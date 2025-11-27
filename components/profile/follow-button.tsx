@@ -9,9 +9,10 @@ import { UserPlus, UserMinus, Loader2 } from "lucide-react";
 interface FollowButtonProps {
     targetUserId: string;
     initialIsFollowing: boolean;
+    targetUsername?: string;
 }
 
-export function FollowButton({ targetUserId, initialIsFollowing }: FollowButtonProps) {
+export function FollowButton({ targetUserId, initialIsFollowing, targetUsername }: FollowButtonProps) {
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isPending, startTransition] = useTransition();
 
@@ -34,7 +35,16 @@ export function FollowButton({ targetUserId, initialIsFollowing }: FollowButtonP
                     setIsFollowing(previousState);
                     toast.error(result.error || "İşlem başarısız.");
                 } else {
-                    toast.success(previousState ? "Takipten çıkıldı." : "Takip ediliyor.");
+                    if (!previousState) {
+                        // Just followed
+                        if (targetUsername === 'barannnbozkurttb') {
+                            toast.success("Gönüllerin sultanı Hazreti Admin'i takip ediyorsun! 👑");
+                        } else {
+                            toast.success("Takip ediliyor.");
+                        }
+                    } else {
+                        toast.success("Takipten çıkıldı.");
+                    }
                 }
             } catch (error) {
                 setIsFollowing(previousState);
