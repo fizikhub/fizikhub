@@ -72,6 +72,8 @@ export const metadata: Metadata = {
 
 import { Toaster } from "sonner";
 
+import { GlobalAdminNotification } from "@/components/global-admin-notification";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -89,6 +91,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <GlobalAdminNotification />
           <Navbar />
           <main className="flex-1">
             {children}
