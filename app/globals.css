@@ -137,6 +137,21 @@ html {
   font-size: 16px;
 }
 
+/* Safe area insets for notched phones */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Improve touch targets for buttons and links */
+button,
+a {
+  touch-action: manipulation;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

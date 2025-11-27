@@ -14,26 +14,31 @@ const inter = Inter({
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
+  viewportFit: 'cover',
 };
-
 
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://fizikhub.com'),
   title: {
-    default: "Fizikhub | Eğlenceli Bilim",
+    default: "Fizikhub | Eğlenceli Bilim Platformu",
     template: "%s | Fizikhub"
   },
   description: "Sıkıcı bilim sitelerinden sıkıldın mı? Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk için doğru yerdesin.",
   keywords: ["fizik", "bilim", "uzay", "teknoloji", "eğlenceli bilim", "fizikhub", "forum", "soru cevap"],
   authors: [{ name: "Fizikhub Ekibi" }],
   creator: "Fizikhub",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "tr_TR",
