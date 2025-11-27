@@ -54,7 +54,7 @@ export function NotificationBell() {
 
         // Check for special admin notification
         const hasAdminNotification = data?.some((n: any) =>
-            !n.is_read && n.content === "Yüce Hazretleri Admin sorunuza cevap verdi"
+            !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
         );
 
         if (hasAdminNotification) {
@@ -138,7 +138,7 @@ export function NotificationBell() {
             case 'report':
                 return <><span className="font-semibold">{name}</span> bir içerik bildirdi.</>;
             default:
-                if (notification.content === "Yüce Hazretleri Admin sorunuza cevap verdi") {
+                if (notification.content === "hazreti yüce müce admin soruna cevap verdi") {
                     return <span className="font-bold text-amber-500 animate-pulse">👑 {notification.content} 👑</span>;
                 }
                 return notification.content;

@@ -21,7 +21,7 @@ export function GlobalAdminNotification() {
         const checkNotifications = async () => {
             const notifications = await getNotifications();
             const adminNote = notifications?.find((n: any) =>
-                !n.is_read && n.content === "Yüce Hazretleri Admin sorunuza cevap verdi"
+                !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
             );
 
             if (adminNote) {
@@ -90,7 +90,7 @@ export function GlobalAdminNotification() {
                             >
                                 <span className="text-xl md:text-2xl animate-bounce">👑</span>
                                 <span className="font-bold text-xs md:text-xl text-center animate-pulse leading-tight">
-                                    Yüce Hazretleri Admin sorunuza cevap verdi! Tıklayın!
+                                    hazreti yüce müce admin soruna cevap verdi! Tıklayın!
                                 </span>
                                 <span className="text-xl md:text-2xl animate-bounce">👑</span>
                             </div>

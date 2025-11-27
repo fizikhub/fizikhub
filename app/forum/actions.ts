@@ -65,7 +65,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
     if (question) {
         const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
         const notificationContent = isAdmin
-            ? "Yüce Hazretleri Admin sorunuza cevap verdi"
+            ? "hazreti yüce müce admin soruna cevap verdi"
             : `"${question.title}" soruna cevap yazdı.`;
 
         await createNotification({
