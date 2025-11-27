@@ -81,18 +81,18 @@ export function GlobalAdminNotification() {
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -100, opacity: 0 }}
-                        className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-black shadow-lg border-b-4 border-yellow-600"
+                        className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-black shadow-lg border-b-4 border-yellow-600"
                     >
-                        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+                        <div className="container mx-auto px-2 md:px-4 py-2 md:py-3 flex items-center justify-between gap-2">
                             <div
-                                className="flex-1 flex items-center justify-center gap-2 cursor-pointer"
+                                className="flex-1 flex items-center justify-center gap-1 md:gap-2 cursor-pointer"
                                 onClick={handleClick}
                             >
-                                <span className="text-2xl animate-bounce">👑</span>
-                                <span className="font-bold text-lg md:text-xl text-center animate-pulse">
+                                <span className="text-xl md:text-2xl animate-bounce">👑</span>
+                                <span className="font-bold text-xs md:text-xl text-center animate-pulse leading-tight">
                                     Yüce Hazretleri Admin sorunuza cevap verdi! Tıklayın!
                                 </span>
-                                <span className="text-2xl animate-bounce">👑</span>
+                                <span className="text-xl md:text-2xl animate-bounce">👑</span>
                             </div>
                             <Button
                                 variant="ghost"
