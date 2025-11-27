@@ -106,6 +106,7 @@ export function Navbar() {
                         <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)}>
                             <Search className="h-5 w-5" />
                         </Button>
+                        <NotificationBell />
                         <Button
                             variant="ghost"
                             size="icon"

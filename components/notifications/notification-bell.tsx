@@ -5,6 +5,7 @@ import { Bell, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactConfetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
+import { motion } from "framer-motion";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -151,9 +152,14 @@ export function NotificationBell() {
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
-                        <Bell className="h-5 w-5" />
+                        <motion.div
+                            animate={unreadCount > 0 ? { rotate: [0, -10, 10, -10, 10, 0] } : {}}
+                            transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 2 }}
+                        >
+                            <Bell className="h-5 w-5" />
+                        </motion.div>
                         {unreadCount > 0 && (
-                            <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background" />
+                            <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background animate-pulse" />
                         )}
                     </Button>
                 </DropdownMenuTrigger>
