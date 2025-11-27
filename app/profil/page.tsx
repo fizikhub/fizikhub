@@ -22,6 +22,7 @@ import { ProfileMessagesButton } from "@/components/profile/profile-messages-but
 import { FollowStats } from "@/components/profile/follow-stats";
 import { getFollowStats } from "@/app/profil/actions";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -167,6 +168,7 @@ export default async function ProfilePage() {
                                     currentWebsite={profile?.website || null}
                                     currentSocialLinks={profile?.social_links || null}
                                 />
+                                <NotificationBell />
                                 <div className="md:hidden">
                                     <ModeToggle />
                                 </div>
