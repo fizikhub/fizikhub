@@ -1,0 +1,283 @@
+"use server";
+
+import { createClient } from "@/lib/supabase-server";
+import { revalidatePath } from "next/cache";
+import { createNotification } from "@/app/notifications/actions";
+
+export async function updateUsername(newUsername: string) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Sadece admin değiştirebilir
+    if (user.email?.toLowerCase() !== 'barannnbozkurttb.b@gmail.com') {
+        return { success: false, error: "Kullanıcı adını değiştirme yetkiniz yok." };
+    }
+
+    // Username boş olamaz
+    if (!newUsername || newUsername.trim().length === 0) {
+        return { success: false, error: "Kullanıcı adı boş olamaz." };
+    }
+
+    // Username formatını kontrol et (sadece harf, rakam, alt çizgi)
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(newUsername)) {
+        return { success: false, error: "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir." };
+    }
+
+    // Kullanıcı adının benzersiz olup olmadığını kontrol et
+    const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', newUsername)
+        .neq('id', user.id)
+        .single();
+
+    if (existingUser) {
+        return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
+    }
+
+    // Kullanıcı adını güncelle
+    const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ username: newUsername })
+        .eq('id', user.id);
+
+    if (updateError) {
+        console.error("Username update error:", updateError);
+        return { success: false, error: "Kullanıcı adı güncellenirken hata oluştu." };
+    }
+
+    revalidatePath('/profil');
+    return { success: true };
+}
+
+export async function updateProfile(formData: {
+    bio?: string;
+    avatar_url?: string;
+    full_name?: string;
+    website?: string;
+    social_links?: any;
+}) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    const updateData: any = {};
+
+    if (formData.bio !== undefined) updateData.bio = formData.bio;
+    if (formData.avatar_url !== undefined) updateData.avatar_url = formData.avatar_url;
+    if (formData.full_name !== undefined) updateData.full_name = formData.full_name;
+    if (formData.website !== undefined) updateData.website = formData.website;
+    if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
+
+    // Add updated_at timestamp
+    const finalUpdateData = {
+        ...updateData,
+        updated_at: new Date().toISOString()
+    };
+
+    const { error: updateError } = await supabase
+        .from('profiles')
+        .update(finalUpdateData)
+        .eq('id', user.id);
+
+    if (updateError) {
+        console.error("Profile update error:", updateError);
+        return { success: false, error: "Profil güncellenirken hata oluştu." };
+    }
+
+    revalidatePath('/profil');
+    return { success: true };
+}
+
+export async function followUser(targetUserId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    if (user.id === targetUserId) {
+        return { success: false, error: "Kendinizi takip edemezsiniz." };
+    }
+
+    const { error } = await supabase
+        .from('follows')
+        .insert({
+            follower_id: user.id,
+            following_id: targetUserId
+        });
+
+    if (error) {
+        console.error("Follow error:", error);
+        return { success: false, error: "Takip edilirken hata oluştu." };
+    }
+
+    // Create notification
+    await createNotification({
+        recipientId: targetUserId,
+        actorId: user.id,
+        type: 'follow'
+    });
+
+    revalidatePath(`/kullanici/${targetUserId}`);
+    revalidatePath('/profil');
+    return { success: true };
+}
+
+export async function unfollowUser(targetUserId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    const { error } = await supabase
+        .from('follows')
+        .delete()
+        .eq('follower_id', user.id)
+        .eq('following_id', targetUserId);
+
+    if (error) {
+        console.error("Unfollow error:", error);
+        return { success: false, error: "Takipten çıkılırken hata oluştu." };
+    }
+
+    revalidatePath(`/kullanici/${targetUserId}`);
+    revalidatePath('/profil');
+    return { success: true };
+}
+
+export async function getFollowStatus(targetUserId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { isFollowing: false };
+
+    const { data } = await supabase
+        .from('follows')
+        .select('follower_id')
+        .eq('follower_id', user.id)
+        .eq('following_id', targetUserId)
+        .single();
+
+    return { isFollowing: !!data };
+}
+
+export async function getFollowStats(userId: string) {
+    const supabase = await createClient();
+
+    // Get real followers count
+    const { count: followersCount } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('following_id', userId);
+
+    // Get real following count
+    const { count: followingCount } = await supabase
+        .from('follows')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', userId);
+
+    // Admin boost logic (check username)
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', userId)
+        .single();
+
+    let finalFollowers = followersCount || 0;
+
+    // Admin username check (barannnbozkurttb)
+    if (profile?.username === 'barannnbozkurttb') {
+        finalFollowers += 28000;
+    }
+
+    return {
+        followersCount: finalFollowers,
+        followingCount: followingCount || 0
+    };
+}
+
+export async function uploadAvatar(file: File) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    try {
+        // Get current profile to check for existing avatar
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('avatar_url, username')
+            .eq('id', user.id)
+            .single();
+
+        // Delete old avatar if exists
+        if (profile?.avatar_url) {
+            const oldPath = profile.avatar_url.split('/').pop();
+            if (oldPath) {
+                await supabase.storage
+                    .from('avatars')
+                    .remove([`${user.id}/${oldPath}`]);
+            }
+        }
+
+        // Create unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        // Upload to Storage
+        const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (uploadError) {
+            console.error("Upload error:", uploadError);
+            return { success: false, error: "Dosya yüklenirken hata oluştu" };
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+        if (!urlData?.publicUrl) {
+            return { success: false, error: "URL alınamadı" };
+        }
+
+        // Update profile with new avatar URL
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ avatar_url: urlData.publicUrl })
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error("Profile update error:", updateError);
+            return { success: false, error: "Profil güncellenirken hata oluştu" };
+        }
+
+        revalidatePath("/profil");
+        revalidatePath(`/kullanici/${profile?.username || user.id}`);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Avatar upload error:", error);
+        return { success: false, error: "Beklenmeyen bir hata oluştu" };
+    }
+}

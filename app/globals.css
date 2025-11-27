@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 24 24 27;
+
+    --card: 255 255 255;
+    --card-foreground: 24 24 27;
+
+    --popover: 255 255 255;
+    --popover-foreground: 24 24 27;
+
+    --primary: 245 158 11;
+    --primary-foreground: 255 255 255;
+
+    --secondary: 244 244 245;
+    --secondary-foreground: 24 24 27;
+
+    --muted: 244 244 245;
+    --muted-foreground: 113 113 122;
+
+    --accent: 244 244 245;
+    --accent-foreground: 24 24 27;
+
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+
+    --border: 228 228 231;
+    --input: 228 228 231;
+    --ring: 245 158 11;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 9 9 11;
+    --foreground: 250 250 250;
+
+    --card: 24 24 27;
+    --card-foreground: 250 250 250;
+
+    --popover: 24 24 27;
+    --popover-foreground: 250 250 250;
+
+    --primary: 245 158 11;
+    --primary-foreground: 0 0 0;
+
+    --secondary: 39 39 42;
+    --secondary-foreground: 250 250 250;
+
+    --muted: 39 39 42;
+    --muted-foreground: 161 161 170;
+
+    --accent: 39 39 42;
+    --accent-foreground: 250 250 250;
+
+    --destructive: 127 29 29;
+    --destructive-foreground: 255 255 255;
+
+    --border: 39 39 42;
+    --input: 39 39 42;
+    --ring: 245 158 11;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+}
+
+@theme {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Base Styles */
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: Arial, Helvetica, sans-serif;
+  /* Mobile optimization: prevent horizontal scroll */
+  overflow-x: hidden;
+  /* Improve touch scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+html {
+  /* Mobile optimization: smooth scrolling */
+  scroll-behavior: smooth;
+  /* Improve touch response */
+  -webkit-tap-highlight-color: transparent;
+  /* Minimum font size for mobile readability */
+  font-size: 16px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Screen shake animation for explosions */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-2px, 2px) rotate(-0.5deg);
+  }
+
+  20% {
+    transform: translate(2px, -2px) rotate(0.5deg);
+  }
+
+  30% {
+    transform: translate(-3px, 3px) rotate(-1deg);
+  }
+
+  40% {
+    transform: translate(3px, -3px) rotate(1deg);
+  }
+
+  50% {
+    transform: translate(-2px, 2px) rotate(-0.5deg);
+  }
+
+  60% {
+    transform: translate(2px, -2px) rotate(0.5deg);
+  }
+
+  70% {
+    transform: translate(-1px, 1px) rotate(-0.3deg);
+  }
+
+  80% {
+    transform: translate(1px, -1px) rotate(0.3deg);
+  }
+
+  90% {
+    transform: translate(-1px, 1px) rotate(-0.2deg);
+  }
+}
