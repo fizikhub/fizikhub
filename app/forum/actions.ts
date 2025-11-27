@@ -63,13 +63,18 @@ export async function createAnswer(formData: { content: string; questionId: numb
         .single();
 
     if (question) {
+        const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+        const notificationContent = isAdmin
+            ? "Yüce Hazretleri Admin sorunuza cevap verdi"
+            : `"${question.title}" soruna cevap yazdı.`;
+
         await createNotification({
             recipientId: question.author_id,
             actorId: user.id,
             type: 'reply',
             resourceId: formData.questionId.toString(),
             resourceType: 'question',
-            content: `"${question.title}" soruna cevap yazdı.`
+            content: notificationContent
         });
     }
 

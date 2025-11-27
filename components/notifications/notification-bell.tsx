@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Bell, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ReactConfetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,6 +41,8 @@ export function NotificationBell() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const { width, height } = useWindowSize();
     const supabase = createClient();
     const router = useRouter();
 
@@ -47,6 +51,17 @@ export function NotificationBell() {
         setNotifications(data as any);
         const count = await getUnreadCount();
         setUnreadCount(count);
+
+        // Check for special admin notification
+        const hasAdminNotification = data?.some((n: any) =>
+            !n.is_read && n.content === "Yüce Hazretleri Admin sorunuza cevap verdi"
+        );
+
+        if (hasAdminNotification) {
+            setShowConfetti(true);
+            // Stop confetti after 7 seconds
+            setTimeout(() => setShowConfetti(false), 7000);
+        }
     };
 
     useEffect(() => {
@@ -123,76 +138,82 @@ export function NotificationBell() {
             case 'report':
                 return <><span className="font-semibold">{name}</span> bir içerik bildirdi.</>;
             default:
+                if (notification.content === "Yüce Hazretleri Admin sorunuza cevap verdi") {
+                    return <span className="font-bold text-amber-500 animate-pulse">👑 {notification.content} 👑</span>;
+                }
                 return notification.content;
         }
     };
 
     return (
-        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    {unreadCount > 0 && (
-                        <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background" />
-                    )}
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 sm:w-96 max-h-[500px] overflow-y-auto">
-                <div className="flex items-center justify-between px-2 py-1.5">
-                    <span className="font-semibold text-sm">Bildirimler</span>
-                    {unreadCount > 0 && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-auto px-2 py-0.5 text-xs text-muted-foreground hover:text-primary"
-                            onClick={handleMarkAllRead}
-                        >
-                            Tümünü okundu işaretle
-                        </Button>
-                    )}
-                </div>
-                <DropdownMenuSeparator />
-                {notifications.length === 0 ? (
-                    <div className="py-8 text-center text-muted-foreground text-sm">
-                        Henüz bildirim yok.
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-1 p-1">
-                        {notifications.map((notification) => (
-                            <DropdownMenuItem
-                                key={notification.id}
-                                className={cn(
-                                    "flex items-start gap-3 p-3 cursor-pointer focus:bg-muted/50",
-                                    !notification.is_read && "bg-primary/5"
-                                )}
-                                onSelect={(e) => e.preventDefault()}
+        <>
+            {showConfetti && <ReactConfetti width={width} height={height} numberOfPieces={200} recycle={false} />}
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative">
+                        <Bell className="h-5 w-5" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background" />
+                        )}
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 sm:w-96 max-h-[500px] overflow-y-auto">
+                    <div className="flex items-center justify-between px-2 py-1.5">
+                        <span className="font-semibold text-sm">Bildirimler</span>
+                        {unreadCount > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto px-2 py-0.5 text-xs text-muted-foreground hover:text-primary"
+                                onClick={handleMarkAllRead}
                             >
-                                <div className="relative mt-1">
-                                    <Avatar className="h-8 w-8 border">
-                                        <AvatarImage src={notification.actor?.avatar_url || ""} />
-                                        <AvatarFallback>{notification.actor?.username?.[0]?.toUpperCase()}</AvatarFallback>
-                                    </Avatar>
-                                    {!notification.is_read && (
-                                        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
-                                    )}
-                                </div>
-                                <div className="flex-1 space-y-1" onClick={() => {
-                                    handleMarkAsRead(notification.id);
-                                    router.push(getNotificationLink(notification));
-                                    setIsOpen(false);
-                                }}>
-                                    <p className="text-sm leading-snug">
-                                        {getNotificationText(notification)}
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground">
-                                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: tr })}
-                                    </p>
-                                </div>
-                            </DropdownMenuItem>
-                        ))}
+                                Tümünü okundu işaretle
+                            </Button>
+                        )}
                     </div>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
+                    <DropdownMenuSeparator />
+                    {notifications.length === 0 ? (
+                        <div className="py-8 text-center text-muted-foreground text-sm">
+                            Henüz bildirim yok.
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-1 p-1">
+                            {notifications.map((notification) => (
+                                <DropdownMenuItem
+                                    key={notification.id}
+                                    className={cn(
+                                        "flex items-start gap-3 p-3 cursor-pointer focus:bg-muted/50",
+                                        !notification.is_read && "bg-primary/5"
+                                    )}
+                                    onSelect={(e) => e.preventDefault()}
+                                >
+                                    <div className="relative mt-1">
+                                        <Avatar className="h-8 w-8 border">
+                                            <AvatarImage src={notification.actor?.avatar_url || ""} />
+                                            <AvatarFallback>{notification.actor?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        {!notification.is_read && (
+                                            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 space-y-1" onClick={() => {
+                                        handleMarkAsRead(notification.id);
+                                        router.push(getNotificationLink(notification));
+                                        setIsOpen(false);
+                                    }}>
+                                        <p className="text-sm leading-snug">
+                                            {getNotificationText(notification)}
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground">
+                                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: tr })}
+                                        </p>
+                                    </div>
+                                </DropdownMenuItem>
+                            ))}
+                        </div>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu >
+        </>
     );
 }
