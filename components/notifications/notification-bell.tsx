@@ -42,26 +42,40 @@ export function NotificationBell() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const { width, height } = useWindowSize();
     const supabase = createClient();
     const router = useRouter();
 
     const fetchNotifications = async () => {
-        const data = await getNotifications();
-        setNotifications(data as any);
-        const count = await getUnreadCount();
-        setUnreadCount(count);
+        try {
+            setIsLoading(true);
+            console.log('[NotificationBell] Fetching notifications...');
 
-        // Check for special admin notification
-        const hasAdminNotification = data?.some((n: any) =>
-            !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
-        );
+            const [data, count] = await Promise.all([
+                getNotifications(),
+                getUnreadCount()
+            ]);
 
-        if (hasAdminNotification) {
-            setShowConfetti(true);
-            // Stop confetti after 7 seconds
-            setTimeout(() => setShowConfetti(false), 7000);
+            console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
+
+            setNotifications(data as any);
+            setUnreadCount(count);
+
+            // Check for special admin notification
+            const hasAdminNotification = data?.some((n: any) =>
+                !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
+            );
+
+            if (hasAdminNotification) {
+                setShowConfetti(true);
+                setTimeout(() => setShowConfetti(false), 7000);
+            }
+        } catch (error) {
+            console.error('[NotificationBell] Error fetching notifications:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -78,11 +92,21 @@ export function NotificationBell() {
                     table: 'notifications',
                 },
                 (payload) => {
-                    // Only increment if it's for the current user (RLS should handle this but good to be safe if logic changes)
-                    // Actually client-side subscription receives all events allowed by RLS.
-                    // Since we have RLS "Users can view their own notifications", we should only receive ours.
+                    console.log('[NotificationBell] New notification received:', payload);
                     setUnreadCount(prev => prev + 1);
-                    fetchNotifications(); // Refresh list to show new item
+                    fetchNotifications();
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'notifications',
+                },
+                (payload) => {
+                    console.log('[NotificationBell] Notification updated:', payload);
+                    fetchNotifications();
                 }
             )
             .subscribe();
@@ -178,7 +202,14 @@ export function NotificationBell() {
                         )}
                     </div>
                     <DropdownMenuSeparator />
-                    {notifications.length === 0 ? (
+                    {isLoading ? (
+                        <div className="py-8 text-center text-muted-foreground text-sm">
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                                Yükleniyor...
+                            </div>
+                        </div>
+                    ) : notifications.length === 0 ? (
                         <div className="py-8 text-center text-muted-foreground text-sm">
                             Henüz bildirim yok.
                         </div>

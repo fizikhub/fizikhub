@@ -66,12 +66,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="container py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
+            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
                 <ForumHeader />
 
-
-
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
                     {/* Desktop Sidebar */}
                     <div className="hidden md:block sticky top-24 h-fit space-y-6">
                         <QuestionOfTheWeek />
@@ -79,22 +77,22 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                     </div>
 
                     {/* Main Content */}
-                    <div className="space-y-4 md:space-y-6 min-w-0">
+                    <div className="space-y-3 sm:space-y-4 md:space-y-6 min-w-0">
                         {!questions || questions.length === 0 ? (
-                            <div className="text-center py-20 border-2 border-dashed rounded-2xl bg-muted/20">
-                                <div className="max-w-md mx-auto">
-                                    <p className="text-muted-foreground text-lg mb-2">
+                            <div className="text-center py-12 sm:py-20 border-2 border-dashed  rounded-xl sm:rounded-2xl bg-muted/20">
+                                <div className="max-w-md mx-auto px-4">
+                                    <p className="text-muted-foreground text-base sm:text-lg mb-2">
                                         {searchQuery
                                             ? `"${searchQuery}" için sonuç bulunamadı.`
                                             : "Henüz hiç soru sorulmamış."}
                                     </p>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-xs sm:text-sm text-muted-foreground">
                                         {!searchQuery && "İlk soran sen ol!"}
                                     </p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-3 md:space-y-4">
+                            <div className="space-y-2 sm:space-y-3 md:space-y-4">
                                 {questions.map((question) => (
                                     <QuestionCard
                                         key={question.id}

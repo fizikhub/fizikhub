@@ -4,37 +4,65 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 
 export async function getNotifications() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return [];
+        if (!user) {
+            console.log('[Notifications] No user logged in');
+            return [];
+        }
 
-    const { data } = await supabase
-        .from('notifications')
-        .select(`
-            *,
-            actor:profiles!actor_id(username, full_name, avatar_url)
-        `)
-        .eq('recipient_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
+        const { data, error } = await supabase
+            .from('notifications')
+            .select(`
+                *,
+                actor:profiles!actor_id(username, full_name, avatar_url)
+            `)
+            .eq('recipient_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(20);
 
-    return data || [];
+        if (error) {
+            console.error('[Notifications] Error fetching notifications:', error);
+            return [];
+        }
+
+        console.log('[Notifications] Fetched notifications:', data?.length || 0);
+        return data || [];
+    } catch (error) {
+        console.error('[Notifications] Unexpected error:', error);
+        return [];
+    }
 }
 
 export async function getUnreadCount() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return 0;
+        if (!user) {
+            console.log('[Notifications] No user for unread count');
+            return 0;
+        }
 
-    const { count } = await supabase
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('recipient_id', user.id)
-        .eq('is_read', false);
+        const { count, error } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('recipient_id', user.id)
+            .eq('is_read', false);
 
-    return count || 0;
+        if (error) {
+            console.error('[Notifications] Error fetching unread count:', error);
+            return 0;
+        }
+
+        console.log('[Notifications] Unread count:', count);
+        return count || 0;
+    } catch (error) {
+        console.error('[Notifications] Unexpected error getting unread count:', error);
+        return 0;
+    }
 }
 
 export async function markAsRead(notificationId: number) {
