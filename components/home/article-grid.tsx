@@ -26,16 +26,16 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
     const hasMore = visibleCount < articles.length;
 
     return (
-        <section className="py-16 bg-background/50">
+        <section className="py-8 sm:py-12 md:py-16 bg-background/50">
             <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center justify-between gap-4 md:flex-row mb-12">
-                    <h2 className="text-3xl font-bold tracking-tight">Son Eklenenler</h2>
+                <div className="flex flex-col items-center justify-between gap-3 sm:gap-4 md:flex-row mb-8 sm:mb-10 md:mb-12">
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Son Eklenenler</h2>
                     <Link href="/blog">
-                        <Button variant="ghost">Tümünü Gör</Button>
+                        <Button variant="ghost" size="sm" className="sm:size-default">Tümünü Gör</Button>
                     </Link>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <AnimatePresence>
                         {visibleArticles.map((article, index) => (
                             <motion.div
@@ -47,8 +47,8 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
                                 viewport={{ once: true }}
                             >
                                 <Link href={`/blog/${article.slug}`}>
-                                    <Card className="h-full flex flex-col overflow-hidden border-border/50 hover:border-primary/50 transition-all duration-300 group cursor-pointer hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
-                                        <div className="relative h-48 w-full overflow-hidden">
+                                    <Card className="h-full flex flex-col overflow-hidden border-border/50 hover:border-primary/50 transition-all duration-300 group cursor-pointer hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 bg-card/50 backdrop-blur-sm">
+                                        <div className="relative h-40 sm:h-44 md:h-48 w-full overflow-hidden">
                                             <Image
                                                 src={(article.image_url && (article.image_url.startsWith('http') || article.image_url.startsWith('/')))
                                                     ? article.image_url
@@ -62,21 +62,21 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
                                                 {article.category}
                                             </div>
                                         </div>
-                                        <CardHeader className="p-4">
-                                            <div className="text-xs text-muted-foreground mb-2">
+                                        <CardHeader className="p-3 sm:p-4">
+                                            <div className="text-[10px] sm:text-xs text-muted-foreground mb-1.5 sm:mb-2">
                                                 {format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}
                                             </div>
-                                            <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                                            <CardTitle className="text-base sm:text-lg line-clamp-2 group-hover:text-primary transition-colors">
                                                 {article.title}
                                             </CardTitle>
                                         </CardHeader>
-                                        <CardContent className="p-4 pt-0 flex-1">
-                                            <p className="text-sm text-muted-foreground line-clamp-3">
+                                        <CardContent className="p-3 sm:p-4 pt-0 flex-1">
+                                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3">
                                                 {article.excerpt}
                                             </p>
                                         </CardContent>
-                                        <CardFooter className="p-4 pt-0">
-                                            <div className="text-xs font-medium text-primary">
+                                        <CardFooter className="p-3 sm:p-4 pt-0">
+                                            <div className="text-[10px] sm:text-xs font-medium text-primary">
                                                 Yazar: {article.author?.full_name || article.author?.username || "Anonim"}
                                             </div>
                                         </CardFooter>
@@ -88,12 +88,12 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
                 </div>
 
                 {hasMore && (
-                    <div className="mt-12 flex justify-center">
+                    <div className="mt-8 sm:mt-10 md:mt-12 flex justify-center">
                         <Button
                             variant="outline"
                             size="lg"
                             onClick={showMore}
-                            className="group gap-2 min-w-[200px]"
+                            className="group gap-2 min-w-[180px] sm:min-w-[200px] rounded-full"
                         >
                             Daha Fazla Göster
                             <ChevronDown className="h-4 w-4 transition-transform group-hover:translate-y-1" />

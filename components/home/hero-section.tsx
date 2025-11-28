@@ -24,13 +24,13 @@ export function HeroSection() {
     };
 
     return (
-        <section className="relative overflow-hidden min-h-[90vh] flex items-center justify-center">
+        <section className="relative overflow-hidden min-h-[70vh] md:min-h-[90vh] flex items-center justify-center">
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 animate-gradient-shift" />
 
             {/* Hero Pattern - Newton, Einstein, Elma */}
             <div
-                className="absolute inset-0 opacity-[0.08]"
+                className="absolute inset-0 opacity-[0.08] hidden sm:block"
                 style={{
                     backgroundImage: "url('/hero-pattern.png')",
                     backgroundSize: "400px",
@@ -43,7 +43,7 @@ export function HeroSection() {
             <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
 
             <div
-                className="container px-4 md:px-6 relative z-10 flex flex-col items-center text-center"
+                className="container px-4 sm:px-6 md:px-6 relative z-10 flex flex-col items-center text-center"
                 onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -54,7 +54,7 @@ export function HeroSection() {
                         rotateY: isHovered ? rotateY : 0,
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="mb-8 will-change-transform"
+                    className="mb-6 sm:mb-8 will-change-transform"
                 >
                     {/* Badge removed */}
 
@@ -63,7 +63,7 @@ export function HeroSection() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5, type: "spring" }}
-                        className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 md:mb-10"
+                        className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter mb-4 sm:mb-6 md:mb-8 lg:mb-10"
                     >
                         <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent inline-block animate-gradient-x">
                             Fizikhub
@@ -75,7 +75,7 @@ export function HeroSection() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: 0.1 }}
-                        className="max-w-[700px] text-base sm:text-lg md:text-xl text-muted-foreground mb-6 md:mb-10 px-4 md:px-0"
+                        className="max-w-[90%] sm:max-w-[700px] text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8 md:mb-10 px-2 sm:px-4 md:px-0"
                     >
                         Sıkıcı formüllerden, anlaşılmaz terimlerden gına mı geldi?
                         Fizikhub'da bilimi makaraya sararak öğreniyoruz.
@@ -86,12 +86,12 @@ export function HeroSection() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.4, delay: 0.2 }}
-                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                        className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-4 sm:px-0"
                     >
-                        <Link href="/blog">
+                        <Link href="/blog" className="w-full sm:w-auto">
                             <Button
                                 size="lg"
-                                className="w-full sm:w-auto gap-2 group relative overflow-hidden"
+                                className="w-full sm:w-auto gap-2 group relative overflow-hidden h-11 sm:h-12"
                             >
                                 <span className="relative z-10 flex items-center gap-2">
                                     Dal İçeri Kaptan
@@ -105,11 +105,11 @@ export function HeroSection() {
                                 />
                             </Button>
                         </Link>
-                        <Link href="/forum">
+                        <Link href="/forum" className="w-full sm:w-auto">
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="w-full sm:w-auto gap-2 group border-2 hover:border-primary hover:bg-primary/5"
+                                className="w-full sm:w-auto gap-2 group border-2 hover:border-primary hover:bg-primary/5 h-11 sm:h-12"
                             >
                                 Bi Sorum Var
                                 <Rocket className="h-4 w-4 group-hover:rotate-12 transition-transform" />
@@ -164,10 +164,10 @@ export function HeroSection() {
 
 function FloatingElements() {
     const elements = [
-        { icon: Atom, className: "top-20 left-10", delay: 0, size: "w-16 h-16" },
-        { icon: Rocket, className: "bottom-32 right-16", delay: 1, size: "w-20 h-20" },
-        { icon: Star, className: "top-40 right-20", delay: 0.5, size: "w-12 h-12" },
-        { icon: Sparkles, className: "bottom-48 left-20", delay: 1.5, size: "w-14 h-14" },
+        { icon: Atom, className: "top-20 left-10", delay: 0, size: "w-12 h-12 sm:w-16 sm:h-16", hideOnMobile: false },
+        { icon: Rocket, className: "bottom-32 right-16", delay: 1, size: "w-16 h-16 sm:w-20 sm:h-20", hideOnMobile: true },
+        { icon: Star, className: "top-40 right-20", delay: 0.5, size: "w-10 h-10 sm:w-12 sm:h-12", hideOnMobile: false },
+        { icon: Sparkles, className: "bottom-48 left-20", delay: 1.5, size: "w-12 h-12 sm:w-14 sm:h-14", hideOnMobile: true },
     ];
 
     return (
@@ -175,7 +175,7 @@ function FloatingElements() {
             {elements.map((element, index) => (
                 <motion.div
                     key={index}
-                    className={`absolute ${element.className} text-primary/30 will-change-transform`}
+                    className={`absolute ${element.className} ${element.hideOnMobile ? 'hidden sm:block' : ''} text-primary/30 will-change-transform`}
                     animate={{
                         y: [0, -30, 0],
                         rotate: [0, 10, -10, 0],

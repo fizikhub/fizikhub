@@ -42,8 +42,8 @@ export default async function Home() {
       <div className="flex flex-col min-h-screen">
         <HeroSection />
 
-        <div className="container py-8">
-          <div className="grid gap-6">
+        <div className="container py-6 sm:py-8 md:py-12 px-4">
+          <div className="grid gap-4 sm:gap-6">
             <ArticleGrid articles={articles} />
           </div>
         </div>
