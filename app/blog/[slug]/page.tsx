@@ -150,15 +150,15 @@ export default async function ArticlePage({ params }: PageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <ReadingProgress />
-            <div className="container py-10 px-4 md:px-6 max-w-7xl mx-auto">
+            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
                 <Link href={`/blog#article-${slug}`}>
-                    <Button variant="ghost" className="mb-8 gap-2 pl-0 hover:pl-2 transition-all">
-                        <ArrowLeft className="h-4 w-4" /> Geri Dön
+                    <Button variant="ghost" size="sm" className="mb-4 sm:mb-6 md:mb-8 gap-2 pl-0 hover:pl-2 transition-all">
+                        <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Geri Dön</span><span className="sm:hidden">Geri</span>
                     </Button>
                 </Link>
 
                 {/* Hero Section */}
-                <div className="relative w-full h-[400px] mb-12 rounded-2xl overflow-hidden shadow-2xl shadow-primary/20">
+                <div className="relative w-full h-[250px] sm:h-[350px] md:h-[400px] mb-6 sm:mb-8 md:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl shadow-primary/20">
                     <Image
                         src={(article.image_url && (article.image_url.startsWith('http') || article.image_url.startsWith('/')))
                             ? article.image_url
@@ -170,40 +170,40 @@ export default async function ArticlePage({ params }: PageProps) {
                         priority
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-                    <div className="absolute bottom-0 left-0 p-8 md:p-12 max-w-4xl">
-                        <div className="inline-flex items-center gap-2 text-sm font-medium text-primary bg-primary/10 backdrop-blur-sm px-3 py-1 rounded-full mb-4">
+                    <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-8 lg:p-12 max-w-4xl">
+                        <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm font-medium text-primary bg-primary/10 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full mb-2 sm:mb-3 md:mb-4">
                             {article.category}
                         </div>
-                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 drop-shadow-lg">
+                        <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white mb-2 sm:mb-3 md:mb-4 drop-shadow-lg line-clamp-3">
                             {article.title}
                         </h1>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-200">
-                            <span className="font-medium">{article.author?.full_name || article.author?.username || "Anonim"}</span>
-                            <span>•</span>
-                            <span>{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
-                            <span>•</span>
-                            <div className="flex items-center gap-1.5">
-                                <Clock className="h-4 w-4" />
-                                <span>{formatReadingTime(readingTime)} okuma</span>
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-[10px] sm:text-xs md:text-sm text-gray-200">
+                            <span className="font-medium truncate max-w-[150px] sm:max-w-none">{article.author?.full_name || article.author?.username || "Anonim"}</span>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="hidden sm:inline">{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
+                            <span className="hidden md:inline">•</span>
+                            <div className="flex items-center gap-1 sm:gap-1.5">
+                                <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
+                                <span>{formatReadingTime(readingTime)}<span className="hidden sm:inline"> okuma</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Main Content Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 md:gap-12">
                     {/* Article Content */}
                     <article className="lg:col-span-8 xl:col-span-8">
                         {/* Author Card at Top */}
-                        <div className="mb-8">
+                        <div className="mb-6 sm:mb-8">
                             <AuthorCard author={article.author || {}} />
                         </div>
 
                         {/* Article Body with Improved Typography */}
-                        <MarkdownRenderer content={article.content || ""} className="prose-lg" />
+                        <MarkdownRenderer content={article.content || ""} className="prose-sm sm:prose-base md:prose-lg" />
 
                         {/* Like & Share Section */}
-                        <div className="flex items-center gap-4 mt-12 pt-8 border-t border-border">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-8 border-t border-border">
                             <LikeButton
                                 articleId={article.id}
                                 initialLiked={!!userLike}
@@ -216,7 +216,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <RelatedArticles currentArticleId={article.id} category={article.category || "Genel"} />
 
                         {/* Comments Section */}
-                        <div className="mt-16">
+                        <div className="mt-10 sm:mt-12 md:mt-16">
                             <CommentSection
                                 articleId={article.id}
                                 comments={comments || []}

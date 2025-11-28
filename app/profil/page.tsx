@@ -83,44 +83,44 @@ export default async function ProfilePage() {
     const { followersCount, followingCount } = await getFollowStats(user.id);
 
     return (
-        <div className="container py-8 px-4 md:px-6 max-w-5xl mx-auto min-h-screen">
+        <div className="container py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 max-w-5xl mx-auto min-h-screen">
             {/* Profile Header */}
-            <div className="relative mb-8 group">
+            <div className="relative mb-6 sm:mb-8 group">
                 {/* Cover Image */}
-                <div className="h-32 md:h-48 rounded-t-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-background border-x border-t border-primary/10 overflow-hidden relative">
-                    <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]" />
+                <div className="h-24 sm:h-32 md:h-48 rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-r from-primary/20 via-primary/10 to-background border-x border-t border-primary/10 overflow-hidden relative">
+                    <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] " />
                 </div>
 
-                <div className="px-6 md:px-10 pb-6 -mt-12 md:-mt-16 relative z-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-end gap-6">
+                <div className="px-4 sm:px-6 md:px-10 pb-4 sm:pb-6 -mt-10 sm:-mt-12 md:-mt-16 relative z-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-end gap-4 sm:gap-6">
                         <AvatarUpload
                             currentAvatarUrl={profile?.avatar_url}
                             userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
                         />
 
-                        <div className="flex-1 pt-2 md:pb-2 space-y-2">
-                            <div className="flex flex-col md:flex-row md:items-center gap-2">
-                                <div className="flex items-center gap-2">
-                                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{profile?.full_name || "İsimsiz Kullanıcı"}</h1>
+                        <div className="flex-1 pt-1 sm:pt-2 md:pb-2 space-y-1.5 sm:space-y-2">
+                            <div className="flex flex-col md:flex-row md:items-center gap-1.5 sm:gap-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
+                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">{profile?.full_name || "İsimsiz Kullanıcı"}</h1>
                                     {profile?.is_verified && (
-                                        <BadgeCheck className="h-6 w-6 text-blue-500 fill-blue-500/10" />
+                                        <BadgeCheck className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 fill-blue-500/10" />
                                     )}
                                 </div>
                                 {userBadges && userBadges.length > 0 && (
-                                    <div className="flex gap-1.5 mt-1 md:mt-0">
+                                    <div className="flex gap-1 sm:gap-1.5 mt-0.5 md:mt-0">
                                         {userBadges.map((ub: any) => (
                                             <div
                                                 key={ub.badges.name}
                                                 title={`${ub.badges.name}: ${ub.badges.description}`}
                                                 className="cursor-help"
                                             >
-                                                <span className="text-lg">{ub.badges.icon}</span>
+                                                <span className="text-base sm:text-lg">{ub.badges.icon}</span>
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
-                            <p className="text-muted-foreground font-medium">@{profile?.username || "kullanici"}</p>
+                            <p className="text-sm sm:text-base text-muted-foreground font-medium">@{profile?.username || "kullanici"}</p>
 
                             {profile?.bio && (
                                 <p className="text-sm text-muted-foreground/80 max-w-md line-clamp-2 hover:line-clamp-none transition-all">
@@ -158,7 +158,7 @@ export default async function ProfilePage() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3 w-full md:w-auto mt-4 md:mt-0">
+                        <div className="flex flex-col gap-2 sm:gap-3 w-full md:w-auto mt-3 sm:mt-4 md:mt-0">
                             <div className="flex gap-2">
                                 <ProfileMessagesButton />
                                 <EditProfileButton
@@ -174,7 +174,7 @@ export default async function ProfilePage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50 shadow-sm">
+                            <div className="flex items-center gap-3 sm:gap-4 bg-card/50 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border/50 shadow-sm">
                                 <FollowStats followers={followersCount} following={followingCount} />
                             </div>
 
@@ -207,28 +207,28 @@ export default async function ProfilePage() {
 
                 {/* Content Tabs */}
                 <Tabs defaultValue="questions" className="w-full">
-                    <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent gap-6 mb-8 overflow-x-auto flex-nowrap">
+                    <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 overflow-x-auto flex-nowrap">
                         <TabsTrigger
                             value="questions"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:text-foreground transition-none"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 sm:px-3 md:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm md:text-base text-muted-foreground data-[state=active]:text-foreground transition-none whitespace-nowrap"
                         >
-                            Sorduğum Sorular
+                            Sorular
                         </TabsTrigger>
                         <TabsTrigger
                             value="answers"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:text-foreground transition-none"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 sm:px-3 md:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm md:text-base text-muted-foreground data-[state=active]:text-foreground transition-none whitespace-nowrap"
                         >
-                            Verdiğim Cevaplar
+                            Cevaplar
                         </TabsTrigger>
                         <TabsTrigger
                             value="notifications"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:text-foreground transition-none"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 sm:px-3 md:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm md:text-base text-muted-foreground data-[state=active]:text-foreground transition-none whitespace-nowrap"
                         >
                             Bildirimler
                         </TabsTrigger>
                         <TabsTrigger
                             value="messages"
-                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 font-medium text-muted-foreground data-[state=active]:text-foreground transition-none"
+                            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 sm:px-3 md:px-4 py-2 sm:py-3 font-medium text-xs sm:text-sm md:text-base text-muted-foreground data-[state=active]:text-foreground transition-none whitespace-nowrap"
                         >
                             Mesajlar
                         </TabsTrigger>
@@ -248,17 +248,17 @@ export default async function ProfilePage() {
                         </Card>
                     </TabsContent>
 
-                    <TabsContent value="questions" className="space-y-4 animate-in fade-in-50 duration-300">
+                    <TabsContent value="questions" className="space-y-3 sm:space-y-4 animate-in fade-in-50 duration-300">
                         {!questions || questions.length === 0 ? (
-                            <div className="text-center py-12 border rounded-xl bg-muted/10 border-dashed">
-                                <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground/20" />
-                                <p className="text-muted-foreground">Henüz hiç soru sormadın.</p>
+                            <div className="text-center py-10 sm:py-12 border rounded-xl bg-muted/10 border-dashed">
+                                <MessageSquare className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-muted-foreground/20" />
+                                <p className="text-sm sm:text-base text-muted-foreground">Henüz hiç soru sormadın.</p>
                                 <Link href="/forum">
-                                    <Button variant="link" className="mt-2">Foruma Git</Button>
+                                    <Button variant="link" size="sm" className="mt-2">Foruma Git</Button>
                                 </Link>
                             </div>
                         ) : (
-                            <div className="grid gap-4">
+                            <div className="grid gap-3 sm:gap-4">
                                 {questions.map((question) => (
                                     <div key={question.id} className="relative group">
                                         <QuestionCard
@@ -278,14 +278,14 @@ export default async function ProfilePage() {
                         )}
                     </TabsContent>
 
-                    <TabsContent value="answers" className="space-y-4 animate-in fade-in-50 duration-300">
+                    <TabsContent value="answers" className="space-y-3 sm:space-y-4 animate-in fade-in-50 duration-300">
                         {!answers || answers.length === 0 ? (
-                            <div className="text-center py-12 border rounded-xl bg-muted/10 border-dashed">
-                                <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/20" />
-                                <p className="text-muted-foreground">Henüz hiç cevap vermedin.</p>
+                            <div className="text-center py-10 sm:py-12 border rounded-xl bg-muted/10 border-dashed">
+                                <FileText className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-muted-foreground/20" />
+                                <p className="text-sm sm:text-base text-muted-foreground">Henüz hiç cevap vermedin.</p>
                             </div>
                         ) : (
-                            <div className="grid gap-4">
+                            <div className="grid gap-3 sm:gap-4">
                                 {answers.map((answer) => (
                                     <Link key={answer.id} href={`/forum/${answer.question_id}`}>
                                         <Card className="hover:border-primary/50 transition-colors cursor-pointer bg-card/50 backdrop-blur-sm">
