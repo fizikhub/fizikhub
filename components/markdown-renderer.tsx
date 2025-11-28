@@ -36,6 +36,18 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
                             </pre>
                         );
                     },
+                    img: ({ node, ...props }: any) => {
+                        const src = props.src as string;
+                        if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
+                            return (
+                                <video controls className="rounded-lg w-full my-4" {...props}>
+                                    <source src={src} type={`video/${src.split('.').pop()}`} />
+                                    Tarayıcınız video etiketini desteklemiyor.
+                                </video>
+                            );
+                        }
+                        return <img className="rounded-lg w-full my-4" {...props} />;
+                    },
                 }}
             >
                 {content}

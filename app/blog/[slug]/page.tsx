@@ -7,6 +7,7 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { LikeButton } from "@/components/articles/like-button";
 import { CommentSection } from "@/components/articles/comment-section";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { AuthorCard } from "@/components/blog/author-card";
@@ -199,25 +200,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         </div>
 
                         {/* Article Body with Improved Typography */}
-                        <div
-                            className="prose prose-invert prose-lg max-w-none
-                                prose-headings:scroll-mt-24 
-                                prose-headings:font-bold 
-                                prose-headings:tracking-tight
-                                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:text-primary
-                                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-primary/90
-                                prose-p:text-base prose-p:leading-[1.8] prose-p:mb-6 prose-p:text-foreground/90
-                                prose-a:text-secondary prose-a:no-underline hover:prose-a:underline prose-a:font-medium
-                                prose-strong:text-foreground prose-strong:font-semibold
-                                prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
-                                prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:rounded-xl prose-pre:p-4
-                                prose-ul:my-6 prose-ul:list-disc prose-ul:pl-6
-                                prose-ol:my-6 prose-ol:list-decimal prose-ol:pl-6
-                                prose-li:my-2 prose-li:leading-relaxed
-                                prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
-                                prose-img:rounded-xl prose-img:shadow-lg"
-                            dangerouslySetInnerHTML={{ __html: article.content || "" }}
-                        />
+                        <MarkdownRenderer content={article.content || ""} className="prose-lg" />
 
                         {/* Like & Share Section */}
                         <div className="flex items-center gap-4 mt-12 pt-8 border-t border-border">

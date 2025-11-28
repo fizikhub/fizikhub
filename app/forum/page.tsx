@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { ForumHeader } from "@/components/forum/forum-header";
 import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
+import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
 
 export const dynamic = "force-dynamic";
@@ -72,7 +73,8 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
                     {/* Desktop Sidebar */}
-                    <div className="hidden md:block sticky top-24 h-fit">
+                    <div className="hidden md:block sticky top-24 h-fit space-y-6">
+                        <QuestionOfTheWeek />
                         <ForumSidebar />
                     </div>
 

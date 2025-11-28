@@ -21,9 +21,23 @@ export function Footer() {
                         &copy; 2025 Fizikhub. İzinsiz alıntı yapanı kara deliğe atarız.
                     </p>
                 </div>
-                <div className="flex gap-4">
-                    <a href="#" className="text-sm text-muted-foreground hover:text-primary">Instagram</a>
-                    <a href="#" className="text-sm text-muted-foreground hover:text-primary">Twitter</a>
+                <div className="flex flex-col items-center gap-4 md:items-end">
+                    <div className="flex gap-4">
+                        <a href="https://instagram.com/fizikhub" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                            <Instagram className="h-5 w-5" />
+                            <span className="sr-only">Instagram</span>
+                        </a>
+                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
+                            <Twitter className="h-5 w-5" />
+                            <span className="sr-only">Twitter</span>
+                        </a>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-4 text-xs text-muted-foreground md:justify-end">
+                        <Link href="/hakkimizda" className="hover:underline">Hakkımızda</Link>
+                        <Link href="/iletisim" className="hover:underline">İletişim</Link>
+                        <Link href="/gizlilik-politikasi" className="hover:underline">Gizlilik Politikası</Link>
+                        <Link href="/kullanim-sartlari" className="hover:underline">Kullanım Şartları</Link>
+                    </div>
                 </div>
             </div>
         </footer>
