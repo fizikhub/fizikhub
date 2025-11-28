@@ -126,67 +126,68 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
             {/* Answer List */}
-            <div className="space-y-6">
+            <div className="space-y-3 sm:space-y-4">
                 {answers.length === 0 ? (
-                    <div className="py-12 text-center border rounded-2xl bg-muted/10 border-dashed border-muted-foreground/20">
-                        <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                    <div className="py-8 sm:py-12 text-center border rounded-xl sm:rounded-2xl bg-muted/10 border-dashed border-muted-foreground/20">
+                        <div className="bg-muted/20 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                         </div>
-                        <h3 className="text-lg font-medium mb-1">Henüz cevap yok</h3>
-                        <p className="text-muted-foreground text-sm">Bu soruya ilk cevabı sen ver!</p>
+                        <h3 className="text-base sm:text-lg font-medium mb-1">Henüz cevap yok</h3>
+                        <p className="text-muted-foreground text-xs sm:text-sm">Bu soruya ilk cevabı sen ver!</p>
                     </div>
                 ) : (
                     answers.map((answer) => (
-                        <div key={answer.id} className={`group relative bg-card/50 backdrop-blur-sm rounded-xl border p-6 transition-all hover:border-primary/20 ${answer.is_accepted ? 'border-green-500/50 bg-green-500/5 shadow-[0_0_20px_-12px_rgba(34,197,94,0.4)]' : 'border-border/50'}`}>
+                        <div key={answer.id} className={`group relative bg-card/50 backdrop-blur-sm rounded-lg sm:rounded-xl border p-4 sm:p-5 md:p-6 transition-all hover:border-primary/20 ${answer.is_accepted ? 'border-green-500/50 bg-green-500/5 shadow-[0_0_20px_-12px_rgba(34,197,94,0.4)]' : 'border-border/50'}`}>
                             {answer.is_accepted && (
-                                <div className="absolute -top-3 right-6 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                <div className="absolute -top-2 sm:-top-3 right-4 sm:right-6 bg-green-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex items-center gap-0.5 sm:gap-1 shadow-sm">
+                                    <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                     ÇÖZÜM
                                 </div>
                             )}
 
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="flex items-center gap-3">
+                            <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2">
+                                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                                     <Link
                                         href={`/kullanici/${answer.profiles?.username}`}
-                                        className="relative"
+                                        className="relative flex-shrink-0"
                                     >
-                                        <Avatar className="h-10 w-10">
+                                        <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
                                             <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="text-sm font-bold bg-primary/10 text-primary">
+                                            <AvatarFallback className="text-xs sm:text-sm font-bold bg-primary/10 text-primary">
                                                 {answer.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Link>
-                                    <div>
+                                    <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-1">
                                             <Link
                                                 href={`/kullanici/${answer.profiles?.username}`}
-                                                className="font-semibold text-sm hover:text-primary transition-colors block"
+                                                className="font-semibold text-xs sm:text-sm hover:text-primary transition-colors truncate block"
                                             >
                                                 @{answer.profiles?.username || "Anonim"}
                                             </Link>
                                             {answer.profiles?.is_verified && (
-                                                <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500/10" />
+                                                <BadgeCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-500 fill-blue-500/10 flex-shrink-0" />
                                             )}
                                         </div>
-                                        <span className="text-xs text-muted-foreground">
-                                            {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
+                                        <span className="text-[10px] sm:text-xs text-muted-foreground block">
+                                            <span className="hidden sm:inline">{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
+                                            <span className="sm:hidden">{formatDistanceToNow(new Date(answer.created_at), { locale: tr })}</span>
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 flex-shrink-0">
                                     {user?.id === questionAuthorId && (
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => handleToggleAccept(answer.id)}
-                                            className={`h-8 px-2 ${answer.is_accepted ? 'text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20' : 'text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/10'}`}
+                                            className={`h-7 w-7 sm:h-8 sm:w-8 p-0 ${answer.is_accepted ? 'text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20' : 'text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/10'}`}
                                             title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
                                         >
-                                            <CheckCircle2 className={`h-4 w-4 ${answer.is_accepted ? 'fill-current' : ''}`} />
+                                            <CheckCircle2 className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${answer.is_accepted ? 'fill-current' : ''}`} />
                                         </Button>
                                     )}
                                     <DeleteAnswerButton
@@ -198,15 +199,15 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                         resourceId={answer.id}
                                         resourceType="answer"
                                         trigger={
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                                                <Flag className="h-4 w-4" />
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                                                <Flag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                             </Button>
                                         }
                                     />
                                 </div>
                             </div>
 
-                            <div className="pl-13">
+                            <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none pl-0 sm:pl-13">
                                 <MarkdownRenderer content={answer.content} className="text-sm leading-relaxed" />
                             </div>
                         </div>
@@ -216,10 +217,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
             {/* New Answer Form */}
             {user ? (
-                <div className="bg-card rounded-2xl border shadow-sm p-6">
-                    <h3 className="text-lg font-semibold mb-4">Cevap Yaz</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="min-h-[200px] border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border shadow-sm p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Cevap Yaz</h3>
+                    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                        <div className="min-h-[180px] sm:min-h-[200px] border rounded-lg sm:rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <MarkdownEditor
                                 value={newAnswer}
                                 onChange={setNewAnswer}
@@ -230,7 +231,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || !newAnswer.trim()}
-                                className="min-w-[120px] rounded-full"
+                                className="min-w-[100px] sm:min-w-[120px] rounded-full h-9 sm:h-10 text-sm sm:text-base"
                             >
                                 {isSubmitting ? "Gönderiliyor..." : "Cevabı Gönder"}
                             </Button>
@@ -238,9 +239,9 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                     </form>
                 </div>
             ) : (
-                <div className="p-6 rounded-lg bg-muted/20 text-center border border-dashed">
-                    <p className="text-muted-foreground mb-4">Cevap yazmak için giriş yapmalısın.</p>
-                    <Button variant="outline" asChild>
+                <div className="p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/20 text-center border border-dashed">
+                    <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">Cevap yazmak için giriş yapmalısın.</p>
+                    <Button variant="outline" size="sm" className="rounded-full" asChild>
                         <a href="/login">Giriş Yap</a>
                     </Button>
                 </div>
