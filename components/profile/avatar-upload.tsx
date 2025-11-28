@@ -77,12 +77,12 @@ export function AvatarUpload({ currentAvatarUrl, userInitial }: AvatarUploadProp
 
     return (
         <div className="relative group">
-            <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background shadow-xl ring-2 ring-primary/10 transition-transform group-hover:scale-105 duration-300">
+            <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background">
                 <AvatarImage
                     src={previewUrl || currentAvatarUrl || ""}
                     className="object-cover"
                 />
-                <AvatarFallback className="text-3xl md:text-4xl bg-primary/5">
+                <AvatarFallback className="text-3xl sm:text-4xl bg-primary/5">
                     {userInitial}
                 </AvatarFallback>
             </Avatar>
