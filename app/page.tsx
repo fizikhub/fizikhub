@@ -1,5 +1,7 @@
-import { HeroSection } from "@/components/home/hero-section";
-import { ArticleGrid } from "@/components/home/article-grid";
+import { HeroSection3D } from "@/components/home/hero-section-3d";
+import { ModernArticleGrid } from "@/components/home/modern-article-grid";
+import { FeaturesSection } from "@/components/home/features-section";
+import { TrendingQuestions } from "@/components/home/trending-questions";
 import { EasterEggManager } from "@/components/easter-eggs/easter-egg-manager";
 import { createClient } from "@/lib/supabase-server";
 import { getArticles } from "@/lib/api";
@@ -17,8 +19,37 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const supabase = await createClient();
-  // Home page only shows published articles from Admins
-  const articles = await getArticles(supabase, { status: 'published', authorRole: 'admin' });
+
+  // Fetch articles (published & admin only for home)
+  const rawArticles = await getArticles(supabase, { status: 'published', authorRole: 'admin' });
+  const articles = rawArticles.map(a => ({
+    ...a,
+    summary: a.summary || null
+  }));
+
+  // Fetch trending questions (top 3 by votes/activity)
+  const { data: trendingQuestions } = await supabase
+    .from('questions')
+    .select(`
+      id,
+      title,
+      created_at,
+      votes,
+      profiles(username, avatar_url),
+      answers(count)
+    `)
+    .order('votes', { ascending: false })
+    .limit(3);
+
+  // Transform questions data to match component interface
+  const formattedQuestions = trendingQuestions?.map(q => {
+    const profile = Array.isArray(q.profiles) ? q.profiles[0] : q.profiles;
+    return {
+      ...q,
+      profiles: profile,
+      answer_count: q.answers?.[0]?.count || 0
+    };
+  }) || [];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -40,15 +71,13 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <EasterEggManager />
-      <div className="flex flex-col min-h-screen">
-        <HeroSection />
 
-        <div className="container py-6 sm:py-8 md:py-12 px-4">
-          <div className="grid gap-4 sm:gap-6">
-            <ArticleGrid articles={articles} />
-          </div>
-        </div>
-      </div>
+      <main className="flex flex-col min-h-screen bg-background overflow-x-hidden">
+        <HeroSection3D />
+        <FeaturesSection />
+        <ModernArticleGrid articles={articles} />
+        <TrendingQuestions questions={formattedQuestions} />
+      </main>
     </>
   );
 }
