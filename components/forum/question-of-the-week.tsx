@@ -11,9 +11,11 @@ interface QuestionOfTheWeekProps {
 }
 
 export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWeekProps) {
-    // If no ID provided, fallback to a default or hide?
-    // For now, hardcode the known title slug if not provided, but ideally we pass it.
-    const targetUrl = questionId ? `/forum/soru/${questionId}` : "/forum/soru/isik-hizi-tren-paradoksu";
+    // If no ID provided, fallback to search for the title
+    const questionTitle = "Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?";
+    const targetUrl = questionId
+        ? `/forum/soru/${questionId}`
+        : `/forum?q=${encodeURIComponent(questionTitle)}`;
 
     return (
         <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
