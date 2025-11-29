@@ -25,7 +25,8 @@ export default async function Home() {
   const articles = rawArticles.map(a => ({
     ...a,
     summary: a.summary || null,
-    content: a.content || ""
+    content: a.content || "",
+    category: a.category || undefined
   }));
 
   // Fetch trending questions (top 3 by votes/activity)
