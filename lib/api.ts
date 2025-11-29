@@ -3,6 +3,10 @@ import { SupabaseClient } from '@supabase/supabase-js';
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
     author?: Database['public']['Tables']['profiles']['Row'] | null;
+    summary?: string | null;
+    is_featured?: boolean;
+    views?: number;
+    profiles?: Database['public']['Tables']['profiles']['Row'] | null; // Alias for author in some queries
 };
 
 export type Question = Database['public']['Tables']['questions']['Row'] & {
