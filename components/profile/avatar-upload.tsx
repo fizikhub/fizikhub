@@ -7,13 +7,15 @@ import { Camera, Loader2, X } from "lucide-react";
 import { uploadAvatar } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface AvatarUploadProps {
     currentAvatarUrl?: string | null;
     userInitial: string;
+    className?: string;
 }
 
-export function AvatarUpload({ currentAvatarUrl, userInitial }: AvatarUploadProps) {
+export function AvatarUpload({ currentAvatarUrl, userInitial, className }: AvatarUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -76,8 +78,8 @@ export function AvatarUpload({ currentAvatarUrl, userInitial }: AvatarUploadProp
     };
 
     return (
-        <div className="relative group">
-            <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background">
+        <div className="relative group inline-block">
+            <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background", className)}>
                 <AvatarImage
                     src={previewUrl || currentAvatarUrl || ""}
                     className="object-cover"
