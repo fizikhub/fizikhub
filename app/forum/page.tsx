@@ -69,6 +69,11 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
                 <ForumHeader />
 
+                {/* Mobile Question of the Week */}
+                <div className="md:hidden mb-6">
+                    <QuestionOfTheWeek />
+                </div>
+
                 <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
                     {/* Desktop Sidebar */}
                     <div className="hidden md:block sticky top-24 h-fit space-y-6">
