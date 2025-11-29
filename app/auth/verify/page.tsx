@@ -88,11 +88,11 @@ function VerifyContent() {
                         <Label htmlFor="code">Doğrulama Kodu</Label>
                         <Input
                             id="code"
-                            placeholder="123456"
+                            placeholder="12345678"
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
                             className="text-center text-2xl tracking-widest"
-                            maxLength={6}
+                            maxLength={8}
                             required
                         />
                     </div>
