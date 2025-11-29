@@ -36,7 +36,8 @@ export async function createAnswer(formData: { content: string; questionId: numb
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-        return { success: false, error: "Cevap yazmak için giriş yapmalısınız." };
+        console.error("Auth Error:", authError);
+        return { success: false, error: `Oturum hatası: ${authError?.message || "Kullanıcı bulunamadı"}` };
     }
 
     const { data, error } = await supabase.from('answers').insert({
