@@ -135,7 +135,7 @@ export function NotificationBell() {
             case 'like':
             case 'comment':
             case 'reply':
-                if (notification.resource_type === 'question') return `/forum/soru/${notification.resource_id}`;
+                if (notification.resource_type === 'question') return `/forum/${notification.resource_id}`;
                 if (notification.resource_type === 'article') return `/blog/${notification.resource_id}`; // Assuming slug or id
                 return '#';
             case 'welcome':
