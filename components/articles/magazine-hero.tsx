@@ -21,10 +21,10 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
     const sideArticles = articles.slice(1, 3);
 
     return (
-        <section className="mb-12 sm:mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 h-auto lg:h-[500px]">
+        <section className="mb-8 sm:mb-12 md:mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 md:gap-6 h-auto lg:h-[500px]">
                 {/* Main Featured Article (Large) */}
-                <div className="lg:col-span-8 h-[400px] lg:h-full relative group overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl">
+                <div className="lg:col-span-8 h-[350px] sm:h-[400px] lg:h-full relative group overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-xl">
                     <Link href={`/blog/${mainArticle.slug}`} className="block h-full w-full">
                         <Image
                             src={mainArticle.image_url || "/images/placeholder-hero.jpg"}
@@ -35,14 +35,14 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                        <div className="absolute bottom-0 left-0 p-6 sm:p-8 md:p-10 w-full">
-                            <Badge className="bg-primary hover:bg-primary/90 text-white border-0 mb-3 sm:mb-4 px-3 py-1 text-sm">
+                        <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-8 lg:p-10 w-full">
+                            <Badge className="bg-primary hover:bg-primary/90 text-white border-0 mb-2 sm:mb-3 px-2.5 py-0.5 text-xs sm:text-sm">
                                 {mainArticle.category}
                             </Badge>
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-4 leading-tight drop-shadow-lg line-clamp-3">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-white mb-2 sm:mb-3 leading-tight drop-shadow-lg line-clamp-3">
                                 {mainArticle.title}
                             </h2>
-                            <p className="text-white/80 text-sm sm:text-base md:text-lg line-clamp-2 mb-4 max-w-2xl hidden sm:block">
+                            <p className="text-white/80 text-sm sm:text-base md:text-lg line-clamp-2 mb-3 sm:mb-4 max-w-2xl hidden sm:block">
                                 {mainArticle.summary}
                             </p>
                             <div className="flex items-center gap-4 text-white/70 text-xs sm:text-sm font-medium">
@@ -68,7 +68,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                 </div>
 
                 {/* Side Articles (Stacked) */}
-                <div className="lg:col-span-4 flex flex-col gap-4 sm:gap-6">
+                <div className="lg:col-span-4 flex flex-col gap-3 sm:gap-4 md:gap-6">
                     {sideArticles.map((article, index) => (
                         <div key={article.id} className="relative flex-1 h-[200px] lg:h-auto group overflow-hidden rounded-2xl shadow-lg">
                             <Link href={`/blog/${article.slug}`} className="block h-full w-full">

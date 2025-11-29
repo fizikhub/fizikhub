@@ -32,14 +32,16 @@ export default async function BlogPage() {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            <div className="container mx-auto max-w-7xl px-4 md:px-6 py-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
-                    <div>
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-2">Bilim Arşivi</h1>
-                        <p className="text-muted-foreground">Evrenin derinliklerine yolculuk.</p>
+            <div className="container mx-auto max-w-7xl px-3 sm:px-4 md:px-6 py-4 sm:py-8">
+                {/* Header - Simplified for Mobile */}
+                <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-10">
+                    <div className="text-center sm:text-left">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 sm:mb-2">Bilim Arşivi</h1>
+                        <p className="text-sm sm:text-base text-muted-foreground">Evrenin derinliklerine yolculuk.</p>
                     </div>
-                    <div className="relative w-full md:w-72">
+
+                    {/* Search - Hidden on Mobile, can be toggled if needed */}
+                    <div className="hidden sm:block relative w-full md:w-72 md:ml-auto">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input placeholder="Makale ara..." className="pl-9 bg-muted/50 border-0" />
                     </div>
@@ -48,17 +50,17 @@ export default async function BlogPage() {
                 {/* Magazine Hero Grid */}
                 <MagazineHero articles={featuredArticles} />
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-10">
                     {/* Main Content Column */}
                     <div className="lg:col-span-8">
-                        <div className="flex items-center justify-between mb-8 border-b pb-4">
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <span className="w-2 h-8 bg-primary rounded-full" />
+                        <div className="flex items-center justify-between mb-6 sm:mb-8 border-b pb-3 sm:pb-4">
+                            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                                <span className="w-1.5 sm:w-2 h-6 sm:h-8 bg-primary rounded-full" />
                                 Son Eklenenler
                             </h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-x-8 sm:gap-y-12">
                             {listArticles.map((article) => (
                                 <EditorialCard key={article.id} article={article} />
                             ))}
@@ -71,8 +73,8 @@ export default async function BlogPage() {
                         )}
                     </div>
 
-                    {/* Sidebar Column */}
-                    <aside className="lg:col-span-4 space-y-10">
+                    {/* Sidebar Column - Hidden on Mobile */}
+                    <aside className="hidden lg:block lg:col-span-4 space-y-10">
                         {/* Popular Articles Widget */}
                         <div className="bg-card/50 rounded-2xl p-6 border shadow-sm">
                             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
