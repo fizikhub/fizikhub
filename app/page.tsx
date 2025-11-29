@@ -17,7 +17,8 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const supabase = await createClient();
-  const articles = await getArticles(supabase);
+  // Home page only shows published articles from Admins
+  const articles = await getArticles(supabase, { status: 'published', authorRole: 'admin' });
 
   const jsonLd = {
     '@context': 'https://schema.org',

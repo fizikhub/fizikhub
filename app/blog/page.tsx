@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
     const supabase = await createClient();
-    const articles = await getArticles(supabase);
+    const articles = await getArticles(supabase, { status: 'published', authorRole: 'all' });
 
     return (
         <div className="min-h-screen py-8 sm:py-12 md:py-16 px-4 md:px-6">

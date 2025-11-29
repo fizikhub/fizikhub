@@ -11,11 +11,29 @@ export type Question = Database['public']['Tables']['questions']['Row'] & {
 
 export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['Row'];
 
-export async function getArticles(supabase: SupabaseClient<Database>) {
-    const { data, error } = await supabase
+export async function getArticles(
+    supabase: SupabaseClient<Database>,
+    options: { status?: string | null; authorRole?: 'admin' | 'all' } = { status: 'published', authorRole: 'all' }
+) {
+    let query = supabase
         .from('articles')
-        .select('*, author:profiles(*)')
+        .select('*, author:profiles!inner(*)')
         .order('created_at', { ascending: false });
+
+    if (options.status) {
+        query = query.eq('status', options.status);
+    }
+
+    if (options.authorRole === 'admin') {
+        // Filter for admin authors
+        // We assume admin emails are hardcoded or role is 'admin'
+        // Since filtering by joined table column is tricky with OR logic for emails,
+        // we'll rely on the 'role' column in profiles if it exists, or specific emails if needed.
+        // Based on previous code, we check role='admin'.
+        query = query.eq('author.role', 'admin');
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         console.error('Error fetching articles:', error);

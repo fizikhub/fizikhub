@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
 
 
     // Fetch data for management
-    const articles = await getArticles(supabase);
+    const articles = await getArticles(supabase, { status: null, authorRole: 'all' });
     const terms = await getDictionaryTerms(supabase);
 
     // Fetch questions with answer count
