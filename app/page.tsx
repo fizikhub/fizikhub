@@ -24,7 +24,8 @@ export default async function Home() {
   const rawArticles = await getArticles(supabase, { status: 'published', authorRole: 'admin' });
   const articles = rawArticles.map(a => ({
     ...a,
-    summary: a.summary || null
+    summary: a.summary || null,
+    content: a.content || ""
   }));
 
   // Fetch trending questions (top 3 by votes/activity)
