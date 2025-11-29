@@ -150,16 +150,16 @@ export default async function ArticlePage({ params }: PageProps) {
                 <ArticleHero article={article} readingTime={readingTime} />
 
                 <div className="container max-w-7xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 relative z-20">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 md:gap-14">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 md:gap-10">
                         {/* Article Content */}
-                        <article className="lg:col-span-9 bg-background/80 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/10">
+                        <article className="lg:col-span-10 bg-background/80 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/10">
                             {/* Author Card at Top */}
                             <div className="mb-8 sm:mb-10">
                                 <AuthorCard author={article.author || {}} />
                             </div>
 
                             {/* Article Body with Improved Typography */}
-                            <MarkdownRenderer content={article.content || ""} className="prose-lg sm:prose-xl leading-relaxed" />
+                            <MarkdownRenderer content={article.content || ""} className="prose-lg sm:prose-xl leading-relaxed max-w-none" />
 
                             {/* Like & Share Section */}
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-12 pt-8 border-t border-border/40">
@@ -189,7 +189,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         </article>
 
                         {/* Table of Contents Sidebar */}
-                        <aside className="hidden lg:block lg:col-span-3 space-y-8">
+                        <aside className="hidden lg:block lg:col-span-2 space-y-8">
                             <div className="sticky top-24">
                                 <TableOfContents content={article.content || ""} />
 
