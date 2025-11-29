@@ -139,6 +139,7 @@ export function NotificationBell() {
                 if (notification.resource_type === 'article') return `/blog/${notification.resource_id}`; // Assuming slug or id
                 return '#';
             case 'welcome':
+                if (notification.resource_type === 'system') return '#';
                 return '/profil';
             case 'report':
                 return '/admin?tab=reports';
@@ -159,6 +160,9 @@ export function NotificationBell() {
             case 'reply':
                 return <><span className="font-semibold">{name}</span> yorumuna yanıt verdi.</>;
             case 'welcome':
+                if (notification.resource_type === 'system') {
+                    return <span className="font-medium text-primary">{notification.content}</span>;
+                }
                 return "Fizikhub'a hoş geldin! 🚀";
             case 'report':
                 return <><span className="font-semibold">{name}</span> bir içerik bildirdi.</>;
