@@ -94,17 +94,20 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* Avatar & Action Bar Container */}
-                    <div className="px-4 flex justify-between items-start relative">
-                        {/* Avatar - Absolute positioned */}
-                        <div className="-mt-12 sm:-mt-16 mb-3 relative z-10">
-                            <AvatarUpload
-                                currentAvatarUrl={profile?.avatar_url}
-                                userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
-                            />
+                    <div className="px-4 md:px-6 flex flex-col sm:flex-row items-start sm:items-end justify-between relative -mt-12 sm:-mt-16 mb-4 sm:mb-6 gap-4">
+                        {/* Avatar */}
+                        <div className="relative z-10">
+                            <div className="rounded-full p-1 bg-background shadow-xl">
+                                <AvatarUpload
+                                    currentAvatarUrl={profile?.avatar_url}
+                                    userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
+                                    className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-background"
+                                />
+                            </div>
                         </div>
 
                         {/* Action Bar */}
-                        <div className="pt-3 flex gap-2">
+                        <div className="flex gap-2 w-full sm:w-auto justify-end">
                             <div className="md:hidden">
                                 <ModeToggle />
                             </div>
@@ -130,66 +133,83 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* Profile Info */}
-                    <div className="px-4 pb-4 space-y-3">
-                        <div>
-                            <div className="flex items-center gap-1">
-                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight leading-tight">
+                    <div className="px-4 md:px-6 pb-6 space-y-5">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
                                     {profile?.full_name || "İsimsiz Kullanıcı"}
                                 </h1>
                                 {profile?.is_verified && (
-                                    <BadgeCheck className="h-5 w-5 text-blue-500 fill-blue-500/10" />
+                                    <BadgeCheck className="h-6 w-6 text-blue-500 fill-blue-500/10" />
                                 )}
                             </div>
-                            <p className="text-muted-foreground text-sm">@{profile?.username || "kullanici"}</p>
+                            <p className="text-base text-muted-foreground font-medium">@{profile?.username || "kullanici"}</p>
                         </div>
 
                         {profile?.bio && (
-                            <p className="text-sm sm:text-base whitespace-pre-wrap">
+                            <p className="text-base leading-relaxed max-w-2xl text-foreground/90 whitespace-pre-wrap">
                                 {profile.bio}
                             </p>
                         )}
 
-                        {/* Metadata Row */}
-                        <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                            {profile?.website && (
-                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:underline hover:text-primary transition-colors">
-                                    <Globe className="h-4 w-4" />
-                                    <span className="truncate max-w-[200px]">{profile.website.replace(/^https?:\/\//, '')}</span>
-                                </a>
-                            )}
-                            <div className="flex items-center gap-1">
-                                <span className="text-lg">📅</span>
-                                <span>Katıldı: {new Date(user.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}</span>
+                        {/* Stats Row */}
+                        <div className="flex flex-wrap items-center gap-6 py-4 border-y border-border/50">
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-xl font-bold text-foreground">{followersCount.toLocaleString('tr-TR')}</span>
+                                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Takipçi</span>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-xl font-bold text-foreground">{followingCount.toLocaleString('tr-TR')}</span>
+                                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Takip</span>
+                            </div>
+                            <div className="w-px h-8 bg-border/50 hidden sm:block" />
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-xl font-bold text-foreground">{questions?.length || 0}</span>
+                                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Soru</span>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-xl font-bold text-foreground">{answers?.length || 0}</span>
+                                <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Cevap</span>
                             </div>
                         </div>
 
-                        {/* Follow Stats */}
-                        <div className="flex gap-4 text-sm">
-                            <FollowStats followers={followersCount} following={followingCount} />
-                        </div>
+                        {/* Metadata & Social */}
+                        <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-muted-foreground pt-1">
+                            <div className="flex flex-wrap gap-4">
+                                {profile?.website && (
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors group">
+                                        <Globe className="h-4 w-4 group-hover:text-primary" />
+                                        <span className="truncate max-w-[200px] border-b border-transparent group-hover:border-primary/30">{profile.website.replace(/^https?:\/\//, '')}</span>
+                                    </a>
+                                )}
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-lg leading-none">📅</span>
+                                    <span>{new Date(user.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })} tarihinde katıldı</span>
+                                </div>
+                            </div>
 
-                        {/* Social Links */}
-                        <div className="flex gap-3 pt-1">
-                            {profile?.social_links?.twitter && (
-                                <a href={`https://twitter.com/${profile.social_links.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <Twitter className="h-5 w-5" />
-                                </a>
-                            )}
-                            {profile?.social_links?.github && (
-                                <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <Github className="h-5 w-5" />
-                                </a>
-                            )}
-                            {profile?.social_links?.instagram && (
-                                <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <Instagram className="h-5 w-5" />
-                                </a>
-                            )}
-                            {profile?.social_links?.linkedin && (
-                                <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                                    <Linkedin className="h-5 w-5" />
-                                </a>
-                            )}
+                            <div className="flex gap-3">
+                                {profile?.social_links?.twitter && (
+                                    <a href={`https://twitter.com/${profile.social_links.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-muted hover:text-[#1DA1F2] transition-colors">
+                                        <Twitter className="h-4 w-4" />
+                                    </a>
+                                )}
+                                {profile?.social_links?.github && (
+                                    <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-muted hover:text-foreground transition-colors">
+                                        <Github className="h-4 w-4" />
+                                    </a>
+                                )}
+                                {profile?.social_links?.instagram && (
+                                    <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-muted hover:text-[#E1306C] transition-colors">
+                                        <Instagram className="h-4 w-4" />
+                                    </a>
+                                )}
+                                {profile?.social_links?.linkedin && (
+                                    <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-muted hover:text-[#0077b5] transition-colors">
+                                        <Linkedin className="h-4 w-4" />
+                                    </a>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
