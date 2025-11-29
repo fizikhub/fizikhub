@@ -111,6 +111,15 @@ export default async function ProfilePage() {
                             <div className="md:hidden">
                                 <ModeToggle />
                             </div>
+                            {profile?.is_writer && (
+                                <Link href="/yazar">
+                                    <Button variant="outline" size="sm" className="gap-2 bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border-purple-200">
+                                        <FileText className="h-4 w-4" />
+                                        <span className="hidden sm:inline">Yazar Paneli</span>
+                                        <span className="sm:hidden">Panel</span>
+                                    </Button>
+                                </Link>
+                            )}
                             <ProfileMessagesButton />
                             <EditProfileButton
                                 currentFullName={profile?.full_name || null}
