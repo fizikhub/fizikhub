@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createNotification } from "@/app/notifications/actions";
 
 export async function sendMessage(conversationId: string, content: string) {
     const supabase = await createClient();
@@ -19,6 +20,35 @@ export async function sendMessage(conversationId: string, content: string) {
     if (error) {
         console.error("Send Message Error:", error);
         return { success: false, error: error.message };
+    }
+
+    // Find recipient and create notification
+    const { data: participants } = await supabase
+        .from('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', conversationId);
+
+    const recipient = participants?.find(p => p.user_id !== user.id);
+
+    if (recipient) {
+        // Get sender's profile for notification content
+        const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('username, full_name')
+            .eq('id', user.id)
+            .single();
+
+        const senderName = senderProfile?.full_name || senderProfile?.username || 'Bir kullanıcı';
+        const messagePreview = content.length > 50 ? content.substring(0, 50) + '...' : content;
+
+        await createNotification({
+            recipientId: recipient.user_id,
+            actorId: user.id,
+            type: 'message',
+            resourceId: conversationId,
+            resourceType: 'conversation',
+            content: `${senderName}: ${messagePreview}`
+        });
     }
 
     revalidatePath(`/mesajlar`);

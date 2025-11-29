@@ -144,9 +144,9 @@ export async function createNotification({
 }: {
     recipientId: string;
     actorId: string;
-    type: 'like' | 'comment' | 'follow' | 'reply' | 'welcome' | 'report';
+    type: 'like' | 'comment' | 'follow' | 'reply' | 'welcome' | 'report' | 'message';
     resourceId?: string;
-    resourceType?: 'question' | 'answer' | 'profile' | 'article';
+    resourceType?: 'question' | 'answer' | 'profile' | 'article' | 'conversation';
     content?: string;
 }) {
     // Don't notify self
