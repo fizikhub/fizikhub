@@ -47,7 +47,7 @@ export function CreateQuestionDialog() {
             <DialogTrigger asChild>
                 <Button className="gap-2 rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 bg-gradient-to-r from-primary to-purple-600 hover:scale-105">
                     <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Soru Sor</span>
+                    <span>Soru Sor</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[700px] border-white/10 bg-background/80 backdrop-blur-2xl backdrop-saturate-150 shadow-2xl shadow-black/50 rounded-[32px] p-0 overflow-hidden">
