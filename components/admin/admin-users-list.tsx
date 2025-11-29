@@ -4,10 +4,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Search, Shield } from "lucide-react";
+import { BadgeCheck, Search, Shield, PenTool } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
+import { toggleWriterStatus } from "@/app/admin/actions";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 interface Profile {
     id: string;
@@ -17,6 +20,7 @@ interface Profile {
     website: string | null;
     created_at: string;
     is_verified?: boolean;
+    is_writer?: boolean;
 }
 
 interface AdminUsersListProps {
@@ -26,11 +30,29 @@ interface AdminUsersListProps {
 export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [users, setUsers] = useState(initialUsers);
+    const [isLoading, setIsLoading] = useState<string | null>(null);
 
     const filteredUsers = users.filter(user =>
     (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const handleToggleWriter = async (userId: string, currentStatus: boolean) => {
+        setIsLoading(userId);
+        try {
+            const result = await toggleWriterStatus(userId, !currentStatus);
+            if (result.success) {
+                toast.success(currentStatus ? "Yazar yetkisi alındı." : "Yazar yetkisi verildi.");
+                setUsers(users.map(u => u.id === userId ? { ...u, is_writer: !currentStatus } : u));
+            } else {
+                toast.error(result.error || "İşlem başarısız.");
+            }
+        } catch (error) {
+            toast.error("Bir hata oluştu.");
+        } finally {
+            setIsLoading(null);
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -53,7 +75,7 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                             <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Kullanıcı</th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Kayıt Tarihi</th>
-                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Web Sitesi</th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Roller</th>
                                 <th className="h-12 px-4 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 text-right">İşlemler</th>
                             </tr>
                         </thead>
@@ -95,25 +117,31 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                                             {format(new Date(user.created_at), "d MMM yyyy", { locale: tr })}
                                         </td>
                                         <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
-                                            {user.website ? (
-                                                <a
-                                                    href={user.website.startsWith('http') ? user.website : `https://${user.website}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-500 hover:underline text-sm"
-                                                >
-                                                    {user.website.replace(/^https?:\/\//, '')}
-                                                </a>
-                                            ) : (
-                                                <span className="text-muted-foreground text-sm">-</span>
-                                            )}
+                                            <div className="flex gap-1">
+                                                {user.is_writer && (
+                                                    <Badge variant="secondary" className="text-xs bg-purple-500/10 text-purple-600 hover:bg-purple-500/20 border-purple-200">
+                                                        <PenTool className="mr-1 h-3 w-3" />
+                                                        Yazar
+                                                    </Badge>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-right">
-                                            <Button variant="ghost" size="sm" asChild>
-                                                <Link href={`/kullanici/${user.username}`}>
-                                                    Profili Gör
-                                                </Link>
-                                            </Button>
+                                            <div className="flex justify-end gap-2">
+                                                <Button
+                                                    variant={user.is_writer ? "destructive" : "outline"}
+                                                    size="sm"
+                                                    onClick={() => handleToggleWriter(user.id, user.is_writer || false)}
+                                                    disabled={isLoading === user.id}
+                                                >
+                                                    {user.is_writer ? "Yazarlığı Al" : "Yazar Yap"}
+                                                </Button>
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link href={`/profil/${user.username}`}>
+                                                        Profili Gör
+                                                    </Link>
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
