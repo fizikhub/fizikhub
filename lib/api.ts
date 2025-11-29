@@ -26,18 +26,37 @@ export async function getArticles(supabase: SupabaseClient<Database>) {
 }
 
 export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug: string) {
+    // First try to find by slug
     const { data, error } = await supabase
         .from('articles')
         .select('*, author:profiles(*)')
         .eq('slug', slug)
         .single();
 
+    if (!error && data) {
+        return data as Article;
+    }
+
+    // If not found and slug looks like a numeric ID, try to find by ID
+    // This handles cases where we link to /blog/[id] instead of /blog/[slug]
+    if (/^\d+$/.test(slug)) {
+        const { data: byId, error: errorId } = await supabase
+            .from('articles')
+            .select('*, author:profiles(*)')
+            .eq('id', parseInt(slug))
+            .single();
+
+        if (!errorId && byId) {
+            return byId as Article;
+        }
+    }
+
     if (error) {
         console.error('Error fetching article:', error);
         return null;
     }
 
-    return data as Article;
+    return null;
 }
 
 export async function getQuestions(supabase: SupabaseClient<Database>) {
