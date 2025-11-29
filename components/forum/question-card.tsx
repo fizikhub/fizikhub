@@ -53,96 +53,89 @@ export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) 
             onClick={handleCardClick}
             className="group"
         >
-            <Card className="border hover:border-primary/30 shadow-sm hover:shadow-md bg-card/50 backdrop-blur-xl transition-all duration-300 cursor-pointer overflow-hidden rounded-xl">
-                <CardContent className="p-3 sm:p-5">
-                    <div className="flex gap-3 sm:gap-4 items-start">
-                        {/* Avatar Column - Only show on desktop */}
-                        <div className="hidden sm:block flex-shrink-0 pt-1">
-                            {question.profiles?.username ? (
-                                <Link
-                                    href={`/kullanici/${question.profiles.username}`}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all group-hover:ring-primary/30">
-                                        <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                        <AvatarFallback className="text-sm bg-primary/10 text-primary font-bold">
-                                            {question.profiles?.username?.[0]?.toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Link>
-                            ) : (
-                                <Avatar className="h-10 w-10">
-                                    <AvatarFallback className="text-sm bg-primary/10 text-primary font-bold">?</AvatarFallback>
-                                </Avatar>
-                            )}
+            <Card className="border-0 sm:border hover:border-primary/30 shadow-sm hover:shadow-md bg-card/50 backdrop-blur-xl transition-all duration-300 cursor-pointer overflow-hidden rounded-xl">
+                <CardContent className="p-4 sm:p-6">
+                    <div className="flex gap-4 sm:gap-6">
+                        {/* Stats Column - Desktop */}
+                        <div className="hidden sm:flex flex-col gap-3 items-center min-w-[60px] text-xs text-muted-foreground pt-1">
+                            <div className="flex flex-col items-center gap-0.5">
+                                <span className="text-lg font-bold text-foreground">{question.votes || 0}</span>
+                                <span>oy</span>
+                            </div>
+                            <div className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-md ${answerCount > 0 ? 'bg-green-500/10 text-green-600 border border-green-500/20' : ''}`}>
+                                <span className={`text-lg font-bold ${answerCount > 0 ? 'text-green-600' : 'text-muted-foreground'}`}>{answerCount}</span>
+                                <span>cevap</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-0.5 opacity-70">
+                                <span className="font-medium">{question.views || 0}</span>
+                                <span>bakış</span>
+                            </div>
                         </div>
 
                         {/* Content Column */}
-                        <div className="flex-1 min-w-0 space-y-2 sm:space-y-2.5">
-                            {/* Header: Metadata & Badges */}
-                            <div className="flex items-center justify-between gap-2 flex-wrap">
-                                <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground">
-                                    <span className="font-medium text-foreground flex items-center gap-1">
-                                        @{question.profiles?.username || "Anonim"}
-                                        {question.profiles?.is_verified && (
-                                            <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
-                                        )}
-                                    </span>
-                                    <span>•</span>
-                                    <span className="hidden sm:inline">{formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}</span>
-                                    <span className="sm:hidden">{formatDistanceToNow(new Date(question.created_at), { locale: tr })}</span>
+                        <div className="flex-1 min-w-0 space-y-2">
+                            {/* Mobile Stats & Meta */}
+                            <div className="flex sm:hidden items-center justify-between text-xs text-muted-foreground mb-2">
+                                <div className="flex items-center gap-3">
+                                    <span className="font-medium text-foreground">{question.votes || 0} oy</span>
+                                    <span className={answerCount > 0 ? "text-green-600 font-medium" : ""}>{answerCount} cevap</span>
                                 </div>
+                                <span>{formatDistanceToNow(new Date(question.created_at), { locale: tr })}</span>
+                            </div>
 
-                                <div className="flex items-center gap-1.5">
+                            {/* Title & Category */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-start justify-between gap-2">
+                                    <h3 className="text-base sm:text-lg font-bold leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                                        {question.title}
+                                    </h3>
                                     {isSolved && (
-                                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 hover:bg-green-500/20 border-0 h-5 px-1.5 text-[10px]">
+                                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-0 h-5 px-1.5 text-[10px] flex-shrink-0">
                                             <CheckCircle2 className="h-3 w-3 mr-0.5" />
                                             <span className="hidden sm:inline">Çözüldü</span>
                                         </Badge>
                                     )}
-
-                                    <Badge variant="outline" className="text-[10px] h-5 px-2 font-normal border-border/50 bg-background/50">
-                                        {question.category || "Genel"}
-                                    </Badge>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {question.tags?.map((tag) => (
+                                        <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0 font-normal bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                                            {tag}
+                                        </Badge>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* Title */}
-                            <h3 className="text-sm sm:text-base font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                {question.title}
-                            </h3>
-
-                            {/* Preview Content - Desktop only */}
-                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed hidden sm:block">
-                                {question.content}
-                            </p>
-
-                            {/* Footer: Tags & Stats */}
-                            <div className="flex items-center justify-between pt-1 sm:pt-2 gap-2">
-                                <div className="flex flex-wrap gap-1.5">
-                                    {question.tags?.slice(0, 2).map((tag) => (
-                                        <span key={tag} className="text-[10px] sm:text-xs text-muted-foreground/60 hover:text-primary transition-colors">
-                                            #{tag}
-                                        </span>
-                                    ))}
+                            {/* Author & Date (Desktop) */}
+                            <div className="hidden sm:flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border/30">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>{formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}</span>
+                                    <Link
+                                        href={`/kullanici/${question.profiles?.username}`}
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                                    >
+                                        <Avatar className="h-5 w-5">
+                                            <AvatarImage src={question.profiles?.avatar_url || ""} />
+                                            <AvatarFallback className="text-[10px]">{question.profiles?.username?.[0]}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="font-medium text-foreground">@{question.profiles?.username || "Anonim"}</span>
+                                    </Link>
                                 </div>
+                            </div>
 
-                                <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground" onClick={(e) => e.stopPropagation()}>
-                                    <VoteButton
-                                        questionId={question.id}
-                                        initialVotes={question.votes || 0}
-                                        initialHasVoted={hasVoted}
-                                        className="border-0 shadow-none px-0 py-0 hover:bg-transparent text-muted-foreground hover:text-primary h-auto min-h-0"
-                                    />
-                                    <div className="flex items-center gap-1 min-w-[2rem]">
-                                        <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                        <span className="text-[11px] sm:text-xs">{answerCount}</span>
-                                    </div>
-                                    <div className="hidden sm:flex items-center gap-1">
-                                        <Eye className="h-4 w-4" />
-                                        <span>{question.views || 0}</span>
-                                    </div>
-                                </div>
+                            {/* Mobile Author */}
+                            <div className="flex sm:hidden items-center gap-2 mt-2 pt-2 border-t border-border/30 text-xs text-muted-foreground">
+                                <Link
+                                    href={`/kullanici/${question.profiles?.username}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-1.5 font-medium text-foreground"
+                                >
+                                    <Avatar className="h-4 w-4">
+                                        <AvatarImage src={question.profiles?.avatar_url || ""} />
+                                        <AvatarFallback className="text-[8px]">{question.profiles?.username?.[0]}</AvatarFallback>
+                                    </Avatar>
+                                    @{question.profiles?.username || "Anonim"}
+                                </Link>
                             </div>
                         </div>
                     </div>
