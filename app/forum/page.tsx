@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
-import { ForumHeader } from "@/components/forum/forum-header";
+import { ModernForumHeader } from "@/components/forum/modern-forum-header";
 import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
@@ -65,7 +65,6 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     }
 
     // Fetch Question of the Week
-    // Fetch Question of the Week
     const { data: weeklyQuestion } = await supabase
         .from('questions')
         .select('id')
@@ -76,7 +75,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     return (
         <div className="min-h-screen bg-background">
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
-                <ForumHeader />
+                <ModernForumHeader />
 
                 {/* Mobile Question of the Week */}
                 <div className="md:hidden mb-6">
@@ -93,7 +92,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                     {/* Main Content */}
                     <div className="space-y-3 sm:space-y-4 md:space-y-6 min-w-0">
                         {!questions || questions.length === 0 ? (
-                            <div className="text-center py-12 sm:py-20 border-2 border-dashed  rounded-xl sm:rounded-2xl bg-muted/20">
+                            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-white/10 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-sm">
                                 <div className="max-w-md mx-auto px-4">
                                     <p className="text-muted-foreground text-base sm:text-lg mb-2">
                                         {searchQuery
@@ -106,7 +105,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                            <div className="space-y-4">
                                 {questions.map((question) => (
                                     <QuestionCard
                                         key={question.id}
