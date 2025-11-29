@@ -4,6 +4,59 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 
+export async function toggleAnswerLike(answerId: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Check if user already liked this answer
+    const { data: existingLike } = await supabase
+        .from('answer_likes')
+        .select('id')
+        .eq('answer_id', answerId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (existingLike) {
+        // Unlike
+        const { error } = await supabase
+            .from('answer_likes')
+            .delete()
+            .eq('id', existingLike.id);
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+    } else {
+        // Like
+        const { error } = await supabase
+            .from('answer_likes')
+            .insert({ answer_id: answerId, user_id: user.id });
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Get updated like count
+    const { count } = await supabase
+        .from('answer_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('answer_id', answerId);
+
+    revalidatePath('/forum');
+
+    return {
+        success: true,
+        likeCount: count || 0,
+        isLiked: !existingLike
+    };
+}
+
+
 export async function createQuestion(formData: { title: string; content: string; category: string }) {
     const supabase = await createClient();
 

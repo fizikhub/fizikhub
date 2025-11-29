@@ -81,6 +81,27 @@ export default async function QuestionPage({ params }: PageProps) {
     const { data: { user } } = await supabase.auth.getUser();
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
+    // Fetch like counts and user likes for all answers
+    const answersWithLikes = await Promise.all((answers || []).map(async (answer) => {
+        const { count: likeCount } = await supabase
+            .from('answer_likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('answer_id', answer.id);
+
+        let isLiked = false;
+        if (user) {
+            const { data: userLike } = await supabase
+                .from('answer_likes')
+                .select('id')
+                .eq('answer_id', answer.id)
+                .eq('user_id', user.id)
+                .single();
+            isLiked = !!userLike;
+        }
+
+        return { ...answer, likeCount: likeCount || 0, isLiked };
+    }));
+
     // Check if user has voted
     let hasVoted = false;
     if (user) {
@@ -94,7 +115,7 @@ export default async function QuestionPage({ params }: PageProps) {
     }
 
     // Status indicators
-    const isSolved = answers?.some(a => a.is_accepted) || false;
+    const isSolved = answersWithLikes?.some(a => a.is_accepted) || false;
     const isHot = (question.votes || 0) > 5;
     const isNew = new Date(question.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
 
@@ -249,7 +270,7 @@ export default async function QuestionPage({ params }: PageProps) {
 
                             <AnswerList
                                 questionId={question.id}
-                                initialAnswers={answers || []}
+                                initialAnswers={answersWithLikes || []}
                                 questionAuthorId={question.author_id}
                             />
                         </div>

@@ -16,6 +16,7 @@ import { Database } from "@/types/database";
 import { DeleteAnswerButton } from "@/components/forum/delete-answer-button";
 import { ReportDialog } from "@/components/report-dialog";
 import { Flag } from "lucide-react";
+import { AnswerLikeButton } from "@/components/forum/answer-like-button";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;
@@ -25,6 +26,8 @@ type Answer = Database['public']['Tables']['answers']['Row'] & {
         avatar_url: string | null;
         is_verified?: boolean | null;
     } | null;
+    likeCount?: number;
+    isLiked?: boolean;
 };
 
 interface AnswerListProps {
@@ -209,6 +212,16 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
                             <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none pl-0 sm:pl-13">
                                 <MarkdownRenderer content={answer.content} className="text-sm leading-relaxed" />
+                            </div>
+
+                            {/* Like Button */}
+                            <div className="mt-4 pl-0 sm:pl-13">
+                                <AnswerLikeButton
+                                    answerId={answer.id}
+                                    initialLikeCount={answer.likeCount || 0}
+                                    initialIsLiked={answer.isLiked || false}
+                                    isLoggedIn={!!user}
+                                />
                             </div>
                         </div>
                     ))
