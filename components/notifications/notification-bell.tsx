@@ -168,7 +168,7 @@ export function NotificationBell() {
                 return <><span className="font-semibold">{name}</span> bir içerik bildirdi.</>;
             default:
                 if (notification.content === "hazreti yüce müce admin soruna cevap verdi") {
-                    return <span className="font-bold text-amber-500 animate-pulse">👑 {notification.content} 👑</span>;
+                    return <span className="font-bold text-amber-500 animate-pulse">🚀 {notification.content} 🚀</span>;
                 }
                 return notification.content;
         }
