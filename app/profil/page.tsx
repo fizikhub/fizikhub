@@ -116,6 +116,9 @@ export default async function ProfilePage() {
                                 currentWebsite={profile?.website || null}
                                 currentSocialLinks={profile?.social_links || null}
                             />
+                            <div className="md:hidden">
+                                <SignOutButton variant="destructive" className="rounded-full" iconOnly />
+                            </div>
                             <div className="hidden md:block">
                                 <NotificationBell />
                             </div>

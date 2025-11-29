@@ -15,7 +15,13 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export function SignOutButton() {
+interface SignOutButtonProps {
+    className?: string;
+    variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+    iconOnly?: boolean;
+}
+
+export function SignOutButton({ className, variant = "destructive", iconOnly = false }: SignOutButtonProps) {
     const [showDialog, setShowDialog] = useState(false);
     const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -32,12 +38,13 @@ export function SignOutButton() {
     return (
         <>
             <Button
-                variant="destructive"
-                size="sm"
+                variant={variant}
+                size={iconOnly ? "icon" : "sm"}
                 onClick={() => setShowDialog(true)}
-                className="gap-2"
+                className={className}
             >
-                <LogOut className="h-4 w-4" /> Çıkış Yap
+                <LogOut className={iconOnly ? "h-4 w-4" : "h-4 w-4 mr-2"} />
+                {!iconOnly && "Çıkış Yap"}
             </Button>
 
             <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
