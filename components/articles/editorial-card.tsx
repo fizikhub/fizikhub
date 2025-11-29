@@ -43,7 +43,7 @@ export function EditorialCard({ article }: EditorialCardProps) {
                     </span>
                 </div>
 
-                <h3 className="text-xl font-bold leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2 font-serif tracking-tight">
+                <h3 className="text-xl font-bold leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">
                     {article.title}
                 </h3>
 

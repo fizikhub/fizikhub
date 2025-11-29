@@ -152,9 +152,9 @@ export default async function ArticlePage({ params }: PageProps) {
                 <div className="container max-w-7xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 relative z-20">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 md:gap-14">
                         {/* Article Content */}
-                        <article className="lg:col-span-8 bg-background/80 backdrop-blur-xl rounded-[40px] p-6 sm:p-10 md:p-14 shadow-2xl border border-white/10">
+                        <article className="lg:col-span-9 bg-background/80 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/10">
                             {/* Author Card at Top */}
-                            <div className="mb-10 sm:mb-12">
+                            <div className="mb-8 sm:mb-10">
                                 <AuthorCard author={article.author || {}} />
                             </div>
 
@@ -162,7 +162,7 @@ export default async function ArticlePage({ params }: PageProps) {
                             <MarkdownRenderer content={article.content || ""} className="prose-lg sm:prose-xl leading-relaxed" />
 
                             {/* Like & Share Section */}
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-16 pt-10 border-t border-border/40">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-12 pt-8 border-t border-border/40">
                                 <LikeButton
                                     articleId={article.id}
                                     initialLiked={!!userLike}
@@ -172,12 +172,12 @@ export default async function ArticlePage({ params }: PageProps) {
                             </div>
 
                             {/* Related Articles */}
-                            <div className="mt-16">
+                            <div className="mt-12">
                                 <RelatedArticles currentArticleId={article.id} category={article.category || "Genel"} />
                             </div>
 
                             {/* Comments Section */}
-                            <div className="mt-16 sm:mt-20">
+                            <div className="mt-12 sm:mt-16">
                                 <CommentSection
                                     articleId={article.id}
                                     comments={comments || []}
@@ -189,7 +189,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         </article>
 
                         {/* Table of Contents Sidebar */}
-                        <aside className="hidden lg:block lg:col-span-4 space-y-8">
+                        <aside className="hidden lg:block lg:col-span-3 space-y-8">
                             <div className="sticky top-24">
                                 <TableOfContents content={article.content || ""} />
 

@@ -39,7 +39,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                             <Badge className="bg-primary hover:bg-primary/90 text-white border-0 mb-3 sm:mb-4 px-3 py-1 text-sm">
                                 {mainArticle.category}
                             </Badge>
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 leading-tight drop-shadow-lg line-clamp-3">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-4 leading-tight drop-shadow-lg line-clamp-3">
                                 {mainArticle.title}
                             </h2>
                             <p className="text-white/80 text-sm sm:text-base md:text-lg line-clamp-2 mb-4 max-w-2xl hidden sm:block">
@@ -84,7 +84,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                                     <Badge variant="secondary" className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border-0 mb-2 px-2 py-0.5 text-xs">
                                         {article.category}
                                     </Badge>
-                                    <h3 className="text-lg sm:text-xl font-bold text-white leading-snug drop-shadow-md line-clamp-2 group-hover:text-primary transition-colors">
+                                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug drop-shadow-md line-clamp-2 group-hover:text-primary transition-colors">
                                         {article.title}
                                     </h3>
                                     <div className="flex items-center gap-2 text-white/60 text-xs mt-2">
