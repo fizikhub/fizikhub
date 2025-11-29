@@ -11,11 +11,41 @@ export async function signOut() {
 
 export async function verifyOtp(email: string, token: string) {
     const supabase = await createClient();
+    const cleanToken = token.trim();
 
-    const { data, error } = await supabase.auth.verifyOtp({
+    // Try signup verification first
+    let { data, error } = await supabase.auth.verifyOtp({
         email,
-        token,
+        token: cleanToken,
         type: 'signup'
+    });
+
+    // If signup verification fails, try email verification (sometimes happens if user is already confirmed but stuck)
+    if (error) {
+        console.log("Signup verification failed, trying email verification:", error.message);
+        const { data: emailData, error: emailError } = await supabase.auth.verifyOtp({
+            email,
+            token: cleanToken,
+            type: 'email'
+        });
+
+        if (!emailError) {
+            return { success: true };
+        }
+
+        // If both fail, return the original error
+        return { success: false, error: error.message };
+    }
+
+    return { success: true };
+}
+
+export async function resendOtp(email: string) {
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
     });
 
     if (error) {

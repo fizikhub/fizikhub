@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { verifyOtp } from "@/app/auth/actions";
+import { verifyOtp, resendOtp } from "@/app/auth/actions";
 import { Logo } from "@/components/ui/logo";
 
 function VerifyContent() {
@@ -18,6 +18,7 @@ function VerifyContent() {
 
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
+    const [resending, setResending] = useState(false);
 
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,12 +35,30 @@ function VerifyContent() {
                 toast.success("E-posta doğrulandı!");
                 router.push("/onboarding");
             } else {
-                toast.error(result.error || "Doğrulama başarısız.");
+                toast.error(result.error || "Doğrulama başarısız. Kod yanlış veya süresi dolmuş.");
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        if (!email) return;
+
+        setResending(true);
+        try {
+            const result = await resendOtp(email);
+            if (result.success) {
+                toast.success("Yeni kod gönderildi.");
+            } else {
+                toast.error(result.error || "Kod gönderilemedi.");
+            }
+        } catch (error) {
+            toast.error("Bir hata oluştu.");
+        } finally {
+            setResending(false);
         }
     };
 
@@ -73,7 +92,7 @@ function VerifyContent() {
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
                             className="text-center text-2xl tracking-widest"
-                            maxLength={8}
+                            maxLength={6}
                             required
                         />
                     </div>
@@ -83,7 +102,15 @@ function VerifyContent() {
                     </Button>
                 </form>
                 <div className="text-center text-sm text-muted-foreground">
-                    Kod gelmedi mi? <Button variant="link" className="p-0 h-auto">Tekrar Gönder</Button>
+                    Kod gelmedi mi?{" "}
+                    <Button
+                        variant="link"
+                        className="p-0 h-auto"
+                        onClick={handleResend}
+                        disabled={resending}
+                    >
+                        {resending ? "Gönderiliyor..." : "Tekrar Gönder"}
+                    </Button>
                 </div>
             </CardContent>
         </Card>
