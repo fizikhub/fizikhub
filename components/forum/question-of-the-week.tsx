@@ -14,7 +14,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
     // If no ID provided, fallback to search for the title
     const questionTitle = "Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?";
     const targetUrl = questionId
-        ? `/forum/soru/${questionId}`
+        ? `/forum/${questionId}`
         : `/forum?q=${encodeURIComponent(questionTitle)}`;
 
     return (
