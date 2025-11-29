@@ -149,10 +149,10 @@ export default async function ArticlePage({ params }: PageProps) {
                 {/* Immersive Hero */}
                 <ArticleHero article={article} readingTime={readingTime} />
 
-                <div className="container max-w-7xl mx-auto px-4 sm:px-6 md:px-8 -mt-20 relative z-20">
+                <div className="container max-w-7xl mx-auto px-0 sm:px-6 md:px-8 -mt-10 sm:-mt-20 relative z-20">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 md:gap-10">
                         {/* Article Content */}
-                        <article className="lg:col-span-10 bg-background/80 backdrop-blur-xl rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/10">
+                        <article className="lg:col-span-10 bg-background/80 backdrop-blur-xl rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border-x-0 sm:border border-t border-b-0 sm:border-b border-white/10 min-h-screen sm:min-h-0">
                             {/* Author Card at Top */}
                             <div className="mb-8 sm:mb-10">
                                 <AuthorCard author={article.author || {}} />
