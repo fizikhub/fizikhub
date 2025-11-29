@@ -110,3 +110,46 @@ export async function deleteDictionaryTerm(id: number) {
     revalidatePath('/sozluk');
     return { success: true };
 }
+
+export async function sendBroadcastNotification(message: string) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const supabase = adminCheck.supabase!;
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 1. Fetch all users
+    const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id');
+
+    if (profilesError || !profiles) {
+        console.error("Error fetching profiles:", profilesError);
+        return { success: false, error: "Kullanıcılar getirilemedi." };
+    }
+
+    // 2. Create notifications
+    const notifications = profiles.map(p => ({
+        recipient_id: p.id,
+        actor_id: user!.id,
+        type: 'welcome', // Using 'welcome' as generic system type
+        content: message,
+        is_read: false,
+        resource_id: 'admin_broadcast',
+        resource_type: 'system'
+    }));
+
+    const { error: insertError } = await supabase
+        .from('notifications')
+        .insert(notifications);
+
+    if (insertError) {
+        console.error("Error inserting notifications:", insertError);
+        return { success: false, error: "Bildirimler gönderilemedi." };
+    }
+
+    revalidatePath('/admin');
+    return { success: true, count: notifications.length };
+}

@@ -13,6 +13,8 @@ import { tr } from "date-fns/locale";
 import Link from "next/link";
 import { getReports } from "@/app/actions/report";
 
+import { AdminBroadcastForm } from "@/components/admin/admin-broadcast-form";
+
 export default async function AdminDashboard() {
     const supabase = await createClient();
 
@@ -66,6 +68,7 @@ export default async function AdminDashboard() {
                         <TabsTrigger value="dictionary">Sözlük</TabsTrigger>
                         <TabsTrigger value="users">Kullanıcılar</TabsTrigger>
                         <TabsTrigger value="reports">Raporlar</TabsTrigger>
+                        <TabsTrigger value="broadcast">Duyuru</TabsTrigger>
                     </TabsList>
                 </div>
 
@@ -177,6 +180,10 @@ export default async function AdminDashboard() {
                         <p className="text-muted-foreground">Kullanıcı şikayetlerini buradan yönetebilirsin.</p>
                     </div>
                     <AdminReportsList initialReports={reports} />
+                </TabsContent>
+
+                <TabsContent value="broadcast" className="space-y-4">
+                    <AdminBroadcastForm />
                 </TabsContent>
             </Tabs>
         </div>
