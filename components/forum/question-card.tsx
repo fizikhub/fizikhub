@@ -105,6 +105,11 @@ export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) 
                                 </div>
                             </div>
 
+                            {/* Preview Content */}
+                            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mt-2">
+                                {question.content}
+                            </p>
+
                             {/* Author & Date (Desktop) */}
                             <div className="hidden sm:flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border/30">
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
