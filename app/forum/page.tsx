@@ -65,10 +65,12 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     }
 
     // Fetch Question of the Week
+    // Fetch Question of the Week
     const { data: weeklyQuestion } = await supabase
         .from('questions')
         .select('id')
-        .eq('title', 'Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?')
+        .contains('tags', ['haftanin-sorusu'])
+        .limit(1)
         .single();
 
     return (
