@@ -178,16 +178,26 @@ export const questions = [
 ];
 
 export const loadingMessages = [
-    "Atomlar hizalanıyor...",
-    "Kediyi kutuya koyuyoruz...",
-    "Evrenin sırları çözülüyor (biraz sürebilir)...",
-    "Işık hızına çıkılıyor...",
-    "Yerçekimi ayarlanıyor...",
-    "Kara delikten veri kurtarılıyor...",
-    "Çay demleniyor...",
-    "Uzaylılarla pazarlık yapılıyor...",
-    "Schrödinger'in kedisi besleniyor...",
-    "Paralel evrenden veri çekiliyor..."
+    "Çay demleniyor... ☕",
+    "Kara delikten veri çekiliyor... 🌌",
+    "Atomlar hizalanıyor... ⚛️",
+    "Kediyi kutuya koyuyoruz... 🐱",
+    "Evrenin sırları çözülüyor... 🔮",
+    "Işık hızına çıkılıyor... 🚀",
+    "Yerçekimi ayarlanıyor... 🌍",
+    "Uzaylılarla pazarlık yapılıyor... 👽",
+    "Schrödinger'in kedisi besleniyor... 😺",
+    "Paralel evrenden veri çekiliyor... 🌠",
+    "Kuantum dolanıklık çözülüyor... 🔗",
+    "Einstein'ın saçları taranıyor... 👨‍🔬",
+    "Nötron yıldızları sayılıyor... ⭐",
+    "Solucan deliklerinden geçiliyor... 🕳️",
+    "Fotonlar toplanıyor... 💡",
+    "Büyük Patlama simülasyonu yapılıyor... 💥",
+    "Zaman makinesi ısınıyor... ⏰",
+    "Galaksiler arası yolculuk başlıyor... 🛸",
+    "Karanlık madde aranıyor... 🔦",
+    "Evrenin genişlemesi hesaplanıyor... 📏"
 ];
 
 export const dictionaryTerms = [

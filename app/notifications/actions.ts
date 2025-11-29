@@ -13,12 +13,10 @@ export async function getNotifications() {
             return [];
         }
 
-        const { data, error } = await supabase
+        // 1. Fetch notifications without the join first
+        const { data: notifications, error } = await supabase
             .from('notifications')
-            .select(`
-                *,
-                actor:profiles!actor_id(username, full_name, avatar_url)
-            `)
+            .select('*')
             .eq('recipient_id', user.id)
             .order('created_at', { ascending: false })
             .limit(20);
@@ -28,8 +26,47 @@ export async function getNotifications() {
             return [];
         }
 
-        console.log('[Notifications] Fetched notifications:', data?.length || 0);
-        return data || [];
+        if (!notifications || notifications.length === 0) {
+            return [];
+        }
+
+        // 2. Get unique actor IDs
+        const actorIds = [...new Set(notifications.map(n => n.actor_id))];
+
+        // 3. Fetch profiles for these actors
+        const { data: profiles, error: profilesError } = await supabase
+            .from('profiles')
+            .select('id, username, full_name, avatar_url')
+            .in('id', actorIds);
+
+        if (profilesError) {
+            console.error('[Notifications] Error fetching profiles:', profilesError);
+            // Return notifications without actor details if profiles fail (fallback)
+            // But the UI expects actor, so we might need to handle that.
+            // Let's return them with minimal actor info or filter them out.
+            // For now, let's try to map what we can.
+        }
+
+        // 4. Map profiles to notifications
+        const notificationsWithActors = notifications.map(notification => {
+            const actorProfile = profiles?.find(p => p.id === notification.actor_id);
+            return {
+                ...notification,
+                actor: actorProfile ? {
+                    username: actorProfile.username,
+                    full_name: actorProfile.full_name,
+                    avatar_url: actorProfile.avatar_url
+                } : {
+                    username: 'Unknown',
+                    full_name: 'Unknown User',
+                    avatar_url: null
+                }
+            };
+        });
+
+        console.log('[Notifications] Fetched notifications with actors:', notificationsWithActors.length);
+        return notificationsWithActors;
+
     } catch (error) {
         console.error('[Notifications] Unexpected error:', error);
         return [];

@@ -175,7 +175,11 @@ export function NotificationBell() {
             {showConfetti && <ReactConfetti width={width} height={height} numberOfPieces={200} recycle={false} />}
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="relative">
+                    <Button
+                        variant="secondary"
+                        size="icon"
+                        className="relative rounded-full h-10 w-10 bg-background/60 backdrop-blur-md border border-border/50 hover:bg-background/80 transition-all shadow-sm"
+                    >
                         <motion.div
                             animate={unreadCount > 0 ? { rotate: [0, -10, 10, -10, 10, 0] } : {}}
                             transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 2 }}
@@ -183,7 +187,7 @@ export function NotificationBell() {
                             <Bell className="h-5 w-5" />
                         </motion.div>
                         {unreadCount > 0 && (
-                            <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background animate-pulse" />
+                            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background animate-pulse" />
                         )}
                     </Button>
                 </DropdownMenuTrigger>

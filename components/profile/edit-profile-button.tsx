@@ -68,8 +68,13 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-full font-bold px-4 hover:bg-muted/50">
-                    Profili Düzenle
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full font-bold h-10 px-4 bg-background/60 backdrop-blur-md border-border/50 hover:bg-background/80 transition-all shadow-sm"
+                >
+                    <span className="hidden sm:inline">Profili Düzenle</span>
+                    <span className="sm:hidden">Düzenle</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">

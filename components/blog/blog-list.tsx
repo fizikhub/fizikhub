@@ -40,7 +40,7 @@ export function BlogList({ initialArticles }: BlogListProps) {
     return (
         <>
             {/* Filter Section */}
-            <div className="mb-8 sticky top-16 z-40 bg-background/95 backdrop-blur-md py-4 -mx-4 px-4 md:mx-0 md:px-0 border-b border-border/50 md:border-none shadow-sm md:shadow-none transition-all duration-300">
+            <div className="mb-8 sm:mb-10 md:mb-12 sticky top-16 z-30 bg-background/95 backdrop-blur-lg py-4 sm:py-5 -mx-4 px-4 md:mx-0 md:px-0 border-b border-border/50 md:border-none shadow-sm md:shadow-none transition-all duration-300">
                 <CategoryFilter
                     categories={categories}
                     selectedCategory={selectedCategory}
@@ -51,17 +51,17 @@ export function BlogList({ initialArticles }: BlogListProps) {
             {/* Articles Grid */}
             <motion.div
                 layout
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10"
             >
                 <AnimatePresence mode="popLayout">
                     {filteredArticles.map((article) => (
                         <motion.div
                             key={article.id}
                             layout
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.3 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
                             <BlogCard article={article} />
                         </motion.div>
@@ -73,7 +73,9 @@ export function BlogList({ initialArticles }: BlogListProps) {
             {filteredArticles.length === 0 && (
                 <div className="text-center py-20">
                     <p className="text-xl text-muted-foreground">
-                        Bu kategoride henüz bir şey yok. Belki kara delik yutmuştur?
+                        Bu kategoride henüz bir şey yok. 🕳️
+                        <br />
+                        <span className="text-sm mt-2 inline-block">Belki kara delik yutmuştur?</span>
                     </p>
                 </div>
             )}

@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingMessage } from "@/components/ui/loading-message";
 
 export default function Loading() {
     return (
@@ -45,6 +46,7 @@ export default function Loading() {
                     </div>
                 </div>
             </div>
+            <LoadingMessage />
         </div>
     );
 }

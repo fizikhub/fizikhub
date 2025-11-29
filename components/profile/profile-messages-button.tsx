@@ -10,7 +10,7 @@ export function ProfileMessagesButton() {
             <Button
                 variant="secondary"
                 size="icon"
-                className="rounded-full h-10 w-10 bg-primary/10 hover:bg-primary/20 text-primary border-0 shadow-sm transition-all hover:scale-105"
+                className="rounded-full h-10 w-10 bg-background/60 backdrop-blur-md border border-border/50 hover:bg-background/80 text-foreground shadow-sm transition-all hover:scale-105"
                 title="Mesajlarım"
             >
                 <MessageSquare className="h-5 w-5" />
