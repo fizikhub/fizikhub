@@ -5,7 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Trophy, HelpCircle } from "lucide-react";
 import Link from "next/link";
 
-export function QuestionOfTheWeek() {
+interface QuestionOfTheWeekProps {
+    questionId?: number;
+    questionSlug?: string;
+}
+
+export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWeekProps) {
+    // If no ID provided, fallback to a default or hide?
+    // For now, hardcode the known title slug if not provided, but ideally we pass it.
+    const targetUrl = questionId ? `/forum/soru/${questionId}` : "/forum/soru/isik-hizi-tren-paradoksu";
+
     return (
         <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
@@ -19,7 +28,7 @@ export function QuestionOfTheWeek() {
                 <p className="mb-4 text-sm text-muted-foreground">
                     En iyi cevabı veren "Einstein Rozeti" kazanacak!
                 </p>
-                <Link href="/forum/soru/isik-hizi-tren-paradoksu">
+                <Link href={targetUrl}>
                     <Button className="w-full gap-2">
                         <HelpCircle className="h-4 w-4" />
                         Cevapla

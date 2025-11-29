@@ -184,15 +184,17 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
     if (!user) return { success: false, error: "Giriş yapmalısınız." };
 
-    // Verify ownership of the question
+    // Verify ownership of the question OR admin status
     const { data: question } = await supabase
         .from('questions')
         .select('author_id')
         .eq('id', questionId)
         .single();
 
-    if (!question || question.author_id !== user.id) {
-        return { success: false, error: "Sadece soruyu soran kişi cevabı onaylayabilir." };
+    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+
+    if (!question || (question.author_id !== user.id && !isAdmin)) {
+        return { success: false, error: "Sadece soruyu soran kişi veya admin cevabı onaylayabilir." };
     }
 
     // Check current status of the answer
@@ -207,7 +209,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
     const newStatus = !currentAnswer.is_accepted;
 
     if (newStatus) {
-        // If marking as accepted, first unmark all others (to be safe, though unique index handles it, this prevents error)
+        // If marking as accepted, first unmark all others
         await supabase
             .from('answers')
             .update({ is_accepted: false })
@@ -226,13 +228,17 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
     // Notify answer author if accepted
     if (newStatus && currentAnswer.author_id !== user.id) {
+        const notificationContent = isAdmin
+            ? "Tebrikler! Cevabın haftanın en iyi cevabı seçildi! 🚀"
+            : "Cevabını doğru cevap olarak işaretledi! 🎉";
+
         await createNotification({
             recipientId: currentAnswer.author_id,
             actorId: user.id,
-            type: 'reply', // TODO: Add specific 'accepted' type
+            type: 'reply', // TODO: Add specific 'accepted' type if needed
             resourceId: questionId.toString(),
             resourceType: 'question',
-            content: `Cevabını doğru cevap olarak işaretledi! 🎉`
+            content: notificationContent
         });
     }
 

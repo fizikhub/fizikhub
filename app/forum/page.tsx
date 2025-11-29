@@ -64,6 +64,13 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         }
     }
 
+    // Fetch Question of the Week
+    const { data: weeklyQuestion } = await supabase
+        .from('questions')
+        .select('id')
+        .eq('title', 'Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?')
+        .single();
+
     return (
         <div className="min-h-screen bg-background">
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
@@ -71,13 +78,13 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
                 {/* Mobile Question of the Week */}
                 <div className="md:hidden mb-6">
-                    <QuestionOfTheWeek />
+                    <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
                     {/* Desktop Sidebar */}
                     <div className="hidden md:block sticky top-24 h-fit space-y-6">
-                        <QuestionOfTheWeek />
+                        <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
                         <ForumSidebar />
                     </div>
 
