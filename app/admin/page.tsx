@@ -14,6 +14,7 @@ import Link from "next/link";
 import { getReports } from "@/app/actions/report";
 
 import { AdminBroadcastForm } from "@/components/admin/admin-broadcast-form";
+import { AdminArticleApproval } from "@/components/admin/admin-article-approval";
 
 export default async function AdminDashboard() {
     const supabase = await createClient();
@@ -57,12 +58,33 @@ export default async function AdminDashboard() {
     const recentQuestions = questions?.slice(0, 5) || [];
     const recentUsers = allUsers?.slice(0, 5) || [];
 
+    // Fetch pending articles
+    const { data: pendingArticles } = await supabase
+        .from('articles')
+        .select(`
+            *,
+            profiles (
+                username,
+                full_name
+            )
+        `)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
     return (
         <div className="space-y-8">
             <Tabs defaultValue="overview" className="w-full">
                 <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-                    <TabsList className="grid w-full grid-cols-4 min-w-[400px]">
+                    <TabsList className="grid w-full grid-cols-5 min-w-[500px]">
                         <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
+                        <TabsTrigger value="approval" className="relative">
+                            Onay
+                            {pendingArticles && pendingArticles.length > 0 && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] text-white">
+                                    {pendingArticles.length}
+                                </span>
+                            )}
+                        </TabsTrigger>
                         <TabsTrigger value="articles">Makaleler</TabsTrigger>
                         <TabsTrigger value="forum">Forum</TabsTrigger>
                         <TabsTrigger value="dictionary">Sözlük</TabsTrigger>
@@ -140,6 +162,14 @@ export default async function AdminDashboard() {
                             </CardContent>
                         </Card>
                     </div>
+                </TabsContent>
+
+                <TabsContent value="approval" className="space-y-4">
+                    <div>
+                        <h2 className="text-2xl font-bold">Makale Onayı</h2>
+                        <p className="text-muted-foreground">Yayınlanmayı bekleyen makaleleri buradan inceleyebilirsin.</p>
+                    </div>
+                    <AdminArticleApproval pendingArticles={pendingArticles || []} />
                 </TabsContent>
 
                 <TabsContent value="articles" className="space-y-4">

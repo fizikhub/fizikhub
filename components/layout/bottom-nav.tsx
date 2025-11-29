@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { CommandPalette } from "@/components/ui/command-palette";
-import { Home, BookOpen, MessageCircle, Shield, Search, User } from "lucide-react";
+
+import { Home, BookOpen, MessageCircle, Shield, Search, User, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
     const pathname = usePathname();
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
 
     const links = [
         {
@@ -23,10 +22,9 @@ export function BottomNav() {
             icon: BookOpen
         },
         {
-            href: "#search", // Special case
-            label: "Ara",
-            icon: Search,
-            onClick: () => setIsSearchOpen(true)
+            href: "/kesfet",
+            label: "Keşfet",
+            icon: Compass
         },
         {
             href: "/forum",
@@ -57,23 +55,7 @@ export function BottomNav() {
                                 const Icon = link.icon;
                                 const isActive = pathname === link.href || (link.href !== "/" && link.href !== "#search" && pathname.startsWith(link.href));
 
-                                if (link.href === "#search") {
-                                    return (
-                                        <button
-                                            key={link.href}
-                                            onClick={link.onClick}
-                                            className="relative flex flex-col items-center justify-center gap-1 px-3 py-2 min-w-[60px] group"
-                                        >
-                                            {/* Icon with scale animation */}
-                                            <div className="relative">
-                                                <Icon className="h-[22px] w-[22px] text-muted-foreground/80 group-hover:text-foreground transition-all duration-300 group-hover:scale-110" />
-                                            </div>
-                                            <span className="text-[9px] font-medium text-muted-foreground/80 group-hover:text-foreground transition-colors duration-300">
-                                                {link.label}
-                                            </span>
-                                        </button>
-                                    );
-                                }
+
 
                                 return (
                                     <Link
@@ -113,7 +95,7 @@ export function BottomNav() {
                     </div>
                 </div>
             </div>
-            <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
         </>
     );
 }

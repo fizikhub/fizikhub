@@ -153,3 +153,64 @@ export async function sendBroadcastNotification(message: string) {
     revalidatePath('/admin');
     return { success: true, count: notifications.length };
 }
+
+export async function approveArticle(id: number) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const { error } = await adminCheck.supabase!
+        .from('articles')
+        .update({ status: 'published' })
+        .eq('id', id);
+
+    if (error) {
+        console.error("Approve Article Error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/kesfet');
+    return { success: true };
+}
+
+export async function rejectArticle(id: number) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const { error } = await adminCheck.supabase!
+        .from('articles')
+        .update({ status: 'rejected' })
+        .eq('id', id);
+
+    if (error) {
+        console.error("Reject Article Error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin');
+    return { success: true };
+}
+
+export async function toggleWriterStatus(userId: string, isWriter: boolean) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const { error } = await adminCheck.supabase!
+        .from('profiles')
+        .update({ is_writer: isWriter })
+        .eq('id', userId);
+
+    if (error) {
+        console.error("Toggle Writer Status Error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin');
+    return { success: true };
+}
