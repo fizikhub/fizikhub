@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BlogCard } from "@/components/blog/blog-card";
+import { ModernArticleCard } from "@/components/articles/modern-article-card";
 import { CategoryFilter } from "@/components/blog/category-filter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Article } from "@/lib/api";
@@ -63,7 +63,7 @@ export function BlogList({ initialArticles }: BlogListProps) {
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
-                            <BlogCard article={article} />
+                            <ModernArticleCard article={article} index={filteredArticles.indexOf(article)} />
                         </motion.div>
                     ))}
                 </AnimatePresence>
