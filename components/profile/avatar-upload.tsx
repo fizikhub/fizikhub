@@ -78,8 +78,8 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
     };
 
     return (
-        <div className="relative group inline-block">
-            <Avatar className={cn("h-24 w-24 sm:h-32 sm:w-32 border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background", className)}>
+        <div className={cn("relative group inline-block h-24 w-24 sm:h-32 sm:w-32", className)}>
+            <Avatar className="h-full w-full border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background">
                 <AvatarImage
                     src={previewUrl || currentAvatarUrl || ""}
                     className="object-cover"

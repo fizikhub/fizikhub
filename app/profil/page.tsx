@@ -143,7 +143,7 @@ export default async function ProfilePage() {
                     <div className="flex flex-col md:flex-row gap-6 items-end">
                         {/* Avatar */}
                         <div className="relative -mt-12 md:-mt-16 mx-auto md:mx-0 z-10">
-                            <div className="h-32 w-32 md:h-40 md:w-40 rounded-full ring-4 ring-background bg-background shadow-xl">
+                            <div className="h-32 w-32 md:h-40 md:w-40 rounded-full ring-4 ring-background bg-background shadow-xl flex items-center justify-center overflow-hidden">
                                 <AvatarUpload
                                     currentAvatarUrl={profile?.avatar_url}
                                     userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
