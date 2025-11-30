@@ -30,7 +30,8 @@ export function TrendingQuestions({ questions }: { questions: Question[] }) {
                     <motion.h2
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
                         className="text-3xl sm:text-4xl font-bold tracking-tight mb-2"
                     >
                         Gündemdeki Sorular
@@ -38,8 +39,8 @@ export function TrendingQuestions({ questions }: { questions: Question[] }) {
                     <motion.p
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
                         className="text-muted-foreground"
                     >
                         Topluluğun en çok tartıştığı konulara göz at

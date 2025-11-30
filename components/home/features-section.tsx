@@ -87,16 +87,30 @@ function TiltCard({ feature, index }: { feature: typeof features[0], index: numb
     const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"]);
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"]);
 
+    // Cache dimensions to avoid layout thrashing
+    const bounds = useRef<{ width: number; height: number; left: number; top: number } | null>(null);
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (ref.current) {
+            const rect = ref.current.getBoundingClientRect();
+            bounds.current = {
+                width: rect.width,
+                height: rect.height,
+                left: rect.left,
+                top: rect.top
+            };
+        }
+    };
+
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!ref.current) return;
+        if (!bounds.current) return;
+        // Disable on mobile
+        if (typeof window !== 'undefined' && window.innerWidth < 768) return;
 
-        const rect = ref.current.getBoundingClientRect();
+        const { width, height, left, top } = bounds.current;
 
-        const width = rect.width;
-        const height = rect.height;
-
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const mouseX = e.clientX - left;
+        const mouseY = e.clientY - top;
 
         const xPct = mouseX / width - 0.5;
         const yPct = mouseY / height - 0.5;
@@ -108,11 +122,13 @@ function TiltCard({ feature, index }: { feature: typeof features[0], index: numb
     const handleMouseLeave = () => {
         x.set(0);
         y.set(0);
+        bounds.current = null;
     };
 
     return (
         <motion.div
             ref={ref}
+            onMouseEnter={handleMouseEnter}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{

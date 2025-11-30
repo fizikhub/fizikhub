@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
 import { Atom, Zap, Globe, Rocket, Star, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,19 +8,33 @@ import Link from "next/link";
 
 export function HeroSection3D() {
     const ref = useRef<HTMLDivElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
+
     const { scrollYProgress } = useScroll({
         target: ref,
         offset: ["start start", "end start"]
     });
 
-    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-    const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+    const y = useTransform(scrollYProgress, [0, 1], isMobile ? ["0%", "0%"] : ["0%", "50%"]);
+    const opacity = useTransform(scrollYProgress, [0, 0.5], isMobile ? [1, 1] : [1, 0]);
 
     // Mouse parallax effect
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
     const handleMouseMove = (e: React.MouseEvent) => {
+        // Disable on mobile
+        if (typeof window !== 'undefined' && window.innerWidth < 768) return;
+
         const { clientX, clientY } = e;
         const { innerWidth, innerHeight } = window;
         mouseX.set(clientX / innerWidth - 0.5);
@@ -28,9 +42,9 @@ export function HeroSection3D() {
     };
 
     // Smooth spring animation for mouse movement
-    const springConfig = { damping: 25, stiffness: 150 };
-    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), springConfig);
-    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-10, 10]), springConfig);
+    const springConfig = { damping: 30, stiffness: 200, mass: 0.5 }; // Snappier but smooth
+    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), springConfig); // Reduced rotation range
+    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), springConfig); // Reduced rotation range
 
     return (
         <section
@@ -45,7 +59,7 @@ export function HeroSection3D() {
             {/* Floating 3D Objects Container */}
             <motion.div
                 style={{ rotateX, rotateY, y, opacity }}
-                className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center transform-style-3d"
+                className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center transform-style-3d will-change-transform"
             >
                 {/* Main Content */}
                 <motion.div
@@ -97,12 +111,18 @@ export function HeroSection3D() {
                     </div>
                 </motion.div>
 
-                {/* Floating Elements */}
+                {/* Floating Elements - Reduced count on mobile */}
                 <FloatingElement icon={Atom} className="absolute -top-20 -left-10 text-blue-500" delay={0} size={64} xRange={[-20, 20]} yRange={[-20, 20]} />
-                <FloatingElement icon={Globe} className="absolute top-40 -right-20 text-green-500" delay={1} size={48} xRange={[20, -20]} yRange={[-30, 30]} />
-                <FloatingElement icon={Zap} className="absolute bottom-20 left-10 text-yellow-500" delay={2} size={56} xRange={[-15, 15]} yRange={[15, -15]} />
+                {!isMobile && (
+                    <>
+                        <FloatingElement icon={Globe} className="absolute top-40 -right-20 text-green-500" delay={1} size={48} xRange={[20, -20]} yRange={[-30, 30]} />
+                        <FloatingElement icon={Zap} className="absolute bottom-20 left-10 text-yellow-500" delay={2} size={56} xRange={[-15, 15]} yRange={[15, -15]} />
+                    </>
+                )}
                 <FloatingElement icon={Rocket} className="absolute -bottom-10 right-20 text-red-500" delay={1.5} size={72} xRange={[30, -30]} yRange={[20, -20]} />
-                <FloatingElement icon={Star} className="absolute top-10 right-1/4 text-purple-500" delay={0.5} size={32} xRange={[-10, 10]} yRange={[-10, 10]} />
+                {!isMobile && (
+                    <FloatingElement icon={Star} className="absolute top-10 right-1/4 text-purple-500" delay={0.5} size={32} xRange={[-10, 10]} yRange={[-10, 10]} />
+                )}
 
             </motion.div>
 
@@ -136,7 +156,7 @@ function FloatingElement({
 }) {
     return (
         <motion.div
-            className={className}
+            className={`${className} will-change-transform`}
             initial={{ opacity: 0 }}
             animate={{
                 opacity: 0.8,

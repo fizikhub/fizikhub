@@ -35,14 +35,15 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
     return (
         <section className="py-12 sm:py-20 relative overflow-hidden">
             {/* Background Blobs */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -z-10" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl -z-10" />
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -z-10 will-change-transform" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl -z-10 will-change-transform" />
 
             <div className="container px-4 md:px-6 mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                     className="flex items-center justify-between mb-10"
                 >
                     <div>

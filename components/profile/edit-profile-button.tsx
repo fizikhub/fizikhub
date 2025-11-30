@@ -24,12 +24,17 @@ interface EditProfileButtonProps {
     currentAvatarUrl: string | null;
     currentWebsite?: string | null;
     currentSocialLinks?: any;
+    currentUsername: string;
+    userEmail?: string | null;
 }
 
-export function EditProfileButton({ currentFullName, currentBio, currentAvatarUrl, currentWebsite, currentSocialLinks }: EditProfileButtonProps) {
+export function EditProfileButton({ currentFullName, currentBio, currentAvatarUrl, currentWebsite, currentSocialLinks, currentUsername, userEmail }: EditProfileButtonProps) {
     const [open, setOpen] = useState(false);
     const [fullName, setFullName] = useState(currentFullName || "");
+    const [username, setUsername] = useState(currentUsername || "");
     const [bio, setBio] = useState(currentBio || "");
+
+    const isAdmin = userEmail === 'barannnbozkurttb.b@gmail.com';
     const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl || "");
     const [website, setWebsite] = useState(currentWebsite || "");
     const [twitter, setTwitter] = useState(currentSocialLinks?.twitter || "");
@@ -40,6 +45,18 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
 
     const handleUpdate = async () => {
         setIsUpdating(true);
+
+        // 1. Update Username if changed
+        if (username !== currentUsername) {
+            const usernameResult = await import("@/app/profil/actions").then(mod => mod.updateUsername(username));
+            if (!usernameResult.success) {
+                toast.error(usernameResult.error || "Kullanıcı adı güncellenemedi");
+                setIsUpdating(false);
+                return;
+            }
+        }
+
+        // 2. Update Profile Info
         const socialLinks = {
             twitter: twitter || null,
             github: github || null,
@@ -81,10 +98,23 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
                 <DialogHeader>
                     <DialogTitle>Profili Düzenle</DialogTitle>
                     <DialogDescription>
-                        Profil fotoğrafınızı ve biyografinizi güncelleyin.
+                        Profil bilgilerinizi buradan güncelleyebilirsiniz.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="username">Kullanıcı Adı</Label>
+                        <Input
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="username"
+                            disabled={!isAdmin || isUpdating}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            {isAdmin ? "Benzersiz olmalı, sadece harf, rakam ve alt çizgi." : "Kullanıcı adı sadece yönetici tarafından değiştirilebilir."}
+                        </p>
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="fullname">Ad Soyad</Label>
                         <Input

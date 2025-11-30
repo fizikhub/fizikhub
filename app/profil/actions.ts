@@ -90,10 +90,21 @@ export async function updateProfile(formData: {
 
     if (updateError) {
         console.error("Profile update error:", updateError);
-        return { success: false, error: "Profil güncellenirken hata oluştu." };
+        return { success: false, error: `Hata: ${updateError.message}` };
     }
 
+    // Get username for revalidation
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
     revalidatePath('/profil');
+    if (profile?.username) {
+        revalidatePath(`/kullanici/${profile.username}`);
+    }
+
     return { success: true };
 }
 
