@@ -9,10 +9,12 @@ import {
     Sparkles,
     Zap,
     Target,
-    ArrowLeft
+    ArrowLeft,
+    BadgeCheck
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
 
 export default function PointsInfoPage() {
     return (
@@ -160,6 +162,58 @@ export default function PointsInfoPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Özel Rozetler Section */}
+            <div className="mt-8" id="rozetler">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <BadgeCheck className="h-5 w-5 text-blue-500" />
+                            Özel Rozetler
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                            {/* Einstein Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="einstein" />
+                                </div>
+                                <h3 className="font-bold mb-1">Einstein</h3>
+                                <p className="text-xs text-muted-foreground">Bilimsel tartışmalara yön verenlere verilir.</p>
+                            </div>
+
+                            {/* Newton Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="newton" />
+                                </div>
+                                <h3 className="font-bold mb-1">Newton</h3>
+                                <p className="text-xs text-muted-foreground">Fizik yasalarını sorgulayanlara verilir.</p>
+                            </div>
+
+                            {/* Tesla Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="tesla" />
+                                </div>
+                                <h3 className="font-bold mb-1">Tesla</h3>
+                                <p className="text-xs text-muted-foreground">Yenilikçi fikirler üretenlere verilir.</p>
+                            </div>
+
+                            {/* Writer Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="yazar" />
+                                </div>
+                                <h3 className="font-bold mb-1">Yazar</h3>
+                                <p className="text-xs text-muted-foreground">Blog yazılarıyla katkı sağlayanlara verilir.</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
+
     );
 }
