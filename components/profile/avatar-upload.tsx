@@ -78,13 +78,13 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
     };
 
     return (
-        <div className={cn("relative group inline-block h-24 w-24 sm:h-32 sm:w-32", className)}>
-            <Avatar className="h-full w-full border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background">
+        <div className={cn("relative group", className)}>
+            <Avatar className="h-full w-full aspect-square rounded-full border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background overflow-hidden">
                 <AvatarImage
                     src={previewUrl || currentAvatarUrl || ""}
-                    className="object-cover"
+                    className="object-cover h-full w-full"
                 />
-                <AvatarFallback className="text-3xl sm:text-4xl bg-primary/5">
+                <AvatarFallback className="text-3xl sm:text-4xl bg-primary/5 flex items-center justify-center">
                     {userInitial}
                 </AvatarFallback>
             </Avatar>
