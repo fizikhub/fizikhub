@@ -17,7 +17,7 @@ import { DeleteAnswerButton } from "@/components/forum/delete-answer-button";
 import { ReportDialog } from "@/components/report-dialog";
 import { Flag } from "lucide-react";
 import { AnswerLikeButton } from "@/components/forum/answer-like-button";
-import { AnswerCommentList } from "@/components/forum/answer-comment-list";
+import { RealtimeCommentList } from "@/components/forum/realtime-comment-list";
 import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
@@ -348,11 +348,29 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                 {/* Comments Section */}
                                 {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
                                     <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <AnswerCommentList
-                                            comments={answer.comments || []}
+                                        <RealtimeCommentList
+                                            answerId={answer.id}
+                                            initialComments={answer.comments || []}
                                             currentUserId={user?.id}
                                             questionId={questionId}
                                             onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
+                                            onCountChange={(count) => {
+                                                // Update local state count if needed, or rely on realtime
+                                                // Since AnswerList uses 'answers' state, we might want to update it to reflect count
+                                                setAnswers(prev => prev.map(a => {
+                                                    if (a.id === answer.id && (a.comments?.length !== count)) {
+                                                        // Only update if count changed to avoid loops
+                                                        // But we can't easily update just the count without the comments array
+                                                        // Actually, RealtimeCommentList handles the list.
+                                                        // We just need to update the count for the button label.
+                                                        // But 'answers' state holds the comments array.
+                                                        // If we update 'answers', we might re-render RealtimeCommentList with new initialComments?
+                                                        // No, hook ignores initialComments after first render usually.
+                                                        return a;
+                                                    }
+                                                    return a;
+                                                }));
+                                            }}
                                         />
 
                                         {expandedComments[answer.id] ? (

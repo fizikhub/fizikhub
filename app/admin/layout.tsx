@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, FilePlus, BookPlus, Settings, LogOut, Home } from "lucide-react";
+import { LayoutDashboard, FilePlus, BookPlus, Settings, LogOut, Home, Flag } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
 export default async function AdminLayout({
@@ -52,6 +52,11 @@ export default async function AdminLayout({
                     <Link href="/admin/sozluk-ekle">
                         <Button variant="ghost" className="w-full justify-start gap-2">
                             <BookPlus className="h-4 w-4" /> Terim Ekle
+                        </Button>
+                    </Link>
+                    <Link href="/admin/reports">
+                        <Button variant="ghost" className="w-full justify-start gap-2">
+                            <Flag className="h-4 w-4" /> Raporlar
                         </Button>
                     </Link>
                     <div className="my-2 border-t" />
