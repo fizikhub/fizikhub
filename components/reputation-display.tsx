@@ -85,11 +85,18 @@ export function ReputationDisplay({
                 >
                     <Icon className={cn(iconSizes[size])} />
 
-                    <div className="flex items-baseline gap-1.5">
-                        <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
-                        <span className="text-[10px] opacity-80 font-medium uppercase tracking-wide">
-                            Hub Puanı
-                        </span>
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
+                            <span className="text-[10px] opacity-80 font-medium uppercase tracking-wide">
+                                Hub Puanı
+                            </span>
+                        </div>
+                        {showLabel && size !== "sm" && (
+                            <span className="px-1.5 py-0.5 rounded-md bg-background/50 text-[10px] font-bold uppercase tracking-wider border border-current/20 shadow-sm">
+                                {tier.label}
+                            </span>
+                        )}
                     </div>
                 </button>
             </DropdownMenuTrigger>
