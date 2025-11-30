@@ -11,6 +11,8 @@ import { QuestionCard } from "@/components/forum/question-card";
 import { FollowButton } from "@/components/profile/follow-button";
 import { FollowStats } from "@/components/profile/follow-stats";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
+import { BadgeDisplay } from "@/components/badge-display";
+import { ReputationDisplay } from "@/components/reputation-display";
 
 interface PublicProfileViewProps {
     profile: any;
@@ -191,6 +193,32 @@ export function PublicProfileView({
                                     </a>
                                 )}
                             </div>
+                        </div>
+
+                        {/* Reputation & Badges */}
+                        <div className="space-y-4 pt-4 border-t border-border/40">
+                            {/* Reputation */}
+                            <div className="flex items-center gap-3 justify-center md:justify-start">
+                                <ReputationDisplay
+                                    reputation={profile.reputation || 0}
+                                    showLabel={true}
+                                    size="md"
+                                />
+                            </div>
+
+                            {/* Badges */}
+                            {userBadges && userBadges.length > 0 && (
+                                <div className="space-y-2">
+                                    <div className="text-sm font-medium text-muted-foreground">Rozetler</div>
+                                    <div className="flex justify-center md:justify-start">
+                                        <BadgeDisplay
+                                            userBadges={userBadges}
+                                            maxDisplay={8}
+                                            size="md"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="pt-6 border-t">

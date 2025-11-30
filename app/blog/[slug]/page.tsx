@@ -8,6 +8,8 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { AuthorCard } from "@/components/blog/author-card";
 import { ArticleHero } from "@/components/articles/article-hero";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { ReportButton } from "@/components/report-button";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime } from "@/lib/reading-time";
@@ -71,6 +73,14 @@ export default async function ArticlePage({ params }: PageProps) {
 
     const { data: userLike } = user ? await supabase
         .from('article_likes')
+        .select('id')
+        .eq('article_id', article.id)
+        .eq('user_id', user.id)
+        .single() : { data: null };
+
+    // Fetch bookmark status
+    const { data: userBookmark } = user ? await supabase
+        .from('article_bookmarks')
         .select('id')
         .eq('article_id', article.id)
         .eq('user_id', user.id)
@@ -164,13 +174,24 @@ export default async function ArticlePage({ params }: PageProps) {
                             {/* Article Body with Improved Typography */}
                             <MarkdownRenderer content={article.content || ""} className="prose-lg sm:prose-xl leading-relaxed max-w-none" />
 
-                            {/* Like & Share Section */}
+                            {/* Like, Bookmark, Share & Report Section */}
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-12 pt-8 border-t border-border/40">
-                                <LikeButton
-                                    articleId={article.id}
-                                    initialLiked={!!userLike}
-                                    initialCount={likeCount || 0}
-                                />
+                                <div className="flex items-center gap-2">
+                                    <LikeButton
+                                        articleId={article.id}
+                                        initialLiked={!!userLike}
+                                        initialCount={likeCount || 0}
+                                    />
+                                    <BookmarkButton
+                                        type="article"
+                                        itemId={article.id}
+                                        initialBookmarked={!!userBookmark}
+                                    />
+                                    <ReportButton
+                                        contentType="article"
+                                        contentId={article.id}
+                                    />
+                                </div>
                                 <ShareButtons title={article.title} slug={article.slug} />
                             </div>
 
