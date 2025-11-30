@@ -14,7 +14,8 @@ import { DeleteQuestionButton } from "@/components/forum/delete-question-button"
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
-import { ReportDialog } from "@/components/report-dialog";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { ReportButton } from "@/components/report-button";
 import { Flag } from "lucide-react";
 
 import { Metadata } from "next";
@@ -81,6 +82,24 @@ export default async function QuestionPage({ params }: PageProps) {
     const { data: { user } } = await supabase.auth.getUser();
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
+    // Check if user has voted
+    const { data: userVote } = user ? await supabase
+        .from('question_votes')
+        .select('vote_type')
+        .eq('question_id', id)
+        .eq('user_id', user.id)
+        .single() : { data: null };
+
+    const hasVoted = userVote?.vote_type === 1;
+
+    // Check if user has bookmarked
+    const { data: userBookmark } = user ? await supabase
+        .from('question_bookmarks')
+        .select('id')
+        .eq('question_id', id)
+        .eq('user_id', user.id)
+        .single() : { data: null };
+
     // Fetch like counts and user likes for all answers
     const answersWithLikes = await Promise.all((answers || []).map(async (answer) => {
         const { count: likeCount } = await supabase
@@ -112,17 +131,7 @@ export default async function QuestionPage({ params }: PageProps) {
         return { ...answer, likeCount: likeCount || 0, isLiked, comments: comments || [] };
     }));
 
-    // Check if user has voted
-    let hasVoted = false;
-    if (user) {
-        const { data: vote } = await supabase
-            .from('question_votes')
-            .select('id')
-            .eq('question_id', id)
-            .eq('user_id', user.id)
-            .single();
-        hasVoted = !!vote;
-    }
+
 
     // Status indicators
     const isSolved = answersWithLikes?.some(a => a.is_accepted) || false;
@@ -248,16 +257,15 @@ export default async function QuestionPage({ params }: PageProps) {
                                             <span className="font-medium">{answers?.length || 0}</span>
                                             <span className="hidden sm:inline">Cevap</span>
                                         </div>
+                                        <BookmarkButton
+                                            type="question"
+                                            itemId={question.id}
+                                            initialBookmarked={!!userBookmark}
+                                        />
 
-                                        <ReportDialog
-                                            resourceId={question.id}
-                                            resourceType="question"
-                                            trigger={
-                                                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive h-8 sm:h-9 px-2 sm:px-3 rounded-full hover:bg-destructive/10 text-xs sm:text-sm">
-                                                    <Flag className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
-                                                    <span className="hidden sm:inline">Bildir</span>
-                                                </Button>
-                                            }
+                                        <ReportButton
+                                            contentType="question"
+                                            contentId={question.id}
                                         />
                                     </div>
 
@@ -342,6 +350,6 @@ export default async function QuestionPage({ params }: PageProps) {
                     </aside>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
