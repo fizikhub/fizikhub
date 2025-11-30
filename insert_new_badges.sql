@@ -1,12 +1,12 @@
 -- Insert new badges
 INSERT INTO badges (name, description, icon, category, requirement_type, requirement_value) VALUES
-('Einstein', 'Bilimsel tartışmalara yön verenlere verilir.', 'atom', 'special', 'manual', 0),
-('Newton', 'Fizik yasalarını sorgulayanlara verilir.', 'apple', 'special', 'question_count', 10),
-('Tesla', 'Yenilikçi fikirler üretenlere verilir.', 'zap', 'special', 'manual', 0),
-('Curie', 'Radyoaktivite ve kimya alanında katkı sağlayanlara.', 'flask', 'special', 'answer_count', 10),
-('Galileo', 'Gözlem ve deneylerle bilime yön verenlere.', 'telescope', 'special', 'manual', 0),
-('Hawking', 'Evrenin sırlarını çözen teorisyenlere.', 'stars', 'special', 'manual', 0),
-('Da Vinci', 'Bilim ve sanatı birleştiren çok yönlü üyelere.', 'pen-tool', 'special', 'manual', 0)
+('Einstein', '50 soru ile bilim merakını yayanlara verilir.', 'atom', 'special', 'question_count', 50),
+('Newton', '10 soru sorarak topluluğu canlandıranlara verilir.', 'apple', 'special', 'question_count', 10),
+('Tesla', '50 cevap ile bilgiyi yaymaya adananlara verilir.', 'zap', 'special', 'answer_count', 50),
+('Curie', '10 cevap vererek bilgiyi paylaşanlara verilir.', 'flask', 'special', 'answer_count', 10),
+('Galileo', 'Cevaplarıyla 20+ beğeni kazanan gözlemcilere verilir.', 'telescope', 'special', 'answer_likes', 20),
+('Hawking', '100+ beğeniyle evrenin sırlarını açanlara verilir.', 'stars', 'special', 'answer_likes', 100),
+('Da Vinci', '30+ beğeniyle yaratıcı sorular soranlara verilir.', 'pen-tool', 'special', 'question_votes', 30)
 ON CONFLICT (name) DO NOTHING;
 
 -- Grant badges to the admin user (assuming admin is the current user or we can find them)

@@ -198,7 +198,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="einstein" />
                                 </div>
                                 <h3 className="font-bold mb-1">Einstein</h3>
-                                <p className="text-xs text-muted-foreground">Bilimsel tartışmalara yön verenlere verilir.</p>
+                                <p className="text-xs text-muted-foreground">50 soru ile bilim merakını yayanlara verilir.</p>
                             </div>
 
                             {/* Newton Badge */}
@@ -216,7 +216,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="tesla" />
                                 </div>
                                 <h3 className="font-bold mb-1">Tesla</h3>
-                                <p className="text-xs text-muted-foreground">Yenilikçi fikirler üretenlere verilir.</p>
+                                <p className="text-xs text-muted-foreground">50 cevap ile bilgiyi yaymaya adananlara verilir.</p>
                             </div>
 
                             {/* Writer Badge */}
@@ -234,7 +234,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="curie" />
                                 </div>
                                 <h3 className="font-bold mb-1">Curie</h3>
-                                <p className="text-xs text-muted-foreground">10 cevap vererek topluluğa destek olanlara.</p>
+                                <p className="text-xs text-muted-foreground">10 cevap vererek bilgiyi paylaşanlara verilir.</p>
                             </div>
 
                             {/* Galileo Badge */}
@@ -243,7 +243,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="galileo" />
                                 </div>
                                 <h3 className="font-bold mb-1">Galileo</h3>
-                                <p className="text-xs text-muted-foreground">Gözlem ve deneylerle bilime yön verenlere.</p>
+                                <p className="text-xs text-muted-foreground">Cevaplarıyla 20+ beğeni kazanan gözlemcilere verilir.</p>
                             </div>
 
                             {/* Hawking Badge */}
@@ -252,7 +252,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="hawking" />
                                 </div>
                                 <h3 className="font-bold mb-1">Hawking</h3>
-                                <p className="text-xs text-muted-foreground">Evrenin sırlarını çözen teorisyenlere.</p>
+                                <p className="text-xs text-muted-foreground">100+ beğeniyle evrenin sırlarını açanlara verilir.</p>
                             </div>
 
                             {/* Da Vinci Badge */}
@@ -261,7 +261,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="vinci" />
                                 </div>
                                 <h3 className="font-bold mb-1">Da Vinci</h3>
-                                <p className="text-xs text-muted-foreground">Bilim ve sanatı birleştiren çok yönlü üyelere.</p>
+                                <p className="text-xs text-muted-foreground">30+ beğeniyle yaratıcı sorular soranlara verilir.</p>
                             </div>
                         </div>
                     </CardContent>

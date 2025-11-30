@@ -30,6 +30,14 @@ BEGIN
         END IF;
     END IF;
 
+    -- 50th Question -> Einstein
+    IF v_question_count = 50 THEN
+        SELECT id INTO v_badge_id FROM badges WHERE name = 'Einstein';
+        IF v_badge_id IS NOT NULL THEN
+            INSERT INTO user_badges (user_id, badge_id) VALUES (NEW.author_id, v_badge_id) ON CONFLICT DO NOTHING;
+        END IF;
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -55,6 +63,14 @@ BEGIN
     -- 10th Answer -> Curie
     IF v_answer_count = 10 THEN
         SELECT id INTO v_badge_id FROM badges WHERE name = 'Curie';
+        IF v_badge_id IS NOT NULL THEN
+            INSERT INTO user_badges (user_id, badge_id) VALUES (NEW.author_id, v_badge_id) ON CONFLICT DO NOTHING;
+        END IF;
+    END IF;
+
+    -- 50th Answer -> Tesla
+    IF v_answer_count = 50 THEN
+        SELECT id INTO v_badge_id FROM badges WHERE name = 'Tesla';
         IF v_badge_id IS NOT NULL THEN
             INSERT INTO user_badges (user_id, badge_id) VALUES (NEW.author_id, v_badge_id) ON CONFLICT DO NOTHING;
         END IF;
