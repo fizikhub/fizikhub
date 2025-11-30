@@ -73,9 +73,9 @@ export function ReputationDisplay({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <div
+                <button
                     className={cn(
-                        "inline-flex items-center gap-2 font-semibold rounded-lg border transition-colors cursor-pointer hover:opacity-80",
+                        "inline-flex items-center gap-2 font-semibold rounded-lg border transition-colors cursor-pointer hover:opacity-80 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         sizeClasses[size],
                         tier.color,
                         tier.bg,
@@ -87,13 +87,11 @@ export function ReputationDisplay({
 
                     <div className="flex items-baseline gap-1.5">
                         <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
-                        {showLabel && size !== "sm" && (
-                            <span className="text-[10px] opacity-70 font-medium uppercase tracking-wide">
-                                {tier.label}
-                            </span>
-                        )}
+                        <span className="text-[10px] opacity-80 font-medium uppercase tracking-wide">
+                            Hub Puanı
+                        </span>
                     </div>
-                </div>
+                </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <Link href="/puanlar-nedir">
