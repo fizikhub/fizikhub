@@ -23,6 +23,9 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { BadgeDisplay } from "@/components/badge-display";
 import { ReputationDisplay } from "@/components/reputation-display";
+import { AnimatedStatCard } from "@/components/profile/animated-stat-card";
+import { ParallaxCover } from "@/components/profile/parallax-cover";
+import { Users, MessageCircle, FileQuestion, Heart } from "lucide-react";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -129,13 +132,8 @@ export default async function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
-            {/* Modern Cover Section */}
-            <div className="relative h-64 md:h-80 w-full overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`}>
-                    <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                </div>
-            </div>
+            {/* Parallax Cover Section */}
+            <ParallaxCover gradient={coverGradient} />
 
             <div className="container px-4 md:px-6 mx-auto max-w-6xl relative z-10 -mt-32">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -168,8 +166,12 @@ export default async function ProfilePage() {
                                         @{profile?.username || "kullanici"}
                                     </p>
 
-                                    <div className="flex justify-center py-2">
-                                        <ReputationDisplay reputation={profile?.reputation || 0} size="sm" />
+                                    <div className="flex justify-center py-3">
+                                        <ReputationDisplay
+                                            reputation={profile?.reputation || 0}
+                                            size="lg"
+                                            showProgress={true}
+                                        />
                                     </div>
 
                                     {profile?.bio && (
@@ -288,6 +290,36 @@ export default async function ProfilePage() {
                                 </Card>
                             </div>
                         )}
+
+                        {/* Animated Stats Section */}
+                        <div className="mt-6 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <AnimatedStatCard
+                                    icon={Users}
+                                    value={followersCount}
+                                    label="Takipçi"
+                                    delay={0}
+                                />
+                                <AnimatedStatCard
+                                    icon={Users}
+                                    value={followingCount}
+                                    label="Takip"
+                                    delay={0.1}
+                                />
+                                <AnimatedStatCard
+                                    icon={MessageCircle}
+                                    value={questions?.length || 0}
+                                    label="Soru"
+                                    delay={0.2}
+                                />
+                                <AnimatedStatCard
+                                    icon={FileQuestion}
+                                    value={answers?.length || 0}
+                                    label="Cevap"
+                                    delay={0.3}
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Right Content: Tabs & Activity */}
