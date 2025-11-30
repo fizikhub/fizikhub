@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase-server";
 import { ModernExploreView } from "@/components/explore/modern-explore-view";
 
-export const dynamic = 'force-dynamic';
+// Revalidate every 5 minutes for better performance
+export const revalidate = 300;
 
 export default async function DiscoverPage({
     searchParams,

@@ -48,6 +48,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
+// Enable ISR with 10 minute revalidation
+export const revalidate = 600;
+
 export default async function ArticlePage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = await createClient();

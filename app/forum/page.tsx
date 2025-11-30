@@ -4,8 +4,8 @@ import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
-
-export const dynamic = "force-dynamic";
+// Revalidate every 2 minutes for active forum
+export const revalidate = 120;
 
 interface ForumPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
