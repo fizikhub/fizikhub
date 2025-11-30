@@ -117,7 +117,48 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
         );
     }
 
-    // Default Fallback (Star)
+    // Rank Badges
+    if (normalizedName.includes("efsane")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z" fill="currentColor" className="text-amber-500" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("uzman")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" className="text-purple-500" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("aktif")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" className="text-blue-500" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("yeni")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" className="text-gray-400" />
+                <circle cx="12" cy="12" r="6" fill="currentColor" className="text-gray-400" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("doğrulanmış")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none" className="text-blue-500" />
+                <circle cx="12" cy="12" r="9" fill="currentColor" className="text-blue-100 dark:text-blue-900/30" />
+            </svg>
+        );
+    }
     return (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" className="text-yellow-400" />

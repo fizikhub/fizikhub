@@ -49,7 +49,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 5, size = "md" }: BadgeD
             {displayBadges.map((userBadge) => (
                 <DropdownMenu key={userBadge.badges.id}>
                     <DropdownMenuTrigger asChild>
-                        <div
+                        <button
                             className="group relative cursor-pointer outline-none"
                         >
                             <div className={cn(
@@ -62,7 +62,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 5, size = "md" }: BadgeD
                             )}>
                                 <CustomBadgeIcon name={userBadge.badges.name} className="w-full h-full drop-shadow-sm" />
                             </div>
-                        </div>
+                        </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="center" className="w-56">
                         <div className="p-3 text-center">
