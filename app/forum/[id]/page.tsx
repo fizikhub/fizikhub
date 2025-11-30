@@ -88,6 +88,16 @@ export default async function QuestionPage({ params }: PageProps) {
             .select('*', { count: 'exact', head: true })
             .eq('answer_id', answer.id);
 
+        // Fetch comments
+        const { data: comments } = await supabase
+            .from('answer_comments')
+            .select(`
+                *,
+                profiles(username, full_name, avatar_url, is_verified)
+            `)
+            .eq('answer_id', answer.id)
+            .order('created_at', { ascending: true });
+
         let isLiked = false;
         if (user) {
             const { data: userLike } = await supabase
@@ -99,7 +109,7 @@ export default async function QuestionPage({ params }: PageProps) {
             isLiked = !!userLike;
         }
 
-        return { ...answer, likeCount: likeCount || 0, isLiked };
+        return { ...answer, likeCount: likeCount || 0, isLiked, comments: comments || [] };
     }));
 
     // Check if user has voted

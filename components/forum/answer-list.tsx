@@ -17,6 +17,8 @@ import { DeleteAnswerButton } from "@/components/forum/delete-answer-button";
 import { ReportDialog } from "@/components/report-dialog";
 import { Flag } from "lucide-react";
 import { AnswerLikeButton } from "@/components/forum/answer-like-button";
+import { AnswerCommentList } from "@/components/forum/answer-comment-list";
+import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;
@@ -28,6 +30,7 @@ type Answer = Database['public']['Tables']['answers']['Row'] & {
     } | null;
     likeCount?: number;
     isLiked?: boolean;
+    comments?: any[]; // Using any[] for now to avoid circular type issues, ideally define Comment type
 };
 
 interface AnswerListProps {
@@ -49,7 +52,40 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     const [newAnswer, setNewAnswer] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
     const supabase = createClient();
+
+    const toggleComments = (answerId: number) => {
+        setExpandedComments(prev => ({
+            ...prev,
+            [answerId]: !prev[answerId]
+        }));
+    };
+
+    const handleCommentAdded = (answerId: number, comment: any) => {
+        setAnswers(prev => prev.map(a => {
+            if (a.id === answerId) {
+                return {
+                    ...a,
+                    comments: [...(a.comments || []), comment]
+                };
+            }
+            return a;
+        }));
+        setExpandedComments(prev => ({ ...prev, [answerId]: false }));
+    };
+
+    const handleCommentDeleted = (answerId: number, commentId: number) => {
+        setAnswers(prev => prev.map(a => {
+            if (a.id === answerId) {
+                return {
+                    ...a,
+                    comments: (a.comments || []).filter(c => c.id !== commentId)
+                };
+            }
+            return a;
+        }));
+    };
 
     useEffect(() => {
         const getUser = async () => {
@@ -210,18 +246,65 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                 </div>
                             </div>
 
-                            <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none pl-0 sm:pl-13">
+                            <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none pl-0 sm:pl-12">
                                 <MarkdownRenderer content={answer.content} className="text-sm leading-relaxed" />
                             </div>
 
-                            {/* Like Button */}
-                            <div className="mt-4 pl-0 sm:pl-13">
-                                <AnswerLikeButton
-                                    answerId={answer.id}
-                                    initialLikeCount={answer.likeCount || 0}
-                                    initialIsLiked={answer.isLiked || false}
-                                    isLoggedIn={!!user}
-                                />
+                            {/* Like Button & Comments */}
+                            <div className="mt-4 pl-0 sm:pl-12 space-y-4">
+                                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                                    <AnswerLikeButton
+                                        answerId={answer.id}
+                                        initialLikeCount={answer.likeCount || 0}
+                                        initialIsLiked={answer.isLiked || false}
+                                        isLoggedIn={!!user}
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 text-muted-foreground hover:text-foreground gap-2 px-2"
+                                        onClick={() => toggleComments(answer.id)}
+                                    >
+                                        <MessageSquare className="h-4 w-4" />
+                                        <span className="text-xs font-medium">
+                                            {answer.comments && answer.comments.length > 0
+                                                ? `${answer.comments.length} Yorum`
+                                                : "Yorum Yap"}
+                                        </span>
+                                    </Button>
+                                </div>
+
+                                {/* Comments Section */}
+                                {(expandedComments[answer.id] || answer.comments?.length > 0) && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <AnswerCommentList
+                                            comments={answer.comments || []}
+                                            currentUserId={user?.id}
+                                            questionId={questionId}
+                                            onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
+                                        />
+
+                                        {expandedComments[answer.id] ? (
+                                            <AnswerCommentForm
+                                                answerId={answer.id}
+                                                questionId={questionId}
+                                                onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
+                                                onCancel={() => toggleComments(answer.id)}
+                                            />
+                                        ) : (
+                                            user && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="mt-2 pl-0 sm:ml-6 text-xs text-muted-foreground hover:text-primary"
+                                                    onClick={() => toggleComments(answer.id)}
+                                                >
+                                                    Yorum Yaz
+                                                </Button>
+                                            )
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))

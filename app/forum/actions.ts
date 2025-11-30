@@ -353,3 +353,70 @@ export async function deleteAnswer(answerId: number, questionId: number) {
     revalidatePath(`/forum/${questionId}`);
     return { success: true };
 }
+
+export async function createAnswerComment(formData: {
+    content: string;
+    answerId: number;
+    questionId: number;
+}) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Yorum yapmak için giriş yapmalısınız." };
+    }
+
+    if (!formData.content || formData.content.trim().length === 0) {
+        return { success: false, error: "Yorum içeriği boş olamaz." };
+    }
+
+    const { data, error } = await supabase
+        .from('answer_comments')
+        .insert({
+            content: formData.content,
+            answer_id: formData.answerId,
+            author_id: user.id
+        })
+        .select(`
+            *,
+            profiles(username, full_name, avatar_url, is_verified)
+        `)
+        .single();
+
+    if (error) {
+        console.error("Comment creation error:", error);
+        return { success: false, error: "Yorum eklenirken hata oluştu." };
+    }
+
+    revalidatePath(`/forum/${formData.questionId}`);
+    return { success: true, data };
+}
+
+export async function deleteAnswerComment(commentId: number, questionId: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Check if user is admin
+    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+
+    let query = supabase.from('answer_comments').delete().eq('id', commentId);
+
+    // If not admin, ensure user owns the comment
+    if (!isAdmin) {
+        query = query.eq('author_id', user.id);
+    }
+
+    const { error } = await query;
+
+    if (error) {
+        console.error("Comment deletion error:", error);
+        return { success: false, error: "Yorum silinirken hata oluştu." };
+    }
+
+    revalidatePath(`/forum/${questionId}`);
+    return { success: true };
+}
