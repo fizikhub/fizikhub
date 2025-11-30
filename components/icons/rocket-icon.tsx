@@ -1,73 +1,75 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Rocket } from "lucide-react";
 
 export function RocketIcon({ className }: { className?: string }) {
     return (
-        <div className="relative inline-block">
-            <motion.div
-                animate={{
-                    y: [0, -2, 0],
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                }}
-                className={className}
+        <motion.div
+            className={className}
+            animate={{
+                scale: [1, 1.05, 1],
+            }}
+            transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+            }}
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-full w-full"
             >
-                <Rocket className="h-full w-full relative z-10 drop-shadow-sm" />
+                {/* Hexagon Background */}
+                <path
+                    d="M12 2L20 7V17L12 22L4 17V7L12 2Z"
+                    fill="currentColor"
+                    className="opacity-20"
+                />
 
-                {/* Fire Effect */}
-                <div className="absolute top-[60%] left-[0%] z-0">
-                    {/* Main flame glow */}
-                    <motion.div
-                        className="absolute -top-[2px] -left-[2px] w-[10px] h-[10px] bg-gradient-to-b from-orange-400 via-red-500 to-yellow-500 rounded-full blur-[4px]"
-                        animate={{
-                            opacity: [0.7, 1, 0.7],
-                            scale: [0.9, 1.2, 0.9],
-                        }}
-                        transition={{ duration: 0.3, repeat: Infinity, ease: "easeInOut" }}
+                {/* Inner Hexagon */}
+                <path
+                    d="M12 4L18 8V16L12 20L6 16V8L12 4Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    fill="none"
+                    className="opacity-60"
+                />
+
+                {/* Star/Sparkle in center */}
+                <motion.g
+                    animate={{
+                        rotate: [0, 360],
+                        scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                        rotate: {
+                            duration: 8,
+                            repeat: Infinity,
+                            ease: "linear",
+                        },
+                        scale: {
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        },
+                    }}
+                >
+                    <path
+                        d="M12 7L13 11H17L14 13.5L15 17.5L12 15L9 17.5L10 13.5L7 11H11L12 7Z"
+                        fill="currentColor"
                     />
+                </motion.g>
 
-                    {/* Inner bright core */}
-                    <motion.div
-                        className="absolute top-0 left-0 w-[6px] h-[6px] bg-yellow-300 rounded-full blur-[2px]"
-                        animate={{
-                            opacity: [0.9, 1, 0.9],
-                            scale: [1, 1.3, 1],
-                        }}
-                        transition={{ duration: 0.2, repeat: Infinity }}
-                    />
-
-                    {/* Flame particles */}
-                    {[...Array(4)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            className="absolute w-[2px] h-[2px] rounded-full"
-                            style={{
-                                background: i % 2 === 0
-                                    ? 'linear-gradient(to bottom, #fb923c, #ef4444)'
-                                    : 'linear-gradient(to bottom, #fbbf24, #f97316)',
-                            }}
-                            initial={{ opacity: 0, scale: 0.3, x: 0, y: 0 }}
-                            animate={{
-                                opacity: [0, 0.9, 0],
-                                scale: [0.3, 1, 0.5],
-                                x: [-1, -4 - Math.random() * 3],
-                                y: [1, 4 + Math.random() * 4],
-                            }}
-                            transition={{
-                                duration: 0.5 + Math.random() * 0.3,
-                                repeat: Infinity,
-                                delay: i * 0.08,
-                                ease: [0.4, 0, 0.2, 1]
-                            }}
-                        />
-                    ))}
-                </div>
-            </motion.div>
-        </div>
+                {/* Corner accents */}
+                <circle cx="12" cy="3" r="1" fill="currentColor" className="opacity-40" />
+                <circle cx="19" cy="7.5" r="1" fill="currentColor" className="opacity-40" />
+                <circle cx="19" cy="16.5" r="1" fill="currentColor" className="opacity-40" />
+                <circle cx="12" cy="21" r="1" fill="currentColor" className="opacity-40" />
+                <circle cx="5" cy="16.5" r="1" fill="currentColor" className="opacity-40" />
+                <circle cx="5" cy="7.5" r="1" fill="currentColor" className="opacity-40" />
+            </svg>
+        </motion.div>
     );
 }
