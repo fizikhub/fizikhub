@@ -23,6 +23,8 @@ import { FollowStats } from "@/components/profile/follow-stats";
 import { getFollowStats } from "@/app/profil/actions";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { BadgeDisplay } from "@/components/badge-display";
+import { ReputationDisplay } from "@/components/reputation-display";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -68,9 +70,11 @@ export default async function ProfilePage() {
         .select(`
             awarded_at,
             badges (
+                id,
                 name,
                 description,
-                icon
+                icon,
+                category
             )
         `)
         .eq('user_id', user.id)
@@ -225,107 +229,133 @@ export default async function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Content Tabs */}
-                <Tabs defaultValue="questions" className="w-full">
-                    <TabsList className="w-full justify-between border-b rounded-none h-auto p-0 bg-background/80 backdrop-blur-md sticky top-0 z-20">
-                        <TabsTrigger
-                            value="questions"
-                            className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
-                        >
-                            Sorular
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="answers"
-                            className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
-                        >
-                            Cevaplar
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="notifications"
-                            className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
-                        >
-                            Bildirimler
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="messages"
-                            className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
-                        >
-                            Mesajlar
-                        </TabsTrigger>
-                    </TabsList>
-
-                    <div className="min-h-[50vh]">
-                        <TabsContent value="messages" className="m-0 animate-in fade-in-50 duration-300">
-                            <div className="divide-y divide-border">
-                                <ConversationList conversations={conversations} />
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="notifications" className="m-0 animate-in fade-in-50 duration-300">
-                            <NotificationsList userId={user.id} />
-                        </TabsContent>
-
-                        <TabsContent value="questions" className="m-0 animate-in fade-in-50 duration-300">
-                            {!questions || questions.length === 0 ? (
-                                <div className="text-center py-12 px-4">
-                                    <MessageSquare className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
-                                    <p className="text-muted-foreground font-medium">Henüz hiç soru sormadın.</p>
-                                    <Link href="/forum">
-                                        <Button variant="outline" className="mt-4 rounded-full">Soru Sor</Button>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <div className="divide-y divide-border">
-                                    {questions.map((question) => (
-                                        <div key={question.id} className="hover:bg-muted/30 transition-colors">
-                                            <QuestionCard
-                                                question={{
-                                                    ...question,
-                                                    profiles: {
-                                                        username: profile?.username || "Ben",
-                                                        full_name: profile?.full_name
-                                                    },
-                                                    answers: []
-                                                }}
-                                                hasVoted={false}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="answers" className="m-0 animate-in fade-in-50 duration-300">
-                            {!answers || answers.length === 0 ? (
-                                <div className="text-center py-12 px-4">
-                                    <FileText className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
-                                    <p className="text-muted-foreground font-medium">Henüz hiç cevap vermedin.</p>
-                                </div>
-                            ) : (
-                                <div className="divide-y divide-border">
-                                    {answers.map((answer) => (
-                                        <Link key={answer.id} href={`/forum/${answer.question_id}`} className="block hover:bg-muted/30 transition-colors p-4">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                                                    <span className="font-bold text-foreground">Cevap verdi</span>
-                                                    <span>·</span>
-                                                    <span>{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
-                                                </div>
-                                                <p className="text-sm font-medium text-muted-foreground mb-1">
-                                                    Soru: <span className="text-primary">{answer.questions?.title || "Silinmiş Soru"}</span>
-                                                </p>
-                                                <p className="text-base whitespace-pre-wrap line-clamp-3">
-                                                    {answer.content}
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </TabsContent>
+                {/* Reputation & Badges */}
+                <div className="px-4 md:px-6 pb-6 space-y-4 border-t border-border/40 pt-4">
+                    {/* Reputation */}
+                    <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <ReputationDisplay
+                            reputation={profile?.reputation || 0}
+                            showLabel={true}
+                            size="md"
+                        />
                     </div>
-                </Tabs>
+
+                    {/* Badges */}
+                    {userBadges && userBadges.length > 0 && (
+                        <div className="space-y-2">
+                            <div className="text-sm font-medium text-muted-foreground text-center md:text-left">Rozetler</div>
+                            <div className="flex justify-center md:justify-start">
+                                <BadgeDisplay
+                                    userBadges={userBadges as any}
+                                    maxDisplay={8}
+                                    size="md"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Content Tabs */}
+            <Tabs defaultValue="questions" className="w-full">
+                <TabsList className="w-full justify-between border-b rounded-none h-auto p-0 bg-background/80 backdrop-blur-md sticky top-0 z-20">
+                    <TabsTrigger
+                        value="questions"
+                        className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                        Sorular
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="answers"
+                        className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                        Cevaplar
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="notifications"
+                        className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                        Bildirimler
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="messages"
+                        className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                        Mesajlar
+                    </TabsTrigger>
+                </TabsList>
+
+                <div className="min-h-[50vh]">
+                    <TabsContent value="messages" className="m-0 animate-in fade-in-50 duration-300">
+                        <div className="divide-y divide-border">
+                            <ConversationList conversations={conversations} />
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="notifications" className="m-0 animate-in fade-in-50 duration-300">
+                        <NotificationsList userId={user.id} />
+                    </TabsContent>
+
+                    <TabsContent value="questions" className="m-0 animate-in fade-in-50 duration-300">
+                        {!questions || questions.length === 0 ? (
+                            <div className="text-center py-12 px-4">
+                                <MessageSquare className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
+                                <p className="text-muted-foreground font-medium">Henüz hiç soru sormadın.</p>
+                                <Link href="/forum">
+                                    <Button variant="outline" className="mt-4 rounded-full">Soru Sor</Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-border">
+                                {questions.map((question) => (
+                                    <div key={question.id} className="hover:bg-muted/30 transition-colors">
+                                        <QuestionCard
+                                            question={{
+                                                ...question,
+                                                profiles: {
+                                                    username: profile?.username || "Ben",
+                                                    full_name: profile?.full_name
+                                                },
+                                                answers: []
+                                            }}
+                                            hasVoted={false}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="answers" className="m-0 animate-in fade-in-50 duration-300">
+                        {!answers || answers.length === 0 ? (
+                            <div className="text-center py-12 px-4">
+                                <FileText className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
+                                <p className="text-muted-foreground font-medium">Henüz hiç cevap vermedin.</p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-border">
+                                {answers.map((answer) => (
+                                    <Link key={answer.id} href={`/forum/${answer.question_id}`} className="block hover:bg-muted/30 transition-colors p-4">
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                                                <span className="font-bold text-foreground">Cevap verdi</span>
+                                                <span>·</span>
+                                                <span>{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
+                                            </div>
+                                            <p className="text-sm font-medium text-muted-foreground mb-1">
+                                                Soru: <span className="text-primary">{answer.questions?.title || "Silinmiş Soru"}</span>
+                                            </p>
+                                            <p className="text-base whitespace-pre-wrap line-clamp-3">
+                                                {answer.content}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </TabsContent>
+                </div>
+            </Tabs>
         </div>
     );
 }

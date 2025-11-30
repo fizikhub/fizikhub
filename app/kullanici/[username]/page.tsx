@@ -48,9 +48,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
         .select(`
             awarded_at,
             badges (
+                id,
                 name,
                 description,
-                icon
+                icon,
+                category
             )
         `)
         .eq('user_id', profile.id)
