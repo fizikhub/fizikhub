@@ -3,7 +3,9 @@
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeHighlight from "rehype-highlight";
 import "katex/dist/katex.min.css";
+import "highlight.js/styles/github-dark.css";
 import { cn } from "@/lib/utils";
 
 interface MarkdownRendererProps {
@@ -16,7 +18,7 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
         <div className={cn("prose prose-invert max-w-none prose-headings:text-primary prose-a:text-secondary", className)}>
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex]}
+                rehypePlugins={[rehypeKatex, rehypeHighlight]}
                 components={{
                     p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
                     a: ({ node, ...props }) => <a className="text-secondary hover:underline" {...props} />,
