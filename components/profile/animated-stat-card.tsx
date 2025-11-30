@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
-import { LucideIcon } from "lucide-react";
 
 interface AnimatedStatCardProps {
-    icon: LucideIcon;
+    icon: React.ReactNode;
     value: number;
     label: string;
     suffix?: string;
@@ -14,7 +13,7 @@ interface AnimatedStatCardProps {
 }
 
 export function AnimatedStatCard({
-    icon: Icon,
+    icon,
     value,
     label,
     suffix = "",
@@ -71,7 +70,7 @@ export function AnimatedStatCard({
                         transition={{ duration: 0.5 }}
                         className={`p-3 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 ${color}`}
                     >
-                        <Icon className="h-6 w-6" strokeWidth={2.5} />
+                        {icon}
                     </motion.div>
 
                     {/* Animated Value */}

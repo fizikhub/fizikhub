@@ -295,25 +295,25 @@ export default async function ProfilePage() {
                         <div className="mt-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <AnimatedStatCard
-                                    icon={Users}
+                                    icon={<Users className="h-6 w-6" strokeWidth={2.5} />}
                                     value={followersCount}
                                     label="Takipçi"
                                     delay={0}
                                 />
                                 <AnimatedStatCard
-                                    icon={Users}
+                                    icon={<Users className="h-6 w-6" strokeWidth={2.5} />}
                                     value={followingCount}
                                     label="Takip"
                                     delay={0.1}
                                 />
                                 <AnimatedStatCard
-                                    icon={MessageCircle}
+                                    icon={<MessageCircle className="h-6 w-6" strokeWidth={2.5} />}
                                     value={questions?.length || 0}
                                     label="Soru"
                                     delay={0.2}
                                 />
                                 <AnimatedStatCard
-                                    icon={FileQuestion}
+                                    icon={<FileQuestion className="h-6 w-6" strokeWidth={2.5} />}
                                     value={answers?.length || 0}
                                     label="Cevap"
                                     delay={0.3}
