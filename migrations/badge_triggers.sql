@@ -1,7 +1,7 @@
 -- Add new badges for triggers
-INSERT INTO badges (name, description, icon, category) VALUES
-('Kaşif', 'İlk sorusunu soran meraklı zihinlere verilir.', 'compass', 'milestone'),
-('Yardımsever', 'İlk cevabını veren yardımsever üyelere verilir.', 'heart', 'milestone')
+INSERT INTO badges (name, description, icon, category, requirement_type, requirement_value) VALUES
+('Kaşif', 'İlk sorusunu soran meraklı zihinlere verilir.', 'compass', 'milestone', 'question_count', 1),
+('Yardımsever', 'İlk cevabını veren yardımsever üyelere verilir.', 'heart', 'milestone', 'answer_count', 1)
 ON CONFLICT (name) DO NOTHING;
 
 -- Function to handle question badges

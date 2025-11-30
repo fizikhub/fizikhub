@@ -1,12 +1,12 @@
 -- Insert new badges
-INSERT INTO badges (name, description, icon, category) VALUES
-('Einstein', 'Bilimsel tartışmalara yön verenlere verilir.', 'atom', 'special'),
-('Newton', 'Fizik yasalarını sorgulayanlara verilir.', 'apple', 'special'),
-('Tesla', 'Yenilikçi fikirler üretenlere verilir.', 'zap', 'special'),
-('Curie', 'Radyoaktivite ve kimya alanında katkı sağlayanlara.', 'flask', 'special'),
-('Galileo', 'Gözlem ve deneylerle bilime yön verenlere.', 'telescope', 'special'),
-('Hawking', 'Evrenin sırlarını çözen teorisyenlere.', 'stars', 'special'),
-('Da Vinci', 'Bilim ve sanatı birleştiren çok yönlü üyelere.', 'pen-tool', 'special')
+INSERT INTO badges (name, description, icon, category, requirement_type, requirement_value) VALUES
+('Einstein', 'Bilimsel tartışmalara yön verenlere verilir.', 'atom', 'special', 'manual', 0),
+('Newton', 'Fizik yasalarını sorgulayanlara verilir.', 'apple', 'special', 'question_count', 10),
+('Tesla', 'Yenilikçi fikirler üretenlere verilir.', 'zap', 'special', 'manual', 0),
+('Curie', 'Radyoaktivite ve kimya alanında katkı sağlayanlara.', 'flask', 'special', 'answer_count', 10),
+('Galileo', 'Gözlem ve deneylerle bilime yön verenlere.', 'telescope', 'special', 'manual', 0),
+('Hawking', 'Evrenin sırlarını çözen teorisyenlere.', 'stars', 'special', 'manual', 0),
+('Da Vinci', 'Bilim ve sanatı birleştiren çok yönlü üyelere.', 'pen-tool', 'special', 'manual', 0)
 ON CONFLICT (name) DO NOTHING;
 
 -- Grant badges to the admin user (assuming admin is the current user or we can find them)
