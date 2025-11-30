@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { User, MessageSquare, FileText, LogOut, Shield, BadgeCheck, Globe, Twitter, Github, Instagram, Linkedin } from "lucide-react";
+import { User, MessageSquare, FileText, LogOut, Shield, BadgeCheck, Globe, Twitter, Github, Instagram, Linkedin, Bookmark } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -85,6 +85,41 @@ export default async function ProfilePage() {
 
     // Fetch follow stats
     const { followersCount, followingCount } = await getFollowStats(user.id);
+
+    // Fetch bookmarked articles
+    const { data: bookmarkedArticles } = await supabase
+        .from('article_bookmarks')
+        .select(`
+            created_at,
+            articles (
+                id,
+                title,
+                slug,
+                excerpt,
+                created_at,
+                author:profiles(full_name, username)
+            )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    // Fetch bookmarked questions
+    const { data: bookmarkedQuestions } = await supabase
+        .from('question_bookmarks')
+        .select(`
+            created_at,
+            questions (
+                id,
+                title,
+                content,
+                created_at,
+                category,
+                profiles(full_name, username),
+                answers(count)
+            )
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
     return (
 
@@ -283,6 +318,12 @@ export default async function ProfilePage() {
                     >
                         Mesajlar
                     </TabsTrigger>
+                    <TabsTrigger
+                        value="saved"
+                        className="flex-1 rounded-none border-b-4 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-2 py-3 sm:py-4 font-bold text-sm text-muted-foreground data-[state=active]:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                        Kaydedilenler
+                    </TabsTrigger>
                 </TabsList>
 
                 <div className="min-h-[50vh]">
@@ -353,6 +394,123 @@ export default async function ProfilePage() {
                                 ))}
                             </div>
                         )}
+                    </TabsContent>
+
+                    <TabsContent value="saved" className="m-0 animate-in fade-in-50 duration-300">
+                        <Tabs defaultValue="articles" className="w-full">
+                            <div className="px-4 pt-4">
+                                <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 rounded-lg mb-4">
+                                    <TabsTrigger
+                                        value="articles"
+                                        className="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                    >
+                                        <div className="flex items-center justify-center gap-2">
+                                            <FileText className="h-4 w-4" />
+                                            <span>Makaleler</span>
+                                            <Badge variant="secondary" className="ml-1 text-[10px] h-5 px-1.5">
+                                                {bookmarkedArticles?.length || 0}
+                                            </Badge>
+                                        </div>
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value="questions"
+                                        className="flex-1 rounded-md px-3 py-2 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                                    >
+                                        <div className="flex items-center justify-center gap-2">
+                                            <MessageSquare className="h-4 w-4" />
+                                            <span>Sorular</span>
+                                            <Badge variant="secondary" className="ml-1 text-[10px] h-5 px-1.5">
+                                                {bookmarkedQuestions?.length || 0}
+                                            </Badge>
+                                        </div>
+                                    </TabsTrigger>
+                                </TabsList>
+                            </div>
+
+                            <TabsContent value="articles" className="mt-0">
+                                {!bookmarkedArticles || bookmarkedArticles.length === 0 ? (
+                                    <div className="text-center py-12 px-4">
+                                        <Bookmark className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
+                                        <p className="text-muted-foreground font-medium">Henüz hiç makale kaydetmediniz.</p>
+                                        <Link href="/blog">
+                                            <Button variant="outline" className="mt-4 rounded-full">Makaleleri Keşfet</Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-4 px-4 pb-4">
+                                        {bookmarkedArticles.map((item: any) => (
+                                            <Link key={item.articles.id} href={`/blog/${item.articles.slug}`}>
+                                                <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+                                                    <CardContent className="p-4 sm:p-6">
+                                                        <div className="flex justify-between items-start gap-4">
+                                                            <div className="space-y-2">
+                                                                <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-1">
+                                                                    {item.articles.title}
+                                                                </h3>
+                                                                <p className="text-muted-foreground line-clamp-2 text-sm">
+                                                                    {item.articles.excerpt}
+                                                                </p>
+                                                                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                                                                    <span>{item.articles.author?.full_name || "Yazar"}</span>
+                                                                    <span>•</span>
+                                                                    <span>{formatDistanceToNow(new Date(item.articles.created_at), { addSuffix: true, locale: tr })}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </TabsContent>
+
+                            <TabsContent value="questions" className="mt-0">
+                                {!bookmarkedQuestions || bookmarkedQuestions.length === 0 ? (
+                                    <div className="text-center py-12 px-4">
+                                        <Bookmark className="h-10 w-10 mx-auto mb-4 text-muted-foreground/20" />
+                                        <p className="text-muted-foreground font-medium">Henüz hiç soru kaydetmediniz.</p>
+                                        <Link href="/forum">
+                                            <Button variant="outline" className="mt-4 rounded-full">Soruları Keşfet</Button>
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <div className="grid gap-4 px-4 pb-4">
+                                        {bookmarkedQuestions.map((item: any) => (
+                                            <Link key={item.questions.id} href={`/forum/${item.questions.id}`}>
+                                                <Card className="hover:border-primary/50 transition-colors cursor-pointer">
+                                                    <CardContent className="p-4 sm:p-6">
+                                                        <div className="flex justify-between items-start gap-4">
+                                                            <div className="space-y-2">
+                                                                <div className="flex items-center gap-2">
+                                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5">
+                                                                        {item.questions.category || "Genel"}
+                                                                    </Badge>
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        {item.questions.answers?.[0]?.count || 0} Cevap
+                                                                    </span>
+                                                                </div>
+                                                                <h3 className="font-bold text-base sm:text-lg group-hover:text-primary transition-colors line-clamp-1">
+                                                                    {item.questions.title}
+                                                                </h3>
+                                                                <p className="text-muted-foreground line-clamp-2 text-sm">
+                                                                    {item.questions.content.substring(0, 150)}...
+                                                                </p>
+                                                                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                                                                    <span>{item.questions.profiles?.full_name || "Kullanıcı"}</span>
+                                                                    <span>•</span>
+                                                                    <span>{formatDistanceToNow(new Date(item.questions.created_at), { addSuffix: true, locale: tr })}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </TabsContent>
+                        </Tabs>
                     </TabsContent>
                 </div>
             </Tabs>
