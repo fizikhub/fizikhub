@@ -2,32 +2,24 @@
 
 import { TrendingUp, Sparkles, Zap, Crown, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
 
 interface ReputationDisplayProps {
     reputation: number;
     showLabel?: boolean;
     size?: "sm" | "md" | "lg";
     className?: string;
-    showProgress?: boolean;
 }
 
 export function ReputationDisplay({
     reputation,
     showLabel = true,
     size = "md",
-    className,
-    showProgress = false
+    className
 }: ReputationDisplayProps) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
-    const [animatedRep, setAnimatedRep] = useState(0);
-
     const sizeClasses = {
-        sm: "text-sm px-2 py-0.5",
-        md: "text-base px-3 py-1",
-        lg: "text-lg px-4 py-1.5"
+        sm: "text-xs px-2 py-1",
+        md: "text-sm px-3 py-1.5",
+        lg: "text-base px-4 py-2"
     };
 
     const iconSizes = {
@@ -39,153 +31,42 @@ export function ReputationDisplay({
     // Determine tier and styling
     const getTierInfo = (rep: number) => {
         if (rep >= 1000) return {
-            color: "text-amber-500",
-            bg: "bg-gradient-to-br from-amber-500/20 to-orange-500/10",
-            border: "border-amber-500/30",
+            color: "text-amber-600 dark:text-amber-400",
+            bg: "bg-amber-50 dark:bg-amber-950/50",
+            border: "border-amber-200 dark:border-amber-800",
             icon: Crown,
-            label: "Efsane",
-            nextTier: null,
-            progress: 100
+            label: "Efsane"
         };
         if (rep >= 500) return {
-            color: "text-purple-500",
-            bg: "bg-gradient-to-br from-purple-500/20 to-pink-500/10",
-            border: "border-purple-500/30",
+            color: "text-purple-600 dark:text-purple-400",
+            bg: "bg-purple-50 dark:bg-purple-950/50",
+            border: "border-purple-200 dark:border-purple-800",
             icon: Sparkles,
-            label: "Uzman",
-            nextTier: 1000,
-            progress: ((rep - 500) / 500) * 100
+            label: "Uzman"
         };
         if (rep >= 100) return {
-            color: "text-blue-500",
-            bg: "bg-gradient-to-br from-blue-500/20 to-cyan-500/10",
-            border: "border-blue-500/30",
+            color: "text-blue-600 dark:text-blue-400",
+            bg: "bg-blue-50 dark:bg-blue-950/50",
+            border: "border-blue-200 dark:border-blue-800",
             icon: Zap,
-            label: "Aktif",
-            nextTier: 500,
-            progress: ((rep - 100) / 400) * 100
+            label: "Aktif"
         };
         return {
-            color: "text-muted-foreground",
-            bg: "bg-muted/50",
-            border: "border-border/50",
+            color: "text-gray-600 dark:text-gray-400",
+            bg: "bg-gray-50 dark:bg-gray-900/50",
+            border: "border-gray-200 dark:border-gray-800",
             icon: Target,
-            label: "Yeni",
-            nextTier: 100,
-            progress: (rep / 100) * 100
+            label: "Yeni"
         };
     };
 
     const tier = getTierInfo(reputation);
     const Icon = tier.icon;
 
-    // Animate reputation count
-    useEffect(() => {
-        if (isInView) {
-            let start = 0;
-            const end = reputation;
-            const duration = 1500;
-            const increment = end / (duration / 16);
-
-            const timer = setInterval(() => {
-                start += increment;
-                if (start >= end) {
-                    setAnimatedRep(end);
-                    clearInterval(timer);
-                } else {
-                    setAnimatedRep(Math.floor(start));
-                }
-            }, 16);
-
-            return () => clearInterval(timer);
-        }
-    }, [isInView, reputation]);
-
-    if (showProgress && size === "lg") {
-        // Large version with circular progress
-        return (
-            <div ref={ref} className={cn("relative inline-flex items-center gap-4", className)}>
-                {/* Circular Progress */}
-                <div className="relative">
-                    <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-                        {/* Background circle */}
-                        <circle
-                            cx="50"
-                            cy="50"
-                            r="45"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="8"
-                            className="text-muted/20"
-                        />
-                        {/* Progress circle */}
-                        <motion.circle
-                            cx="50"
-                            cy="50"
-                            r="45"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="8"
-                            strokeLinecap="round"
-                            className={tier.color}
-                            initial={{ pathLength: 0 }}
-                            animate={isInView ? { pathLength: tier.progress / 100 } : { pathLength: 0 }}
-                            transition={{ duration: 1.5, ease: "easeOut" }}
-                            style={{
-                                strokeDasharray: "283",
-                                strokeDashoffset: 0
-                            }}
-                        />
-                    </svg>
-                    {/* Center content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <motion.div
-                            animate={{
-                                rotate: reputation >= 500 ? [0, 15, -15, 0] : 0,
-                                scale: reputation >= 1000 ? [1, 1.2, 1] : 1
-                            }}
-                            transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                repeatDelay: 3
-                            }}
-                            className={tier.color}
-                        >
-                            <Icon className="h-8 w-8" />
-                        </motion.div>
-                    </div>
-                </div>
-
-                {/* Info */}
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-baseline gap-2">
-                        <span className={cn("text-3xl font-bold", tier.color)}>
-                            {animatedRep.toLocaleString('tr-TR')}
-                        </span>
-                        <span className="text-sm text-muted-foreground uppercase font-medium tracking-wider">
-                            puan
-                        </span>
-                    </div>
-                    <div className="text-sm font-medium text-muted-foreground">
-                        {tier.label}
-                    </div>
-                    {tier.nextTier && (
-                        <div className="text-xs text-muted-foreground">
-                            {tier.nextTier - reputation} puan kaldı
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
-    // Compact version
     return (
-        <motion.div
-            ref={ref}
-            whileHover={{ scale: 1.05 }}
+        <div
             className={cn(
-                "inline-flex items-center gap-2 font-semibold rounded-full border backdrop-blur-sm transition-colors",
+                "inline-flex items-center gap-2 font-semibold rounded-lg border transition-colors",
                 sizeClasses[size],
                 tier.color,
                 tier.bg,
@@ -193,28 +74,16 @@ export function ReputationDisplay({
                 className
             )}
         >
-            <motion.div
-                animate={{
-                    rotate: reputation >= 500 ? [0, 15, -15, 0] : 0,
-                    scale: reputation >= 1000 ? [1, 1.2, 1] : 1
-                }}
-                transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatDelay: 3
-                }}
-            >
-                <Icon className={cn(iconSizes[size])} />
-            </motion.div>
+            <Icon className={cn(iconSizes[size])} />
 
-            <div className="flex items-baseline gap-1">
-                <span className="font-bold tracking-tight">{animatedRep.toLocaleString('tr-TR')}</span>
+            <div className="flex items-baseline gap-1.5">
+                <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
                 {showLabel && size !== "sm" && (
-                    <span className="text-[10px] opacity-80 font-medium uppercase tracking-wider">
+                    <span className="text-[10px] opacity-70 font-medium uppercase tracking-wide">
                         {tier.label}
                     </span>
                 )}
             </div>
-        </motion.div>
+        </div>
     );
 }
