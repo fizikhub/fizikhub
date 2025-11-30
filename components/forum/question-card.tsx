@@ -23,13 +23,13 @@ interface QuestionCardProps {
         votes: number;
         views: number;
         tags: string[];
-        profiles: {
-            username: string;
+        profiles?: {
+            username: string | null;
             full_name: string | null;
             avatar_url: string | null;
-            is_verified?: boolean;
-        };
-        answers: { count: number }[];
+            is_verified?: boolean | null;
+        } | null;
+        answers?: { count: number }[] | any[];
     };
     hasVoted?: boolean;
 }

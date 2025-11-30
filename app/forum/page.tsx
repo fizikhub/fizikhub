@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { ModernForumHeader } from "@/components/forum/modern-forum-header";
 import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
+import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
 // Revalidate every 2 minutes for active forum
@@ -105,15 +106,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-4">
-                                {questions.map((question) => (
-                                    <QuestionCard
-                                        key={question.id}
-                                        question={question}
-                                        hasVoted={userVotes.has(question.id)}
-                                    />
-                                ))}
-                            </div>
+                            <QuestionList
+                                initialQuestions={questions}
+                                userVotes={userVotes}
+                            />
                         )}
                     </div>
                 </div>

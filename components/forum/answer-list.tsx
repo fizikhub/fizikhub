@@ -99,10 +99,81 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
             setUser(session?.user ?? null);
         });
 
+        // Realtime subscription for answers
+        const channel = supabase
+            .channel(`answers_${questionId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'answers',
+                    filter: `question_id=eq.${questionId}`
+                },
+                async (payload) => {
+                    // Fetch the complete answer with profile data
+                    const { data: newAnswer } = await supabase
+                        .from('answers')
+                        .select(`
+                            *,
+                            profiles (
+                                username,
+                                full_name,
+                                avatar_url,
+                                is_verified
+                            )
+                        `)
+                        .eq('id', payload.new.id)
+                        .single();
+
+                    if (newAnswer) {
+                        setAnswers((current) => {
+                            // Avoid duplicates
+                            if (current.some(a => a.id === newAnswer.id)) return current;
+                            return [...current, { ...newAnswer, comments: [] }];
+                        });
+                    }
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'answers',
+                    filter: `question_id=eq.${questionId}`
+                },
+                (payload) => {
+                    setAnswers((current) =>
+                        current.map((a) =>
+                            a.id === payload.new.id
+                                ? { ...a, ...payload.new }
+                                : a
+                        )
+                    );
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: 'DELETE',
+                    schema: 'public',
+                    table: 'answers',
+                    filter: `question_id=eq.${questionId}`
+                },
+                (payload) => {
+                    setAnswers((current) =>
+                        current.filter((a) => a.id !== payload.old.id)
+                    );
+                }
+            )
+            .subscribe();
+
         return () => {
             subscription.unsubscribe();
+            supabase.removeChannel(channel);
         };
-    }, [supabase.auth]);
+    }, [supabase, questionId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

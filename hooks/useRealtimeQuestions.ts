@@ -10,8 +10,9 @@ interface Question {
     category: string;
     author_id: string;
     created_at: string;
-    vote_count: number;
-    view_count: number;
+    votes: number;
+    views: number;
+    tags: string[];
     profiles?: {
         username: string | null;
         full_name: string | null;
