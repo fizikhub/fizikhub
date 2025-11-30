@@ -140,9 +140,9 @@ export default async function ProfilePage() {
             <div className="container mx-auto max-w-5xl px-4 -mt-20">
                 {/* Profile Header */}
                 <div className="relative mb-8">
-                    <div className="flex flex-col md:flex-row gap-6 items-end">
+                    <div className="flex flex-col gap-6 items-center">
                         {/* Avatar */}
-                        <div className="relative -mt-12 md:-mt-16 mx-auto md:mx-0 z-10">
+                        <div className="relative -mt-12 md:-mt-16 mx-auto z-10">
                             <div className="h-32 w-32 md:h-40 md:w-40 rounded-full ring-4 ring-background bg-background shadow-xl flex items-center justify-center overflow-hidden">
                                 <AvatarUpload
                                     currentAvatarUrl={profile?.avatar_url}
@@ -158,20 +158,20 @@ export default async function ProfilePage() {
                         </div>
 
                         {/* Main Info */}
-                        <div className="flex-1 text-center md:text-left space-y-2 pb-2">
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                        <div className="flex-1 text-center space-y-2 pb-2">
+                            <div className="flex flex-col items-center gap-2">
                                 <h1 className="text-3xl font-bold tracking-tight">{profile?.full_name || "İsimsiz Kullanıcı"}</h1>
-                                <div className="flex items-center justify-center md:justify-start gap-2">
+                                <div className="flex items-center justify-center gap-2">
                                     <Badge variant="secondary" className="font-mono text-xs">@{profile?.username || "kullanici"}</Badge>
                                     <ReputationDisplay reputation={profile?.reputation || 0} size="sm" showLabel={true} />
                                 </div>
                             </div>
 
                             {profile?.bio && (
-                                <p className="text-muted-foreground max-w-2xl mx-auto md:mx-0 text-base">{profile.bio}</p>
+                                <p className="text-muted-foreground max-w-2xl mx-auto text-base">{profile.bio}</p>
                             )}
 
-                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center md:justify-start pt-1">
+                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center pt-1">
                                 <div className="flex items-center gap-1.5">
                                     <Calendar className="h-4 w-4 opacity-70" />
                                     <span>{format(new Date(user.created_at), 'MMMM yyyy', { locale: tr })}</span>
@@ -192,7 +192,7 @@ export default async function ProfilePage() {
 
                         {/* Actions Toolbar */}
                         <div className="flex flex-col gap-2 min-w-[140px]">
-                            <div className="flex gap-2 justify-center md:justify-end">
+                            <div className="flex gap-2 justify-center">
                                 <div className="md:hidden">
                                     <ModeToggle />
                                 </div>
@@ -220,7 +220,7 @@ export default async function ProfilePage() {
 
                             {/* Social Links Mini-Bar */}
                             {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
-                                <div className="flex gap-1 justify-center md:justify-end p-1 bg-muted/50 rounded-full backdrop-blur-sm">
+                                <div className="flex gap-1 justify-center p-1 bg-muted/50 rounded-full backdrop-blur-sm">
                                     {profile.social_links?.twitter && (
                                         <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full hover:bg-background transition-all hover:text-[#1DA1F2]">
                                             <Twitter className="h-4 w-4" />
