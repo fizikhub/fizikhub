@@ -174,6 +174,24 @@ export default function PointsInfoPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                            {/* Kaşif Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="kaşif" />
+                                </div>
+                                <h3 className="font-bold mb-1">Kaşif</h3>
+                                <p className="text-xs text-muted-foreground">İlk sorusunu soran meraklı zihinlere verilir.</p>
+                            </div>
+
+                            {/* Yardımsever Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="yardımsever" />
+                                </div>
+                                <h3 className="font-bold mb-1">Yardımsever</h3>
+                                <p className="text-xs text-muted-foreground">İlk cevabını veren yardımsever üyelere verilir.</p>
+                            </div>
+
                             {/* Einstein Badge */}
                             <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
                                 <div className="w-16 h-16 mb-3">
@@ -189,7 +207,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="newton" />
                                 </div>
                                 <h3 className="font-bold mb-1">Newton</h3>
-                                <p className="text-xs text-muted-foreground">Fizik yasalarını sorgulayanlara verilir.</p>
+                                <p className="text-xs text-muted-foreground">10 soru sorarak topluluğu canlandıranlara verilir.</p>
                             </div>
 
                             {/* Tesla Badge */}
@@ -216,7 +234,7 @@ export default function PointsInfoPage() {
                                     <CustomBadgeIcon name="curie" />
                                 </div>
                                 <h3 className="font-bold mb-1">Curie</h3>
-                                <p className="text-xs text-muted-foreground">Radyoaktivite ve kimya alanında katkı sağlayanlara.</p>
+                                <p className="text-xs text-muted-foreground">10 cevap vererek topluluğa destek olanlara.</p>
                             </div>
 
                             {/* Galileo Badge */}

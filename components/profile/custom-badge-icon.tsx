@@ -70,26 +70,65 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
         );
     }
 
-    // Galileo Badge (Telescope)
+    // Galileo Badge (Solar System/Telescope Redesign)
     if (normalizedName.includes("galileo") || normalizedName.includes("teleskop")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M4 18L16 6" stroke="currentColor" strokeWidth="3" className="text-amber-700" />
-                <path d="M14 4L18 8" stroke="currentColor" strokeWidth="3" className="text-amber-500" />
-                <path d="M3 19L5 21" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
-                <circle cx="19" cy="5" r="1" fill="currentColor" className="text-blue-300" />
-                <path d="M18 18L21 21" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" />
+                {/* Sun */}
+                <circle cx="4" cy="20" r="3" fill="currentColor" className="text-yellow-500" />
+                {/* Orbit 1 */}
+                <path d="M4 20C4 20 10 14 16 14" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" className="text-slate-400" />
+                <circle cx="16" cy="14" r="1.5" fill="currentColor" className="text-blue-400" />
+                {/* Orbit 2 */}
+                <path d="M4 20C4 20 14 8 20 8" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" className="text-slate-400" />
+                <circle cx="20" cy="8" r="2" fill="currentColor" className="text-red-400" />
+                {/* Telescope */}
+                <path d="M16 18L20 22" stroke="currentColor" strokeWidth="2" className="text-slate-600" />
+                <path d="M14 16L18 20" stroke="currentColor" strokeWidth="3" className="text-amber-700" />
             </svg>
         );
     }
 
-    // Hawking Badge (Black Hole)
+    // Hawking Badge (Black Hole + Wheelchair)
     if (normalizedName.includes("hawking") || normalizedName.includes("kara delik")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <circle cx="12" cy="12" r="6" fill="currentColor" className="text-black dark:text-white" />
-                <ellipse cx="12" cy="12" rx="9" ry="3" stroke="currentColor" strokeWidth="1" className="text-purple-500" transform="rotate(45 12 12)" />
-                <ellipse cx="12" cy="12" rx="9" ry="3" stroke="currentColor" strokeWidth="1" className="text-blue-500" transform="rotate(-45 12 12)" />
+                {/* Black Hole */}
+                <circle cx="12" cy="10" r="5" fill="currentColor" className="text-black dark:text-white" />
+                <ellipse cx="12" cy="10" rx="8" ry="2" stroke="currentColor" strokeWidth="1" className="text-purple-500" transform="rotate(15 12 10)" />
+
+                {/* Wheelchair Symbol (Simplified) */}
+                <path d="M9 17C9 18.6569 10.3431 20 12 20C13.6569 20 15 18.6569 15 17" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                <path d="M12 17V14H15" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                <circle cx="12" cy="17" r="1" fill="currentColor" className="text-slate-500" />
+            </svg>
+        );
+    }
+
+    // Kaşif (Explorer) Badge - First Question
+    if (normalizedName.includes("kaşif") || normalizedName.includes("explorer")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                {/* Compass */}
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" className="text-amber-600" />
+                <path d="M12 3V5" stroke="currentColor" strokeWidth="1.5" className="text-amber-800" />
+                <path d="M12 19V21" stroke="currentColor" strokeWidth="1.5" className="text-amber-800" />
+                <path d="M3 12H5" stroke="currentColor" strokeWidth="1.5" className="text-amber-800" />
+                <path d="M19 12H21" stroke="currentColor" strokeWidth="1.5" className="text-amber-800" />
+                {/* Needle */}
+                <path d="M12 12L14 8L12 12L10 16L12 12Z" fill="currentColor" className="text-red-500" />
+            </svg>
+        );
+    }
+
+    // Yardımsever (Helper) Badge - First Answer
+    if (normalizedName.includes("yardımsever") || normalizedName.includes("helper")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                {/* Heart in Hand */}
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" className="text-rose-500" />
+                <path d="M12 12L15 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M9 9L12 12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
         );
     }
