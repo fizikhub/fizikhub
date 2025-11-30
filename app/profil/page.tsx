@@ -171,6 +171,26 @@ export default async function ProfilePage() {
                                 <p className="text-muted-foreground max-w-2xl mx-auto text-base">{profile.bio}</p>
                             )}
 
+                            {/* Inline Stats */}
+                            <div className="flex items-center justify-center gap-6 py-3">
+                                <div className="text-center">
+                                    <div className="text-xl font-bold">{followersCount}</div>
+                                    <div className="text-xs text-muted-foreground">Takipçi</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-xl font-bold">{followingCount}</div>
+                                    <div className="text-xs text-muted-foreground">Takip</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-xl font-bold">{questions?.length || 0}</div>
+                                    <div className="text-xs text-muted-foreground">Soru</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-xl font-bold">{answers?.length || 0}</div>
+                                    <div className="text-xs text-muted-foreground">Cevap</div>
+                                </div>
+                            </div>
+
                             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center pt-1">
                                 <div className="flex items-center gap-1.5">
                                     <Calendar className="h-4 w-4 opacity-70" />
@@ -247,35 +267,9 @@ export default async function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Dashboard Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    {/* Stats Card */}
-                    <Card className="md:col-span-2 overflow-hidden">
-                        <CardContent className="p-6">
-                            <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">İstatistikler</h3>
-                            <div className="grid grid-cols-4 gap-4">
-                                <div className="space-y-1">
-                                    <div className="text-2xl font-bold">{followersCount}</div>
-                                    <div className="text-xs text-muted-foreground">Takipçi</div>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="text-2xl font-bold">{followingCount}</div>
-                                    <div className="text-xs text-muted-foreground">Takip</div>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="text-2xl font-bold">{questions?.length || 0}</div>
-                                    <div className="text-xs text-muted-foreground">Soru</div>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="text-2xl font-bold">{answers?.length || 0}</div>
-                                    <div className="text-xs text-muted-foreground">Cevap</div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Badges Card */}
-                    <Card className="overflow-hidden bg-gradient-to-br from-background to-muted/30">
+                {/* Badges Section */}
+                <div className="mb-8">
+                    <Card className="overflow-hidden bg-gradient-to-br from-background to-muted/30 max-w-md mx-auto">
                         <CardContent className="p-6">
                             {/* Badges */}
                             {userBadges && userBadges.length > 0 ? (
