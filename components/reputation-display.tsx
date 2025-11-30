@@ -1,7 +1,8 @@
 "use client";
 
-import { TrendingUp, Sparkles, Zap, Crown, Target, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RocketIcon } from "@/components/icons/rocket-icon";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,34 +42,29 @@ export function ReputationDisplay({
             color: "text-amber-600 dark:text-amber-400",
             bg: "bg-amber-50 dark:bg-amber-950/50",
             border: "border-amber-200 dark:border-amber-800",
-            icon: Crown,
             label: "Efsane"
         };
         if (rep >= 500) return {
             color: "text-purple-600 dark:text-purple-400",
             bg: "bg-purple-50 dark:bg-purple-950/50",
             border: "border-purple-200 dark:border-purple-800",
-            icon: Sparkles,
             label: "Uzman"
         };
         if (rep >= 100) return {
             color: "text-blue-600 dark:text-blue-400",
             bg: "bg-blue-50 dark:bg-blue-950/50",
             border: "border-blue-200 dark:border-blue-800",
-            icon: Zap,
             label: "Aktif"
         };
         return {
             color: "text-gray-600 dark:text-gray-400",
             bg: "bg-gray-50 dark:bg-gray-900/50",
             border: "border-gray-200 dark:border-gray-800",
-            icon: Target,
             label: "Yeni"
         };
     };
 
     const tier = getTierInfo(reputation);
-    const Icon = tier.icon;
 
     return (
         <DropdownMenu>
@@ -83,7 +79,7 @@ export function ReputationDisplay({
                         className
                     )}
                 >
-                    <Icon className={cn(iconSizes[size])} />
+                    <RocketIcon className={cn(iconSizes[size])} />
 
                     <div className="flex items-center gap-2">
                         <div className="flex items-baseline gap-1.5">
