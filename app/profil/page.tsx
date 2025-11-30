@@ -122,11 +122,13 @@ export default async function ProfilePage() {
                             )}
                             <ProfileMessagesButton />
                             <EditProfileButton
+                                currentUsername={profile?.username || null}
                                 currentFullName={profile?.full_name || null}
                                 currentBio={profile?.bio || null}
                                 currentAvatarUrl={profile?.avatar_url || null}
                                 currentWebsite={profile?.website || null}
                                 currentSocialLinks={profile?.social_links || null}
+                                userEmail={user?.email || null}
                             />
                             <div className="md:hidden">
                                 <SignOutButton

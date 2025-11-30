@@ -275,7 +275,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                 </div>
 
                                 {/* Comments Section */}
-                                {(expandedComments[answer.id] || answer.comments?.length > 0) && (
+                                {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
                                     <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                                         <AnswerCommentList
                                             comments={answer.comments || []}

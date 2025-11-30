@@ -385,7 +385,7 @@ export async function createAnswerComment(formData: {
 
     if (error) {
         console.error("Comment creation error:", error);
-        return { success: false, error: "Yorum eklenirken hata oluştu." };
+        return { success: false, error: `Hata: ${error.message}` };
     }
 
     revalidatePath(`/forum/${formData.questionId}`);
