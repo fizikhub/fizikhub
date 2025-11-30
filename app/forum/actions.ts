@@ -12,6 +12,17 @@ export async function toggleAnswerLike(answerId: number) {
         return { success: false, error: "Giriş yapmalısınız." };
     }
 
+    // Get answer details to check author
+    const { data: answer } = await supabase
+        .from('answers')
+        .select('author_id')
+        .eq('id', answerId)
+        .single();
+
+    if (!answer) {
+        return { success: false, error: "Cevap bulunamadı." };
+    }
+
     // Check if user already liked this answer
     const { data: existingLike } = await supabase
         .from('answer_likes')
@@ -30,6 +41,18 @@ export async function toggleAnswerLike(answerId: number) {
         if (error) {
             return { success: false, error: error.message };
         }
+
+        // Remove reputation if not self-like
+        if (answer.author_id !== user.id) {
+            await supabase.rpc('add_reputation', {
+                p_user_id: answer.author_id,
+                p_points: -5,
+                p_reason: 'answer_like_removed',
+                p_reference_type: 'answer',
+                p_reference_id: answerId
+            });
+        }
+
     } else {
         // Like
         const { error } = await supabase
@@ -38,6 +61,17 @@ export async function toggleAnswerLike(answerId: number) {
 
         if (error) {
             return { success: false, error: error.message };
+        }
+
+        // Add reputation if not self-like
+        if (answer.author_id !== user.id) {
+            await supabase.rpc('add_reputation', {
+                p_user_id: answer.author_id,
+                p_points: 5,
+                p_reason: 'answer_liked',
+                p_reference_type: 'answer',
+                p_reference_id: answerId
+            });
         }
     }
 
@@ -66,18 +100,27 @@ export async function createQuestion(formData: { title: string; content: string;
         return { success: false, error: "Soru sormak için giriş yapmalısınız." };
     }
 
-    const { error } = await supabase.from('questions').insert({
+    const { data, error } = await supabase.from('questions').insert({
         title: formData.title,
         content: formData.content,
         category: formData.category,
         author_id: user.id,
         tags: []
-    });
+    }).select().single();
 
     if (error) {
         console.error("Create Question Error:", error);
         return { success: false, error: error.message };
     }
+
+    // Add reputation for asking question
+    await supabase.rpc('add_reputation', {
+        p_user_id: user.id,
+        p_points: 2,
+        p_reason: 'question_created',
+        p_reference_type: 'question',
+        p_reference_id: data.id
+    });
 
     revalidatePath('/forum');
     return { success: true };

@@ -33,7 +33,7 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
 
         // Validate file size (2MB max)
         if (file.size > 2 * 1024 * 1024) {
-            toast.error("Dosya boyutu 2MB'den küçük olmalı");
+            toast.error("Dosya boyutu 2MB'den küçük olmalı veritabanının depolamasını doldurma eşek");
             return;
         }
 

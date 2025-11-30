@@ -21,7 +21,7 @@ export function AnswerLikeButton({ answerId, initialLikeCount, initialIsLiked, i
 
     const handleLike = async () => {
         if (!isLoggedIn) {
-            toast.error("Beğenmek için giriş yapmalısınız");
+            toast.error("Beğenmek için giriş yapmalısın ulan!");
             return;
         }
 
@@ -39,7 +39,7 @@ export function AnswerLikeButton({ answerId, initialLikeCount, initialIsLiked, i
                 // Revert on error
                 setIsLiked(previousIsLiked);
                 setLikeCount(previousLikeCount);
-                toast.error(result.error || "Bir hata oluştu");
+                toast.error(result.error || "Bir hata oluştu hocam");
             } else {
                 // Update with server values
                 setLikeCount(result.likeCount ?? previousLikeCount);
