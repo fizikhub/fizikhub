@@ -63,7 +63,6 @@ export function PublicProfileView({
             y: 0,
             transition: {
                 duration: 0.5,
-                ease: "easeOut"
             }
         }
     };
