@@ -2,6 +2,7 @@
 
 import { Badge as BadgeUI } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
 
 interface Badge {
     id: number;
@@ -27,9 +28,9 @@ export function BadgeDisplay({ userBadges, maxDisplay = 5, size = "md" }: BadgeD
     const remainingCount = userBadges.length - maxDisplay;
 
     const sizeClasses = {
-        sm: "text-base p-2",
-        md: "text-xl p-3",
-        lg: "text-3xl p-4"
+        sm: "w-8 h-8 p-1",
+        md: "w-12 h-12 p-2",
+        lg: "w-16 h-16 p-3"
     };
 
     if (userBadges.length === 0) {
@@ -37,22 +38,21 @@ export function BadgeDisplay({ userBadges, maxDisplay = 5, size = "md" }: BadgeD
     }
 
     return (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
             {displayBadges.map((userBadge) => (
                 <div
                     key={userBadge.badges.id}
                     className="group relative"
                 >
                     <div className={cn(
-                        "relative cursor-help transition-all duration-200",
-                        "rounded-lg bg-muted/50 hover:bg-muted",
-                        "border border-border hover:border-primary/50",
-                        "hover:scale-105",
+                        "relative cursor-help transition-all duration-300",
+                        "rounded-xl bg-gradient-to-br from-muted/50 to-muted",
+                        "border border-border/50 hover:border-primary/50",
+                        "hover:scale-110 hover:shadow-lg hover:-translate-y-1",
+                        "flex items-center justify-center",
                         sizeClasses[size]
                     )}>
-                        <div className="relative">
-                            {userBadge.badges.icon}
-                        </div>
+                        <CustomBadgeIcon name={userBadge.badges.name} className="w-full h-full drop-shadow-sm" />
                     </div>
 
                     {/* Simple Tooltip */}

@@ -133,100 +133,73 @@ export default async function ProfilePage() {
 
             <div className="container mx-auto max-w-5xl px-4 -mt-20">
                 {/* Profile Header */}
-                <Card className="mb-6">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row gap-6 items-start">
-                            {/* Avatar */}
-                            <div className="relative mx-auto md:mx-0">
-                                <div className="h-32 w-32 rounded-full ring-4 ring-background bg-background">
-                                    <AvatarUpload
-                                        currentAvatarUrl={profile?.avatar_url}
-                                        userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
-                                        className="h-full w-full"
-                                    />
+                <div className="relative mb-8">
+                    <div className="flex flex-col md:flex-row gap-6 items-end">
+                        {/* Avatar */}
+                        <div className="relative -mt-12 md:-mt-16 mx-auto md:mx-0 z-10">
+                            <div className="h-32 w-32 md:h-40 md:w-40 rounded-full ring-4 ring-background bg-background shadow-xl">
+                                <AvatarUpload
+                                    currentAvatarUrl={profile?.avatar_url}
+                                    userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
+                                    className="h-full w-full"
+                                />
+                            </div>
+                            {profile?.is_verified && (
+                                <div className="absolute bottom-1 right-1 bg-background rounded-full p-1.5 shadow-sm ring-1 ring-border/50">
+                                    <BadgeCheck className="h-6 w-6 text-blue-500 fill-blue-500/10" />
                                 </div>
-                                {profile?.is_verified && (
-                                    <div className="absolute bottom-0 right-0 bg-background rounded-full p-1">
-                                        <BadgeCheck className="h-6 w-6 text-blue-500 fill-blue-500/20" />
-                                    </div>
-                                )}
+                            )}
+                        </div>
+
+                        {/* Main Info */}
+                        <div className="flex-1 text-center md:text-left space-y-2 pb-2">
+                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                                <h1 className="text-3xl font-bold tracking-tight">{profile?.full_name || "İsimsiz Kullanıcı"}</h1>
+                                <div className="flex items-center justify-center md:justify-start gap-2">
+                                    <Badge variant="secondary" className="font-mono text-xs">@{profile?.username || "kullanici"}</Badge>
+                                    <ReputationDisplay reputation={profile?.reputation || 0} size="sm" showLabel={true} />
+                                </div>
                             </div>
 
-                            {/* Info */}
-                            <div className="flex-1 text-center md:text-left space-y-3">
-                                <div>
-                                    <h1 className="text-2xl font-bold">{profile?.full_name || "İsimsiz Kullanıcı"}</h1>
-                                    <p className="text-muted-foreground">@{profile?.username || "kullanici"}</p>
+                            {profile?.bio && (
+                                <p className="text-muted-foreground max-w-2xl mx-auto md:mx-0 text-base">{profile.bio}</p>
+                            )}
+
+                            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center md:justify-start pt-1">
+                                <div className="flex items-center gap-1.5">
+                                    <Calendar className="h-4 w-4 opacity-70" />
+                                    <span>{format(new Date(user.created_at), 'MMMM yyyy', { locale: tr })}</span>
                                 </div>
-
-                                {profile?.bio && (
-                                    <p className="text-sm text-foreground/80 max-w-2xl">{profile.bio}</p>
-                                )}
-
-                                {/* Meta info */}
-                                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground justify-center md:justify-start">
-                                    <div className="flex items-center gap-1">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>Katılım: {format(new Date(user.created_at), 'MMM yyyy', { locale: tr })}</span>
-                                    </div>
-                                    {profile?.website && (
-                                        <a
-                                            href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-1 hover:text-primary transition-colors"
-                                        >
-                                            <LinkIcon className="h-4 w-4" />
-                                            <span>{profile.website.replace(/^https?:\/\//, '')}</span>
-                                        </a>
-                                    )}
-                                </div>
-
-                                {/* Social links */}
-                                {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
-                                    <div className="flex gap-2 justify-center md:justify-start">
-                                        {profile.social_links?.twitter && (
-                                            <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-[#1DA1F2]">
-                                                <Twitter className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.github && (
-                                            <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
-                                                <Github className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.linkedin && (
-                                            <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-[#0077b5]">
-                                                <Linkedin className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.instagram && (
-                                            <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-[#E1306C]">
-                                                <Instagram className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                    </div>
+                                {profile?.website && (
+                                    <a
+                                        href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                                    >
+                                        <LinkIcon className="h-4 w-4 opacity-70" />
+                                        <span>{profile.website.replace(/^https?:\/\//, '')}</span>
+                                    </a>
                                 )}
                             </div>
+                        </div>
 
-                            {/* Actions */}
-                            <div className="flex flex-col gap-2 w-full md:w-auto">
-                                <div className="flex gap-2 justify-center">
-                                    <div className="md:hidden">
-                                        <ModeToggle />
-                                    </div>
-                                    {profile?.is_writer && (
-                                        <Link href="/yazar">
-                                            <Button variant="outline" size="sm">
-                                                <FileText className="h-4 w-4 mr-2" />
-                                                Panel
-                                            </Button>
-                                        </Link>
-                                    )}
-                                    <ProfileMessagesButton />
-                                    <div className="hidden md:block">
-                                        <NotificationBell />
-                                    </div>
+                        {/* Actions Toolbar */}
+                        <div className="flex flex-col gap-2 min-w-[140px]">
+                            <div className="flex gap-2 justify-center md:justify-end">
+                                <div className="md:hidden">
+                                    <ModeToggle />
+                                </div>
+                                {profile?.is_writer && (
+                                    <Link href="/yazar">
+                                        <Button variant="outline" size="icon" title="Yazar Paneli">
+                                            <FileText className="h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                )}
+                                <ProfileMessagesButton />
+                                <div className="hidden md:block">
+                                    <NotificationBell />
                                 </div>
                                 <EditProfileButton
                                     currentUsername={profile?.username || null}
@@ -237,47 +210,81 @@ export default async function ProfilePage() {
                                     currentSocialLinks={profile?.social_links || null}
                                     userEmail={user?.email || null}
                                 />
-                                <div className="md:hidden">
-                                    <SignOutButton className="w-full" />
+                            </div>
+
+                            {/* Social Links Mini-Bar */}
+                            {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
+                                <div className="flex gap-1 justify-center md:justify-end p-1 bg-muted/50 rounded-full backdrop-blur-sm">
+                                    {profile.social_links?.twitter && (
+                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full hover:bg-background transition-all hover:text-[#1DA1F2]">
+                                            <Twitter className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.github && (
+                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full hover:bg-background transition-all hover:text-foreground">
+                                            <Github className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.linkedin && (
+                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full hover:bg-background transition-all hover:text-[#0077b5]">
+                                            <Linkedin className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.instagram && (
+                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full hover:bg-background transition-all hover:text-[#E1306C]">
+                                            <Instagram className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Dashboard Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    {/* Stats Card */}
+                    <Card className="md:col-span-2 overflow-hidden">
+                        <CardContent className="p-6">
+                            <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">İstatistikler</h3>
+                            <div className="grid grid-cols-4 gap-4">
+                                <div className="space-y-1">
+                                    <div className="text-2xl font-bold">{followersCount}</div>
+                                    <div className="text-xs text-muted-foreground">Takipçi</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-2xl font-bold">{followingCount}</div>
+                                    <div className="text-xs text-muted-foreground">Takip</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-2xl font-bold">{questions?.length || 0}</div>
+                                    <div className="text-xs text-muted-foreground">Soru</div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="text-2xl font-bold">{answers?.length || 0}</div>
+                                    <div className="text-xs text-muted-foreground">Cevap</div>
                                 </div>
                             </div>
-                        </div>
+                        </CardContent>
+                    </Card>
 
-                        {/* Stats */}
-                        <div className="mt-6 pt-6 border-t flex flex-wrap gap-6 justify-center md:justify-start">
-                            <div className="text-center">
-                                <div className="text-2xl font-bold">{followersCount}</div>
-                                <div className="text-sm text-muted-foreground">Takipçi</div>
+                    {/* Badges Card */}
+                    <Card className="overflow-hidden bg-gradient-to-br from-background to-muted/30">
+                        <CardContent className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Rozetler</h3>
+                                <BadgeCheck className="h-4 w-4 text-muted-foreground" />
                             </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold">{followingCount}</div>
-                                <div className="text-sm text-muted-foreground">Takip</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold">{questions?.length || 0}</div>
-                                <div className="text-sm text-muted-foreground">Soru</div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold">{answers?.length || 0}</div>
-                                <div className="text-sm text-muted-foreground">Cevap</div>
-                            </div>
-                            <div className="flex items-center">
-                                <ReputationDisplay reputation={profile?.reputation || 0} />
-                            </div>
-                        </div>
-
-                        {/* Badges */}
-                        {userBadges && userBadges.length > 0 && (
-                            <div className="mt-6 pt-6 border-t">
-                                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                                    <BadgeCheck className="h-4 w-4" />
-                                    Rozetler
-                                </h3>
-                                <BadgeDisplay userBadges={userBadges as any} maxDisplay={10} size="md" />
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                            {userBadges && userBadges.length > 0 ? (
+                                <BadgeDisplay userBadges={userBadges as any} maxDisplay={4} size="md" />
+                            ) : (
+                                <div className="text-sm text-muted-foreground text-center py-4">
+                                    Henüz rozet kazanılmadı
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Content Tabs */}
                 <Tabs defaultValue="questions" className="mb-20">
