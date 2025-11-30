@@ -8,49 +8,100 @@ interface CustomBadgeIconProps {
 export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
     const normalizedName = name.toLowerCase();
 
-    // Einstein Badge (Atom/Brain concept)
+    // Einstein Badge (Face Concept)
     if (normalizedName.includes("einstein") || normalizedName.includes("bilim")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <circle cx="12" cy="12" r="3" fill="currentColor" className="text-amber-500" />
-                <ellipse cx="12" cy="12" rx="8" ry="3" stroke="currentColor" strokeWidth="1.5" className="text-blue-500" transform="rotate(0 12 12)" />
-                <ellipse cx="12" cy="12" rx="8" ry="3" stroke="currentColor" strokeWidth="1.5" className="text-blue-500" transform="rotate(60 12 12)" />
-                <ellipse cx="12" cy="12" rx="8" ry="3" stroke="currentColor" strokeWidth="1.5" className="text-blue-500" transform="rotate(120 12 12)" />
+                {/* Hair */}
+                <path d="M4 10C4 6 7 3 12 3C17 3 20 6 20 10C21 11 22 13 21 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-gray-400" />
+                <path d="M3 15C2 13 3 11 4 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-gray-400" />
+                {/* Face */}
+                <path d="M6 10C6 10 6 18 12 18C18 18 18 10 18 10" stroke="currentColor" strokeWidth="1.5" className="text-amber-200" />
+                {/* Mustache */}
+                <path d="M9 14C10 13.5 11 14 12 14C13 14 14 13.5 15 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-gray-500" />
+                {/* Eyes */}
+                <circle cx="9" cy="11" r="1" fill="currentColor" className="text-slate-700" />
+                <circle cx="15" cy="11" r="1" fill="currentColor" className="text-slate-700" />
             </svg>
         );
     }
 
-    // Newton/Apple Badge
+    // Newton Badge (Face/Wig Concept)
     if (normalizedName.includes("newton") || normalizedName.includes("elma") || normalizedName.includes("yerçekimi")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M12 2C13 2 14 4 14 4C14 4 15 3 16 4C17 5 16 7 16 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-green-600" />
-                <path d="M12 5C9 5 7 7 7 10C7 14 9 19 12 21C15 19 17 14 17 10C17 7 15 5 12 5Z" fill="currentColor" className="text-red-500" />
-                <path d="M14 8C14 8 15 8 15 9" stroke="white" strokeWidth="1" strokeLinecap="round" />
+                {/* Wig */}
+                <path d="M5 18C4 16 4 14 5 12C5 8 8 5 12 5C16 5 19 8 19 12C20 14 20 16 19 18" stroke="currentColor" strokeWidth="1.5" className="text-gray-300" />
+                {/* Face */}
+                <path d="M7 12C7 12 7 19 12 19C17 19 17 12 17 12" stroke="currentColor" strokeWidth="1.5" className="text-amber-200" />
+                {/* Apple (Small, falling) */}
+                <circle cx="18" cy="6" r="2" fill="currentColor" className="text-red-500" />
+                <path d="M18 4V5" stroke="currentColor" strokeWidth="1" className="text-green-700" />
             </svg>
         );
     }
 
-    // E=mc² Badge
-    if (normalizedName.includes("e=mc") || normalizedName.includes("görelilik") || normalizedName.includes("teori")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <rect x="2" y="4" width="20" height="16" rx="2" fill="currentColor" className="text-slate-800 dark:text-slate-200" />
-                <path d="M6 16V8H10" stroke="currentColor" strokeWidth="2" className="text-white dark:text-black" />
-                <path d="M6 12H9" stroke="currentColor" strokeWidth="2" className="text-white dark:text-black" />
-                <path d="M6 16H10" stroke="currentColor" strokeWidth="2" className="text-white dark:text-black" />
-                <path d="M13 10H16" stroke="currentColor" strokeWidth="2" className="text-white dark:text-black" />
-                <path d="M13 13H16" stroke="currentColor" strokeWidth="2" className="text-white dark:text-black" />
-            </svg>
-        );
-    }
-
-    // Tesla Badge (Lightning/Energy)
+    // Tesla Badge (Face/Mustache)
     if (normalizedName.includes("tesla") || normalizedName.includes("elektrik") || normalizedName.includes("enerji")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <circle cx="12" cy="12" r="10" fill="currentColor" className="text-purple-100 dark:text-purple-900" />
-                <path d="M13 3L7 14H12L11 21L17 10H12L13 3Z" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" className="text-yellow-500" />
+                {/* Face */}
+                <path d="M7 8C7 8 7 18 12 18C17 18 17 8 17 8" stroke="currentColor" strokeWidth="1.5" className="text-amber-200" />
+                {/* Hair (Center Part) */}
+                <path d="M7 8C7 5 9 3 12 3C15 3 17 5 17 8" stroke="currentColor" strokeWidth="1.5" className="text-slate-800 dark:text-slate-200" />
+                {/* Mustache (Sharp) */}
+                <path d="M10 14L12 13.5L14 14" stroke="currentColor" strokeWidth="1" className="text-slate-800 dark:text-slate-200" />
+                {/* Lightning Bolt (Background) */}
+                <path d="M20 2L18 8H21L19 14" stroke="currentColor" strokeWidth="1.5" className="text-yellow-500 opacity-50" />
+            </svg>
+        );
+    }
+
+    // Curie Badge (Flask/Radioactivity)
+    if (normalizedName.includes("curie") || normalizedName.includes("radyoaktif")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M12 4V10" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                <path d="M9 10L7 19H17L15 10H9Z" fill="currentColor" className="text-purple-200 dark:text-purple-900" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx="12" cy="15" r="2" fill="currentColor" className="text-green-400 animate-pulse" />
+                <path d="M12 20V22" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                <path d="M8 22H16" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+            </svg>
+        );
+    }
+
+    // Galileo Badge (Telescope)
+    if (normalizedName.includes("galileo") || normalizedName.includes("teleskop")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M4 18L16 6" stroke="currentColor" strokeWidth="3" className="text-amber-700" />
+                <path d="M14 4L18 8" stroke="currentColor" strokeWidth="3" className="text-amber-500" />
+                <path d="M3 19L5 21" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                <circle cx="19" cy="5" r="1" fill="currentColor" className="text-blue-300" />
+                <path d="M18 18L21 21" stroke="currentColor" strokeWidth="1.5" className="text-slate-400" />
+            </svg>
+        );
+    }
+
+    // Hawking Badge (Black Hole)
+    if (normalizedName.includes("hawking") || normalizedName.includes("kara delik")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <circle cx="12" cy="12" r="6" fill="currentColor" className="text-black dark:text-white" />
+                <ellipse cx="12" cy="12" rx="9" ry="3" stroke="currentColor" strokeWidth="1" className="text-purple-500" transform="rotate(45 12 12)" />
+                <ellipse cx="12" cy="12" rx="9" ry="3" stroke="currentColor" strokeWidth="1" className="text-blue-500" transform="rotate(-45 12 12)" />
+            </svg>
+        );
+    }
+
+    // Da Vinci Badge (Vitruvian/Geometry)
+    if (normalizedName.includes("vinci") || normalizedName.includes("sanat")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1" className="text-amber-600" />
+                <rect x="6.5" y="6.5" width="11" height="11" stroke="currentColor" strokeWidth="1" className="text-amber-800" />
+                <path d="M12 6V18" stroke="currentColor" strokeWidth="0.5" className="text-amber-500" />
+                <path d="M6 12H18" stroke="currentColor" strokeWidth="0.5" className="text-amber-500" />
             </svg>
         );
     }

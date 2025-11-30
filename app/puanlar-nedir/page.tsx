@@ -209,6 +209,42 @@ export default function PointsInfoPage() {
                                 <h3 className="font-bold mb-1">Yazar</h3>
                                 <p className="text-xs text-muted-foreground">Blog yazılarıyla katkı sağlayanlara verilir.</p>
                             </div>
+
+                            {/* Curie Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="curie" />
+                                </div>
+                                <h3 className="font-bold mb-1">Curie</h3>
+                                <p className="text-xs text-muted-foreground">Radyoaktivite ve kimya alanında katkı sağlayanlara.</p>
+                            </div>
+
+                            {/* Galileo Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="galileo" />
+                                </div>
+                                <h3 className="font-bold mb-1">Galileo</h3>
+                                <p className="text-xs text-muted-foreground">Gözlem ve deneylerle bilime yön verenlere.</p>
+                            </div>
+
+                            {/* Hawking Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="hawking" />
+                                </div>
+                                <h3 className="font-bold mb-1">Hawking</h3>
+                                <p className="text-xs text-muted-foreground">Evrenin sırlarını çözen teorisyenlere.</p>
+                            </div>
+
+                            {/* Da Vinci Badge */}
+                            <div className="flex flex-col items-center text-center p-4 rounded-lg border bg-card hover:shadow-md transition-shadow">
+                                <div className="w-16 h-16 mb-3">
+                                    <CustomBadgeIcon name="vinci" />
+                                </div>
+                                <h3 className="font-bold mb-1">Da Vinci</h3>
+                                <p className="text-xs text-muted-foreground">Bilim ve sanatı birleştiren çok yönlü üyelere.</p>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
