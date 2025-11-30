@@ -175,6 +175,15 @@ export async function createAnswer(formData: { content: string; questionId: numb
         });
     }
 
+    // Add reputation for answering a question
+    await supabase.rpc('add_reputation', {
+        p_user_id: user.id,
+        p_points: 10,
+        p_reason: 'answer_created',
+        p_reference_type: 'answer',
+        p_reference_id: data.id
+    });
+
     revalidatePath(`/forum/${formData.questionId}`);
     return { success: true, data };
 }

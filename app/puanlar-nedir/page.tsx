@@ -70,6 +70,19 @@ export default function PointsInfoPage() {
                         </div>
 
                         <div className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
+                            <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                <MessageSquare className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold">Cevap Yazmak</h3>
+                                <p className="text-sm text-muted-foreground">Bir soruya cevap verdiğinizde.</p>
+                                <Badge variant="secondary" className="mt-2 text-blue-600 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800">
+                                    +10 Puan
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-4 p-3 rounded-lg bg-muted/50">
                             <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
                                 <MessageSquare className="h-5 w-5" />
                             </div>
