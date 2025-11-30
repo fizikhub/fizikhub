@@ -1,7 +1,14 @@
 "use client";
 
-import { TrendingUp, Sparkles, Zap, Crown, Target } from "lucide-react";
+import { TrendingUp, Sparkles, Zap, Crown, Target, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface ReputationDisplayProps {
     reputation: number;
@@ -64,26 +71,38 @@ export function ReputationDisplay({
     const Icon = tier.icon;
 
     return (
-        <div
-            className={cn(
-                "inline-flex items-center gap-2 font-semibold rounded-lg border transition-colors",
-                sizeClasses[size],
-                tier.color,
-                tier.bg,
-                tier.border,
-                className
-            )}
-        >
-            <Icon className={cn(iconSizes[size])} />
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <div
+                    className={cn(
+                        "inline-flex items-center gap-2 font-semibold rounded-lg border transition-colors cursor-pointer hover:opacity-80",
+                        sizeClasses[size],
+                        tier.color,
+                        tier.bg,
+                        tier.border,
+                        className
+                    )}
+                >
+                    <Icon className={cn(iconSizes[size])} />
 
-            <div className="flex items-baseline gap-1.5">
-                <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
-                {showLabel && size !== "sm" && (
-                    <span className="text-[10px] opacity-70 font-medium uppercase tracking-wide">
-                        {tier.label}
-                    </span>
-                )}
-            </div>
-        </div>
+                    <div className="flex items-baseline gap-1.5">
+                        <span className="font-bold">{reputation.toLocaleString('tr-TR')}</span>
+                        {showLabel && size !== "sm" && (
+                            <span className="text-[10px] opacity-70 font-medium uppercase tracking-wide">
+                                {tier.label}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <Link href="/puanlar-nedir">
+                    <DropdownMenuItem className="cursor-pointer gap-2">
+                        <HelpCircle className="h-4 w-4" />
+                        Hub Puanlar Nedir?
+                    </DropdownMenuItem>
+                </Link>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
