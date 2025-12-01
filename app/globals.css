@@ -152,10 +152,10 @@ a {
   touch-action: manipulation;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar - Premium & Sleek */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -163,13 +163,19 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 4px;
-  transition: background 0.2s;
+  background: rgba(var(--muted-foreground), 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-foreground);
+  background: rgba(var(--primary), 0.5);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--muted-foreground), 0.3) transparent;
 }
 
 /* Animations */
