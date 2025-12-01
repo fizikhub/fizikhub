@@ -88,7 +88,8 @@ export async function completeOnboarding(formData: { username: string; fullName:
             username: formData.username,
             full_name: formData.fullName,
             avatar_url: formData.avatarUrl,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            onboarding_completed: true
         })
         .eq('id', user.id);
 

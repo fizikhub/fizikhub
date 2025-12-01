@@ -32,8 +32,28 @@ export async function updateSession(request: NextRequest) {
     )
 
     // This will refresh session if needed - required for Server Components
-    // https://supabase.com/docs/guides/auth/server-side/nextjs
-    await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Onboarding Check
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', user.id)
+            .single()
+
+        const isOnboardingPage = request.nextUrl.pathname.startsWith('/onboarding')
+
+        // If onboarding is NOT completed and user is NOT on onboarding page -> Redirect to onboarding
+        if (profile && !profile.onboarding_completed && !isOnboardingPage) {
+            return NextResponse.redirect(new URL('/onboarding', request.url))
+        }
+
+        // If onboarding IS completed and user IS on onboarding page -> Redirect to home
+        if (profile && profile.onboarding_completed && isOnboardingPage) {
+            return NextResponse.redirect(new URL('/', request.url))
+        }
+    }
 
     return response
 }
