@@ -89,9 +89,7 @@ export async function completeOnboarding(formData: { username: string; fullName:
             full_name: formData.fullName,
             avatar_url: formData.avatarUrl,
             bio: formData.bio,
-            onboarding_completed: true,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            onboarding_completed: true
         });
 
     if (error) {
