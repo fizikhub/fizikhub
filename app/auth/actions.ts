@@ -21,6 +21,7 @@ export async function verifyOtp(email: string, token: string) {
     // 'email': For existing users logging in or changing email
     // 'recovery': For password reset (sometimes used interchangeably in flows)
     const types: ('signup' | 'email' | 'recovery')[] = ['signup', 'email', 'recovery'];
+    let lastError = "";
 
     for (const type of types) {
         const { data, error } = await supabase.auth.verifyOtp({
@@ -35,10 +36,14 @@ export async function verifyOtp(email: string, token: string) {
         }
 
         console.log(`Verification failed for type ${type}:`, error.message);
+        // Capture the error from the 'signup' attempt as it's the most likely one for new users
+        if (type === 'signup') {
+            lastError = error.message;
+        }
     }
 
-    // If all fail, return a generic error or the last error
-    return { success: false, error: "Doğrulama başarısız. Kod yanlış veya süresi dolmuş." };
+    // If all fail, return the specific error for debugging
+    return { success: false, error: lastError || "Doğrulama başarısız." };
 }
 
 export async function resendOtp(email: string) {

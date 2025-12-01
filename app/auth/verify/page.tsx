@@ -45,7 +45,8 @@ function VerifyContent() {
                 toast.success("E-posta doğrulandı! Hoş geldin.");
                 router.push("/onboarding");
             } else {
-                toast.error("kodu tekrar kontrol et hocam. yanlış giriyorsun..");
+                // Show the specific error message returned from the server
+                toast.error(result.error);
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
