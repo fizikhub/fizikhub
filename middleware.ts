@@ -1,7 +1,14 @@
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/middleware'
 
 export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl
+
+    // Maintenance mode check
+    if (pathname !== '/maintenance') {
+        return NextResponse.redirect(new URL('/maintenance', request.url))
+    }
+
     return await updateSession(request)
 }
 
