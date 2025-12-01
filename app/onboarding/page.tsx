@@ -25,7 +25,8 @@ export default function OnboardingPage() {
     const [formData, setFormData] = useState({
         username: "",
         fullName: "",
-        avatarUrl: ""
+        avatarUrl: "",
+        bio: ""
     });
 
     const handleMouseMove = (e: React.MouseEvent) => {
@@ -254,6 +255,19 @@ export default function OnboardingPage() {
                                     className="bg-background/50 border-primary/20 focus:border-primary/50 transition-all h-11"
                                     required
                                 />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="bio">Biyografi (İsteğe Bağlı)</Label>
+                                <textarea
+                                    id="bio"
+                                    placeholder="Kendinden kısaca bahset..."
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                    className="flex min-h-[80px] w-full rounded-md border border-primary/20 bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                                    maxLength={160}
+                                />
+                                <p className="text-[10px] text-muted-foreground text-right">{formData.bio.length}/160</p>
                             </div>
                         </div>
 

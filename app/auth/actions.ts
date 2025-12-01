@@ -61,7 +61,7 @@ export async function resendOtp(email: string) {
     return { success: true };
 }
 
-export async function completeOnboarding(formData: { username: string; fullName: string; avatarUrl?: string }) {
+export async function completeOnboarding(formData: { username: string; fullName: string; avatarUrl?: string; bio?: string }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -88,6 +88,7 @@ export async function completeOnboarding(formData: { username: string; fullName:
             username: formData.username,
             full_name: formData.fullName,
             avatar_url: formData.avatarUrl,
+            bio: formData.bio,
             updated_at: new Date().toISOString(),
             onboarding_completed: true
         })
