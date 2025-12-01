@@ -11,33 +11,34 @@ export async function signOut() {
 
 export async function verifyOtp(email: string, token: string) {
     const supabase = await createClient();
-    const cleanToken = token.trim();
+    // Remove any non-alphanumeric characters (spaces, dashes, etc.)
+    const cleanToken = token.replace(/[^a-zA-Z0-9]/g, '');
 
-    // Try signup verification first
-    let { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: cleanToken,
-        type: 'signup'
-    });
+    console.log(`Attempting verification for ${email} with token length ${cleanToken.length}`);
 
-    // If signup verification fails, try email verification (sometimes happens if user is already confirmed but stuck)
-    if (error) {
-        console.log("Signup verification failed, trying email verification:", error.message);
-        const { data: emailData, error: emailError } = await supabase.auth.verifyOtp({
+    // Array of types to try in order
+    // 'signup': For new users
+    // 'email': For existing users logging in or changing email
+    // 'recovery': For password reset (sometimes used interchangeably in flows)
+    const types: ('signup' | 'email' | 'recovery')[] = ['signup', 'email', 'recovery'];
+
+    for (const type of types) {
+        const { data, error } = await supabase.auth.verifyOtp({
             email,
             token: cleanToken,
-            type: 'email'
+            type
         });
 
-        if (!emailError) {
+        if (!error) {
+            console.log(`Verification successful with type: ${type}`);
             return { success: true };
         }
 
-        // If both fail, return the original error
-        return { success: false, error: error.message };
+        console.log(`Verification failed for type ${type}:`, error.message);
     }
 
-    return { success: true };
+    // If all fail, return a generic error or the last error
+    return { success: false, error: "Doğrulama başarısız. Kod yanlış veya süresi dolmuş." };
 }
 
 export async function resendOtp(email: string) {
