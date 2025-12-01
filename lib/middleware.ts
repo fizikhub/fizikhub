@@ -45,15 +45,19 @@ export async function updateSession(request: NextRequest) {
         const isOnboardingPage = request.nextUrl.pathname.startsWith('/onboarding')
         const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
 
-        // If profile doesn't exist OR onboarding is not completed, redirect to onboarding
-        // (unless already on onboarding or auth pages)
+        // If profile doesn't exist OR onboarding is not completed
+        // We do NOT force redirect to onboarding anymore, allowing "guest-like" access
+        // The UI should handle the missing profile state (e.g. showing "Complete Setup" button)
+
+        /* 
         if ((!profile || !profile.onboarding_completed) && !isOnboardingPage && !isAuthPage) {
             return NextResponse.redirect(new URL('/onboarding', request.url))
         }
+        */
 
         // If onboarding IS completed and user IS on onboarding page -> Redirect to home
         if (profile && profile.onboarding_completed && isOnboardingPage) {
-            return NextResponse.redirect(new URL('/', request.url))
+            return NextResponse.redirect(new URL('/profil', request.url))
         }
     }
 

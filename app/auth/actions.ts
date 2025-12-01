@@ -96,5 +96,6 @@ export async function completeOnboarding(formData: { username: string; fullName:
         return { success: false, error: error.message };
     }
 
-    return { success: true };
+    // Redirect to profile page on success
+    redirect('/profil');
 }

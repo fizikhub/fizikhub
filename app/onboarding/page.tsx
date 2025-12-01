@@ -90,12 +90,10 @@ export default function OnboardingPage() {
         try {
             const result = await completeOnboarding(formData);
 
-            if (result.success) {
-                toast.success("Profiliniz oluşturuldu! Hoş geldiniz.");
-                router.push("/");
-            } else {
-                toast.error(result.error || "Bir hata oluştu.");
+            if (result?.error) {
+                toast.error(result.error);
             }
+            // If success, the server action will redirect automatically
         } catch (error) {
             toast.error("Bir hata oluştu.");
         } finally {

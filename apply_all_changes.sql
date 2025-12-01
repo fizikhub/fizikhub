@@ -1,30 +1,21 @@
--- 1. Add is_accepted column to answers table if it doesn't exist
-ALTER TABLE answers 
-ADD COLUMN IF NOT EXISTS is_accepted BOOLEAN DEFAULT FALSE;
+-- 1. Otomatik profil oluşturmayı kapat
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user();
 
--- 2. Ensure the Question of the Week exists
-DO $$
-DECLARE
-    admin_id uuid;
-    question_id bigint;
-BEGIN
-    -- Get admin ID (using the email we know)
-    SELECT id INTO admin_id FROM auth.users WHERE email = 'barannnbozkurttb.b@gmail.com';
+-- 2. ÖNCE eksik kolonları ekle
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS onboarding_completed BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS bio TEXT,
+ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL;
 
-    -- If admin exists, proceed
-    IF admin_id IS NOT NULL THEN
-        -- Check if question already exists
-        SELECT id INTO question_id FROM questions WHERE title = 'Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?';
+-- 3. SONRA sadece ilişkili verisi OLMAYAN boş profilleri temizle
+-- Eğer bir kullanıcı soru sormuşsa veya cevap vermişse silinmeyecek
+DELETE FROM public.profiles 
+WHERE onboarding_completed = FALSE 
+  AND (username IS NULL OR username = '' OR username NOT LIKE '%@%')
+  AND id NOT IN (SELECT author_id FROM public.questions)
+  AND id NOT IN (SELECT author_id FROM public.answers);
 
-        IF question_id IS NULL THEN
-            INSERT INTO questions (title, content, category, author_id, tags)
-            VALUES (
-                'Işık hızıyla giden bir trende ileriye doğru fener tutarsak ışığın hızı ne olur?',
-                'Bu klasik bir görelilik paradoksu. Sizce dışarıdan bakan bir gözlemci ışığın hızını nasıl ölçer? Işık hızı kaynak hızından bağımsız mıdır? Düşüncelerinizi bekliyorum.',
-                'Genel Görelilik',
-                admin_id,
-                ARRAY['haftanin-sorusu']
-            );
-        END IF;
-    END IF;
-END $$;
+-- 4. Şemayı yenile
+NOTIFY pgrst, 'reload schema';

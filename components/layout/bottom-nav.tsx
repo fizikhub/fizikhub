@@ -74,7 +74,10 @@ export function BottomNav() {
                                                 className={cn(
                                                     "h-[22px] w-[22px] transition-all duration-300",
                                                     isActive
-                                                        ? "text-primary fill-current scale-110 drop-shadow-sm"
+                                                        ? cn(
+                                                            "text-primary fill-current scale-110 drop-shadow-sm",
+                                                            link.href === "/kesfet" && "text-orange-500 fill-orange-500"
+                                                        )
                                                         : "text-muted-foreground/80 group-hover:text-foreground group-hover:scale-110"
                                                 )}
                                             />
