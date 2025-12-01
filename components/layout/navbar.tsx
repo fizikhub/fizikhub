@@ -5,19 +5,6 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Shield, Search, User } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CommandPalette } from "@/components/ui/command-palette";
-import { AuthButton } from "@/components/auth/auth-button";
-import { NotificationBell } from "@/components/notifications/notification-bell";
-
-"use client";
-
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
-import { Logo } from "@/components/ui/logo";
-import { Button } from "@/components/ui/button";
 import { Menu, Search, Shield, Home, BookOpen, MessageSquare, Book, Trophy, BrainCircuit, User } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
