@@ -145,13 +145,13 @@ export default async function QuestionPage({ params }: PageProps) {
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto">
                 {/* Back Button */}
                 <div className="mb-4 sm:mb-6">
-                    <Link href="/forum">
-                        <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0">
+                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0" asChild>
+                        <Link href="/forum">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline">Foruma Dön</span>
                             <span className="sm:hidden">Geri</span>
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 sm:gap-6 lg:gap-8">

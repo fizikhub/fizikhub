@@ -41,7 +41,7 @@ export function BottomNav() {
     return (
         <>
             {/* iOS 26 Style Liquid Glass Bottom Navigation - Refined */}
-            <div className="fixed bottom-0 left-0 z-50 w-full px-6 pb-6 md:hidden pointer-events-none">
+            <div className="fixed bottom-0 left-0 z-[100] w-full px-6 pb-6 md:hidden pointer-events-none">
                 <div className="relative pointer-events-auto">
                     {/* Liquid Glass Container */}
                     <div className="relative overflow-hidden rounded-[32px] border border-white/20 bg-background/60 backdrop-blur-xl backdrop-saturate-150 shadow-2xl shadow-black/10">
