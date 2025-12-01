@@ -86,6 +86,12 @@ export function Navbar() {
                         <Link href="/sozluk" className="text-sm font-medium transition-colors hover:text-primary">
                             Sözlük
                         </Link>
+                        <Link href="/testler" className="text-sm font-medium transition-colors hover:text-primary">
+                            Testler
+                        </Link>
+                        <Link href="/siralamalar" className="text-sm font-medium transition-colors hover:text-primary">
+                            Sıralamalar
+                        </Link>
                         {isAdmin && (
                             <Link href="/admin" className="text-sm font-medium transition-colors hover:text-primary text-red-500 font-bold">
                                 Admin Paneli
@@ -156,6 +162,20 @@ export function Navbar() {
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Sözlük
+                                </Link>
+                                <Link
+                                    href="/testler"
+                                    className="text-sm font-medium transition-colors hover:text-primary"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    Testler
+                                </Link>
+                                <Link
+                                    href="/siralamalar"
+                                    className="text-sm font-medium transition-colors hover:text-primary"
+                                    onClick={() => setIsMenuOpen(false)}
+                                >
+                                    Sıralamalar
                                 </Link>
                                 {isAdmin && (
                                     <Link
