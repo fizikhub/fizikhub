@@ -45,7 +45,7 @@ function VerifyContent() {
                 toast.success("E-posta doğrulandı! Hoş geldin.");
                 router.push("/onboarding");
             } else {
-                toast.error(result.error || "Doğrulama başarısız. Kod yanlış veya süresi dolmuş.");
+                toast.error("kodu tekrar kontrol et hocam. yanlış giriyorsun..");
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
@@ -185,7 +185,7 @@ function VerifyContent() {
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
                                 className="text-center text-2xl tracking-[0.5em] font-mono h-14 bg-background/50 border-primary/20 focus:border-primary/50 transition-all uppercase"
-                                maxLength={6}
+                                maxLength={8}
                                 required
                             />
                         </div>
