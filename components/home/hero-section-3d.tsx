@@ -1,13 +1,12 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue, useMotionTemplate } from "framer-motion";
-import { Atom, Zap, Globe, Rocket, Star, Sparkles, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { BookOpen, MessageCircle, Sparkles, Rocket, Atom, Stars, ArrowRight, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export function HeroSection3D() {
-    const ref = useRef<HTMLDivElement>(null);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -19,162 +18,205 @@ export function HeroSection3D() {
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start start", "end start"]
-    });
-
-    const y = useTransform(scrollYProgress, [0, 1], isMobile ? ["0%", "0%"] : ["0%", "50%"]);
-    const opacity = useTransform(scrollYProgress, [0, 0.5], isMobile ? [1, 1] : [1, 0]);
-
-    // Mouse parallax effect
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        // Disable on mobile
-        if (typeof window !== 'undefined' && window.innerWidth < 768) return;
-
-        const { clientX, clientY } = e;
-        const { innerWidth, innerHeight } = window;
-        mouseX.set(clientX / innerWidth - 0.5);
-        mouseY.set(clientY / innerHeight - 0.5);
-    };
-
-    // Smooth spring animation for mouse movement
-    const springConfig = { damping: 30, stiffness: 200, mass: 0.5 }; // Snappier but smooth
-    const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), springConfig); // Reduced rotation range
-    const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), springConfig); // Reduced rotation range
-
     return (
-        <section
-            ref={ref}
-            className="relative h-[90vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-background perspective-1000"
-            onMouseMove={handleMouseMove}
-        >
-            {/* Background Gradient & Grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-background to-background z-0" />
-            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20 z-0" />
-
-            {/* Floating 3D Objects Container */}
-            <motion.div
-                style={{ rotateX, rotateY, y, opacity }}
-                className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center transform-style-3d will-change-transform"
-            >
-                {/* Main Content */}
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-primary/5">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+                {/* Gradient Orbs */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="relative z-20 max-w-4xl mx-auto"
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, type: "spring" }}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 border border-primary/20 backdrop-blur-sm"
-                    >
-                        <Sparkles className="w-4 h-4" />
-                        <span>Bilimin Eğlenceli Hali</span>
-                    </motion.div>
+                    className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+                <motion.div
+                    className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1
+                    }}
+                />
 
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/50">
-                        Evrenin Sırlarını
-                        <br />
-                        <span className="text-primary">Keşfetmeye Başla</span>
-                    </h1>
-
-                    <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                        Fizik, uzay ve bilim dünyasına dair en güncel makaleler, tartışmalar ve keşifler burada seni bekliyor.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Button size="lg" className="rounded-full text-lg h-12 px-8 group relative overflow-hidden" asChild>
-                            <Link href="/blog">
-                                <span className="relative z-10 flex items-center gap-2">
-                                    Okumaya Başla
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                                <motion.div
-                                    className="absolute inset-0 bg-primary-foreground/20"
-                                    initial={{ x: "-100%" }}
-                                    whileHover={{ x: "100%" }}
-                                    transition={{ duration: 0.5 }}
-                                />
-                            </Link>
-                        </Button>
-                        <Button size="lg" variant="outline" className="rounded-full text-lg h-12 px-8 backdrop-blur-sm bg-background/50" asChild>
-                            <Link href="/forum">
-                                Tartışmalara Katıl
-                            </Link>
-                        </Button>
-                    </div>
-                </motion.div>
-
-                {/* Floating Elements - Reduced count on mobile */}
-                <FloatingElement icon={Atom} className="absolute -top-20 -left-10 text-blue-500" delay={0} size={64} xRange={[-20, 20]} yRange={[-20, 20]} />
+                {/* Floating Icons - Desktop Only */}
                 {!isMobile && (
                     <>
-                        <FloatingElement icon={Globe} className="absolute top-40 -right-20 text-green-500" delay={1} size={48} xRange={[20, -20]} yRange={[-30, 30]} />
-                        <FloatingElement icon={Zap} className="absolute bottom-20 left-10 text-yellow-500" delay={2} size={56} xRange={[-15, 15]} yRange={[15, -15]} />
+                        <FloatingIcon icon={Atom} className="top-1/4 left-[15%] text-blue-400" delay={0} />
+                        <FloatingIcon icon={Rocket} className="top-1/3 right-[20%] text-purple-400" delay={0.5} />
+                        <FloatingIcon icon={Stars} className="bottom-1/4 left-[20%] text-pink-400" delay={1} />
+                        <FloatingIcon icon={Brain} className="bottom-1/3 right-[15%] text-cyan-400" delay={1.5} />
                     </>
                 )}
-                <FloatingElement icon={Rocket} className="absolute -bottom-10 right-20 text-red-500" delay={1.5} size={72} xRange={[30, -30]} yRange={[20, -20]} />
-                {!isMobile && (
-                    <FloatingElement icon={Star} className="absolute top-10 right-1/4 text-purple-500" delay={0.5} size={32} xRange={[-10, 10]} yRange={[-10, 10]} />
-                )}
+            </div>
 
-            </motion.div>
+            {/* Main Content */}
+            <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="text-center space-y-8">
+                    {/* Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="flex justify-center"
+                    >
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 border border-primary/30 backdrop-blur-sm">
+                            <Sparkles className="w-4 h-4 text-primary" />
+                            <span className="text-sm font-medium bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                                Bilim Artık Daha Eğlenceli
+                            </span>
+                        </div>
+                    </motion.div>
+
+                    {/* Main Heading */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="space-y-4"
+                    >
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+                            <span className="block mb-2">Evrenin Sırlarını</span>
+                            <span className="block bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                Birlikte Keşfedelim
+                            </span>
+                        </h1>
+                    </motion.div>
+
+                    {/* Description */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                    >
+                        Fizik, uzay ve bilim meraklılarının buluşma noktası.
+                        <span className="text-foreground font-medium"> Öğren, paylaş, tartış</span> – bilimi birlikte keşfetmenin tadını çıkar! 🚀
+                    </motion.p>
+
+                    {/* Feature Pills */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="flex flex-wrap items-center justify-center gap-3 md:gap-4"
+                    >
+                        <FeaturePill icon={BookOpen} text="Güncel Makaleler" />
+                        <FeaturePill icon={MessageCircle} text="Canlı Tartışmalar" />
+                        <FeaturePill icon={Brain} text="Bilim Sözlüğü" />
+                    </motion.div>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
+                    >
+                        <Button
+                            size="lg"
+                            className="rounded-full text-base sm:text-lg h-12 sm:h-14 px-8 sm:px-10 group shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+                            asChild
+                        >
+                            <Link href="/blog">
+                                <BookOpen className="w-5 h-5 mr-2" />
+                                <span>Makaleleri Keşfet</span>
+                                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </Button>
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="rounded-full text-base sm:text-lg h-12 sm:h-14 px-8 sm:px-10 backdrop-blur-sm bg-background/50 border-2 hover:bg-background/80 hover:border-primary/50 transition-all duration-300"
+                            asChild
+                        >
+                            <Link href="/forum">
+                                <MessageCircle className="w-5 h-5 mr-2" />
+                                <span>Foruma Katıl</span>
+                            </Link>
+                        </Button>
+                    </motion.div>
+
+                    {/* Trust Indicator */}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.6 }}
+                        className="text-sm text-muted-foreground pt-6"
+                    >
+                        <span className="inline-flex items-center gap-1">
+                            <Sparkles className="w-3 h-3" />
+                            Bilim tutkunları için ücretsiz ve reklamsız
+                        </span>
+                    </motion.p>
+                </div>
+            </div>
 
             {/* Scroll Indicator */}
             <motion.div
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground"
-                animate={{ y: [0, 10, 0] }}
+                className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2 text-muted-foreground"
+                animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-                <span className="text-sm font-medium">Aşağı Kaydır</span>
-                <div className="w-1 h-12 rounded-full bg-gradient-to-b from-primary/50 to-transparent" />
+                <span className="text-xs font-medium uppercase tracking-wider">Keşfet</span>
+                <div className="w-0.5 h-10 rounded-full bg-gradient-to-b from-primary/50 to-transparent" />
             </motion.div>
         </section>
     );
 }
 
-function FloatingElement({
+function FloatingIcon({
     icon: Icon,
     className,
-    delay,
-    size,
-    xRange,
-    yRange
+    delay
 }: {
-    icon: any,
-    className?: string,
-    delay: number,
-    size: number,
-    xRange: number[],
-    yRange: number[]
+    icon: any;
+    className: string;
+    delay: number;
 }) {
     return (
         <motion.div
-            className={`${className} will-change-transform`}
-            initial={{ opacity: 0 }}
+            className={`absolute ${className}`}
+            initial={{ opacity: 0, scale: 0 }}
             animate={{
-                opacity: 0.8,
-                y: yRange,
-                x: xRange,
-                rotate: [0, 10, -10, 0],
+                opacity: [0, 0.6, 0.3, 0.6, 0],
+                scale: [0.8, 1.2, 0.9, 1.1, 0.8],
+                y: [0, -30, 0, -20, 0],
+                rotate: [0, 10, -10, 5, 0],
             }}
             transition={{
-                opacity: { duration: 1, delay },
-                y: { duration: 5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay },
-                x: { duration: 7, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay },
-                rotate: { duration: 10, repeat: Infinity, ease: "linear" }
+                duration: 15,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay,
             }}
         >
             <div className="relative">
-                <Icon size={size} strokeWidth={1.5} />
-                <div className="absolute inset-0 blur-xl bg-current opacity-30" />
+                <Icon className="w-12 h-12 sm:w-16 sm:h-16" strokeWidth={1.5} />
+                <div className="absolute inset-0 blur-xl bg-current opacity-40" />
             </div>
+        </motion.div>
+    );
+}
+
+function FeaturePill({ icon: Icon, text }: { icon: any; text: string }) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-colors cursor-default"
+        >
+            <Icon className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">{text}</span>
         </motion.div>
     );
 }
