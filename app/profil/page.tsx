@@ -238,6 +238,11 @@ export default async function ProfilePage() {
                                 />
                             </div>
 
+                            {/* Sign Out Button */}
+                            <div className="flex justify-center">
+                                <SignOutButton />
+                            </div>
+
                             {/* Social Links Mini-Bar */}
                             {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
                                 <div className="flex gap-1 justify-center p-1 bg-muted/50 rounded-full backdrop-blur-sm">
