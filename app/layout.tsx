@@ -79,6 +79,8 @@ import { Toaster } from "sonner";
 
 import { GlobalAdminNotification } from "@/components/global-admin-notification";
 
+import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -97,12 +99,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <GlobalAdminNotification />
-          <Navbar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <BottomNav />
+          <NavigationWrapper>
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <BottomNav />
+          </NavigationWrapper>
           <Toaster />
         </ThemeProvider>
       </body>
