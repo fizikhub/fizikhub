@@ -73,7 +73,7 @@ export function HeroSection3D() {
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 border border-primary/30 backdrop-blur-sm">
                             <Sparkles className="w-4 h-4 text-primary" />
                             <span className="text-sm font-medium bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                                Bilim Artık Daha Eğlenceli
+                                Fizik & Bilim Dünyası
                             </span>
                         </div>
                     </motion.div>
@@ -86,9 +86,9 @@ export function HeroSection3D() {
                         className="space-y-4"
                     >
                         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                            <span className="block mb-2">Evrenin Sırlarını</span>
+                            <span className="block mb-2">Sorgula, Araştır,</span>
                             <span className="block bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                                Birlikte Keşfedelim
+                                Keşfetmeye Başla
                             </span>
                         </h1>
                     </motion.div>
@@ -98,10 +98,9 @@ export function HeroSection3D() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
                     >
-                        Fizik, uzay ve bilim meraklılarının buluşma noktası.
-                        <span className="text-foreground font-medium"> Öğren, paylaş, tartış</span> – bilimi birlikte keşfetmenin tadını çıkar! 🚀
+                        Makaleler, tartışma forumu ve bilim sözlüğü ile fiziği derinlemesine öğren. Aklındaki soruları sor, cevaplar bul. 🚀
                     </motion.p>
 
                     {/* Feature Pills */}
