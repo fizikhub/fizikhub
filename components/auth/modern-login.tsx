@@ -83,15 +83,16 @@ export function ModernLogin() {
         setLoading(true);
         try {
             if (isSignUp) {
-                const { data: emailExists } = await supabase.rpc('check_email_exists', {
-                    email_to_check: email
-                });
+                // RPC check removed to prevent blocking if function is missing
+                // const { data: emailExists } = await supabase.rpc('check_email_exists', {
+                //     email_to_check: email
+                // });
 
-                if (emailExists) {
-                    toast.error("Bu e-posta ile zaten bir hesap var, şifreni mi unuttun yoksa? 🤨");
-                    setLoading(false);
-                    return;
-                }
+                // if (emailExists) {
+                //     toast.error("Bu e-posta ile zaten bir hesap var, şifreni mi unuttun yoksa? 🤨");
+                //     setLoading(false);
+                //     return;
+                // }
 
                 const { error } = await supabase.auth.signUp({
                     email,
