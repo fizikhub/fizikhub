@@ -116,7 +116,7 @@ export function ModernLogin() {
             if (error.message.includes("User already registered") || error.message.includes("already registered")) {
                 toast.error("Bu e-posta zaten kayıtlı. Hafızanı mı tazelesek? 🧠");
             } else if (error.message.includes("Invalid login credentials")) {
-                toast.error("Bilgiler yanlış. Paralel evrendeki şifreni giriyor olabilir misin? 🌌");
+                toast.error("valla bu e-postayı bulamadık. yüksek ihtimalle yanlış girdin. ya da biz sıçtık ve bu e-postayı bulamadık.");
             } else {
                 toast.error(error.message);
             }
