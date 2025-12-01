@@ -126,11 +126,11 @@ export function ModernLogin() {
 
     const getPasswordStrengthMessage = (pass: string) => {
         if (!pass) return "";
-        if (pass.length < 6) return "Bu şifre çok kısa, atom altı parçacık kadar... 🔬";
+        if (pass.length < 6) return "Bu şifre çok kısa, atom altı parçacık kadar... 🔬 Şifren çok kısa hocam..";
         if (pass === "123456" || pass === "password") return "Ciddi misin? Bu şifreyi havada kırıyorlar! 🤦‍♂️";
         if (pass.length > 12) return "Kara delik kadar güçlü bir şifre! ⚫";
         if (pass.includes("einstein")) return "Einstein şifreni mi kıracak sanıyorsun? 😄";
-        return "Güzel şifre, Einstein onaylardı. 👍";
+        return "Uzun şifre afferin";
     };
 
     return (
