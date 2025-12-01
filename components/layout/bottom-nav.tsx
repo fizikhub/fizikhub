@@ -76,7 +76,7 @@ export function BottomNav() {
                                                     isActive
                                                         ? cn(
                                                             "text-primary fill-current scale-110 drop-shadow-sm",
-                                                            link.href === "/kesfet" && "text-orange-500 fill-orange-500"
+                                                            link.href === "/kesfet" && "text-orange-500 fill-orange-500/20"
                                                         )
                                                         : "text-muted-foreground/80 group-hover:text-foreground group-hover:scale-110"
                                                 )}
