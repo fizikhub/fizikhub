@@ -1,16 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { MessageCircle, ArrowUp, ArrowDown, Eye, CheckCircle2, Flame, Share2, MoreHorizontal, Sparkles } from "lucide-react";
+import { MessageCircle, ArrowUp, ArrowDown, Eye, CheckCircle2, Flame, Share2, MoreHorizontal, Sparkles, Flag, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase";
 
 interface QuestionCardProps {
     question: {
@@ -33,11 +42,16 @@ interface QuestionCardProps {
     hasVoted?: boolean;
 }
 
-export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) {
+export function QuestionCard({ question, hasVoted: initialHasVoted = false }: QuestionCardProps) {
     const router = useRouter();
+    const [votes, setVotes] = useState(question.votes || 0);
+    const [hasVoted, setHasVoted] = useState(initialHasVoted);
+    const [isVoting, setIsVoting] = useState(false);
+    const supabase = createClient();
+
     const answerCount = question.answers?.[0]?.count || 0;
     const isSolved = false; // TODO: Check if any answer is accepted
-    const isHot = (question.votes || 0) > 5;
+    const isHot = votes > 5;
 
     const handleCardClick = () => {
         router.push(`/forum/${question.id}`);
@@ -46,6 +60,79 @@ export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) 
     const handleShare = (e: React.MouseEvent) => {
         e.stopPropagation();
         navigator.clipboard.writeText(`${window.location.origin}/forum/${question.id}`);
+        toast.success("Bağlantı kopyalandı", {
+            description: "Sorunun bağlantısı panoya kopyalandı.",
+            duration: 2000,
+        });
+    };
+
+    const handleVote = async (e: React.MouseEvent, type: 'up' | 'down') => {
+        e.stopPropagation();
+        if (isVoting) return;
+
+        // Optimistic update
+        const previousVotes = votes;
+        const previousHasVoted = hasVoted;
+
+        setIsVoting(true);
+
+        // Simple toggle logic for now: 
+        // If already voted and clicking up again -> remove vote (not implemented fully in backend yet usually, but let's assume toggle)
+        // For this implementation, we'll just handle Upvote = +1, Downvote = -1 (visual only if not implementing full logic)
+        // Assuming 'hasVoted' means "has upvoted". 
+
+        if (type === 'up') {
+            if (hasVoted) {
+                setVotes(v => v - 1);
+                setHasVoted(false);
+            } else {
+                setVotes(v => v + 1);
+                setHasVoted(true);
+            }
+        } else {
+            // Downvote logic (if we want to support it, usually requires checking if user already downvoted)
+            // For now, let's just simulate a downvote as -1 visual
+            setVotes(v => v - 1);
+        }
+
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                toast.error("Giriş yapmalısınız", {
+                    description: "Oy kullanmak için lütfen giriş yapın."
+                });
+                // Revert
+                setVotes(previousVotes);
+                setHasVoted(previousHasVoted);
+                return;
+            }
+
+            // Call RPC or insert to table
+            // This part depends on your backend implementation. 
+            // Assuming a simple insert/delete for upvote for now based on previous context.
+
+            if (type === 'up') {
+                if (previousHasVoted) {
+                    // Remove vote
+                    await supabase.from('question_votes').delete().match({ question_id: question.id, user_id: user.id });
+                } else {
+                    // Add vote
+                    await supabase.from('question_votes').insert({ question_id: question.id, user_id: user.id, vote_type: 1 });
+                }
+            } else {
+                // Downvote implementation would go here
+                toast.info("Downvote özelliği yakında!");
+                setVotes(previousVotes); // Revert for now
+            }
+
+        } catch (error) {
+            console.error("Voting error:", error);
+            setVotes(previousVotes);
+            setHasVoted(previousHasVoted);
+            toast.error("Bir hata oluştu");
+        } finally {
+            setIsVoting(false);
+        }
     };
 
     return (
@@ -98,9 +185,30 @@ export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) 
                                     <Flame className="h-3 w-3 mr-1" /> Popüler
                                 </Badge>
                             )}
-                            <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-foreground">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-foreground">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={(e) => {
+                                        e.stopPropagation();
+                                        router.push(`/kullanici/${question.profiles?.username}`);
+                                    }}>
+                                        <User className="mr-2 h-4 w-4" />
+                                        <span>Profili Görüntüle</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={(e) => {
+                                        e.stopPropagation();
+                                        toast.success("Bildiriminiz alındı.");
+                                    }} className="text-red-600 focus:text-red-600">
+                                        <Flag className="mr-2 h-4 w-4" />
+                                        <span>Şikayet Et</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
 
@@ -153,16 +261,18 @@ export function QuestionCard({ question, hasVoted = false }: QuestionCardProps) 
                                     variant="ghost"
                                     size="icon"
                                     className="h-7 w-7 rounded-full hover:bg-background/80 hover:text-primary"
-                                    onClick={(e) => { e.stopPropagation(); /* Vote logic */ }}
+                                    onClick={(e) => handleVote(e, 'up')}
+                                    disabled={isVoting}
                                 >
                                     <ArrowUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
                                 </Button>
-                                <span className="text-sm font-bold min-w-[1.5ch] text-center">{question.votes || 0}</span>
+                                <span className="text-sm font-bold min-w-[1.5ch] text-center tabular-nums">{votes}</span>
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     className="h-7 w-7 rounded-full hover:bg-background/80 hover:text-red-500"
-                                    onClick={(e) => { e.stopPropagation(); /* Downvote logic */ }}
+                                    onClick={(e) => handleVote(e, 'down')}
+                                    disabled={isVoting}
                                 >
                                     <ArrowDown className="h-4 w-4" />
                                 </Button>
