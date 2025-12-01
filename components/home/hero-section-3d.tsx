@@ -64,44 +64,29 @@ export function HeroSection3D() {
             <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="text-center space-y-8">
                     {/* Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="flex justify-center"
-                    >
+                    <div className="flex justify-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 border border-primary/30 backdrop-blur-sm">
                             <Sparkles className="w-4 h-4 text-primary" />
                             <span className="text-sm font-medium bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                                 Fizik & Bilim Dünyası
                             </span>
                         </div>
-                    </motion.div>
+                    </div>
 
                     {/* Main Heading */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                        className="space-y-4"
-                    >
+                    <div className="space-y-4">
                         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
                             <span className="block mb-2">Sorgula, Araştır,</span>
                             <span className="block bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
                                 Keşfetmeye Başla
                             </span>
                         </h1>
-                    </motion.div>
+                    </div>
 
                     {/* Description */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
-                    >
+                    <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                         Makaleler, tartışma forumu ve bilim sözlüğü ile fiziği derinlemesine öğren. Aklındaki soruları sor, cevaplar bul. 🚀
-                    </motion.p>
+                    </p>
 
                     {/* Feature Pills */}
                     <motion.div

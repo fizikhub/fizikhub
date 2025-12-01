@@ -20,28 +20,29 @@ export const metadata: Metadata = {
 export default async function Home() {
   const supabase = await createClient();
 
-  // Fetch articles (published & admin only for home)
-  const rawArticles = await getArticles(supabase, { status: 'published', authorRole: 'admin' });
+  // Fetch articles and trending questions in parallel
+  const [rawArticles, { data: trendingQuestions }] = await Promise.all([
+    getArticles(supabase, { status: 'published', authorRole: 'admin' }),
+    supabase
+      .from('questions')
+      .select(`
+        id,
+        title,
+        created_at,
+        votes,
+        profiles(username, avatar_url),
+        answers(count)
+      `)
+      .order('votes', { ascending: false })
+      .limit(3)
+  ]);
+
   const articles = rawArticles.map(a => ({
     ...a,
     summary: a.summary || null,
     content: a.content || "",
     category: a.category || undefined
   }));
-
-  // Fetch trending questions (top 3 by votes/activity)
-  const { data: trendingQuestions } = await supabase
-    .from('questions')
-    .select(`
-      id,
-      title,
-      created_at,
-      votes,
-      profiles(username, avatar_url),
-      answers(count)
-    `)
-    .order('votes', { ascending: false })
-    .limit(3);
 
   // Transform questions data to match component interface
   const formattedQuestions = trendingQuestions?.map(q => {
