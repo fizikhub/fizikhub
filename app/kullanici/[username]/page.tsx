@@ -34,46 +34,56 @@ export default async function PublicProfilePage({ params }: PageProps) {
     const { data: { user } } = await supabase.auth.getUser();
     const isOwnProfile = user?.id === profile.id;
 
-    // Check follow status
-    const { isFollowing } = user && !isOwnProfile
-        ? await getFollowStatus(profile.id)
-        : { isFollowing: false };
+    // Run all independent queries in parallel
+    const [
+        followStatus,
+        followStats,
+        { data: userBadges },
+        { data: questions },
+        { count: answersCount }
+    ] = await Promise.all([
+        // 1. Follow status (only if logged in and not own profile)
+        user && !isOwnProfile ? getFollowStatus(profile.id) : Promise.resolve({ isFollowing: false }),
 
-    // Fetch follow stats
-    const { followersCount, followingCount } = await getFollowStats(profile.id);
+        // 2. Follow stats
+        getFollowStats(profile.id),
 
-    // Fetch user's badges
-    const { data: userBadges } = await supabase
-        .from('user_badges')
-        .select(`
-            awarded_at,
-            badges (
-                id,
-                name,
-                description,
-                icon,
-                category
-            )
-        `)
-        .eq('user_id', profile.id)
-        .order('awarded_at', { ascending: false });
+        // 3. User badges
+        supabase
+            .from('user_badges')
+            .select(`
+                awarded_at,
+                badges (
+                    id,
+                    name,
+                    description,
+                    icon,
+                    category
+                )
+            `)
+            .eq('user_id', profile.id)
+            .order('awarded_at', { ascending: false }),
 
-    // Fetch user's questions
-    const { data: questions } = await supabase
-        .from('questions')
-        .select(`
-            *,
-            profiles(username, full_name),
-            answers(count)
-        `)
-        .eq('author_id', profile.id)
-        .order('created_at', { ascending: false });
+        // 4. User questions
+        supabase
+            .from('questions')
+            .select(`
+                *,
+                profiles(username, full_name),
+                answers(count)
+            `)
+            .eq('author_id', profile.id)
+            .order('created_at', { ascending: false }),
 
-    // Fetch user's answers count
-    const { count: answersCount } = await supabase
-        .from('answers')
-        .select('*', { count: 'exact', head: true })
-        .eq('author_id', profile.id);
+        // 5. User answers count
+        supabase
+            .from('answers')
+            .select('*', { count: 'exact', head: true })
+            .eq('author_id', profile.id)
+    ]);
+
+    const { isFollowing } = followStatus;
+    const { followersCount, followingCount } = followStats;
 
     return (
         <PublicProfileView

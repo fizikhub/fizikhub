@@ -68,37 +68,44 @@ export default async function QuestionPage({ params }: PageProps) {
         notFound();
     }
 
-    // Fetch answers
-    const { data: answers } = await supabase
-        .from('answers')
-        .select(`
-            *,
-            profiles(username, full_name, avatar_url, is_verified)
-        `)
-        .eq('question_id', id)
-        .order('created_at', { ascending: true });
-
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser();
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
-    // Check if user has voted
-    const { data: userVote } = user ? await supabase
-        .from('question_votes')
-        .select('vote_type')
-        .eq('question_id', id)
-        .eq('user_id', user.id)
-        .single() : { data: null };
+    // Fetch answers and user interactions in parallel
+    const [
+        { data: answers },
+        { data: userVote },
+        { data: userBookmark }
+    ] = await Promise.all([
+        // 1. Fetch answers
+        supabase
+            .from('answers')
+            .select(`
+                *,
+                profiles(username, full_name, avatar_url, is_verified)
+            `)
+            .eq('question_id', id)
+            .order('created_at', { ascending: true }),
+
+        // 2. Check if user has voted (only if logged in)
+        user ? supabase
+            .from('question_votes')
+            .select('vote_type')
+            .eq('question_id', id)
+            .eq('user_id', user.id)
+            .single() : Promise.resolve({ data: null }),
+
+        // 3. Check if user has bookmarked (only if logged in)
+        user ? supabase
+            .from('question_bookmarks')
+            .select('id')
+            .eq('question_id', id)
+            .eq('user_id', user.id)
+            .single() : Promise.resolve({ data: null })
+    ]);
 
     const hasVoted = userVote?.vote_type === 1;
-
-    // Check if user has bookmarked
-    const { data: userBookmark } = user ? await supabase
-        .from('question_bookmarks')
-        .select('id')
-        .eq('question_id', id)
-        .eq('user_id', user.id)
-        .single() : { data: null };
 
     // Fetch like counts and user likes for all answers
     const answersWithLikes = await Promise.all((answers || []).map(async (answer) => {
