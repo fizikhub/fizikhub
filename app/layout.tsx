@@ -100,12 +100,7 @@ export default function RootLayout({
         >
           <GlobalAdminNotification />
           <NavigationWrapper>
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-            <BottomNav />
+            {children}
           </NavigationWrapper>
           <Toaster />
         </ThemeProvider>
