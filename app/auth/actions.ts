@@ -74,25 +74,25 @@ export async function completeOnboarding(formData: { username: string; fullName:
         .from('profiles')
         .select('id')
         .eq('username', formData.username)
-        .neq('id', user.id)
         .single();
 
     if (existingUser) {
         return { success: false, error: "Bu kullanıcı adı zaten alınmış." };
     }
 
-    // Update profile
+    // INSERT profile (not UPDATE, because we removed auto-creation)
     const { error } = await supabase
         .from('profiles')
-        .update({
+        .insert({
+            id: user.id,
             username: formData.username,
             full_name: formData.fullName,
             avatar_url: formData.avatarUrl,
             bio: formData.bio,
-            updated_at: new Date().toISOString(),
-            onboarding_completed: true
-        })
-        .eq('id', user.id);
+            onboarding_completed: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
 
     if (error) {
         return { success: false, error: error.message };

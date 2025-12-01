@@ -43,9 +43,11 @@ export async function updateSession(request: NextRequest) {
             .single()
 
         const isOnboardingPage = request.nextUrl.pathname.startsWith('/onboarding')
+        const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
 
-        // If onboarding is NOT completed and user is NOT on onboarding page -> Redirect to onboarding
-        if (profile && !profile.onboarding_completed && !isOnboardingPage) {
+        // If profile doesn't exist OR onboarding is not completed, redirect to onboarding
+        // (unless already on onboarding or auth pages)
+        if ((!profile || !profile.onboarding_completed) && !isOnboardingPage && !isAuthPage) {
             return NextResponse.redirect(new URL('/onboarding', request.url))
         }
 
