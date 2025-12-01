@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const { data: question } = await supabase
         .from('questions')
-        .select('title, content')
+        .select('title, content, category')
         .eq('id', id)
         .single();
 
@@ -40,6 +40,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/api/og`);
+    ogUrl.searchParams.set('title', question.title);
+    ogUrl.searchParams.set('category', question.category || 'Genel');
+
     return {
         title: question.title,
         description: question.content.substring(0, 160) + "...",
@@ -47,6 +51,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: question.title,
             description: question.content.substring(0, 160) + "...",
             type: "website",
+            images: [
+                {
+                    url: ogUrl.toString(),
+                    width: 1200,
+                    height: 630,
+                    alt: question.title,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: question.title,
+            description: question.content.substring(0, 160) + "...",
+            images: [ogUrl.toString()],
         },
     };
 }

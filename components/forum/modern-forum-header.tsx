@@ -7,15 +7,60 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CreateQuestionDialog } from "./create-question-dialog";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase";
 
 export function ModernForumHeader() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+    const [results, setResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showResults, setShowResults] = useState(false);
     const currentCategory = searchParams.get("category") || "Tümü";
     const currentSort = searchParams.get("sort") || "newest";
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLDivElement>(null);
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.trim().length > 2) {
+                setIsSearching(true);
+                setShowResults(true);
+                try {
+                    const supabase = createClient();
+                    const { data } = await supabase
+                        .from('questions')
+                        .select('id, title, slug, category')
+                        .ilike('title', `%${searchQuery}%`)
+                        .limit(5);
+                    setResults(data || []);
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    setIsSearching(false);
+                }
+            } else {
+                setResults([]);
+                setShowResults(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Click outside to close
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setShowResults(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const categories = [
         "Tümü",
@@ -38,6 +83,7 @@ export function ModernForumHeader() {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
+        setShowResults(false);
         const params = new URLSearchParams(searchParams.toString());
 
         if (searchQuery.trim()) {
@@ -126,29 +172,77 @@ export function ModernForumHeader() {
                         </motion.p>
                     </div>
 
-                    <motion.form
-                        onSubmit={handleSearch}
+                    <motion.div
+                        ref={searchRef}
                         className="relative group max-w-lg mx-auto w-full"
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.5 }}
                     >
-                        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="relative flex items-center">
-                            <Search className="absolute left-3 sm:left-4 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                            <Input
-                                placeholder="Merak ettiğin konuyu ara..."
-                                className="pl-10 sm:pl-12 pr-20 sm:pr-24 h-11 sm:h-14 rounded-full bg-background/80 backdrop-blur-xl border-white/10 shadow-lg text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-primary/20 transition-all w-full"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <div className="absolute right-1.5 sm:right-2">
-                                <Button size="sm" type="submit" className="rounded-full px-3 sm:px-4 md:px-6 h-8 sm:h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all hover:scale-105 text-xs sm:text-sm group-hover:shadow-primary/25">
-                                    Ara
-                                </Button>
+                        <form onSubmit={handleSearch}>
+                            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="relative flex items-center">
+                                <Search className="absolute left-3 sm:left-4 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                <Input
+                                    placeholder="Merak ettiğin konuyu ara..."
+                                    className="pl-10 sm:pl-12 pr-20 sm:pr-24 h-11 sm:h-14 rounded-full bg-background/80 backdrop-blur-xl border-white/10 shadow-lg text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-primary/20 transition-all w-full"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => {
+                                        if (searchQuery.length > 2 && results.length > 0) setShowResults(true);
+                                    }}
+                                />
+                                <div className="absolute right-1.5 sm:right-2">
+                                    <Button size="sm" type="submit" className="rounded-full px-3 sm:px-4 md:px-6 h-8 sm:h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all hover:scale-105 text-xs sm:text-sm group-hover:shadow-primary/25">
+                                        Ara
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    </motion.form>
+                        </form>
+
+                        {/* Instant Search Results */}
+                        <AnimatePresence>
+                            {showResults && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute top-full left-0 right-0 mt-2 bg-background/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50"
+                                >
+                                    {isSearching ? (
+                                        <div className="p-4 text-center text-muted-foreground text-sm">
+                                            Aranıyor...
+                                        </div>
+                                    ) : results.length > 0 ? (
+                                        <div className="py-2">
+                                            {results.map((result) => (
+                                                <button
+                                                    key={result.id}
+                                                    onClick={() => {
+                                                        router.push(`/forum/${result.id}`);
+                                                        setShowResults(false);
+                                                    }}
+                                                    className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors flex items-center gap-3 group/item"
+                                                >
+                                                    <div className="p-2 rounded-full bg-primary/10 text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors">
+                                                        <Sparkles className="h-4 w-4" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium truncate text-foreground/90">{result.title}</p>
+                                                        <p className="text-xs text-muted-foreground">{result.category}</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 text-center text-muted-foreground text-sm">
+                                            Sonuç bulunamadı.
+                                        </div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
                 </div>
             </motion.div>
 
