@@ -31,9 +31,9 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
             case 1:
                 return <Trophy className="h-6 w-6 text-yellow-500 fill-yellow-500 animate-pulse" />;
             case 2:
-                return <Medal className="h-6 w-6 text-gray-400 fill-gray-400" />;
+                return <Trophy className="h-6 w-6 text-gray-400 fill-gray-400" />;
             case 3:
-                return <Medal className="h-6 w-6 text-amber-700 fill-amber-700" />;
+                return <Trophy className="h-6 w-6 text-amber-700 fill-amber-700" />;
             default:
                 return <span className="text-lg font-bold text-muted-foreground w-6 text-center">{rank}</span>;
         }

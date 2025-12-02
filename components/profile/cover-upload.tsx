@@ -1,21 +1,19 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, X } from "lucide-react";
-import { uploadAvatar } from "@/app/profil/actions";
+import { Camera, Loader2, ImagePlus } from "lucide-react";
+import { uploadCover } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-interface AvatarUploadProps {
-    currentAvatarUrl?: string | null;
-    userInitial: string;
+interface CoverUploadProps {
+    currentCoverUrl?: string | null;
     className?: string;
 }
 
-export function AvatarUpload({ currentAvatarUrl, userInitial, className }: AvatarUploadProps) {
+export function CoverUpload({ currentCoverUrl, className }: CoverUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -31,9 +29,9 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
             return;
         }
 
-        // Validate file size (2MB max)
-        if (file.size > 2 * 1024 * 1024) {
-            toast.error("Dosya boyutu 2MB'den küçük olmalı veritabanının depolamasını doldurma eşek");
+        // Validate file size (4MB max for covers)
+        if (file.size > 4 * 1024 * 1024) {
+            toast.error("Dosya boyutu 4MB'den küçük olmalı");
             return;
         }
 
@@ -47,14 +45,14 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
             };
             reader.readAsDataURL(file);
 
-            // Resize and compress image
-            const resizedFile = await resizeImage(file, 500, 500, 0.8);
+            // Resize and compress image (larger dimensions for cover)
+            const resizedFile = await resizeImage(file, 1500, 500, 0.85);
 
             // Upload to Supabase
-            const result = await uploadAvatar(resizedFile);
+            const result = await uploadCover(resizedFile);
 
             if (result.success) {
-                toast.success("Profil fotoğrafı güncellendi!");
+                toast.success("Kapak fotoğrafı güncellendi!");
                 router.refresh();
                 setPreviewUrl(null);
             } else {
@@ -78,43 +76,33 @@ export function AvatarUpload({ currentAvatarUrl, userInitial, className }: Avata
     };
 
     return (
-        <div className={cn("relative group", className)}>
-            <Avatar className="h-full w-full aspect-square rounded-full border-4 border-background shadow-sm transition-transform group-hover:scale-105 duration-300 bg-background overflow-hidden">
-                <AvatarImage
-                    src={previewUrl || currentAvatarUrl || ""}
-                    className="object-cover h-full w-full"
+        <div className={cn("relative group w-full h-32 sm:h-48 rounded-lg overflow-hidden bg-muted", className)}>
+            {/* Background Image */}
+            {(previewUrl || currentCoverUrl) ? (
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${previewUrl || currentCoverUrl})` }}
                 />
-                <AvatarFallback className="text-3xl sm:text-4xl bg-primary/5 flex items-center justify-center">
-                    {userInitial}
-                </AvatarFallback>
-            </Avatar>
+            ) : (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-50" />
+            )}
 
-            {/* Upload Button Overlay */}
-            <button
-                onClick={handleClick}
-                disabled={isUploading}
-                className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer disabled:cursor-not-allowed z-10"
-            >
-                {isUploading ? (
-                    <Loader2 className="h-8 w-8 text-white animate-spin" />
-                ) : (
-                    <Camera className="h-8 w-8 text-white" />
-                )}
-            </button>
-
-            {/* Pencil Icon Badge */}
-            <div className="absolute bottom-0 right-0 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Button
-                    size="icon"
-                    variant="secondary"
-                    className="h-8 w-8 rounded-full shadow-md border border-border"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleClick();
-                    }}
+            {/* Overlay & Button */}
+            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors flex items-center justify-center">
+                <button
+                    onClick={handleClick}
+                    disabled={isUploading}
+                    className="flex flex-col items-center gap-2 text-white opacity-90 hover:opacity-100 transition-opacity"
                 >
-                    <div className="h-4 w-4">✏️</div>
-                </Button>
+                    {isUploading ? (
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                    ) : (
+                        <>
+                            <ImagePlus className="h-8 w-8" />
+                            <span className="text-sm font-medium">Kapak Fotoğrafı Ekle</span>
+                        </>
+                    )}
+                </button>
             </div>
 
             <input
@@ -146,17 +134,17 @@ async function resizeImage(
                 let width = img.width;
                 let height = img.height;
 
-                // Calculate new dimensions
-                if (width > height) {
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-                } else {
-                    if (height > maxHeight) {
-                        width = (width * maxHeight) / height;
-                        height = maxHeight;
-                    }
+                // Calculate new dimensions while maintaining aspect ratio
+                // For cover, we want to ensure it covers the area, but we'll just limit max dimensions
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+
+                // If height is still too big (unlikely for landscape, but possible)
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
                 }
 
                 canvas.width = width;

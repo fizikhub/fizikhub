@@ -289,7 +289,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 flex-shrink-0">
-                                    {(user?.id === questionAuthorId || user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com') && (
+                                    {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
                                         <Button
                                             variant="ghost"
                                             size="sm"

@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Shield, Home, Feather, MessageCircle, Library, Crown, Atom, User } from "lucide-react";
+import { Menu, Search, Shield, Home, Feather, MessageCircle, Library, Trophy, Atom, User } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
@@ -86,7 +86,7 @@ export function Navbar() {
         { href: "/forum", label: "Forum", icon: MessageCircle },
         { href: "/sozluk", label: "Sözlük", icon: Library },
         { href: "/testler", label: "Testler", icon: Atom },
-        { href: "/siralamalar", label: "Sıralamalar", icon: Crown },
+        { href: "/siralamalar", label: "Sıralamalar", icon: Trophy },
     ];
 
     return (

@@ -16,6 +16,7 @@ export interface Database {
                     username: string | null
                     full_name: string | null
                     avatar_url: string | null
+                    cover_url: string | null
                     role: string | null
                     created_at: string
                 }
@@ -25,6 +26,7 @@ export interface Database {
                     username?: string | null
                     full_name?: string | null
                     avatar_url?: string | null
+                    cover_url?: string | null
                     role?: string | null
                     created_at?: string
                 }
@@ -34,6 +36,7 @@ export interface Database {
                     username?: string | null
                     full_name?: string | null
                     avatar_url?: string | null
+                    cover_url?: string | null
                     role?: string | null
                     created_at?: string
                 }

@@ -17,18 +17,20 @@ import {
 import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { updateProfile } from "@/app/profil/actions";
+import { CoverUpload } from "@/components/profile/cover-upload";
 
 interface EditProfileButtonProps {
     currentFullName: string | null;
     currentBio: string | null;
     currentAvatarUrl: string | null;
+    currentCoverUrl?: string | null;
     currentWebsite?: string | null;
     currentSocialLinks?: any;
     currentUsername: string;
     userEmail?: string | null;
 }
 
-export function EditProfileButton({ currentFullName, currentBio, currentAvatarUrl, currentWebsite, currentSocialLinks, currentUsername, userEmail }: EditProfileButtonProps) {
+export function EditProfileButton({ currentFullName, currentBio, currentAvatarUrl, currentCoverUrl, currentWebsite, currentSocialLinks, currentUsername, userEmail }: EditProfileButtonProps) {
     const [open, setOpen] = useState(false);
     const [fullName, setFullName] = useState(currentFullName || "");
     const [username, setUsername] = useState(currentUsername || "");
@@ -102,6 +104,11 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                        <Label>Kapak Fotoğrafı</Label>
+                        <CoverUpload currentCoverUrl={currentCoverUrl} />
+                    </div>
+
                     <div className="space-y-2">
                         <Label htmlFor="username">Kullanıcı Adı</Label>
                         <Input

@@ -28,6 +28,7 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { BadgeDisplay } from "@/components/badge-display";
 import { ReputationDisplay } from "@/components/reputation-display";
+import { EditableCover } from "@/components/profile/editable-cover";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -121,6 +122,8 @@ export default async function ProfilePage() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+
+
     // Generate gradient for cover
     const gradients = [
         "from-blue-500 to-indigo-600",
@@ -134,8 +137,12 @@ export default async function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-background">
-            {/* Simple Cover */}
-            <div className={`h-48 w-full bg-gradient-to-r ${coverGradient}`} />
+            {/* Editable Cover Image */}
+            <EditableCover
+                url={profile?.cover_url}
+                gradient={coverGradient}
+                editable={true}
+            />
 
             <div className="container mx-auto max-w-5xl px-4 -mt-20">
                 {/* Profile Header */}
@@ -232,6 +239,7 @@ export default async function ProfilePage() {
                                     currentFullName={profile?.full_name || null}
                                     currentBio={profile?.bio || null}
                                     currentAvatarUrl={profile?.avatar_url || null}
+                                    currentCoverUrl={profile?.cover_url || null}
                                     currentWebsite={profile?.website || null}
                                     currentSocialLinks={profile?.social_links || null}
                                     userEmail={user?.email || null}

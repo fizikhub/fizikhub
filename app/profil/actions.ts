@@ -292,3 +292,77 @@ export async function uploadAvatar(file: File) {
         return { success: false, error: "Beklenmeyen bir hata oluştu" };
     }
 }
+
+export async function uploadCover(file: File) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    try {
+        // Get current profile to check for existing cover
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('cover_url, username')
+            .eq('id', user.id)
+            .single();
+
+        // Delete old cover if exists
+        if (profile?.cover_url) {
+            const oldPath = profile.cover_url.split('/').pop();
+            if (oldPath) {
+                await supabase.storage
+                    .from('covers')
+                    .remove([`${user.id}/${oldPath}`]);
+            }
+        }
+
+        // Create unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        // Upload to Storage
+        const { error: uploadError } = await supabase.storage
+            .from('covers')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+
+        if (uploadError) {
+            console.error("Upload error:", uploadError);
+            return { success: false, error: "Dosya yüklenirken hata oluştu" };
+        }
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+            .from('covers')
+            .getPublicUrl(filePath);
+
+        if (!urlData?.publicUrl) {
+            return { success: false, error: "URL alınamadı" };
+        }
+
+        // Update profile with new cover URL
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ cover_url: urlData.publicUrl })
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error("Profile update error:", updateError);
+            return { success: false, error: "Profil güncellenirken hata oluştu" };
+        }
+
+        revalidatePath("/profil");
+        revalidatePath(`/kullanici/${profile?.username || user.id}`);
+
+        return { success: true };
+    } catch (error) {
+        console.error("Cover upload error:", error);
+        return { success: false, error: "Beklenmeyen bir hata oluştu" };
+    }
+}

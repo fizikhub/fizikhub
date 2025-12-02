@@ -4,6 +4,11 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 
+const ADMIN_EMAILS = [
+    'barannnbozkurttb.b@gmail.com',
+    'barannnnbozkurttb.b@gmail.com'
+];
+
 export async function toggleAnswerLike(answerId: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -160,7 +165,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
         .single();
 
     if (question) {
-        const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+        const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
         const notificationContent = isAdmin
             ? "hazreti yüce müce admin soruna cevap verdi"
             : `"${question.title}" soruna cevap yazdı.`;
@@ -262,7 +267,7 @@ export async function deleteQuestion(questionId: number) {
     if (!user) return { success: false, error: "Giriş yapmalısınız." };
 
     // Check if user is admin
-    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
 
     if (!isAdmin) {
         // Optional: Allow owner to delete (if we want that feature later)
@@ -297,7 +302,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
         .eq('id', questionId)
         .single();
 
-    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
 
     if (!question || (question.author_id !== user.id && !isAdmin)) {
         return { success: false, error: "Sadece soruyu soran kişi veya admin cevabı onaylayabilir." };
@@ -386,7 +391,7 @@ export async function deleteAnswer(answerId: number, questionId: number) {
         return { success: false, error: "Cevap bulunamadı." };
     }
 
-    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
 
     if (answer.author_id !== user.id && !isAdmin) {
         return { success: false, error: "Bu cevabı silme yetkiniz yok." };
@@ -453,7 +458,7 @@ export async function deleteAnswerComment(commentId: number, questionId: number)
     }
 
     // Check if user is admin
-    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
 
     let query = supabase.from('answer_comments').delete().eq('id', commentId);
 
