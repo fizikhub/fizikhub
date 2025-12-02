@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Shield, Home, BookOpen, MessageSquare, Book, Trophy, BrainCircuit, User } from "lucide-react";
+import { Menu, Search, Shield, Home, Feather, MessageCircle, Library, Crown, Atom, User } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const supabase = createClient();
@@ -81,11 +82,11 @@ export function Navbar() {
 
     const navLinks = [
         { href: "/", label: "Ana Sayfa", icon: Home },
-        { href: "/blog", label: "Makaleler", icon: BookOpen },
-        { href: "/forum", label: "Forum", icon: MessageSquare },
-        { href: "/sozluk", label: "Sözlük", icon: Book },
-        { href: "/testler", label: "Testler", icon: BrainCircuit },
-        { href: "/siralamalar", label: "Sıralamalar", icon: Trophy },
+        { href: "/blog", label: "Makaleler", icon: Feather },
+        { href: "/forum", label: "Forum", icon: MessageCircle },
+        { href: "/sozluk", label: "Sözlük", icon: Library },
+        { href: "/testler", label: "Testler", icon: Atom },
+        { href: "/siralamalar", label: "Sıralamalar", icon: Crown },
     ];
 
     return (
@@ -138,7 +139,7 @@ export function Navbar() {
                         </Button>
                         <NotificationBell />
 
-                        <Sheet>
+                        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon" className="rounded-full">
                                     <Menu className="h-6 w-6" />
@@ -154,6 +155,7 @@ export function Navbar() {
                                         <Link
                                             key={link.href}
                                             href={link.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
                                             className={cn(
                                                 "flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
                                                 pathname === link.href
@@ -168,6 +170,7 @@ export function Navbar() {
                                     {isAdmin && (
                                         <Link
                                             href="/admin"
+                                            onClick={() => setIsMobileMenuOpen(false)}
                                             className="flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
                                         >
                                             <Shield className="h-5 w-5" />
@@ -177,6 +180,7 @@ export function Navbar() {
                                     <div className="my-4 border-t" />
                                     <Link
                                         href="/profil"
+                                        onClick={() => setIsMobileMenuOpen(false)}
                                         className="flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
                                     >
                                         <User className="h-5 w-5" />
