@@ -83,7 +83,7 @@ export function EditableCover({ url, gradient, editable = false }: EditableCover
                     <Button
                         variant="secondary"
                         size="icon"
-                        className="absolute bottom-4 right-4 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        className="absolute bottom-4 right-4 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-20"
                         onClick={handleClick}
                         disabled={isUploading}
                         title="Kapak fotoğrafını değiştir"
