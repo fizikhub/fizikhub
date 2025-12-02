@@ -207,10 +207,11 @@ export function EasterEggManager() {
     return (
         <>
             {/* Debug Button - Temporary */}
-            <div className="fixed bottom-20 right-4 z-[100] opacity-50 hover:opacity-100 transition-opacity">
+            <div className="fixed top-24 right-4 z-[9999] opacity-80 hover:opacity-100 transition-opacity">
                 <Button
                     variant="destructive"
                     size="sm"
+                    className="shadow-lg border-2 border-white"
                     onClick={() => {
                         console.log("Debug: Manually triggering Einstein Mode");
                         window.dispatchEvent(new Event("einstein-mode-trigger"));
