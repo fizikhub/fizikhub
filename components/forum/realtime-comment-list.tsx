@@ -2,7 +2,7 @@
 
 import { useRealtimeComments } from "@/hooks/useRealtimeComments";
 import { AnswerCommentList } from "./answer-comment-list";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface RealtimeCommentListProps {
     answerId: number;
@@ -10,7 +10,7 @@ interface RealtimeCommentListProps {
     currentUserId?: string;
     questionId: number;
     onDelete?: (commentId: number) => void;
-    onCountChange?: (count: number) => void;
+    onCommentsChange?: (comments: any[]) => void;
 }
 
 export function RealtimeCommentList({
@@ -19,15 +19,21 @@ export function RealtimeCommentList({
     currentUserId,
     questionId,
     onDelete,
-    onCountChange
+    onCommentsChange
 }: RealtimeCommentListProps) {
     const comments = useRealtimeComments(answerId, initialComments);
+    const onCommentsChangeRef = useRef(onCommentsChange);
+
+    // Update ref when prop changes
+    useEffect(() => {
+        onCommentsChangeRef.current = onCommentsChange;
+    }, [onCommentsChange]);
 
     useEffect(() => {
-        if (onCountChange) {
-            onCountChange(comments.length);
+        if (onCommentsChangeRef.current) {
+            onCommentsChangeRef.current(comments);
         }
-    }, [comments.length, onCountChange]);
+    }, [comments]);
 
     return (
         <AnswerCommentList
@@ -35,7 +41,6 @@ export function RealtimeCommentList({
             currentUserId={currentUserId}
             questionId={questionId}
             onDelete={(id) => {
-                // We rely on realtime for state update, but we can call parent's onDelete if needed
                 if (onDelete) onDelete(id);
             }}
         />

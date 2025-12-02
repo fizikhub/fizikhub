@@ -354,19 +354,19 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                             currentUserId={user?.id}
                                             questionId={questionId}
                                             onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
-                                            onCountChange={(count) => {
-                                                // Update local state count if needed, or rely on realtime
-                                                // Since AnswerList uses 'answers' state, we might want to update it to reflect count
+                                            onCommentsChange={(comments) => {
                                                 setAnswers(prev => prev.map(a => {
-                                                    if (a.id === answer.id && (a.comments?.length !== count)) {
-                                                        // Only update if count changed to avoid loops
-                                                        // But we can't easily update just the count without the comments array
-                                                        // Actually, RealtimeCommentList handles the list.
-                                                        // We just need to update the count for the button label.
-                                                        // But 'answers' state holds the comments array.
-                                                        // If we update 'answers', we might re-render RealtimeCommentList with new initialComments?
-                                                        // No, hook ignores initialComments after first render usually.
-                                                        return a;
+                                                    if (a.id === answer.id) {
+                                                        // Only update if comments array reference or length changed significantly
+                                                        // to avoid unnecessary re-renders if deep equality check is expensive.
+                                                        // However, since we get a new array from realtime, we should update.
+                                                        // But we must ensure this doesn't trigger a loop.
+                                                        // The loop happened because onCountChange triggered setAnswers -> re-render AnswerList -> new onCountChange -> re-render RealtimeCommentList -> useEffect -> onCountChange...
+                                                        // Now RealtimeCommentList has stable callback ref, so it won't re-run useEffect on parent re-render.
+                                                        // We just need to update the state here.
+                                                        if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
+                                                            return { ...a, comments };
+                                                        }
                                                     }
                                                     return a;
                                                 }));
