@@ -103,6 +103,34 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
         };
     }, [conversationId]);
 
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [isBlocking, setIsBlocking] = useState(false);
+    const [showBlockMenu, setShowBlockMenu] = useState(false);
+
+    useEffect(() => {
+        const checkBlock = async () => {
+            const { checkBlockStatus } = await import("@/app/mesajlar/actions");
+            const status = await checkBlockStatus(otherUser.id);
+            setIsBlocked(status.isBlocked);
+            setIsBlocking(status.isBlocking);
+        };
+        checkBlock();
+    }, [otherUser.id]);
+
+    const handleBlockToggle = async () => {
+        const { blockUser, unblockUser } = await import("@/app/mesajlar/actions");
+        if (isBlocking) {
+            await unblockUser(otherUser.id);
+            setIsBlocking(false);
+            toast.success("Kullanıcının engeli kaldırıldı.");
+        } else {
+            await blockUser(otherUser.id);
+            setIsBlocking(true);
+            toast.success("Kullanıcı engellendi.");
+        }
+        setShowBlockMenu(false);
+    };
+
     const handleLike = async (messageId: number, currentLikeStatus: boolean) => {
         setMessages(prev => prev.map(m =>
             m.id === messageId ? { ...m, is_liked: !currentLikeStatus } : m
@@ -173,16 +201,29 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
                         </span>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 text-muted-foreground relative">
                     <Button variant="ghost" size="icon" className="hidden sm:flex">
                         <Video className="h-5 w-5" />
                     </Button>
                     <Button variant="ghost" size="icon" className="hidden sm:flex">
                         <Phone className="h-5 w-5" />
                     </Button>
-                    <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-5 w-5" />
-                    </Button>
+                    <div className="relative">
+                        <Button variant="ghost" size="icon" onClick={() => setShowBlockMenu(!showBlockMenu)}>
+                            <MoreVertical className="h-5 w-5" />
+                        </Button>
+                        {showBlockMenu && (
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-popover border rounded-md shadow-lg z-50 py-1">
+                                <button
+                                    onClick={handleBlockToggle}
+                                    className="w-full text-left px-4 py-2 text-sm hover:bg-muted text-destructive flex items-center gap-2"
+                                >
+                                    <AlertTriangle className="h-4 w-4" />
+                                    {isBlocking ? "Engeli Kaldır" : "Kullanıcıyı Engelle"}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -281,35 +322,48 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
 
             {/* Input Area */}
             <div className="p-3 bg-card/95 backdrop-blur-md border-t z-10">
-                <form onSubmit={handleSend} className="flex items-end gap-2 max-w-4xl mx-auto">
-                    <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex">
-                        <Smile className="h-6 w-6" />
-                    </Button>
-                    <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex">
-                        <Paperclip className="h-5 w-5" />
-                    </Button>
-
-                    <div className="flex-1 bg-muted/50 rounded-2xl border focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all">
-                        <Input
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder="Bir mesaj yaz..."
-                            className="border-0 bg-transparent focus-visible:ring-0 py-3 px-4 min-h-[44px]"
-                        />
+                {isBlocked ? (
+                    <div className="text-center text-muted-foreground py-4 bg-muted/50 rounded-lg">
+                        Bu kullanıcı sizi engellediği için mesaj gönderemezsiniz.
                     </div>
+                ) : isBlocking ? (
+                    <div className="text-center text-muted-foreground py-4 bg-muted/50 rounded-lg">
+                        Bu kullanıcıyı engellediniz. Mesaj göndermek için engeli kaldırın.
+                        <Button variant="link" onClick={handleBlockToggle} className="ml-2 text-destructive">
+                            Engeli Kaldır
+                        </Button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSend} className="flex items-end gap-2 max-w-4xl mx-auto">
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex">
+                            <Smile className="h-6 w-6" />
+                        </Button>
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex">
+                            <Paperclip className="h-5 w-5" />
+                        </Button>
 
-                    <Button
-                        type="submit"
-                        size="icon"
-                        disabled={!newMessage.trim()}
-                        className={`rounded-full h-11 w-11 transition-all duration-300 ${newMessage.trim()
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
-                            : "bg-muted text-muted-foreground hover:bg-muted/80"
-                            }`}
-                    >
-                        <Send className="h-5 w-5 ml-0.5" />
-                    </Button>
-                </form>
+                        <div className="flex-1 bg-muted/50 rounded-2xl border focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary/30 transition-all">
+                            <Input
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Bir mesaj yaz..."
+                                className="border-0 bg-transparent focus-visible:ring-0 py-3 px-4 min-h-[44px]"
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            size="icon"
+                            disabled={!newMessage.trim()}
+                            className={`rounded-full h-11 w-11 transition-all duration-300 ${newMessage.trim()
+                                ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                }`}
+                        >
+                            <Send className="h-5 w-5 ml-0.5" />
+                        </Button>
+                    </form>
+                )}
             </div>
         </div>
     );

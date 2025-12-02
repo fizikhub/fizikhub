@@ -277,6 +277,26 @@ export interface Database {
                     created_at?: string
                 }
             }
+            blocked_users: {
+                Row: {
+                    id: string
+                    blocker_id: string
+                    blocked_id: string
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    blocker_id: string
+                    blocked_id: string
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    blocker_id?: string
+                    blocked_id?: string
+                    created_at?: string
+                }
+            }
         }
     }
 }

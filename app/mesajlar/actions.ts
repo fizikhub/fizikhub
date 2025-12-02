@@ -11,6 +11,27 @@ export async function sendMessage(conversationId: string, content: string) {
 
     if (!user) return { success: false, error: "Giriş yapmalısınız." };
 
+    // Find recipient to check blocks and for notification
+    const { data: participants } = await supabase
+        .from('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', conversationId);
+
+    const recipient = participants?.find(p => p.user_id !== user.id);
+
+    if (recipient) {
+        // Check for blocks
+        const { data: block } = await supabase
+            .from('blocked_users')
+            .select('id')
+            .or(`and(blocker_id.eq.${user.id},blocked_id.eq.${recipient.user_id}),and(blocker_id.eq.${recipient.user_id},blocked_id.eq.${user.id})`)
+            .single();
+
+        if (block) {
+            return { success: false, error: "Bu kullanıcı ile mesajlaşamazsınız." };
+        }
+    }
+
     const { error } = await supabase.from('messages').insert({
         conversation_id: conversationId,
         sender_id: user.id,
@@ -21,14 +42,6 @@ export async function sendMessage(conversationId: string, content: string) {
         console.error("Send Message Error:", error);
         return { success: false, error: error.message };
     }
-
-    // Find recipient and create notification
-    const { data: participants } = await supabase
-        .from('conversation_participants')
-        .select('user_id')
-        .eq('conversation_id', conversationId);
-
-    const recipient = participants?.find(p => p.user_id !== user.id);
 
     if (recipient) {
         // Get sender's profile for notification content
@@ -166,16 +179,103 @@ export async function toggleLike(messageId: number, currentLikeStatus: boolean) 
     if (!user) return { success: false };
 
     // Toggle the like status
-    const { error } = await supabase
+    const { data: message, error } = await supabase
         .from('messages')
         .update({ is_liked: !currentLikeStatus })
-        .eq('id', messageId);
+        .eq('id', messageId)
+        .select('*, conversation_id')
+        .single();
 
     if (error) {
         console.error("Toggle Like Error:", error);
         return { success: false };
     }
 
+    // Send notification if liked (not unliked) and not liking own message
+    if (!currentLikeStatus && message.sender_id !== user.id) {
+        // Get sender's profile for notification content
+        const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('username, full_name')
+            .eq('id', user.id)
+            .single();
+
+        const senderName = senderProfile?.full_name || senderProfile?.username || 'Bir kullanıcı';
+        const messagePreview = message.content.length > 20 ? message.content.substring(0, 20) + '...' : message.content;
+
+        await createNotification({
+            recipientId: message.sender_id,
+            actorId: user.id,
+            type: 'like', // You might need to handle 'like' type in notifications UI
+            resourceId: message.conversation_id,
+            resourceType: 'conversation',
+            content: `${senderName} mesajını beğendi: "${messagePreview}"`
+        });
+    }
+
     revalidatePath(`/mesajlar`);
     return { success: true };
+}
+
+export async function blockUser(blockedId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Giriş yapmalısınız." };
+
+    const { error } = await supabase
+        .from('blocked_users')
+        .insert({
+            blocker_id: user.id,
+            blocked_id: blockedId
+        });
+
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/mesajlar');
+    return { success: true };
+}
+
+export async function unblockUser(blockedId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { success: false, error: "Giriş yapmalısınız." };
+
+    const { error } = await supabase
+        .from('blocked_users')
+        .delete()
+        .eq('blocker_id', user.id)
+        .eq('blocked_id', blockedId);
+
+    if (error) return { success: false, error: error.message };
+    revalidatePath('/mesajlar');
+    return { success: true };
+}
+
+export async function checkBlockStatus(otherUserId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { isBlocked: false, isBlocking: false };
+
+    // Check if I blocked them
+    const { data: blocking } = await supabase
+        .from('blocked_users')
+        .select('id')
+        .eq('blocker_id', user.id)
+        .eq('blocked_id', otherUserId)
+        .single();
+
+    // Check if they blocked me
+    const { data: blocked } = await supabase
+        .from('blocked_users')
+        .select('id')
+        .eq('blocker_id', otherUserId)
+        .eq('blocked_id', user.id)
+        .single();
+
+    return {
+        isBlocking: !!blocking,
+        isBlocked: !!blocked
+    };
 }
