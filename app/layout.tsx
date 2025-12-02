@@ -80,6 +80,7 @@ import { Toaster } from "sonner";
 import { GlobalAdminNotification } from "@/components/global-admin-notification";
 
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
+import { EasterEggManager } from "@/components/easter-eggs/easter-egg-manager";
 
 export default function RootLayout({
   children,
@@ -99,6 +100,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <GlobalAdminNotification />
+          <EasterEggManager />
           <NavigationWrapper>
             {children}
           </NavigationWrapper>

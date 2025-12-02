@@ -2,7 +2,7 @@
 
 import { motion, useAnimation } from "framer-motion";
 import { Rocket } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 export function Logo() {
@@ -20,7 +20,31 @@ export function Logo() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Einstein Mode Trigger Logic
+    const [tapCount, setTapCount] = useState(0);
+    const tapTimeout = useRef<NodeJS.Timeout>(null);
+
+    const handleTap = () => {
+        setTapCount(prev => {
+            const newCount = prev + 1;
+            if (newCount === 5) {
+                // Trigger Einstein Mode
+                window.dispatchEvent(new Event("einstein-mode-trigger"));
+                return 0;
+            }
+            return newCount;
+        });
+
+        // Reset tap count if not tapped again within 500ms
+        if (tapTimeout.current) clearTimeout(tapTimeout.current);
+        tapTimeout.current = setTimeout(() => {
+            setTapCount(0);
+        }, 500);
+    };
+
     const handleLaunch = async () => {
+        handleTap(); // Check for Einstein tap
+
         if (isLaunching) return;
         setIsLaunching(true);
 
