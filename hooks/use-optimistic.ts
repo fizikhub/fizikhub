@@ -9,11 +9,11 @@ import { useState, useTransition } from 'react';
  * @example
  * const [isLiked, toggleLike] = useOptimistic(initialLiked, likeAction);
  */
-export function useOptimistic\u003cT\u003e(
+export function useOptimistic<T>(
     initialState: T,
-    serverAction: (newState: T) => Promise\u003cvoid | { error?: string }\u003e
-): [T, (newState: T) => Promise\u003cvoid\u003e] {
-    const [state, setState] = useState\u003cT\u003e(initialState);
+    serverAction: (newState: T) => Promise<void | { error?: string }>
+): [T, (newState: T) => Promise<void>] {
+    const [state, setState] = useState<T>(initialState);
     const [isPending, startTransition] = useTransition();
 
     const optimisticUpdate = async (newState: T) => {
