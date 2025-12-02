@@ -32,6 +32,8 @@ export function EasterEggManager() {
     const lastShakeTime = useRef(0);
 
     useEffect(() => {
+        console.log("EasterEggManager mounted and active!");
+
         // --- 1. Midnight Schrödinger Check ---
         const checkTime = () => {
             const now = new Date();
@@ -204,6 +206,21 @@ export function EasterEggManager() {
 
     return (
         <>
+            {/* Debug Button - Temporary */}
+            <div className="fixed bottom-20 right-4 z-[100] opacity-50 hover:opacity-100 transition-opacity">
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                        console.log("Debug: Manually triggering Einstein Mode");
+                        window.dispatchEvent(new Event("einstein-mode-trigger"));
+                        toast("Debug: Einstein Mode Triggered");
+                    }}
+                >
+                    🐞 Test Easter Egg
+                </Button>
+            </div>
+
             {/* Midnight Schrödinger Dialog */}
             <Dialog open={showSchrodinger} onOpenChange={setShowSchrodinger}>
                 <DialogContent className="sm:max-w-md">
