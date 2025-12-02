@@ -25,6 +25,17 @@ export function Logo() {
     const tapTimeout = useRef<NodeJS.Timeout>(null);
 
     const handleTap = () => {
+        // Request DeviceMotion permission on iOS 13+ on first tap
+        if (tapCount === 0 && typeof DeviceMotionEvent !== 'undefined' && (DeviceMotionEvent as any).requestPermission) {
+            (DeviceMotionEvent as any).requestPermission()
+                .then((response: string) => {
+                    if (response === 'granted') {
+                        console.log("Motion permission granted");
+                    }
+                })
+                .catch(console.error);
+        }
+
         setTapCount(prev => {
             const newCount = prev + 1;
             if (newCount === 5) {

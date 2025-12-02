@@ -55,7 +55,9 @@ export function EasterEggManager() {
                 const distance = Math.abs(currentScrollY - lastScrollY.current);
                 const speed = distance / timeDiff; // pixels per ms
 
-                if (speed > 4) { // Threshold for "Light Speed"
+                // Lowered threshold from 4 to 3 for easier triggering
+                if (speed > 3) {
+                    console.log("Light speed triggered!", speed);
                     document.body.style.filter = "blur(4px) hue-rotate(90deg)";
                     document.body.style.transition = "filter 0.1s";
 
@@ -93,7 +95,9 @@ export function EasterEggManager() {
                 const touchY = e.touches[0].clientY;
                 const pullDistance = touchY - touchStartY.current;
 
-                if (pullDistance > pullThreshold) {
+                // Lowered threshold from 300 to 250
+                if (pullDistance > 250) {
+                    console.log("Time machine triggered!");
                     // Trigger Time Machine
                     toast("🕰️ Zaman Makinesi Çalıştırılıyor...", {
                         description: "Geçmişe gidiliyor: 1905 (Annus Mirabilis)",
@@ -126,7 +130,9 @@ export function EasterEggManager() {
             if (now - lastShakeTime.current > 100) {
                 const diff = Math.abs(x - lastX.current + y - lastY.current + z - lastZ.current);
 
-                if (diff > 25) { // Shake threshold
+                // Lowered threshold from 25 to 15 for easier triggering
+                if (diff > 15) {
+                    console.log("Shake triggered!", diff);
                     toast("⚛️ Kuantum Dalgalanması Tespit Edildi!", {
                         icon: "🌊",
                         style: {
