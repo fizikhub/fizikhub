@@ -22,7 +22,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     // Fetch profile
     const { data: profile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, cover_url')
         .eq('username', username)
         .single();
 

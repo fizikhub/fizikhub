@@ -75,16 +75,27 @@ export function PublicProfileView({
     return (
         <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
             {/* Modern Cover Section with Parallax-like feel */}
-            <div className="relative h-64 md:h-80 w-full overflow-hidden">
-                <motion.div
-                    initial={{ scale: 1.1 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`}
-                >
-                    <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                </motion.div>
+            <div className="relative h-64 md:h-80 w-full overflow-hidden group">
+                {profile.cover_url ? (
+                    <motion.div
+                        initial={{ scale: 1.1 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${profile.cover_url})` }}
+                    />
+                ) : (
+                    <motion.div
+                        initial={{ scale: 1.1 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`}
+                    >
+                        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+                    </motion.div>
+                )}
+                <div className="absolute inset-0 bg-black/10" />
             </div>
 
             <motion.div
@@ -96,15 +107,15 @@ export function PublicProfileView({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Left Sidebar: Profile Card */}
                     <motion.div variants={itemVariants} className="lg:col-span-4">
-                        <Card className="border-none shadow-2xl bg-card/80 backdrop-blur-xl overflow-hidden sticky top-24">
-                            <CardContent className="p-6 flex flex-col items-center text-center pt-12 relative">
+                        <Card className="border-none shadow-2xl bg-card/80 backdrop-blur-xl overflow-visible sticky top-24">
+                            <CardContent className="p-6 flex flex-col items-center text-center pt-16 relative">
                                 {/* Avatar */}
-                                <div className="absolute -top-16 left-1/2 -translate-x-1/2">
+                                <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-20">
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
                                         className="relative"
                                     >
-                                        <div className="h-32 w-32 rounded-full p-1.5 bg-background shadow-2xl ring-4 ring-background/50">
+                                        <div className="h-32 w-32 rounded-full p-1.5 bg-background shadow-2xl ring-4 ring-background/50 overflow-hidden">
                                             <Avatar className="h-full w-full border-2 border-muted">
                                                 <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
                                                 <AvatarFallback className="text-4xl bg-muted font-bold text-muted-foreground">
@@ -125,14 +136,18 @@ export function PublicProfileView({
                                 </div>
 
                                 {/* Name & Bio */}
-                                <div className="mt-16 space-y-2 w-full">
+                                <div className="mt-4 space-y-2 w-full">
                                     <h1 className="text-2xl font-bold tracking-tight">{profile.full_name || "İsimsiz Kullanıcı"}</h1>
                                     <p className="text-muted-foreground font-medium flex items-center justify-center gap-1">
                                         @{profile.username}
                                     </p>
 
                                     <div className="flex justify-center py-2">
-                                        <ReputationDisplay reputation={profile.reputation || 0} size="sm" />
+                                        <ReputationDisplay
+                                            reputation={profile.reputation || 0}
+                                            size="sm"
+                                            className="bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800"
+                                        />
                                     </div>
 
                                     {profile.bio && (
@@ -220,23 +235,33 @@ export function PublicProfileView({
                         </Card>
 
                         {/* Badges Section - Left Sidebar */}
-                        {userBadges && userBadges.length > 0 && (
-                            <motion.div variants={itemVariants} className="mt-6">
-                                <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
-                                    <CardContent className="p-6">
-                                        <h3 className="font-semibold mb-4 flex items-center gap-2">
-                                            <BadgeCheck className="h-5 w-5 text-primary" />
-                                            Rozetler
-                                        </h3>
+                        <motion.div variants={itemVariants} className="mt-6">
+                            <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
+                                <CardContent className="p-6">
+                                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                                        <BadgeCheck className="h-5 w-5 text-primary" />
+                                        Rozetler
+                                    </h3>
+                                    {userBadges && userBadges.length > 0 ? (
                                         <BadgeDisplay
                                             userBadges={userBadges}
                                             maxDisplay={12}
                                             size="md"
                                         />
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        )}
+                                    ) : (
+                                        <a href="/puanlar-nedir" className="block group">
+                                            <div className="border-2 border-dashed border-muted rounded-xl p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
+                                                <div className="bg-muted/50 p-2 rounded-full inline-flex mb-2 group-hover:scale-110 transition-transform">
+                                                    <BadgeCheck className="h-5 w-5 text-muted-foreground" />
+                                                </div>
+                                                <p className="text-sm font-medium text-muted-foreground">Henüz rozet kazanılmamış</p>
+                                                <p className="text-xs text-primary mt-1 font-medium">Rozetler nedir?</p>
+                                            </div>
+                                        </a>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     </motion.div>
 
                     {/* Right Content: Tabs & Activity */}
