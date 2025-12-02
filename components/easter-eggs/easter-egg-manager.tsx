@@ -206,21 +206,7 @@ export function EasterEggManager() {
 
     return (
         <>
-            {/* Debug Button - Temporary */}
-            <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[9999] opacity-90 hover:opacity-100 transition-opacity w-full flex justify-center pointer-events-none">
-                <Button
-                    variant="destructive"
-                    size="lg"
-                    className="shadow-2xl border-4 border-white text-xl py-8 px-12 pointer-events-auto animate-bounce"
-                    onClick={() => {
-                        console.log("Debug: Manually triggering Einstein Mode");
-                        window.dispatchEvent(new Event("einstein-mode-trigger"));
-                        toast("Debug: Einstein Mode Triggered");
-                    }}
-                >
-                    🐞 TEST ET (BÜYÜK)
-                </Button>
-            </div>
+
 
             {/* Midnight Schrödinger Dialog */}
             <Dialog open={showSchrodinger} onOpenChange={setShowSchrodinger}>
