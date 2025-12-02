@@ -173,6 +173,110 @@ export interface Database {
                     category?: string | null
                 }
             }
+            quizzes: {
+                Row: {
+                    id: string
+                    title: string
+                    slug: string
+                    description: string | null
+                    points: number
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    title: string
+                    slug: string
+                    description?: string | null
+                    points?: number
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    title?: string
+                    slug?: string
+                    description?: string | null
+                    points?: number
+                    created_at?: string
+                }
+            }
+            quiz_questions: {
+                Row: {
+                    id: string
+                    quiz_id: string
+                    question_text: string
+                    options: Json
+                    correct_answer: number
+                    order: number
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    quiz_id: string
+                    question_text: string
+                    options: Json
+                    correct_answer: number
+                    order?: number
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    quiz_id?: string
+                    question_text?: string
+                    options?: Json
+                    correct_answer?: number
+                    order?: number
+                    created_at?: string
+                }
+            }
+            user_quiz_attempts: {
+                Row: {
+                    id: string
+                    user_id: string
+                    quiz_id: string
+                    score: number
+                    total_questions: number
+                    completed_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    quiz_id: string
+                    score: number
+                    total_questions: number
+                    completed_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    quiz_id?: string
+                    score?: number
+                    total_questions?: number
+                    completed_at?: string
+                }
+            }
+            weekly_picks: {
+                Row: {
+                    id: string
+                    question_id: number
+                    week_start_date: string
+                    is_active: boolean
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    question_id: number
+                    week_start_date?: string
+                    is_active?: boolean
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    question_id?: number
+                    week_start_date?: string
+                    is_active?: boolean
+                    created_at?: string
+                }
+            }
         }
     }
 }
