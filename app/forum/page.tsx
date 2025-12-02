@@ -74,7 +74,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         .single();
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="bg-background pb-20">
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
                 <ModernForumHeader />
 

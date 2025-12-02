@@ -164,9 +164,7 @@ export default async function QuestionPage({ params }: PageProps) {
     const isNew = new Date(question.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     return (
-        <div className="min-h-screen bg-background">
-            <ViewTracker questionId={question.id} />
-
+        <div className="bg-background pb-20">
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto">
                 {/* Back Button */}
                 <div className="mb-4 sm:mb-6">
@@ -375,6 +373,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     </aside>
                 </div>
             </div>
+            <ViewTracker questionId={question.id} />
         </div >
     );
 }

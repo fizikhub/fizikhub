@@ -136,7 +136,7 @@ export default async function ProfilePage() {
     const coverGradient = gradients[gradientIndex];
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="bg-background pb-20">
             {/* Editable Cover Image */}
             <EditableCover
                 url={profile?.cover_url}
