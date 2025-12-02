@@ -135,6 +135,8 @@ html {
   -webkit-tap-highlight-color: transparent;
   /* Minimum font size for mobile readability */
   font-size: 16px;
+  /* Optimize touch actions */
+  touch-action: pan-x pan-y;
 }
 
 /* Safe area insets for notched phones */
