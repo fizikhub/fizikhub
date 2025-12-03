@@ -17,11 +17,14 @@ export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['R
 
 export async function getArticles(
     supabase: SupabaseClient<Database>,
-    options: { status?: string | null; authorRole?: 'admin' | 'all' } = { status: 'published', authorRole: 'all' }
+    options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string } = { status: 'published', authorRole: 'all' }
 ) {
+    // Default to all fields if not specified, but for homepage we will want to restrict this
+    const selectFields = options.fields || '*, author:profiles!inner(*)';
+
     let query = supabase
         .from('articles')
-        .select('*, author:profiles!inner(*)')
+        .select(selectFields)
         .order('created_at', { ascending: false });
 
     if (options.status) {
@@ -29,11 +32,6 @@ export async function getArticles(
     }
 
     if (options.authorRole === 'admin') {
-        // Filter for admin authors
-        // We assume admin emails are hardcoded or role is 'admin'
-        // Since filtering by joined table column is tricky with OR logic for emails,
-        // we'll rely on the 'role' column in profiles if it exists, or specific emails if needed.
-        // Based on previous code, we check role='admin'.
         query = query.eq('author.role', 'admin');
     }
 

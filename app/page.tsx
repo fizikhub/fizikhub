@@ -22,7 +22,11 @@ export default async function Home() {
 
   // Fetch articles and trending questions in parallel
   const [rawArticles, { data: trendingQuestions }] = await Promise.all([
-    getArticles(supabase, { status: 'published', authorRole: 'admin' }),
+    getArticles(supabase, {
+      status: 'published',
+      authorRole: 'admin',
+      fields: 'id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)'
+    }),
     supabase
       .from('questions')
       .select(`

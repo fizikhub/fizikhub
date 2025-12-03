@@ -35,12 +35,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
                     "flex flex-col w-full md:w-[320px] lg:w-[380px] border-r bg-muted/5",
                     activeConversationId ? "hidden md:flex" : "flex"
                 )}>
-                    <div className="p-4 border-b bg-background/50 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between">
-                        <h1 className="font-bold text-xl flex items-center gap-2">
-                            <MessageSquare className="h-5 w-5 text-primary" />
-                            Mesajlar
-                        </h1>
-                    </div>
+
                     <div className="flex-1 overflow-hidden">
                         <ConversationList conversations={conversations} />
                     </div>

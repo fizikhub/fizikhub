@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCheck, Heart, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft, BadgeCheck, AlertTriangle, Image as ImageIcon, Mic } from "lucide-react";
+import { Send, CheckCheck, Heart, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft, BadgeCheck, AlertTriangle, Mic } from "lucide-react";
 import { sendMessage, getMessages, markAsRead, toggleLike } from "@/app/mesajlar/actions";
 import { format, isToday, isYesterday } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -13,6 +13,12 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Message {
     id: number;
@@ -106,7 +112,6 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
 
     const [isBlocked, setIsBlocked] = useState(false);
     const [isBlocking, setIsBlocking] = useState(false);
-    const [showBlockMenu, setShowBlockMenu] = useState(false);
 
     useEffect(() => {
         const checkBlock = async () => {
@@ -129,7 +134,6 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
             setIsBlocking(true);
             toast.success("Kullanıcı engellendi.");
         }
-        setShowBlockMenu(false);
     };
 
     const handleLike = async (messageId: number, currentLikeStatus: boolean) => {
@@ -173,8 +177,10 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
 
     return (
         <div className="flex flex-col h-full bg-[#f0f2f5] dark:bg-[#0b141a] relative">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-repeat" />
+            {/* Background Pattern - Subtle Dot Pattern */}
+            <div className="absolute inset-0 opacity-[0.4] dark:opacity-[0.1] pointer-events-none"
+                style={{ backgroundImage: 'radial-gradient(circle, #a1a1aa 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+            />
 
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-background/80 backdrop-blur-xl border-b z-20 sticky top-0 shadow-sm">
@@ -211,29 +217,20 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
                     <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
                         <Phone className="h-5 w-5" />
                     </Button>
-                    <div className="relative">
-                        <Button variant="ghost" size="icon" onClick={() => setShowBlockMenu(!showBlockMenu)} className="rounded-full">
-                            <MoreVertical className="h-5 w-5" />
-                        </Button>
-                        <AnimatePresence>
-                            {showBlockMenu && (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                    className="absolute right-0 top-full mt-2 w-48 bg-popover border rounded-xl shadow-xl z-50 py-1 overflow-hidden"
-                                >
-                                    <button
-                                        onClick={handleBlockToggle}
-                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-destructive/10 text-destructive flex items-center gap-2 transition-colors"
-                                    >
-                                        <AlertTriangle className="h-4 w-4" />
-                                        {isBlocking ? "Engeli Kaldır" : "Kullanıcıyı Engelle"}
-                                    </button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="rounded-full">
+                                <MoreVertical className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={handleBlockToggle} className="text-destructive focus:text-destructive">
+                                <AlertTriangle className="h-4 w-4 mr-2" />
+                                {isBlocking ? "Engeli Kaldır" : "Kullanıcıyı Engelle"}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 
@@ -298,31 +295,18 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
                                             className={cn(
                                                 "relative max-w-[85%] sm:max-w-[70%] px-4 py-2 shadow-sm border text-sm sm:text-base leading-relaxed break-words",
                                                 isMe
-                                                    ? "bg-[#d9fdd3] dark:bg-[#005c4b] border-transparent rounded-2xl rounded-tr-none text-foreground/90"
+                                                    ? "bg-primary text-primary-foreground border-transparent rounded-2xl rounded-tr-none"
                                                     : "bg-white dark:bg-[#202c33] border-transparent rounded-2xl rounded-tl-none text-foreground/90",
                                                 isConsecutive && isMe && "rounded-tr-2xl",
                                                 isConsecutive && !isMe && "rounded-tl-2xl"
                                             )}
                                             onDoubleClick={() => handleLike(msg.id, msg.is_liked)}
                                         >
-                                            {/* Tail for first message in group */}
-                                            {!isConsecutive && (
-                                                <svg
-                                                    className={cn(
-                                                        "absolute top-0 w-3 h-3 fill-current",
-                                                        isMe ? "-right-2 text-[#d9fdd3] dark:text-[#005c4b]" : "-left-2 text-white dark:text-[#202c33]"
-                                                    )}
-                                                    viewBox="0 0 10 10"
-                                                >
-                                                    <path d={isMe ? "M0 0 L10 0 L0 10 Z" : "M10 0 L0 0 L10 10 Z"} />
-                                                </svg>
-                                            )}
-
                                             <p>{msg.content}</p>
 
                                             <div className={cn(
                                                 "flex items-center gap-1 mt-1 select-none opacity-70 text-[10px]",
-                                                isMe ? "justify-end" : "justify-start"
+                                                isMe ? "justify-end text-primary-foreground/80" : "justify-start"
                                             )}>
                                                 <span>
                                                     {format(new Date(msg.created_at), "HH:mm", { locale: tr })}
@@ -331,7 +315,7 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
                                                     <span title={msg.is_read ? "Okundu" : "İletildi"}>
                                                         <CheckCheck className={cn(
                                                             "h-3.5 w-3.5",
-                                                            msg.is_read ? "text-blue-500" : "text-muted-foreground/60"
+                                                            msg.is_read ? "text-primary-foreground" : "text-primary-foreground/60"
                                                         )} />
                                                     </span>
                                                 )}
