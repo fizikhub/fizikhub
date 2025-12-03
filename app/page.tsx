@@ -81,8 +81,8 @@ export default async function Home() {
 
       <main className="flex flex-col min-h-screen bg-background overflow-x-hidden">
         <HeroSection3D />
-        <FeaturesSection />
         <ModernArticleGrid articles={articles} />
+        <FeaturesSection />
         <TrendingQuestions questions={formattedQuestions} />
       </main>
     </>
