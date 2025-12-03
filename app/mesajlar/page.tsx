@@ -28,16 +28,17 @@ export default async function MessagesPage({ searchParams }: PageProps) {
     }
 
     return (
-        <div className="container py-4 md:py-6 px-0 md:px-6 h-[calc(100vh-3.5rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-[350px_1fr] lg:grid-cols-[400px_1fr] h-full md:border md:rounded-2xl md:overflow-hidden md:bg-card md:shadow-xl transition-all">
+        <div className="flex h-[calc(100vh-4rem)] max-w-[1600px] mx-auto md:p-4 lg:p-6">
+            <div className="flex-1 flex overflow-hidden bg-background md:border md:rounded-2xl md:shadow-2xl md:ring-1 md:ring-border/5">
                 {/* Sidebar - Conversation List */}
                 <div className={cn(
-                    "flex flex-col bg-background md:bg-muted/10 md:border-r h-full",
+                    "flex flex-col w-full md:w-[320px] lg:w-[380px] border-r bg-muted/5",
                     activeConversationId ? "hidden md:flex" : "flex"
                 )}>
-                    <div className="p-4 border-b flex items-center justify-between bg-card/50 backdrop-blur-sm">
-                        <h1 className="font-bold text-2xl flex items-center gap-2 text-primary">
-                            <MessageSquare className="h-6 w-6" /> Mesajlar
+                    <div className="p-4 border-b bg-background/50 backdrop-blur-xl sticky top-0 z-10 flex items-center justify-between">
+                        <h1 className="font-bold text-xl flex items-center gap-2">
+                            <MessageSquare className="h-5 w-5 text-primary" />
+                            Mesajlar
                         </h1>
                     </div>
                     <div className="flex-1 overflow-hidden">
@@ -47,7 +48,7 @@ export default async function MessagesPage({ searchParams }: PageProps) {
 
                 {/* Main - Chat Window */}
                 <div className={cn(
-                    "flex flex-col bg-background h-full relative",
+                    "flex flex-col flex-1 bg-background relative min-w-0",
                     !activeConversationId ? "hidden md:flex" : "flex"
                 )}>
                     {activeConversationId && activeConversation ? (
@@ -58,12 +59,12 @@ export default async function MessagesPage({ searchParams }: PageProps) {
                         />
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/5">
-                            <div className="bg-primary/5 p-8 rounded-full mb-6 animate-pulse">
-                                <MessageSquare className="h-20 w-20 text-primary/20" />
+                            <div className="bg-primary/5 p-6 rounded-3xl mb-6 animate-pulse ring-1 ring-primary/10">
+                                <MessageSquare className="h-16 w-16 text-primary/40" />
                             </div>
-                            <h2 className="text-2xl font-bold mb-2 text-foreground">Hoş Geldin, {user.user_metadata?.full_name?.split(' ')[0] || "Kullanıcı"}! 👋</h2>
-                            <p className="max-w-md text-muted-foreground">
-                                Sol taraftan bir sohbet seçerek mesajlaşmaya başlayabilirsin. Yeni bir sohbet başlatmak için kullanıcı profillerini ziyaret et.
+                            <h2 className="text-2xl font-bold mb-2 text-foreground tracking-tight">Hoş Geldin, {user.user_metadata?.full_name?.split(' ')[0] || "Kullanıcı"}! 👋</h2>
+                            <p className="max-w-sm text-muted-foreground/80 leading-relaxed">
+                                Sol taraftan bir sohbet seçerek mesajlaşmaya başlayabilirsin.
                             </p>
                         </div>
                     )}
