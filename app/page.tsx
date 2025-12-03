@@ -2,7 +2,7 @@ import { HeroSection3D } from "@/components/home/hero-section-3d";
 import { ModernArticleGrid } from "@/components/home/modern-article-grid";
 import { FeaturesSection } from "@/components/home/features-section";
 import { TrendingQuestions } from "@/components/home/trending-questions";
-import { EasterEggManager } from "@/components/easter-eggs/easter-egg-manager";
+
 import { createClient } from "@/lib/supabase-server";
 import { getArticles } from "@/lib/api";
 import type { Metadata } from "next";
@@ -73,7 +73,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <EasterEggManager />
+
 
       <main className="flex flex-col min-h-screen bg-background overflow-x-hidden">
         <HeroSection3D />

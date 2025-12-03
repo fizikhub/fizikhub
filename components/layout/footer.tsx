@@ -20,18 +20,7 @@ export function Footer() {
                     <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
                         &copy; 2025 Fizikhub. İzinsiz alıntı yapanı kara deliğe atarız.
                     </p>
-                    <button
-                        onClick={() => {
-                            console.log("Debug: Manually triggering Einstein Mode");
-                            if (typeof window !== 'undefined') {
-                                window.dispatchEvent(new Event("einstein-mode-trigger"));
-                                // Also try to show a toast if possible, but we might not have access to it here easily without importing
-                            }
-                        }}
-                        className="ml-2 rounded-full bg-red-500/10 px-3 py-1 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition-colors"
-                    >
-                        🐞 Test
-                    </button>
+
                 </div>
                 <div className="flex flex-col items-center gap-4 md:items-end">
                     <div className="flex gap-4">
