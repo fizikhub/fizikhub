@@ -1,7 +1,7 @@
-import { HeroSection3D } from "@/components/home/hero-section-3d";
-import { ModernArticleGrid } from "@/components/home/modern-article-grid";
-import { FeaturesSection } from "@/components/home/features-section";
-import { TrendingQuestions } from "@/components/home/trending-questions";
+import { HeroBento } from "@/components/home/hero-bento";
+import { FeaturedContentBento } from "@/components/home/featured-content-bento";
+import { InteractiveStats } from "@/components/home/interactive-stats";
+import { ModernCTASection } from "@/components/home/modern-cta-section";
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
@@ -99,10 +99,10 @@ export default async function Home() {
 
 
       <main className="flex flex-col min-h-screen bg-background overflow-x-hidden">
-        <HeroSection3D />
-        <ModernArticleGrid articles={articles} />
-        <FeaturesSection />
-        <TrendingQuestions questions={formattedQuestions} />
+        <HeroBento />
+        <FeaturedContentBento articles={articles} questions={formattedQuestions} />
+        <InteractiveStats />
+        <ModernCTASection />
       </main>
     </>
   );
