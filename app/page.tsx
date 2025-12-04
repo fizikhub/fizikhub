@@ -3,8 +3,8 @@ import { ModernArticleGrid } from "@/components/home/modern-article-grid";
 import { FeaturesSection } from "@/components/home/features-section";
 import { TrendingQuestions } from "@/components/home/trending-questions";
 
-import { createClient } from "@/lib/supabase-server";
-import { getArticles } from "@/lib/api";
+import { createClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -17,29 +17,48 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Home() {
-  const supabase = await createClient();
+// Create a cached version of the data fetching function
+const getCachedHomepageData = unstable_cache(
+  async () => {
+    // Create a direct client to avoid cookie dependency in cached function
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
 
-  // Fetch articles and trending questions in parallel
-  const [rawArticles, { data: trendingQuestions }] = await Promise.all([
-    getArticles(supabase, {
-      status: 'published',
-      fields: 'id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)',
-      limit: 3
-    }),
-    supabase
-      .from('questions')
-      .select(`
-        id,
-        title,
-        created_at,
-        votes,
-        profiles(username, avatar_url),
-        answers(count)
-      `)
-      .order('votes', { ascending: false })
-      .limit(3)
-  ]);
+    // Fetch articles and trending questions in parallel
+    const [articlesResult, questionsResult] = await Promise.all([
+      supabase
+        .from('articles')
+        .select('id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(3),
+      supabase
+        .from('questions')
+        .select(`
+          id,
+          title,
+          created_at,
+          votes,
+          profiles(username, avatar_url),
+          answers(count)
+        `)
+        .order('votes', { ascending: false })
+        .limit(3)
+    ]);
+
+    return {
+      articles: articlesResult.data || [],
+      trendingQuestions: questionsResult.data || []
+    };
+  },
+  ['homepage-data'], // Cache key
+  { revalidate: 3600 } // Revalidate every hour
+);
+
+export default async function Home() {
+  const { articles: rawArticles, trendingQuestions } = await getCachedHomepageData();
 
   const articles = rawArticles.map(a => ({
     ...a,
