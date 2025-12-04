@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useOptimistic as useReactOptimistic } from 'react';
 
 /**
  * Optimistic UI Hook
@@ -16,9 +16,8 @@ export function useOptimistic<T>(
     const [state, setState] = useState<T>(initialState);
     const [, startTransition] = useTransition();
 
-    const [, addOptimistic] = useOptimistic(
+    const [optimisticState, addOptimistic] = useReactOptimistic(
         state,
-        // @ts-expect-error -- optimistic state type mismatch
         (currentState: T, optimisticValue: T) => {
             return optimisticValue;
         }
@@ -46,5 +45,5 @@ export function useOptimistic<T>(
         });
     };
 
-    return [state, optimisticUpdate];
+    return [optimisticState, optimisticUpdate];
 }
