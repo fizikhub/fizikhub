@@ -28,12 +28,19 @@ export async function updateSession(request: NextRequest) {
     )
 
     // Refreshing the auth token
+    // OPTIMIZATION: Skip auth check for homepage and public static pages to improve TTFB.
+    // The homepage is cached and doesn't use server-side user data.
+    // Navbar fetches user status on the client side.
+    if (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/hakkimizda' || request.nextUrl.pathname === '/gizlilik-politikasi') {
+        return supabaseResponse;
+    }
+
     const {
         data: { user },
     } = await supabase.auth.getUser()
 
     // Protected routes
-    if (request.nextUrl.pathname.startsWith('/admin') && user?.email !== 'admin@fizikhub.com') {
+    if (request.nextUrl.pathname.startsWith('/admin') && user?.email !== 'barannnbozkurttb.b@gmail.com' && user?.email !== 'barannnnbozkurttb.b@gmail.com') {
         return NextResponse.redirect(new URL('/', request.url))
     }
 
