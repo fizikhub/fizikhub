@@ -7,9 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Image as ImageIcon, Upload } from "lucide-react";
+import {
+    Bold,
+    Italic,
+    List,
+    ListOrdered,
+    Quote,
+    Undo,
+    Redo,
+    Link as LinkIcon,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    Loader2,
+    Upload
+} from "lucide-react";
 import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
+import NextImage from "next/image";
 
 interface ArticleEditorProps {
     article?: {
@@ -59,7 +74,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             } else {
                 toast.error(result.error || "Resim yüklenemedi");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu");
         } finally {
             setIsUploading(false);
@@ -87,7 +102,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             } else {
                 toast.error(result.error || "İşlem başarısız");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu");
         } finally {
             setIsSubmitting(false);
@@ -162,10 +177,11 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
                 {imageUrl && (
                     <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
-                        <img
+                        <NextImage
                             src={imageUrl}
                             alt="Kapak önizleme"
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
                         />
                     </div>
                 )}

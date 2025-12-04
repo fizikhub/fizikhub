@@ -25,12 +25,12 @@ interface QuestionCardProps {
     question: {
         id: number;
         title: string;
-        content: string;
-        category: string;
+        content: string | null;
+        category: string | null;
         created_at: string;
         votes: number;
         views: number;
-        tags: string[];
+        tags: string[] | null;
         profiles?: {
             username: string | null;
             full_name: string | null;
@@ -227,7 +227,7 @@ export function QuestionCard({ question, hasVoted: initialHasVoted = false }: Qu
                             )}
                         </div>
                         <p className="text-sm sm:text-base text-muted-foreground line-clamp-2 leading-relaxed">
-                            {question.content}
+                            {question.content || ""}
                         </p>
                     </div>
 
@@ -236,7 +236,7 @@ export function QuestionCard({ question, hasVoted: initialHasVoted = false }: Qu
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2">
                             <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors cursor-pointer">
-                                {question.category}
+                                {question.category || "Genel"}
                             </Badge>
                             {question.tags?.slice(0, 3).map((tag) => (
                                 <Badge key={tag} variant="secondary" className="bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer border-0 font-normal">

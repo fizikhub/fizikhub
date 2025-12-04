@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Heart, ThumbsUp, Award } from "lucide-react";
+import { Heart } from "lucide-react";
 import { haptics } from "@/lib/haptics";
 import { celebrate } from "@/lib/confetti";
 import { LazyImage } from "@/components/ui/lazy-image";

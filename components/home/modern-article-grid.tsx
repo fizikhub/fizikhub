@@ -27,7 +27,15 @@ interface Article {
 }
 
 export function ModernArticleGrid({ articles }: { articles: Article[] }) {
-    if (!articles.length) return null;
+    if (!articles.length) {
+        return (
+            <section className="py-20 text-center">
+                <div className="container">
+                    <p className="text-muted-foreground">Henüz makale bulunmuyor.</p>
+                </div>
+            </section>
+        );
+    }
 
     const featuredArticle = articles[0];
     const otherArticles = articles.slice(1);

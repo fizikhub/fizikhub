@@ -2,27 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { Database } from "@/types/database";
 
-interface Answer {
-    id: number;
-    content: string;
-    question_id: number;
-    author_id: string;
-    created_at: string;
-    is_accepted: boolean | null;
-    profiles?: {
-        username: string | null;
-        full_name: string | null;
-        avatar_url: string | null;
+type Answer = Database['public']['Tables']['answers']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'];
+
+export interface AnswerWithProfile extends Answer {
+    profiles: Pick<Profile, 'username' | 'full_name' | 'avatar_url'> & {
         is_verified?: boolean | null;
     } | null;
     likeCount?: number;
     isLiked?: boolean;
-    comments?: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    comments?: any[]; // Keep as any for now if comments structure isn't fully defined yet, or define if possible
 }
 
-export function useRealtimeAnswers(questionId: number, initialAnswers: Answer[]) {
-    const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
+export function useRealtimeAnswers(questionId: number, initialAnswers: AnswerWithProfile[]) {
+    const [answers, setAnswers] = useState<AnswerWithProfile[]>(initialAnswers);
     const supabase = createClient();
 
     useEffect(() => {
@@ -54,7 +50,7 @@ export function useRealtimeAnswers(questionId: number, initialAnswers: Answer[])
                         .single();
 
                     if (newAnswer) {
-                        setAnswers((current) => [...current, { ...newAnswer, comments: [] }]);
+                        setAnswers((current) => [...current, { ...newAnswer, comments: [] } as AnswerWithProfile]);
                     }
                 }
             )

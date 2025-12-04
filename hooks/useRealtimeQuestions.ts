@@ -2,28 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import { Database } from "@/types/database";
 
-interface Question {
-    id: number;
-    title: string;
-    content: string;
-    category: string;
-    author_id: string;
-    created_at: string;
-    votes: number;
-    views: number;
-    tags: string[];
-    profiles?: {
-        username: string | null;
-        full_name: string | null;
-        avatar_url: string | null;
+type Question = Database['public']['Tables']['questions']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'];
+
+export interface QuestionWithProfile extends Question {
+    profiles: Pick<Profile, 'username' | 'full_name' | 'avatar_url'> & {
         is_verified?: boolean | null;
     } | null;
-    answers?: any[];
+    votes: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    answers?: any[]; // Keep as any for now or define Answer structure if needed
 }
 
-export function useRealtimeQuestions(initialQuestions: Question[]) {
-    const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+export function useRealtimeQuestions(initialQuestions: QuestionWithProfile[]) {
+    const [questions, setQuestions] = useState<QuestionWithProfile[]>(initialQuestions);
     const supabase = createClient();
 
     useEffect(() => {
@@ -54,7 +48,7 @@ export function useRealtimeQuestions(initialQuestions: Question[]) {
                         .single();
 
                     if (newQuestion) {
-                        setQuestions((current) => [newQuestion, ...current]);
+                        setQuestions((current) => [newQuestion as QuestionWithProfile, ...current]);
                     }
                 }
             )

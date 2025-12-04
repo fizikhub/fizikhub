@@ -36,7 +36,7 @@ async function main() {
     console.log('Question not found. Creating it...');
 
     // Get admin user
-    const { data: { users }, error: userError } = await supabase.auth.admin.listUsers();
+    const { data: { users } } = await supabase.auth.admin.listUsers();
     const admin = users.find(u => u.email === 'barannnbozkurttb.b@gmail.com');
 
     if (!admin) {

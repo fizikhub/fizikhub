@@ -24,6 +24,7 @@ export function DidYouKnow() {
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsClient(true);
         // Random start
         setIndex(Math.floor(Math.random() * facts.length));
@@ -53,7 +54,7 @@ export function DidYouKnow() {
                             transition={{ duration: 0.3 }}
                             className="text-lg text-center font-medium leading-relaxed"
                         >
-                            "{facts[index]}"
+                            &quot;{facts[index]}&quot;
                         </motion.p>
                     </AnimatePresence>
                 </div>

@@ -11,6 +11,7 @@ export function LoadingMessage() {
     useEffect(() => {
         // Hydration mismatch'i önlemek için client-side'da seçiyoruz
         const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMessage(randomMessage);
     }, []);
 

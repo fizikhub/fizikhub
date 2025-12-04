@@ -80,16 +80,17 @@ export async function completeOnboarding(formData: { username: string; fullName:
         return { success: false, error: "Bu kullanıcı adı zaten alınmış." };
     }
 
-    // INSERT profile (not UPDATE, because we removed auto-creation)
+    // UPSERT profile to handle both new and existing (auto-created) profiles
     const { error } = await supabase
         .from('profiles')
-        .insert({
+        .upsert({
             id: user.id,
             username: formData.username,
             full_name: formData.fullName,
             avatar_url: formData.avatarUrl,
             bio: formData.bio,
-            onboarding_completed: true
+            onboarding_completed: true,
+            updated_at: new Date().toISOString()
         });
 
     if (error) {

@@ -9,14 +9,53 @@ export function Logo() {
     const [isLaunching, setIsLaunching] = useState(false);
     const [showExplosion, setShowExplosion] = useState(false);
     const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+    const [randomValues, setRandomValues] = useState<{
+        debris: { angle: number; distance: number; rotate: number; duration: number }[];
+        sparks: { angle: number; distance: number; duration: number }[];
+        smoke: { x: number; y: number }[];
+        flames: { x: number; y: number; duration: number; delay: number }[];
+        smokeParticles: { x: number; y: number }[];
+    }>({ debris: [], sparks: [], smoke: [], flames: [], smokeParticles: [] });
+
     const controls = useAnimation();
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setWindowSize({ width: window.innerWidth, height: window.innerHeight });
         const handleResize = () => {
             setWindowSize({ width: window.innerWidth, height: window.innerHeight });
         };
         window.addEventListener('resize', handleResize);
+
+        // Generate random values once on mount to avoid hydration mismatch
+        setRandomValues({
+            debris: Array.from({ length: 16 }).map(() => ({
+                angle: Math.random() * Math.PI * 2,
+                distance: 150 + Math.random() * 100,
+                rotate: Math.random() * 720,
+                duration: 1 + Math.random() * 0.5
+            })),
+            sparks: Array.from({ length: 24 }).map(() => ({
+                angle: Math.random() * 0.5,
+                distance: 80 + Math.random() * 120,
+                duration: 0.6 + Math.random() * 0.4
+            })),
+            smoke: Array.from({ length: 6 }).map(() => ({
+                x: (Math.random() - 0.5) * 150,
+                y: (Math.random() - 0.5) * 150 + 30
+            })),
+            flames: Array.from({ length: 8 }).map(() => ({
+                x: -8 - Math.random() * 6,
+                y: 8 + Math.random() * 8,
+                duration: 0.5 + Math.random() * 0.3,
+                delay: Math.random() * 0.08 // approximate i * 0.08 but random
+            })),
+            smokeParticles: Array.from({ length: 3 }).map(() => ({
+                x: -12 - Math.random() * 4, // approximate logic
+                y: 12 + Math.random() * 6
+            }))
+        });
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
@@ -26,7 +65,9 @@ export function Logo() {
 
     const handleTap = () => {
         // Request DeviceMotion permission on iOS 13+ on first tap
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if (tapCount === 0 && typeof DeviceMotionEvent !== 'undefined' && (DeviceMotionEvent as any).requestPermission) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (DeviceMotionEvent as any).requestPermission()
                 .then((response: string) => {
                     if (response === 'granted') {
@@ -63,7 +104,7 @@ export function Logo() {
         const h = windowSize.height;
 
         // Calculate circular flight path
-        const numPoints = 20;
+        // const numPoints = 20;
         const xPath: number[] = [];
         const yPath: number[] = [];
         const rotatePath: number[] = [];
@@ -179,11 +220,9 @@ export function Logo() {
                         />
 
                         {/* Debris particles */}
-                        {[...Array(16)].map((_, i) => {
-                            const angle = (i / 16) * Math.PI * 2;
-                            const distance = 150 + Math.random() * 100;
-                            const x = Math.cos(angle) * distance;
-                            const y = Math.sin(angle) * distance;
+                        {randomValues.debris.map((val, i) => {
+                            const x = Math.cos(val.angle) * val.distance;
+                            const y = Math.sin(val.angle) * val.distance;
 
                             return (
                                 <motion.div
@@ -194,10 +233,10 @@ export function Logo() {
                                         x: x,
                                         y: y,
                                         opacity: [1, 1, 0],
-                                        rotate: Math.random() * 720,
+                                        rotate: val.rotate,
                                     }}
                                     transition={{
-                                        duration: 1 + Math.random() * 0.5,
+                                        duration: val.duration,
                                         ease: "easeOut"
                                     }}
                                 />
@@ -205,11 +244,10 @@ export function Logo() {
                         })}
 
                         {/* Fire sparks */}
-                        {[...Array(24)].map((_, i) => {
-                            const angle = (i / 24) * Math.PI * 2 + Math.random() * 0.5;
-                            const distance = 80 + Math.random() * 120;
-                            const x = Math.cos(angle) * distance;
-                            const y = Math.sin(angle) * distance;
+                        {randomValues.sparks.map((val, i) => {
+                            const angle = (i / 24) * Math.PI * 2 + val.angle;
+                            const x = Math.cos(angle) * val.distance;
+                            const y = Math.sin(angle) * val.distance;
 
                             return (
                                 <motion.div
@@ -226,7 +264,7 @@ export function Logo() {
                                         scale: [1, 0.5, 0]
                                     }}
                                     transition={{
-                                        duration: 0.6 + Math.random() * 0.4,
+                                        duration: val.duration,
                                         ease: [0.4, 0, 0.2, 1]
                                     }}
                                 />
@@ -234,14 +272,14 @@ export function Logo() {
                         })}
 
                         {/* Smoke clouds */}
-                        {[...Array(6)].map((_, i) => (
+                        {randomValues.smoke.map((val, i) => (
                             <motion.div
                                 key={`smoke-${i}`}
                                 className="absolute w-16 h-16 bg-gray-600/60 rounded-full blur-xl"
                                 initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
                                 animate={{
-                                    x: (Math.random() - 0.5) * 150,
-                                    y: (Math.random() - 0.5) * 150 + 30,
+                                    x: val.x,
+                                    y: val.y,
                                     opacity: [0, 0.6, 0],
                                     scale: [0.5, 2.5, 3]
                                 }}
@@ -296,7 +334,7 @@ export function Logo() {
                             />
 
                             {/* Flame particles - more dynamic */}
-                            {[...Array(8)].map((_, i) => (
+                            {randomValues.flames.map((val, i) => (
                                 <motion.div
                                     key={i}
                                     className="absolute w-1 h-1 rounded-full"
@@ -309,11 +347,11 @@ export function Logo() {
                                     animate={{
                                         opacity: [0, 0.9, 0],
                                         scale: [0.3, 1, 0.5],
-                                        x: [-1, -8 - Math.random() * 6],
-                                        y: [1, 8 + Math.random() * 8],
+                                        x: [-1, val.x],
+                                        y: [1, val.y],
                                     }}
                                     transition={{
-                                        duration: 0.5 + Math.random() * 0.3,
+                                        duration: val.duration,
                                         repeat: Infinity,
                                         delay: i * 0.08,
                                         ease: [0.4, 0, 0.2, 1]
@@ -322,7 +360,7 @@ export function Logo() {
                             ))}
 
                             {/* Smoke particles */}
-                            {[...Array(3)].map((_, i) => (
+                            {randomValues.smokeParticles.map((val, i) => (
                                 <motion.div
                                     key={`smoke-${i}`}
                                     className="absolute w-2 h-2 bg-gray-400/40 rounded-full blur-sm"

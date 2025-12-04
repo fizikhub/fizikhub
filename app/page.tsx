@@ -24,8 +24,8 @@ export default async function Home() {
   const [rawArticles, { data: trendingQuestions }] = await Promise.all([
     getArticles(supabase, {
       status: 'published',
-      authorRole: 'admin',
-      fields: 'id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)'
+      fields: 'id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)',
+      limit: 3
     }),
     supabase
       .from('questions')

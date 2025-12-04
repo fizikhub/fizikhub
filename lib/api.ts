@@ -17,7 +17,7 @@ export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['R
 
 export async function getArticles(
     supabase: SupabaseClient<Database>,
-    options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string } = { status: 'published', authorRole: 'all' }
+    options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
     // Default to all fields if not specified, but for homepage we will want to restrict this
     const selectFields = options.fields || '*, author:profiles!inner(*)';
@@ -33,6 +33,10 @@ export async function getArticles(
 
     if (options.authorRole === 'admin') {
         query = query.eq('author.role', 'admin');
+    }
+
+    if (options.limit) {
+        query = query.limit(options.limit);
     }
 
     const { data, error } = await query;

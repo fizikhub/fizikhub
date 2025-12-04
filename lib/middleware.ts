@@ -2,10 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
-    let response = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
+    let supabaseResponse = NextResponse.next({
+        request,
     })
 
     const supabase = createServerClient(
@@ -17,49 +15,31 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        request.cookies.set(name, value)
-                    )
-                    response = NextResponse.next({
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+                    supabaseResponse = NextResponse.next({
                         request,
                     })
                     cookiesToSet.forEach(({ name, value, options }) =>
-                        response.cookies.set(name, value, options)
+                        supabaseResponse.cookies.set(name, value, options)
                     )
                 },
             },
         }
     )
 
-    // This will refresh session if needed - required for Server Components
-    const { data: { user } } = await supabase.auth.getUser()
+    // Refreshing the auth token
+    const {
+        data: { user },
+    } = await supabase.auth.getUser()
 
-    // Onboarding Check
-    if (user) {
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('onboarding_completed')
-            .eq('id', user.id)
-            .single()
-
-        const isOnboardingPage = request.nextUrl.pathname.startsWith('/onboarding')
-        const isAuthPage = request.nextUrl.pathname.startsWith('/auth')
-
-        // If profile doesn't exist OR onboarding is not completed
-        // We do NOT force redirect to onboarding anymore, allowing "guest-like" access
-        // The UI should handle the missing profile state (e.g. showing "Complete Setup" button)
-
-        /* 
-        if ((!profile || !profile.onboarding_completed) && !isOnboardingPage && !isAuthPage) {
-            return NextResponse.redirect(new URL('/onboarding', request.url))
-        }
-        */
-
-        // If onboarding IS completed and user IS on onboarding page -> Redirect to home
-        if (profile && profile.onboarding_completed && isOnboardingPage) {
-            return NextResponse.redirect(new URL('/profil', request.url))
-        }
+    // Protected routes
+    if (request.nextUrl.pathname.startsWith('/admin') && user?.email !== 'admin@fizikhub.com') {
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
-    return response
+    if (request.nextUrl.pathname.startsWith('/profil') && !user) {
+        return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    return supabaseResponse
 }

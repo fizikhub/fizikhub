@@ -14,11 +14,19 @@ export function useOptimistic<T>(
     serverAction: (newState: T) => Promise<void | { error?: string }>
 ): [T, (newState: T) => Promise<void>] {
     const [state, setState] = useState<T>(initialState);
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
+
+    const [, addOptimistic] = useOptimistic(
+        state,
+        // @ts-expect-error -- optimistic state type mismatch
+        (currentState: T, optimisticValue: T) => {
+            return optimisticValue;
+        }
+    );
 
     const optimisticUpdate = async (newState: T) => {
         // Immediately update UI (optimistic)
-        setState(newState);
+        addOptimistic(newState); // Use addOptimistic for immediate UI update
 
         // Start server action
         startTransition(async () => {
