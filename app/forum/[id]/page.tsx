@@ -163,8 +163,59 @@ export default async function QuestionPage({ params }: PageProps) {
     const isHot = (question.votes || 0) > 5;
     const isNew = new Date(question.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
 
+    // JSON-LD Structured Data for Q&A
+    const acceptedAnswer = answersWithLikes?.find(a => a.is_accepted);
+    const suggestedAnswers = answersWithLikes?.filter(a => !a.is_accepted);
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'QAPage',
+        mainEntity: {
+            '@type': 'Question',
+            name: question.title,
+            text: question.content.substring(0, 200) + "...",
+            answerCount: answers?.length || 0,
+            upvoteCount: question.votes || 0,
+            dateCreated: question.created_at,
+            author: {
+                '@type': 'Person',
+                name: question.profiles?.username || 'Anonim',
+            },
+            ...(acceptedAnswer && {
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: acceptedAnswer.content,
+                    dateCreated: acceptedAnswer.created_at,
+                    upvoteCount: acceptedAnswer.votes || 0,
+                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}#answer-${acceptedAnswer.id}`,
+                    author: {
+                        '@type': 'Person',
+                        name: acceptedAnswer.profiles?.username || 'Anonim',
+                    },
+                },
+            }),
+            ...(suggestedAnswers && suggestedAnswers.length > 0 && {
+                suggestedAnswer: suggestedAnswers.map(answer => ({
+                    '@type': 'Answer',
+                    text: answer.content,
+                    dateCreated: answer.created_at,
+                    upvoteCount: answer.votes || 0,
+                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}#answer-${answer.id}`,
+                    author: {
+                        '@type': 'Person',
+                        name: answer.profiles?.username || 'Anonim',
+                    },
+                })),
+            }),
+        },
+    };
+
     return (
         <div className="bg-background pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto">
                 {/* Back Button */}
                 <div className="mb-4 sm:mb-6">
