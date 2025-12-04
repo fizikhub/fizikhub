@@ -21,6 +21,8 @@ export function ModernForumHeader() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     // Debounce search
     useEffect(() => {
@@ -29,7 +31,6 @@ export function ModernForumHeader() {
                 setIsSearching(true);
                 setShowResults(true);
                 try {
-                    const supabase = createClient();
                     const { data } = await supabase
                         .from('questions')
                         .select('id, title, slug, category')

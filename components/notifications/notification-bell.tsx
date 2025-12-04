@@ -45,7 +45,8 @@ export function NotificationBell() {
     const [isLoading, setIsLoading] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const { width, height } = useWindowSize();
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
     const router = useRouter();
 
     const fetchNotifications = async () => {

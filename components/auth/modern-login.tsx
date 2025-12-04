@@ -20,7 +20,8 @@ export function ModernLogin() {
     const [displayText, setDisplayText] = useState("");
     const [kursorBlink, setKursorBlink] = useState(true);
     const containerRef = useRef<HTMLDivElement>(null);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const quotes = [
         "Evrenin sırlarını keşfet",

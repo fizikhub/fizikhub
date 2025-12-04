@@ -23,7 +23,8 @@ interface MarkdownEditorProps {
 export function MarkdownEditor({ value, onChange, placeholder, label, id, minHeight = "200px" }: MarkdownEditorProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isUploading, setIsUploading] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

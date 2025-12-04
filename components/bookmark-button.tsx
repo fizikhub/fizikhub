@@ -22,7 +22,8 @@ export function BookmarkButton({
 }: BookmarkButtonProps) {
     const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
     const [isLoading, setIsLoading] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const toggleBookmark = async () => {
         setIsLoading(true);

@@ -22,7 +22,8 @@ interface Notification {
 export function NotificationsList({ userId }: { userId: string }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [loading, setLoading] = useState(true);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         const fetchNotifications = async () => {

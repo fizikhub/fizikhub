@@ -12,10 +12,11 @@ export function ForumStats() {
         solvedQuestions: 0,
         activeUsers: 0
     });
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         const fetchStats = async () => {
-            const supabase = createClient();
 
             // Get total questions
             const { count: questionsCount } = await supabase

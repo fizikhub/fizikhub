@@ -38,7 +38,8 @@ export function ReportButton({ contentType, contentId, variant = "ghost", size =
     const [reason, setReason] = useState("");
     const [description, setDescription] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const handleSubmit = async () => {
         if (!reason) {

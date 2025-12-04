@@ -47,7 +47,8 @@ export function QuestionCard({ question, hasVoted: initialHasVoted = false }: Qu
     const [votes, setVotes] = useState(question.votes || 0);
     const [hasVoted, setHasVoted] = useState(initialHasVoted);
     const [isVoting, setIsVoting] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const answerCount = question.answers?.[0]?.count || 0;
     const isSolved = false; // TODO: Check if any answer is accepted

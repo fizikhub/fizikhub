@@ -30,12 +30,13 @@ export function WeeklyQuestionManager({ currentPick }: WeeklyQuestionManagerProp
     const [searchResults, setSearchResults] = useState<Question[]>([]);
     const [loading, setLoading] = useState(false);
     const [settingPick, setSettingPick] = useState(false);
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
         setLoading(true);
 
-        const supabase = createClient();
         const { data, error } = await supabase
             .from("questions")
             .select(`

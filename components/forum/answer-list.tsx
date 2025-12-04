@@ -53,7 +53,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const toggleComments = (answerId: number) => {
         setExpandedComments(prev => ({

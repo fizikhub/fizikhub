@@ -40,7 +40,8 @@ export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindo
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

@@ -19,7 +19,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
     const [isAdmin, setIsAdmin] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {

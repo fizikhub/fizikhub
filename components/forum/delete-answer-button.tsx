@@ -27,7 +27,8 @@ interface DeleteAnswerButtonProps {
 export function DeleteAnswerButton({ answerId, questionId, authorId }: DeleteAnswerButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
     const [canDelete, setCanDelete] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
 
     useState(() => {
         const checkPermission = async () => {
