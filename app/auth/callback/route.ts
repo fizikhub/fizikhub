@@ -36,15 +36,16 @@ export async function GET(request: Request) {
         if (!error) {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
-                // Check if profile exists and has default values
+                // Check if profile exists and has completed onboarding
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('username, full_name')
+                    .select('onboarding_completed')
                     .eq('id', user.id)
                     .single()
 
-                // If profile exists but has default values (created by trigger), redirect to onboarding
-                if (profile && (profile.username?.startsWith('kullanici') || profile.full_name === 'İsimsiz Kullanıcı')) {
+                // If profile exists but onboarding is not completed (or null), redirect to onboarding
+                // This handles both auto-created profiles (trigger) and manual signups
+                if (profile && !profile.onboarding_completed) {
                     return NextResponse.redirect(`${origin}/onboarding`)
                 }
             }

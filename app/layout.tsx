@@ -31,7 +31,10 @@ export const metadata: Metadata = {
     template: "%s | Fizikhub"
   },
   description: "Sıkıcı bilim sitelerinden sıkıldın mı? Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk için doğru yerdesin.",
-  keywords: ["fizik", "bilim", "uzay", "teknoloji", "eğlenceli bilim", "fizikhub", "forum", "soru cevap"],
+  keywords: [
+    "fizik", "bilim", "uzay", "teknoloji", "eğlenceli bilim", "fizikhub", "forum", "soru cevap",
+    "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Tartışma", "Popüler Bilim", "Fizik Soru Çözümü"
+  ],
   authors: [{ name: "Fizikhub Ekibi" }],
   creator: "Fizikhub",
   manifest: "/manifest.json",
@@ -75,6 +78,23 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Fizikhub',
+  url: 'https://fizikhub.com',
+  logo: 'https://fizikhub.com/icon-512.png',
+  sameAs: [
+    'https://twitter.com/fizikhub',
+    'https://instagram.com/fizikhub'
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'iletisim@fizikhub.com'
+  }
+};
+
 import { Toaster } from "sonner";
 
 import { GlobalAdminNotification } from "@/components/global-admin-notification";
@@ -91,6 +111,10 @@ export default function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col pb-16 md:pb-0`}>
         <ThemeProvider
