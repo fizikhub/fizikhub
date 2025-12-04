@@ -1,7 +1,9 @@
-import { HeroSection3D } from "@/components/home/hero-section-3d";
-import { ModernArticleGrid } from "@/components/home/modern-article-grid";
-import { FeaturesSection } from "@/components/home/features-section";
-import { TrendingQuestions } from "@/components/home/trending-questions";
+import dynamic from "next/dynamic";
+
+const HeroSection3D = dynamic(() => import("@/components/home/hero-section-3d").then(mod => mod.HeroSection3D));
+const ModernArticleGrid = dynamic(() => import("@/components/home/modern-article-grid").then(mod => mod.ModernArticleGrid));
+const FeaturesSection = dynamic(() => import("@/components/home/features-section").then(mod => mod.FeaturesSection));
+const TrendingQuestions = dynamic(() => import("@/components/home/trending-questions").then(mod => mod.TrendingQuestions));
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
@@ -54,7 +56,10 @@ const getCachedHomepageData = unstable_cache(
     };
   },
   ['homepage-data'], // Cache key
-  { revalidate: 3600 } // Revalidate every hour
+  {
+    revalidate: 1800, // Revalidate every 30 minutes
+    tags: ['homepage']
+  }
 );
 
 export default async function Home() {
