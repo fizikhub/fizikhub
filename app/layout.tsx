@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   creator: "Fizikhub",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.png",
     apple: "/apple-icon.png",
   },
   openGraph: {
