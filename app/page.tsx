@@ -2,7 +2,6 @@ import { HeroSection3D } from "@/components/home/hero-section-3d";
 import { ModernArticleGrid } from "@/components/home/modern-article-grid";
 import { FeaturesSection } from "@/components/home/features-section";
 import { TrendingQuestions } from "@/components/home/trending-questions";
-import { CommunityCTA } from "@/components/home/community-cta";
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
@@ -104,7 +103,6 @@ export default async function Home() {
         <ModernArticleGrid articles={articles} />
         <FeaturesSection />
         <TrendingQuestions questions={formattedQuestions} />
-        <CommunityCTA />
       </main>
     </>
   );
