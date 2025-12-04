@@ -14,7 +14,8 @@ export function GlobalAdminNotification() {
     const [adminNotification, setAdminNotification] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
     const { width, height } = useWindowSize();
-    const supabase = createClient();
+    // Fix: Initialize supabase client once
+    const [supabase] = useState(() => createClient());
     const router = useRouter();
 
     useEffect(() => {
