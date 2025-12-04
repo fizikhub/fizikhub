@@ -24,7 +24,8 @@ export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const supabase = createClient();
+    // Fix: Initialize supabase client once to avoid infinite re-renders
+    const [supabase] = useState(() => createClient());
     const pathname = usePathname();
 
     useEffect(() => {
