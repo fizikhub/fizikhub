@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,30 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    const checkAdminStatus = useCallback(async (user: { email?: string, id: string }) => {
+        const adminEmails = [
+            'barannnbozkurttb.b@gmail.com',
+            'barannnnbozkurttb.b@gmail.com'
+        ];
+
+        const userEmail = user.email?.toLowerCase().trim();
+        const isEmailMatch = userEmail ? adminEmails.includes(userEmail) : false;
+
+        if (isEmailMatch) {
+            setIsAdmin(true);
+            return;
+        }
+
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        const isAdminRole = profile?.role === 'admin';
+        setIsAdmin(isAdminRole || isEmailMatch);
+    }, [supabase]);
+
     useEffect(() => {
         const checkUser = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -54,31 +78,7 @@ export function Navbar() {
         });
 
         return () => subscription.unsubscribe();
-    }, [supabase]);
-
-    const checkAdminStatus = async (user: any) => {
-        const adminEmails = [
-            'barannnbozkurttb.b@gmail.com',
-            'barannnnbozkurttb.b@gmail.com'
-        ];
-
-        const userEmail = user.email?.toLowerCase().trim();
-        const isEmailMatch = adminEmails.includes(userEmail);
-
-        if (isEmailMatch) {
-            setIsAdmin(true);
-            return;
-        }
-
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
-
-        const isAdminRole = profile?.role === 'admin';
-        setIsAdmin(isAdminRole || isEmailMatch);
-    };
+    }, [supabase, checkAdminStatus]);
 
     const navLinks = [
         { href: "/", label: "Ana Sayfa", icon: Home },
@@ -92,10 +92,10 @@ export function Navbar() {
     return (
         <>
             <nav className={cn(
-                "sticky top-0 z-50 w-full transition-all duration-300",
+                "w-full transition-all duration-300",
                 isScrolled
-                    ? "border-b border-border/40 bg-background/80 backdrop-blur-md shadow-sm"
-                    : "bg-transparent border-transparent"
+                    ? "glass-nav shadow-sm"
+                    : "sticky top-0 z-50 bg-transparent border-transparent"
             )}>
                 <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                     <Logo />

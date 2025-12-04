@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -8,7 +8,20 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap", // Optimize font loading
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space",
+  display: "swap",
 });
 
 export const viewport = {
@@ -116,7 +129,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen flex flex-col pb-16 md:pb-0`}>
+      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-screen flex flex-col pb-16 md:pb-0`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

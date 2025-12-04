@@ -130,7 +130,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                             transition={{ delay: index * 0.1 }}
                         >
                             <Link href={`/blog/${article.slug}`} className="group block h-full">
-                                <div className="relative h-full bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1">
+                                <div className="relative h-full glass-card rounded-2xl overflow-hidden hover:-translate-y-1">
                                     <div className="aspect-[16/10] relative overflow-hidden">
                                         <Image
                                             src={article.image_url || "/placeholder-article.jpg"}
