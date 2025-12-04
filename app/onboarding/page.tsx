@@ -12,15 +12,6 @@ import { Logo } from "@/components/ui/logo";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "Profil Oluştur | Fizikhub",
-    robots: {
-        index: false,
-        follow: false,
-    },
-};
 
 export default function OnboardingPage() {
     const router = useRouter();
