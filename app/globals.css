@@ -124,17 +124,13 @@
     text-wrap: balance;
   }
   
-  /* Glassmorphism Utilities */
-  .glass {
-    @apply bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10;
+  /* Pop Science / Industrial Utilities */
+  .brutalist-card {
+    @apply bg-card border-2 border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all duration-200;
   }
-  
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-all duration-300;
-  }
-  
-  .glass-nav {
-    @apply bg-background/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50;
+
+  .brutalist-button {
+    @apply bg-primary text-primary-foreground font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100;
   }
 }
 
@@ -175,30 +171,29 @@ a {
   touch-action: manipulation;
 }
 
-/* Custom Scrollbar - Premium & Sleek */
+/* Custom Scrollbar - Industrial */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgb(var(--secondary));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--muted-foreground), 0.3);
-  border-radius: 10px;
-  transition: background 0.3s ease;
+  background: rgb(var(--muted-foreground));
+  border: 2px solid rgb(var(--secondary));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--primary), 0.5);
+  background: rgb(var(--primary));
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--muted-foreground), 0.3) transparent;
+  scrollbar-color: rgb(var(--muted-foreground)) rgb(var(--secondary));
 }
 
 /* Animations */
@@ -208,115 +203,9 @@ a {
 }
 
 @keyframes slide-up {
-  from { transform: translateY(10px); opacity: 0; }
+  from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes shimmer {
-  100% { transform: translateX(100%); }
-}
-
-@keyframes scale-in {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes bounce-subtle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--primary), 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(var(--primary), 0); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
 }
 
 .animate-fade-in { animation: fade-in 0.3s ease-out; }
 .animate-slide-up { animation: slide-up 0.4s ease-out; }
-.animate-shimmer { animation: shimmer 2s infinite; }
-.animate-scale-in { animation: scale-in 0.2s ease-out; }
-.animate-bounce-subtle { animation: bounce-subtle 0.3s ease-in-out; }
-.animate-pulse-glow { animation: pulse-glow 2s infinite; }
-.animate-float { animation: float 6s ease-in-out infinite; }
-
-/* Interactive element enhancements */
-.interactive-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.interactive-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.interactive-lift:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.interactive-scale {
-  transition: transform 0.15s ease;
-}
-
-.interactive-scale:hover {
-  transform: scale(1.02);
-}
-
-.interactive-scale:active {
-  transform: scale(0.98);
-}
-
-.interactive-glow {
-  transition: box-shadow 0.3s ease;
-}
-
-.interactive-glow:hover {
-  box-shadow: 0 0 20px rgba(var(--primary), 0.3);
-}
-
-/* Screen shake animation for explosions */
-@keyframes shake {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  10% { transform: translate(-2px, 2px) rotate(-0.5deg); }
-  20% { transform: translate(2px, -2px) rotate(0.5deg); }
-  30% { transform: translate(-3px, 3px) rotate(-1deg); }
-  40% { transform: translate(3px, -3px) rotate(1deg); }
-  50% { transform: translate(-2px, 2px) rotate(-0.5deg); }
-  60% { transform: translate(2px, -2px) rotate(0.5deg); }
-  70% { transform: translate(-1px, 1px) rotate(-0.3deg); }
-  80% { transform: translate(1px, -1px) rotate(0.3deg); }
-  90% { transform: translate(-1px, 1px) rotate(-0.2deg); }
-}
-
-/* Slow spin animations for 404 */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes spin-reverse {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(0deg); }
-}
-
-.animate-spin-slow { animation: spin-slow 8s linear infinite; }
-.animate-spin-reverse { animation: spin-reverse 6s linear infinite; }
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-}
-
-@keyframes gradient-x {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.animate-pulse-slow { animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-.animate-gradient-x { animation: gradient-x 6s ease infinite; }

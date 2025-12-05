@@ -24,65 +24,62 @@ export function TrendingQuestions({ questions }: { questions: Question[] }) {
     if (!questions || questions.length === 0) return null;
 
     return (
-        <section className="py-24 bg-muted/30">
+        <section className="py-24 bg-muted/20">
             <div className="container px-4 mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 border-b-2 border-black dark:border-white pb-6">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 font-heading">
-                            Gündemdeki Sorular
+                        <h2 className="text-4xl font-black tracking-tighter mb-2 uppercase">
+                            Gündem
                         </h2>
-                        <p className="text-muted-foreground text-lg">
-                            Topluluğun en çok tartıştığı konulara göz at
+                        <p className="text-muted-foreground text-lg font-medium">
+                            Topluluğun en çok tartıştığı konular.
                         </p>
                     </div>
-                    <Button variant="outline" className="rounded-full group hidden sm:inline-flex" asChild>
-                        <Link href="/forum">
-                            Foruma Git
-                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                    </Button>
+                    <Link href="/forum" className="hidden sm:flex items-center gap-2 font-bold hover:underline decoration-2 underline-offset-4">
+                        FORUMA GİT
+                        <ArrowRight className="w-5 h-5" />
+                    </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="flex flex-col gap-4">
                     {questions.map((question, index) => (
                         <motion.div
                             key={question.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
                         >
-                            <Link href={`/forum/${question.id}`} className="group block h-full">
-                                <div className="h-full bg-background border border-border/50 rounded-3xl p-6 hover:border-primary/30 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-                                        <MessageSquare className="w-32 h-32 -mr-10 -mt-10 rotate-12" />
-                                    </div>
+                            <Link href={`/forum/${question.id}`} className="group block">
+                                <div className="bg-background border-2 border-border p-6 hover:border-black dark:hover:border-white transition-all duration-200 flex flex-col sm:flex-row sm:items-center gap-6 shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1">
 
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <Avatar className="w-10 h-10 border border-border">
+                                    <div className="flex items-center gap-4 min-w-[200px]">
+                                        <Avatar className="w-10 h-10 border-2 border-black dark:border-white">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                                            <AvatarFallback>{question.profiles?.username?.[0]}</AvatarFallback>
+                                            <AvatarFallback className="font-bold">{question.profiles?.username?.[0]}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-sm text-foreground/90">@{question.profiles?.username}</span>
-                                            <span className="text-muted-foreground text-xs">
+                                            <span className="font-bold text-sm">@{question.profiles?.username}</span>
+                                            <span className="text-muted-foreground text-xs font-medium uppercase">
                                                 {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <h3 className="text-lg font-bold mb-6 line-clamp-2 group-hover:text-primary transition-colors font-heading leading-snug">
-                                        {question.title}
-                                    </h3>
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-bold group-hover:text-primary transition-colors line-clamp-1">
+                                            {question.title}
+                                        </h3>
+                                    </div>
 
-                                    <div className="flex items-center gap-3 text-sm text-muted-foreground mt-auto">
-                                        <div className="flex items-center gap-1.5 bg-muted px-3 py-1 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                            <ThumbsUp className="w-3.5 h-3.5" />
-                                            <span className="font-medium">{question.votes}</span>
+                                    <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground">
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-none border border-border">
+                                            <ThumbsUp className="w-4 h-4" />
+                                            <span>{question.votes}</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5 bg-muted px-3 py-1 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                            <MessageCircle className="w-3.5 h-3.5" />
-                                            <span className="font-medium">{question.answer_count}</span>
+                                        <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-none border border-border">
+                                            <MessageCircle className="w-4 h-4" />
+                                            <span>{question.answer_count}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -92,9 +89,11 @@ export function TrendingQuestions({ questions }: { questions: Question[] }) {
                 </div>
 
                 <div className="mt-8 text-center sm:hidden">
-                    <Button variant="outline" className="w-full rounded-full" asChild>
-                        <Link href="/forum">Foruma Git</Link>
-                    </Button>
+                    <Link href="/forum">
+                        <div className="brutalist-button inline-flex px-8 py-3 items-center justify-center gap-2 w-full">
+                            FORUMA GİT
+                        </div>
+                    </Link>
                 </div>
             </div>
         </section>
