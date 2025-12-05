@@ -24,7 +24,6 @@ export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    // Fix: Initialize supabase client once to avoid infinite re-renders
     const [supabase] = useState(() => createClient());
     const pathname = usePathname();
 
@@ -82,51 +81,60 @@ export function Navbar() {
     }, [supabase, checkAdminStatus]);
 
     const navLinks = [
-        { href: "/", label: "Ana Sayfa", icon: Home },
-        { href: "/blog", label: "Makaleler", icon: Feather },
-        { href: "/forum", label: "Forum", icon: MessageCircle },
-        { href: "/sozluk", label: "Sözlük", icon: Library },
-        { href: "/testler", label: "Testler", icon: Atom },
-        { href: "/siralamalar", label: "Sıralamalar", icon: Trophy },
+        { href: "/", label: "ANA SAYFA", icon: Home },
+        { href: "/blog", label: "MAKALELER", icon: Feather },
+        { href: "/forum", label: "FORUM", icon: MessageCircle },
+        { href: "/sozluk", label: "SÖZLÜK", icon: Library },
+        { href: "/testler", label: "TESTLER", icon: Atom },
+        { href: "/siralamalar", label: "SIRALAMALAR", icon: Trophy },
     ];
 
     return (
         <>
             <nav className={cn(
-                "w-full transition-all duration-300",
+                "w-full transition-all duration-300 border-b-2",
                 isScrolled
-                    ? "glass-nav shadow-sm"
-                    : "sticky top-0 z-50 bg-transparent border-transparent"
+                    ? "bg-background/95 backdrop-blur-md border-black dark:border-white shadow-[0_4px_0_0_rgba(0,0,0,1)] dark:shadow-[0_4px_0_0_rgba(255,255,255,1)]"
+                    : "bg-background border-transparent"
             )}>
-                <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-20 items-center justify-between px-4 md:px-6">
                     <Logo />
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-1">
+                    <div className="hidden lg:flex items-center gap-6">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "text-sm font-medium transition-all px-4 py-2 rounded-full hover:bg-primary/10 hover:text-primary",
-                                    pathname === link.href ? "text-primary bg-primary/10 font-semibold" : "text-muted-foreground"
+                                    "text-sm font-bold uppercase tracking-wide transition-all relative group",
+                                    pathname === link.href ? "text-primary" : "text-foreground hover:text-primary"
                                 )}
                             >
                                 {link.label}
+                                <span className={cn(
+                                    "absolute -bottom-1 left-0 w-full h-0.5 bg-primary transform origin-left transition-transform duration-300",
+                                    pathname === link.href ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                                )} />
                             </Link>
                         ))}
                         {isAdmin && (
                             <Link
                                 href="/admin"
-                                className="text-sm font-medium transition-all px-4 py-2 rounded-full hover:bg-red-500/10 hover:text-red-500 text-red-500 font-bold"
+                                className="text-sm font-black uppercase tracking-wide text-red-500 hover:text-red-600 transition-colors border-2 border-red-500 px-3 py-1 hover:bg-red-500 hover:text-white"
                             >
                                 Admin
                             </Link>
                         )}
                     </div>
 
-                    <div className="hidden md:flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="rounded-full">
+                    <div className="hidden lg:flex items-center gap-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsSearchOpen(true)}
+                            className="rounded-none hover:bg-primary/20 hover:text-primary transition-colors"
+                        >
                             <Search className="h-5 w-5" />
                         </Button>
                         <NotificationBell />
@@ -134,34 +142,36 @@ export function Navbar() {
                     </div>
 
                     {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="rounded-full">
+                    <div className="lg:hidden flex items-center gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="rounded-none">
                             <Search className="h-5 w-5" />
                         </Button>
                         <NotificationBell />
 
                         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-full">
+                                <Button variant="ghost" size="icon" className="rounded-none border-2 border-transparent hover:border-black dark:hover:border-white">
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                                <SheetHeader className="mb-6 text-left">
-                                    <Logo />
+                            <SheetContent side="right" className="w-[300px] sm:w-[400px] border-l-2 border-black dark:border-white p-0">
+                                <SheetHeader className="p-6 border-b-2 border-black dark:border-white bg-primary">
+                                    <div className="flex justify-start">
+                                        <Logo />
+                                    </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>
                                 </SheetHeader>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex flex-col p-6 gap-2">
                                     {navLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className={cn(
-                                                "flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg transition-colors",
+                                                "flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
                                                 pathname === link.href
-                                                    ? "bg-primary/10 text-primary"
-                                                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                                                    ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white"
+                                                    : "bg-background border-black dark:border-white hover:bg-primary/10"
                                             )}
                                         >
                                             <link.icon className="h-5 w-5" />
@@ -172,17 +182,17 @@ export function Navbar() {
                                         <Link
                                             href="/admin"
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg hover:bg-red-500/10 text-red-500 transition-colors"
+                                            className="flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]"
                                         >
                                             <Shield className="h-5 w-5" />
                                             Admin Paneli
                                         </Link>
                                     )}
-                                    <div className="my-4 border-t" />
+                                    <div className="my-4 border-t-2 border-dashed border-black/20 dark:border-white/20" />
                                     <Link
                                         href="/profil"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center gap-4 px-4 py-3 text-sm font-medium rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                                        className="flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
                                     >
                                         <User className="h-5 w-5" />
                                         Profilim

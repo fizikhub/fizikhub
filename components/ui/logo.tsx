@@ -385,8 +385,8 @@ export function Logo() {
             </div>
 
             <Link href="/" className="flex flex-col cursor-pointer">
-                <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:from-primary group-hover:to-secondary transition-all duration-300">
-                    Fizikhub
+                <span className="text-2xl font-black tracking-tighter uppercase bg-clip-text text-transparent bg-gradient-to-r from-black to-black dark:from-white dark:to-white group-hover:from-primary group-hover:to-primary transition-all duration-300 leading-none">
+                    FİZİKHUB
                 </span>
             </Link>
         </div>
