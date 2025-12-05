@@ -23,8 +23,8 @@ export function Footer() {
 
     if (isMessagesPage) return null;
 
-    // Generate random debris for the suction effect
-    const debris = Array.from({ length: 40 }).map((_, i) => ({
+    // OPTIMIZATION: Reduced debris count for mobile performance
+    const debris = Array.from({ length: 15 }).map((_, i) => ({
         id: i,
         angle: Math.random() * 360,
         distance: 300 + Math.random() * 500,
@@ -58,25 +58,25 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Massive Black Hole Background Effect */}
-            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
+            {/* Massive Black Hole Background Effect - OPTIMIZED */}
+            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000 will-change-transform" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
                 {/* Accretion Disk - Outer */}
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary/10 to-transparent opacity-50 blur-3xl"
+                    className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary/10 to-transparent opacity-50 blur-2xl"
                 />
 
                 {/* Accretion Disk - Inner (Faster) */}
                 <motion.div
                     animate={{ rotate: -360, scale: [1, 1.05, 1] }}
                     transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
-                    className="absolute inset-20 rounded-full bg-gradient-radial from-transparent via-orange-600/30 to-transparent blur-2xl"
+                    className="absolute inset-20 rounded-full bg-gradient-radial from-transparent via-orange-600/30 to-transparent blur-xl"
                 />
 
                 {/* Photon Ring - The Bright Edge */}
                 <div className="absolute inset-[290px] rounded-full border-[3px] border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.8)] z-20 blur-[1px]" />
-                <div className="absolute inset-[290px] rounded-full border-[6px] border-primary/50 shadow-[0_0_40px_rgba(234,88,12,0.8)] z-10 blur-md" />
+                <div className="absolute inset-[290px] rounded-full border-[6px] border-primary/50 shadow-[0_0_40px_rgba(234,88,12,0.8)] z-10 blur-sm" />
 
                 {/* Event Horizon (The Void) */}
                 <motion.div
@@ -85,7 +85,7 @@ export function Footer() {
                     className="absolute inset-[300px] rounded-full bg-black shadow-[inset_0_0_50px_rgba(0,0,0,1)] z-30"
                 />
 
-                {/* Suction Particles */}
+                {/* Suction Particles - OPTIMIZED */}
                 {debris.map((d) => (
                     <motion.div
                         key={d.id}
@@ -121,7 +121,7 @@ export function Footer() {
             <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
 
                 {/* Center Singularity Brand & Toggle */}
-                <div className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex items-center gap-6 z-50">
+                <div className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex items-center justify-center z-50 w-[300px]">
                     {/* The Singularity Core */}
                     <div className="relative pointer-events-none">
                         <motion.div
@@ -140,28 +140,28 @@ export function Footer() {
                         </div>
                     </div>
 
-                    {/* Control Panel - Moved to Right */}
+                    {/* Control Panel - Moved to Right & Smaller */}
                     <div
-                        className="flex flex-col items-start gap-1 cursor-pointer group"
+                        className="absolute left-[65%] flex flex-col items-start gap-1 cursor-pointer group"
                         onClick={() => setIsSingularityActive(!isSingularityActive)}
                     >
-                        <div className="flex items-center gap-2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 shadow-2xl group-hover:border-primary/50 transition-colors">
+                        <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2 py-1 rounded-md border border-white/10 shadow-2xl group-hover:border-primary/50 transition-colors">
                             <Power className={cn(
-                                "h-3 w-3",
+                                "h-2.5 w-2.5",
                                 isSingularityActive ? "text-primary" : "text-white/40"
                             )} />
                             <span className={cn(
-                                "text-[10px] font-black tracking-tighter uppercase transition-colors",
+                                "text-[8px] font-black tracking-tighter uppercase transition-colors",
                                 isSingularityActive ? "text-white" : "text-white/40"
                             )}>
                                 FİZİKHUB
                             </span>
                         </div>
                         <p className={cn(
-                            "text-[8px] font-mono uppercase tracking-widest pl-1 transition-colors",
+                            "text-[6px] font-mono uppercase tracking-widest pl-1 transition-colors",
                             isSingularityActive ? "text-primary animate-pulse" : "text-white/20"
                         )}>
-                            {isSingularityActive ? "TEKİLLİK AKTİF" : "TEKİLLİK PASİF"}
+                            {isSingularityActive ? "AKTİF" : "PASİF"}
                         </p>
                     </div>
                 </div>
