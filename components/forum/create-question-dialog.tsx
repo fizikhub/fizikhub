@@ -68,9 +68,9 @@ export function CreateQuestionDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2 rounded-full shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all duration-500 bg-gradient-to-r from-primary via-orange-500 to-purple-600 hover:scale-105 border border-white/20">
+                <Button className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] border-2 border-transparent hover:border-black dark:hover:border-white">
                     <Plus className="h-5 w-5" />
-                    <span className="font-semibold tracking-wide">Soru Sor</span>
+                    <span className="font-black tracking-wide">SORU SOR</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[800px] border-white/10 bg-black/80 backdrop-blur-3xl shadow-2xl shadow-black/80 rounded-[32px] p-0 overflow-hidden ring-1 ring-white/10">

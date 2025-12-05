@@ -21,12 +21,7 @@ export function QuestionCard({ question, hasVoted }: QuestionCardProps) {
         <Link href={`/forum/${question.id}`} className="group block h-full">
             <div className="h-full bg-card border-2 border-border p-6 hover:border-black dark:hover:border-white transition-all duration-200 flex flex-col gap-4 shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1 relative overflow-hidden">
 
-                {/* Solved Badge */}
-                {(isSolved || hasAcceptedAnswer) && (
-                    <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold uppercase border-l-2 border-b-2 border-black dark:border-white">
-                        Çözüldü
-                    </div>
-                )}
+
 
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
@@ -51,6 +46,9 @@ export function QuestionCard({ question, hasVoted }: QuestionCardProps) {
                     <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">
                         {question.title}
                     </h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2 font-medium">
+                        {question.content?.replace(/[#*`]/g, '') || "İçerik önizlemesi yok..."}
+                    </p>
                     <div className="flex flex-wrap gap-2">
                         <span className="px-2 py-0.5 bg-muted border border-border text-xs font-bold uppercase text-muted-foreground">
                             {question.category}
