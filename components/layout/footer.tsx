@@ -203,18 +203,19 @@ export function Footer() {
                 {/* Technical Links Grid */}
                 <div className={cn(
                     "grid gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px] transition-all duration-700",
-                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-2 max-w-2xl mx-auto items-center gap-y-12" : "grid-cols-2 md:grid-cols-4"
+                    // Dramatically tighter grid when active to simulate high gravity compression
+                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-2 max-w-lg mx-auto items-center gap-y-6" : "grid-cols-2 md:grid-cols-4"
                 )}>
                     {/* Left Side Links */}
                     <motion.div
                         className="flex flex-col gap-2"
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.95 } : {
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : {
                             rotate: pullIntensity.rotate,
                             x: pullIntensity.x,
                             y: pullIntensity.y,
                             scale: pullIntensity.scale
                         }}
-                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
                         <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
@@ -224,8 +225,8 @@ export function Footer() {
 
                     <motion.div
                         className="flex flex-col gap-2"
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.95 } : undefined}
-                        transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
+                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.05 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
                         <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
@@ -237,8 +238,8 @@ export function Footer() {
                     <motion.div
                         className="flex flex-col gap-2 md:text-right"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.95 } : undefined}
-                        transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.05 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
+                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.02 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
                         <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
@@ -249,8 +250,8 @@ export function Footer() {
                     <motion.div
                         className="flex flex-col gap-2 md:text-right"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.95 } : undefined}
-                        transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.15 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
+                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.07 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
                         <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
