@@ -201,21 +201,23 @@ export function Footer() {
                 </div>
 
                 {/* Technical Links Grid */}
+                {/* Technical Links Grid */}
                 <div className={cn(
                     "grid gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px] transition-all duration-700",
                     // Dramatically tighter grid when active to simulate high gravity compression
                     isSingularityActive ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-2 max-w-lg mx-auto items-center gap-y-6" : "grid-cols-2 md:grid-cols-4"
                 )}>
                     {/* Left Side Links */}
+                    {/* 1. Keşif Modülü - Top Left Quadrant */}
                     <motion.div
                         className="flex flex-col gap-2"
                         animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : {
-                            rotate: pullIntensity.rotate,
-                            x: pullIntensity.x,
-                            y: pullIntensity.y,
-                            scale: pullIntensity.scale
+                            x: [-50, -55, -50], // Exploded Left + Float
+                            y: [-30, -35, -30], // Exploded Top + Float
+                            rotate: [-2, 2, -2],
+                            scale: 1
                         }}
-                        transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                        transition={isSingularityActive ? { type: "spring", stiffness: 200, damping: 25 } : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
                         <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
@@ -223,10 +225,16 @@ export function Footer() {
                         <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sözlük</Link>
                     </motion.div>
 
+                    {/* 2. Topluluk - Bottom Left Quadrant */}
                     <motion.div
                         className="flex flex-col gap-2"
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
-                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.05 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : {
+                            x: [-50, -55, -50], // Exploded Left + Float
+                            y: [30, 35, 30],    // Exploded Bottom + Float
+                            rotate: [2, -2, 2],
+                            scale: 1
+                        }}
+                        transition={isSingularityActive ? { type: "spring", stiffness: 200, damping: 25, delay: 0.05 } : { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
                         <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
@@ -235,11 +243,17 @@ export function Footer() {
                     </motion.div>
 
                     {/* Right Side Links */}
+                    {/* 3. Kurumsal - Top Right Quadrant */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
-                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.02 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : {
+                            x: [50, 55, 50],   // Exploded Right + Float
+                            y: [-30, -35, -30], // Exploded Top + Float
+                            rotate: [2, -2, 2],
+                            scale: 1
+                        }}
+                        transition={isSingularityActive ? { type: "spring", stiffness: 200, damping: 25, delay: 0.02 } : { duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
                         <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
@@ -247,11 +261,17 @@ export function Footer() {
                         <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Blog</Link>
                     </motion.div>
 
+                    {/* 4. Protokoller - Bottom Right Quadrant */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : undefined}
-                        transition={{ type: "spring", stiffness: 200, damping: 25, delay: 0.07 }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 0.85 } : {
+                            x: [50, 55, 50],   // Exploded Right + Float
+                            y: [30, 35, 30],    // Exploded Bottom + Float
+                            rotate: [-2, 2, -2],
+                            scale: 1
+                        }}
+                        transition={isSingularityActive ? { type: "spring", stiffness: 200, damping: 25, delay: 0.07 } : { duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
                         <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
