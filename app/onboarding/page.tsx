@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, User, Camera, Upload, Fingerprint, Save } from "lucide-react";
+import { Loader2, User, Camera, Upload, Fingerprint, Save, Scan } from "lucide-react";
 import { toast } from "sonner";
 import { completeOnboarding } from "@/app/auth/actions";
 import { Logo } from "@/components/ui/logo";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function OnboardingPage() {
     const router = useRouter();
@@ -89,9 +88,40 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-background">
-            {/* Technical Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
+            {/* Black Hole Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-transparent via-primary/5 to-transparent blur-3xl opacity-40"
+                />
+                <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-radial from-transparent via-orange-600/10 to-transparent blur-2xl opacity-30"
+                />
+                {[...Array(20)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-white rounded-full"
+                        initial={{
+                            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+                            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
+                            opacity: Math.random()
+                        }}
+                        animate={{
+                            opacity: [0.2, 1, 0.2],
+                            scale: [1, 1.5, 1]
+                        }}
+                        transition={{
+                            duration: 3 + Math.random() * 5,
+                            repeat: Infinity,
+                            delay: Math.random() * 5
+                        }}
+                    />
+                ))}
+            </div>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -106,117 +136,141 @@ export default function OnboardingPage() {
                     </div>
 
                     <div className="space-y-1">
-                        <h1 className="text-3xl font-black uppercase tracking-tighter">
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-white">
                             PERSONEL KAYDI
                         </h1>
-                        <div className="flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
+                        <div className="flex items-center justify-center gap-2 text-xs font-mono text-primary/80">
                             <Fingerprint className="h-3 w-3" />
                             <span>KİMLİK OLUŞTURMA PROTOKOLÜ</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Industrial Card */}
-                <div className="bg-background border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 relative">
-                    {/* Corner Accents */}
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-black dark:border-white" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-black dark:border-white" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-black dark:border-white" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-black dark:border-white" />
+                {/* Industrial Glass Card */}
+                <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-2xl relative overflow-hidden group">
+                    {/* Industrial Hazard Stripes */}
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
+                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
 
-                    <form onSubmit={handleSubmit} className="space-y-8 mt-4">
+                    {/* Corner Brackets */}
+                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary z-30" />
+                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary z-30" />
+                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary z-30" />
+                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary z-30" />
 
-                        {/* Avatar Upload - ID Card Style */}
-                        <div className="flex flex-col items-center justify-center space-y-4">
-                            <div
-                                className="relative group cursor-pointer w-32 h-32 bg-muted/20 border-2 border-dashed border-black/30 dark:border-white/30 hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center"
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                {formData.avatarUrl ? (
-                                    <img
-                                        src={formData.avatarUrl}
-                                        alt="Avatar"
-                                        className="w-full h-full object-cover"
+                    <div className="bg-black/60 p-6 md:p-8 rounded-xl relative z-10">
+                        <form onSubmit={handleSubmit} className="space-y-8 mt-4">
+
+                            {/* Avatar Upload - Biometric Scanner Style */}
+                            <div className="flex flex-col items-center justify-center space-y-4">
+                                <div className="relative">
+                                    {/* Rotating Scanner Ring */}
+                                    <motion.div
+                                        className="absolute -inset-2 border border-dashed border-primary/50 rounded-full"
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                                     />
-                                ) : (
-                                    <div className="text-center p-2">
-                                        <Camera className="h-8 w-8 mx-auto text-muted-foreground mb-2 group-hover:text-primary" />
-                                        <span className="text-[10px] font-mono uppercase text-muted-foreground group-hover:text-primary">FOTOĞRAF YÜKLE</span>
-                                    </div>
-                                )}
 
-                                {uploading && (
-                                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
-                                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                    <div
+                                        className="relative group cursor-pointer w-32 h-32 bg-black/50 border border-white/10 rounded-full overflow-hidden hover:border-primary transition-all flex items-center justify-center"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        {formData.avatarUrl ? (
+                                            <img
+                                                src={formData.avatarUrl}
+                                                alt="Avatar"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="text-center p-2">
+                                                <Scan className="h-8 w-8 mx-auto text-white/40 mb-2 group-hover:text-primary transition-colors" />
+                                                <span className="text-[10px] font-mono uppercase text-white/40 group-hover:text-primary transition-colors">TARAMA BAŞLAT</span>
+                                            </div>
+                                        )}
+
+                                        {uploading && (
+                                            <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+                                                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                />
                             </div>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileSelect}
-                                className="hidden"
-                            />
-                        </div>
 
-                        <div className="space-y-5">
-                            <div className="space-y-2">
-                                <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider">KOD ADI (KULLANICI ADI)</Label>
-                                <div className="relative group">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div className="space-y-5">
+                                <div className="space-y-2">
+                                    <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-white/60 flex items-center gap-2">
+                                        <div className="w-1 h-1 bg-primary rounded-full" />
+                                        KOD ADI (KULLANICI ADI)
+                                    </Label>
+                                    <div className="relative group">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-hover:text-primary transition-colors" />
+                                        <Input
+                                            id="username"
+                                            placeholder="kullaniciadi"
+                                            value={formData.username}
+                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                            className="pl-9 h-12 bg-white/5 border-white/10 focus:border-primary rounded-none transition-all font-mono text-white placeholder:text-white/20 border-l-2 border-l-primary/50"
+                                            required
+                                            minLength={3}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wider text-white/60 flex items-center gap-2">
+                                        <div className="w-1 h-1 bg-primary rounded-full" />
+                                        TAM İSİM
+                                    </Label>
                                     <Input
-                                        id="username"
-                                        placeholder="kullaniciadi"
-                                        value={formData.username}
-                                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                        className="pl-9 h-12 bg-muted/20 border-2 border-black/10 dark:border-white/10 focus:border-primary rounded-none transition-all font-mono"
+                                        id="fullName"
+                                        placeholder="Adınız Soyadınız"
+                                        value={formData.fullName}
+                                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                        className="h-12 bg-white/5 border-white/10 focus:border-primary rounded-none transition-all text-white placeholder:text-white/20 border-l-2 border-l-primary/50"
                                         required
-                                        minLength={3}
                                     />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="bio" className="text-xs font-bold uppercase tracking-wider text-white/60 flex items-center gap-2">
+                                        <div className="w-1 h-1 bg-primary rounded-full" />
+                                        GÖREV TANIMI (BİYOGRAFİ)
+                                    </Label>
+                                    <textarea
+                                        id="bio"
+                                        placeholder="Kendinden kısaca bahset..."
+                                        value={formData.bio}
+                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                        className="flex min-h-[100px] w-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-none rounded-none transition-all border-l-2 border-l-primary/50"
+                                        maxLength={160}
+                                    />
+                                    <p className="text-[10px] font-mono text-white/40 text-right">{formData.bio.length}/160</p>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wider">TAM İSİM</Label>
-                                <Input
-                                    id="fullName"
-                                    placeholder="Adınız Soyadınız"
-                                    value={formData.fullName}
-                                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                    className="h-12 bg-muted/20 border-2 border-black/10 dark:border-white/10 focus:border-primary rounded-none transition-all"
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="bio" className="text-xs font-bold uppercase tracking-wider">GÖREV TANIMI (BİYOGRAFİ)</Label>
-                                <textarea
-                                    id="bio"
-                                    placeholder="Kendinden kısaca bahset..."
-                                    value={formData.bio}
-                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                    className="flex min-h-[100px] w-full border-2 border-black/10 dark:border-white/10 bg-muted/20 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-none rounded-none transition-all"
-                                    maxLength={160}
-                                />
-                                <p className="text-[10px] font-mono text-muted-foreground text-right">{formData.bio.length}/160</p>
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full h-14 text-base font-black uppercase tracking-wider rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-primary text-primary-foreground hover:bg-primary/90"
-                            disabled={loading || uploading}
-                        >
-                            {loading ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    KAYDI TAMAMLA <Save className="h-4 w-4" />
-                                </span>
-                            )}
-                        </Button>
-                    </form>
+                            <Button
+                                type="submit"
+                                className="w-full h-14 text-base font-black uppercase tracking-wider rounded-none border border-white/20 shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary text-white hover:bg-primary/90"
+                                disabled={loading || uploading}
+                            >
+                                {loading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        KAYDI TAMAMLA <Save className="h-4 w-4" />
+                                    </span>
+                                )}
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </motion.div>
         </div>
