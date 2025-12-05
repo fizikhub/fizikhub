@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Github, Loader2, Rocket, Eye, EyeOff, Zap, AlertTriangle } from "lucide-react";
+import { Github, Loader2, Rocket, Eye, EyeOff, Zap, AlertTriangle, Atom } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -55,6 +55,7 @@ export function ModernLogin() {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
+
                 });
                 if (error) throw error;
                 window.location.href = "/";
@@ -83,9 +84,43 @@ export function ModernLogin() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-background">
-            {/* Technical Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
+            {/* Black Hole Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Accretion Disk */}
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-transparent via-primary/5 to-transparent blur-3xl opacity-40"
+                />
+                <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-radial from-transparent via-orange-600/10 to-transparent blur-2xl opacity-30"
+                />
+
+                {/* Stars/Particles */}
+                {[...Array(20)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-white rounded-full"
+                        initial={{
+                            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+                            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
+                            opacity: Math.random()
+                        }}
+                        animate={{
+                            opacity: [0.2, 1, 0.2],
+                            scale: [1, 1.5, 1]
+                        }}
+                        transition={{
+                            duration: 3 + Math.random() * 5,
+                            repeat: Infinity,
+                            delay: Math.random() * 5
+                        }}
+                    />
+                ))}
+            </div>
 
             {/* Main Container */}
             <motion.div
@@ -104,23 +139,23 @@ export function ModernLogin() {
                     </motion.div>
 
                     <div className="space-y-2">
-                        <p className="text-muted-foreground font-medium">
-                            {isSignUp ? "Laboratuvara hoş geldin çaylak." : "Tekrar hoş geldin şef."}
+                        <p className="text-white/80 font-medium tracking-wide">
+                            {isSignUp ? "OLAY UFKUNA KAYIT OL" : "TEKİLLİĞE GİRİŞ YAP"}
                         </p>
                     </div>
                 </div>
 
-                {/* Auth Card */}
-                <div className="bg-card border-2 border-black dark:border-white p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] relative">
-                    {/* Decorative Corner */}
-                    <div className="absolute top-0 left-0 w-3 h-3 bg-black dark:bg-white" />
-                    <div className="absolute top-0 right-0 w-3 h-3 bg-black dark:bg-white" />
-                    <div className="absolute bottom-0 left-0 w-3 h-3 bg-black dark:bg-white" />
-                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-black dark:bg-white" />
+                {/* Auth Card - Glassmorphism */}
+                <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-2xl shadow-2xl relative overflow-hidden group">
+                    {/* Hover Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                    <form onSubmit={handleEmailAuth} className="space-y-6">
+                    {/* Top Border Gradient */}
+                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
+
+                    <form onSubmit={handleEmailAuth} className="space-y-6 relative z-10">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-bold uppercase">E-posta</Label>
+                            <Label htmlFor="email" className="text-xs font-bold uppercase text-white/60 tracking-wider">E-posta</Label>
                             <div className="relative group">
                                 <Input
                                     id="email"
@@ -129,14 +164,14 @@ export function ModernLogin() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-12 border-2 border-black dark:border-white rounded-none bg-background focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium"
+                                    className="h-12 border-white/10 rounded-lg bg-white/5 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-primary/50 transition-all font-medium pl-4"
                                 />
-                                <Zap className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                                <Zap className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-colors" />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-sm font-bold uppercase">Şifre</Label>
+                            <Label htmlFor="password" className="text-xs font-bold uppercase text-white/60 tracking-wider">Şifre</Label>
                             <div className="relative group">
                                 <Input
                                     id="password"
@@ -144,12 +179,12 @@ export function ModernLogin() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="h-12 border-2 border-black dark:border-white rounded-none bg-background focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium pr-10"
+                                    className="h-12 border-white/10 rounded-lg bg-white/5 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-primary/50 transition-all font-medium pr-10"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -160,7 +195,7 @@ export function ModernLogin() {
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
                                         exit={{ opacity: 0, height: 0 }}
-                                        className="flex items-center gap-2 text-xs font-bold text-muted-foreground pt-1"
+                                        className="flex items-center gap-2 text-xs font-bold text-primary/80 pt-1"
                                     >
                                         <AlertTriangle className="h-3 w-3" />
                                         {getPasswordStrengthMessage(password)}
@@ -171,7 +206,7 @@ export function ModernLogin() {
 
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-black uppercase rounded-none bg-black dark:bg-white text-white dark:text-black hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px]"
+                            className="w-full h-12 text-base font-bold uppercase rounded-lg bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] hover:scale-[1.02] active:scale-[0.98]"
                             disabled={loading}
                         >
                             {loading ? (
@@ -187,17 +222,17 @@ export function ModernLogin() {
 
                     <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t-2 border-dashed border-border" />
+                            <span className="w-full border-t border-white/10" />
                         </div>
-                        <div className="relative flex justify-center text-xs font-bold uppercase">
-                            <span className="bg-card px-4 text-muted-foreground">VEYA BUNLARLA GEL</span>
+                        <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
+                            <span className="bg-black/40 backdrop-blur-xl px-4 text-white/40">VEYA BUNLARLA GEL</span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 relative z-10">
                         <Button
                             variant="outline"
-                            className="w-full gap-2 h-12 border-2 border-black dark:border-white rounded-none font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                            className="w-full gap-2 h-12 border-white/10 rounded-lg bg-white/5 text-white hover:bg-white/10 hover:text-white transition-all font-bold uppercase"
                             onClick={() => handleOAuthLogin('github')}
                             disabled={loading}
                         >
@@ -206,7 +241,7 @@ export function ModernLogin() {
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full gap-2 h-12 border-2 border-black dark:border-white rounded-none font-bold uppercase hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                            className="w-full gap-2 h-12 border-white/10 rounded-lg bg-white/5 text-white hover:bg-white/10 hover:text-white transition-all font-bold uppercase"
                             onClick={() => handleOAuthLogin('google')}
                             disabled={loading}
                         >
@@ -220,12 +255,12 @@ export function ModernLogin() {
                         </Button>
                     </div>
 
-                    <div className="text-center text-sm font-medium mt-6">
-                        <span className="text-muted-foreground">
+                    <div className="text-center text-sm font-medium mt-6 relative z-10">
+                        <span className="text-white/40">
                             {isSignUp ? "Zaten içeride misin? " : "Hala dışarıda mısın? "}
                         </span>
                         <button
-                            className="font-bold text-primary hover:underline decoration-2 underline-offset-4 uppercase ml-1"
+                            className="font-bold text-primary hover:text-primary/80 hover:underline decoration-2 underline-offset-4 uppercase ml-1 transition-colors"
                             onClick={() => setIsSignUp(!isSignUp)}
                         >
                             {isSignUp ? "Giriş Yap" : "Kayıt Ol"}

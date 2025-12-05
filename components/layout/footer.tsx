@@ -1,16 +1,18 @@
 "use client";
 
-import { Rocket, Github, Twitter, Instagram, Atom, Orbit, Disc } from "lucide-react"
+import { Rocket, Github, Twitter, Instagram, Atom, Orbit, Disc, Power } from "lucide-react"
 import Link from "next/link";
 import { DidYouKnow } from "@/components/ui/did-you-know";
 import { usePathname } from "next/navigation";
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [windowWidth, setWindowWidth] = useState(0);
+    const [isSingularityActive, setIsSingularityActive] = useState(true);
 
     useEffect(() => {
         setWindowWidth(window.innerWidth);
@@ -33,10 +35,10 @@ export function Footer() {
 
     // Permanent breathing animation for the pull intensity
     const pullIntensity = {
-        scale: [0.9, 0.85, 0.9],
-        rotate: [5, 7, 5],
-        x: [20, 25, 20],
-        y: [20, 25, 20],
+        scale: isSingularityActive ? [0.9, 0.85, 0.9] : 1,
+        rotate: isSingularityActive ? [5, 7, 5] : 0,
+        x: isSingularityActive ? [20, 25, 20] : 0,
+        y: isSingularityActive ? [20, 25, 20] : 0,
         transition: {
             duration: 4,
             repeat: Infinity,
@@ -47,14 +49,17 @@ export function Footer() {
     return (
         <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
             {/* Event Horizon Warning Line */}
-            <div className="absolute top-0 left-0 right-0 h-8 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-20 flex items-center justify-center overflow-hidden z-50">
+            <div className={cn(
+                "absolute top-0 left-0 right-0 h-8 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000",
+                isSingularityActive ? "bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-20" : "bg-black opacity-0"
+            )}>
                 <div className="animate-marquee whitespace-nowrap text-[10px] font-black text-primary uppercase tracking-[0.5em]">
                     DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ // DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ
                 </div>
             </div>
 
             {/* Massive Black Hole Background Effect */}
-            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none">
+            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
                 {/* Accretion Disk - Outer */}
                 <motion.div
                     animate={{ rotate: 360 }}
@@ -91,11 +96,13 @@ export function Footer() {
                             left: '50%',
                             top: '50%',
                         }}
-                        animate={{
+                        animate={isSingularityActive ? {
                             x: [Math.cos(d.angle * Math.PI / 180) * d.distance, 0],
                             y: [Math.sin(d.angle * Math.PI / 180) * d.distance, 0],
                             opacity: [0, 1, 0],
                             scale: [1, 0],
+                        } : {
+                            opacity: 0
                         }}
                         transition={{
                             duration: d.duration,
@@ -113,31 +120,55 @@ export function Footer() {
 
             <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
 
-                {/* Center Singularity Brand */}
-                <div
-                    className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-center z-50 pointer-events-none"
-                >
-                    <div className="relative">
+                {/* Center Singularity Brand & Toggle */}
+                <div className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex items-center gap-6 z-50">
+                    {/* The Singularity Core */}
+                    <div className="relative pointer-events-none">
                         <motion.div
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                            animate={{ scale: isSingularityActive ? [1, 1.2, 1] : 1, opacity: isSingularityActive ? [0.5, 0.8, 0.5] : 0.2 }}
                             transition={{ duration: 2, repeat: Infinity }}
                             className="absolute inset-0 bg-primary/50 blur-xl rounded-full"
                         />
-                        <div className="relative p-6 bg-black border-2 border-primary rounded-full shadow-[0_0_30px_rgba(234,88,12,0.5)]">
-                            <Atom className="h-10 w-10 text-primary animate-spin" />
+                        <div className={cn(
+                            "relative p-6 bg-black border-2 rounded-full transition-all duration-500",
+                            isSingularityActive ? "border-primary shadow-[0_0_30px_rgba(234,88,12,0.5)]" : "border-white/10"
+                        )}>
+                            <Atom className={cn(
+                                "h-10 w-10 transition-all duration-1000",
+                                isSingularityActive ? "text-primary animate-spin" : "text-white/20"
+                            )} />
                         </div>
                     </div>
-                    <div className="space-y-1 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
-                        <h2 className="text-2xl font-black tracking-tighter text-white">FİZİKHUB</h2>
-                        <p className="text-[10px] font-mono text-primary uppercase tracking-widest animate-pulse">
-                            TEKİLLİK AKTİF
+
+                    {/* Control Panel - Moved to Right */}
+                    <div
+                        className="flex flex-col items-start gap-1 cursor-pointer group"
+                        onClick={() => setIsSingularityActive(!isSingularityActive)}
+                    >
+                        <div className="flex items-center gap-2 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 shadow-2xl group-hover:border-primary/50 transition-colors">
+                            <Power className={cn(
+                                "h-3 w-3",
+                                isSingularityActive ? "text-primary" : "text-white/40"
+                            )} />
+                            <span className={cn(
+                                "text-[10px] font-black tracking-tighter uppercase transition-colors",
+                                isSingularityActive ? "text-white" : "text-white/40"
+                            )}>
+                                FİZİKHUB
+                            </span>
+                        </div>
+                        <p className={cn(
+                            "text-[8px] font-mono uppercase tracking-widest pl-1 transition-colors",
+                            isSingularityActive ? "text-primary animate-pulse" : "text-white/20"
+                        )}>
+                            {isSingularityActive ? "TEKİLLİK AKTİF" : "TEKİLLİK PASİF"}
                         </p>
                     </div>
                 </div>
 
-                {/* Technical Links Grid - Permanently Sucked In */}
+                {/* Technical Links Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px]">
-                    {/* Left Side Links - Pulled Right */}
+                    {/* Left Side Links */}
                     <motion.div
                         className="flex flex-col gap-2 origin-bottom-right"
                         animate={{
@@ -160,12 +191,12 @@ export function Footer() {
 
                     <motion.div
                         className="flex flex-col gap-2 origin-bottom-right"
-                        animate={{
+                        animate={isSingularityActive ? {
                             rotate: [10, 12, 10],
                             x: [40, 45, 40],
                             y: [40, 45, 40],
                             scale: [0.8, 0.75, 0.8]
-                        }}
+                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
@@ -174,15 +205,15 @@ export function Footer() {
                         <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Yazarlar</Link>
                     </motion.div>
 
-                    {/* Right Side Links - Pulled Left */}
+                    {/* Right Side Links */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right origin-bottom-left"
-                        animate={{
+                        animate={isSingularityActive ? {
                             rotate: [-10, -12, -10],
                             x: [-40, -45, -40],
                             y: [40, 45, 40],
                             scale: [0.8, 0.75, 0.8]
-                        }}
+                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
                         transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
@@ -193,12 +224,12 @@ export function Footer() {
 
                     <motion.div
                         className="flex flex-col gap-2 md:text-right origin-bottom-left"
-                        animate={{
+                        animate={isSingularityActive ? {
                             rotate: [-5, -7, -5],
                             x: [-20, -25, -20],
                             y: [20, 25, 20],
                             scale: [0.9, 0.85, 0.9]
-                        }}
+                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
                         transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>

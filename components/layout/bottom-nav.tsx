@@ -31,7 +31,7 @@ export function BottomNav() {
         },
         {
             href: "/profil",
-            label: "KİMLİK",
+            label: "PROFİL",
             icon: User
         }
     ];
