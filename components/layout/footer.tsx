@@ -176,55 +176,30 @@ export function Footer() {
 
                 {/* Center Singularity Brand & Toggle - FIXED LAYOUT */}
                 <div className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex items-center justify-center z-50">
-                    <div className="relative flex items-center">
-                        {/* The Singularity Core */}
-                        <div className="relative pointer-events-none z-10">
+                    <div className="relative flex items-center justify-center">
+                        {/* The Singularity Core - NOW INTERACTIVE */}
+                        <div
+                            className="relative cursor-pointer z-50 group"
+                            onClick={() => setIsSingularityActive(!isSingularityActive)}
+                        >
                             <motion.div
                                 animate={{ scale: isSingularityActive ? [1, 1.2, 1] : 1, opacity: isSingularityActive ? [0.5, 0.8, 0.5] : 0.2 }}
                                 transition={{ duration: 2, repeat: Infinity }}
                                 className={cn(
-                                    "absolute inset-0 bg-primary/50 rounded-full",
+                                    "absolute inset-0 bg-primary/50 rounded-full group-hover:scale-110 transition-transform duration-500",
                                     isMobile ? "" : "blur-xl"
                                 )}
                             />
                             <div className={cn(
-                                "relative p-6 bg-black border-2 rounded-full transition-all duration-500",
-                                isSingularityActive ? "border-primary" : "border-white/10",
-                                !isMobile && isSingularityActive && "shadow-[0_0_30px_rgba(234,88,12,0.5)]"
+                                "relative p-6 bg-black border-2 rounded-full transition-all duration-500 group-hover:border-primary group-hover:scale-105",
+                                isSingularityActive ? "border-primary shadow-[0_0_30px_rgba(234,88,12,0.5)]" : "border-white/10 hover:border-white/30",
+                                !isMobile && isSingularityActive && "shadow-[0_0_50px_rgba(234,88,12,0.6)]"
                             )}>
                                 <Atom className={cn(
                                     "h-10 w-10 transition-all duration-1000",
-                                    isSingularityActive ? "text-primary animate-spin" : "text-white/20"
+                                    isSingularityActive ? "text-primary animate-spin" : "text-white/20 group-hover:text-white/50"
                                 )} />
                             </div>
-                        </div>
-
-                        {/* Control Panel - Centered & Compact */}
-                        <div
-                            className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 cursor-pointer z-50 group"
-                            onClick={() => setIsSingularityActive(!isSingularityActive)}
-                        >
-                            <div className={cn(
-                                "flex items-center gap-1 px-1.5 py-0.5 rounded-full border transition-all duration-300",
-                                isMobile ? "bg-black border-white/20" : "bg-black/50 backdrop-blur-sm border-white/10 group-hover:bg-black/80 group-hover:border-primary/50"
-                            )}>
-                                <Power className={cn(
-                                    "h-2.5 w-2.5",
-                                    isSingularityActive ? "text-primary" : "text-white/40"
-                                )} />
-                                <span className={cn(
-                                    "text-[8px] font-black tracking-tighter uppercase transition-colors hidden sm:inline-block",
-                                    isSingularityActive ? "text-white" : "text-white/40"
-                                )}>
-                                    FİZİKHUB
-                                </span>
-                            </div>
-                            <p className={cn(
-                                "text-[6px] font-mono uppercase tracking-widest transition-colors",
-                                isSingularityActive ? "text-primary animate-pulse" : "text-white/20"
-                            )}>
-                                {isSingularityActive ? "ON" : "OFF"}
-                            </p>
                         </div>
                     </div>
                 </div>
