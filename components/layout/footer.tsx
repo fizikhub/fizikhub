@@ -23,8 +23,8 @@ export function Footer() {
 
     if (isMessagesPage) return null;
 
-    // OPTIMIZATION: Balanced particles for mobile
-    const debrisCount = isMobile ? 8 : 15;
+    // OPTIMIZATION: High particle density (mobile optimized)
+    const debrisCount = isMobile ? 18 : 25;
     const debris = Array.from({ length: debrisCount }).map((_, i) => ({
         id: i,
         angle: Math.random() * 360,
