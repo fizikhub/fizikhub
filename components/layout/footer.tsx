@@ -201,21 +201,20 @@ export function Footer() {
                 </div>
 
                 {/* Technical Links Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px]">
+                <div className={cn(
+                    "grid gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px] transition-all duration-700",
+                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 lg:grid-cols-2 max-w-3xl mx-auto items-center" : "grid-cols-2 md:grid-cols-4"
+                )}>
                     {/* Left Side Links */}
                     <motion.div
-                        className="flex flex-col gap-2 origin-bottom-right"
-                        animate={{
+                        className="flex flex-col gap-2"
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 1 } : {
                             rotate: pullIntensity.rotate,
                             x: pullIntensity.x,
                             y: pullIntensity.y,
                             scale: pullIntensity.scale
                         }}
-                        transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        }}
+                        transition={{ duration: 1 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
                         <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
@@ -224,14 +223,9 @@ export function Footer() {
                     </motion.div>
 
                     <motion.div
-                        className="flex flex-col gap-2 origin-bottom-right"
-                        animate={isSingularityActive ? {
-                            rotate: [10, 12, 10],
-                            x: [40, 45, 40],
-                            y: [40, 45, 40],
-                            scale: [0.8, 0.75, 0.8]
-                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                        className="flex flex-col gap-2"
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 1 } : undefined}
+                        transition={{ duration: 1 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
                         <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
@@ -241,14 +235,10 @@ export function Footer() {
 
                     {/* Right Side Links */}
                     <motion.div
-                        className="flex flex-col gap-2 md:text-right origin-bottom-left"
-                        animate={isSingularityActive ? {
-                            rotate: [-10, -12, -10],
-                            x: [-40, -45, -40],
-                            y: [40, 45, 40],
-                            scale: [0.8, 0.75, 0.8]
-                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
-                        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                        className="flex flex-col gap-2 md:text-right"
+                        style={{ textAlign: isSingularityActive ? 'left' : undefined }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 1 } : undefined}
+                        transition={{ duration: 1 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
                         <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
@@ -257,14 +247,10 @@ export function Footer() {
                     </motion.div>
 
                     <motion.div
-                        className="flex flex-col gap-2 md:text-right origin-bottom-left"
-                        animate={isSingularityActive ? {
-                            rotate: [-5, -7, -5],
-                            x: [-20, -25, -20],
-                            y: [20, 25, 20],
-                            scale: [0.9, 0.85, 0.9]
-                        } : { rotate: 0, x: 0, y: 0, scale: 1 }}
-                        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+                        className="flex flex-col gap-2 md:text-right"
+                        style={{ textAlign: isSingularityActive ? 'left' : undefined }}
+                        animate={isSingularityActive ? { x: 0, y: 0, rotate: 0, scale: 1 } : undefined}
+                        transition={{ duration: 1 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
                         <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
