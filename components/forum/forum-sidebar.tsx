@@ -4,44 +4,30 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, CheckCircle2, Clock, Flame } from "lucide-react";
-
-const categories = [
-    "Tümü",
-    "Kuantum Fiziği",
-    "Astrofizik",
-    "Termodinamik",
-    "Mekanik",
-    "Elektromanyetizma",
-    "Genel Görelilik",
-    "Parçacık Fiziği"
-];
-
+import { MessageSquare, CheckCircle2, Clock, Flame, Filter } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
-import { Filter } from "lucide-react";
 
 export function ForumSidebar() {
     const searchParams = useSearchParams();
-    const currentCategory = searchParams.get("category") || "Tümü";
     const currentSort = searchParams.get("sort") || "newest";
     const [open, setOpen] = useState(false);
 
     const SidebarContent = () => (
-        <div className="space-y-6 p-6 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-sm">
-            {/* Filters */}
-            <div className="space-y-4">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider px-2">Filtreler</h3>
-                <div className="flex flex-col gap-1">
+        <div className="space-y-6">
+            <div className="brutalist-card p-6 bg-card">
+                <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-4 border-b-2 border-black dark:border-white pb-2">
+                    FİLTRELER
+                </h3>
+                <div className="flex flex-col gap-2">
                     <Link href="/forum?sort=newest" onClick={() => setOpen(false)}>
                         <Button
                             variant="ghost"
-                            size="sm"
                             className={cn(
-                                "w-full justify-start gap-2 font-normal rounded-lg h-9",
+                                "w-full justify-start gap-3 font-bold uppercase rounded-none border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-transparent transition-all",
                                 currentSort === "newest"
-                                    ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
-                                    : "hover:bg-muted/50"
+                                    ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                    : "text-muted-foreground"
                             )}
                         >
                             <Clock className="h-4 w-4" />
@@ -51,12 +37,11 @@ export function ForumSidebar() {
                     <Link href="/forum?sort=popular" onClick={() => setOpen(false)}>
                         <Button
                             variant="ghost"
-                            size="sm"
                             className={cn(
-                                "w-full justify-start gap-2 font-normal rounded-lg h-9",
+                                "w-full justify-start gap-3 font-bold uppercase rounded-none border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-transparent transition-all",
                                 currentSort === "popular"
-                                    ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
-                                    : "hover:bg-muted/50"
+                                    ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                    : "text-muted-foreground"
                             )}
                         >
                             <Flame className="h-4 w-4" />
@@ -66,12 +51,11 @@ export function ForumSidebar() {
                     <Link href="/forum?filter=solved" onClick={() => setOpen(false)}>
                         <Button
                             variant="ghost"
-                            size="sm"
                             className={cn(
-                                "w-full justify-start gap-2 font-normal rounded-lg h-9",
+                                "w-full justify-start gap-3 font-bold uppercase rounded-none border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-transparent transition-all",
                                 searchParams.get("filter") === "solved"
-                                    ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
-                                    : "hover:bg-muted/50"
+                                    ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                    : "text-muted-foreground"
                             )}
                         >
                             <CheckCircle2 className="h-4 w-4" />
@@ -81,12 +65,11 @@ export function ForumSidebar() {
                     <Link href="/forum?filter=unanswered" onClick={() => setOpen(false)}>
                         <Button
                             variant="ghost"
-                            size="sm"
                             className={cn(
-                                "w-full justify-start gap-2 font-normal rounded-lg h-9",
+                                "w-full justify-start gap-3 font-bold uppercase rounded-none border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-transparent transition-all",
                                 searchParams.get("filter") === "unanswered"
-                                    ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
-                                    : "hover:bg-muted/50"
+                                    ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                    : "text-muted-foreground"
                             )}
                         >
                             <MessageSquare className="h-4 w-4" />
@@ -104,14 +87,16 @@ export function ForumSidebar() {
             <div className="md:hidden mb-6">
                 <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full gap-2 bg-background/50 backdrop-blur-sm">
+                        <Button variant="outline" className="w-full gap-2 border-2 border-black dark:border-white rounded-none font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
                             <Filter className="h-4 w-4" />
                             Filtrele ve Sırala
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="w-[90vw] max-w-sm rounded-xl">
-                        <DialogTitle>Filtreler</DialogTitle>
-                        <div className="mt-4">
+                    <DialogContent className="w-[90vw] max-w-sm border-2 border-black dark:border-white p-0 overflow-hidden">
+                        <DialogTitle className="p-4 bg-primary text-primary-foreground font-black uppercase border-b-2 border-black dark:border-white m-0">
+                            Filtreler
+                        </DialogTitle>
+                        <div className="p-4">
                             <SidebarContent />
                         </div>
                     </DialogContent>

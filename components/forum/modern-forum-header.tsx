@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Sparkles, Atom, Zap } from "lucide-react";
+import { Search, Sparkles, Atom, Zap, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CreateQuestionDialog } from "./create-question-dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 
 export function ModernForumHeader() {
     const router = useRouter();
@@ -18,10 +19,7 @@ export function ModernForumHeader() {
     const [showResults, setShowResults] = useState(false);
     const currentCategory = searchParams.get("category") || "Tümü";
     const currentSort = searchParams.get("sort") || "newest";
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const containerRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
-    // Fix: Initialize supabase client once
     const [supabase] = useState(() => createClient());
 
     // Debounce search
@@ -74,14 +72,6 @@ export function ModernForumHeader() {
         "Parçacık Fiziği"
     ];
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!containerRef.current) return;
-        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - left) / width - 0.5;
-        const y = (e.clientY - top) / height - 0.5;
-        setMousePosition({ x, y });
-    };
-
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         setShowResults(false);
@@ -113,109 +103,65 @@ export function ModernForumHeader() {
     };
 
     return (
-        <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
-            {/* Hero & Search Section */}
-            <motion.div
-                ref={containerRef}
-                onMouseMove={handleMouseMove}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="relative rounded-2xl sm:rounded-[32px] overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background border border-white/10 shadow-xl sm:shadow-2xl shadow-primary/5 p-6 sm:p-8 md:p-12 text-center group"
-            >
-                {/* Animated Background Elements */}
-                <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]" />
+        <div className="flex flex-col gap-8 mb-8">
+            {/* Industrial Header */}
+            <div className="relative border-2 border-black dark:border-white bg-card p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+                {/* Decorative Corner */}
+                <div className="absolute top-0 left-0 w-4 h-4 bg-black dark:bg-white" />
+                <div className="absolute top-0 right-0 w-4 h-4 bg-black dark:bg-white" />
+                <div className="absolute bottom-0 left-0 w-4 h-4 bg-black dark:bg-white" />
+                <div className="absolute bottom-0 right-0 w-4 h-4 bg-black dark:bg-white" />
 
-                {/* Floating Orbs */}
-                <motion.div
-                    className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"
-                    animate={{
-                        x: mousePosition.x * -50,
-                        y: mousePosition.y * -50,
-                    }}
-                />
-                <motion.div
-                    className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"
-                    animate={{
-                        x: mousePosition.x * 50,
-                        y: mousePosition.y * 50,
-                    }}
-                />
-
-                <div className="relative z-10 max-w-2xl mx-auto space-y-4 sm:space-y-8">
-                    <div className="space-y-1 sm:space-y-2">
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="inline-flex items-center justify-center p-2 bg-primary/10 rounded-full mb-4 ring-1 ring-primary/20 backdrop-blur-sm"
-                        >
-                            <Atom className="w-5 h-5 text-primary mr-2 animate-spin-slow" />
-                            <span className="text-xs font-medium text-primary">FizikHub Topluluğu</span>
-                        </motion.div>
-
-                        <motion.h1
-                            className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70"
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                        >
-                            Bilim Topluluğu
-                        </motion.h1>
-
-                        <motion.p
-                            className="text-sm sm:text-base md:text-lg text-muted-foreground"
-                            initial={{ y: 20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            Merak ettiklerini sor, tartışmalara katıl ve bilimin derinliklerini keşfet.
-                        </motion.p>
+                <div className="max-w-4xl mx-auto text-center space-y-6">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest border-2 border-black dark:border-white">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>FizikHub Forum</span>
                     </div>
 
-                    <motion.div
-                        ref={searchRef}
-                        className="relative group max-w-lg mx-auto w-full"
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                    >
-                        <form onSubmit={handleSearch}>
-                            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            <div className="relative flex items-center">
-                                <Search className="absolute left-3 sm:left-4 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                <Input
-                                    placeholder="Merak ettiğin konuyu ara..."
-                                    className="pl-10 sm:pl-12 pr-20 sm:pr-24 h-11 sm:h-14 rounded-full bg-background/80 backdrop-blur-xl border-white/10 shadow-lg text-sm sm:text-base md:text-lg focus:ring-2 focus:ring-primary/20 transition-all w-full"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    onFocus={() => {
-                                        if (searchQuery.length > 2 && results.length > 0) setShowResults(true);
-                                    }}
-                                />
-                                <div className="absolute right-1.5 sm:right-2">
-                                    <Button size="sm" type="submit" className="rounded-full px-3 sm:px-4 md:px-6 h-8 sm:h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all hover:scale-105 text-xs sm:text-sm group-hover:shadow-primary/25">
-                                        Ara
-                                    </Button>
-                                </div>
-                            </div>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9]">
+                        FİZİKHUB FORUM
+                    </h1>
+
+                    <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
+                        Henüz kimse cesaret edip sormadı. İlk sen ol, tarihe geç.
+                    </p>
+
+                    {/* Search Bar */}
+                    <div ref={searchRef} className="relative max-w-xl mx-auto mt-8">
+                        <form onSubmit={handleSearch} className="relative flex items-center">
+                            <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                placeholder="Aradığın şey kara delikte kaybolmuş olabilir..."
+                                className="pl-12 pr-24 h-14 rounded-none border-2 border-black dark:border-white bg-background text-lg font-medium focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-colors"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => {
+                                    if (searchQuery.length > 2 && results.length > 0) setShowResults(true);
+                                }}
+                            />
+                            <Button
+                                type="submit"
+                                className="absolute right-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-colors"
+                            >
+                                ARA
+                            </Button>
                         </form>
 
                         {/* Instant Search Results */}
                         <AnimatePresence>
                             {showResults && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-background/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] z-50"
                                 >
                                     {isSearching ? (
-                                        <div className="p-4 text-center text-muted-foreground text-sm">
-                                            Aranıyor...
+                                        <div className="p-4 text-center text-muted-foreground font-medium">
+                                            Veriler taranıyor...
                                         </div>
                                     ) : results.length > 0 ? (
-                                        <div className="py-2">
+                                        <div className="divide-y-2 divide-border">
                                             {results.map((result) => (
                                                 <button
                                                     key={result.id}
@@ -223,92 +169,81 @@ export function ModernForumHeader() {
                                                         router.push(`/forum/${result.id}`);
                                                         setShowResults(false);
                                                     }}
-                                                    className="w-full px-4 py-3 text-left hover:bg-white/5 transition-colors flex items-center gap-3 group/item"
+                                                    className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 group"
                                                 >
-                                                    <div className="p-2 rounded-full bg-primary/10 text-primary group-hover/item:bg-primary group-hover/item:text-primary-foreground transition-colors">
+                                                    <div className="p-2 bg-primary/10 text-primary border-2 border-transparent group-hover:border-black dark:group-hover:border-white transition-colors">
                                                         <Sparkles className="h-4 w-4" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium truncate text-foreground/90">{result.title}</p>
-                                                        <p className="text-xs text-muted-foreground">{result.category}</p>
+                                                        <p className="font-bold truncate">{result.title}</p>
+                                                        <p className="text-xs font-bold text-muted-foreground uppercase">{result.category}</p>
                                                     </div>
                                                 </button>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="p-4 text-center text-muted-foreground text-sm">
-                                            Sonuç bulunamadı.
+                                        <div className="p-4 text-center text-muted-foreground font-medium">
+                                            Sonuç yok. Belki de paralel evrendedir.
                                         </div>
                                     )}
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </motion.div>
+                    </div>
                 </div>
-            </motion.div>
+            </div>
 
             {/* Categories & Actions Bar */}
-            <motion.div
-                className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] sm:top-[72px] z-30 py-2 -mx-4 px-4 md:mx-0 md:px-0 bg-background/95 backdrop-blur-xl border-b md:border-none border-border/40 md:bg-transparent md:backdrop-blur-none md:static"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-            >
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between sticky top-[70px] z-30 py-4 bg-background/95 backdrop-blur-sm border-b-2 border-border">
                 {/* Categories - Horizontal Scroll */}
-                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                    <div className="flex gap-1.5 sm:gap-2 min-w-max p-0.5 sm:p-1">
-                        {categories.map((category, index) => (
-                            <motion.button
+                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide">
+                    <div className="flex gap-2 min-w-max px-1">
+                        {categories.map((category) => (
+                            <button
                                 key={category}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.6 + index * 0.05 }}
                                 onClick={() => handleCategoryChange(category)}
-                                className={`
-                                    px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 border whitespace-nowrap relative overflow-hidden
-                                    ${currentCategory === category
-                                        ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20 scale-105"
-                                        : "bg-card/50 text-muted-foreground border-border/50 hover:bg-card hover:text-foreground hover:border-primary/20 hover:shadow-md"
-                                    }
-                                `}
-                            >
-                                {currentCategory === category && (
-                                    <motion.div
-                                        className="absolute inset-0 bg-white/20"
-                                        layoutId="activeCategory"
-                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                    />
+                                className={cn(
+                                    "px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200",
+                                    currentCategory === category
+                                        ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -translate-y-1"
+                                        : "bg-background border-border hover:border-black dark:hover:border-white hover:-translate-y-0.5"
                                 )}
-                                <span className="relative z-10">{category}</span>
-                            </motion.button>
+                            >
+                                {category}
+                            </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto justify-center md:justify-end">
-                    <div className="flex bg-card/50 p-0.5 sm:p-1 rounded-full border border-border/50 backdrop-blur-sm shadow-sm">
+                <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex border-2 border-border bg-background">
                         <button
                             onClick={() => handleSortChange("newest")}
-                            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${currentSort === "newest" ? "bg-background shadow-sm text-foreground ring-1 ring-black/5" : "text-muted-foreground hover:text-foreground"}`}
+                            className={cn(
+                                "px-4 py-2 text-sm font-bold uppercase transition-colors",
+                                currentSort === "newest" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
+                            )}
                         >
-                            Yeni
+                            YENİ
                         </button>
+                        <div className="w-0.5 bg-border" />
                         <button
                             onClick={() => handleSortChange("popular")}
-                            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${currentSort === "popular" ? "bg-background shadow-sm text-foreground ring-1 ring-black/5" : "text-muted-foreground hover:text-foreground"}`}
+                            className={cn(
+                                "px-4 py-2 text-sm font-bold uppercase transition-colors",
+                                currentSort === "popular" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
+                            )}
                         >
-                            Popüler
+                            POPÜLER
                         </button>
                     </div>
-
-                    <div className="h-6 sm:h-8 w-px bg-border/50 mx-0.5 sm:mx-1 hidden md:block" />
 
                     <div className="relative z-10">
                         <CreateQuestionDialog />
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

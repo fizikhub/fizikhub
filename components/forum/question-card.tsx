@@ -1,308 +1,83 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { MessageCircle, ArrowUp, ArrowDown, Eye, CheckCircle2, Flame, Share2, MoreHorizontal, Sparkles, Flag, User } from "lucide-react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { MessageSquare, ThumbsUp, Eye, CheckCircle2, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { createClient } from "@/lib/supabase";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 interface QuestionCardProps {
-    question: {
-        id: number;
-        title: string;
-        content: string | null;
-        category: string | null;
-        created_at: string;
-        votes: number;
-        views: number;
-        tags: string[] | null;
-        profiles?: {
-            username: string | null;
-            full_name: string | null;
-            avatar_url: string | null;
-            is_verified?: boolean | null;
-        } | null;
-        answers?: { count: number }[] | any[];
-    };
+    question: any;
     hasVoted?: boolean;
 }
 
-export function QuestionCard({ question, hasVoted: initialHasVoted = false }: QuestionCardProps) {
-    const router = useRouter();
-    const [votes, setVotes] = useState(question.votes || 0);
-    const [hasVoted, setHasVoted] = useState(initialHasVoted);
-    const [isVoting, setIsVoting] = useState(false);
-    // Fix: Initialize supabase client once
-    const [supabase] = useState(() => createClient());
-
-    const answerCount = question.answers?.[0]?.count || 0;
-    const isSolved = false; // TODO: Check if any answer is accepted
-    const isHot = votes > 5;
-
-    const handleCardClick = () => {
-        router.push(`/forum/${question.id}`);
-    };
-
-    const handleShare = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        navigator.clipboard.writeText(`${window.location.origin}/forum/${question.id}`);
-        toast.success("Bağlantı kopyalandı", {
-            description: "Sorunun bağlantısı panoya kopyalandı.",
-            duration: 2000,
-        });
-    };
-
-    const handleVote = async (e: React.MouseEvent, type: 'up' | 'down') => {
-        e.stopPropagation();
-        if (isVoting) return;
-
-        // Optimistic update
-        const previousVotes = votes;
-        const previousHasVoted = hasVoted;
-
-        setIsVoting(true);
-
-        // Simple toggle logic for now: 
-        // If already voted and clicking up again -> remove vote (not implemented fully in backend yet usually, but let's assume toggle)
-        // For this implementation, we'll just handle Upvote = +1, Downvote = -1 (visual only if not implementing full logic)
-        // Assuming 'hasVoted' means "has upvoted". 
-
-        if (type === 'up') {
-            if (hasVoted) {
-                setVotes(v => v - 1);
-                setHasVoted(false);
-            } else {
-                setVotes(v => v + 1);
-                setHasVoted(true);
-            }
-        } else {
-            // Downvote logic (if we want to support it, usually requires checking if user already downvoted)
-            // For now, let's just simulate a downvote as -1 visual
-            setVotes(v => v - 1);
-        }
-
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                toast.error("Giriş yapmalısınız", {
-                    description: "Oy kullanmak için lütfen giriş yapın."
-                });
-                // Revert
-                setVotes(previousVotes);
-                setHasVoted(previousHasVoted);
-                return;
-            }
-
-            // Call RPC or insert to table
-            // This part depends on your backend implementation. 
-            // Assuming a simple insert/delete for upvote for now based on previous context.
-
-            if (type === 'up') {
-                if (previousHasVoted) {
-                    // Remove vote
-                    await supabase.from('question_votes').delete().match({ question_id: question.id, user_id: user.id });
-                } else {
-                    // Add vote
-                    await supabase.from('question_votes').insert({ question_id: question.id, user_id: user.id, vote_type: 1 });
-                }
-            } else {
-                // Downvote implementation would go here
-                toast.info("Downvote özelliği yakında!");
-                setVotes(previousVotes); // Revert for now
-            }
-
-        } catch (error) {
-            console.error("Voting error:", error);
-            setVotes(previousVotes);
-            setHasVoted(previousHasVoted);
-            toast.error("Bir hata oluştu");
-        } finally {
-            setIsVoting(false);
-        }
-    };
+export function QuestionCard({ question, hasVoted }: QuestionCardProps) {
+    const isSolved = question.is_solved;
+    const hasAcceptedAnswer = question.accepted_answer_id !== null;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.2 }}
-            onClick={handleCardClick}
-            className="group relative"
-        >
-            {/* Gradient Border Effect on Hover */}
-            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-primary/50 via-purple-500/50 to-pink-500/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
+        <Link href={`/forum/${question.id}`} className="group block h-full">
+            <div className="h-full bg-card border-2 border-border p-6 hover:border-black dark:hover:border-white transition-all duration-200 flex flex-col gap-4 shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1 relative overflow-hidden">
 
-            <Card className="relative border border-border/40 shadow-sm hover:shadow-xl bg-card/80 backdrop-blur-md transition-all duration-300 cursor-pointer overflow-hidden rounded-2xl">
-                <CardContent className="p-5 sm:p-6">
-                    {/* Header: User & Meta */}
-                    <div className="flex items-center justify-between mb-4">
-                        <Link
-                            href={`/kullanici/${question.profiles?.username}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-3 group/author"
-                        >
-                            <div className="relative">
-                                <Avatar className="h-10 w-10 ring-2 ring-background group-hover/author:ring-primary/20 transition-all">
-                                    <AvatarImage src={question.profiles?.avatar_url || ""} />
-                                    <AvatarFallback className="bg-primary/5 text-primary font-medium">
-                                        {question.profiles?.username?.[0]?.toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
-                                {question.profiles?.is_verified && (
-                                    <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5">
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 fill-blue-500/10" />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-foreground group-hover/author:text-primary transition-colors">
-                                    {question.profiles?.full_name || question.profiles?.username || "Anonim"}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                    {formatDistanceToNow(new Date(question.created_at), { locale: tr, addSuffix: true })}
-                                </span>
-                            </div>
-                        </Link>
+                {/* Solved Badge */}
+                {(isSolved || hasAcceptedAnswer) && (
+                    <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold uppercase border-l-2 border-b-2 border-black dark:border-white">
+                        Çözüldü
+                    </div>
+                )}
 
-                        <div className="flex items-center gap-2">
-                            {isHot && (
-                                <Badge variant="secondary" className="bg-orange-500/10 text-orange-600 border-orange-200/20 px-2 py-0.5 text-xs font-medium animate-pulse">
-                                    <Flame className="h-3 w-3 mr-1" /> Popüler
-                                </Badge>
-                            )}
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-foreground">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={(e) => {
-                                        e.stopPropagation();
-                                        router.push(`/kullanici/${question.profiles?.username}`);
-                                    }}>
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Profili Görüntüle</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={(e) => {
-                                        e.stopPropagation();
-                                        toast.success("Bildiriminiz alındı.");
-                                    }} className="text-red-600 focus:text-red-600">
-                                        <Flag className="mr-2 h-4 w-4" />
-                                        <span>Şikayet Et</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10 border-2 border-black dark:border-white">
+                            <AvatarImage src={question.profiles?.avatar_url || ""} />
+                            <AvatarFallback className="font-bold bg-primary text-primary-foreground">
+                                {question.profiles?.username?.[0]?.toUpperCase() || <User className="w-4 h-4" />}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-sm hover:underline decoration-2 underline-offset-2">
+                                @{question.profiles?.username || "Anonim"}
+                            </span>
+                            <span className="text-muted-foreground text-xs font-bold uppercase">
+                                {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    {/* Content Body */}
-                    <div className="space-y-3 mb-5">
-                        <div className="flex items-start justify-between gap-4">
-                            <h3 className="text-lg sm:text-xl font-bold leading-snug text-foreground group-hover:text-primary transition-colors">
-                                {question.title}
-                            </h3>
-                            {isSolved && (
-                                <div className="flex-shrink-0" title="Çözüldü">
-                                    <div className="bg-green-500/10 text-green-600 p-1.5 rounded-full">
-                                        <CheckCircle2 className="h-5 w-5" />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        <p className="text-sm sm:text-base text-muted-foreground line-clamp-2 leading-relaxed">
-                            {question.content || ""}
-                        </p>
+                <div className="space-y-2">
+                    <h3 className="text-xl font-black leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase">
+                        {question.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                        <span className="px-2 py-0.5 bg-muted border border-border text-xs font-bold uppercase text-muted-foreground">
+                            {question.category}
+                        </span>
+                        {question.tags?.map((tag: string) => (
+                            <span key={tag} className="px-2 py-0.5 bg-muted/50 border border-border/50 text-xs font-medium text-muted-foreground">
+                                #{tag}
+                            </span>
+                        ))}
                     </div>
+                </div>
 
-                    {/* Footer: Tags & Actions */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-border/30">
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2">
-                            <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 hover:bg-primary/10 transition-colors cursor-pointer">
-                                {question.category || "Genel"}
-                            </Badge>
-                            {question.tags?.slice(0, 3).map((tag) => (
-                                <Badge key={tag} variant="secondary" className="bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer border-0 font-normal">
-                                    #{tag}
-                                </Badge>
-                            ))}
-                            {(question.tags?.length || 0) > 3 && (
-                                <span className="text-xs text-muted-foreground self-center">+{question.tags!.length - 3}</span>
-                            )}
-                        </div>
-
-                        {/* Action Pills */}
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            {/* Vote Pill */}
-                            <div className={cn(
-                                "flex items-center gap-1 px-1.5 py-1 rounded-full border transition-colors",
-                                hasVoted
-                                    ? "bg-primary/10 border-primary/20 text-primary"
-                                    : "bg-muted/30 border-border/50 text-muted-foreground hover:border-primary/30 hover:bg-muted/50"
-                            )}>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-full hover:bg-background/80 hover:text-primary"
-                                    onClick={(e) => handleVote(e, 'up')}
-                                    disabled={isVoting}
-                                >
-                                    <ArrowUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
-                                </Button>
-                                <span className="text-sm font-bold min-w-[1.5ch] text-center tabular-nums">{votes}</span>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-full hover:bg-background/80 hover:text-red-500"
-                                    onClick={(e) => handleVote(e, 'down')}
-                                    disabled={isVoting}
-                                >
-                                    <ArrowDown className="h-4 w-4" />
-                                </Button>
-                            </div>
-
-                            {/* Answer Pill */}
-                            <div className={cn(
-                                "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors",
-                                answerCount > 0
-                                    ? "bg-green-500/5 border-green-500/20 text-green-600"
-                                    : "bg-muted/30 border-border/50 text-muted-foreground"
-                            )}>
-                                <MessageCircle className="h-4 w-4" />
-                                <span className="text-sm font-medium">{answerCount}</span>
-                            </div>
-
-                            {/* Share Button */}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-9 w-9 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
-                                onClick={handleShare}
-                            >
-                                <Share2 className="h-4 w-4" />
-                            </Button>
-                        </div>
+                <div className="mt-auto pt-4 flex items-center gap-4 text-sm font-bold text-muted-foreground border-t-2 border-border/50">
+                    <div className={cn("flex items-center gap-2 px-3 py-1 border-2 border-transparent", hasVoted ? "text-primary border-primary/20 bg-primary/5" : "")}>
+                        <ThumbsUp className={cn("w-4 h-4", hasVoted ? "fill-current" : "")} />
+                        <span>{question.votes || 0}</span>
                     </div>
-                </CardContent>
-            </Card>
-        </motion.div>
+                    <div className="flex items-center gap-2 px-3 py-1">
+                        <MessageSquare className="w-4 h-4" />
+                        <span>{question.answers?.length || question.answers?.[0]?.count || 0}</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-1 ml-auto">
+                        <Eye className="w-4 h-4" />
+                        <span>{question.views || 0}</span>
+                    </div>
+                </div>
+            </div>
+        </Link>
     );
 }
