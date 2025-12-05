@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, FileText, BadgeCheck, Globe, Twitter, Github, Linkedin, Instagram, MapPin, Calendar, Link as LinkIcon } from "lucide-react";
+import { MessageSquare, FileText, BadgeCheck, Globe, Twitter, Github, Linkedin, Instagram, MapPin, Calendar, Link as LinkIcon, Microscope, Activity, Scan } from "lucide-react";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { QuestionCard } from "@/components/forum/question-card";
 import { FollowButton } from "@/components/profile/follow-button";
@@ -39,16 +39,6 @@ export function PublicProfileView({
     answersCount,
     user
 }: PublicProfileViewProps) {
-    // Generate a consistent gradient based on username length (simple hash)
-    const gradients = [
-        "from-blue-600 via-indigo-500 to-purple-600",
-        "from-emerald-500 via-teal-500 to-cyan-500",
-        "from-orange-500 via-amber-500 to-yellow-500",
-        "from-pink-500 via-rose-500 to-red-500",
-        "from-violet-600 via-purple-500 to-fuchsia-500"
-    ];
-    const gradientIndex = (profile.username.length + (profile.full_name?.length || 0)) % gradients.length;
-    const coverGradient = gradients[gradientIndex];
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -73,94 +63,100 @@ export function PublicProfileView({
     };
 
     return (
-        <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
-            {/* Modern Cover Section with Parallax-like feel */}
-            <div className="relative h-64 md:h-80 w-full overflow-hidden group">
+        <div className="min-h-screen bg-background pb-20 overflow-x-hidden relative">
+            {/* Laboratory Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+            {/* Top Ruler Decoration */}
+            <div className="absolute top-0 left-0 w-full h-8 border-b border-black/10 dark:border-white/10 flex items-end justify-between px-4 font-mono text-[10px] text-muted-foreground select-none pointer-events-none">
+                <span>00</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
+            </div>
+
+            {/* Cover Area - Technical & Clean */}
+            <div className="relative h-48 md:h-64 w-full overflow-hidden border-b border-black/10 dark:border-white/10 bg-muted/10">
                 {profile.cover_url ? (
-                    <motion.div
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="absolute inset-0 bg-cover bg-center"
+                    <div
+                        className="absolute inset-0 bg-cover bg-center opacity-80 grayscale hover:grayscale-0 transition-all duration-700"
                         style={{ backgroundImage: `url(${profile.cover_url})` }}
                     />
                 ) : (
-                    <motion.div
-                        initial={{ scale: 1.1 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                        className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`}
-                    >
-                        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                    </motion.div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-background to-background" />
                 )}
-                <div className="absolute inset-0 bg-black/10" />
+
+                {/* Overlay Grid */}
+                <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+
+                {/* Data Overlay */}
+                <div className="absolute top-4 right-4 flex gap-2">
+                    <div className="px-2 py-1 bg-background/80 backdrop-blur border border-black/10 dark:border-white/10 text-[10px] font-mono">
+                        SUBJ_ID: {profile.id.substring(0, 8).toUpperCase()}
+                    </div>
+                </div>
             </div>
 
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="container px-4 md:px-6 mx-auto max-w-6xl relative z-10 -mt-32"
+                className="container px-4 md:px-6 mx-auto max-w-7xl relative z-10 -mt-12"
             >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left Sidebar: Profile Card */}
-                    <motion.div variants={itemVariants} className="lg:col-span-4">
-                        <Card className="border-none shadow-2xl bg-card/80 backdrop-blur-xl overflow-visible sticky top-24">
-                            <CardContent className="p-6 flex flex-col items-center text-center pt-16 relative">
-                                {/* Avatar */}
-                                <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-20">
-                                    <motion.div
-                                        whileHover={{ scale: 1.05 }}
-                                        className="relative"
-                                    >
-                                        <div className="h-32 w-32 rounded-full p-1.5 bg-background shadow-2xl ring-4 ring-background/50 overflow-hidden">
-                                            <Avatar className="h-full w-full border-2 border-muted">
-                                                <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
-                                                <AvatarFallback className="text-4xl bg-muted font-bold text-muted-foreground">
-                                                    {profile.full_name?.charAt(0) || profile.username?.charAt(0).toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        </div>
-                                        {profile.is_verified && (
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                className="absolute bottom-1 right-1 bg-background rounded-full p-1.5 shadow-lg text-blue-500"
-                                            >
-                                                <BadgeCheck className="h-6 w-6 fill-blue-500/10" />
-                                            </motion.div>
-                                        )}
-                                    </motion.div>
-                                </div>
+                    {/* Left Sidebar: Subject Identity */}
+                    <motion.div variants={itemVariants} className="lg:col-span-4 space-y-6">
+                        {/* Identity Card */}
+                        <div className="bg-background border border-black/20 dark:border-white/20 p-6 relative shadow-sm">
+                            {/* Scanner Corners */}
+                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary" />
+                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary" />
+                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary" />
+                            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary" />
 
-                                {/* Name & Bio */}
-                                <div className="mt-4 space-y-2 w-full">
-                                    <h1 className="text-2xl font-bold tracking-tight">{profile.full_name || "İsimsiz Kullanıcı"}</h1>
-                                    <p className="text-muted-foreground font-medium flex items-center justify-center gap-1">
-                                        @{profile.username}
-                                    </p>
-
-                                    <div className="flex justify-center py-2">
-                                        <ReputationDisplay
-                                            reputation={profile.reputation || 0}
-                                            size="sm"
-                                            className="bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800"
-                                        />
+                            <div className="flex flex-col items-center text-center">
+                                {/* Avatar Scanner Frame */}
+                                <div className="relative mb-4 group">
+                                    <div className="absolute inset-0 border-2 border-dashed border-primary/30 rounded-full animate-[spin_10s_linear_infinite] group-hover:border-primary/60" />
+                                    <div className="h-32 w-32 rounded-full p-2 bg-background relative z-10">
+                                        <Avatar className="h-full w-full">
+                                            <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
+                                            <AvatarFallback className="text-4xl bg-muted font-mono">
+                                                {profile.full_name?.charAt(0) || profile.username?.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
                                     </div>
-
-                                    {profile.bio && (
-                                        <p className="text-sm text-foreground/80 leading-relaxed py-2 border-t border-border/50 mt-4">
-                                            {profile.bio}
-                                        </p>
+                                    {profile.is_verified && (
+                                        <div className="absolute bottom-2 right-2 z-20 bg-background rounded-full p-1 shadow-sm border border-black/10">
+                                            <BadgeCheck className="h-5 w-5 text-blue-500 fill-blue-500/10" />
+                                        </div>
                                     )}
                                 </div>
 
-                                {/* Stats */}
-                                <div className="w-full py-4 border-y border-border/50 my-4">
-                                    <FollowStats followers={followersCount} following={followingCount} />
+                                <h1 className="text-2xl font-bold tracking-tight uppercase font-outfit">
+                                    {profile.full_name || "BİLİNMEYEN DENEK"}
+                                </h1>
+                                <div className="flex items-center gap-2 mt-1 mb-4">
+                                    <span className="font-mono text-sm text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-sm">
+                                        @{profile.username}
+                                    </span>
                                 </div>
+
+                                <div className="w-full border-t border-dashed border-black/10 dark:border-white/10 my-4" />
+
+                                <div className="flex justify-center mb-4">
+                                    <ReputationDisplay
+                                        reputation={profile.reputation || 0}
+                                        size="sm"
+                                        showLabel={true}
+                                        className="bg-transparent border border-primary/20"
+                                    />
+                                </div>
+
+                                {profile.bio && (
+                                    <div className="w-full bg-muted/10 border-l-2 border-primary/50 p-3 text-left mb-6">
+                                        <p className="text-sm text-muted-foreground leading-relaxed font-mono text-xs">
+                                            "{profile.bio}"
+                                        </p>
+                                    </div>
+                                )}
 
                                 {/* Actions */}
                                 <div className="w-full space-y-3">
@@ -184,113 +180,110 @@ export function PublicProfileView({
                                     )}
                                 </div>
 
-                                {/* Social & Info */}
-                                <div className="w-full mt-6 space-y-3 text-sm">
+                                {/* Meta Data */}
+                                <div className="w-full mt-6 space-y-2 text-xs font-mono text-muted-foreground text-left">
+                                    <div className="flex items-center justify-between border-b border-dashed border-black/5 dark:border-white/5 pb-1">
+                                        <span className="flex items-center gap-2"><Calendar className="h-3 w-3" /> KAYIT TARİHİ</span>
+                                        <span>{format(new Date(profile.created_at || new Date()), 'dd.MM.yyyy', { locale: tr })}</span>
+                                    </div>
                                     {profile.website && (
-                                        <a
-                                            href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors p-2 rounded-lg hover:bg-muted/50"
-                                        >
-                                            <div className="p-1.5 bg-primary/10 rounded-md text-primary">
-                                                <LinkIcon className="h-4 w-4" />
-                                            </div>
-                                            <span className="truncate">{profile.website.replace(/^https?:\/\//, '')}</span>
-                                        </a>
-                                    )}
-
-                                    <div className="flex items-center gap-3 text-muted-foreground p-2">
-                                        <div className="p-1.5 bg-primary/10 rounded-md text-primary">
-                                            <Calendar className="h-4 w-4" />
+                                        <div className="flex items-center justify-between border-b border-dashed border-black/5 dark:border-white/5 pb-1">
+                                            <span className="flex items-center gap-2"><LinkIcon className="h-3 w-3" /> BAĞLANTI</span>
+                                            <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate max-w-[150px]">
+                                                {profile.website.replace(/^https?:\/\//, '')}
+                                            </a>
                                         </div>
-                                        <span>{format(new Date(profile.created_at || new Date()), 'MMMM yyyy', { locale: tr })} tarihinde katıldı</span>
-                                    </div>
-
-                                    {/* Social Icons */}
-                                    <div className="flex justify-center gap-2 pt-2">
-                                        {profile.social_links?.twitter && (
-                                            <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] transition-colors">
-                                                <Twitter className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.github && (
-                                            <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-foreground/10 hover:text-foreground transition-colors">
-                                                <Github className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.linkedin && (
-                                            <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-[#0077b5]/10 hover:text-[#0077b5] transition-colors">
-                                                <Linkedin className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                        {profile.social_links?.instagram && (
-                                            <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted/50 hover:bg-[#E1306C]/10 hover:text-[#E1306C] transition-colors">
-                                                <Instagram className="h-5 w-5" />
-                                            </a>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
-                            </CardContent>
-                        </Card>
 
-                        {/* Badges Section - Left Sidebar */}
-                        <motion.div variants={itemVariants} className="mt-6">
-                            <Card className="border-none shadow-lg bg-card/50 backdrop-blur-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="font-semibold mb-4 flex items-center gap-2">
-                                        <BadgeCheck className="h-5 w-5 text-primary" />
-                                        Rozetler
-                                    </h3>
-                                    {userBadges && userBadges.length > 0 ? (
-                                        <BadgeDisplay
-                                            userBadges={userBadges}
-                                            maxDisplay={12}
-                                            size="md"
-                                        />
-                                    ) : (
-                                        <a href="/puanlar-nedir" className="block group">
-                                            <div className="border-2 border-dashed border-muted rounded-xl p-4 text-center hover:bg-muted/50 transition-colors cursor-pointer">
-                                                <div className="bg-muted/50 p-2 rounded-full inline-flex mb-2 group-hover:scale-110 transition-transform">
-                                                    <BadgeCheck className="h-5 w-5 text-muted-foreground" />
-                                                </div>
-                                                <p className="text-sm font-medium text-muted-foreground">Henüz rozet kazanılmamış</p>
-                                                <p className="text-xs text-primary mt-1 font-medium">Rozetler nedir?</p>
-                                            </div>
+                                {/* Social Links */}
+                                <div className="flex gap-4 mt-4 pt-4 border-t border-black/10 dark:border-white/10">
+                                    {profile.social_links?.twitter && (
+                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                            <Twitter className="h-4 w-4" />
                                         </a>
                                     )}
-                                </CardContent>
-                            </Card>
-                        </motion.div>
+                                    {profile.social_links?.github && (
+                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                            <Github className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.linkedin && (
+                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                            <Linkedin className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.instagram && (
+                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                                            <Instagram className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Badges Module */}
+                        <div className="bg-background border border-black/20 dark:border-white/20 p-4 relative">
+                            <div className="absolute -top-3 left-4 bg-background px-2 text-xs font-bold uppercase tracking-wider text-primary border border-primary/20">
+                                BAŞARI KAYITLARI
+                            </div>
+                            {userBadges && userBadges.length > 0 ? (
+                                <BadgeDisplay
+                                    userBadges={userBadges}
+                                    maxDisplay={8}
+                                    size="sm"
+                                />
+                            ) : (
+                                <div className="text-center py-4 text-xs font-mono text-muted-foreground">
+                                    KAYIT BULUNAMADI
+                                </div>
+                            )}
+                        </div>
                     </motion.div>
 
-                    {/* Right Content: Tabs & Activity */}
+                    {/* Right Content: Observation Data */}
                     <motion.div variants={itemVariants} className="lg:col-span-8 space-y-6">
+
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-background border border-black/10 dark:border-white/10 p-3 flex flex-col items-center justify-center hover:border-primary/50 transition-colors">
+                                <span className="text-2xl font-mono font-bold">{followersCount}</span>
+                                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">TAKİPÇİ</span>
+                            </div>
+                            <div className="bg-background border border-black/10 dark:border-white/10 p-3 flex flex-col items-center justify-center hover:border-primary/50 transition-colors">
+                                <span className="text-2xl font-mono font-bold">{followingCount}</span>
+                                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">TAKİP</span>
+                            </div>
+                            <div className="bg-background border border-black/10 dark:border-white/10 p-3 flex flex-col items-center justify-center hover:border-primary/50 transition-colors">
+                                <span className="text-2xl font-mono font-bold">{questions?.length || 0}</span>
+                                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">SORU</span>
+                            </div>
+                            <div className="bg-background border border-black/10 dark:border-white/10 p-3 flex flex-col items-center justify-center hover:border-primary/50 transition-colors">
+                                <span className="text-2xl font-mono font-bold">{answersCount || 0}</span>
+                                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">CEVAP</span>
+                            </div>
+                        </div>
+
+                        {/* Data Tabs */}
                         <Tabs defaultValue="questions" className="w-full">
-                            <div className="sticky top-[72px] z-20 bg-background/80 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg mb-6 p-1">
-                                <TabsList className="w-full justify-start bg-transparent h-auto p-0">
+                            <div className="border-b border-black/10 dark:border-white/10 mb-6">
+                                <TabsList className="bg-transparent h-auto p-0 gap-6">
                                     <TabsTrigger
                                         value="questions"
-                                        className="flex-1 rounded-xl data-[state=active]:bg-primary/10 data-[state=active]:text-primary px-4 py-3 font-medium text-muted-foreground transition-all"
+                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-3 font-bold uppercase tracking-wide text-muted-foreground data-[state=active]:text-foreground transition-all"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <MessageSquare className="h-4 w-4" />
-                                            <span>Sorular</span>
-                                            <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary border-0">
-                                                {questions?.length || 0}
-                                            </Badge>
+                                            <Microscope className="h-4 w-4" />
+                                            <span>SORU ANALİZLERİ</span>
                                         </div>
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="answers"
-                                        className="flex-1 rounded-xl data-[state=active]:bg-primary/10 data-[state=active]:text-primary px-4 py-3 font-medium text-muted-foreground transition-all"
+                                        className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-3 font-bold uppercase tracking-wide text-muted-foreground data-[state=active]:text-foreground transition-all"
                                     >
                                         <div className="flex items-center gap-2">
-                                            <FileText className="h-4 w-4" />
-                                            <span>Cevaplar</span>
-                                            <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary border-0">
-                                                {answersCount || 0}
-                                            </Badge>
+                                            <Activity className="h-4 w-4" />
+                                            <span>CEVAP VERİLERİ</span>
                                         </div>
                                     </TabsTrigger>
                                 </TabsList>
@@ -303,14 +296,14 @@ export function PublicProfileView({
                                             <motion.div
                                                 initial={{ opacity: 0, scale: 0.9 }}
                                                 animate={{ opacity: 1, scale: 1 }}
-                                                className="text-center py-20 border-2 border-dashed rounded-3xl bg-muted/20"
+                                                className="text-center py-20 border border-dashed border-black/10 dark:border-white/10 bg-muted/5"
                                             >
-                                                <div className="bg-muted/50 p-4 rounded-full inline-block mb-4">
-                                                    <MessageSquare className="h-8 w-8 text-muted-foreground" />
+                                                <div className="bg-muted/20 p-4 rounded-full inline-block mb-4">
+                                                    <Scan className="h-8 w-8 text-muted-foreground" />
                                                 </div>
-                                                <h3 className="text-xl font-semibold mb-2">Henüz soru yok</h3>
-                                                <p className="text-muted-foreground max-w-sm mx-auto">
-                                                    Bu kullanıcı henüz topluluğa bir soru sormamış.
+                                                <h3 className="text-lg font-bold uppercase mb-2">VERİ TESPİT EDİLEMEDİ</h3>
+                                                <p className="text-muted-foreground font-mono text-xs max-w-sm mx-auto">
+                                                    Bu deneğin soru veritabanında henüz bir kaydı bulunmuyor.
                                                 </p>
                                             </motion.div>
                                         ) : (
@@ -332,14 +325,14 @@ export function PublicProfileView({
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
-                                        className="text-center py-20 border-2 border-dashed rounded-3xl bg-muted/20"
+                                        className="text-center py-20 border border-dashed border-black/10 dark:border-white/10 bg-muted/5"
                                     >
-                                        <div className="bg-muted/50 p-4 rounded-full inline-block mb-4">
-                                            <FileText className="h-8 w-8 text-muted-foreground" />
+                                        <div className="bg-muted/20 p-4 rounded-full inline-block mb-4">
+                                            <Activity className="h-8 w-8 text-muted-foreground" />
                                         </div>
-                                        <h3 className="text-xl font-semibold mb-2">Cevaplar yakında</h3>
-                                        <p className="text-muted-foreground max-w-sm mx-auto">
-                                            Kullanıcının verdiği cevapları listeleme özelliği çok yakında eklenecek.
+                                        <h3 className="text-lg font-bold uppercase mb-2">VERİLER İŞLENİYOR</h3>
+                                        <p className="text-muted-foreground font-mono text-xs max-w-sm mx-auto">
+                                            Cevap analiz modülü şu anda bakımda. Veriler yakında sisteme düşecek.
                                         </p>
                                     </motion.div>
                                 </TabsContent>
