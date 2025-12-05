@@ -15,7 +15,7 @@ export function BlackHoleBackground() {
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
             {/* Distant Singularity - Top Right */}
-            <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] opacity-[0.03] dark:opacity-[0.08]">
+            <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] opacity-[0.15] dark:opacity-[0.2]">
                 {/* Accretion Disk */}
                 <motion.div
                     animate={{ rotate: 360 }}
@@ -32,7 +32,7 @@ export function BlackHoleBackground() {
             </div>
 
             {/* Distant Singularity - Bottom Left (Echo) */}
-            <div className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] opacity-[0.02] dark:opacity-[0.05]">
+            <div className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] opacity-[0.1] dark:opacity-[0.15]">
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 250, repeat: Infinity, ease: "linear" }}
