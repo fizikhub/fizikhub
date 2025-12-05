@@ -24,12 +24,12 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     // AGGRESSIVE OPTIMIZATION: Very few particles on mobile
-    const debrisCount = isMobile ? 5 : 15;
+    const debrisCount = isMobile ? 3 : 12;
     const debris = Array.from({ length: debrisCount }).map((_, i) => ({
         id: i,
         angle: Math.random() * 360,
         distance: 300 + Math.random() * 500,
-        size: Math.random() * 3 + 1,
+        size: isMobile ? 2 : (Math.random() * 3 + 1),
         duration: Math.random() * 2 + 1,
         delay: Math.random() * 2
     }));
@@ -59,61 +59,102 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Massive Black Hole Background Effect - OPTIMIZED */}
-            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000 will-change-transform" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
-                {/* Accretion Disk - Outer - Simplified for Mobile */}
+            {/* Massive Black Hole Background Effect - ENHANCED */}
+            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
+                {/* Accretion Disk - Layer 1 (Outermost, Slowest) */}
+                <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '80s' }}>
+                    <div className={cn(
+                        "absolute inset-0 rounded-full bg-gradient-conic from-transparent via-primary/15 via-transparent to-transparent",
+                        !isMobile && "blur-2xl"
+                    )} />
+                </div>
+
+                {/* Accretion Disk - Layer 2 */}
+                <div className="absolute inset-[50px] rounded-full animate-spin" style={{ animationDuration: '50s', animationDirection: 'reverse' }}>
+                    <div className={cn(
+                        "absolute inset-0 rounded-full bg-gradient-conic from-orange-600/20 via-transparent via-primary/25 to-transparent",
+                        !isMobile && "blur-xl"
+                    )} />
+                </div>
+
+                {/* Accretion Disk - Layer 3 (Fast Inner) */}
+                <div className="absolute inset-[100px] rounded-full animate-spin" style={{ animationDuration: '30s' }}>
+                    <div className={cn(
+                        "absolute inset-0 rounded-full bg-gradient-conic from-primary/30 via-orange-500/20 to-transparent",
+                        !isMobile && "blur-lg"
+                    )} />
+                </div>
+
+                {/* Gravitational Lensing Rings */}
                 <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    animate={{ rotate: 360, scale: [1, 1.02, 1] }}
+                    transition={{ rotate: { duration: 100, repeat: Infinity, ease: "linear" }, scale: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+                    className="absolute inset-[200px] rounded-full border border-white/20 z-10"
+                />
+                <motion.div
+                    animate={{ rotate: -360, scale: [1.02, 1, 1.02] }}
+                    transition={{ rotate: { duration: 120, repeat: Infinity, ease: "linear" }, scale: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
+                    className="absolute inset-[240px] rounded-full border border-primary/30 z-10"
+                />
+
+                {/* Photon Ring - Enhanced Pulsing */}
+                <motion.div
+                    animate={{ opacity: [0.8, 1, 0.8], scale: [1, 1.01, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary/10 to-transparent",
-                        isMobile ? "opacity-30" : "opacity-50 blur-2xl"
+                        "absolute inset-[290px] rounded-full border-[3px] border-white/90 z-20",
+                        !isMobile && "shadow-[0_0_20px_rgba(255,255,255,0.8)]"
+                    )}
+                />
+                <motion.div
+                    animate={{ opacity: [0.6, 0.9, 0.6], scale: [1.01, 1, 1.01] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    className={cn(
+                        "absolute inset-[288px] rounded-full border-[6px] border-primary/60 z-19",
+                        !isMobile && "shadow-[0_0_40px_rgba(234,88,12,0.8)]"
                     )}
                 />
 
-                {/* Accretion Disk - Inner (Faster) */}
+                {/* Event Horizon (The Void) - Breathing */}
                 <motion.div
-                    animate={{ rotate: -360, scale: [1, 1.05, 1] }}
-                    transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
-                    className={cn(
-                        "absolute inset-20 rounded-full bg-gradient-radial from-transparent via-orange-600/30 to-transparent",
-                        isMobile ? "" : "blur-xl"
-                    )}
-                />
-
-                {/* Photon Ring - The Bright Edge */}
-                <div className={cn(
-                    "absolute inset-[290px] rounded-full border-[3px] border-white/80 z-20",
-                    isMobile ? "" : "shadow-[0_0_20px_rgba(255,255,255,0.8)] blur-[1px]"
-                )} />
-                <div className={cn(
-                    "absolute inset-[290px] rounded-full border-[6px] border-primary/50 z-10",
-                    isMobile ? "" : "shadow-[0_0_40px_rgba(234,88,12,0.8)] blur-sm"
-                )} />
-
-                {/* Event Horizon (The Void) */}
-                <motion.div
-                    animate={{ scale: [1, 1.02, 1] }}
-                    transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
+                    animate={{ scale: [1, 1.015, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute inset-[300px] rounded-full bg-black z-30"
                 />
 
-                {/* Suction Particles - OPTIMIZED */}
+                {/* Energy Jets (Polar) */}
+                {!isMobile && (
+                    <>
+                        <motion.div
+                            animate={{ opacity: [0.3, 0.7, 0.3], scaleY: [1, 1.2, 1] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute left-1/2 -translate-x-1/2 top-[280px] w-[4px] h-[100px] bg-gradient-to-t from-primary/80 to-transparent z-5"
+                        />
+                        <motion.div
+                            animate={{ opacity: [0.3, 0.7, 0.3], scaleY: [1, 1.2, 1] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                            className="absolute left-1/2 -translate-x-1/2 bottom-[280px] w-[4px] h-[100px] bg-gradient-to-b from-primary/80 to-transparent z-5"
+                        />
+                    </>
+                )}
+
+                {/* Suction Particles - Enhanced Variety */}
                 {debris.map((d) => (
                     <motion.div
                         key={d.id}
-                        className="absolute bg-white rounded-full z-10"
+                        className="absolute rounded-full z-10"
                         style={{
                             width: d.size,
                             height: d.size,
                             left: '50%',
                             top: '50%',
+                            backgroundColor: d.id % 3 === 0 ? '#fff' : (d.id % 3 === 1 ? '#ea580c' : '#fb923c'),
                         }}
                         animate={isSingularityActive ? {
                             x: [Math.cos(d.angle * Math.PI / 180) * d.distance, 0],
                             y: [Math.sin(d.angle * Math.PI / 180) * d.distance, 0],
-                            opacity: [0, 1, 0],
-                            scale: [1, 0],
+                            opacity: [0, 0.8, 0],
+                            scale: [1, 0.5, 0],
                         } : {
                             opacity: 0
                         }}
