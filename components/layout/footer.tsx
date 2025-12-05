@@ -199,31 +199,31 @@ export function Footer() {
                             </div>
                         </div>
 
-                        {/* Control Panel - Flex Positioned */}
+                        {/* Control Panel - Centered & Compact */}
                         <div
-                            className="absolute left-[80%] ml-4 flex flex-col items-start gap-1 cursor-pointer group w-max z-20"
+                            className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 cursor-pointer z-50 group"
                             onClick={() => setIsSingularityActive(!isSingularityActive)}
                         >
                             <div className={cn(
-                                "flex items-center gap-1.5 px-2 py-1 rounded-md border transition-colors",
-                                isMobile ? "bg-black border-white/20" : "bg-black/80 backdrop-blur-md border-white/10 shadow-2xl group-hover:border-primary/50"
+                                "flex items-center gap-1 px-1.5 py-0.5 rounded-full border transition-all duration-300",
+                                isMobile ? "bg-black border-white/20" : "bg-black/50 backdrop-blur-sm border-white/10 group-hover:bg-black/80 group-hover:border-primary/50"
                             )}>
                                 <Power className={cn(
-                                    "h-3 w-3",
+                                    "h-2.5 w-2.5",
                                     isSingularityActive ? "text-primary" : "text-white/40"
                                 )} />
                                 <span className={cn(
-                                    "text-[9px] font-black tracking-tighter uppercase transition-colors",
+                                    "text-[8px] font-black tracking-tighter uppercase transition-colors hidden sm:inline-block",
                                     isSingularityActive ? "text-white" : "text-white/40"
                                 )}>
                                     FİZİKHUB
                                 </span>
                             </div>
                             <p className={cn(
-                                "text-[7px] font-mono uppercase tracking-widest pl-1 transition-colors",
+                                "text-[6px] font-mono uppercase tracking-widest transition-colors",
                                 isSingularityActive ? "text-primary animate-pulse" : "text-white/20"
                             )}>
-                                {isSingularityActive ? "AKTİF" : "PASİF"}
+                                {isSingularityActive ? "ON" : "OFF"}
                             </p>
                         </div>
                     </div>
