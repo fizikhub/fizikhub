@@ -133,11 +133,11 @@ export function Footer() {
                     </>
                 )}
 
-                {/* Suction Particles - Enhanced Variety */}
+                {/* Suction Particles - Enhanced Variety & Physics */}
                 {debris.map((d) => (
                     <motion.div
                         key={d.id}
-                        className="absolute rounded-full z-10"
+                        className="absolute rounded-full z-10 will-change-transform"
                         style={{
                             width: d.size,
                             height: d.size,
@@ -146,18 +146,18 @@ export function Footer() {
                             backgroundColor: d.id % 3 === 0 ? '#fff' : (d.id % 3 === 1 ? '#ea580c' : '#fb923c'),
                         }}
                         animate={isSingularityActive ? {
-                            x: [Math.cos(d.angle * Math.PI / 180) * d.distance, 0],
-                            y: [Math.sin(d.angle * Math.PI / 180) * d.distance, 0],
-                            opacity: [0, 0.8, 0],
-                            scale: [1, 0.5, 0],
+                            x: [Math.cos(d.angle * Math.PI / 180) * (isMobile ? 150 : 300), 0], // Reduced start distance on mobile for visibility
+                            y: [Math.sin(d.angle * Math.PI / 180) * (isMobile ? 150 : 300), 0],
+                            opacity: [0, 1, 0], // Fade in then out
+                            scale: [0.5, 1, 0], // Grow then shrink into void
                         } : {
                             opacity: 0
                         }}
                         transition={{
-                            duration: d.duration,
+                            duration: isMobile ? 1.5 : d.duration, // Faster suction on mobile for impact
                             repeat: Infinity,
                             delay: d.delay,
-                            ease: "easeIn"
+                            ease: "easeIn" // Gravity acceleration feel
                         }}
                     />
                 ))}
