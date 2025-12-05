@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, User, Camera, Sparkles, Rocket, Upload, X } from "lucide-react";
+import { Loader2, User, Camera, Upload, Fingerprint, Save } from "lucide-react";
 import { toast } from "sonner";
 import { completeOnboarding } from "@/app/auth/actions";
 import { Logo } from "@/components/ui/logo";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -17,8 +17,6 @@ export default function OnboardingPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const containerRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const supabase = createClient();
 
@@ -28,14 +26,6 @@ export default function OnboardingPage() {
         avatarUrl: "",
         bio: ""
     });
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!containerRef.current) return;
-        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - left) / width - 0.5;
-        const y = (e.clientY - top) / height - 0.5;
-        setMousePosition({ x, y });
-    };
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -53,9 +43,7 @@ export default function OnboardingPage() {
 
         setUploading(true);
         try {
-            // Resize image before upload
             const resizedFile = await resizeImage(file, 500, 500, 0.8);
-
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Kullanıcı bulunamadı");
 
@@ -93,7 +81,6 @@ export default function OnboardingPage() {
             if (result?.error) {
                 toast.error(result.error);
             }
-            // If success, the server action will redirect automatically
         } catch (error) {
             toast.error("Bir hata oluştu.");
         } finally {
@@ -102,120 +89,68 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div
-            className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
-            onMouseMove={handleMouseMove}
-            ref={containerRef}
-        >
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-background to-blue-900/20 animate-gradient" />
-
-            {/* Grid overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:40px_40px] md:bg-[size:60px_60px]" />
-
-            {/* Floating orbs */}
-            <div className="absolute inset-0 overflow-hidden hidden lg:block">
-                <motion.div
-                    className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-                    animate={{
-                        x: mousePosition.x * 100,
-                        y: mousePosition.y * 100,
-                        scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                        scale: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-                        default: { type: "spring", stiffness: 30, damping: 20 }
-                    }}
-                />
-                <motion.div
-                    className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-                    animate={{
-                        x: mousePosition.x * -80,
-                        y: mousePosition.y * -80,
-                        scale: [1.2, 1, 1.2],
-                    }}
-                    transition={{
-                        scale: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-                        default: { type: "spring", stiffness: 30, damping: 20 }
-                    }}
-                />
-            </div>
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-background">
+            {/* Technical Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full max-w-md relative z-10"
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-lg relative z-10"
             >
                 {/* Header */}
                 <div className="text-center mb-8 space-y-4">
-                    <motion.div
-                        whileHover={{ scale: 1.1, rotate: [0, -10, 10, -10, 0] }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-block cursor-pointer"
-                    >
+                    <div className="inline-block">
                         <Logo />
-                    </motion.div>
+                    </div>
 
-                    <motion.h1
-                        className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-x"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        Profilini Oluştur
-                    </motion.h1>
-
-                    <motion.div
-                        className="flex items-center justify-center text-muted-foreground text-sm"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        <Sparkles className="h-4 w-4 mr-2 text-primary animate-pulse" />
-                        <span>Fizikhub topluluğuna katıl</span>
-                    </motion.div>
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-black uppercase tracking-tighter">
+                            PERSONEL KAYDI
+                        </h1>
+                        <div className="flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
+                            <Fingerprint className="h-3 w-3" />
+                            <span>KİMLİK OLUŞTURMA PROTOKOLÜ</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Glass card */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="bg-card/40 backdrop-blur-2xl border border-primary/20 shadow-2xl rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden"
-                >
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full animate-shimmer" />
+                {/* Industrial Card */}
+                <div className="bg-background border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 relative">
+                    {/* Corner Accents */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-4 border-l-4 border-black dark:border-white" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-4 border-r-4 border-black dark:border-white" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-4 border-l-4 border-black dark:border-white" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-black dark:border-white" />
 
-                    <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                    <form onSubmit={handleSubmit} className="space-y-8 mt-4">
 
-                        {/* Avatar Upload */}
+                        {/* Avatar Upload - ID Card Style */}
                         <div className="flex flex-col items-center justify-center space-y-4">
-                            <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                                <Avatar className="h-24 w-24 border-4 border-background/50 shadow-xl transition-transform group-hover:scale-105">
-                                    <AvatarImage src={formData.avatarUrl} className="object-cover" />
-                                    <AvatarFallback className="bg-primary/10 text-2xl">
-                                        {formData.fullName ? formData.fullName.charAt(0).toUpperCase() : <User className="h-8 w-8 opacity-50" />}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    {uploading ? (
-                                        <Loader2 className="h-6 w-6 text-white animate-spin" />
-                                    ) : (
-                                        <Camera className="h-6 w-6 text-white" />
-                                    )}
-                                </div>
-                            </div>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="text-xs text-muted-foreground hover:text-primary"
+                            <div
+                                className="relative group cursor-pointer w-32 h-32 bg-muted/20 border-2 border-dashed border-black/30 dark:border-white/30 hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center"
                                 onClick={() => fileInputRef.current?.click()}
-                                disabled={uploading}
                             >
-                                {uploading ? "Yükleniyor..." : "Fotoğraf Yükle"}
-                            </Button>
+                                {formData.avatarUrl ? (
+                                    <img
+                                        src={formData.avatarUrl}
+                                        alt="Avatar"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="text-center p-2">
+                                        <Camera className="h-8 w-8 mx-auto text-muted-foreground mb-2 group-hover:text-primary" />
+                                        <span className="text-[10px] font-mono uppercase text-muted-foreground group-hover:text-primary">FOTOĞRAF YÜKLE</span>
+                                    </div>
+                                )}
+
+                                {uploading && (
+                                    <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                    </div>
+                                )}
+                            </div>
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -225,9 +160,9 @@ export default function OnboardingPage() {
                             />
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div className="space-y-2">
-                                <Label htmlFor="username">Kullanıcı Adı</Label>
+                                <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider">KOD ADI (KULLANICI ADI)</Label>
                                 <div className="relative group">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                                     <Input
@@ -235,59 +170,54 @@ export default function OnboardingPage() {
                                         placeholder="kullaniciadi"
                                         value={formData.username}
                                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                        className="pl-9 bg-background/50 border-primary/20 focus:border-primary/50 transition-all h-11"
+                                        className="pl-9 h-12 bg-muted/20 border-2 border-black/10 dark:border-white/10 focus:border-primary rounded-none transition-all font-mono"
                                         required
                                         minLength={3}
                                     />
                                 </div>
-                                <p className="text-[10px] text-muted-foreground pl-1">Benzersiz olmalıdır.</p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="fullName">Ad Soyad</Label>
+                                <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wider">TAM İSİM</Label>
                                 <Input
                                     id="fullName"
                                     placeholder="Adınız Soyadınız"
                                     value={formData.fullName}
                                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                    className="bg-background/50 border-primary/20 focus:border-primary/50 transition-all h-11"
+                                    className="h-12 bg-muted/20 border-2 border-black/10 dark:border-white/10 focus:border-primary rounded-none transition-all"
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="bio">Biyografi (İsteğe Bağlı)</Label>
+                                <Label htmlFor="bio" className="text-xs font-bold uppercase tracking-wider">GÖREV TANIMI (BİYOGRAFİ)</Label>
                                 <textarea
                                     id="bio"
                                     placeholder="Kendinden kısaca bahset..."
                                     value={formData.bio}
                                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                    className="flex min-h-[80px] w-full rounded-md border border-primary/20 bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                                    className="flex min-h-[100px] w-full border-2 border-black/10 dark:border-white/10 bg-muted/20 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 resize-none rounded-none transition-all"
                                     maxLength={160}
                                 />
-                                <p className="text-[10px] text-muted-foreground text-right">{formData.bio.length}/160</p>
+                                <p className="text-[10px] font-mono text-muted-foreground text-right">{formData.bio.length}/160</p>
                             </div>
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-medium group relative overflow-hidden bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 transition-all shadow-lg shadow-primary/25"
+                            className="w-full h-14 text-base font-black uppercase tracking-wider rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-primary text-primary-foreground hover:bg-primary/90"
                             disabled={loading || uploading}
                         >
-                            <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-                                initial={{ x: '-100%' }}
-                                whileHover={{ x: '100%' }}
-                                transition={{ duration: 0.6 }}
-                            />
-                            <span className="relative flex items-center justify-center gap-2">
-                                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                                Tamamla ve Başla
-                                {!loading && <Rocket className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                            </span>
+                            {loading ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    KAYDI TAMAMLA <Save className="h-4 w-4" />
+                                </span>
+                            )}
                         </Button>
                     </form>
-                </motion.div>
+                </div>
             </motion.div>
         </div>
     );
@@ -311,7 +241,6 @@ async function resizeImage(
                 let width = img.width;
                 let height = img.height;
 
-                // Calculate new dimensions
                 if (width > height) {
                     if (width > maxWidth) {
                         height = (height * maxWidth) / width;

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Mail, Rocket, ArrowLeft, Star } from "lucide-react";
+import { Loader2, Mail, ShieldCheck, ArrowLeft, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { verifyOtp, resendOtp } from "@/app/auth/actions";
 import { Logo } from "@/components/ui/logo";
@@ -19,16 +19,6 @@ function VerifyContent() {
     const [code, setCode] = useState("");
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!containerRef.current) return;
-        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-        const x = (e.clientX - left) / width - 0.5;
-        const y = (e.clientY - top) / height - 0.5;
-        setMousePosition({ x, y });
-    };
 
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,14 +32,13 @@ function VerifyContent() {
             const result = await verifyOtp(email, code);
 
             if (result.success) {
-                toast.success("E-posta doğrulandı! Hoş geldin.");
+                toast.success("Erişim izni onaylandı.");
                 router.push("/onboarding");
             } else {
-                // Show the specific error message returned from the server
                 toast.error(result.error);
             }
         } catch (error) {
-            toast.error("Bir hata oluştu.");
+            toast.error("Sistem hatası.");
         } finally {
             setLoading(false);
         }
@@ -62,12 +51,12 @@ function VerifyContent() {
         try {
             const result = await resendOtp(email);
             if (result.success) {
-                toast.success("Yeni kod gönderildi.");
+                toast.success("Yeni kod iletildi.");
             } else {
                 toast.error(result.error || "Kod gönderilemedi.");
             }
         } catch (error) {
-            toast.error("Bir hata oluştu.");
+            toast.error("Sistem hatası.");
         } finally {
             setResending(false);
         }
@@ -77,106 +66,63 @@ function VerifyContent() {
         return (
             <div className="min-h-screen w-full flex items-center justify-center p-4 bg-background">
                 <div className="text-center space-y-4">
-                    <p className="text-muted-foreground">Geçersiz istek. Lütfen giriş sayfasına dönün.</p>
-                    <Button variant="link" onClick={() => router.push("/login")}>Giriş Yap</Button>
+                    <p className="text-muted-foreground font-mono">GEÇERSİZ ERİŞİM İSTEĞİ.</p>
+                    <Button variant="link" onClick={() => router.push("/login")}>GİRİŞ EKRANINA DÖN</Button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div
-            className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
-            onMouseMove={handleMouseMove}
-            ref={containerRef}
-        >
-            {/* Animated gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-background to-blue-900/20 animate-gradient" />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-background">
+            {/* Technical Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 
-            {/* Grid overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:40px_40px] md:bg-[size:60px_60px]" />
-
-            {/* Floating orbs */}
-            <div className="absolute inset-0 overflow-hidden hidden lg:block">
-                <motion.div
-                    className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"
-                    animate={{
-                        x: mousePosition.x * 100,
-                        y: mousePosition.y * 100,
-                        scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                        scale: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-                        default: { type: "spring", stiffness: 30, damping: 20 }
-                    }}
-                />
-                <motion.div
-                    className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
-                    animate={{
-                        x: mousePosition.x * -80,
-                        y: mousePosition.y * -80,
-                        scale: [1.2, 1, 1.2],
-                    }}
-                    transition={{
-                        scale: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-                        default: { type: "spring", stiffness: 30, damping: 20 }
-                    }}
-                />
-            </div>
+            {/* Decorative Elements */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-primary/20" />
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20" />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
                 className="w-full max-w-md relative z-10"
             >
                 {/* Header */}
                 <div className="text-center mb-8 space-y-4">
-                    <motion.div
-                        whileHover={{ scale: 1.1, rotate: [0, -10, 10, -10, 0] }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-block cursor-pointer"
-                    >
+                    <div className="inline-block">
                         <Logo />
-                    </motion.div>
+                    </div>
 
-                    <motion.h1
-                        className="text-3xl font-bold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-x"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        E-posta Doğrulama
-                    </motion.h1>
-
-                    <motion.div
-                        className="flex items-center justify-center text-muted-foreground text-sm"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        <Mail className="h-4 w-4 mr-2 text-primary" />
-                        <span>{email}</span>
-                    </motion.div>
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-black uppercase tracking-tighter">
+                            GÜVENLİK KONTROLÜ
+                        </h1>
+                        <div className="flex items-center justify-center gap-2 text-xs font-mono text-muted-foreground">
+                            <Lock className="h-3 w-3" />
+                            <span>ERİŞİM DOĞRULAMASI GEREKLİ</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Glass card */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                    className="bg-card/40 backdrop-blur-2xl border border-primary/20 shadow-2xl rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden"
-                >
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent -translate-x-full animate-shimmer" />
+                {/* Industrial Card */}
+                <div className="bg-background border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 relative">
+                    {/* Corner Accents */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary -translate-x-1 -translate-y-1" />
+                    <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary translate-x-1 -translate-y-1" />
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary -translate-x-1 translate-y-1" />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary translate-x-1 translate-y-1" />
 
-                    <div className="text-center space-y-2 relative z-10">
-                        <p className="text-sm text-muted-foreground">
-                            E-posta adresine gönderdiğimiz doğrulama kodunu gir.
+                    <div className="text-center mb-6">
+                        <div className="bg-muted/30 border border-black/10 dark:border-white/10 p-3 mb-4 inline-block">
+                            <Mail className="h-6 w-6 mx-auto text-primary" />
+                        </div>
+                        <p className="text-sm font-medium">
+                            <span className="font-bold text-primary">{email}</span> adresine gönderilen kodu gir.
                         </p>
                     </div>
 
-                    <form onSubmit={handleVerify} className="space-y-6 relative z-10">
+                    <form onSubmit={handleVerify} className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="code" className="sr-only">Doğrulama Kodu</Label>
                             <Input
@@ -185,67 +131,59 @@ function VerifyContent() {
                                 placeholder="KODU GİR"
                                 value={code}
                                 onChange={(e) => setCode(e.target.value)}
-                                className="text-center text-2xl tracking-[0.5em] font-mono h-14 bg-background/50 border-primary/20 focus:border-primary/50 transition-all uppercase"
+                                className="text-center text-2xl tracking-[0.5em] font-mono h-14 bg-muted/20 border-2 border-black/20 dark:border-white/20 focus:border-primary transition-all uppercase rounded-none"
                                 maxLength={8}
                                 required
+                                autoFocus
                             />
                         </div>
 
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-medium group relative overflow-hidden bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 transition-all shadow-lg shadow-primary/25"
+                            className="w-full h-12 text-base font-black uppercase tracking-wider rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-primary text-primary-foreground hover:bg-primary/90"
                             disabled={loading}
                         >
-                            <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-                                initial={{ x: '-100%' }}
-                                whileHover={{ x: '100%' }}
-                                transition={{ duration: 0.6 }}
-                            />
-                            <span className="relative flex items-center justify-center gap-2">
-                                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                                Doğrula
-                                {!loading && <Rocket className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                            </span>
+                            {loading ? (
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    DOĞRULA <ShieldCheck className="h-4 w-4" />
+                                </span>
+                            )}
                         </Button>
                     </form>
 
-                    <div className="text-center space-y-4 relative z-10">
+                    <div className="mt-6 pt-6 border-t-2 border-dashed border-black/10 dark:border-white/10 text-center space-y-4">
                         <div className="text-sm text-muted-foreground">
-                            Kod gelmedi mi?{" "}
-                            <Button
-                                variant="link"
-                                className="p-0 h-auto font-semibold text-primary hover:text-primary/80"
+                            Kod ulaşmadı mı?{" "}
+                            <button
+                                className="font-bold text-primary hover:underline uppercase tracking-wide"
                                 onClick={handleResend}
                                 disabled={resending}
                             >
-                                {resending ? "Gönderiliyor..." : "Tekrar Gönder"}
-                            </Button>
+                                {resending ? "İLETİLİYOR..." : "TEKRAR İLET"}
+                            </button>
                         </div>
 
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-muted-foreground hover:text-foreground"
+                            className="text-muted-foreground hover:text-foreground font-mono text-xs uppercase"
                             onClick={() => router.push("/login")}
                         >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Giriş'e Dön
+                            <ArrowLeft className="h-3 w-3 mr-2" />
+                            GİRİŞ EKRANINA DÖN
                         </Button>
                     </div>
-                </motion.div>
+                </div>
 
-                {/* Footer easter egg */}
-                <motion.p
-                    className="text-center text-xs text-muted-foreground mt-6 opacity-50 hover:opacity-100 transition-opacity cursor-default"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.5 }}
-                    transition={{ delay: 1 }}
-                    whileHover={{ scale: 1.05 }}
-                >
-                    <Star className="inline h-3 w-3 mr-1" />
-                    Bilim doğruluk ister ✨
-                </motion.p>
+                {/* Footer Status */}
+                <div className="mt-8 text-center">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] font-mono text-muted-foreground uppercase">SİSTEM ÇEVRİMİÇİ</span>
+                    </div>
+                </div>
             </motion.div>
         </div>
     );
@@ -253,7 +191,7 @@ function VerifyContent() {
 
 export default function VerifyPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
             <VerifyContent />
         </Suspense>
     );
