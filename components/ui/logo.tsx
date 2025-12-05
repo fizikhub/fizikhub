@@ -1,63 +1,14 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import { Rocket } from "lucide-react";
+import { Rocket, Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 export function Logo() {
     const [isLaunching, setIsLaunching] = useState(false);
-    const [showExplosion, setShowExplosion] = useState(false);
-    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-    const [randomValues, setRandomValues] = useState<{
-        debris: { angle: number; distance: number; rotate: number; duration: number }[];
-        sparks: { angle: number; distance: number; duration: number }[];
-        smoke: { x: number; y: number }[];
-        flames: { x: number; y: number; duration: number; delay: number }[];
-        smokeParticles: { x: number; y: number }[];
-    }>({ debris: [], sparks: [], smoke: [], flames: [], smokeParticles: [] });
-
+    const [warpState, setWarpState] = useState<'idle' | 'charging' | 'warping' | 'cooldown'>('idle');
     const controls = useAnimation();
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-        const handleResize = () => {
-            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-        };
-        window.addEventListener('resize', handleResize);
-
-        // Generate random values once on mount to avoid hydration mismatch
-        setRandomValues({
-            debris: Array.from({ length: 20 }).map(() => ({
-                angle: Math.random() * Math.PI * 2,
-                distance: 150 + Math.random() * 150,
-                rotate: Math.random() * 720,
-                duration: 1 + Math.random() * 0.8
-            })),
-            sparks: Array.from({ length: 30 }).map(() => ({
-                angle: Math.random() * 0.8,
-                distance: 100 + Math.random() * 150,
-                duration: 0.5 + Math.random() * 0.5
-            })),
-            smoke: Array.from({ length: 8 }).map(() => ({
-                x: (Math.random() - 0.5) * 200,
-                y: (Math.random() - 0.5) * 200 + 50
-            })),
-            flames: Array.from({ length: 12 }).map(() => ({
-                x: -10 - Math.random() * 8,
-                y: 10 + Math.random() * 10,
-                duration: 0.4 + Math.random() * 0.4,
-                delay: Math.random() * 0.1
-            })),
-            smokeParticles: Array.from({ length: 5 }).map(() => ({
-                x: -15 - Math.random() * 6,
-                y: 15 + Math.random() * 8
-            }))
-        });
-
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
     // Einstein Mode Trigger Logic
     const [tapCount, setTapCount] = useState(0);
@@ -99,201 +50,129 @@ export function Logo() {
 
         if (isLaunching) return;
         setIsLaunching(true);
+        setWarpState('charging');
 
-        const w = windowSize.width;
-        const h = windowSize.height;
-
-        // Calculate orbital flight path
-        const xPath: number[] = [];
-        const yPath: number[] = [];
-        const rotatePath: number[] = [];
-
-        // Initial launch - straight up then curve
-        xPath.push(0); yPath.push(0); rotatePath.push(0);
-        xPath.push(20); yPath.push(-50); rotatePath.push(15);
-        xPath.push(50); yPath.push(-150); rotatePath.push(30);
-
-        // Orbital loop
-        const centerX = w * 0.5;
-        const centerY = h * 0.4;
-        const radiusX = w * 0.4;
-        const radiusY = h * 0.3;
-
-        for (let i = 0; i <= 20; i++) {
-            const angle = (i / 20) * Math.PI * 2 - Math.PI / 2; // Start from top
-            const x = centerX + Math.cos(angle) * radiusX;
-            const y = centerY + Math.sin(angle) * radiusY;
-
-            // Adjust coordinates relative to start position
-            xPath.push(x - 20); // Offset adjustments
-            yPath.push(y);
-
-            // Calculate rotation based on tangent
-            const nextAngle = ((i + 1) / 20) * Math.PI * 2 - Math.PI / 2;
-            const nextX = centerX + Math.cos(nextAngle) * radiusX;
-            const nextY = centerY + Math.sin(nextAngle) * radiusY;
-            const rotation = Math.atan2(nextY - y, nextX - x) * (180 / Math.PI) + 90;
-
-            rotatePath.push(rotation);
-        }
-
-        // Final crash dive
-        xPath.push(w * 0.8); yPath.push(h * 0.8); rotatePath.push(135);
-
-        // Execute animation sequence
+        // 1. Charge Up Phase (1s)
         await controls.start({
-            x: xPath,
-            y: yPath,
-            rotate: rotatePath,
-            scale: [1, 1.5, 1.5, 1.5, 0.5],
-            opacity: [1, 1, 1, 1, 0],
-            transition: {
-                duration: 3.5,
-                ease: "easeInOut",
-                times: [0, 0.1, 0.2, 0.8, 1]
-            }
+            x: [0, -2, 2, -2, 2, 0],
+            y: [0, 1, -1, 1, -1, 0],
+            scale: [1, 0.9, 0.85],
+            filter: ["brightness(1)", "brightness(1.5)", "brightness(2)"],
+            transition: { duration: 1, ease: "easeInOut" }
         });
 
-        // Trigger explosion
-        setShowExplosion(true);
+        setWarpState('warping');
 
-        // Screen shake effect
-        const body = document.body;
-        body.style.animation = 'shake 0.5s';
-        setTimeout(() => {
-            body.style.animation = '';
-        }, 500);
+        // 2. Warp Phase (0.5s) - Shoot forward
+        await controls.start({
+            x: [0, 300], // Shoot right
+            scaleX: [0.85, 3], // Stretch
+            scaleY: [0.85, 0.1], // Thin out
+            opacity: [1, 0],
+            transition: { duration: 0.2, ease: "easeIn" }
+        });
 
-        setTimeout(() => {
-            setShowExplosion(false);
-        }, 1200);
+        // 3. Teleport / Re-entry (0.5s)
+        setWarpState('cooldown');
+        controls.set({ x: -300, scaleX: 3, scaleY: 0.1, opacity: 0 }); // Reset to left side
 
-        setTimeout(() => {
-            controls.set({ x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 });
-            setIsLaunching(false);
-        }, 2000);
+        await controls.start({
+            x: 0,
+            scaleX: [3, 1],
+            scaleY: [0.1, 1],
+            opacity: [0, 1],
+            transition: { duration: 0.4, ease: "easeOut" }
+        });
+
+        // 4. Cooldown / Steam
+        await controls.start({
+            filter: ["brightness(2)", "brightness(1)"],
+            transition: { duration: 0.5 }
+        });
+
+        setWarpState('idle');
+        setIsLaunching(false);
     };
 
     return (
         <div className="flex items-center gap-2 group select-none relative">
-            {/* Epic Explosion Effect */}
-            {showExplosion && (
-                <div
-                    className="fixed z-[100] pointer-events-none"
-                    style={{
-                        left: windowSize.width * 0.8,
-                        top: windowSize.height * 0.8
-                    }}
-                >
-                    <div className="relative transform -translate-x-1/2 -translate-y-1/2">
-                        {/* Shockwave ring */}
-                        <motion.div
-                            initial={{ scale: 0, opacity: 1 }}
-                            animate={{ scale: [0, 15], opacity: [1, 0] }}
-                            transition={{ duration: 0.6, ease: "easeOut" }}
-                            className="absolute inset-0 w-20 h-20 border-4 border-primary rounded-full -translate-x-1/2 -translate-y-1/2"
-                        />
-
-                        {/* Main explosion core */}
-                        <motion.div
-                            initial={{ scale: 0, opacity: 1 }}
-                            animate={{ scale: [0, 8], opacity: [1, 0] }}
-                            transition={{ duration: 0.5 }}
-                            className="absolute inset-0 w-32 h-32 bg-gradient-radial from-white via-primary to-black rounded-full blur-xl -translate-x-1/2 -translate-y-1/2"
-                        />
-
-                        {/* Debris particles - Industrial Squares */}
-                        {randomValues.debris.map((val, i) => {
-                            const x = Math.cos(val.angle) * val.distance;
-                            const y = Math.sin(val.angle) * val.distance;
-
-                            return (
-                                <motion.div
-                                    key={i}
-                                    className="absolute w-2 h-2 bg-black dark:bg-white border border-primary"
-                                    initial={{ x: 0, y: 0, opacity: 1, rotate: 0 }}
-                                    animate={{
-                                        x: x,
-                                        y: y,
-                                        opacity: [1, 1, 0],
-                                        rotate: val.rotate,
-                                    }}
-                                    transition={{
-                                        duration: val.duration,
-                                        ease: "easeOut"
-                                    }}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-
             <div className="relative z-50 cursor-pointer" onClick={handleLaunch}>
-                <motion.div
-                    animate={controls}
-                    className={`relative ${isLaunching ? 'fixed z-[60] top-4 left-4' : ''}`}
-                >
-                    {/* Idle Hover Animation */}
-                    <motion.div
-                        animate={!isLaunching ? {
-                            y: [0, -3, 0],
-                            rotate: [0, 2, -2, 0],
-                        } : {}}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
-                        className="relative"
-                    >
-                        <Rocket className="h-7 w-7 text-primary z-10 relative drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]" />
+                <div className="relative w-10 h-10 flex items-center justify-center">
 
-                        {/* Engine Idle Glow */}
-                        {!isLaunching && (
+                    {/* Magnetic Field Rings (Idle) */}
+                    {warpState === 'idle' && (
+                        <>
                             <motion.div
-                                className="absolute bottom-1 left-1.5 w-4 h-4 bg-primary/40 rounded-full blur-md"
-                                animate={{
-                                    opacity: [0.4, 0.8, 0.4],
-                                    scale: [0.8, 1.2, 0.8],
-                                }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
+                                className="absolute inset-0 border border-primary/30 rounded-full"
+                                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+                                transition={{ rotate: { duration: 10, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity } }}
                             />
-                        )}
-
-                        {/* Enhanced Fire Effect (Only visible during launch or hover) */}
-                        <div className={`absolute top-[20px] left-[5px] z-0 transition-opacity duration-300 ${isLaunching ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                            {/* Main flame jet */}
                             <motion.div
-                                className="absolute -top-1 -left-1 w-4 h-8 bg-gradient-to-b from-primary via-orange-500 to-transparent rounded-full blur-sm"
-                                animate={{
-                                    height: [20, 35, 20],
-                                    opacity: [0.8, 1, 0.8],
-                                }}
-                                transition={{ duration: 0.2, repeat: Infinity }}
+                                className="absolute inset-1 border border-primary/20 rounded-full"
+                                animate={{ rotate: -360, scale: [1, 0.9, 1] }}
+                                transition={{ rotate: { duration: 7, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity, delay: 1 } }}
                             />
+                        </>
+                    )}
 
-                            {/* Particles */}
-                            {randomValues.flames.map((val, i) => (
+                    {/* Charge Up Particles */}
+                    {warpState === 'charging' && (
+                        <div className="absolute inset-0">
+                            {[...Array(8)].map((_, i) => (
                                 <motion.div
                                     key={i}
-                                    className="absolute w-1 h-1 bg-primary rounded-sm"
-                                    initial={{ opacity: 0, y: 0 }}
-                                    animate={{
-                                        opacity: [0, 1, 0],
-                                        y: [0, 20 + val.y],
-                                        x: [(Math.random() - 0.5) * 10],
-                                    }}
-                                    transition={{
-                                        duration: 0.5,
-                                        repeat: Infinity,
-                                        delay: i * 0.05,
-                                    }}
+                                    className="absolute left-1/2 top-1/2 w-1 h-1 bg-primary rounded-full"
+                                    initial={{ x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, opacity: 0 }}
+                                    animate={{ x: 0, y: 0, opacity: 1 }}
+                                    transition={{ duration: 0.8, delay: Math.random() * 0.2 }}
                                 />
                             ))}
                         </div>
+                    )}
+
+                    {/* Rocket Container */}
+                    <motion.div
+                        animate={controls}
+                        className="relative z-10"
+                    >
+                        <Rocket className={`h-7 w-7 text-primary drop-shadow-[0_0_10px_rgba(234,88,12,0.5)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
+
+                        {/* Engine Glow */}
+                        <motion.div
+                            className="absolute bottom-1 left-1.5 w-4 h-4 bg-primary/50 rounded-full blur-md -z-10"
+                            animate={{
+                                scale: warpState === 'charging' ? [1, 2] : [0.8, 1.2, 0.8],
+                                opacity: warpState === 'charging' ? [0.5, 1] : [0.4, 0.8, 0.4]
+                            }}
+                            transition={{ duration: warpState === 'charging' ? 0.1 : 1.5, repeat: Infinity }}
+                        />
                     </motion.div>
-                </motion.div>
+
+                    {/* Warp Trail (Visual only during warp) */}
+                    {warpState === 'warping' && (
+                        <motion.div
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-2 bg-gradient-to-r from-transparent via-primary to-transparent blur-sm"
+                            initial={{ scaleX: 0, opacity: 0 }}
+                            animate={{ scaleX: 2, opacity: 1 }}
+                            transition={{ duration: 0.1 }}
+                        />
+                    )}
+
+                    {/* Cooldown Steam */}
+                    {warpState === 'cooldown' && (
+                        <>
+                            {[...Array(3)].map((_, i) => (
+                                <motion.div
+                                    key={`steam-${i}`}
+                                    className="absolute top-1/2 left-1/2 w-2 h-2 bg-white/50 rounded-full blur-sm"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: [0, 0.5, 0], scale: [0, 2], y: -20, x: (Math.random() - 0.5) * 20 }}
+                                    transition={{ duration: 1, delay: i * 0.1 }}
+                                />
+                            ))}
+                        </>
+                    )}
+                </div>
             </div>
 
             <Link href="/" className="flex flex-col cursor-pointer">
