@@ -175,7 +175,7 @@ export function Footer() {
             <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
 
                 {/* Center Singularity Brand & Toggle - FIXED LAYOUT */}
-                <div className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex items-center justify-center z-50">
+                <div className="absolute bottom-[300px] left-1/2 -translate-x-1/2 flex items-center justify-center z-50">
                     <div className="relative flex items-center justify-center">
                         {/* The Singularity Core - NOW INTERACTIVE */}
                         <div
