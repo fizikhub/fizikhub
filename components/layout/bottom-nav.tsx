@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { Home, BookOpen, MessageCircle, User, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +54,6 @@ export function BottomNav() {
                                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                {/* Active Indicator Line */}
                                 {isActive && (
                                     <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                                 )}
@@ -80,8 +78,7 @@ export function BottomNav() {
                     })}
                 </div>
             </div>
-            {/* Safe area spacer for iPhone home indicator */}
-            <div className="h-safe-area-bottom bg-background border-t-0" />
+            <div className="h-safe-area-bottom bg-background border-t-0"></div>
         </div>
     );
 }
