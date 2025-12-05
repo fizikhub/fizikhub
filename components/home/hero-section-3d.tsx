@@ -35,13 +35,14 @@ export function HeroSection3D() {
                     >
                         BİLİMİ Tİ'YE ALIYORUZ
                         <br />
-                        <span className="text-primary relative inline-block">
+                        <span className="text-primary relative inline-block mx-2 my-2">
                             AMA CİDDİLİ
-                            <svg className="absolute w-full h-3 -bottom-1 left-0 text-foreground" viewBox="0 0 100 10" preserveAspectRatio="none">
+                            <svg className="absolute w-full h-3 -bottom-2 left-0 text-foreground" viewBox="0 0 100 10" preserveAspectRatio="none">
                                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
                             </svg>
                         </span>
-                        {" "}ŞEKİLDE.
+                        <br className="sm:hidden" />
+                        ŞEKİLDE.
                     </motion.h1>
 
                     {/* Description */}
