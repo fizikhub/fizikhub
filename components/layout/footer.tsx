@@ -190,9 +190,10 @@ export function Footer() {
                                 isSingularityActive ? "border-primary shadow-[0_0_30px_rgba(234,88,12,0.5)]" : "border-white/10 hover:border-white/30",
                                 !isMobile && isSingularityActive && "shadow-[0_0_50px_rgba(234,88,12,0.6)]"
                             )}>
-                                <Atom className={cn(
-                                    "h-10 w-10 transition-all duration-1000",
-                                    isSingularityActive ? "text-primary animate-spin" : "text-white/20 group-hover:text-white/50"
+                                {/* Solid Singularity Core */}
+                                <div className={cn(
+                                    "w-8 h-8 rounded-full transition-all duration-1000",
+                                    isSingularityActive ? "bg-white shadow-[0_0_20px_#fff,0_0_40px_#ea580c] scale-100 animate-pulse" : "bg-zinc-900 scale-75"
                                 )} />
                             </div>
                         </div>
