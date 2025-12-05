@@ -5,9 +5,14 @@ import { useEffect, useState } from "react";
 
 export function BlackHoleBackground() {
     const [mounted, setMounted] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     if (!mounted) return null;
@@ -20,14 +25,14 @@ export function BlackHoleBackground() {
                 <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 200, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl"
+                    className={`absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent ${isMobile ? 'blur-2xl' : 'blur-3xl'} will-change-transform`}
                 />
 
                 {/* Inner Ring */}
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent blur-2xl border-[50px] border-primary/20"
+                    className={`absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent ${isMobile ? 'blur-xl' : 'blur-2xl'} border-[50px] border-primary/20 will-change-transform`}
                 />
             </div>
 
@@ -36,15 +41,15 @@ export function BlackHoleBackground() {
                 <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 250, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl"
+                    className={`absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent ${isMobile ? 'blur-2xl' : 'blur-3xl'} will-change-transform`}
                 />
             </div>
 
-            {/* Floating Particles */}
-            {[...Array(15)].map((_, i) => (
+            {/* Floating Particles - Reduced on Mobile */}
+            {[...Array(isMobile ? 6 : 15)].map((_, i) => (
                 <motion.div
                     key={i}
-                    className="absolute w-1 h-1 bg-primary/20 rounded-full"
+                    className="absolute w-1 h-1 bg-primary/20 rounded-full will-change-transform"
                     initial={{
                         x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
                         y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),

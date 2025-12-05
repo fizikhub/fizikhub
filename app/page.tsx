@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 
-const HeroSection3D = dynamic(() => import("@/components/home/hero-section-3d").then(mod => mod.HeroSection3D));
+import { HeroSection3D } from "@/components/home/hero-section-3d";
 const ModernArticleGrid = dynamic(() => import("@/components/home/modern-article-grid").then(mod => mod.ModernArticleGrid));
 const FeaturesSection = dynamic(() => import("@/components/home/features-section").then(mod => mod.FeaturesSection));
 const TrendingQuestions = dynamic(() => import("@/components/home/trending-questions").then(mod => mod.TrendingQuestions));
 const DailyFact = dynamic(() => import("@/components/home/daily-fact").then(mod => mod.DailyFact));
-import { BlackHoleBackground } from "@/components/home/black-hole-background";
+const BlackHoleBackground = dynamic(() => import("@/components/home/black-hole-background").then(mod => mod.BlackHoleBackground), { ssr: false });
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
