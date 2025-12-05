@@ -7,19 +7,19 @@ import { cn } from "@/lib/utils";
 const features = [
     {
         title: "ÖĞREN",
-        description: "Fizik, uzay ve bilim dünyasından en güncel ve ilgi çekici makalelerle ufkunu genişlet.",
+        description: "Ders kitaplarında bulamayacağın, 'bunu bilip de ne yapacağım' diyeceğin ama yine de okumadan duramayacağın her şey.",
         icon: BookOpen,
         number: "01"
     },
     {
         title: "TARTIŞ",
-        description: "Aklına takılan soruları sor, diğer bilim severlerle tartış ve yeni bakış açıları kazan.",
+        description: "En saçma soruların bile mantıklı bir cevabı olabilir. Ya da yoktur, gelip birlikte bakalım. Yargılamak yok, bilim var.",
         icon: MessageCircle,
         number: "02"
     },
     {
         title: "PAYLAŞ",
-        description: "Kendi yazılarını yaz, toplulukla paylaş ve bilimin yayılmasına katkıda bulun.",
+        description: "İçindeki Einstein'ı serbest bırak. Bildiklerini anlat, belki bir gün senin teorin de birilerinin sınav sorusu olur.",
         icon: Share2,
         number: "03"
     }
