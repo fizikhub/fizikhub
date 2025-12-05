@@ -29,30 +29,30 @@ export function Logo() {
 
         // Generate random values once on mount to avoid hydration mismatch
         setRandomValues({
-            debris: Array.from({ length: 16 }).map(() => ({
+            debris: Array.from({ length: 20 }).map(() => ({
                 angle: Math.random() * Math.PI * 2,
-                distance: 150 + Math.random() * 100,
+                distance: 150 + Math.random() * 150,
                 rotate: Math.random() * 720,
-                duration: 1 + Math.random() * 0.5
+                duration: 1 + Math.random() * 0.8
             })),
-            sparks: Array.from({ length: 24 }).map(() => ({
-                angle: Math.random() * 0.5,
-                distance: 80 + Math.random() * 120,
-                duration: 0.6 + Math.random() * 0.4
+            sparks: Array.from({ length: 30 }).map(() => ({
+                angle: Math.random() * 0.8,
+                distance: 100 + Math.random() * 150,
+                duration: 0.5 + Math.random() * 0.5
             })),
-            smoke: Array.from({ length: 6 }).map(() => ({
-                x: (Math.random() - 0.5) * 150,
-                y: (Math.random() - 0.5) * 150 + 30
+            smoke: Array.from({ length: 8 }).map(() => ({
+                x: (Math.random() - 0.5) * 200,
+                y: (Math.random() - 0.5) * 200 + 50
             })),
-            flames: Array.from({ length: 8 }).map(() => ({
-                x: -8 - Math.random() * 6,
-                y: 8 + Math.random() * 8,
-                duration: 0.5 + Math.random() * 0.3,
-                delay: Math.random() * 0.08 // approximate i * 0.08 but random
+            flames: Array.from({ length: 12 }).map(() => ({
+                x: -10 - Math.random() * 8,
+                y: 10 + Math.random() * 10,
+                duration: 0.4 + Math.random() * 0.4,
+                delay: Math.random() * 0.1
             })),
-            smokeParticles: Array.from({ length: 3 }).map(() => ({
-                x: -12 - Math.random() * 4, // approximate logic
-                y: 12 + Math.random() * 6
+            smokeParticles: Array.from({ length: 5 }).map(() => ({
+                x: -15 - Math.random() * 6,
+                y: 15 + Math.random() * 8
             }))
         });
 
@@ -103,55 +103,54 @@ export function Logo() {
         const w = windowSize.width;
         const h = windowSize.height;
 
-        // Calculate circular flight path
-        // const numPoints = 20;
+        // Calculate orbital flight path
         const xPath: number[] = [];
         const yPath: number[] = [];
         const rotatePath: number[] = [];
 
-        // First circle
-        const circle1CenterX = w * 0.25;
-        const circle1CenterY = h * 0.2;
-        const circle1Radius = Math.min(w, h) * 0.15;
+        // Initial launch - straight up then curve
+        xPath.push(0); yPath.push(0); rotatePath.push(0);
+        xPath.push(20); yPath.push(-50); rotatePath.push(15);
+        xPath.push(50); yPath.push(-150); rotatePath.push(30);
 
-        for (let i = 0; i <= 6; i++) {
-            const angle = (i / 6) * Math.PI * 2;
-            xPath.push(circle1CenterX + Math.cos(angle) * circle1Radius);
-            yPath.push(circle1CenterY + Math.sin(angle) * circle1Radius);
-            rotatePath.push(angle * (180 / Math.PI) + 90);
+        // Orbital loop
+        const centerX = w * 0.5;
+        const centerY = h * 0.4;
+        const radiusX = w * 0.4;
+        const radiusY = h * 0.3;
+
+        for (let i = 0; i <= 20; i++) {
+            const angle = (i / 20) * Math.PI * 2 - Math.PI / 2; // Start from top
+            const x = centerX + Math.cos(angle) * radiusX;
+            const y = centerY + Math.sin(angle) * radiusY;
+
+            // Adjust coordinates relative to start position
+            xPath.push(x - 20); // Offset adjustments
+            yPath.push(y);
+
+            // Calculate rotation based on tangent
+            const nextAngle = ((i + 1) / 20) * Math.PI * 2 - Math.PI / 2;
+            const nextX = centerX + Math.cos(nextAngle) * radiusX;
+            const nextY = centerY + Math.sin(nextAngle) * radiusY;
+            const rotation = Math.atan2(nextY - y, nextX - x) * (180 / Math.PI) + 90;
+
+            rotatePath.push(rotation);
         }
 
-        // Second circle (smaller, faster)
-        const circle2CenterX = w * 0.55;
-        const circle2CenterY = h * 0.25;
-        const circle2Radius = Math.min(w, h) * 0.1;
+        // Final crash dive
+        xPath.push(w * 0.8); yPath.push(h * 0.8); rotatePath.push(135);
 
-        for (let i = 1; i <= 5; i++) {
-            const angle = (i / 5) * Math.PI * 2;
-            xPath.push(circle2CenterX + Math.cos(angle) * circle2Radius);
-            yPath.push(circle2CenterY + Math.sin(angle) * circle2Radius);
-            rotatePath.push(angle * (180 / Math.PI) + 90);
-        }
-
-        // Final dive to crash
-        xPath.push(w * 0.75);
-        yPath.push(h * 0.15);
-        rotatePath.push(45);
-
-        xPath.push(w * 0.85);
-        yPath.push(h * 0.4);
-        rotatePath.push(135);
-
-        // Epic circular flight path
+        // Execute animation sequence
         await controls.start({
             x: xPath,
             y: yPath,
             rotate: rotatePath,
-            scale: [1, ...Array(xPath.length - 2).fill(1.2), 0.3],
-            opacity: [1, ...Array(xPath.length - 2).fill(1), 0],
+            scale: [1, 1.5, 1.5, 1.5, 0.5],
+            opacity: [1, 1, 1, 1, 0],
             transition: {
-                duration: 4,
-                ease: "linear"
+                duration: 3.5,
+                ease: "easeInOut",
+                times: [0, 0.1, 0.2, 0.8, 1]
             }
         });
 
@@ -182,44 +181,28 @@ export function Logo() {
                 <div
                     className="fixed z-[100] pointer-events-none"
                     style={{
-                        left: windowSize.width * 0.85,
-                        top: windowSize.height * 0.4 + 20
+                        left: windowSize.width * 0.8,
+                        top: windowSize.height * 0.8
                     }}
                 >
                     <div className="relative transform -translate-x-1/2 -translate-y-1/2">
                         {/* Shockwave ring */}
                         <motion.div
                             initial={{ scale: 0, opacity: 1 }}
-                            animate={{ scale: [0, 8, 12], opacity: [1, 0.3, 0] }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="absolute inset-0 w-40 h-40 border-4 border-orange-500 rounded-full -translate-x-1/2 -translate-y-1/2"
+                            animate={{ scale: [0, 15], opacity: [1, 0] }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="absolute inset-0 w-20 h-20 border-4 border-primary rounded-full -translate-x-1/2 -translate-y-1/2"
                         />
 
                         {/* Main explosion core */}
                         <motion.div
                             initial={{ scale: 0, opacity: 1 }}
-                            animate={{ scale: [0, 6, 9], opacity: [1, 0.8, 0] }}
-                            transition={{ duration: 0.7 }}
-                            className="absolute inset-0 w-40 h-40 bg-gradient-radial from-yellow-200 via-orange-500 to-red-600 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"
+                            animate={{ scale: [0, 8], opacity: [1, 0] }}
+                            transition={{ duration: 0.5 }}
+                            className="absolute inset-0 w-32 h-32 bg-gradient-radial from-white via-primary to-black rounded-full blur-xl -translate-x-1/2 -translate-y-1/2"
                         />
 
-                        {/* Secondary explosion flash */}
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: [0, 4, 7], opacity: [1, 0.6, 0] }}
-                            transition={{ duration: 0.6, delay: 0.1 }}
-                            className="absolute inset-0 w-32 h-32 bg-yellow-300 rounded-full blur-xl -translate-x-1/2 -translate-y-1/2"
-                        />
-
-                        {/* Bright white flash */}
-                        <motion.div
-                            initial={{ scale: 0, opacity: 1 }}
-                            animate={{ scale: [0, 3, 0], opacity: [1, 0.9, 0] }}
-                            transition={{ duration: 0.3 }}
-                            className="absolute inset-0 w-24 h-24 bg-white rounded-full blur-lg -translate-x-1/2 -translate-y-1/2"
-                        />
-
-                        {/* Debris particles */}
+                        {/* Debris particles - Industrial Squares */}
                         {randomValues.debris.map((val, i) => {
                             const x = Math.cos(val.angle) * val.distance;
                             const y = Math.sin(val.angle) * val.distance;
@@ -227,7 +210,7 @@ export function Logo() {
                             return (
                                 <motion.div
                                     key={i}
-                                    className="absolute w-3 h-3 bg-gray-700 rounded-sm"
+                                    className="absolute w-2 h-2 bg-black dark:bg-white border border-primary"
                                     initial={{ x: 0, y: 0, opacity: 1, rotate: 0 }}
                                     animate={{
                                         x: x,
@@ -242,54 +225,6 @@ export function Logo() {
                                 />
                             );
                         })}
-
-                        {/* Fire sparks */}
-                        {randomValues.sparks.map((val, i) => {
-                            const angle = (i / 24) * Math.PI * 2 + val.angle;
-                            const x = Math.cos(angle) * val.distance;
-                            const y = Math.sin(angle) * val.distance;
-
-                            return (
-                                <motion.div
-                                    key={`spark-${i}`}
-                                    className="absolute w-1 h-1 rounded-full"
-                                    style={{
-                                        background: i % 3 === 0 ? '#fbbf24' : i % 3 === 1 ? '#fb923c' : '#ef4444'
-                                    }}
-                                    initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                                    animate={{
-                                        x: x,
-                                        y: y + 20,
-                                        opacity: [1, 0.8, 0],
-                                        scale: [1, 0.5, 0]
-                                    }}
-                                    transition={{
-                                        duration: val.duration,
-                                        ease: [0.4, 0, 0.2, 1]
-                                    }}
-                                />
-                            );
-                        })}
-
-                        {/* Smoke clouds */}
-                        {randomValues.smoke.map((val, i) => (
-                            <motion.div
-                                key={`smoke-${i}`}
-                                className="absolute w-16 h-16 bg-gray-600/60 rounded-full blur-xl"
-                                initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
-                                animate={{
-                                    x: val.x,
-                                    y: val.y,
-                                    opacity: [0, 0.6, 0],
-                                    scale: [0.5, 2.5, 3]
-                                }}
-                                transition={{
-                                    duration: 1.2,
-                                    delay: i * 0.1,
-                                    ease: "easeOut"
-                                }}
-                            />
-                        ))}
                     </div>
                 </div>
             )}
@@ -299,83 +234,60 @@ export function Logo() {
                     animate={controls}
                     className={`relative ${isLaunching ? 'fixed z-[60] top-4 left-4' : ''}`}
                 >
+                    {/* Idle Hover Animation */}
                     <motion.div
                         animate={!isLaunching ? {
-                            y: [0, -2, 0],
+                            y: [0, -3, 0],
+                            rotate: [0, 2, -2, 0],
                         } : {}}
                         transition={{
-                            duration: 2,
+                            duration: 3,
                             repeat: Infinity,
                             ease: "easeInOut",
                         }}
+                        className="relative"
                     >
-                        <Rocket className="h-7 w-7 text-primary z-10 relative drop-shadow-lg" />
+                        <Rocket className="h-7 w-7 text-primary z-10 relative drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]" />
 
-                        {/* Enhanced Fire Effect */}
-                        <div className="absolute top-[18px] left-[4px] z-0">
-                            {/* Main flame glow */}
+                        {/* Engine Idle Glow */}
+                        {!isLaunching && (
                             <motion.div
-                                className="absolute -top-1 -left-1 w-4 h-4 bg-gradient-to-b from-orange-400 via-red-500 to-yellow-500 rounded-full blur-md"
+                                className="absolute bottom-1 left-1.5 w-4 h-4 bg-primary/40 rounded-full blur-md"
                                 animate={{
-                                    opacity: [0.7, 1, 0.7],
-                                    scale: [0.9, 1.2, 0.9],
+                                    opacity: [0.4, 0.8, 0.4],
+                                    scale: [0.8, 1.2, 0.8],
                                 }}
-                                transition={{ duration: 0.3, repeat: Infinity, ease: "easeInOut" }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
                             />
+                        )}
 
-                            {/* Inner bright core */}
+                        {/* Enhanced Fire Effect (Only visible during launch or hover) */}
+                        <div className={`absolute top-[20px] left-[5px] z-0 transition-opacity duration-300 ${isLaunching ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                            {/* Main flame jet */}
                             <motion.div
-                                className="absolute top-0 left-0 w-2 h-2 bg-yellow-300 rounded-full blur-sm"
+                                className="absolute -top-1 -left-1 w-4 h-8 bg-gradient-to-b from-primary via-orange-500 to-transparent rounded-full blur-sm"
                                 animate={{
-                                    opacity: [0.9, 1, 0.9],
-                                    scale: [1, 1.3, 1],
+                                    height: [20, 35, 20],
+                                    opacity: [0.8, 1, 0.8],
                                 }}
                                 transition={{ duration: 0.2, repeat: Infinity }}
                             />
 
-                            {/* Flame particles - more dynamic */}
+                            {/* Particles */}
                             {randomValues.flames.map((val, i) => (
                                 <motion.div
                                     key={i}
-                                    className="absolute w-1 h-1 rounded-full"
-                                    style={{
-                                        background: i % 2 === 0
-                                            ? 'linear-gradient(to bottom, #fb923c, #ef4444)'
-                                            : 'linear-gradient(to bottom, #fbbf24, #f97316)',
-                                    }}
-                                    initial={{ opacity: 0, scale: 0.3, x: 0, y: 0 }}
+                                    className="absolute w-1 h-1 bg-primary rounded-sm"
+                                    initial={{ opacity: 0, y: 0 }}
                                     animate={{
-                                        opacity: [0, 0.9, 0],
-                                        scale: [0.3, 1, 0.5],
-                                        x: [-1, val.x],
-                                        y: [1, val.y],
+                                        opacity: [0, 1, 0],
+                                        y: [0, 20 + val.y],
+                                        x: [(Math.random() - 0.5) * 10],
                                     }}
                                     transition={{
-                                        duration: val.duration,
+                                        duration: 0.5,
                                         repeat: Infinity,
-                                        delay: i * 0.08,
-                                        ease: [0.4, 0, 0.2, 1]
-                                    }}
-                                />
-                            ))}
-
-                            {/* Smoke particles */}
-                            {randomValues.smokeParticles.map((val, i) => (
-                                <motion.div
-                                    key={`smoke-${i}`}
-                                    className="absolute w-2 h-2 bg-gray-400/40 rounded-full blur-sm"
-                                    initial={{ opacity: 0, scale: 0.5, x: -2, y: 2 }}
-                                    animate={{
-                                        opacity: [0, 0.4, 0],
-                                        scale: [0.5, 1.5, 2],
-                                        x: [-2, -12 - (i % 3) * 4],
-                                        y: [2, 12 + (i % 2) * 6],
-                                    }}
-                                    transition={{
-                                        duration: 1.5,
-                                        repeat: Infinity,
-                                        delay: i * 0.2,
-                                        ease: "easeOut"
+                                        delay: i * 0.05,
                                     }}
                                 />
                             ))}
