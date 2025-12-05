@@ -23,8 +23,8 @@ export function Footer() {
 
     if (isMessagesPage) return null;
 
-    // AGGRESSIVE OPTIMIZATION: Very few particles on mobile
-    const debrisCount = isMobile ? 3 : 12;
+    // OPTIMIZATION: Balanced particles for mobile
+    const debrisCount = isMobile ? 8 : 15;
     const debris = Array.from({ length: debrisCount }).map((_, i) => ({
         id: i,
         angle: Math.random() * 360,
@@ -64,24 +64,21 @@ export function Footer() {
                 {/* Accretion Disk - Layer 1 (Outermost, Slowest) */}
                 <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '80s' }}>
                     <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-transparent via-primary/15 via-transparent to-transparent",
-                        !isMobile && "blur-2xl"
+                        "absolute inset-0 rounded-full bg-gradient-conic from-transparent via-primary/15 via-transparent to-transparent blur-2xl will-change-transform"
                     )} />
                 </div>
 
                 {/* Accretion Disk - Layer 2 */}
                 <div className="absolute inset-[50px] rounded-full animate-spin" style={{ animationDuration: '50s', animationDirection: 'reverse' }}>
                     <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-orange-600/20 via-transparent via-primary/25 to-transparent",
-                        !isMobile && "blur-xl"
+                        "absolute inset-0 rounded-full bg-gradient-conic from-orange-600/20 via-transparent via-primary/25 to-transparent blur-xl will-change-transform"
                     )} />
                 </div>
 
                 {/* Accretion Disk - Layer 3 (Fast Inner) */}
                 <div className="absolute inset-[100px] rounded-full animate-spin" style={{ animationDuration: '30s' }}>
                     <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-primary/30 via-orange-500/20 to-transparent",
-                        !isMobile && "blur-lg"
+                        "absolute inset-0 rounded-full bg-gradient-conic from-primary/30 via-orange-500/20 to-transparent blur-lg will-change-transform"
                     )} />
                 </div>
 
@@ -102,16 +99,14 @@ export function Footer() {
                     animate={{ opacity: [0.8, 1, 0.8], scale: [1, 1.01, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className={cn(
-                        "absolute inset-[290px] rounded-full border-[3px] border-white/90 z-20",
-                        !isMobile && "shadow-[0_0_20px_rgba(255,255,255,0.8)]"
+                        "absolute inset-[290px] rounded-full border-[3px] border-white/90 z-20 shadow-[0_0_20px_rgba(255,255,255,0.8)] will-change-transform"
                     )}
                 />
                 <motion.div
                     animate={{ opacity: [0.6, 0.9, 0.6], scale: [1.01, 1, 1.01] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     className={cn(
-                        "absolute inset-[288px] rounded-full border-[6px] border-primary/60 z-19",
-                        !isMobile && "shadow-[0_0_40px_rgba(234,88,12,0.8)]"
+                        "absolute inset-[288px] rounded-full border-[6px] border-primary/60 z-19 shadow-[0_0_40px_rgba(234,88,12,0.8)] will-change-transform"
                     )}
                 />
 
