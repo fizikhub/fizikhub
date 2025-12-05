@@ -2,11 +2,10 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Pencil, Loader2, ImagePlus } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
 import { uploadCover } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 interface EditableCoverProps {
     url?: string | null;
@@ -14,7 +13,7 @@ interface EditableCoverProps {
     editable?: boolean;
 }
 
-export function EditableCover({ url, gradient, editable = false }: EditableCoverProps) {
+export function EditableCover({ url, editable = false }: EditableCoverProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
@@ -23,13 +22,11 @@ export function EditableCover({ url, gradient, editable = false }: EditableCover
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         if (!file.type.startsWith("image/")) {
             toast.error("Lütfen bir resim dosyası seçin");
             return;
         }
 
-        // Validate file size (4MB max)
         if (file.size > 4 * 1024 * 1024) {
             toast.error("Dosya boyutu 4MB'den küçük olmalı");
             return;
@@ -38,10 +35,7 @@ export function EditableCover({ url, gradient, editable = false }: EditableCover
         setIsUploading(true);
 
         try {
-            // Resize and compress image
             const resizedFile = await resizeImage(file, 1500, 500, 0.85);
-
-            // Upload to Supabase
             const result = await uploadCover(resizedFile);
 
             if (result.success) {
@@ -67,23 +61,41 @@ export function EditableCover({ url, gradient, editable = false }: EditableCover
     };
 
     return (
-        <div className="h-48 w-full relative overflow-hidden group">
+        <div className="h-48 w-full relative overflow-hidden group border-b-2 border-black dark:border-white">
+            {/* Technical Grid Background */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+
             {url ? (
                 <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105 opacity-80"
                     style={{ backgroundImage: `url(${url})` }}
                 />
             ) : (
-                <div className={`absolute inset-0 bg-gradient-to-r ${gradient}`} />
+                <div className="absolute inset-0 bg-muted/20" />
             )}
-            <div className="absolute inset-0 bg-black/10" />
+
+            {/* Industrial Overlay Elements */}
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+
+            {/* Top Secret Stamp */}
+            <div className="absolute top-4 right-4 border-2 border-primary/30 px-3 py-1 -rotate-6 pointer-events-none select-none">
+                <span className="text-xs font-black text-primary/50 tracking-[0.2em]">TOP SECRET</span>
+            </div>
+
+            {/* Data Lines */}
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-primary/20" />
+            <div className="absolute bottom-2 left-4 flex gap-1 pointer-events-none">
+                <div className="w-2 h-2 bg-primary/40" />
+                <div className="w-2 h-2 bg-primary/40" />
+                <div className="w-2 h-2 bg-primary/40" />
+            </div>
 
             {editable && (
                 <>
                     <Button
-                        variant="secondary"
+                        variant="outline"
                         size="icon"
-                        className="absolute bottom-4 right-4 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-20"
+                        className="absolute bottom-4 right-4 rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-20"
                         onClick={handleClick}
                         disabled={isUploading}
                         title="Kapak fotoğrafını değiştir"
