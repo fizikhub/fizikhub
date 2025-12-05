@@ -81,12 +81,12 @@ export function Navbar() {
     }, [supabase, checkAdminStatus]);
 
     const navLinks = [
-        { href: "/", label: "ANA SAYFA", icon: Home },
-        { href: "/blog", label: "MAKALELER", icon: Feather },
-        { href: "/forum", label: "FORUM", icon: MessageCircle },
-        { href: "/sozluk", label: "SÖZLÜK", icon: Library },
-        { href: "/testler", label: "TESTLER", icon: Atom },
-        { href: "/siralamalar", label: "SIRALAMALAR", icon: Trophy },
+        { href: "/", label: "ANA ÜS", description: "Başladığın yere dön.", icon: Home },
+        { href: "/blog", label: "KÜTÜPHANE", description: "Biraz kültürlen.", icon: Feather },
+        { href: "/forum", label: "MEYDAN", description: "Kavga etme, tartış.", icon: MessageCircle },
+        { href: "/sozluk", label: "LÜGAT", description: "Bu ne demek şimdi?", icon: Library },
+        { href: "/testler", label: "SİMÜLASYON", description: "Kendini sına.", icon: Atom },
+        { href: "/siralamalar", label: "ŞÖHRETLER", description: "Kim daha zeki?", icon: Trophy },
     ];
 
     return (
@@ -154,48 +154,84 @@ export function Navbar() {
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[300px] sm:w-[400px] border-l-2 border-black dark:border-white p-0">
+                            <SheetContent side="right" className="w-[300px] sm:w-[400px] border-l-2 border-black dark:border-white p-0 bg-background">
                                 <SheetHeader className="p-6 border-b-2 border-black dark:border-white bg-primary">
                                     <div className="flex justify-start">
                                         <Logo />
                                     </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>
+                                    <p className="text-xs font-black uppercase tracking-widest text-black/60 mt-2">
+                                        NAVİGASYON MODÜLÜ v2.0
+                                    </p>
                                 </SheetHeader>
-                                <div className="flex flex-col p-6 gap-2">
+                                <div className="flex flex-col p-6 gap-3 overflow-y-auto h-[calc(100vh-140px)]">
                                     {navLinks.map((link) => (
                                         <Link
                                             key={link.href}
                                             href={link.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
                                             className={cn(
-                                                "flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                                "group flex items-center gap-4 px-4 py-4 border-2 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
                                                 pathname === link.href
                                                     ? "bg-black text-white dark:bg-white dark:text-black border-black dark:border-white"
                                                     : "bg-background border-black dark:border-white hover:bg-primary/10"
                                             )}
                                         >
-                                            <link.icon className="h-5 w-5" />
-                                            {link.label}
+                                            <div className={cn(
+                                                "p-2 border-2 border-current",
+                                                pathname === link.href ? "bg-white text-black dark:bg-black dark:text-white" : "bg-transparent"
+                                            )}>
+                                                <link.icon className="h-5 w-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black uppercase tracking-wide leading-none">
+                                                    {link.label}
+                                                </span>
+                                                <span className={cn(
+                                                    "text-[10px] font-bold uppercase tracking-wider mt-1",
+                                                    pathname === link.href ? "text-white/70 dark:text-black/70" : "text-muted-foreground group-hover:text-primary"
+                                                )}>
+                                                    {link.description}
+                                                </span>
+                                            </div>
                                         </Link>
                                     ))}
                                     {isAdmin && (
                                         <Link
                                             href="/admin"
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]"
+                                            className="flex items-center gap-4 px-4 py-4 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                                         >
-                                            <Shield className="h-5 w-5" />
-                                            Admin Paneli
+                                            <div className="p-2 border-2 border-current bg-transparent">
+                                                <Shield className="h-5 w-5" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-black uppercase tracking-wide leading-none">
+                                                    YÖNETİM
+                                                </span>
+                                                <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-80">
+                                                    GİZLİ BÖLGE
+                                                </span>
+                                            </div>
                                         </Link>
                                     )}
-                                    <div className="my-4 border-t-2 border-dashed border-black/20 dark:border-white/20" />
+                                    <div className="my-2 border-t-2 border-dashed border-black/20 dark:border-white/20" />
                                     <Link
                                         href="/profil"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center gap-4 px-4 py-4 text-sm font-bold uppercase border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                                        className="flex items-center gap-4 px-4 py-4 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all active:translate-x-[2px] active:translate-y-[2px]"
                                     >
-                                        <User className="h-5 w-5" />
-                                        Profilim
+                                        <div className="p-2 border-2 border-current bg-transparent">
+                                            <User className="h-5 w-5" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-black uppercase tracking-wide leading-none">
+                                                KİMLİK KARTI
+                                            </span>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-60">
+                                                PROFİLİNİ DÜZENLE
+                                            </span>
+                                        </div>
                                     </Link>
                                 </div>
                             </SheetContent>
