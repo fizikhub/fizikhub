@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
-    const [isHoveringBlackHole, setIsHoveringBlackHole] = useState(false);
     const [windowWidth, setWindowWidth] = useState(0);
 
     useEffect(() => {
@@ -32,6 +31,19 @@ export function Footer() {
         delay: Math.random() * 2
     }));
 
+    // Permanent breathing animation for the pull intensity
+    const pullIntensity = {
+        scale: [0.9, 0.85, 0.9],
+        rotate: [5, 7, 5],
+        x: [20, 25, 20],
+        y: [20, 25, 20],
+        transition: {
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+        }
+    };
+
     return (
         <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
             {/* Event Horizon Warning Line */}
@@ -52,26 +64,27 @@ export function Footer() {
 
                 {/* Accretion Disk - Inner (Faster) */}
                 <motion.div
-                    animate={{ rotate: -360, scale: isHoveringBlackHole ? 1.1 : 1 }}
-                    transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 0.5 } }}
-                    className="absolute inset-20 rounded-full bg-gradient-radial from-transparent via-orange-600/20 to-transparent blur-2xl"
+                    animate={{ rotate: -360, scale: [1, 1.05, 1] }}
+                    transition={{ rotate: { duration: 30, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                    className="absolute inset-20 rounded-full bg-gradient-radial from-transparent via-orange-600/30 to-transparent blur-2xl"
                 />
+
+                {/* Photon Ring - The Bright Edge */}
+                <div className="absolute inset-[290px] rounded-full border-[3px] border-white/80 shadow-[0_0_20px_rgba(255,255,255,0.8)] z-20 blur-[1px]" />
+                <div className="absolute inset-[290px] rounded-full border-[6px] border-primary/50 shadow-[0_0_40px_rgba(234,88,12,0.8)] z-10 blur-md" />
 
                 {/* Event Horizon (The Void) */}
                 <motion.div
-                    animate={{ scale: isHoveringBlackHole ? 1.2 : 1 }}
-                    transition={{ duration: 0.5, type: "spring" }}
-                    className="absolute inset-[300px] rounded-full bg-black shadow-[0_0_100px_50px_rgba(0,0,0,1)] z-10"
+                    animate={{ scale: [1, 1.02, 1] }}
+                    transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
+                    className="absolute inset-[300px] rounded-full bg-black shadow-[inset_0_0_50px_rgba(0,0,0,1)] z-30"
                 />
-
-                {/* Photon Ring */}
-                <div className="absolute inset-[295px] rounded-full border-2 border-primary/50 blur-sm z-20" />
 
                 {/* Suction Particles */}
                 {debris.map((d) => (
                     <motion.div
                         key={d.id}
-                        className="absolute bg-white rounded-full"
+                        className="absolute bg-white rounded-full z-10"
                         style={{
                             width: d.size,
                             height: d.size,
@@ -85,7 +98,7 @@ export function Footer() {
                             scale: [1, 0],
                         }}
                         transition={{
-                            duration: isHoveringBlackHole ? d.duration * 0.5 : d.duration,
+                            duration: d.duration,
                             repeat: Infinity,
                             delay: d.delay,
                             ease: "easeIn"
@@ -100,97 +113,103 @@ export function Footer() {
 
             <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
 
-                {/* Center Singularity Brand - The Trigger */}
+                {/* Center Singularity Brand */}
                 <div
-                    className="absolute bottom-[100px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-center cursor-pointer group z-50"
-                    onMouseEnter={() => setIsHoveringBlackHole(true)}
-                    onMouseLeave={() => setIsHoveringBlackHole(false)}
+                    className="absolute bottom-[120px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-center z-50 pointer-events-none"
                 >
                     <div className="relative">
                         <motion.div
-                            animate={{ scale: isHoveringBlackHole ? [1, 1.5, 1] : 1, opacity: isHoveringBlackHole ? 0.8 : 0 }}
-                            transition={{ duration: 1, repeat: Infinity }}
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
                             className="absolute inset-0 bg-primary/50 blur-xl rounded-full"
                         />
-                        <div className="relative p-6 bg-black border-2 border-primary/50 rounded-full group-hover:border-primary transition-colors duration-300 shadow-[0_0_30px_rgba(234,88,12,0.3)]">
-                            <Atom className={`h-10 w-10 text-primary ${isHoveringBlackHole ? 'animate-spin' : ''}`} />
+                        <div className="relative p-6 bg-black border-2 border-primary rounded-full shadow-[0_0_30px_rgba(234,88,12,0.5)]">
+                            <Atom className="h-10 w-10 text-primary animate-spin" />
                         </div>
                     </div>
-                    <div className="space-y-1 bg-black/50 backdrop-blur-sm p-2 rounded-xl border border-white/5">
+                    <div className="space-y-1 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
                         <h2 className="text-2xl font-black tracking-tighter text-white">FİZİKHUB</h2>
-                        <p className="text-[10px] font-mono text-primary uppercase tracking-widest">
-                            {isHoveringBlackHole ? "TEKİLLİK AKTİF" : "OLAY UFKU STABİL"}
+                        <p className="text-[10px] font-mono text-primary uppercase tracking-widest animate-pulse">
+                            TEKİLLİK AKTİF
                         </p>
                     </div>
                 </div>
 
-                {/* Technical Links Grid - Being Sucked In */}
+                {/* Technical Links Grid - Permanently Sucked In */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left w-full max-w-6xl pt-8 relative min-h-[300px]">
                     {/* Left Side Links - Pulled Right */}
                     <motion.div
                         className="flex flex-col gap-2 origin-bottom-right"
                         animate={{
-                            rotate: isHoveringBlackHole ? 5 : 0,
-                            x: isHoveringBlackHole ? 20 : 0,
-                            y: isHoveringBlackHole ? 20 : 0,
-                            scale: isHoveringBlackHole ? 0.9 : 1
+                            rotate: pullIntensity.rotate,
+                            x: pullIntensity.x,
+                            y: pullIntensity.y,
+                            scale: pullIntensity.scale
+                        }}
+                        transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut"
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
-                        <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors">Keşfet</Link>
-                        <Link href="/testler" className="text-sm text-muted-foreground hover:text-primary transition-colors">Testler</Link>
-                        <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors">Sözlük</Link>
+                        <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
+                        <Link href="/testler" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Testler</Link>
+                        <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sözlük</Link>
                     </motion.div>
 
                     <motion.div
                         className="flex flex-col gap-2 origin-bottom-right"
                         animate={{
-                            rotate: isHoveringBlackHole ? 10 : 0,
-                            x: isHoveringBlackHole ? 40 : 0,
-                            y: isHoveringBlackHole ? 40 : 0,
-                            scale: isHoveringBlackHole ? 0.8 : 1
+                            rotate: [10, 12, 10],
+                            x: [40, 45, 40],
+                            y: [40, 45, 40],
+                            scale: [0.8, 0.75, 0.8]
                         }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
-                        <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors">Forum</Link>
-                        <Link href="/siralamalar" className="text-sm text-muted-foreground hover:text-primary transition-colors">Sıralamalar</Link>
-                        <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors">Yazarlar</Link>
+                        <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
+                        <Link href="/siralamalar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sıralamalar</Link>
+                        <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Yazarlar</Link>
                     </motion.div>
 
                     {/* Right Side Links - Pulled Left */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right origin-bottom-left"
                         animate={{
-                            rotate: isHoveringBlackHole ? -10 : 0,
-                            x: isHoveringBlackHole ? -40 : 0,
-                            y: isHoveringBlackHole ? 40 : 0,
-                            scale: isHoveringBlackHole ? 0.8 : 1
+                            rotate: [-10, -12, -10],
+                            x: [-40, -45, -40],
+                            y: [40, 45, 40],
+                            scale: [0.8, 0.75, 0.8]
                         }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
-                        <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors">Hakkımızda</Link>
-                        <Link href="/iletisim" className="text-sm text-muted-foreground hover:text-primary transition-colors">İletişim</Link>
-                        <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">Blog</Link>
+                        <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
+                        <Link href="/iletisim" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">İletişim</Link>
+                        <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Blog</Link>
                     </motion.div>
 
                     <motion.div
                         className="flex flex-col gap-2 md:text-right origin-bottom-left"
                         animate={{
-                            rotate: isHoveringBlackHole ? -5 : 0,
-                            x: isHoveringBlackHole ? -20 : 0,
-                            y: isHoveringBlackHole ? 20 : 0,
-                            scale: isHoveringBlackHole ? 0.9 : 1
+                            rotate: [-5, -7, -5],
+                            x: [-20, -25, -20],
+                            y: [20, 25, 20],
+                            scale: [0.9, 0.85, 0.9]
                         }}
+                        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
-                        <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors">Gizlilik</Link>
-                        <Link href="/kullanim-sartlari" className="text-sm text-muted-foreground hover:text-primary transition-colors">Şartlar</Link>
-                        <Link href="/kvkk" className="text-sm text-muted-foreground hover:text-primary transition-colors">KVKK</Link>
+                        <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
+                        <Link href="/kullanim-sartlari" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Şartlar</Link>
+                        <Link href="/kvkk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">KVKK</Link>
                     </motion.div>
                 </div>
 
                 {/* Bottom Bar - Safe Distance */}
-                <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-white/10 pt-8 gap-6 bg-black/80 backdrop-blur-md rounded-t-2xl p-4 mt-20">
+                <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-white/10 pt-8 gap-6 bg-black/80 backdrop-blur-md rounded-t-2xl p-4 mt-20 relative z-40">
                     <p className="text-xs font-mono text-muted-foreground text-center md:text-left">
                         &copy; 2025 FİZİKHUB // TÜM HAKLARI SAKLIDIR.
                         <br />
