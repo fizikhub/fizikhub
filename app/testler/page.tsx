@@ -14,52 +14,56 @@ export default async function QuizzesPage() {
     const quizzes = await getQuizzes();
 
     return (
-        <div className="container max-w-5xl py-10 px-4 mx-auto">
-            <div className="text-center mb-12 space-y-4">
-                <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4 ring-1 ring-primary/20">
-                    <BrainCircuit className="h-8 w-8 text-primary" />
+        <div className="container max-w-7xl py-12 px-4 mx-auto min-h-screen">
+            <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
+                <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-primary text-primary-foreground p-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <BrainCircuit className="h-8 w-8" />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
+                            Fizik Testleri
+                        </h1>
+                    </div>
+                    <p className="text-xl text-muted-foreground font-medium max-w-2xl">
+                        Kendini dene, eksiklerini gör ve puanları topla.
+                        Her test sana yeni bir şeyler öğretecek.
+                    </p>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight">Fizik Testleri</h1>
-                <p className="text-muted-foreground max-w-lg mx-auto">
-                    Kendini dene, eksiklerini gör ve puanları topla.
-                    Her test sana yeni bir şeyler öğretecek.
-                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {quizzes.map((quiz) => (
-                    <Card key={quiz.id} className="group hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-                        <CardHeader>
-                            <div className="flex justify-between items-start mb-2">
-                                <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
-                                    Fizik
+                    <Card key={quiz.id} className="group border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 bg-card rounded-xl overflow-hidden flex flex-col h-full">
+                        <CardHeader className="border-b-2 border-black dark:border-white bg-secondary/50 pb-4">
+                            <div className="flex justify-between items-start mb-3">
+                                <Badge variant="secondary" className="bg-white border-2 border-black text-black font-bold hover:bg-white rounded-md">
+                                    FİZİK
                                 </Badge>
-                                <div className="flex items-center text-xs text-muted-foreground gap-1">
-                                    <Trophy className="h-3 w-3" />
+                                <div className="flex items-center font-bold text-sm bg-black text-white px-2 py-1 rounded">
+                                    <Trophy className="h-3 w-3 mr-1 text-yellow-400 fill-yellow-400" />
                                     <span>{quiz.points} Puan</span>
                                 </div>
                             </div>
-                            <CardTitle className="line-clamp-1 group-hover:text-primary transition-colors">
+                            <CardTitle className="text-2xl font-black uppercase leading-tight line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
                                 {quiz.title}
                             </CardTitle>
-                            <CardDescription className="line-clamp-2 min-h-[40px]">
-                                {quiz.description}
-                            </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                    <Clock className="h-4 w-4" />
-                                    <span>~5 dk</span>
-                                </div>
-                                {/* We could add question count here if we joined tables */}
+                        <CardContent className="pt-6 flex-grow">
+                            <p className="text-muted-foreground font-medium mb-6 line-clamp-3">
+                                {quiz.description}
+                            </p>
+
+                            <div className="flex items-center gap-2 text-sm font-bold opacity-70">
+                                <Clock className="h-4 w-4" />
+                                <span>~5 dakika</span>
                             </div>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="pt-0 pb-6 px-6 mt-auto">
                             <Link href={`/testler/${quiz.slug}`} className="w-full">
-                                <Button className="w-full group-hover:bg-primary group-hover:text-primary-foreground">
-                                    Teste Başla
-                                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                <Button className="w-full h-12 text-lg font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] bg-primary text-primary-foreground transition-all">
+                                    TESTE BAŞLA
+                                    <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
                         </CardFooter>

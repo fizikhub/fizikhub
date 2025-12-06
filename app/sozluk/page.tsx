@@ -8,18 +8,22 @@ export default async function DictionaryPage() {
     const terms = await getDictionaryTerms(supabase);
 
     return (
-        <div className="container py-6 sm:py-8 md:py-12 px-4 md:px-6 max-w-4xl mx-auto min-h-screen">
-            <div className="text-center mb-8 sm:mb-10 md:mb-12">
-                <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <Book className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                        Bilim Sözlüğü
-                    </h1>
+        <div className="container py-12 px-4 md:px-6 max-w-7xl mx-auto min-h-screen">
+            <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
+                <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-primary text-primary-foreground p-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <Book className="h-8 w-8" />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
+                            Bilim Sözlüğü
+                        </h1>
+                    </div>
+                    <p className="text-xl text-muted-foreground font-medium max-w-2xl">
+                        "Bu ne demek şimdi?" dediğin her şey burada.
+                        Evrenin karmaşık dilini Türkçe'ye çeviriyoruz.
+                    </p>
                 </div>
-                <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
-                    "Bu ne demek şimdi?" dediğin her şey burada.
-                    Evrenin karmaşık dilini Türkçe'ye çeviriyoruz.
-                </p>
             </div>
 
             <DictionaryList initialTerms={terms} />

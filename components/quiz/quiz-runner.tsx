@@ -126,38 +126,47 @@ export function QuizRunner({ quizId, questions, title }: QuizRunnerProps) {
     }
 
     return (
-        <div className="w-full max-w-2xl mx-auto space-y-6">
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
-                <span>Soru {currentQuestionIndex + 1} / {questions.length}</span>
-                <span>Skor: {score}</span>
+        <div className="w-full max-w-3xl mx-auto space-y-8">
+            <div className="flex justify-between items-center bg-card border-2 border-black dark:border-white p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <span className="font-bold text-muted-foreground uppercase tracking-widest text-xs">Soru {currentQuestionIndex + 1} / {questions.length}</span>
+                <div className="flex items-center gap-2 font-black text-xl">
+                    <Trophy className="h-5 w-5 text-primary" />
+                    <span>{score}</span>
+                </div>
             </div>
-            <Progress value={progress} className="h-2" />
 
-            <Card className="mt-4">
-                <CardHeader>
-                    <CardTitle className="text-xl leading-relaxed">
+            <div className="h-4 w-full bg-secondary border-2 border-black dark:border-white rounded-full overflow-hidden">
+                <div
+                    className="h-full bg-primary transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                />
+            </div>
+
+            <Card className="mt-8 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
+                <CardHeader className="bg-secondary/30 border-b-2 border-black dark:border-white p-8">
+                    <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-black leading-tight">
                         {currentQuestion.question_text}
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-8">
                     <RadioGroup
                         value={selectedOption?.toString()}
                         onValueChange={handleOptionSelect}
-                        className="space-y-3"
+                        className="space-y-4"
                     >
                         <AnimatePresence mode="wait">
                             {currentQuestion.options.map((option, index) => {
-                                let itemStyle = "border-2 hover:bg-muted/50 transition-all";
+                                let itemStyle = "border-2 border-black dark:border-white bg-card hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]";
                                 if (isAnswered) {
                                     if (index === currentQuestion.correct_answer) {
-                                        itemStyle = "border-green-500 bg-green-500/10";
+                                        itemStyle = "border-2 border-green-600 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-100 transform scale-[1.02]";
                                     } else if (index === selectedOption && index !== currentQuestion.correct_answer) {
-                                        itemStyle = "border-red-500 bg-red-500/10";
+                                        itemStyle = "border-2 border-red-600 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-100 opacity-90";
                                     } else {
-                                        itemStyle = "opacity-50";
+                                        itemStyle = "border-2 opacity-40 grayscale";
                                     }
                                 } else if (selectedOption === index) {
-                                    itemStyle = "border-primary bg-primary/5";
+                                    itemStyle = "border-2 border-primary bg-primary/10 ring-2 ring-primary ring-offset-2";
                                 }
 
                                 return (
@@ -167,23 +176,26 @@ export function QuizRunner({ quizId, questions, title }: QuizRunnerProps) {
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.1 }}
                                     >
-                                        <div className={`flex items-center space-x-2 rounded-lg p-4 cursor-pointer ${itemStyle}`}>
-                                            <RadioGroupItem
-                                                value={index.toString()}
-                                                id={`option-${index}`}
-                                                disabled={isAnswered}
-                                            />
+                                        <div className={`flex items-center space-x-4 rounded-xl p-5 cursor-pointer transition-all duration-200 ${itemStyle}`}>
+                                            <div className="flex-shrink-0">
+                                                <RadioGroupItem
+                                                    value={index.toString()}
+                                                    id={`option-${index}`}
+                                                    disabled={isAnswered}
+                                                    className="w-6 h-6 border-2 border-black"
+                                                />
+                                            </div>
                                             <Label
                                                 htmlFor={`option-${index}`}
-                                                className="flex-1 cursor-pointer font-medium"
+                                                className="flex-1 cursor-pointer font-bold text-lg leading-snug"
                                             >
                                                 {option}
                                             </Label>
                                             {isAnswered && index === currentQuestion.correct_answer && (
-                                                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                                <CheckCircle2 className="h-8 w-8 text-green-600 fill-white" />
                                             )}
                                             {isAnswered && index === selectedOption && index !== currentQuestion.correct_answer && (
-                                                <XCircle className="h-5 w-5 text-red-500" />
+                                                <XCircle className="h-8 w-8 text-red-600 fill-white" />
                                             )}
                                         </div>
                                     </motion.div>
@@ -192,24 +204,26 @@ export function QuizRunner({ quizId, questions, title }: QuizRunnerProps) {
                         </AnimatePresence>
                     </RadioGroup>
                 </CardContent>
-                <CardFooter className="flex justify-end pt-6">
+                <CardFooter className="flex justify-end p-8 bg-secondary/10 border-t-2 border-black dark:border-white">
                     {!isAnswered ? (
                         <Button
                             onClick={handleCheckAnswer}
                             disabled={selectedOption === null}
-                            className="w-full sm:w-auto"
+                            size="lg"
+                            className="w-full sm:w-auto text-lg font-bold brutalist-button px-10"
                         >
                             Cevabı Kontrol Et
                         </Button>
                     ) : (
                         <Button
                             onClick={handleNextQuestion}
-                            className="w-full sm:w-auto"
+                            size="lg"
+                            className="w-full sm:w-auto text-lg font-bold brutalist-button px-10"
                         >
                             {currentQuestionIndex < questions.length - 1 ? (
                                 <>
                                     Sonraki Soru
-                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                    <ArrowRight className="ml-2 h-6 w-6" />
                                 </>
                             ) : (
                                 "Testi Bitir"

@@ -14,21 +14,25 @@ export default async function LeaderboardPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     return (
-        <div className="container max-w-4xl py-10 px-4 mx-auto">
-            <div className="text-center mb-10 space-y-4">
-                <div className="inline-flex items-center justify-center p-3 bg-yellow-500/10 rounded-full mb-4 ring-1 ring-yellow-500/20">
-                    <Trophy className="h-8 w-8 text-yellow-500" />
+        <div className="container max-w-5xl py-12 px-4 mx-auto min-h-screen">
+            <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
+                <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="bg-yellow-500 text-yellow-950 p-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <Trophy className="h-8 w-8" />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
+                            Liderlik Tablosu
+                        </h1>
+                    </div>
+                    <p className="text-xl text-muted-foreground font-medium max-w-2xl">
+                        Topluluğa katkı sağlayarak puan toplayan en başarılı üyelerimiz.
+                        Soru sorarak, cevap vererek ve test çözerek sıralamada yüksel!
+                    </p>
                 </div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                    Liderlik Tablosu
-                </h1>
-                <p className="text-muted-foreground max-w-lg mx-auto">
-                    Topluluğa katkı sağlayarak puan toplayan en başarılı üyelerimiz.
-                    Soru sorarak, cevap vererek ve test çözerek sıralamada yüksel!
-                </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
                 {leaderboard.map((leaderboardUser) => (
                     <LeaderboardCard
                         key={leaderboardUser.id}
