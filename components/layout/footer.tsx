@@ -204,17 +204,17 @@ export function Footer() {
                 <div className={cn(
                     "grid gap-8 text-center md:text-left w-full pt-8 relative min-h-[300px] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]",
                     // Active: Ultra tight cluster at center, Inactive: Spread wide
-                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 max-w-[250px] mx-auto items-center gap-2" : "grid-cols-2 md:grid-cols-2 max-w-3xl mx-auto items-center gap-y-12 gap-x-16"
+                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 max-w-[220px] mx-auto items-center gap-1" : "grid-cols-2 md:grid-cols-2 max-w-3xl mx-auto items-center gap-y-12 gap-x-16"
                 )}>
                     {/* 1. Keşif Modülü - Top Left */}
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.9
+                            x: [0, 0, 0],
+                            y: [0, 0, 0],
+                            rotate: [0, -2, 0],
+                            scale: [0.85, 0.75, 0.85],
+                            opacity: [0.9, 0.6, 0.9]
                         } : {
                             x: -40,
                             y: -30,
@@ -222,7 +222,15 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                        transition={isSingularityActive ? {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        } : {
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 18
+                        }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
                         <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
@@ -234,11 +242,11 @@ export function Footer() {
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.9
+                            x: [0, 0, 0],
+                            y: [0, 0, 0],
+                            rotate: [0, 2, 0],
+                            scale: [0.85, 0.75, 0.85],
+                            opacity: [0.9, 0.6, 0.9]
                         } : {
                             x: 40,
                             y: -30,
@@ -246,7 +254,17 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.05 }}
+                        transition={isSingularityActive ? {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 0.3
+                        } : {
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 18,
+                            delay: 0.05
+                        }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
                         <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
@@ -259,11 +277,11 @@ export function Footer() {
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.9
+                            x: [0, 0, 0],
+                            y: [0, 0, 0],
+                            rotate: [0, 1, 0],
+                            scale: [0.85, 0.75, 0.85],
+                            opacity: [0.9, 0.6, 0.9]
                         } : {
                             x: -40,
                             y: 30,
@@ -271,7 +289,17 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.1 }}
+                        transition={isSingularityActive ? {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 0.15
+                        } : {
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 18,
+                            delay: 0.1
+                        }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
                         <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
@@ -284,11 +312,11 @@ export function Footer() {
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.9
+                            x: [0, 0, 0],
+                            y: [0, 0, 0],
+                            rotate: [0, -1, 0],
+                            scale: [0.85, 0.75, 0.85],
+                            opacity: [0.9, 0.6, 0.9]
                         } : {
                             x: 40,
                             y: 30,
@@ -296,7 +324,17 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.15 }}
+                        transition={isSingularityActive ? {
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: 0.45
+                        } : {
+                            type: "spring",
+                            stiffness: 120,
+                            damping: 18,
+                            delay: 0.15
+                        }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
                         <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
