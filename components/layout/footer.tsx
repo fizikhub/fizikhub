@@ -203,29 +203,29 @@ export function Footer() {
                 {/* Technical Links Grid */}
                 <div className={cn(
                     "grid gap-8 text-center md:text-left w-full pt-8 relative min-h-[300px] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    // Active: Ultra tight cluster at center, Inactive: Spread wide
-                    isSingularityActive ? "grid-cols-2 md:grid-cols-2 max-w-[220px] mx-auto items-center gap-1" : "grid-cols-2 md:grid-cols-2 max-w-3xl mx-auto items-center gap-y-12 gap-x-16"
+                    // Active: Collapsed to center point, Inactive: Spread wide
+                    "grid-cols-2 md:grid-cols-2 max-w-3xl mx-auto items-center gap-y-12 gap-x-16"
                 )}>
-                    {/* 1. Keşif Modülü - Top Left */}
+                    {/* 1. Keşif Modülü - Top Left → CENTER */}
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
                             x: 0,
+                            y: -150,
+                            rotate: 0,
+                            scale: 0.3,
+                            opacity: 0.5
+                        } : {
+                            x: 0,
                             y: 0,
                             rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.85
-                        } : {
-                            x: -40,
-                            y: -30,
-                            rotate: -3,
                             scale: 1,
                             opacity: 1
                         }}
                         transition={{
                             type: "spring",
-                            stiffness: 100,
-                            damping: 15,
+                            stiffness: 80,
+                            damping: 12,
                             delay: isSingularityActive ? 0 : 0
                         }}
                     >
@@ -235,27 +235,27 @@ export function Footer() {
                         <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sözlük</Link>
                     </motion.div>
 
-                    {/* 2. Topluluk - Top Right */}
+                    {/* 2. Topluluk - Top Right → CENTER */}
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
                             x: 0,
+                            y: -150,
+                            rotate: 0,
+                            scale: 0.3,
+                            opacity: 0.5
+                        } : {
+                            x: 0,
                             y: 0,
                             rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.85
-                        } : {
-                            x: 40,
-                            y: -30,
-                            rotate: 3,
                             scale: 1,
                             opacity: 1
                         }}
                         transition={{
                             type: "spring",
-                            stiffness: 100,
-                            damping: 15,
-                            delay: isSingularityActive ? 0.1 : 0.05
+                            stiffness: 80,
+                            damping: 12,
+                            delay: isSingularityActive ? 0.1 : 0
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
@@ -264,28 +264,28 @@ export function Footer() {
                         <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Yazarlar</Link>
                     </motion.div>
 
-                    {/* 3. Kurumsal - Bottom Left */}
+                    {/* 3. Kurumsal - Bottom Left → CENTER */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
                             x: 0,
+                            y: -150,
+                            rotate: 0,
+                            scale: 0.3,
+                            opacity: 0.5
+                        } : {
+                            x: 0,
                             y: 0,
                             rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.85
-                        } : {
-                            x: -40,
-                            y: 30,
-                            rotate: 2,
                             scale: 1,
                             opacity: 1
                         }}
                         transition={{
                             type: "spring",
-                            stiffness: 100,
-                            damping: 15,
-                            delay: isSingularityActive ? 0.2 : 0.1
+                            stiffness: 80,
+                            damping: 12,
+                            delay: isSingularityActive ? 0.2 : 0
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
@@ -294,28 +294,28 @@ export function Footer() {
                         <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Blog</Link>
                     </motion.div>
 
-                    {/* 4. Protokoller - Bottom Right */}
+                    {/* 4. Protokoller - Bottom Right → CENTER */}
                     <motion.div
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
                             x: 0,
+                            y: -150,
+                            rotate: 0,
+                            scale: 0.3,
+                            opacity: 0.5
+                        } : {
+                            x: 0,
                             y: 0,
                             rotate: 0,
-                            scale: 0.85,
-                            opacity: 0.85
-                        } : {
-                            x: 40,
-                            y: 30,
-                            rotate: -2,
                             scale: 1,
                             opacity: 1
                         }}
                         transition={{
                             type: "spring",
-                            stiffness: 100,
-                            damping: 15,
-                            delay: isSingularityActive ? 0.3 : 0.15
+                            stiffness: 80,
+                            damping: 12,
+                            delay: isSingularityActive ? 0.3 : 0
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
