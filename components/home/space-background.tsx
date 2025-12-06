@@ -45,7 +45,8 @@ export function SpaceBackground() {
         }, 5000);
 
         // Initial UFO
-        setTimeout(() => setUfo({ id: 1 }), 2000);
+        // Initial UFO - Start almost immediately
+        setTimeout(() => setUfo({ id: 1 }), 100);
 
         const ufoInterval = setInterval(() => {
             setUfo({ id: Date.now() });
