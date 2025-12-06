@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
@@ -21,39 +22,50 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
     return (
-        <div className="relative mb-8">
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-                {/* ID Card Avatar Section */}
-                <div className="relative -mt-12 md:-mt-16 z-10 mx-auto md:mx-0">
-                    <div className="h-32 w-32 md:h-40 md:w-40 bg-background border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center justify-center overflow-hidden relative group">
-                        {/* Corner Accents */}
-                        <div className="absolute top-0 left-0 w-2 h-2 bg-black dark:bg-white z-20" />
-                        <div className="absolute top-0 right-0 w-2 h-2 bg-black dark:bg-white z-20" />
-                        <div className="absolute bottom-0 left-0 w-2 h-2 bg-black dark:bg-white z-20" />
-                        <div className="absolute bottom-0 right-0 w-2 h-2 bg-black dark:bg-white z-20" />
-
-                        <AvatarUpload
-                            currentAvatarUrl={profile?.avatar_url}
-                            userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
-                            className="h-full w-full rounded-none"
+        <div className="relative mb-8 p-6 rounded-3xl bg-black/40 backdrop-blur-md border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+                {/* Orbit Avatar Section */}
+                <div className="relative z-10 mx-auto md:mx-0">
+                    <div className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center">
+                        {/* Rotating Orbit Ring */}
+                        <motion.div
+                            className="absolute inset-0 rounded-full border-2 border-dashed border-cyan-500/30"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                         />
-                    </div>
-                    {profile?.is_verified && (
-                        <div className="absolute -bottom-2 -right-2 bg-background border-2 border-black dark:border-white p-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                            <BadgeCheck className="h-5 w-5 text-primary fill-primary/10" />
+                        <motion.div
+                            className="absolute -inset-2 rounded-full border border-white/10"
+                            animate={{ rotate: -360 }}
+                            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                        />
+
+                        {/* Avatar Container */}
+                        <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-2 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.3)] bg-black">
+                            <AvatarUpload
+                                currentAvatarUrl={profile?.avatar_url}
+                                userInitial={profile?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
+                                className="h-full w-full"
+                            />
                         </div>
-                    )}
+
+                        {/* Verified Badge */}
+                        {profile?.is_verified && (
+                            <div className="absolute bottom-0 right-0 bg-black border border-cyan-500 rounded-full p-1.5 shadow-[0_0_10px_cyan]">
+                                <BadgeCheck className="h-5 w-5 text-cyan-400 fill-cyan-400/10" />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Personnel Data Section */}
                 <div className="flex-1 w-full text-center md:text-left space-y-4 pt-2">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                        <div className="space-y-1">
-                            <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase">
+                        <div className="space-y-2">
+                            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                                 {profile?.full_name || "İSİMSİZ PERSONEL"}
                             </h1>
                             <div className="flex items-center justify-center md:justify-start gap-3">
-                                <span className="font-mono text-sm bg-muted px-2 py-0.5 border border-black/20 dark:border-white/20">
+                                <span className="font-mono text-sm text-cyan-400 bg-cyan-950/30 px-3 py-1 rounded-full border border-cyan-800 backdrop-blur-sm">
                                     @{profile?.username || "kullanici"}
                                 </span>
                                 <ReputationDisplay reputation={profile?.reputation || 0} size="sm" showLabel={true} />
@@ -67,7 +79,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                             </div>
                             {profile?.is_writer && (
                                 <Link href="/yazar">
-                                    <Button variant="outline" size="icon" className="rounded-none border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all" title="Yazar Paneli">
+                                    <Button variant="outline" size="icon" className="rounded-full border-white/20 hover:bg-white/10 hover:border-cyan-400/50 transition-all text-white" title="Yazar Paneli">
                                         <FileText className="h-4 w-4" />
                                     </Button>
                                 </Link>
@@ -92,17 +104,17 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
 
                     {/* Mission Statement (Bio) */}
                     {profile?.bio && (
-                        <div className="relative border-l-4 border-primary/50 pl-4 py-1 bg-muted/30 max-w-2xl mx-auto md:mx-0 text-left">
-                            <p className="text-muted-foreground text-sm md:text-base font-medium">
-                                "{profile.bio}"
+                        <div className="relative pl-4 border-l-2 border-cyan-500/50 bg-gradient-to-r from-cyan-950/20 to-transparent py-2 max-w-2xl mx-auto md:mx-0 text-left rounded-r-lg">
+                            <p className="text-blue-100/80 text-sm md:text-base font-medium leading-relaxed">
+                                {profile.bio}
                             </p>
                         </div>
                     )}
 
                     {/* Meta Data */}
-                    <div className="flex flex-wrap gap-4 text-xs font-mono text-muted-foreground justify-center md:justify-start border-t border-dashed border-border pt-3 mt-2">
+                    <div className="flex flex-wrap gap-4 text-xs font-mono text-blue-200/50 justify-center md:justify-start border-t border-white/5 pt-4 mt-2">
                         <div className="flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3" />
+                            <Calendar className="h-3 w-3 text-cyan-600" />
                             <span>KAYIT: {format(new Date(user.created_at), 'MM.yyyy', { locale: tr }).toUpperCase()}</span>
                         </div>
                         {profile?.website && (
@@ -110,7 +122,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                                 href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                                className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors"
                             >
                                 <LinkIcon className="h-3 w-3" />
                                 <span>{profile.website.replace(/^https?:\/\//, '').toUpperCase()}</span>
@@ -119,24 +131,24 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
 
                         {/* Social Links */}
                         {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
-                            <div className="flex gap-3 ml-2 pl-2 border-l border-border">
+                            <div className="flex gap-3 ml-2 pl-2 border-l border-white/10">
                                 {profile.social_links?.twitter && (
-                                    <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                    <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
                                         <Twitter className="h-3 w-3" />
                                     </a>
                                 )}
                                 {profile.social_links?.github && (
-                                    <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                    <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
                                         <Github className="h-3 w-3" />
                                     </a>
                                 )}
                                 {profile.social_links?.linkedin && (
-                                    <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                    <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
                                         <Linkedin className="h-3 w-3" />
                                     </a>
                                 )}
                                 {profile.social_links?.instagram && (
-                                    <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                    <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
                                         <Instagram className="h-3 w-3" />
                                     </a>
                                 )}

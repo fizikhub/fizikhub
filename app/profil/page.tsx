@@ -8,6 +8,8 @@ import { ProfileTabs } from "@/components/profile/profile-tabs";
 import { ProfileBadges } from "@/components/profile/profile-badges";
 import { EditableCover } from "@/components/profile/editable-cover";
 
+import { SpaceBackground } from "@/components/home/space-background";
+
 export default async function ProfilePage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -64,15 +66,19 @@ export default async function ProfilePage() {
     const coverGradient = gradients[gradientIndex];
 
     return (
-        <div className="bg-background pb-20">
-            {/* Editable Cover Image */}
-            <EditableCover
-                url={profile?.cover_url}
-                gradient={coverGradient}
-                editable={true}
-            />
+        <div className="min-h-screen pb-20 relative overflow-hidden bg-black">
+            <SpaceBackground />
 
-            <div className="container mx-auto max-w-5xl px-4 -mt-20">
+            {/* Editable Cover Image */}
+            <div className="relative z-10">
+                <EditableCover
+                    url={profile?.cover_url}
+                    gradient={coverGradient}
+                    editable={true}
+                />
+            </div>
+
+            <div className="container mx-auto max-w-5xl px-4 -mt-20 relative z-10">
                 <ProfileHeader
                     profile={profile}
                     user={user}

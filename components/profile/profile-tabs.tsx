@@ -33,55 +33,65 @@ export function ProfileTabs({
 }: ProfileTabsProps) {
     return (
         <Tabs defaultValue="questions" className="mb-20">
-            <TabsList className="w-full justify-start overflow-x-auto bg-transparent p-0 h-auto gap-2 mb-6 rounded-none">
+            <TabsList className="w-full justify-start overflow-x-auto bg-black/40 border-b border-white/10 p-0 h-12 gap-0 mb-8 rounded-none no-scrollbar">
                 <TabsTrigger
                     value="questions"
-                    className="gap-2 rounded-none border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-background data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    className="relative px-6 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-cyan-500 data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-400 transition-all hover:bg-white/5"
                 >
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="font-bold uppercase">Sorular</span>
-                    <Badge variant="secondary" className="ml-1 rounded-none text-[10px] h-5 px-1">{questions?.length || 0}</Badge>
+                    <div className="flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        <span className="font-bold uppercase tracking-wider font-mono">Sorular</span>
+                        <span className="ml-1 text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{questions?.length || 0}</span>
+                    </div>
                 </TabsTrigger>
                 <TabsTrigger
                     value="answers"
-                    className="gap-2 rounded-none border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-background data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    className="relative px-6 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-blue-500/10 data-[state=active]:text-blue-400 transition-all hover:bg-white/5"
                 >
-                    <FileText className="h-4 w-4" />
-                    <span className="font-bold uppercase">Cevaplar</span>
-                    <Badge variant="secondary" className="ml-1 rounded-none text-[10px] h-5 px-1">{answers?.length || 0}</Badge>
+                    <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        <span className="font-bold uppercase tracking-wider font-mono">Cevaplar</span>
+                        <span className="ml-1 text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">{answers?.length || 0}</span>
+                    </div>
                 </TabsTrigger>
                 <TabsTrigger
                     value="notifications"
-                    className="gap-2 rounded-none border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-background data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    className="relative px-6 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-purple-500/10 data-[state=active]:text-purple-400 transition-all hover:bg-white/5"
                 >
-                    <Bell className="h-4 w-4" />
-                    <span className="font-bold uppercase">Bildirimler</span>
+                    <div className="flex items-center gap-2">
+                        <Bell className="h-4 w-4" />
+                        <span className="font-bold uppercase tracking-wider font-mono">Bildirimler</span>
+                    </div>
                 </TabsTrigger>
                 <TabsTrigger
                     value="messages"
-                    className="gap-2 rounded-none border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-background data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    className="relative px-6 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-green-500 data-[state=active]:bg-green-500/10 data-[state=active]:text-green-400 transition-all hover:bg-white/5"
                 >
-                    <MessageCircle className="h-4 w-4" />
-                    <span className="font-bold uppercase">Mesajlar</span>
+                    <div className="flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4" />
+                        <span className="font-bold uppercase tracking-wider font-mono">Mesajlar</span>
+                    </div>
                 </TabsTrigger>
                 <TabsTrigger
                     value="saved"
-                    className="gap-2 rounded-none border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-background data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    className="relative px-6 h-full rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-amber-500/10 data-[state=active]:text-amber-400 transition-all hover:bg-white/5"
                 >
-                    <Bookmark className="h-4 w-4" />
-                    <span className="font-bold uppercase">Arşiv</span>
+                    <div className="flex items-center gap-2">
+                        <Bookmark className="h-4 w-4" />
+                        <span className="font-bold uppercase tracking-wider font-mono">Arşiv</span>
+                    </div>
                 </TabsTrigger>
             </TabsList>
 
             <div className="mt-6">
                 <TabsContent value="questions" className="space-y-4">
                     {!questions || questions.length === 0 ? (
-                        <div className="border-2 border-dashed border-black/20 dark:border-white/20 p-12 text-center bg-muted/5">
-                            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                            <h3 className="font-black uppercase mb-2">VERİ BULUNAMADI ŞEF</h3>
-                            <p className="text-muted-foreground text-sm mb-4 font-mono">Henüz sisteme bir soru girişi yapılmamış.</p>
+                        <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 backdrop-blur-sm rounded-xl">
+                            <MessageSquare className="h-12 w-12 mx-auto mb-4 text-white/20" />
+                            <h3 className="font-black uppercase mb-2 text-white/50 tracking-widest">VERİ YOK</h3>
+                            <p className="text-white/30 text-sm mb-6 font-mono">Sistemde soru kaydı bulunamadı.</p>
                             <Link href="/forum">
-                                <Button className="rounded-none font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+                                <Button variant="outline" className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300">
                                     SORU KAYDI OLUŞTUR
                                 </Button>
                             </Link>
@@ -106,55 +116,49 @@ export function ProfileTabs({
 
                 <TabsContent value="answers" className="space-y-4">
                     {!answers || answers.length === 0 ? (
-                        <div className="border-2 border-dashed border-black/20 dark:border-white/20 p-12 text-center bg-muted/5">
-                            <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                            <p className="text-muted-foreground font-mono uppercase">Henüz cevap kaydı yok.</p>
+                        <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 backdrop-blur-sm rounded-xl">
+                            <FileText className="h-12 w-12 mx-auto mb-4 text-white/20" />
+                            <p className="text-white/30 font-mono uppercase">Cevap kaydı bulunamadı.</p>
                         </div>
                     ) : (
                         answers.map((answer) => (
                             <Link key={answer.id} href={`/forum/${answer.question_id}`}>
-                                <Card className="rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all group">
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-mono">
-                                            <Badge variant="outline" className="rounded-none border-black dark:border-white">CEVAP</Badge>
-                                            <span>{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr }).toUpperCase()}</span>
-                                        </div>
-                                        <p className="text-sm font-bold text-muted-foreground mb-2 uppercase">
-                                            REF: <span className="text-foreground group-hover:text-primary transition-colors">{answer.questions?.title || "SİLİNMİŞ KAYIT"}</span>
-                                        </p>
-                                        <p className="text-sm line-clamp-2 border-l-2 border-primary/30 pl-3">{answer.content}</p>
-                                    </CardContent>
-                                </Card>
+                                <div className="group relative bg-black/40 border border-white/10 p-6 rounded-xl hover:border-blue-500/50 transition-all hover:bg-blue-950/20">
+                                    <div className="flex items-center gap-3 text-xs text-blue-300/50 mb-3 font-mono">
+                                        <span className="bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">CEVAP</span>
+                                        <span>{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr }).toUpperCase()}</span>
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-400 mb-3 uppercase">
+                                        REF: <span className="text-white group-hover:text-blue-400 transition-colors">{answer.questions?.title || "SİLİNMİŞ KAYIT"}</span>
+                                    </p>
+                                    <p className="text-sm text-gray-300 leading-relaxed border-l-2 border-blue-500/30 pl-4">{answer.content}</p>
+                                </div>
                             </Link>
                         ))
                     )}
                 </TabsContent>
 
                 <TabsContent value="notifications">
-                    <Card className="rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                        <CardContent className="p-4">
+                    <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden">
+                        <div className="p-6">
                             <NotificationsList userId={userId} />
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="messages">
-                    <Card className="rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                        <CardContent className="p-0">
-                            <ConversationList conversations={conversations} />
-                        </CardContent>
-                    </Card>
+                    <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden">
+                        <ConversationList conversations={conversations} />
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="saved">
                     <Tabs defaultValue="articles">
-                        <TabsList className="bg-muted/50 rounded-none border border-black/10 dark:border-white/10 mb-4">
-                            <TabsTrigger value="articles" className="gap-2 rounded-none data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                                <FileText className="h-4 w-4" />
+                        <TabsList className="bg-black/20 border border-white/10 mb-6 p-1 h-auto rounded-lg inline-flex">
+                            <TabsTrigger value="articles" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 rounded px-4 py-1.5 h-auto text-xs font-mono">
                                 MAKALELER ({bookmarkedArticles?.length || 0})
                             </TabsTrigger>
-                            <TabsTrigger value="questions" className="gap-2 rounded-none data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                                <MessageSquare className="h-4 w-4" />
+                            <TabsTrigger value="questions" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 rounded px-4 py-1.5 h-auto text-xs font-mono">
                                 SORULAR ({bookmarkedQuestions?.length || 0})
                             </TabsTrigger>
                         </TabsList>
@@ -162,27 +166,25 @@ export function ProfileTabs({
                         <div className="mt-4">
                             <TabsContent value="articles" className="space-y-4">
                                 {!bookmarkedArticles || bookmarkedArticles.length === 0 ? (
-                                    <div className="border-2 border-dashed border-black/20 dark:border-white/20 p-12 text-center bg-muted/5">
-                                        <Bookmark className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                                        <p className="text-muted-foreground font-mono uppercase mb-4">Arşiv boş.</p>
+                                    <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 rounded-xl">
+                                        <Bookmark className="h-12 w-12 mx-auto mb-4 text-white/20" />
+                                        <p className="text-white/30 font-mono uppercase mb-4">Arşiv boş.</p>
                                         <Link href="/blog">
-                                            <Button variant="outline" className="rounded-none border-black dark:border-white">MAKALELERİ TARA</Button>
+                                            <Button variant="outline" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">KEŞFET</Button>
                                         </Link>
                                     </div>
                                 ) : (
                                     bookmarkedArticles.map((item: any) => (
                                         <Link key={item.articles.id} href={`/blog/${item.articles.slug}`}>
-                                            <Card className="rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
-                                                <CardContent className="p-4">
-                                                    <h3 className="font-black uppercase mb-2">{item.articles.title}</h3>
-                                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2 font-mono text-xs">{item.articles.excerpt}</p>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground border-t border-dashed border-border pt-2 mt-2">
-                                                        <span className="font-bold">{item.articles.author?.full_name || "YAZAR"}</span>
-                                                        <span>•</span>
-                                                        <span>{formatDistanceToNow(new Date(item.articles.created_at), { addSuffix: true, locale: tr }).toUpperCase()}</span>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                            <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
+                                                <h3 className="font-black uppercase mb-2 text-lg text-white group-hover:text-amber-400 transition-colors">{item.articles.title}</h3>
+                                                <p className="text-sm text-gray-400 line-clamp-2 mb-3 font-mono text-xs">{item.articles.excerpt}</p>
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 border-t border-white/5 pt-3 mt-2">
+                                                    <span className="font-bold text-amber-500/80">{item.articles.author?.full_name || "YAZAR"}</span>
+                                                    <span>•</span>
+                                                    <span>{formatDistanceToNow(new Date(item.articles.created_at), { addSuffix: true, locale: tr }).toUpperCase()}</span>
+                                                </div>
+                                            </div>
                                         </Link>
                                     ))
                                 )}
@@ -190,35 +192,28 @@ export function ProfileTabs({
 
                             <TabsContent value="questions" className="space-y-4">
                                 {!bookmarkedQuestions || bookmarkedQuestions.length === 0 ? (
-                                    <div className="border-2 border-dashed border-black/20 dark:border-white/20 p-12 text-center bg-muted/5">
-                                        <Bookmark className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                                        <p className="text-muted-foreground font-mono uppercase mb-4">Soru arşivi boş.</p>
+                                    <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 rounded-xl">
+                                        <Bookmark className="h-12 w-12 mx-auto mb-4 text-white/20" />
+                                        <p className="text-white/30 font-mono uppercase mb-4">Soru arşivi boş.</p>
                                         <Link href="/forum">
-                                            <Button variant="outline" className="rounded-none border-black dark:border-white">SORULARI TARA</Button>
+                                            <Button variant="outline" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">KEŞFET</Button>
                                         </Link>
                                     </div>
                                 ) : (
                                     bookmarkedQuestions.map((item: any) => (
                                         <Link key={item.questions.id} href={`/forum/${item.questions.id}`}>
-                                            <Card className="rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
-                                                <CardContent className="p-4">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <Badge variant="outline" className="rounded-none border-black dark:border-white">{item.questions.category || "GENEL"}</Badge>
-                                                        <span className="text-xs text-muted-foreground font-mono">
-                                                            {item.questions.answers?.[0]?.count || 0} CEVAP
-                                                        </span>
-                                                    </div>
-                                                    <h3 className="font-black uppercase mb-2">{item.questions.title}</h3>
-                                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2 border-l-2 border-primary/30 pl-2">
-                                                        {item.questions.content.substring(0, 150)}...
-                                                    </p>
-                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground border-t border-dashed border-border pt-2 mt-2">
-                                                        <span className="font-bold">{item.questions.profiles?.full_name || "KULLANICI"}</span>
-                                                        <span>•</span>
-                                                        <span>{formatDistanceToNow(new Date(item.questions.created_at), { addSuffix: true, locale: tr }).toUpperCase()}</span>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                            <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <Badge variant="outline" className="rounded border-white/20 text-gray-400">{item.questions.category || "GENEL"}</Badge>
+                                                    <span className="text-xs text-amber-500/50 font-mono">
+                                                        {item.questions.answers?.[0]?.count || 0} CEVAP
+                                                    </span>
+                                                </div>
+                                                <h3 className="font-black uppercase mb-2 text-lg text-white group-hover:text-amber-400 transition-colors">{item.questions.title}</h3>
+                                                <p className="text-sm text-gray-400 line-clamp-2 mb-3 border-l-2 border-amber-500/30 pl-3">
+                                                    {item.questions.content.substring(0, 150)}...
+                                                </p>
+                                            </div>
                                         </Link>
                                     ))
                                 )}
