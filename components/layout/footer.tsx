@@ -201,128 +201,38 @@ export function Footer() {
                 </div>
 
                 {/* Technical Links Grid */}
-                <div className={cn(
-                    "grid gap-8 text-center md:text-left w-full pt-8 relative min-h-[300px] transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                    // Active: Collapsed to center point, Inactive: Spread wide
-                    "grid-cols-2 md:grid-cols-2 max-w-3xl mx-auto items-center gap-y-12 gap-x-16"
-                )}>
-                    {/* 1. Keşif Modülü - Top Left → CENTER */}
-                    <motion.div
-                        className="flex flex-col gap-2 will-change-transform origin-center"
-                        animate={isSingularityActive ? {
-                            x: 0,
-                            y: -150,
-                            rotate: 0,
-                            scale: 0.3,
-                            opacity: 0.5
-                        } : {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 1,
-                            opacity: 1
-                        }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 80,
-                            damping: 12,
-                            delay: isSingularityActive ? 0 : 0
-                        }}
-                    >
+                <div className="grid grid-cols-2 md:grid-cols-2 gap-8 text-center md:text-left w-full max-w-2xl mx-auto pt-8 relative min-h-[300px]">
+                    {/* 1. Keşif Modülü */}
+                    <div className="flex flex-col gap-2">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
                         <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
                         <Link href="/testler" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Testler</Link>
                         <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sözlük</Link>
-                    </motion.div>
+                    </div>
 
-                    {/* 2. Topluluk - Top Right → CENTER */}
-                    <motion.div
-                        className="flex flex-col gap-2 will-change-transform origin-center"
-                        animate={isSingularityActive ? {
-                            x: 0,
-                            y: -150,
-                            rotate: 0,
-                            scale: 0.3,
-                            opacity: 0.5
-                        } : {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 1,
-                            opacity: 1
-                        }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 80,
-                            damping: 12,
-                            delay: isSingularityActive ? 0.1 : 0
-                        }}
-                    >
+                    {/* 2. Topluluk */}
+                    <div className="flex flex-col gap-2">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
                         <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
                         <Link href="/siralamalar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sıralamalar</Link>
                         <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Yazarlar</Link>
-                    </motion.div>
+                    </div>
 
-                    {/* 3. Kurumsal - Bottom Left → CENTER */}
-                    <motion.div
-                        className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
-                        style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? {
-                            x: 0,
-                            y: -150,
-                            rotate: 0,
-                            scale: 0.3,
-                            opacity: 0.5
-                        } : {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 1,
-                            opacity: 1
-                        }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 80,
-                            damping: 12,
-                            delay: isSingularityActive ? 0.2 : 0
-                        }}
-                    >
+                    {/* 3. Kurumsal */}
+                    <div className="flex flex-col gap-2 md:text-right">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
                         <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
                         <Link href="/iletisim" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">İletişim</Link>
                         <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Blog</Link>
-                    </motion.div>
+                    </div>
 
-                    {/* 4. Protokoller - Bottom Right → CENTER */}
-                    <motion.div
-                        className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
-                        style={{ textAlign: isSingularityActive ? 'left' : undefined }}
-                        animate={isSingularityActive ? {
-                            x: 0,
-                            y: -150,
-                            rotate: 0,
-                            scale: 0.3,
-                            opacity: 0.5
-                        } : {
-                            x: 0,
-                            y: 0,
-                            rotate: 0,
-                            scale: 1,
-                            opacity: 1
-                        }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 80,
-                            damping: 12,
-                            delay: isSingularityActive ? 0.3 : 0
-                        }}
-                    >
+                    {/* 4. Protokoller */}
+                    <div className="flex flex-col gap-2 md:text-right">
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
                         <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
                         <Link href="/kullanim-sartlari" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Şartlar</Link>
                         <Link href="/kvkk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">KVKK</Link>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Bottom Bar - Safe Distance */}
