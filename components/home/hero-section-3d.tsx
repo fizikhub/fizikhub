@@ -9,7 +9,7 @@ import { SpaceBackground } from "./space-background";
 
 export function HeroSection3D() {
     return (
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-background border-b-2 border-border">
+        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden border-b-2 border-border">
             <SpaceBackground />
 
             <div className="container px-4 mx-auto relative z-10">
