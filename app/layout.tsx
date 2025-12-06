@@ -115,8 +115,6 @@ import { Toaster } from "sonner";
 import { GlobalAdminNotification } from "@/components/global-admin-notification";
 
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
-import { ScrollProgress } from "@/components/ui/scroll-progress";
-import { PullToRefresh } from "@/components/ui/pull-to-refresh";
 
 
 export default function RootLayout({
@@ -141,11 +139,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <GlobalAdminNotification />
-          <ScrollProgress />
+
           <NavigationWrapper>
-            <PullToRefresh>
-              {children}
-            </PullToRefresh>
+            {children}
           </NavigationWrapper>
           <Toaster />
         </ThemeProvider>
