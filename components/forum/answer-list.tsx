@@ -250,9 +250,9 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                     </div>
                 ) : (
                     answers.map((answer) => (
-                        <div key={answer.id} className={`group relative bg-card/50 backdrop-blur-sm rounded-lg sm:rounded-xl border p-4 sm:p-5 md:p-6 transition-all hover:border-primary/20 ${answer.is_accepted ? 'border-green-500/50 bg-green-500/5 shadow-[0_0_20px_-12px_rgba(34,197,94,0.4)]' : 'border-border/50'}`}>
+                        <div key={answer.id} className={`group relative rounded-lg sm:rounded-xl border-2 p-4 sm:p-5 md:p-6 transition-all ${answer.is_accepted ? 'border-green-500 bg-green-500/5 shadow-[8px_8px_0px_0px_rgba(34,197,94,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]' : 'border-black dark:border-white bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'} duration-200`}>
                             {answer.is_accepted && (
-                                <div className="absolute -top-2 sm:-top-3 right-4 sm:right-6 bg-green-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex items-center gap-0.5 sm:gap-1 shadow-sm">
+                                <div className="absolute -top-2 sm:-top-3 right-4 sm:right-6 bg-green-500 text-white text-[10px] sm:text-xs font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded border-2 border-white dark:border-black flex items-center gap-0.5 sm:gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                                     <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                                     ÇÖZÜM
                                 </div>
@@ -403,8 +403,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
             {/* New Answer Form */}
             {user ? (
-                <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl border shadow-sm p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Cevap Yaz</h3>
+                <div className="border-2 border-black dark:border-white rounded-xl sm:rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-4 sm:p-6 bg-card">
+                    <h3 className="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase tracking-wider">CEVAP YAZ</h3>
                     <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                         <div className="min-h-[180px] sm:min-h-[200px] border rounded-lg sm:rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <MarkdownEditor

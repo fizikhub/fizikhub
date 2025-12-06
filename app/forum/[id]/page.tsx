@@ -8,6 +8,7 @@ import { tr } from "date-fns/locale";
 import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
@@ -211,19 +212,20 @@ export default async function QuestionPage({ params }: PageProps) {
     };
 
     return (
-        <div className="bg-background pb-20">
+        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden">
+            <BackgroundWrapper />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto">
+            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto relative z-10">
                 {/* Back Button */}
                 <div className="mb-4 sm:mb-6">
-                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0" asChild>
+                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0 font-bold uppercase text-xs tracking-wider" asChild>
                         <Link href="/forum">
                             <ArrowLeft className="h-4 w-4" />
-                            <span className="hidden sm:inline">Foruma Dön</span>
-                            <span className="sm:hidden">Geri</span>
+                            <span className="hidden sm:inline">FORUMA DÖN</span>
+                            <span className="sm:hidden">GERİ</span>
                         </Link>
                     </Button>
                 </div>
@@ -232,7 +234,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Main Content */}
                     <div className="space-y-4 sm:space-y-6 lg:space-y-8">
                         {/* Question Card */}
-                        <Card className="border hover:border-primary/10 shadow-sm bg-card/50 backdrop-blur-sm overflow-hidden">
+                        <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 bg-card overflow-hidden">
                             <CardContent className="p-4 sm:p-6 md:p-8">
                                 {/* Author Header */}
                                 <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
@@ -296,7 +298,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                 </div>
 
                                 {/* Title */}
-                                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 leading-tight">
+                                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-4 sm:mb-6 leading-tight uppercase tracking-tight">
                                     {question.title}
                                 </h1>
 
@@ -355,8 +357,8 @@ export default async function QuestionPage({ params }: PageProps) {
                         {/* Answers Section */}
                         <div className="space-y-4 sm:space-y-6">
                             <div className="flex items-center justify-between px-1">
-                                <h2 className="text-lg sm:text-xl md:text-2xl font-bold">
-                                    {answers?.length || 0} Cevap
+                                <h2 className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight">
+                                    {answers?.length || 0} CEVAP
                                 </h2>
                             </div>
 
@@ -371,10 +373,10 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Stats Sidebar (Desktop) */}
                     <aside className="hidden lg:block space-y-6">
                         {/* Stats Card */}
-                        <Card className="bg-card/50 backdrop-blur-sm border-border/50 sticky top-24 shadow-sm">
-                            <CardHeader className="pb-3">
-                                <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    İstatistikler
+                        <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] sticky top-24 bg-card">
+                            <CardHeader className="pb-3 border-b-2 border-black dark:border-white">
+                                <CardTitle className="text-xs font-black text-foreground uppercase tracking-wider">
+                                    İSTATİSTİKLER
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -412,9 +414,9 @@ export default async function QuestionPage({ params }: PageProps) {
 
                         {/* Admin/Author Actions */}
                         {(isAdmin || user?.id === question.author_id) && (
-                            <Card className="bg-card/50 backdrop-blur-sm border-destructive/20 shadow-sm">
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-xs font-medium text-destructive uppercase tracking-wider">İşlemler</CardTitle>
+                            <Card className="border-2 border-destructive shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] bg-card">
+                                <CardHeader className="pb-3 border-b-2 border-destructive">
+                                    <CardTitle className="text-xs font-black text-destructive uppercase tracking-wider">İŞLEMLER</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
