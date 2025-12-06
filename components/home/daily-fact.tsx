@@ -6,6 +6,12 @@ import { Lightbulb, RefreshCw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const facts = [
+    "Eğer dünyadaki tüm insanlar aynı anda zıplarsa... Hiçbir şey olmaz. Evren bizimle o kadar ilgilenmiyor.",
+    "Evrenin %95'i karanlık madde ve enerjiden oluşur. Yani evrenin %95'ini göremiyoruz. Belki de bakmamamız daha hayırlıdır.",
+    "Bir bulutun ağırlığı 500 tona ulaşabilir. O pamuk gibi şeyler aslında süzülen su tankları.",
+    "Jüpiter bizi sayısız göktaşından korur. Koca gövdesiyle hepsini kendine çeker. Evrenin fedakar abisi.",
+    "Güneş her saniye 4 milyon ton kütle kaybediyor. Ama merak etmeyin, daha 5 milyar yılı var. Sizin o kadar vaktiniz yok.",
+    "Ortalama bir insan ömrü boyunca dünyanın çevresini 5 kez dolaşacak kadar yürür. Yine de kumandanın uzakta olması büyük dert.",
     "Işık, Güneş'ten Dünya'ya yaklaşık 8 dakika 20 saniyede ulaşır. Yani şu an güneşe bakıyorsanız, aslında 8 dakika öncesini görüyorsunuz. Geçmiş olsun.",
     "Evrendeki atomların %90'ından fazlası hidrojendir. Geri kalanı da 'ben neyim?' diye düşünüyor.",
     "Bir nötron yıldızından alınan bir çay kaşığı madde, Everest Dağı kadar ağırdır. Çayına şeker niyetine atma sakın.",
@@ -27,7 +33,6 @@ const facts = [
     "Venüs'te bir gün, bir yıldan daha uzundur. 'Bugün bitmek bilmedi' lafı orada gerçek.",
     "Hamamböcekleri kafaları kopsa bile birkaç hafta yaşayabilirler. Sonunda açlıktan ölürler çünkü yemek yiyecek ağızları yoktur. Mantıklı.",
     "Tardigradlar uzay boşluğunda hayatta kalabilir. Biz ise Wi-Fi gidince ölüyoruz.",
-    "Eğer dünyadaki tüm insanlar aynı anda zıplarsa... Hiçbir şey olmaz. Evren bizimle o kadar ilgilenmiyor.",
     "Plüton keşfedildiği tarihten (1930) gezegen statüsünden çıkarıldığı tarihe (2006) kadar güneşi bir kez bile tam turlayamadı. Yazık.",
     "Nötron yıldızları saniyede 600 kez dönebilir. Başın dönmesi neymiş o zaman görürsün.",
     "Her yıl Ay dünyadan 3.8 cm uzaklaşıyor. İlişkimize biraz mesafe koymak istiyor sanırım."
@@ -40,7 +45,8 @@ export function DailyFact() {
 
     useEffect(() => {
         setIsClient(true);
-        setCurrentFactIndex(Math.floor(Math.random() * facts.length));
+        // Removed randomization to prioritize the first fact on load
+        // setCurrentFactIndex(Math.floor(Math.random() * facts.length));
     }, []);
 
     const nextFact = () => {
