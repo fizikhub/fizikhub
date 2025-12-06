@@ -16,7 +16,7 @@ export function BottomNav() {
         },
         {
             href: "/blog",
-            label: "OKU",
+            label: "MAKALE",
             icon: BookOpen
         },
         {
