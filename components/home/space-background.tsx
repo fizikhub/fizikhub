@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 export function SpaceBackground() {
     const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; duration: number }[]>([]);
     const [shootingStar, setShootingStar] = useState<{ x: number; y: number; delay: number; angle: number } | null>(null);
-    const [ufo, setUfo] = useState<{ x: number; y: number; delay: number } | null>(null);
+    const [ufo, setUfo] = useState<{ id: number } | null>(null);
 
     useEffect(() => {
         const generateStars = () => {
@@ -44,14 +44,13 @@ export function SpaceBackground() {
             setTimeout(() => setShootingStar(null), 1500);
         }, 5000);
 
+        // Initial UFO
+        setTimeout(() => setUfo({ id: 1 }), 2000);
+
         const ufoInterval = setInterval(() => {
-            setUfo({
-                x: -10, // Start off-screen left
-                y: Math.random() * 60 + 10, // Random height
-                delay: 0
-            });
-            setTimeout(() => setUfo(null), 8000); // Should be enough time to cross screen
-        }, 15000); // Every 15 seconds
+            setUfo({ id: Date.now() });
+            setTimeout(() => setUfo(null), 10000); // Allow time for full complex animation
+        }, 15000);
 
         return () => {
             clearInterval(shootingStarInterval);
@@ -139,48 +138,67 @@ export function SpaceBackground() {
                 </motion.div>
             )}
 
-            {/* UFO Animation */}
+            {/* Realistic UFO Animation */}
             {ufo && (
                 <motion.div
+                    key={ufo.id}
                     initial={{
-                        top: `${ufo.y}%`,
-                        left: "-5%",
-                        scale: 0.5,
-                        rotate: 5
+                        top: "20%",
+                        left: "-10%",
+                        scale: 0.8,
+                        rotate: 15
                     }}
                     animate={{
-                        left: "105%", // Cross screen
-                        y: [`${ufo.y}%`, `${ufo.y - 10}%`, `${ufo.y + 5}%`, `${ufo.y}%`], // Wobbly path
-                        rotate: [5, -5, 5]
+                        left: "110%",
+                        top: ["20%", "60%", "30%", "50%"], // Complex curved path
+                        rotate: [15, -10, 20, 0], // Banking turns
+                        scale: [0.8, 1.2, 0.9, 0.8] // Perspective shift
                     }}
-                    transition={{ duration: 7, ease: "linear" }}
+                    transition={{
+                        duration: 8,
+                        ease: "easeInOut",
+                        times: [0, 0.4, 0.7, 1]
+                    }}
                     className="absolute z-20"
                 >
-                    <div className="relative w-12 h-8 sm:w-16 sm:h-10">
-                        {/* Dome */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-6 bg-cyan-300 rounded-full opacity-80 blur-[1px] border border-cyan-100/50" />
-                        {/* Disc */}
-                        <div className="absolute top-3 left-0 w-full h-full bg-slate-700 rounded-[50%] border-t border-slate-500 shadow-lg flex items-center justify-center overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-r from-slate-600 via-slate-500 to-slate-600 opacity-50" />
+                    {/* Metallic Saucer Body */}
+                    <div className="relative w-24 h-10 filter drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]">
+                        {/* Glass Dome */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-6 bg-gradient-to-b from-cyan-300/80 to-cyan-500/80 rounded-t-full border border-cyan-200/50 backdrop-blur-sm z-10" />
+
+                        {/* Alien Silhouette inside dome (subtle) */}
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/60 rounded-full blur-[1px] z-10" />
+
+                        {/* Metallic Rim Top */}
+                        <div className="absolute top-0 w-full h-full bg-gradient-to-b from-slate-400 via-slate-200 to-slate-500 rounded-[50%] z-0 border-t border-slate-100/50" />
+
+                        {/* Engine Ring */}
+                        <div className="absolute top-[40%] left-[5%] w-[90%] h-[60%] bg-slate-800 rounded-[50%] z-[-1] flex items-center justify-around px-4">
+                            {/* Rotating Lights */}
+                            <motion.div
+                                className="w-2 h-2 rounded-full bg-cyan-400 box-shadow-[0_0_10px_cyan]"
+                                animate={{ opacity: [0.2, 1, 0.2] }}
+                                transition={{ duration: 0.5, repeat: Infinity, delay: 0 }}
+                            />
+                            <motion.div
+                                className="w-2 h-2 rounded-full bg-cyan-400 box-shadow-[0_0_10px_cyan]"
+                                animate={{ opacity: [0.2, 1, 0.2] }}
+                                transition={{ duration: 0.5, repeat: Infinity, delay: 0.15 }}
+                            />
+                            <motion.div
+                                className="w-2 h-2 rounded-full bg-cyan-400 box-shadow-[0_0_10px_cyan]"
+                                animate={{ opacity: [0.2, 1, 0.2] }}
+                                transition={{ duration: 0.5, repeat: Infinity, delay: 0.3 }}
+                            />
+                            <motion.div
+                                className="w-2 h-2 rounded-full bg-cyan-400 box-shadow-[0_0_10px_cyan]"
+                                animate={{ opacity: [0.2, 1, 0.2] }}
+                                transition={{ duration: 0.5, repeat: Infinity, delay: 0.45 }}
+                            />
                         </div>
-                        {/* Lights */}
-                        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2">
-                            <motion.div
-                                className="w-1.5 h-1.5 rounded-full bg-red-500"
-                                animate={{ opacity: [0.2, 1, 0.2] }}
-                                transition={{ duration: 0.5, repeat: Infinity }}
-                            />
-                            <motion.div
-                                className="w-1.5 h-1.5 rounded-full bg-green-500"
-                                animate={{ opacity: [0.2, 1, 0.2] }}
-                                transition={{ duration: 0.5, repeat: Infinity, delay: 0.1 }}
-                            />
-                            <motion.div
-                                className="w-1.5 h-1.5 rounded-full bg-yellow-500"
-                                animate={{ opacity: [0.2, 1, 0.2] }}
-                                transition={{ duration: 0.5, repeat: Infinity, delay: 0.2 }}
-                            />
-                        </div>
+
+                        {/* Bottom Glow */}
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-3 bg-cyan-500/50 blur-md rounded-[50%]" />
                     </div>
                 </motion.div>
             )}
