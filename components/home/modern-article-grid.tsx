@@ -28,7 +28,23 @@ interface Article {
 }
 
 export function ModernArticleGrid({ articles }: { articles: Article[] }) {
-    if (!articles.length) return null;
+    if (!articles.length) {
+        return (
+            <section className="py-24 bg-background border-b-2 border-border">
+                <div className="container px-4 mx-auto text-center">
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 uppercase">
+                        Son Yazılar
+                    </h2>
+                    <p className="text-muted-foreground text-lg font-medium mb-8">
+                        Henüz makale bulunmuyor. Yakında eklenecek!
+                    </p>
+                    <div className="p-12 border-2 border-dashed border-border rounded-3xl bg-card/50">
+                        <p className="text-xl font-bold text-muted-foreground">Sinyal bulunamadı... 📡</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     const featuredArticle = articles[0];
     const sideArticles = articles.slice(1, 4);

@@ -92,7 +92,7 @@ export function Navbar() {
     return (
         <>
             <nav className={cn(
-                "w-full transition-all duration-300 border-b-2",
+                "sticky top-0 z-50 w-full transition-all duration-300 border-b-2",
                 isScrolled
                     ? "bg-background/95 backdrop-blur-md border-black dark:border-white shadow-[0_4px_0_0_rgba(0,0,0,1)] dark:shadow-[0_4px_0_0_rgba(255,255,255,1)]"
                     : "bg-background border-transparent"

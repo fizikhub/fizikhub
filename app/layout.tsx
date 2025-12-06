@@ -41,17 +41,22 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://fizikhub.com'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: "Fizikhub | Eğlenceli Bilim Platformu",
     template: "%s | Fizikhub"
   },
-  description: "Sıkıcı bilim sitelerinden sıkıldın mı? Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk için doğru yerdesin.",
+  description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin. Soru-cevap forumu, blog yazıları ve bilim sözlüğü.",
   keywords: [
     "fizik", "bilim", "uzay", "teknoloji", "eğlenceli bilim", "fizikhub", "forum", "soru cevap",
-    "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Tartışma", "Popüler Bilim", "Fizik Soru Çözümü"
+    "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Tartışma", "Popüler Bilim", "Fizik Soru Çözümü",
+    "Kuantum Fiziği", "Astrofizik", "Bilim Sözlüğü"
   ],
-  authors: [{ name: "Fizikhub Ekibi" }],
+  authors: [{ name: "Fizikhub Ekibi", url: "https://fizikhub.com" }],
   creator: "Fizikhub",
+  publisher: "Fizikhub",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.png",
@@ -61,12 +66,12 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://fizikhub.com",
-    title: "Fizikhub | Eğlenceli Bilim",
-    description: "Sıkıcı bilim sitelerinden sıkıldın mı? Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk için doğru yerdesin.",
+    title: "Fizikhub | Eğlenceli Bilim Platformu",
+    description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin.",
     siteName: "Fizikhub",
     images: [
       {
-        url: "/og-image.png", // We should create this or use a default
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Fizikhub - Eğlenceli Bilim Platformu",
@@ -75,9 +80,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fizikhub | Eğlenceli Bilim",
-    description: "Sıkıcı bilim sitelerinden sıkıldın mı? Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk için doğru yerdesin.",
+    title: "Fizikhub | Eğlenceli Bilim Platformu",
+    description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin.",
     creator: "@fizikhub",
+    site: "@fizikhub",
     images: ["/og-image.png"],
   },
   robots: {
@@ -91,6 +97,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  category: 'science',
+  verification: {
+    google: "google-site-verification-code", // Placeholder, user might need to add this later or I can ask
+  }
 };
 
 const jsonLd = {

@@ -31,8 +31,8 @@ export const celebrate = {
             return Math.random() * (max - min) + min;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const interval: any = setInterval(function () {
+
+        const interval = setInterval(function () {
             const timeLeft = animationEnd - Date.now();
 
             if (timeLeft <= 0) {
@@ -97,7 +97,7 @@ export const celebrate = {
             origin: { y: 0.7 }
         };
 
-        function fire(particleRatio: number, opts: any) {
+        function fire(particleRatio: number, opts: object) {
             confetti({
                 ...defaults,
                 ...opts,

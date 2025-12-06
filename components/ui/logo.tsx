@@ -5,6 +5,48 @@ import { Rocket, Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
+const Particle = ({ delay }: { delay: number }) => {
+    const [randoms, setRandoms] = useState({ x: 0, y: 0, delay: 0 });
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setRandoms({
+                x: (Math.random() - 0.5) * 40,
+                y: (Math.random() - 0.5) * 40,
+                delay: Math.random() * 0.2
+            });
+        }, 0);
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <motion.div
+            className="absolute left-1/2 top-1/2 w-1 h-1 bg-primary rounded-full"
+            initial={{ x: randoms.x, y: randoms.y, opacity: 0 }}
+            animate={{ x: 0, y: 0, opacity: 1 }}
+            transition={{ duration: 0.8, delay: randoms.delay }}
+        />
+    );
+};
+
+const SteamParticle = ({ delay }: { delay: number }) => {
+    const [randomX, setRandomX] = useState(0);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setRandomX((Math.random() - 0.5) * 20);
+        }, 0);
+        return () => clearTimeout(timer);
+    }, []);
+
+    return (
+        <motion.div
+            className="absolute top-1/2 left-1/2 w-2 h-2 bg-white/50 rounded-full blur-sm"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 0.5, 0], scale: [0, 2], y: -20, x: randomX }}
+            transition={{ duration: 1, delay }}
+        />
+    );
+};
+
 export function Logo() {
     const [isLaunching, setIsLaunching] = useState(false);
     const [warpState, setWarpState] = useState<'idle' | 'charging' | 'warping' | 'cooldown'>('idle');
@@ -119,13 +161,7 @@ export function Logo() {
                     {warpState === 'charging' && (
                         <div className="absolute inset-0">
                             {[...Array(8)].map((_, i) => (
-                                <motion.div
-                                    key={i}
-                                    className="absolute left-1/2 top-1/2 w-1 h-1 bg-primary rounded-full"
-                                    initial={{ x: (Math.random() - 0.5) * 40, y: (Math.random() - 0.5) * 40, opacity: 0 }}
-                                    animate={{ x: 0, y: 0, opacity: 1 }}
-                                    transition={{ duration: 0.8, delay: Math.random() * 0.2 }}
-                                />
+                                <Particle key={i} delay={i * 0.02} />
                             ))}
                         </div>
                     )}
@@ -162,13 +198,7 @@ export function Logo() {
                     {warpState === 'cooldown' && (
                         <>
                             {[...Array(3)].map((_, i) => (
-                                <motion.div
-                                    key={`steam-${i}`}
-                                    className="absolute top-1/2 left-1/2 w-2 h-2 bg-white/50 rounded-full blur-sm"
-                                    initial={{ opacity: 0, scale: 0 }}
-                                    animate={{ opacity: [0, 0.5, 0], scale: [0, 2], y: -20, x: (Math.random() - 0.5) * 20 }}
-                                    transition={{ duration: 1, delay: i * 0.1 }}
-                                />
+                                <SteamParticle key={`steam-${i}`} delay={i * 0.1} />
                             ))}
                         </>
                     )}
