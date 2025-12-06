@@ -31,7 +31,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
     if (!articles.length) return null;
 
     const featuredArticle = articles[0];
-    const sideArticles = articles.slice(1, 3);
+    const sideArticles = articles.slice(1, 4);
 
     return (
         <section className="py-24 bg-background border-b-2 border-border">
@@ -125,8 +125,8 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                 </div>
 
                 <div className="mt-12 text-center">
-                    <Link href="/blog">
-                        <div className="brutalist-button inline-flex px-8 py-3 items-center justify-center gap-2 w-full md:w-auto">
+                    <Link href="/blog" className="inline-block hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors rounded-full">
+                        <div className="brutalist-button inline-flex px-8 py-3 items-center justify-center gap-2 w-full md:w-auto bg-primary text-primary-foreground font-bold uppercase tracking-wider border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
                             DEVAMI
                             <ArrowRight className="w-4 h-4" />
                         </div>
