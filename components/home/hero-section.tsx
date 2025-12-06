@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, Atom, Rocket, Star, Sparkles } from "lucide-react";
 import { TypeAnimation } from "react-type-animation";
 import { useState } from "react";
+import { SpaceBackground } from "./space-background";
 
 export function HeroSection() {
     const [isHovered, setIsHovered] = useState(false);
@@ -25,8 +26,7 @@ export function HeroSection() {
 
     return (
         <section className="relative overflow-hidden min-h-[70vh] md:min-h-[90vh] flex items-center justify-center">
-            {/* Animated Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 animate-gradient-shift" />
+            <SpaceBackground />
 
             {/* Hero Pattern - Newton, Einstein, Elma */}
             <div
@@ -38,9 +38,6 @@ export function HeroSection() {
                     filter: "invert(1) brightness(0.5) blur(0.5px)"
                 }}
             />
-
-            {/* Grid Pattern */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]" />
 
             <div
                 className="container px-4 sm:px-6 md:px-6 relative z-10 flex flex-col items-center text-center"
@@ -125,15 +122,6 @@ export function HeroSection() {
             <FloatingElements />
 
             <style jsx global>{`
-                @keyframes gradient-shift {
-                    0%, 100% {
-                        background-position: 0% 50%;
-                    }
-                    50% {
-                        background-position: 100% 50%;
-                    }
-                }
-
                 @keyframes gradient-x {
                     0%, 100% {
                         background-position: 0% 50%;
@@ -143,19 +131,9 @@ export function HeroSection() {
                     }
                 }
 
-                .animate-gradient-shift {
-                    background-size: 200% 200%;
-                    animation: gradient-shift 15s ease infinite;
-                }
-
                 .animate-gradient-x {
                     background-size: 200% auto;
                     animation: gradient-x 4s linear infinite;
-                }
-
-                .bg-grid-pattern {
-                    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-                    background-size: 50px 50px;
                 }
             `}</style>
         </section>
