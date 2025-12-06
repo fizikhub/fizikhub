@@ -5,7 +5,7 @@ const ModernArticleGrid = dynamic(() => import("@/components/home/modern-article
 const FeaturesSection = dynamic(() => import("@/components/home/features-section").then(mod => mod.FeaturesSection));
 const TrendingQuestions = dynamic(() => import("@/components/home/trending-questions").then(mod => mod.TrendingQuestions));
 const DailyFact = dynamic(() => import("@/components/home/daily-fact").then(mod => mod.DailyFact));
-const BlackHoleBackground = dynamic(() => import("@/components/home/black-hole-background").then(mod => mod.BlackHoleBackground), { ssr: false });
+import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
@@ -106,7 +106,7 @@ export default async function Home() {
 
 
       <main className="flex flex-col min-h-screen bg-background overflow-x-hidden relative">
-        <BlackHoleBackground />
+        <BackgroundWrapper />
         <div className="relative z-10">
           <HeroSection3D />
           <ModernArticleGrid articles={articles} />
