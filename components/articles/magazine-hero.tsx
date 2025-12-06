@@ -9,6 +9,7 @@ import { Article } from "@/lib/api";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface MagazineHeroProps {
     articles: Article[];
@@ -20,6 +21,9 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
     const mainArticle = articles[0];
     const sideArticles = articles.slice(1, 3);
 
+    // State for main image fallback
+    const [mainImgSrc, setMainImgSrc] = useState(mainArticle.image_url || "/images/placeholder-hero.jpg");
+
     return (
         <section className="mb-8 sm:mb-12 md:mb-16">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 md:gap-6 h-auto lg:h-[500px]">
@@ -27,11 +31,12 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                 <div className="lg:col-span-8 h-[350px] sm:h-[400px] lg:h-full relative group overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10">
                     <Link href={`/blog/${mainArticle.slug}`} className="block h-full w-full">
                         <Image
-                            src={mainArticle.image_url || "/images/placeholder-hero.jpg"}
+                            src={mainImgSrc}
                             alt={mainArticle.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                             priority
+                            onError={() => setMainImgSrc("/images/placeholder-article.jpg")} // Use generic placeholder on error
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
 
@@ -70,30 +75,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                 {/* Side Articles (Stacked) */}
                 <div className="lg:col-span-4 flex flex-col gap-3 sm:gap-4 md:gap-6">
                     {sideArticles.map((article, index) => (
-                        <div key={article.id} className="relative flex-1 h-[200px] lg:h-auto group overflow-hidden rounded-2xl shadow-lg border border-white/10">
-                            <Link href={`/blog/${article.slug}`} className="block h-full w-full">
-                                <Image
-                                    src={article.image_url || "/images/placeholder-article.jpg"}
-                                    alt={article.title}
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
-
-                                <div className="absolute bottom-0 left-0 p-5 sm:p-6 w-full z-10">
-                                    <Badge variant="secondary" className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 mb-2 px-2 py-0.5 text-xs">
-                                        {article.category}
-                                    </Badge>
-                                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug drop-shadow-md line-clamp-2 group-hover:text-cyan-300 transition-colors">
-                                        {article.title}
-                                    </h3>
-                                    <div className="flex items-center gap-2 text-blue-200/60 text-xs mt-2">
-                                        <Clock className="w-3 h-3" />
-                                        {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
+                        <SideArticleCard key={article.id} article={article} />
                     ))}
 
                     {/* "More" Link if needed, or just fill space */}
@@ -105,5 +87,37 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                 </div>
             </div>
         </section>
+    );
+}
+
+function SideArticleCard({ article }: { article: Article }) {
+    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
+
+    return (
+        <div className="relative flex-1 h-[200px] lg:h-auto group overflow-hidden rounded-2xl shadow-lg border border-white/10">
+            <Link href={`/blog/${article.slug}`} className="block h-full w-full">
+                <Image
+                    src={imgSrc}
+                    alt={article.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={() => setImgSrc("/images/placeholder-article.jpg")}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+
+                <div className="absolute bottom-0 left-0 p-5 sm:p-6 w-full z-10">
+                    <Badge variant="secondary" className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 mb-2 px-2 py-0.5 text-xs">
+                        {article.category}
+                    </Badge>
+                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug drop-shadow-md line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                        {article.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-blue-200/60 text-xs mt-2">
+                        <Clock className="w-3 h-3" />
+                        {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                    </div>
+                </div>
+            </Link>
+        </div>
     );
 }

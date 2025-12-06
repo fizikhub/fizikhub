@@ -7,21 +7,25 @@ import { tr } from "date-fns/locale";
 import { Clock, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Article } from "@/lib/api";
+import { useState } from "react";
 
 interface EditorialCardProps {
     article: Article;
 }
 
 export function EditorialCard({ article }: EditorialCardProps) {
+    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
+
     return (
         <Link href={`/blog/${article.slug}`} className="group flex flex-col h-full">
             {/* Image Container */}
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl mb-4 bg-white/5 border border-white/10 group-hover:border-cyan-500/50 transition-colors">
                 <Image
-                    src={article.image_url || "/images/placeholder-article.jpg"}
+                    src={imgSrc}
                     alt={article.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={() => setImgSrc("/images/placeholder-article.jpg")}
                 />
 
                 {/* Overlay gradient for text readability if needed, usually not with separate content, but good for style */}
