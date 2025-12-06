@@ -224,7 +224,6 @@ export function ProfileTabs({
                     </div>
                 </Tabs>
             </TabsContent>
-        </div>
-        </Tabs >
+        </Tabs>
     );
 }
