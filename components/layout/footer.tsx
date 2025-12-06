@@ -1,12 +1,11 @@
 "use client";
 
-import { Rocket, Github, Twitter, Instagram, Atom, Orbit, Disc, Power } from "lucide-react"
+import { Rocket, Github, Twitter, Instagram } from "lucide-react"
 import Link from "next/link";
 import { DidYouKnow } from "@/components/ui/did-you-know";
 import { usePathname } from "next/navigation";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
 
 export function Footer() {
     const pathname = usePathname();
@@ -33,19 +32,6 @@ export function Footer() {
         duration: Math.random() * 2 + 1,
         delay: Math.random() * 2
     }));
-
-    // Permanent breathing animation for the pull intensity
-    const pullIntensity = {
-        scale: isSingularityActive ? [0.9, 0.85, 0.9] : 1,
-        rotate: isSingularityActive ? [5, 7, 5] : 0,
-        x: isSingularityActive ? [20, 25, 20] : 0,
-        y: isSingularityActive ? [20, 25, 20] : 0,
-        transition: {
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-        }
-    };
 
     return (
         <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
