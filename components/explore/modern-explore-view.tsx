@@ -4,11 +4,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Microscope, Atom } from "lucide-react";
+import { Search, Rocket, Atom, Cpu, Radio, Globe, Zap } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { LabBackground } from "./lab-background";
+import { SpaceBackground } from "./space-background";
+import { cn } from "@/lib/utils";
 
 interface Article {
     id: number;
@@ -38,19 +39,33 @@ const containerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.08
+            staggerChildren: 0.1
         }
     }
 };
 
 const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+            type: "spring",
+            stiffness: 50,
+            damping: 15
+        }
+    }
 };
 
-const headerVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0 }
+const hudVariants = {
+    hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        transition: { duration: 0.8, ease: "circOut" }
+    }
 };
 
 export function ModernExploreView({
@@ -63,223 +78,234 @@ export function ModernExploreView({
     const [isFocused, setIsFocused] = useState(false);
 
     return (
-        <div className="min-h-screen bg-background pb-20 md:pb-0 relative">
-            {/* Laboratory Background */}
-            <LabBackground />
+        <div className="min-h-screen bg-black pb-20 md:pb-0 relative overflow-x-hidden font-sans selection:bg-cyan-500/30">
+            {/* Space Station Viewport Background */}
+            <SpaceBackground />
 
-            <div className="container max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10">
-                {/* Header Section */}
+            <div className="container max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-20">
+                {/* HUD Header Section */}
                 <motion.div
-                    variants={headerVariants}
+                    variants={hudVariants}
                     initial="hidden"
                     animate="visible"
-                    className="space-y-6 mb-8"
+                    className="space-y-8 mb-12"
                 >
-                    {/* Hero with Laboratory Theme */}
-                    <div className="space-y-4 relative">
-                        {/* Laboratory Bench Effect */}
-                        <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-primary/20 via-primary/50 to-primary/20 rounded-full" />
+                    {/* Command Center Title Area */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6 relative">
+                        {/* Decorative HUD Lines */}
+                        <div className="absolute bottom-0 left-0 w-20 h-[2px] bg-cyan-500" />
+                        <div className="absolute bottom-0 right-0 w-20 h-[2px] bg-cyan-500" />
 
-                        <div className="flex items-center gap-4">
-                            <motion.div
-                                className="relative p-3 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 backdrop-blur-sm"
-                                animate={{
-                                    boxShadow: [
-                                        '0 0 20px rgba(234, 88, 12, 0.2)',
-                                        '0 0 30px rgba(234, 88, 12, 0.3)',
-                                        '0 0 20px rgba(234, 88, 12, 0.2)',
-                                    ]
-                                }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                            >
-                                <Microscope className="h-8 w-8 md:h-10 md:w-10 text-primary" />
-                                <motion.div
-                                    className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full"
-                                    animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                />
-                            </motion.div>
-                            <div>
-                                <h1 className="text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text">
-                                    Keşif Laboratuvarı
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
+                                    <Rocket className="relative h-8 w-8 text-cyan-400 animate-pulse" />
+                                </div>
+                                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-500 mt-1 uppercase">
+                                    KOMUTA MERKEZİ
                                 </h1>
-                                <p className="text-sm md:text-base text-muted-foreground mt-1">
-                                    EXP-2024 // Bilimsel Araştırma ve Keşif Modülü
-                                </p>
+                            </div>
+                            <p className="text-cyan-200/60 font-mono text-sm tracking-widest uppercase pl-1">
+                                SISTEM DURUMU: ONLINE // VERI AKIŞI AKTİF
+                            </p>
+                        </div>
+
+                        {/* Stats / Status Hologram */}
+                        <div className="hidden md:flex gap-8">
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest">Bağlantı</span>
+                                <div className="flex items-center gap-2 text-cyan-400">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
+                                    <span className="font-bold">STABIL</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest">Konum</span>
+                                <span className="font-bold text-white">YÖRÜNGE</span>
                             </div>
                         </div>
-                        <p className="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                            Topluluk tarafından yazılan en son bilimsel makaleleri analiz edin ve keşfedin.
-                        </p>
                     </div>
 
-                    {/* Search Bar - Control Panel Style */}
-                    <div className="relative">
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-2xl blur-xl"
-                            animate={{ opacity: isFocused ? 1 : 0.5 }}
-                            transition={{ duration: 0.3 }}
-                        />
-                        <div className="relative">
-                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-primary pointer-events-none z-10" />
-                            <form action="/kesfet" method="GET">
+                    {/* Navigation Console (Search) */}
+                    <div className="relative max-w-3xl mx-auto">
+                        <div className={cn(
+                            "absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 opacity-20 blur transition-opacity duration-500",
+                            isFocused ? "opacity-60" : "opacity-20"
+                        )} />
+                        <div className="relative bg-black/80 backdrop-blur-md border border-cyan-500/30 rounded-lg p-1 flex items-center shadow-[0_0_50px_rgba(6,182,212,0.15)]">
+                            <div className="pl-4 pr-3 text-cyan-500/50">
+                                <Search className="w-6 h-6" />
+                            </div>
+                            <form action="/kesfet" method="GET" className="flex-1">
                                 <Input
                                     name="q"
-                                    placeholder="Arama protokolü başlatın..."
-                                    className="pl-14 h-14 md:h-16 text-base rounded-2xl border-2 border-primary/20 bg-background/50 backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/40 transition-all shadow-lg"
+                                    placeholder="EVRENDE ARA..."
+                                    className="h-14 bg-transparent border-none text-lg text-white placeholder:text-cyan-900/50 focus-visible:ring-0 font-medium tracking-wide"
                                     defaultValue={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onFocus={() => setIsFocused(true)}
                                     onBlur={() => setIsFocused(false)}
+                                    autoComplete="off"
                                 />
                                 {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
                             </form>
-                            {isFocused && (
-                                <motion.div
-                                    className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent"
-                                    initial={{ scaleX: 0 }}
-                                    animate={{ scaleX: 1 }}
-                                    transition={{ duration: 0.3 }}
-                                />
-                            )}
+                            <div className="pr-4 hidden md:block">
+                                <span className="text-[10px] font-mono text-cyan-500/30 border border-cyan-500/20 px-2 py-1 rounded">
+                                    CMD + K
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Categories - Periodic Table Style */}
-                    <div className="flex flex-wrap gap-2">
+                    {/* System Modules (Categories) */}
+                    <div className="flex flex-wrap justify-center gap-3">
                         <Link href="/kesfet">
                             <Badge
-                                variant={!currentCategory ? "default" : "outline"}
-                                className="cursor-pointer px-5 py-2.5 text-sm font-bold rounded-lg border-2 hover:scale-105 hover:shadow-lg transition-all backdrop-blur-sm"
-                                style={{
-                                    borderColor: !currentCategory ? 'rgba(234, 88, 12, 0.5)' : 'rgba(234, 88, 12, 0.2)',
-                                    background: !currentCategory ? 'rgba(234, 88, 12, 0.15)' : 'rgba(0, 0, 0, 0.2)'
-                                }}
+                                variant="outline"
+                                className={cn(
+                                    "cursor-pointer px-6 py-3 text-xs font-bold tracking-widest uppercase rounded-sm border transition-all duration-300",
+                                    !currentCategory
+                                        ? "bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                                        : "bg-black/50 border-white/10 text-white/50 hover:border-cyan-500/50 hover:text-cyan-300"
+                                )}
                             >
-                                <Atom className="w-3 h-3 mr-1.5 inline" />
-                                TÜMÜ
+                                <Globe className="w-3 h-3 mr-2 animate-spin-slow" />
+                                TÜM VERİLER
                             </Badge>
                         </Link>
-                        {categories.map((cat) => (
-                            <Link
-                                key={cat}
-                                href={`/kesfet?category=${encodeURIComponent(cat)}${currentQuery ? `&q=${currentQuery}` : ''}`}
-                            >
-                                <Badge
-                                    variant={currentCategory === cat ? "default" : "outline"}
-                                    className="cursor-pointer px-5 py-2.5 text-sm font-bold rounded-lg border-2 hover:scale-105 hover:shadow-lg transition-all backdrop-blur-sm"
-                                    style={{
-                                        borderColor: currentCategory === cat ? 'rgba(234, 88, 12, 0.5)' : 'rgba(234, 88, 12, 0.2)',
-                                        background: currentCategory === cat ? 'rgba(234, 88, 12, 0.15)' : 'rgba(0, 0, 0, 0.2)'
-                                    }}
+                        {categories.map((catString) => {
+                            // Map text icons for fun
+                            const iconMap: Record<string, any> = {
+                                "Kuantum": Atom,
+                                "Astrofizik": Rocket,
+                                "Teknoloji": Cpu,
+                                "Varsayılan": Radio
+                            };
+                            const Icon = Object.entries(iconMap).find(([k]) => catString.includes(k))?.[1] || Radio;
+
+                            return (
+                                <Link
+                                    key={catString}
+                                    href={`/kesfet?category=${encodeURIComponent(catString)}${currentQuery ? `&q=${currentQuery}` : ''}`}
                                 >
-                                    {cat}
-                                </Badge>
-                            </Link>
-                        ))}
+                                    <Badge
+                                        variant="outline"
+                                        className={cn(
+                                            "cursor-pointer px-6 py-3 text-xs font-bold tracking-widest uppercase rounded-sm border transition-all duration-300",
+                                            currentCategory === catString
+                                                ? "bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                                                : "bg-black/50 border-white/10 text-white/50 hover:border-cyan-500/50 hover:text-cyan-300"
+                                        )}
+                                    >
+                                        <Icon className="w-3 h-3 mr-2" />
+                                        {catString}
+                                    </Badge>
+                                </Link>
+                            )
+                        })}
                     </div>
                 </motion.div>
 
-                {/* Articles Grid - Laboratory Slides */}
+                {/* Data Logs Grid (Zero-G Cards) */}
                 <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid gap-5 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                 >
                     {!initialArticles || initialArticles.length === 0 ? (
                         <motion.div
                             variants={itemVariants}
-                            className="col-span-full text-center py-20"
+                            className="col-span-full flex flex-col items-center justify-center py-32 border border-white/5 rounded-lg bg-white/5 backdrop-blur-sm"
                         >
-                            <div className="inline-flex p-6 rounded-2xl bg-primary/5 border border-primary/20 mb-4 backdrop-blur-sm">
-                                <Search className="h-10 w-10 text-primary" />
-                            </div>
-                            <p className="text-lg text-muted-foreground font-medium">
-                                Analiz sonuçları bulunamadı.
-                            </p>
-                            <p className="text-sm text-muted-foreground/60 mt-2">
-                                Arama parametrelerini yeniden kalibre edin.
-                            </p>
+                            <Radio className="h-16 w-16 text-cyan-500/20 mb-6 animate-pulse" />
+                            <h3 className="text-xl font-bold text-white uppercase tracking-widest">Sinyal Yok</h3>
+                            <p className="text-cyan-500/50 font-mono mt-2">Kriterlere uygun veri bulunamadı.</p>
                         </motion.div>
                     ) : (
-                        initialArticles.map((article, index) => (
-                            <motion.div
-                                key={article.id}
-                                variants={itemVariants}
-                                custom={index}
-                                whileHover={{ y: -8 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <Link href={`/blog/${article.slug}`} className="group block h-full">
-                                    <div className="flex flex-col h-full overflow-hidden rounded-2xl border-2 border-primary/10 bg-background/40 backdrop-blur-sm shadow-xl transition-all hover:shadow-2xl hover:border-primary/30 hover:bg-background/60 relative">
-                                        {/* Lab Slide Corner */}
-                                        <div className="absolute top-0 right-0 w-20 h-20 opacity-10">
-                                            <div className="absolute inset-0 border-l-2 border-b-2 border-primary rounded-bl-3xl" />
-                                        </div>
+                        initialArticles.map((article, index) => {
+                            // Calculate random float animation parameters for Zero-G effect
+                            const randomDuration = 3 + Math.random() * 2;
+                            const randomDelay = Math.random() * 2;
 
-                                        {/* Image - Petri Dish Style */}
-                                        <div className="aspect-video w-full overflow-hidden bg-gradient-to-br from-primary/5 to-background relative">
-                                            {article.image_url ? (
-                                                <img
-                                                    src={article.image_url}
-                                                    alt={article.title}
-                                                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                                />
-                                            ) : (
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <Microscope className="h-16 w-16 text-primary/20" />
-                                                </div>
-                                            )}
-                                            <div className="absolute top-3 right-3">
-                                                <Badge className="bg-background/95 backdrop-blur-md shadow-lg border border-primary/20 font-bold">
-                                                    {article.category}
-                                                </Badge>
-                                            </div>
-                                            {/* Scan Line Effect */}
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-b from-primary/0 via-primary/10 to-primary/0 opacity-0 group-hover:opacity-100"
-                                                animate={{ y: ['-100%', '100%'] }}
-                                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                            />
-                                        </div>
+                            return (
+                                <motion.div
+                                    key={article.id}
+                                    variants={itemVariants}
+                                    className="h-full"
+                                >
+                                    <motion.div
+                                        className="h-full group relative"
+                                        animate={{
+                                            y: [0, -10, 0],
+                                        }}
+                                        transition={{
+                                            duration: randomDuration,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                            delay: randomDelay
+                                        }}
+                                    >
+                                        <Link href={`/blog/${article.slug}`} className="block h-full">
+                                            {/* Holographic Card Container */}
+                                            <div className="h-full bg-black/40 backdrop-blur-md border border-white/10 overflow-hidden relative transition-all duration-500 group-hover:border-cyan-500/50 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] clip-path-polygon">
 
-                                        {/* Content */}
-                                        <div className="flex flex-col flex-1 p-5 space-y-3">
-                                            <h3 className="font-bold text-lg leading-snug group-hover:text-primary transition-colors line-clamp-2">
-                                                {article.title}
-                                            </h3>
-                                            <p className="text-sm text-muted-foreground line-clamp-3 flex-1 leading-relaxed">
-                                                {article.excerpt || article.content.substring(0, 150)}...
-                                            </p>
+                                                {/* Corner Accents */}
+                                                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
 
-                                            {/* Footer - Data Panel */}
-                                            <div className="flex items-center justify-between pt-3 mt-auto border-t border-primary/10">
-                                                <div className="flex items-center gap-2">
-                                                    {article.profiles?.avatar_url ? (
+                                                {/* Image Window */}
+                                                <div className="aspect-video w-full relative overflow-hidden border-b border-white/5">
+                                                    <div className="absolute inset-0 bg-cyan-500/10 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
+
+                                                    {article.image_url ? (
                                                         <img
-                                                            src={article.profiles.avatar_url}
-                                                            className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20"
-                                                            alt=""
+                                                            src={article.image_url}
+                                                            alt={article.title}
+                                                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1"
                                                         />
                                                     ) : (
-                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary ring-2 ring-primary/20">
-                                                            {article.profiles?.username?.[0]?.toUpperCase()}
+                                                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+                                                            <Atom className="h-16 w-16 text-cyan-900/40" />
                                                         </div>
                                                     )}
-                                                    <span className="text-sm font-medium truncate max-w-[120px]">
-                                                        {article.profiles?.username}
-                                                    </span>
+
+                                                    <div className="absolute bottom-3 left-3 z-20">
+                                                        <Badge className="bg-black/80 text-cyan-400 border border-cyan-500/30 backdrop-blur-sm font-mono text-[10px] tracking-widest uppercase">
+                                                            {article.category}
+                                                        </Badge>
+                                                    </div>
                                                 </div>
-                                                <span className="text-xs text-muted-foreground whitespace-nowrap font-mono">
-                                                    {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                                                </span>
+
+                                                {/* Data Readout (Content) */}
+                                                <div className="p-6 flex flex-col gap-4">
+                                                    <div>
+                                                        <h3 className="text-lg font-bold text-white leading-tight group-hover:text-cyan-300 transition-colors uppercase tracking-wide">
+                                                            {article.title}
+                                                        </h3>
+                                                        <div className="h-[1px] w-10 bg-cyan-900 my-3 group-hover:w-full group-hover:bg-cyan-500/50 transition-all duration-700" />
+                                                        <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-light">
+                                                            {article.excerpt || article.content.substring(0, 150)}...
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="mt-auto flex items-center justify-between text-xs font-mono text-cyan-500/60 pt-4 border-t border-white/5">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500/50 group-hover:bg-cyan-400 group-hover:animate-ping" />
+                                                            <span>AUTHOR: {article.profiles?.username?.toUpperCase() || 'UNKNOWN'}</span>
+                                                        </div>
+                                                        <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </motion.div>
-                        ))
+                                        </Link>
+                                    </motion.div>
+                                </motion.div>
+                            );
+                        })
                     )}
                 </motion.div>
             </div>
