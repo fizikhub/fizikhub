@@ -282,11 +282,14 @@ export function Footer() {
 
                 {/* Bottom Bar - Safe Distance */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-white/10 pt-8 gap-6 bg-black/80 backdrop-blur-md rounded-t-2xl p-4 mt-20 relative z-40">
-                    <p className="text-xs font-mono text-muted-foreground text-center md:text-left">
-                        &copy; 2025 FİZİKHUB // TÜM HAKLARI SAKLIDIR.
-                        <br />
-                        <span className="text-primary/60">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
-                    </p>
+                    <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground text-center md:text-left">
+                        <Rocket className="h-6 w-6 text-primary animate-bounce" />
+                        <p>
+                            &copy; 2025 FİZİKHUB // TÜM HAKLARI SAKLIDIR.
+                            <br />
+                            <span className="text-primary/60">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
+                        </p>
+                    </div>
 
                     <div className="flex gap-4">
                         <a href="https://instagram.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
