@@ -5,11 +5,12 @@ import { ArrowRight, Atom, Brain, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { SpaceBackground } from "./space-background";
+
 export function HeroSection3D() {
     return (
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-background border-b-2 border-border">
-            {/* Background Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
+            <SpaceBackground />
 
             <div className="container px-4 mx-auto relative z-10">
                 <div className="max-w-5xl mx-auto text-center">
