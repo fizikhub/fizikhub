@@ -98,11 +98,11 @@ export function ModernExploreView({
                                     <Rocket className="relative h-8 w-8 text-cyan-400 animate-pulse" />
                                 </div>
                                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-500 mt-1 uppercase">
-                                    KOMUTA MERKEZİ
+                                    KEŞFET
                                 </h1>
                             </div>
-                            <p className="text-cyan-200/60 font-mono text-sm tracking-widest uppercase pl-1">
-                                SISTEM DURUMU: ONLINE // VERI AKIŞI AKTİF
+                            <p className="text-cyan-200/80 font-medium text-lg max-w-2xl pl-1">
+                                Fizikhub'ın derinliklerine dalın. En yeni içerikleri, popüler tartışmaları ve evrenin sırlarını burada keşfedin.
                             </p>
                         </div>
 
