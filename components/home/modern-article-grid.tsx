@@ -124,10 +124,11 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                     </div>
                 </div>
 
-                <div className="mt-12 text-center sm:hidden">
+                <div className="mt-12 text-center">
                     <Link href="/blog">
-                        <div className="brutalist-button inline-flex px-8 py-3 items-center justify-center gap-2 w-full">
-                            TÜM YAZILARI GÖR
+                        <div className="brutalist-button inline-flex px-8 py-3 items-center justify-center gap-2 w-full md:w-auto">
+                            DEVAMI
+                            <ArrowRight className="w-4 h-4" />
                         </div>
                     </Link>
                 </div>

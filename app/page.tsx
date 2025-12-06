@@ -109,10 +109,10 @@ export default async function Home() {
         <BackgroundWrapper />
         <div className="relative z-10">
           <HeroSection3D />
-          <ModernArticleGrid articles={articles} />
           <DailyFact />
-          <FeaturesSection />
+          <ModernArticleGrid articles={articles} />
           <TrendingQuestions questions={formattedQuestions} />
+          <FeaturesSection />
         </div>
       </main>
     </>
