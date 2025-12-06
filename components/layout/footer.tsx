@@ -210,11 +210,11 @@ export function Footer() {
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
-                            x: [0, 0, 0],
-                            y: [0, 0, 0],
-                            rotate: [0, -2, 0],
-                            scale: [0.85, 0.75, 0.85],
-                            opacity: [0.9, 0.6, 0.9]
+                            x: 0,
+                            y: 0,
+                            rotate: 0,
+                            scale: 0.85,
+                            opacity: 0.85
                         } : {
                             x: -40,
                             y: -30,
@@ -222,14 +222,11 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={isSingularityActive ? {
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        } : {
+                        transition={{
                             type: "spring",
-                            stiffness: 120,
-                            damping: 18
+                            stiffness: 100,
+                            damping: 15,
+                            delay: isSingularityActive ? 0 : 0
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
@@ -242,11 +239,11 @@ export function Footer() {
                     <motion.div
                         className="flex flex-col gap-2 will-change-transform origin-center"
                         animate={isSingularityActive ? {
-                            x: [0, 0, 0],
-                            y: [0, 0, 0],
-                            rotate: [0, 2, 0],
-                            scale: [0.85, 0.75, 0.85],
-                            opacity: [0.9, 0.6, 0.9]
+                            x: 0,
+                            y: 0,
+                            rotate: 0,
+                            scale: 0.85,
+                            opacity: 0.85
                         } : {
                             x: 40,
                             y: -30,
@@ -254,16 +251,11 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={isSingularityActive ? {
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: 0.3
-                        } : {
+                        transition={{
                             type: "spring",
-                            stiffness: 120,
-                            damping: 18,
-                            delay: 0.05
+                            stiffness: 100,
+                            damping: 15,
+                            delay: isSingularityActive ? 0.1 : 0.05
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
@@ -277,11 +269,11 @@ export function Footer() {
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
-                            x: [0, 0, 0],
-                            y: [0, 0, 0],
-                            rotate: [0, 1, 0],
-                            scale: [0.85, 0.75, 0.85],
-                            opacity: [0.9, 0.6, 0.9]
+                            x: 0,
+                            y: 0,
+                            rotate: 0,
+                            scale: 0.85,
+                            opacity: 0.85
                         } : {
                             x: -40,
                             y: 30,
@@ -289,16 +281,11 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={isSingularityActive ? {
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: 0.15
-                        } : {
+                        transition={{
                             type: "spring",
-                            stiffness: 120,
-                            damping: 18,
-                            delay: 0.1
+                            stiffness: 100,
+                            damping: 15,
+                            delay: isSingularityActive ? 0.2 : 0.1
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
@@ -312,11 +299,11 @@ export function Footer() {
                         className="flex flex-col gap-2 md:text-right will-change-transform origin-center"
                         style={{ textAlign: isSingularityActive ? 'left' : undefined }}
                         animate={isSingularityActive ? {
-                            x: [0, 0, 0],
-                            y: [0, 0, 0],
-                            rotate: [0, -1, 0],
-                            scale: [0.85, 0.75, 0.85],
-                            opacity: [0.9, 0.6, 0.9]
+                            x: 0,
+                            y: 0,
+                            rotate: 0,
+                            scale: 0.85,
+                            opacity: 0.85
                         } : {
                             x: 40,
                             y: 30,
@@ -324,16 +311,11 @@ export function Footer() {
                             scale: 1,
                             opacity: 1
                         }}
-                        transition={isSingularityActive ? {
-                            duration: 1.5,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: 0.45
-                        } : {
+                        transition={{
                             type: "spring",
-                            stiffness: 120,
-                            damping: 18,
-                            delay: 0.15
+                            stiffness: 100,
+                            damping: 15,
+                            delay: isSingularityActive ? 0.3 : 0.15
                         }}
                     >
                         <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
