@@ -5,19 +5,19 @@ import { motion } from "framer-motion";
 
 export function SpaceBackground() {
     const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; duration: number }[]>([]);
-    const [shootingStar, setShootingStar] = useState<{ x: number; y: number; delay: number } | null>(null);
+    const [shootingStar, setShootingStar] = useState<{ x: number; y: number; delay: number; angle: number } | null>(null);
 
     useEffect(() => {
         const generateStars = () => {
             const newStars = [];
-            const count = 150; // Increased star count
+            const count = 200; // Increased star count further
 
             for (let i = 0; i < count; i++) {
                 newStars.push({
                     x: Math.random() * 100,
                     y: Math.random() * 100,
-                    size: Math.random() * 2 + 1,
-                    opacity: Math.random() * 0.7 + 0.3, // Brighter stars
+                    size: Math.random() * 2 + 1, // 1px to 3px
+                    opacity: Math.random() * 0.8 + 0.2,
                     duration: Math.random() * 3 + 2,
                 });
             }
@@ -29,45 +29,84 @@ export function SpaceBackground() {
 
     useEffect(() => {
         const interval = setInterval(() => {
+            // Randomize starting position more effectively
+            const startX = Math.random() * 100;
+            const startY = Math.random() * 50; // Typically starts from upper half
+            const angle = 45; // Fixed angle for consistent "falling" look, or randomize slightly: Math.random() * 30 + 30
+
             setShootingStar({
-                x: Math.random() * 100,
-                y: Math.random() * 50, // Start from top half
-                delay: Math.random() * 2 // Random delay
+                x: startX,
+                y: startY,
+                delay: 0,
+                angle: angle
             });
-            setTimeout(() => setShootingStar(null), 2000); // Reset after animation
-        }, 4000); // New shooting star every 4 seconds
+
+            setTimeout(() => setShootingStar(null), 1500); // Shorter duration for faster feel
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
 
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-[#050511]">
-            {/* Dark Space Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-[#02020a] via-[#1a1a3a]/20 to-[#050511]" />
-
-            {/* Planet 1 - Large Gas Giant (Purple/Blue) */}
-            <motion.div
-                className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full opacity-30 blur-3xl mix-blend-screen"
+        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-[#03030a]">
+            {/* Deep Space Background - Radial gradient for depth */}
+            <div
+                className="absolute inset-0"
                 style={{
-                    background: "radial-gradient(circle at 30% 30%, rgba(120, 50, 255, 0.4), transparent 70%)",
+                    background: "radial-gradient(circle at 50% 50%, #0d0d26 0%, #03030a 100%)"
                 }}
-                animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
             />
 
-            {/* Planet 2 - Smaller Planet (Blue/Teal) */}
+            {/* Nebulas - Layer 1: Large soft clouds */}
             <motion.div
-                className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] rounded-full opacity-20 blur-2xl mix-blend-screen"
-                style={{
-                    background: "radial-gradient(circle at 70% 30%, rgba(50, 200, 255, 0.3), transparent 70%)",
+                className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full mix-blend-screen opacity-20 blur-[120px]"
+                animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.1, 1]
                 }}
-                animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 0] }}
-                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                style={{
+                    background: "conic-gradient(from 0deg at 50% 50%, #4c1d95, #2563eb, #4c1d95)"
+                }}
             />
 
-            {/* Nebulas */}
-            <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] bg-purple-600/10 blur-[80px] rounded-full mix-blend-screen animate-pulse-slow" />
-            <div className="absolute bottom-[30%] right-[20%] w-[25%] h-[25%] bg-blue-600/10 blur-[80px] rounded-full mix-blend-screen animate-pulse-slow delay-1000" />
+            {/* Nebulas - Layer 2: Accent clouds */}
+            <motion.div
+                className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full mix-blend-screen opacity-20 blur-[100px]"
+                animate={{
+                    rotate: [360, 0],
+                    scale: [1, 1.2, 1]
+                }}
+                transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                style={{
+                    background: "conic-gradient(from 180deg at 50% 50%, #db2777, #7c3aed, #db2777)"
+                }}
+            />
+
+            {/* Planets */}
+            <motion.div
+                className="absolute top-[10%] right-[5%] w-[100px] h-[100px] sm:w-[200px] sm:h-[200px] rounded-full mix-blend-screen opacity-60 blur-md"
+                style={{
+                    background: "radial-gradient(circle at 30% 30%, rgba(167, 139, 250, 0.8), rgba(76, 19, 149, 0.4) 60%, transparent 80%)",
+                    boxShadow: "0 0 60px rgba(139, 92, 246, 0.3)"
+                }}
+                animate={{
+                    y: [0, -20, 0],
+                }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            />
+
+            <motion.div
+                className="absolute bottom-[20%] left-[5%] w-[80px] h-[80px] sm:w-[150px] sm:h-[150px] rounded-full mix-blend-screen opacity-50 blur-sm"
+                style={{
+                    background: "radial-gradient(circle at 70% 30%, rgba(56, 189, 248, 0.8), rgba(14, 165, 233, 0.4) 60%, transparent 80%)",
+                    boxShadow: "0 0 50px rgba(14, 165, 233, 0.2)"
+                }}
+                animate={{
+                    y: [0, 20, 0],
+                }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
 
             {/* Stars */}
             {stars.map((star, i) => (
@@ -80,7 +119,7 @@ export function SpaceBackground() {
                         width: star.size,
                         height: star.size,
                         opacity: star.opacity,
-                        boxShadow: `0 0 ${star.size * 2}px rgba(255, 255, 255, 0.8)` // Star glow matches
+                        boxShadow: star.size > 2 ? `0 0 ${star.size * 3}px rgba(255, 255, 255, 0.9)` : 'none'
                     }}
                     animate={{
                         opacity: [star.opacity, star.opacity * 1.5, star.opacity],
@@ -94,40 +133,33 @@ export function SpaceBackground() {
                 />
             ))}
 
-            {/* Shooting Star */}
+            {/* Enhanced Shooting Star */}
             {shootingStar && (
                 <motion.div
                     key="shooting-star"
-                    className="absolute w-[150px] h-[2px] bg-gradient-to-r from-transparent via-white to-transparent"
                     initial={{
                         top: `${shootingStar.y}%`,
                         left: `${shootingStar.x}%`,
-                        rotate: 315,
                         opacity: 0,
-                        scale: 0.5
+                        transform: `rotate(${shootingStar.angle}deg) scale(0.5) translateX(0)`
                     }}
                     animate={{
-                        top: `${shootingStar.y + 20}%`,
-                        left: `${shootingStar.x - 20}%`,
-                        opacity: [0, 1, 0],
-                        scale: 1
+                        opacity: [0, 1, 1, 0],
+                        transform: `rotate(${shootingStar.angle}deg) scale(1) translateX(300px)` // Move generally diagonally right-down depending on rotation
                     }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="absolute z-0 pointer-events-none"
                     style={{
-                        boxShadow: "0 0 10px 2px rgba(255, 255, 255, 0.5)"
+                        width: "150px",
+                        height: "2px",
+                        background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%)", // Tapered both ends
+                        filter: "drop-shadow(0 0 3px rgba(255,255,255,0.8))",
                     }}
-                />
+                >
+                    {/* Head of the star */}
+                    <div className="absolute top-1/2 left-[50%] -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full box-shadow-[0_0_10px_2px_rgba(255,255,255,1)]" />
+                </motion.div>
             )}
-
-            <style jsx>{`
-                @keyframes pulse-slow {
-                    0%, 100% { opacity: 0.5; transform: scale(1); }
-                    50% { opacity: 0.8; transform: scale(1.1); }
-                }
-                .animate-pulse-slow {
-                    animation: pulse-slow 8s infinite ease-in-out;
-                }
-            `}</style>
         </div>
     );
 }
