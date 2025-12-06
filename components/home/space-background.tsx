@@ -166,8 +166,17 @@ export function SpaceBackground() {
                         {/* Glass Dome */}
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-6 bg-gradient-to-b from-cyan-300/80 to-cyan-500/80 rounded-t-full border border-cyan-200/50 backdrop-blur-sm z-10" />
 
-                        {/* Alien Silhouette inside dome (subtle) */}
-                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-black/60 rounded-full blur-[1px] z-10" />
+                        {/* Green Alien */}
+                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-5 z-10 flex flex-col items-center justify-end">
+                            {/* Head */}
+                            <div className="w-3 h-3 bg-green-500 rounded-full relative">
+                                {/* Eyes */}
+                                <div className="absolute top-1 left-0.5 w-0.5 h-1 bg-black rounded-full skew-x-12 opacity-80" />
+                                <div className="absolute top-1 right-0.5 w-0.5 h-1 bg-black rounded-full -skew-x-12 opacity-80" />
+                            </div>
+                            {/* Body */}
+                            <div className="w-2 h-2 bg-green-600 rounded-t-sm -mt-0.5" />
+                        </div>
 
                         {/* Metallic Rim Top */}
                         <div className="absolute top-0 w-full h-full bg-gradient-to-b from-slate-400 via-slate-200 to-slate-500 rounded-[50%] z-0 border-t border-slate-100/50" />
