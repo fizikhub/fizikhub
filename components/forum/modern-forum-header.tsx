@@ -123,7 +123,7 @@ export function ModernForumHeader() {
                     </h1>
 
                     <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
-                        Henüz kimse cesaret edip sormadı. İlk sen ol, tarihe geç.
+                        Aklındaki soruları sor, bildiklerini paylaş ve bilim topluluğunun bir parçası ol.
                     </p>
 
                     {/* Search Bar */}
