@@ -18,6 +18,7 @@ import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";
+import { ThemeSelector } from "@/components/profile/theme-selector";
 
 interface EditProfileButtonProps {
     currentFullName: string | null;
@@ -107,6 +108,10 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
                     <div className="space-y-2">
                         <Label>Kapak Fotoğrafı</Label>
                         <CoverUpload currentCoverUrl={currentCoverUrl} />
+                    </div>
+
+                    <div className="space-y-2 pb-2 border-b">
+                        <ThemeSelector />
                     </div>
 
                     <div className="space-y-2">
