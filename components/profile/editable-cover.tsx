@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Loader2 } from "lucide-react";
 import { uploadCover } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface EditableCoverProps {
     url?: string | null;
@@ -13,10 +15,16 @@ interface EditableCoverProps {
     editable?: boolean;
 }
 
-export function EditableCover({ url, editable = false }: EditableCoverProps) {
+export function EditableCover({ url, gradient, editable = false }: EditableCoverProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -60,10 +68,20 @@ export function EditableCover({ url, editable = false }: EditableCoverProps) {
         fileInputRef.current?.click();
     };
 
+    const isPinkTheme = mounted && theme === 'pink';
+
     return (
-        <div className="h-48 w-full relative overflow-hidden group border-b-2 border-black dark:border-white">
+        <div className={cn(
+            "h-48 w-full relative overflow-hidden group border-b-2",
+            isPinkTheme ? "border-primary" : "border-black dark:border-white"
+        )}>
             {/* Technical Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+            <div className={cn(
+                "absolute inset-0 bg-[size:24px_24px] pointer-events-none",
+                isPinkTheme
+                    ? "bg-[linear-gradient(to_right,rgba(236,72,153,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(236,72,153,0.1)_1px,transparent_1px)]"
+                    : "bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]"
+            )} />
 
             {url ? (
                 <div
@@ -71,7 +89,11 @@ export function EditableCover({ url, editable = false }: EditableCoverProps) {
                     style={{ backgroundImage: `url(${url})` }}
                 />
             ) : (
-                <div className="absolute inset-0 bg-muted/20" />
+                <div className={cn(
+                    "absolute inset-0",
+                    isPinkTheme ? "bg-primary/5" : "bg-muted/20",
+                    !isPinkTheme && gradient // Use random gradient if not pink theme
+                )} />
             )}
 
             {/* Industrial Overlay Elements */}
