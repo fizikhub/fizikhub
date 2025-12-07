@@ -150,8 +150,38 @@ export function ProfileTabs({
             </TabsContent>
 
             <TabsContent value="messages">
-                <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden">
-                    <ConversationList initialConversations={conversations} currentConversationId={null} />
+                <div className="space-y-2">
+                    {conversations && conversations.length > 0 ? (
+                        conversations.map((conv) => (
+                            <Link
+                                key={conv.id}
+                                href={`/mesajlar?c=${conv.id}`}
+                                className="flex items-center gap-3 p-4 bg-black/60 backdrop-blur-sm border border-amber-500/20 rounded-xl hover:border-amber-500/60 transition-all group"
+                            >
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-semibold text-amber-100 group-hover:text-amber-400 transition-colors">
+                                            {conv.otherUser?.full_name || conv.otherUser?.username || "Kullanıcı"}
+                                        </span>
+                                        {conv.unreadCount && conv.unreadCount > 0 ? (
+                                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded-full">
+                                                {conv.unreadCount}
+                                            </span>
+                                        ) : null}
+                                    </div>
+                                    {conv.lastMessage && (
+                                        <p className="text-sm text-amber-200/50 truncate mt-1 font-mono">
+                                            {conv.lastMessage.content}
+                                        </p>
+                                    )}
+                                </div>
+                            </Link>
+                        ))
+                    ) : (
+                        <div className="text-center py-20 border border-dashed border-amber-500/20 rounded-xl bg-amber-950/10">
+                            <p className="text-amber-200/50 font-mono uppercase tracking-widest">Mesaj Bulunamadı</p>
+                        </div>
+                    )}
                 </div>
             </TabsContent>
 
