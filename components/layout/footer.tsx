@@ -44,11 +44,17 @@ export function Footer() {
                     : "bg-black opacity-0 border-transparent"
             )}>
                 <motion.div
-                    animate={isSingularityActive ? { opacity: [0.7, 1, 0.7] } : { opacity: 0 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="animate-marquee whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                    animate={isSingularityActive ? {
+                        x: [0, -2000],
+                        opacity: [0.7, 1, 0.7]
+                    } : { opacity: 0 }}
+                    transition={{
+                        x: { duration: 40, repeat: Infinity, ease: "linear" },
+                        opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    className="whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
                 >
-                    ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠
+                    ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠
                 </motion.div>
             </div>
 
