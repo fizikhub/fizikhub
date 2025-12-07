@@ -81,12 +81,12 @@ export function Navbar() {
     }, [supabase, checkAdminStatus]);
 
     const navLinks = [
-        { href: "/", label: "ANA ÜS", description: "Başladığın yere dön.", icon: Home },
-        { href: "/blog", label: "KÜTÜPHANE", description: "Biraz kültürlen.", icon: Feather },
-        { href: "/forum", label: "MEYDAN", description: "Kavga etme, tartış.", icon: MessageCircle },
+        { href: "/", label: "ANA SAYFA", description: "Başladığın yere dön.", icon: Home },
+        { href: "/blog", label: "BİLİM ARŞİVİ", description: "Biraz kültürlen.", icon: Feather },
+        { href: "/forum", label: "FORUM", description: "Kavga etme, tartış.", icon: MessageCircle },
         { href: "/sozluk", label: "LÜGAT", description: "Bu ne demek şimdi?", icon: Library },
-        { href: "/testler", label: "SİMÜLASYON", description: "Kendini sına.", icon: Atom },
-        { href: "/siralamalar", label: "ŞÖHRETLER", description: "Kim daha zeki?", icon: Trophy },
+        { href: "/testler", label: "QUIZ", description: "Kendini sına.", icon: Atom },
+        { href: "/siralamalar", label: "SIRALAMA", description: "Sıralamanı gör.", icon: Trophy },
     ];
 
     return (

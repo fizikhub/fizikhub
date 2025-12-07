@@ -11,7 +11,7 @@ export function BottomNav() {
     const links = [
         {
             href: "/",
-            label: "ANA ÜS",
+            label: "ANA SAYFA",
             icon: Home
         },
         {
