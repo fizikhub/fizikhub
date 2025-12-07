@@ -45,12 +45,12 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   title: {
-    default: "Fizikhub | Eğlenceli Bilim Platformu",
+    default: "Fizikhub",
     template: "%s | Fizikhub"
   },
-  description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin. Soru-cevap forumu, blog yazıları ve bilim sözlüğü.",
+  description: "Evrenin sınırlarını çözmeye çalışanların buluşma noktası.",
   keywords: [
-    "fizik", "bilim", "uzay", "teknoloji", "eğlenceli bilim", "fizikhub", "forum", "soru cevap",
+    "fizik", "bilim", "uzay", "teknoloji", "fizikhub", "forum", "soru cevap",
     "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Tartışma", "Popüler Bilim", "Fizik Soru Çözümü",
     "Kuantum Fiziği", "Astrofizik", "Bilim Sözlüğü"
   ],
@@ -66,25 +66,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://fizikhub.com",
-    title: "Fizikhub | Eğlenceli Bilim Platformu",
-    description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin.",
+    title: "Fizikhub",
+    description: "Evrenin sınırlarını çözmeye çalışanların buluşma noktası.",
     siteName: "Fizikhub",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Fizikhub - Eğlenceli Bilim Platformu",
+        alt: "Fizikhub",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fizikhub | Eğlenceli Bilim Platformu",
-    description: "Fizik, uzay ve bilim dünyasına eğlenceli bir yolculuk. Sıkıcı ders kitaplarını unutun, evrenin sırlarını keşfedin.",
+    title: "Fizikhub",
+    description: "Evrenin sınırlarını çözmeye çalışanların buluşma noktası.",
     creator: "@fizikhub",
     site: "@fizikhub",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
