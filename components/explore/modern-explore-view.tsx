@@ -101,9 +101,7 @@ export function ModernExploreView({
                                     KEŞFET
                                 </h1>
                             </div>
-                            <p className="text-cyan-200/80 font-medium text-lg max-w-2xl pl-1">
-                                Fizikhub'ın derinliklerine dalın. En yeni içerikleri, popüler tartışmaları ve evrenin sırlarını burada keşfedin.
-                            </p>
+                            Topluluğumuzun kaleminden çıkan bilimsel makaleleri, özgün içerikleri ve derinlemesine analizleri keşfedin. Bilgi paylaştıkça çoğalır.
                         </div>
 
                         {/* Stats / Status Hologram */}
