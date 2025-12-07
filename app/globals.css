@@ -75,13 +75,6 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
-    --primary: 337 70% 60%;
-    /* Pink instead of amber */
-    --primary-foreground: 15 15 17;
-
-    --secondary: 30 33 37;
-    --secondary-foreground: 248 250 252;
-
     --muted: 30 33 37;
     --muted-foreground: 156 163 175;
 
@@ -93,8 +86,8 @@
 
     --border: 38 42 47;
     --input: 38 42 47;
-    --ring: 337 70% 60%;
-    /* Pink ring */
+    --ring: 337 85% 65%;
+    /* Vibrant pink ring */
   }
 }
 
