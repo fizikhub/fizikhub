@@ -75,6 +75,13 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
+    --primary: 337 85% 65%;
+    /* Vibrant pink */
+    --primary-foreground: 15 15 17;
+
+    --secondary: 30 33 37;
+    --secondary-foreground: 248 250 252;
+
     --muted: 30 33 37;
     --muted-foreground: 156 163 175;
 
