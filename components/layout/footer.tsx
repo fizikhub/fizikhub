@@ -45,16 +45,21 @@ export function Footer() {
             )}>
                 <motion.div
                     animate={isSingularityActive ? {
-                        x: [0, -2000],
+                        x: ["0%", "-50%"],
                         opacity: [0.7, 1, 0.7]
                     } : { opacity: 0 }}
                     transition={{
-                        x: { duration: 40, repeat: Infinity, ease: "linear" },
+                        x: { duration: 30, repeat: Infinity, ease: "linear" },
                         opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                     }}
-                    className="whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                    className="flex whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
                 >
-                    ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠
+                    <span className="shrink-0">
+                        {Array(8).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ").join(" ")}
+                    </span>
+                    <span className="shrink-0">
+                        {Array(8).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ").join(" ")}
+                    </span>
                 </motion.div>
             </div>
 
