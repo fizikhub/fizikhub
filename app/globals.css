@@ -75,9 +75,9 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
-    --primary: 320 100% 55%;
-    /* Barbie Pink */
-    --primary-foreground: 15 15 17;
+    --primary: 327 76% 50%;
+    /* Hex: #E0218A */
+    --primary-foreground: 255 255 255;
 
     --secondary: 30 33 37;
     --secondary-foreground: 248 250 252;
@@ -93,8 +93,8 @@
 
     --border: 38 42 47;
     --input: 38 42 47;
-    --ring: 320 100% 55%;
-    /* Barbie Pink ring */
+    --ring: 327 76% 50%;
+    /* Hex: #E0218A */
   }
 }
 
