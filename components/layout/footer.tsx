@@ -48,7 +48,7 @@ export function Footer() {
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className="animate-marquee whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
                 >
-                    ⚠ DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ // DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ ⚠
+                    ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ⚠
                 </motion.div>
             </div>
 
