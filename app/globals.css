@@ -75,9 +75,9 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
-    --primary: 327 76% 50%;
-    /* Hex: #E0218A */
-    --primary-foreground: 255 255 255;
+    --primary: 331 80% 85%;
+    /* Hex: #F7B9D7 - Pastel Pink */
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 30 33 37;
     --secondary-foreground: 248 250 252;
@@ -93,8 +93,8 @@
 
     --border: 38 42 47;
     --input: 38 42 47;
-    --ring: 327 76% 50%;
-    /* Hex: #E0218A */
+    --ring: 331 80% 85%;
+    /* Hex: #F7B9D7 - Pastel Pink */
   }
 }
 
