@@ -36,14 +36,20 @@ export function Footer() {
 
     return (
         <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
-            {/* Event Horizon Warning Line */}
+            {/* Event Horizon Warning Line - ENHANCED */}
             <div className={cn(
-                "absolute top-0 left-0 right-0 h-8 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000",
-                isSingularityActive ? "bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-20" : "bg-black opacity-0"
+                "absolute top-0 left-0 right-0 h-10 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 border-b-2",
+                isSingularityActive
+                    ? "bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] border-primary/50 shadow-[0_4px_20px_rgba(234,88,12,0.3)]"
+                    : "bg-black opacity-0 border-transparent"
             )}>
-                <div className="animate-marquee whitespace-nowrap text-[10px] font-black text-primary uppercase tracking-[0.5em]">
-                    DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ // DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ
-                </div>
+                <motion.div
+                    animate={isSingularityActive ? { opacity: [0.7, 1, 0.7] } : { opacity: 0 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="animate-marquee whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                >
+                    ⚠ DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ // DİKKAT // OLAY UFKUNA YAKLAŞILIYOR // TEKİLLİK TESPİT EDİLDİ ⚠
+                </motion.div>
             </div>
 
             {/* Massive Black Hole Background Effect - ENHANCED */}
