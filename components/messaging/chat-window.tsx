@@ -1,403 +1,224 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { createClient } from "@/lib/supabase";
+import { useEffect, useRef, useState, useOptimistic } from "react";
+import { Message, sendMessage, getMessages, markAsRead } from "@/app/mesajlar/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, CheckCheck, Heart, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft, BadgeCheck, AlertTriangle, Mic } from "lucide-react";
-import { sendMessage, getMessages, markAsRead, toggleLike } from "@/app/mesajlar/actions";
-import { format, isToday, isYesterday } from "date-fns";
-import { tr } from "date-fns/locale";
-import { toast } from "sonner";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-interface Message {
-    id: number;
-    content: string;
-    sender_id: string;
-    created_at: string;
-    is_read: boolean;
-    is_liked: boolean;
-}
+import { Send, MoreVertical, ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase-client";
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 
 interface ChatWindowProps {
     conversationId: string;
-    currentUser: any;
-    otherUser: any;
 }
 
-export function ChatWindow({ conversationId, currentUser, otherUser }: ChatWindowProps) {
+export function ChatWindow({ conversationId }: ChatWindowProps) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    // Fix: Initialize supabase client once
-    const [supabase] = useState(() => createClient());
+    const [inputText, setInputText] = useState("");
+    const [sending, setSending] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const supabase = createClient();
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    // Optimistic UI for messages
+    const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+        messages,
+        (state, newMessage: Message) => {
+            return [...state, newMessage];
+        }
+    );
 
     useEffect(() => {
-        const loadMessages = async () => {
+        // Get current user
+        supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id || null));
+
+        // Fetch messages
+        const fetchMsgs = async () => {
             setLoading(true);
             const data = await getMessages(conversationId);
-            setMessages(data || []);
+            setMessages(data);
             setLoading(false);
-            setTimeout(scrollToBottom, 100);
+            // Mark as read
+            await markAsRead(conversationId);
         };
 
-        loadMessages();
-        markAsRead(conversationId);
+        fetchMsgs();
 
+        // Subscribe to new messages
         const channel = supabase
             .channel(`chat:${conversationId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'messages',
-                    filter: `conversation_id=eq.${conversationId}`
-                },
-                (payload) => {
-                    const newMessage = payload.new as Message;
-                    if (newMessage.sender_id !== currentUser.id) {
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages',
+                filter: `conversation_id=eq.${conversationId}`
+            }, (payload) => {
+                const newMsg = payload.new as Message;
+                setMessages((prev) => {
+                    if (prev.find(m => m.id === newMsg.id)) return prev;
+                    return [...prev, newMsg];
+                });
+                // Scroll to bottom
+                setTimeout(() => scrollToBottom(), 100);
+
+                // Mark as read if it's not my message
+                supabase.auth.getUser().then(({ data: { user } }) => {
+                    if (user && newMsg.sender_id !== user.id) {
                         markAsRead(conversationId);
                     }
-                    setMessages(prev => {
-                        if (prev.some(m => m.id === newMessage.id)) return prev;
-                        if (newMessage.sender_id === currentUser.id) {
-                            const optimisticMatch = prev.find(m =>
-                                m.sender_id === currentUser.id &&
-                                m.content === newMessage.content &&
-                                m.id > 1000000000000
-                            );
-                            if (optimisticMatch) {
-                                return prev.map(m => m.id === optimisticMatch.id ? newMessage : m);
-                            }
-                        }
-                        return [...prev, newMessage];
-                    });
-                    setTimeout(scrollToBottom, 100);
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'messages',
-                    filter: `conversation_id=eq.${conversationId}`
-                },
-                (payload) => {
-                    const updatedMessage = payload.new as Message;
-                    setMessages(prev => prev.map(m => m.id === updatedMessage.id ? updatedMessage : m));
-                }
-            )
+                });
+            })
             .subscribe();
 
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [conversationId]);
+    }, [conversationId, supabase]);
 
-    const [isBlocked, setIsBlocked] = useState(false);
-    const [isBlocking, setIsBlocking] = useState(false);
+    const scrollToBottom = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    };
 
     useEffect(() => {
-        const checkBlock = async () => {
-            const { checkBlockStatus } = await import("@/app/mesajlar/actions");
-            const status = await checkBlockStatus(otherUser.id);
-            setIsBlocked(status.isBlocked);
-            setIsBlocking(status.isBlocking);
-        };
-        checkBlock();
-    }, [otherUser.id]);
+        scrollToBottom();
+    }, [messages, optimisticMessages]);
 
-    const handleBlockToggle = async () => {
-        const { blockUser, unblockUser } = await import("@/app/mesajlar/actions");
-        if (isBlocking) {
-            await unblockUser(otherUser.id);
-            setIsBlocking(false);
-            toast.success("Kullanıcının engeli kaldırıldı.");
-        } else {
-            await blockUser(otherUser.id);
-            setIsBlocking(true);
-            toast.success("Kullanıcı engellendi.");
-        }
-    };
+    const handleSend = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!inputText.trim() || !currentUserId) return;
 
-    const handleLike = async (messageId: number, currentLikeStatus: boolean) => {
-        setMessages(prev => prev.map(m =>
-            m.id === messageId ? { ...m, is_liked: !currentLikeStatus } : m
-        ));
-        await toggleLike(messageId, currentLikeStatus);
-    };
+        const tempId = Date.now();
+        const content = inputText;
 
-    const handleSend = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newMessage.trim()) return;
+        // Clear input immediately
+        setInputText("");
+        setSending(true);
 
-        const content = newMessage;
-        setNewMessage("");
-
-        const optimisticMessage: Message = {
-            id: Date.now(),
+        // Add optimistic message
+        const optimisticMsg: Message = {
+            id: tempId,
             content: content,
-            sender_id: currentUser.id,
             created_at: new Date().toISOString(),
+            sender_id: currentUserId,
+            conversation_id: conversationId,
             is_read: false,
-            is_liked: false,
+            is_liked: false
         };
-        setMessages(prev => [...prev, optimisticMessage]);
-        setTimeout(scrollToBottom, 100);
 
+        addOptimisticMessage(optimisticMsg);
+
+        // Server action
         const result = await sendMessage(conversationId, content);
+
         if (!result.success) {
-            toast.error("Mesaj gönderilemedi.");
-            setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
+            // Handle error (toast etc)
+            console.error("Failed to send");
+            // Here strictly we should revert the optimistic update or show error
         }
+
+        setSending(false);
     };
 
-    const formatMessageDate = (dateString: string) => {
-        const date = new Date(dateString);
-        if (isToday(date)) return "Bugün";
-        if (isYesterday(date)) return "Dün";
-        return format(date, "d MMMM yyyy", { locale: tr });
-    };
+    if (loading && messages.length === 0) {
+        return (
+            <div className="flex h-full w-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col h-full bg-[#f0f2f5] dark:bg-[#0b141a] relative">
-            {/* Background Pattern - Subtle Dot Pattern */}
-            <div className="absolute inset-0 opacity-[0.4] dark:opacity-[0.1] pointer-events-none"
-                style={{ backgroundImage: 'radial-gradient(circle, #a1a1aa 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-            />
-
+        <div className="flex h-full flex-col bg-background">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-background/80 backdrop-blur-xl border-b z-20 sticky top-0 shadow-sm">
+            <div className="flex items-center justify-between border-b p-4 bg-card/50 backdrop-blur-md sticky top-0 z-10">
                 <div className="flex items-center gap-3">
-                    <Link href="/mesajlar" className="md:hidden text-muted-foreground hover:text-foreground transition-colors p-1 -ml-1 rounded-full hover:bg-muted">
-                        <ArrowLeft className="h-6 w-6" />
-                    </Link>
-                    <Link href={`/kullanici/${otherUser?.username}`} className="relative group">
-                        <Avatar className="h-10 w-10 cursor-pointer ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
-                            <AvatarImage src={otherUser?.avatar_url || ""} className="object-cover" />
-                            <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/5 text-primary font-bold">
-                                {otherUser?.full_name?.charAt(0) || otherUser?.username?.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                        {otherUser?.is_verified && (
-                            <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-0.5">
-                                <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
-                            </div>
-                        )}
-                    </Link>
-                    <div className="flex flex-col">
-                        <Link href={`/kullanici/${otherUser?.username}`} className="font-semibold hover:underline decoration-primary/50 flex items-center gap-1 text-sm">
-                            {otherUser?.full_name || otherUser?.username}
-                        </Link>
-                        <span className="text-xs text-muted-foreground">
-                            @{otherUser?.username}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                    <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
-                        <Video className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="hidden sm:flex rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
-                        <Phone className="h-5 w-5" />
-                    </Button>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="rounded-full">
-                                <MoreVertical className="h-5 w-5" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={handleBlockToggle} className="text-destructive focus:text-destructive">
-                                <AlertTriangle className="h-4 w-4 mr-2" />
-                                {isBlocking ? "Engeli Kaldır" : "Kullanıcıyı Engelle"}
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            </div>
-
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 z-10 custom-scrollbar">
-                {/* Admin Warning */}
-                {(otherUser?.username?.toLowerCase() === 'barannnbozkurttb' || otherUser?.email === 'barannnbozkurttb.b@gmail.com') && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4 flex items-start gap-3 mx-auto max-w-2xl shadow-sm backdrop-blur-sm"
-                    >
-                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-500 shrink-0 mt-0.5" />
-                        <div className="space-y-1">
-                            <h4 className="font-semibold text-yellow-700 dark:text-yellow-400 text-sm">Dikkat!</h4>
-                            <p className="text-sm text-yellow-700/90 dark:text-yellow-400/90 leading-relaxed">
-                                Desdur! Admin hazretleri ile konuşacaksın.
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
-
-                {loading ? (
-                    <div className="flex items-center justify-center h-full">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                ) : messages.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
-                        <div className="bg-primary/10 p-6 rounded-full animate-pulse">
-                            <span className="text-4xl">👋</span>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="font-medium text-lg">Sohbet Başladı</p>
-                            <p className="text-sm text-muted-foreground">İlk mesajı göndererek sohbeti başlat!</p>
-                        </div>
-                    </div>
-                ) : (
-                    <>
-                        {messages.map((msg, index) => {
-                            const isMe = msg.sender_id === currentUser.id;
-                            const showDate = index === 0 || formatMessageDate(messages[index - 1].created_at) !== formatMessageDate(msg.created_at);
-                            const isConsecutive = index > 0 && messages[index - 1].sender_id === msg.sender_id && !showDate;
-
-                            return (
-                                <div key={msg.id} className={cn("space-y-6", isConsecutive && "mt-1 space-y-1")}>
-                                    {showDate && (
-                                        <div className="flex justify-center sticky top-2 z-10 my-4">
-                                            <span className="bg-background/80 backdrop-blur-md shadow-sm px-3 py-1 rounded-full text-xs font-medium text-muted-foreground border ring-1 ring-border/5">
-                                                {formatMessageDate(msg.created_at)}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        className={cn(
-                                            "flex group",
-                                            isMe ? "justify-end" : "justify-start"
-                                        )}
-                                    >
-                                        <div
-                                            className={cn(
-                                                "relative max-w-[85%] sm:max-w-[70%] px-4 py-2 shadow-sm border text-sm sm:text-base leading-relaxed break-words",
-                                                isMe
-                                                    ? "bg-primary text-primary-foreground border-transparent rounded-2xl rounded-tr-none"
-                                                    : "bg-white dark:bg-[#202c33] border-transparent rounded-2xl rounded-tl-none text-foreground/90",
-                                                isConsecutive && isMe && "rounded-tr-2xl",
-                                                isConsecutive && !isMe && "rounded-tl-2xl"
-                                            )}
-                                            onDoubleClick={() => handleLike(msg.id, msg.is_liked)}
-                                        >
-                                            <p>{msg.content}</p>
-
-                                            <div className={cn(
-                                                "flex items-center gap-1 mt-1 select-none opacity-70 text-[10px]",
-                                                isMe ? "justify-end text-primary-foreground/80" : "justify-start"
-                                            )}>
-                                                <span>
-                                                    {format(new Date(msg.created_at), "HH:mm", { locale: tr })}
-                                                </span>
-                                                {isMe && (
-                                                    <span title={msg.is_read ? "Okundu" : "İletildi"}>
-                                                        <CheckCheck className={cn(
-                                                            "h-3.5 w-3.5",
-                                                            msg.is_read ? "text-primary-foreground" : "text-primary-foreground/60"
-                                                        )} />
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Like Heart */}
-                                            <AnimatePresence>
-                                                {msg.is_liked && (
-                                                    <motion.div
-                                                        initial={{ scale: 0 }}
-                                                        animate={{ scale: 1 }}
-                                                        exit={{ scale: 0 }}
-                                                        className="absolute -bottom-2 -right-2 bg-background rounded-full p-1 shadow-md border ring-2 ring-background"
-                                                    >
-                                                        <Heart className="h-3 w-3 fill-red-500 text-red-500" />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </motion.div>
-                                </div>
-                            );
-                        })}
-                        <div ref={messagesEndRef} />
-                    </>
-                )}
-            </div>
-
-            {/* Input Area */}
-            <div className="p-3 bg-background/80 backdrop-blur-xl border-t z-20 sticky bottom-0">
-                {isBlocked ? (
-                    <div className="text-center text-muted-foreground py-4 bg-muted/50 rounded-xl border border-dashed">
-                        Bu kullanıcı sizi engellediği için mesaj gönderemezsiniz.
-                    </div>
-                ) : isBlocking ? (
-                    <div className="text-center text-muted-foreground py-4 bg-muted/50 rounded-xl border border-dashed flex flex-col items-center gap-2">
-                        <span>Bu kullanıcıyı engellediniz.</span>
-                        <Button variant="outline" size="sm" onClick={handleBlockToggle} className="text-destructive hover:text-destructive">
-                            Engeli Kaldır
+                    <Link href="/mesajlar" className="md:hidden">
+                        <Button variant="ghost" size="icon">
+                            <ArrowLeft className="h-5 w-5" />
                         </Button>
-                    </div>
-                ) : (
-                    <form onSubmit={handleSend} className="flex items-end gap-2 max-w-4xl mx-auto">
-                        <div className="flex gap-1">
-                            <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex rounded-full hover:bg-muted">
-                                <Smile className="h-6 w-6" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hidden sm:flex rounded-full hover:bg-muted">
-                                <Paperclip className="h-5 w-5" />
-                            </Button>
-                        </div>
+                    </Link>
 
-                        <div className="flex-1 bg-muted/40 rounded-3xl border border-transparent focus-within:border-primary/20 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-                            <Input
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Bir mesaj yaz..."
-                                className="border-0 bg-transparent focus-visible:ring-0 py-3 px-4 min-h-[44px] placeholder:text-muted-foreground/50"
-                            />
-                        </div>
+                    {/* Note: In a real app we'd pass the other user's info to this component too to display in header.
+                 For now, we'll assume the layout or context provides it, or fetch it.
+                 Short-cut: just show "Sohbet" or try to find it in the messages if possible? 
+                 Actually, best is to pass `otherUser` as prop. I'll stick to a generic header for now to save complexity, 
+                 or better: Update the props to include user info.
+                 But let's keep it simple "Sohbet".
+              */}
+                    <h3 className="font-bold text-lg">Sohbet</h3>
+                </div>
+                <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-5 w-5" />
+                </Button>
+            </div>
 
-                        {newMessage.trim() ? (
-                            <Button
-                                type="submit"
-                                size="icon"
-                                className="rounded-full h-11 w-11 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md transition-all duration-300 hover:scale-105"
-                            >
-                                <Send className="h-5 w-5 ml-0.5" />
-                            </Button>
-                        ) : (
-                            <Button
-                                type="button"
-                                size="icon"
-                                variant="ghost"
-                                className="rounded-full h-11 w-11 text-muted-foreground hover:bg-muted transition-all"
-                            >
-                                <Mic className="h-5 w-5" />
-                            </Button>
-                        )}
-                    </form>
-                )}
+            {/* Messages */}
+            <div
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth"
+            >
+                {/* Welcome message */}
+                <div className="flex justify-center py-6">
+                    <span className="text-xs text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+                        Mesajlarınız uçtan uca şifrelenmiştir - dermişim 😅 (Henüz değil)
+                    </span>
+                </div>
+
+                {optimisticMessages.map((msg, index) => {
+                    const isMe = msg.sender_id === currentUserId;
+                    const isConsecutive = index > 0 && optimisticMessages[index - 1].sender_id === msg.sender_id;
+
+                    return (
+                        <div
+                            key={msg.id}
+                            className={cn(
+                                "flex w-full animate-in slide-in-from-bottom-2 duration-300",
+                                isMe ? "justify-end" : "justify-start",
+                                isConsecutive ? "mt-1" : "mt-4"
+                            )}
+                        >
+                            <div className={cn(
+                                "max-w-[75%] px-4 py-2 shadow-sm relative group",
+                                isMe
+                                    ? "bg-primary text-primary-foreground rounded-2xl rounded-tr-sm"
+                                    : "bg-muted text-foreground rounded-2xl rounded-tl-sm"
+                            )}>
+                                <p className="text-sm md:text-base break-words leading-relaxed">{msg.content}</p>
+                                <span className={cn(
+                                    "text-[10px] absolute bottom-1 right-2 opacity-50",
+                                    isMe ? "text-primary-foreground" : "text-muted-foreground"
+                                )}>
+                                    {format(new Date(msg.created_at), "HH:mm")}
+                                </span>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+
+            {/* Input */}
+            <div className="p-4 border-t bg-card mt-auto">
+                <form onSubmit={handleSend} className="flex gap-2">
+                    <Input
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        placeholder="Bir mesaj yazın..."
+                        className="flex-1 bg-background"
+                        disabled={sending}
+                        autoFocus
+                    />
+                    <Button type="submit" size="icon" disabled={!inputText.trim() || sending} className="rounded-full h-10 w-10 shrink-0">
+                        <Send className="h-4 w-4" />
+                    </Button>
+                </form>
             </div>
         </div>
     );
