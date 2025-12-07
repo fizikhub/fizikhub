@@ -10,6 +10,7 @@ import { Github, Loader2, Rocket, Eye, EyeOff, Zap, AlertTriangle, Atom, Radio }
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
@@ -195,6 +196,18 @@ export function ModernLogin() {
                                     </span>
                                 )}
                             </Button>
+
+                            {/* Forgot Password Link */}
+                            {!isSignUp && (
+                                <div className="text-center mt-3">
+                                    <Link
+                                        href="/forgot-password"
+                                        className="text-xs text-white/50 hover:text-primary transition-colors uppercase tracking-wider font-bold"
+                                    >
+                                        Şifremi Unuttum
+                                    </Link>
+                                </div>
+                            )}
                         </form>
 
                         <div className="relative my-8">
