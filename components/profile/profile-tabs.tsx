@@ -151,7 +151,7 @@ export function ProfileTabs({
 
             <TabsContent value="messages">
                 <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden">
-                    <ConversationList conversations={conversations} />
+                    <ConversationList initialConversations={conversations} currentConversationId={null} />
                 </div>
             </TabsContent>
 
