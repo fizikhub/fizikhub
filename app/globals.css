@@ -64,37 +64,37 @@
   }
 
   .pink {
-    --background: 337 30% 98%;
-    /* Very light pink background */
-    --foreground: 0 0% 0%;
-    /* Pure Black Text */
+    --background: 10 10 12;
+    /* Dark background like dark theme */
+    --foreground: 248 250 252;
+    /* Light text */
 
-    --card: 0 0% 100%;
-    /* White cards */
-    --card-foreground: 0 0% 0%;
+    --card: 20 22 25;
+    --card-foreground: 248 250 252;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 20 22 25;
+    --popover-foreground: 248 250 252;
 
     --primary: 337 70% 60%;
-    /* Vibrant Pink */
-    --primary-foreground: 0 0% 100%;
+    /* Pink instead of amber */
+    --primary-foreground: 15 15 17;
 
-    --secondary: 337 20% 96%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 30 33 37;
+    --secondary-foreground: 248 250 252;
 
-    --muted: 337 10% 96%;
-    --muted-foreground: 337 10% 40%;
+    --muted: 30 33 37;
+    --muted-foreground: 156 163 175;
 
-    --accent: 337 60% 96%;
-    --accent-foreground: 337 80% 40%;
+    --accent: 30 33 37;
+    --accent-foreground: 248 250 252;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 220 38 38;
+    --destructive-foreground: 255 255 255;
 
-    --border: 337 20% 90%;
-    --input: 337 20% 90%;
+    --border: 38 42 47;
+    --input: 38 42 47;
     --ring: 337 70% 60%;
+    /* Pink ring */
   }
 }
 
