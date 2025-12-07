@@ -84,42 +84,8 @@ export function ModernLogin() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Black Hole Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {/* Accretion Disk */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-transparent via-primary/5 to-transparent blur-3xl opacity-40"
-                />
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-radial from-transparent via-orange-600/10 to-transparent blur-2xl opacity-30"
-                />
-
-                {/* Stars/Particles */}
-                {[...Array(20)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white rounded-full"
-                        initial={{
-                            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
-                            opacity: Math.random()
-                        }}
-                        animate={{
-                            opacity: [0.2, 1, 0.2],
-                            scale: [1, 1.5, 1]
-                        }}
-                        transition={{
-                            duration: 3 + Math.random() * 5,
-                            repeat: Infinity,
-                            delay: Math.random() * 5
-                        }}
-                    />
-                ))}
-            </div>
+            {/* Simple Background */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-black to-black" />
 
             {/* Main Container */}
             <motion.div
@@ -145,8 +111,8 @@ export function ModernLogin() {
                     </div>
                 </div>
 
-                {/* Industrial Glass Card */}
-                <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-2xl relative overflow-hidden group">
+                {/* Industrial Glass Card - Optimized */}
+                <div className="bg-black border border-white/10 p-1 rounded-2xl shadow-2xl relative overflow-hidden group">
                     {/* Industrial Hazard Stripes (Top & Bottom) */}
                     <div className="absolute top-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
                     <div className="absolute bottom-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
