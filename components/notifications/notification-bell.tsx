@@ -11,7 +11,7 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
+    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase";
@@ -181,76 +181,101 @@ export function NotificationBell() {
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button
-                        variant="secondary"
+                        variant="ghost"
                         size="icon"
-                        className="relative rounded-full h-10 w-10 bg-background/60 backdrop-blur-md border border-border/50 hover:bg-background/80 transition-all shadow-sm"
+                        className="relative rounded-full h-10 w-10 bg-background/20 backdrop-blur-sm border border-white/10 hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 group overflow-hidden"
                     >
+                        {/* Glow effect behind the bell */}
+                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300" />
+
                         <motion.div
-                            animate={unreadCount > 0 ? { rotate: [0, -10, 10, -10, 10, 0] } : {}}
-                            transition={{ duration: 0.5, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 2 }}
+                            animate={unreadCount > 0 ? {
+                                rotate: [0, -15, 15, -15, 15, 0],
+                                scale: [1, 1.1, 1],
+                                color: ["currentColor", "#a855f7", "currentColor"]
+                            } : {}}
+                            transition={{ duration: 0.6, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
                         >
-                            <Bell className="h-5 w-5" />
+                            <Bell className={cn("h-5 w-5 transition-colors", unreadCount > 0 ? "text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" : "text-foreground")} />
                         </motion.div>
+
                         {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-background animate-pulse" />
+                            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-primary border-[1.5px] border-background shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse" />
                         )}
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80 sm:w-96 max-h-[500px] overflow-y-auto">
-                    <div className="flex items-center justify-between px-2 py-1.5">
-                        <span className="font-semibold text-sm">Bildirimler</span>
+                <DropdownMenuContent
+                    align="end"
+                    className="w-80 sm:w-96 max-h-[500px] overflow-y-auto glass-panel border-white/10 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl p-0"
+                >
+                    <div className="flex items-center justify-between px-4 py-3 bg-black/5 dark:bg-white/5 border-b border-white/10">
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm tracking-wide">BİLDİRİMLER</span>
+                            {unreadCount > 0 && (
+                                <span className="px-1.5 py-0.5 rounded-md bg-primary/20 text-primary text-[10px] font-bold border border-primary/30">
+                                    {unreadCount} YENİ
+                                </span>
+                            )}
+                        </div>
                         {unreadCount > 0 && (
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-auto px-2 py-0.5 text-xs text-muted-foreground hover:text-primary"
+                                className="h-auto px-2 py-1 text-[10px] font-medium text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                                 onClick={handleMarkAllRead}
                             >
-                                Tümünü okundu işaretle
+                                TÜMÜNÜ OKU
                             </Button>
                         )}
                     </div>
-                    <DropdownMenuSeparator />
+
                     {isLoading ? (
-                        <div className="py-8 text-center text-muted-foreground text-sm">
-                            <div className="flex items-center justify-center gap-2">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                                Yükleniyor...
-                            </div>
+                        <div className="py-12 text-center text-muted-foreground text-sm flex flex-col items-center gap-3">
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent shadow-[0_0_15px_rgba(168,85,247,0.4)]" />
+                            <span className="animate-pulse">Uzaydan veri çekiliyor...</span>
                         </div>
                     ) : notifications.length === 0 ? (
-                        <div className="py-8 text-center text-muted-foreground text-sm">
-                            Henüz bildirim yok.
+                        <div className="py-12 text-center text-muted-foreground text-sm flex flex-col items-center gap-3">
+                            <Bell className="h-8 w-8 opacity-20" />
+                            <span>Hiç bildiriminiz yok.</span>
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-1 p-1">
+                        <div className="flex flex-col">
                             {notifications.map((notification) => (
                                 <DropdownMenuItem
                                     key={notification.id}
                                     className={cn(
-                                        "flex items-start gap-3 p-3 cursor-pointer focus:bg-muted/50",
-                                        !notification.is_read && "bg-primary/5"
+                                        "flex items-start gap-4 p-4 cursor-pointer border-b border-white/5 focus:bg-white/5 transition-all duration-200 group relative overflow-hidden",
+                                        !notification.is_read ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-white/5"
                                     )}
                                     onSelect={(e) => e.preventDefault()}
-                                >
-                                    <div className="relative mt-1">
-                                        <Avatar className="h-8 w-8 border">
-                                            <AvatarImage src={notification.actor?.avatar_url || ""} />
-                                            <AvatarFallback>{notification.actor?.username?.[0]?.toUpperCase()}</AvatarFallback>
-                                        </Avatar>
-                                        {!notification.is_read && (
-                                            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-primary border-2 border-background" />
-                                        )}
-                                    </div>
-                                    <div className="flex-1 space-y-1" onClick={() => {
+                                    onClick={() => {
                                         handleMarkAsRead(notification.id);
                                         router.push(getNotificationLink(notification));
                                         setIsOpen(false);
-                                    }}>
-                                        <p className="text-sm leading-snug">
+                                    }}
+                                >
+                                    {!notification.is_read && (
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(168,85,247,0.5)]" />
+                                    )}
+
+                                    <div className="relative mt-1 shrink-0">
+                                        <div className={cn(
+                                            "rounded-full p-[1px] transition-all duration-300",
+                                            !notification.is_read ? "bg-gradient-to-br from-primary to-transparent" : "bg-border"
+                                        )}>
+                                            <Avatar className="h-9 w-9 border-2 border-background">
+                                                <AvatarImage src={notification.actor?.avatar_url || ""} />
+                                                <AvatarFallback>{notification.actor?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                                            </Avatar>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 space-y-1.5 z-10">
+                                        <p className="text-sm leading-snug text-foreground/90 group-hover:text-foreground transition-colors">
                                             {getNotificationText(notification)}
                                         </p>
-                                        <p className="text-[10px] text-muted-foreground">
+                                        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                                             {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: tr })}
                                         </p>
                                     </div>
