@@ -213,7 +213,7 @@
   .glass-panel {
     @apply bg-background/60 backdrop-blur-xl border border-white/10;
   }
-  
+
   .dark .glass-panel {
     @apply bg-black/40 border-white/5;
   }
@@ -223,7 +223,7 @@
     position: relative;
     overflow: hidden;
   }
-  
+
   .neon-glow::after {
     content: '';
     position: absolute;
@@ -231,14 +231,12 @@
     left: -100%;
     width: 200%;
     height: 100%;
-    background: linear-gradient(
-      90deg, 
-      transparent, 
-      rgba(var(--primary), 0.2), 
-      transparent
-    );
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(var(--primary), 0.2),
+        transparent);
     transform: skewX(-20deg);
-    animation: neon-shine 6s infinite ease-in-out; 
+    animation: neon-shine 6s infinite ease-in-out;
     pointer-events: none;
   }
 
@@ -248,9 +246,17 @@
   }
 
   @keyframes neon-shine {
-    0% { left: -100%; }
-    10% { left: 100%; }
-    100% { left: 100%; }
+    0% {
+      left: -100%;
+    }
+
+    10% {
+      left: 100%;
+    }
+
+    100% {
+      left: 100%;
+    }
   }
 
   /* 3. Cosmic Border */
@@ -266,12 +272,10 @@
     position: absolute;
     z-index: -1;
     inset: -2px;
-    background: conic-gradient(
-      from 90deg at 50% 50%,
-      #0000 0%,
-      rgba(var(--primary), 1) 50%,
-      #0000 100%
-    );
+    background: conic-gradient(from 90deg at 50% 50%,
+        #0000 0%,
+        rgba(var(--primary), 1) 50%,
+        #0000 100%);
     animation: cosmic-spin 4s linear infinite;
   }
 
@@ -285,8 +289,13 @@
   }
 
   @keyframes cosmic-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 }
 
@@ -398,34 +407,38 @@ a {
   }
 }
 
-.glitch-text {
+.glitch {
   position: relative;
+  font-weight: 900;
+  /* Ensure bold weight for better effect */
 }
 
-.glitch-text::before,
-.glitch-text::after {
-  content: "FIZIKHUB";
-  /* Fallback */
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.8;
+  background: var(--background);
+  /* Match background to hide original text parts */
 }
 
-.glitch-text::before {
-  color: #0ff;
+.glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 #ff00c1;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim-1 5s infinite linear alternate-reverse;
   z-index: -1;
-  animation: glitch-anim-1 3s infinite linear alternate-reverse;
-  clip-path: inset(0 0 0 0);
 }
 
-.glitch-text::after {
-  color: #f0f;
+.glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 #00fff9;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim-2 5s infinite linear alternate-reverse;
   z-index: -2;
-  animation: glitch-anim-2 2s infinite linear alternate-reverse;
-  clip-path: inset(0 0 0 0);
 }
 
 @keyframes glitch-anim-1 {
