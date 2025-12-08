@@ -158,7 +158,7 @@ export async function updateQuestion(questionId: number, content: string) {
 
     const { error } = await supabase
         .from('questions')
-        .update({ content, updated_at: new Date().toISOString() })
+        .update({ content })
         .eq('id', questionId);
 
     if (error) {
