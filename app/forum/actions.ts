@@ -166,6 +166,7 @@ export async function updateQuestion(questionId: number, content: string) {
         return { success: false, error: "Soru güncellenirken hata oluştu." };
     }
 
+    revalidatePath('/forum');
     revalidatePath(`/forum/${questionId}`);
     return { success: true };
 }
