@@ -32,7 +32,8 @@ export function EditQuestionDialog({ questionId, initialContent }: EditQuestionD
             if (result.success) {
                 toast.success("Soru başarıyla güncellendi.");
                 setOpen(false);
-                router.refresh();
+                // Hard reload to ensure cache is cleared
+                window.location.reload();
             } else {
                 toast.error(result.error || "Bir hata oluştu.");
             }

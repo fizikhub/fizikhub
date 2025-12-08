@@ -26,6 +26,9 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+// Disable static caching for this dynamic page
+export const revalidate = 0;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
     const supabase = await createClient();
