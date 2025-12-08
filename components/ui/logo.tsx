@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import { Zap } from "lucide-react";
-import { IoRocket } from "react-icons/io5";
+import { Rocket, Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
@@ -156,8 +155,8 @@ export function Logo() {
                         transition={warpState === 'idle' ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
                         className="relative z-10"
                     >
-                        {/* IoRocket is a solid, modern rocket icon */}
-                        <IoRocket className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
+                        {/* Rocket Container */}
+                        <Rocket className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
 
                         {/* Engine Glow */}
                         <motion.div
