@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 interface GlitchTextProps {
     text: string;
     className?: string;
-    as?: keyof JSX.IntrinsicElements;
+    as?: React.ElementType;
 }
 
 export function GlitchText({ text, className, as: Component = "span" }: GlitchTextProps) {
