@@ -36,10 +36,10 @@ export function HeroSection3D() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[0.9] drop-shadow-[0_0_15px_rgba(0,0,0,1)]"
                     >
-                        <GlitchText text="BİLİMİ Tİ'YE ALIYORUZ" />
+                        BİLİMİ Tİ'YE ALIYORUZ
                         <br />
                         <span className="text-primary relative inline-block mx-2 my-1 pb-1 drop-shadow-[0_0_10px_rgba(255,255,0,0.3)]">
-                            AMA&nbsp;&nbsp;CİDDİLİ
+                            AMA&nbsp;&nbsp;<GlitchText text="CİDDİLİ" className="text-primary" />
                             <svg className="absolute w-full h-3 -bottom-1 left-0 text-white" viewBox="0 0 100 10" preserveAspectRatio="none">
                                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
                             </svg>
