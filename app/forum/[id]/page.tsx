@@ -350,6 +350,11 @@ export default async function QuestionPage({ params }: PageProps) {
                                             contentType="question"
                                             contentId={question.id}
                                         />
+
+                                        {/* Edit Button (Mobile & Desktop) */}
+                                        {(isAdmin || user?.id === question.author_id) && (
+                                            <EditQuestionDialog questionId={question.id} initialContent={question.content} />
+                                        )}
                                     </div>
 
                                     <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-muted/30">

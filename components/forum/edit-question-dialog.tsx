@@ -46,9 +46,8 @@ export function EditQuestionDialog({ questionId, initialContent }: EditQuestionD
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full justify-start gap-2 h-9">
+                <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
                     <Edit2 className="h-4 w-4" />
-                    <span>Soruyu Düzenle</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
