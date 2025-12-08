@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     Loader2,
-    Upload
+    Upload,
+    ImagePlus
 } from "lucide-react";
 import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
@@ -42,7 +43,10 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isInlineUploading, setIsInlineUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const inlineImageInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +71,48 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             toast.error("Bir hata oluştu");
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Dosya boyutu 5MB'den küçük olmalı");
+            return;
+        }
+
+        setIsInlineUploading(true);
+        try {
+            const result = await uploadArticleImage(file);
+            if (result.success && result.url) {
+                const textarea = textareaRef.current;
+                if (textarea) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const text = textarea.value;
+                    const markdownImage = `\n![Görsel Açıklaması](${result.url})\n`;
+
+                    const newText = text.substring(0, start) + markdownImage + text.substring(end);
+                    textarea.value = newText;
+
+                    // Re-focus and update cursor
+                    textarea.focus();
+                    const newCursorPos = start + markdownImage.length;
+                    textarea.setSelectionRange(newCursorPos, newCursorPos);
+                }
+                toast.success("Görsel içeriğe eklendi");
+            } else {
+                toast.error(result.error || "Yükleme başarısız");
+            }
+        } catch {
+            toast.error("Bir hata oluştu");
+        } finally {
+            setIsInlineUploading(false);
+            if (inlineImageInputRef.current) {
+                inlineImageInputRef.current.value = "";
+            }
         }
     };
 
@@ -187,10 +233,36 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="content">İçerik (Markdown)</Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="content">İçerik (Markdown)</Label>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 hover:text-primary transition-all"
+                            onClick={() => inlineImageInputRef.current?.click()}
+                            disabled={isInlineUploading}
+                        >
+                            {isInlineUploading ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                                <ImagePlus className="h-3.5 w-3.5" />
+                            )}
+                            Görsel Ekle
+                        </Button>
+                        {/* Hidden input for inline images */}
+                        <input
+                            type="file"
+                            ref={inlineImageInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleInlineImageUpload}
+                        />
+                    </div>
                     <div className="relative">
                         <Textarea
                             id="content"
+                            ref={textareaRef}
                             name="content"
                             defaultValue={article?.content}
                             placeholder="# Başlık\n\nİçeriğinizi buraya yazın..."
