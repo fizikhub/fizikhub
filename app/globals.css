@@ -208,6 +208,86 @@
   .h-safe-area-bottom {
     height: env(safe-area-inset-bottom);
   }
+
+  /* 1. Glassmorphism */
+  .glass-panel {
+    @apply bg-background/60 backdrop-blur-xl border border-white/10;
+  }
+  
+  .dark .glass-panel {
+    @apply bg-black/40 border-white/5;
+  }
+
+  /* 2. Neon Glow */
+  .neon-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .neon-glow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+      90deg, 
+      transparent, 
+      rgba(var(--primary), 0.2), 
+      transparent
+    );
+    transform: skewX(-20deg);
+    animation: neon-shine 6s infinite ease-in-out; 
+    pointer-events: none;
+  }
+
+  .neon-glow:hover {
+    box-shadow: 0 0 20px rgba(var(--primary), 0.4);
+    border-color: rgba(var(--primary), 0.6);
+  }
+
+  @keyframes neon-shine {
+    0% { left: -100%; }
+    10% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  /* 3. Cosmic Border */
+  .cosmic-border {
+    position: relative;
+    border-radius: var(--radius);
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .cosmic-border::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -2px;
+    background: conic-gradient(
+      from 90deg at 50% 50%,
+      #0000 0%,
+      rgba(var(--primary), 1) 50%,
+      #0000 100%
+    );
+    animation: cosmic-spin 4s linear infinite;
+  }
+
+  .cosmic-border::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 1px;
+    background: rgb(var(--card));
+    border-radius: calc(var(--radius) - 1px);
+  }
+
+  @keyframes cosmic-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 }
 
 /* Base Styles */

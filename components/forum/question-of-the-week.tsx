@@ -23,7 +23,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
         >
-            <div className="bg-background/50 backdrop-blur-sm border border-black/20 dark:border-white/20 relative overflow-hidden group hover:border-primary/50 transition-colors duration-500">
+            <div className="cosmic-border relative overflow-hidden group transition-all duration-500">
                 {/* Lab Grid Background */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px]" />
 
