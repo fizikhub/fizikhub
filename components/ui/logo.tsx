@@ -141,22 +141,6 @@ export function Logo() {
             <div className="relative z-50 cursor-pointer" onClick={handleLaunch}>
                 <div className="relative w-10 h-10 flex items-center justify-center">
 
-                    {/* Magnetic Field Rings (Idle) */}
-                    {warpState === 'idle' && (
-                        <>
-                            <motion.div
-                                className="absolute inset-0 border border-primary/30 rounded-full"
-                                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-                                transition={{ rotate: { duration: 10, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity } }}
-                            />
-                            <motion.div
-                                className="absolute inset-1 border border-primary/20 rounded-full"
-                                animate={{ rotate: -360, scale: [1, 0.9, 1] }}
-                                transition={{ rotate: { duration: 7, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity, delay: 1 } }}
-                            />
-                        </>
-                    )}
-
                     {/* Charge Up Particles */}
                     {warpState === 'charging' && (
                         <div className="absolute inset-0">
@@ -168,19 +152,20 @@ export function Logo() {
 
                     {/* Rocket Container */}
                     <motion.div
-                        animate={controls}
+                        animate={warpState === 'idle' ? { y: [0, -4, 0] } : controls}
+                        transition={warpState === 'idle' ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
                         className="relative z-10"
                     >
-                        <Rocket className={`h-7 w-7 text-primary drop-shadow-[0_0_10px_rgba(234,88,12,0.5)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
+                        <Rocket className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
 
                         {/* Engine Glow */}
                         <motion.div
                             className="absolute bottom-1 left-1.5 w-4 h-4 bg-primary/50 rounded-full blur-md -z-10"
                             animate={{
-                                scale: warpState === 'charging' ? [1, 2] : [0.8, 1.2, 0.8],
-                                opacity: warpState === 'charging' ? [0.5, 1] : [0.4, 0.8, 0.4]
+                                scale: warpState === 'charging' ? [1, 2] : [0.6, 1, 0.6],
+                                opacity: warpState === 'charging' ? [0.5, 1] : [0.3, 0.6, 0.3]
                             }}
-                            transition={{ duration: warpState === 'charging' ? 0.1 : 1.5, repeat: Infinity }}
+                            transition={{ duration: warpState === 'charging' ? 0.1 : 2, repeat: Infinity }}
                         />
                     </motion.div>
 
