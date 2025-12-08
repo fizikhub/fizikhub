@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -91,14 +91,14 @@ export function ReadingControls({
 
             {!isZenMode && (
                 <div className="flex items-center gap-2 bg-background/80 backdrop-blur-md border border-white/10 p-2 rounded-full shadow-2xl">
-                    <Popover>
-                        <PopoverTrigger asChild>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary">
                                 <Type className="h-5 w-5" />
                             </Button>
-                        </PopoverTrigger>
-                        <PopoverContent side="top" align="end" className="w-64 glass-panel border-white/10 dark:border-white/10 backdrop-blur-xl p-4">
-                            <div className="space-y-4">
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="top" align="end" className="w-64 glass-panel border-white/10 dark:border-white/10 backdrop-blur-xl p-4">
+                            <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
                                 <div className="space-y-2">
                                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Yazı Boyutu</span>
                                     <div className="flex items-center justify-between bg-black/5 dark:bg-white/5 rounded-lg p-1">
@@ -154,8 +154,8 @@ export function ReadingControls({
                                     </div>
                                 </div>
                             </div>
-                        </PopoverContent>
-                    </Popover>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <div className="w-px h-4 bg-border/50" />
 
