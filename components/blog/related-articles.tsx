@@ -1,35 +1,10 @@
-import { createClient } from "@/lib/supabase-server";
 import { BlogCard } from "./blog-card";
 
 interface RelatedArticlesProps {
-    currentArticleId: number;
-    category: string;
+    articles: any[];
 }
 
-export async function RelatedArticles({ currentArticleId, category }: RelatedArticlesProps) {
-    const supabase = await createClient();
-
-    // Fetch 3 related articles from same category
-    const { data: articles } = await supabase
-        .from('articles')
-        .select(`
-            id,
-            title,
-            slug,
-            excerpt,
-            image_url,
-            category,
-            created_at,
-            author:author_id (
-                username,
-                full_name
-            )
-        `)
-        .eq('category', category)
-        .neq('id', currentArticleId)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
+export function RelatedArticles({ articles }: RelatedArticlesProps) {
     if (!articles || articles.length === 0) {
         return null;
     }
@@ -48,7 +23,7 @@ export async function RelatedArticles({ currentArticleId, category }: RelatedArt
                             published: true,
                             author: Array.isArray(article.author) && article.author.length > 0
                                 ? article.author[0]
-                                : null
+                                : article.author || null // Handle both array and object
                         }}
                     />
                 ))}

@@ -112,6 +112,27 @@ export default async function ArticlePage({ params }: PageProps) {
         }
     })) || [];
 
+    // Fetch related articles
+    const { data: relatedArticles } = await supabase
+        .from('articles')
+        .select(`
+            id,
+            title,
+            slug,
+            excerpt,
+            image_url,
+            category,
+            created_at,
+            author:author_id (
+                username,
+                full_name
+            )
+        `)
+        .eq('category', article.category || 'Genel')
+        .neq('id', article.id)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
     // Check if user is admin
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
@@ -169,6 +190,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     isLoggedIn={!!user}
                     isAdmin={isAdmin}
                     userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                    relatedArticles={relatedArticles || []}
                 />
             </div>
         </>

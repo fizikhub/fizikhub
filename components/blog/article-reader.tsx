@@ -23,6 +23,7 @@ interface ArticleReaderProps {
     isLoggedIn: boolean;
     isAdmin: boolean;
     userAvatar?: string;
+    relatedArticles: any[]; // New prop
 }
 
 export function ArticleReader({
@@ -34,7 +35,8 @@ export function ArticleReader({
     comments,
     isLoggedIn,
     isAdmin,
-    userAvatar
+    userAvatar,
+    relatedArticles // New prop
 }: ArticleReaderProps) {
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
@@ -127,7 +129,7 @@ export function ArticleReader({
                                     </div>
 
                                     <div className="mt-12">
-                                        <RelatedArticles currentArticleId={article.id} category={article.category || "Genel"} />
+                                        <RelatedArticles articles={relatedArticles} />
                                     </div>
 
                                     <div className="mt-12 sm:mt-16">
