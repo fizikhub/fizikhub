@@ -182,10 +182,10 @@ export function NotificationBell() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="relative rounded-full h-10 w-10 bg-background/20 backdrop-blur-sm border border-white/10 hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 group overflow-hidden"
+                        className="relative rounded-full h-10 w-10 hover:bg-primary/10 transition-all duration-300 group overflow-hidden"
                     >
                         {/* Glow effect behind the bell */}
-                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300" />
+                        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300" />
 
                         <motion.div
                             animate={unreadCount > 0 ? {
