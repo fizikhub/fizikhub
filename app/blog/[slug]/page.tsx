@@ -1,17 +1,14 @@
 import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { ShareButtons } from "@/components/blog/share-buttons";
-import { LikeButton } from "@/components/articles/like-button";
-import { CommentSection } from "@/components/articles/comment-section";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
-import { AuthorCard } from "@/components/blog/author-card";
 import { ArticleHero } from "@/components/articles/article-hero";
-import { BookmarkButton } from "@/components/bookmark-button";
-import { ReportButton } from "@/components/report-button";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
+import { calculateReadingTime } from "@/lib/reading-time";
+import { Metadata } from "next";
+import { ArticleReader } from "@/components/blog/article-reader";
 import { calculateReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 
@@ -162,66 +159,18 @@ export default async function ArticlePage({ params }: PageProps) {
                 {/* Immersive Hero */}
                 <ArticleHero article={article} readingTime={readingTime} />
 
-                <div className="container max-w-7xl mx-auto px-0 sm:px-6 md:px-8 -mt-10 sm:-mt-20 relative z-20">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 md:gap-10">
-                        {/* Article Content */}
-                        <article className="lg:col-span-10 bg-background/80 backdrop-blur-xl rounded-t-[32px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border-x-0 sm:border border-t border-b-0 sm:border-b border-white/10 min-h-screen sm:min-h-0">
-                            {/* Author Card at Top */}
-                            <div className="mb-8 sm:mb-10">
-                                <AuthorCard author={article.author || {}} />
-                            </div>
-
-                            {/* Article Body with Improved Typography */}
-                            <MarkdownRenderer content={article.content || ""} className="prose-lg sm:prose-xl leading-relaxed max-w-none" />
-
-                            {/* Like, Bookmark, Share & Report Section */}
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mt-12 pt-8 border-t border-border/40">
-                                <div className="flex items-center gap-2">
-                                    <LikeButton
-                                        articleId={article.id}
-                                        initialLiked={!!userLike}
-                                        initialCount={likeCount || 0}
-                                    />
-                                    <BookmarkButton
-                                        type="article"
-                                        itemId={article.id}
-                                        initialBookmarked={!!userBookmark}
-                                    />
-                                    <ReportButton
-                                        contentType="article"
-                                        contentId={article.id}
-                                    />
-                                </div>
-                                <ShareButtons title={article.title} slug={article.slug} />
-                            </div>
-
-                            {/* Related Articles */}
-                            <div className="mt-12">
-                                <RelatedArticles currentArticleId={article.id} category={article.category || "Genel"} />
-                            </div>
-
-                            {/* Comments Section */}
-                            <div className="mt-12 sm:mt-16">
-                                <CommentSection
-                                    articleId={article.id}
-                                    comments={comments || []}
-                                    isLoggedIn={!!user}
-                                    isAdmin={isAdmin}
-                                    userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                                />
-                            </div>
-                        </article>
-
-                        {/* Table of Contents Sidebar */}
-                        <aside className="hidden lg:block lg:col-span-2 space-y-8">
-                            <div className="sticky top-24">
-                                <TableOfContents content={article.content || ""} />
-
-                                {/* Mobile/Tablet Only: Floating Action Button (Optional future addition) */}
-                            </div>
-                        </aside>
-                    </div>
-                </div>
+                {/* State-managed Article Reader */}
+                <ArticleReader
+                    article={article}
+                    readingTime={readingTime}
+                    likeCount={likeCount || 0}
+                    initialLiked={!!userLike}
+                    initialBookmarked={!!userBookmark}
+                    comments={comments || []}
+                    isLoggedIn={!!user}
+                    isAdmin={isAdmin}
+                    userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                />
             </div>
         </>
     );
