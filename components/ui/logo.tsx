@@ -156,19 +156,54 @@ export function Logo() {
                         transition={warpState === 'idle' ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined}
                         className="relative z-10"
                     >
-                        {/* Custom Minimal Rocket SVG */}
+                        {/* Custom "Cosmic Voyager" Rocket SVG */}
                         <svg
                             viewBox="0 0 24 24"
-                            className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`}
-                            fill="currentColor"
+                            className={`h-8 w-8 text-primary drop-shadow-[0_0_20px_rgba(234,88,12,0.8)] ${warpState === 'charging' ? 'animate-pulse' : ''}`}
+                            fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                         >
-                            {/* Main Fuselage - Sleek Arrowhead */}
-                            <path d="M11.5 2C11.5 2 12.5 2 12.5 2C15.5 8 18.5 14 18.5 17C18.5 20.5 15.5 22 12 22C8.5 22 5.5 20.5 5.5 17C5.5 14 8.5 8 11.5 2Z" fillOpacity="0.8" />
-                            {/* Core/Window - Small Contrast */}
-                            <circle cx="12" cy="16" r="1.5" className="fill-background" />
-                            {/* Fins - Detached for futuristic look */}
-                            <path d="M5 16L2 20M19 16L22 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            {/* Flame (Animated Pulse Effect) */}
+                            <path
+                                d="M12 22C12 22 10 19 10 17H14C14 19 12 22 12 22Z"
+                                className="fill-orange-500 animate-pulse"
+                                style={{ opacity: warpState === 'idle' ? 0.6 : 1 }}
+                            />
+
+                            {/* Left Wing */}
+                            <path
+                                d="M6 14L2 19V20H7L8 16"
+                                fill="currentColor"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+
+                            {/* Right Wing */}
+                            <path
+                                d="M18 14L22 19V20H17L16 16"
+                                fill="currentColor"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+
+                            {/* Main Fuselage */}
+                            <path
+                                d="M12 2C12 2 6 8 6 13C6 17 8 19 12 19C16 19 18 17 18 13C18 8 12 2 12 2Z"
+                                fill="currentColor"
+                                fillOpacity="0.9"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+
+                            {/* Cockpit Window */}
+                            <circle cx="12" cy="10" r="2.5" className="fill-background" stroke="currentColor" strokeWidth="1.5" />
+                            <circle cx="12" cy="10" r="1" className="fill-current opacity-50" />
                         </svg>
 
                         {/* Engine Glow */}
