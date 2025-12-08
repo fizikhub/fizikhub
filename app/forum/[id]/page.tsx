@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck } from "lucide-react";
+import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck, Edit2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
@@ -18,6 +18,7 @@ import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { ReportButton } from "@/components/report-button";
 import { Flag } from "lucide-react";
+import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
 
 import { Metadata } from "next";
 
@@ -305,6 +306,12 @@ export default async function QuestionPage({ params }: PageProps) {
                                 {/* Content */}
                                 <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-6 sm:mb-8">
                                     <MarkdownRenderer content={question.content} />
+                                    {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
+                                        <div className="mt-4 text-xs text-muted-foreground italic flex items-center gap-1">
+                                            <Edit2 className="h-3 w-3" />
+                                            (Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })})
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Tags */}
@@ -418,7 +425,8 @@ export default async function QuestionPage({ params }: PageProps) {
                                 <CardHeader className="pb-3 border-b-2 border-destructive">
                                     <CardTitle className="text-xs font-black text-destructive uppercase tracking-wider">İŞLEMLER</CardTitle>
                                 </CardHeader>
-                                <CardContent>
+                                <CardContent className="space-y-2">
+                                    <EditQuestionDialog questionId={question.id} initialContent={question.content} />
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
                                 </CardContent>
                             </Card>

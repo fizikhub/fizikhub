@@ -131,6 +131,45 @@ export async function createQuestion(formData: { title: string; content: string;
     return { success: true };
 }
 
+export async function updateQuestion(questionId: number, content: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Get question to check ownership
+    const { data: question } = await supabase
+        .from('questions')
+        .select('author_id')
+        .eq('id', questionId)
+        .single();
+
+    if (!question) {
+        return { success: false, error: "Soru bulunamadı." };
+    }
+
+    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+
+    if (question.author_id !== user.id && !isAdmin) {
+        return { success: false, error: "Bu soruyu düzenleme yetkiniz yok." };
+    }
+
+    const { error } = await supabase
+        .from('questions')
+        .update({ content, updated_at: new Date().toISOString() })
+        .eq('id', questionId);
+
+    if (error) {
+        console.error("Update Question Error:", error);
+        return { success: false, error: "Soru güncellenirken hata oluştu." };
+    }
+
+    revalidatePath(`/forum/${questionId}`);
+    return { success: true };
+}
+
 export async function createAnswer(formData: { content: string; questionId: number }) {
     const supabase = await createClient();
 
