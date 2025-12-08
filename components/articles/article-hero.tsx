@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 
 interface ArticleHeroProps {
     article: Article;
-    readingTime: number;
+    readingTime: string;
 }
 
 export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
@@ -103,7 +103,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
 
                     <div className="flex items-center gap-2 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-sm sm:text-base">
                         <Clock className="w-4 h-4" />
-                        <span>{formatReadingTime(readingTime)} okuma</span>
+                        <span>{readingTime} okuma</span>
                     </div>
                 </motion.div>
             </motion.div>
