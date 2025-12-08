@@ -5,8 +5,13 @@ import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
-// Revalidate every 2 minutes for active forum
+// Revalidate every 2 minutes for active active forum
 export const revalidate = 120;
+
+export const metadata = {
+    title: "Bilim Forumu | Fizikhub",
+    description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren. TYT/AYT fizik, kuantum, astrofizik ve daha fazlası.",
+};
 
 interface ForumPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -73,47 +78,70 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         .limit(1)
         .single();
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Fizikhub Bilim Forumu',
+        description: 'Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.',
+        url: 'https://fizikhub.com/forum',
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: questions?.map((q, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                url: `https://fizikhub.com/forum/${q.id}`,
+                name: q.title
+            })) || []
+        }
+    };
+
     return (
-        <div className="bg-background pb-20">
-            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
-                <ModernForumHeader />
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <div className="bg-background pb-20">
+                <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
+                    <ModernForumHeader />
 
-                {/* Mobile Question of the Week */}
-                <div className="md:hidden mb-6">
-                    <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
-                    {/* Desktop Sidebar */}
-                    <div className="hidden md:block sticky top-24 h-fit space-y-6">
+                    {/* Mobile Question of the Week */}
+                    <div className="md:hidden mb-6">
                         <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
-                        <ForumSidebar />
                     </div>
 
-                    {/* Main Content */}
-                    <div className="space-y-3 sm:space-y-4 md:space-y-6 min-w-0">
-                        {!questions || questions.length === 0 ? (
-                            <div className="text-center py-12 sm:py-20 border-2 border-dashed border-white/10 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-sm">
-                                <div className="max-w-md mx-auto px-4">
-                                    <p className="text-muted-foreground text-base sm:text-lg mb-2">
-                                        {searchQuery
-                                            ? `"${searchQuery}" için sonuç bulunamadı.`
-                                            : "Henüz hiç soru sorulmamış."}
-                                    </p>
-                                    <p className="text-xs sm:text-sm text-muted-foreground">
-                                        {!searchQuery && "İlk soran sen ol!"}
-                                    </p>
+                    <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
+                        {/* Desktop Sidebar */}
+                        <div className="hidden md:block sticky top-24 h-fit space-y-6">
+                            <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
+                            <ForumSidebar />
+                        </div>
+
+                        {/* Main Content */}
+                        <div className="space-y-3 sm:space-y-4 md:space-y-6 min-w-0">
+                            {!questions || questions.length === 0 ? (
+                                <div className="text-center py-12 sm:py-20 border-2 border-dashed border-white/10 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-sm">
+                                    <div className="max-w-md mx-auto px-4">
+                                        <p className="text-muted-foreground text-base sm:text-lg mb-2">
+                                            {searchQuery
+                                                ? `"${searchQuery}" için sonuç bulunamadı.`
+                                                : "Henüz hiç soru sorulmamış."}
+                                        </p>
+                                        <p className="text-xs sm:text-sm text-muted-foreground">
+                                            {!searchQuery && "İlk soran sen ol!"}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <QuestionList
-                                initialQuestions={questions}
-                                userVotes={userVotes}
-                            />
-                        )}
+                            ) : (
+                                <QuestionList
+                                    initialQuestions={questions}
+                                    userVotes={userVotes}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

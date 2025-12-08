@@ -3,6 +3,11 @@ import { createClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";
 
+export const metadata = {
+    title: "Bilim Sözlüğü | Fizikhub",
+    description: "Fizik ve astronomi terimleri sözlüğü. Karmaşık kavramların anlaşılır açıklamaları.",
+};
+
 export default async function DictionaryPage() {
     const supabase = await createClient();
     const terms = await getDictionaryTerms(supabase);

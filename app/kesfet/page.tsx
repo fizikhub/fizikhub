@@ -4,6 +4,11 @@ import { ModernExploreView } from "@/components/explore/modern-explore-view";
 // Revalidate every 5 minutes for better performance
 export const revalidate = 300;
 
+export const metadata = {
+    title: "Keşfet | Fizikhub",
+    description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
+};
+
 export default async function DiscoverPage({
     searchParams,
 }: {
