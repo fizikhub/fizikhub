@@ -199,7 +199,7 @@ export function NotificationBell() {
                         </motion.div>
 
                         {unreadCount > 0 && (
-                            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-primary border-[1.5px] border-background shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse" />
+                            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-[1.5px] border-background shadow-[0_0_8px_rgba(239,68,68,0.6)] animate-pulse" />
                         )}
                     </Button>
                 </DropdownMenuTrigger>
