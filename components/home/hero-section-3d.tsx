@@ -7,8 +7,6 @@ import Link from "next/link";
 
 import { SpaceBackground } from "./space-background";
 
-import { GlitchText } from "@/components/ui/glitch-text";
-
 export function HeroSection3D() {
     return (
         <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden border-b-2 border-border">
@@ -39,7 +37,7 @@ export function HeroSection3D() {
                         BİLİMİ Tİ'YE ALIYORUZ
                         <br />
                         <span className="text-primary relative inline-block mx-2 my-1 pb-1 drop-shadow-[0_0_10px_rgba(255,255,0,0.3)]">
-                            AMA&nbsp;&nbsp;<GlitchText text="CİDDİLİ" className="text-primary" />
+                            AMA&nbsp;&nbsp;CİDDİLİ
                             <svg className="absolute w-full h-3 -bottom-1 left-0 text-white" viewBox="0 0 100 10" preserveAspectRatio="none">
                                 <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
                             </svg>
