@@ -89,7 +89,7 @@ export function ChatWindow({
     };
 
     return (
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden pb-20 md:pb-0">
             {/* Messages */}
             <div
                 ref={scrollRef}
@@ -109,8 +109,8 @@ export function ChatWindow({
                             >
                                 <div
                                     className={`max-w-[70%] px-4 py-2 rounded-2xl ${isMe
-                                            ? "bg-primary text-primary-foreground rounded-br-sm"
-                                            : "bg-muted rounded-bl-sm"
+                                        ? "bg-primary text-primary-foreground rounded-br-sm"
+                                        : "bg-muted rounded-bl-sm"
                                         }`}
                                 >
                                     <p className="text-sm break-words">{msg.content}</p>
