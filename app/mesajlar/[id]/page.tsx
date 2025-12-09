@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export default async function ConversationPage({
     params,
 }: {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -18,7 +18,7 @@ export default async function ConversationPage({
         redirect("/login");
     }
 
-    const conversationId = params.id;
+    const { id: conversationId } = await params;
     const messages = await getMessages(conversationId);
 
     // Mark messages as read
