@@ -207,5 +207,16 @@ GRANT EXECUTE ON FUNCTION create_conversation(UUID) TO service_role;
 GRANT EXECUTE ON FUNCTION update_conversation_timestamp() TO authenticated;
 GRANT EXECUTE ON FUNCTION update_conversation_timestamp() TO service_role;
 
--- 10. DONE
--- All tables, indexes, policies, functions, and permissions have been set up successfully
+-- 11. ENABLE REALTIME
+-- This is critical for the chat window to receive new messages instantly
+BEGIN;
+  -- Check if publication exists, if not create it (standard in Supabase)
+  -- Then add tables to publication
+  DROP PUBLICATION IF EXISTS supabase_realtime;
+  CREATE PUBLICATION supabase_realtime FOR ALL TABLES;
+COMMIT;
+
+-- Or specifically for our tables if you don't want to expose everything:
+-- ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
+
