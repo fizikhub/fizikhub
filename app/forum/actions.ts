@@ -158,7 +158,11 @@ export async function updateQuestion(questionId: number, content: string) {
 
     console.log('[updateQuestion] Attempting update:', { questionId, contentLength: content.length, userId: user.id });
 
-    const { error, data } = await supabase
+    // Use admin client to bypass RLS after permission check
+    const { createAdminClient } = await import('@/lib/supabase-admin');
+    const adminClient = createAdminClient();
+
+    const { error, data } = await adminClient
         .from('questions')
         .update({ content })
         .eq('id', questionId)
