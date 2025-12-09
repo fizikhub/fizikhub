@@ -156,15 +156,20 @@ export async function updateQuestion(questionId: number, content: string) {
         return { success: false, error: "Bu soruyu düzenleme yetkiniz yok." };
     }
 
-    const { error } = await supabase
+    console.log('[updateQuestion] Attempting update:', { questionId, contentLength: content.length, userId: user.id });
+
+    const { error, data } = await supabase
         .from('questions')
         .update({ content })
-        .eq('id', questionId);
+        .eq('id', questionId)
+        .select();
 
     if (error) {
         console.error("Update Question Error:", error);
-        return { success: false, error: "Soru güncellenirken hata oluştu." };
+        return { success: false, error: `Soru güncellenirken hata oluştu: ${error.message}` };
     }
+
+    console.log('[updateQuestion] Update successful:', data);
 
     revalidatePath('/forum');
     revalidatePath(`/forum/${questionId}`);
