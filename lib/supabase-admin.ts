@@ -1,5 +1,4 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
-import { Database } from '@/types/database'
 
 /**
  * Admin client for server-side operations that need to bypass RLS
@@ -13,7 +12,7 @@ export function createAdminClient() {
         throw new Error('Missing Supabase admin credentials')
     }
 
-    return createSupabaseClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+    return createSupabaseClient(supabaseUrl, supabaseServiceRoleKey, {
         auth: {
             autoRefreshToken: false,
             persistSession: false
