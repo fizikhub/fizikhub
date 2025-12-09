@@ -200,18 +200,36 @@ export async function startConversation(otherUserId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    console.log("=== START CONVERSATION DEBUG ===");
+    console.log("Current user ID:", user?.id);
+    console.log("Other user ID:", otherUserId);
+
     if (!user) {
+        console.error("User not authenticated");
         return { success: false, error: "Not authenticated" };
     }
 
     // Use the database function to create or get conversation
+    console.log("Calling create_conversation RPC...");
     const { data: conversationId, error } = await supabase
         .rpc('create_conversation', { other_user_id: otherUserId });
+
+    console.log("RPC Response - conversationId:", conversationId);
+    console.log("RPC Response - error:", error);
 
     if (error) {
         console.error("Start conversation error:", error);
         return { success: false, error: error.message };
     }
+
+    // Verify participants were created
+    const { data: participants, error: participantsError } = await supabase
+        .from('conversation_participants')
+        .select('*')
+        .eq('conversation_id', conversationId);
+
+    console.log("Participants in conversation:", participants);
+    console.log("Participants error:", participantsError);
 
     revalidatePath('/mesajlar');
     return { success: true, conversationId };
