@@ -156,13 +156,8 @@ export async function updateQuestion(questionId: number, content: string) {
         return { success: false, error: "Bu soruyu düzenleme yetkiniz yok." };
     }
 
-    console.log('[updateQuestion] Attempting update:', { questionId, contentLength: content.length, userId: user.id });
-
-    // Use admin client to bypass RLS after permission check
-    const { createAdminClient } = await import('@/lib/supabase-admin');
-    const adminClient = createAdminClient();
-
-    const { error, data } = await adminClient
+    // Use standard client (and fix RLS instead)
+    const { error, data } = await supabase
         .from('questions')
         .update({ content })
         .eq('id', questionId)
@@ -170,7 +165,7 @@ export async function updateQuestion(questionId: number, content: string) {
 
     if (error) {
         console.error("Update Question Error:", error);
-        return { success: false, error: `Soru güncellenirken hata oluştu: ${error.message}` };
+        return { success: false, error: "Soru güncellenirken hata oluştu." };
     }
 
     console.log('[updateQuestion] Update successful:', data);
