@@ -5,6 +5,7 @@ import { MessageCircle } from "lucide-react";
 import { startConversation } from "@/app/mesajlar/actions";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface StartChatButtonProps {
     otherUserId: string;
@@ -12,6 +13,7 @@ interface StartChatButtonProps {
 
 export function StartChatButton({ otherUserId }: StartChatButtonProps) {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const handleStartChat = async () => {
         setLoading(true);
@@ -19,6 +21,8 @@ export function StartChatButton({ otherUserId }: StartChatButtonProps) {
             const result = await startConversation(otherUserId);
             if (!result?.success && result?.error) {
                 toast.error(result.error);
+            } else if (result?.success && result?.conversationId) {
+                router.push(`/mesajlar/${result.conversationId}`);
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
