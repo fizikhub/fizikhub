@@ -67,7 +67,7 @@ export function AnswerLikeButton({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={cn(
-                "flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors",
+                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[60px]",
                 isLiked
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted/50"
@@ -84,7 +84,7 @@ export function AnswerLikeButton({
                 >
                     <ArrowBigUp
                         className={cn(
-                            "h-6 w-6 transition-all",
+                            "h-8 w-8 transition-all",
                             isLiked && "fill-primary"
                         )}
                     />
@@ -96,8 +96,8 @@ export function AnswerLikeButton({
                 initial={{ y: 5, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 className={cn(
-                    "text-xs font-medium tabular-nums",
-                    isLiked && "font-bold"
+                    "text-base font-bold tabular-nums",
+                    isLiked && "text-primary"
                 )}
             >
                 {likeCount}

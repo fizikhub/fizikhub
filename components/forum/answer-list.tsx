@@ -230,9 +230,9 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     };
 
     return (
-        <div className="space-y-4 sm:space-y-5">
+        <div className="space-y-6">
             {/* Answer List */}
-            <div className="space-y-4">
+            <div className="space-y-6">
                 {answers.length === 0 ? (
                     <div className="py-12 text-center border rounded-xl bg-muted/10 border-dashed border-muted-foreground/20">
                         <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -246,23 +246,21 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                         <div
                             key={answer.id}
                             className={cn(
-                                "group bg-card border-2 transition-all duration-200",
-                                answer.is_accepted
-                                    ? "border-green-500/50 bg-green-500/5"
-                                    : "border-border hover:border-border/80"
+                                "bg-card border border-border rounded-lg overflow-hidden",
+                                answer.is_accepted && "border-green-500/50 bg-green-500/5"
                             )}
                         >
                             {/* Accepted Badge */}
                             {answer.is_accepted && (
-                                <div className="bg-green-500 text-white text-xs font-bold px-4 py-1.5 flex items-center gap-1.5">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />
-                                    KABUL EDİLEN CEVAP
+                                <div className="bg-green-500 text-white text-sm font-bold px-6 py-2 flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4" />
+                                    Kabul Edilen Cevap
                                 </div>
                             )}
 
-                            <div className="flex gap-4 p-5 sm:p-6">
-                                {/* Left: Vote Section - Quora Style */}
-                                <div className="flex flex-col items-center gap-2 min-w-[48px]">
+                            <div className="flex gap-6 p-6">
+                                {/* Left: Upvote Section - Exactly like Quora */}
+                                <div className="flex flex-col items-center gap-2 pt-1">
                                     <AnswerLikeButton
                                         answerId={answer.id}
                                         initialLikeCount={answer.likeCount || 0}
@@ -272,38 +270,37 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                 </div>
 
                                 {/* Right: Content Section */}
-                                <div className="flex-1 min-w-0 space-y-4">
-                                    {/* Author Header */}
-                                    <div className="flex items-start justify-between gap-3">
-                                        <div className="flex items-center gap-2.5">
+                                <div className="flex-1 min-w-0">
+                                    {/* Author Info - Like Quora */}
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-3">
                                             <Link href={`/kullanici/${answer.profiles?.username}`}>
-                                                <Avatar className="h-10 w-10 ring-2 ring-border hover:ring-primary/30 transition-all">
+                                                <Avatar className="h-12 w-12 ring-2 ring-border hover:ring-primary/30 transition-all cursor-pointer">
                                                     <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                                    <AvatarFallback className="text-sm font-bold bg-primary/10 text-primary">
+                                                    <AvatarFallback className="text-base font-bold bg-primary/10 text-primary">
                                                         {answer.profiles?.username?.[0]?.toUpperCase()}
                                                     </AvatarFallback>
                                                 </Avatar>
                                             </Link>
                                             <div>
-                                                <div className="flex items-center gap-1.5">
+                                                <div className="flex items-center gap-2">
                                                     <Link
                                                         href={`/kullanici/${answer.profiles?.username}`}
-                                                        className="font-semibold text-sm hover:text-primary transition-colors"
+                                                        className="font-bold text-base hover:text-primary transition-colors"
                                                     >
-                                                        @{answer.profiles?.username || "Anonim"}
+                                                        {answer.profiles?.username || "Anonim"}
                                                     </Link>
                                                     {answer.profiles?.is_verified && (
-                                                        <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500/10" />
+                                                        <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                                     )}
                                                 </div>
-                                                <span className="text-xs text-muted-foreground">
-                                                    <span className="hidden sm:inline">{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
-                                                    <span className="sm:hidden">{formatDistanceToNow(new Date(answer.created_at), { locale: tr })}</span>
-                                                </span>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
+                                                </p>
                                             </div>
                                         </div>
 
-                                        {/* Actions */}
+                                        {/* Actions - Admin/Author */}
                                         <div className="flex items-center gap-1">
                                             {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
                                                 <Button
@@ -311,14 +308,15 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                                     size="sm"
                                                     onClick={() => handleToggleAccept(answer.id)}
                                                     className={cn(
-                                                        "h-8 w-8 p-0",
+                                                        "h-9 px-3",
                                                         answer.is_accepted
                                                             ? "text-green-600 hover:text-green-700"
                                                             : "text-muted-foreground hover:text-green-600"
                                                     )}
                                                     title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
                                                 >
-                                                    <CheckCircle2 className={cn("h-4 w-4", answer.is_accepted && "fill-current")} />
+                                                    <CheckCircle2 className={cn("h-4 w-4 mr-1", answer.is_accepted && "fill-current")} />
+                                                    <span className="text-xs">{answer.is_accepted ? "Kaldır" : "Kabul Et"}</span>
                                                 </Button>
                                             )}
                                             <DeleteAnswerButton
@@ -330,7 +328,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                                 resourceId={answer.id}
                                                 resourceType="answer"
                                                 trigger={
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                                    <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive">
                                                         <Flag className="h-4 w-4" />
                                                     </Button>
                                                 }
@@ -338,72 +336,70 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                                         </div>
                                     </div>
 
-                                    {/* Content */}
-                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none">
-                                        <MarkdownRenderer content={answer.content} className="leading-relaxed" />
+                                    {/* Answer Content - Larger, more readable */}
+                                    <div className="prose prose-base md:prose-lg prose-neutral dark:prose-invert max-w-none mb-6">
+                                        <MarkdownRenderer content={answer.content} />
                                     </div>
 
-                                    {/* Comments */}
-                                    <div className="pt-3 border-t border-border/50 space-y-3">
-                                        <div className="flex items-center gap-3">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-8 text-muted-foreground hover:text-foreground gap-2 px-2 -ml-2"
-                                                onClick={() => toggleComments(answer.id)}
-                                            >
-                                                <MessageSquare className="h-4 w-4" />
-                                                <span className="text-xs font-medium">
-                                                    {answer.comments && answer.comments.length > 0
-                                                        ? `${answer.comments.length} Yorum`
-                                                        : "Yorum Yap"}
-                                                </span>
-                                            </Button>
-                                        </div>
+                                    {/* Action Bar - Like Quora */}
+                                    <div className="flex items-center gap-4 pt-4 border-t border-border/50">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-muted-foreground hover:text-foreground gap-2"
+                                            onClick={() => toggleComments(answer.id)}
+                                        >
+                                            <MessageSquare className="h-4 w-4" />
+                                            <span className="text-sm font-medium">
+                                                {answer.comments && answer.comments.length > 0
+                                                    ? `${answer.comments.length} Yorum`
+                                                    : "Yorum Yap"}
+                                            </span>
+                                        </Button>
+                                    </div>
 
-                                        {/* Comments Section */}
-                                        {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
-                                            <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                                                <RealtimeCommentList
-                                                    answerId={answer.id}
-                                                    initialComments={answer.comments || []}
-                                                    currentUserId={user?.id}
-                                                    questionId={questionId}
-                                                    onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
-                                                    onCommentsChange={(comments) => {
-                                                        setAnswers(prev => prev.map(a => {
-                                                            if (a.id === answer.id) {
-                                                                if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
-                                                                    return { ...a, comments };
-                                                                }
+                                    {/* Comments Section */}
+                                    {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
+                                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                            <RealtimeCommentList
+                                                answerId={answer.id}
+                                                initialComments={answer.comments || []}
+                                                currentUserId={user?.id}
+                                                questionId={questionId}
+                                                onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
+                                                onCommentsChange={(comments) => {
+                                                    setAnswers(prev => prev.map(a => {
+                                                        if (a.id === answer.id) {
+                                                            if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
+                                                                return { ...a, comments };
                                                             }
-                                                            return a;
-                                                        }));
-                                                    }}
-                                                />
+                                                        }
+                                                        return a;
+                                                    }));
+                                                }}
+                                            />
 
-                                                {expandedComments[answer.id] ? (
-                                                    <AnswerCommentForm
-                                                        answerId={answer.id}
-                                                        questionId={questionId}
-                                                        onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
-                                                        onCancel={() => toggleComments(answer.id)}
-                                                    />
-                                                ) : (
-                                                    user && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="mt-2 text-xs text-muted-foreground hover:text-primary -ml-2"
-                                                            onClick={() => toggleComments(answer.id)}
-                                                        >
-                                                            Yorum Yaz
-                                                        </Button>
-                                                    )
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
+                                            {expandedComments[answer.id] ? (
+                                                <AnswerCommentForm
+                                                    answerId={answer.id}
+                                                    questionId={questionId}
+                                                    onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
+                                                    onCancel={() => toggleComments(answer.id)}
+                                                />
+                                            ) : (
+                                                user && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="mt-2 text-sm text-muted-foreground hover:text-primary"
+                                                        onClick={() => toggleComments(answer.id)}
+                                                    >
+                                                        Yorum Ekle
+                                                    </Button>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -413,8 +409,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
             {/* New Answer Form */}
             {user ? (
-                <div className="border-2 border-border bg-card p-5 sm:p-6">
-                    <h3 className="text-base font-bold mb-4">Cevabınızı Yazın</h3>
+                <div className="border border-border bg-card rounded-lg p-6">
+                    <h3 className="text-lg font-bold mb-4">Cevabınızı Yazın</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="min-h-[200px] border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <MarkdownEditor
