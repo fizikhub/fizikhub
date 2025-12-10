@@ -9,7 +9,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { User, MessageSquare, BadgeCheck, CheckCircle2 } from "lucide-react";
+import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createAnswer, toggleAnswerAcceptance } from "@/app/forum/actions";
 import { Database } from "@/types/database";
@@ -19,6 +19,7 @@ import { Flag } from "lucide-react";
 import { AnswerLikeButton } from "@/components/forum/answer-like-button";
 import { RealtimeCommentList } from "@/components/forum/realtime-comment-list";
 import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
+import { cn } from "@/lib/utils";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;
@@ -30,7 +31,7 @@ type Answer = Database['public']['Tables']['answers']['Row'] & {
     } | null;
     likeCount?: number;
     isLiked?: boolean;
-    comments?: any[]; // Using any[] for now to avoid circular type issues, ideally define Comment type
+    comments?: any[];
 };
 
 interface AnswerListProps {
@@ -40,7 +41,6 @@ interface AnswerListProps {
 }
 
 export function AnswerList({ questionId, initialAnswers, questionAuthorId }: AnswerListProps) {
-    // Sort answers: accepted first, then by date
     const sortedAnswers = [...initialAnswers].sort((a, b) => {
         if (a.is_accepted === b.is_accepted) {
             return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -53,7 +53,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState<any>(null);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
-    // Fix: Initialize supabase client once
     const [supabase] = useState(() => createClient());
 
     const toggleComments = (answerId: number) => {
@@ -100,7 +99,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
             setUser(session?.user ?? null);
         });
 
-        // Realtime subscription for answers
         const channel = supabase
             .channel(`answers_${questionId}`)
             .on(
@@ -112,7 +110,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                     filter: `question_id=eq.${questionId}`
                 },
                 async (payload) => {
-                    // Fetch the complete answer with profile data
                     const { data: newAnswer } = await supabase
                         .from('answers')
                         .select(`
@@ -129,7 +126,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
                     if (newAnswer) {
                         setAnswers((current) => {
-                            // Avoid duplicates
                             if (current.some(a => a.id === newAnswer.id)) return current;
                             return [...current, { ...newAnswer, comments: [] }];
                         });
@@ -212,19 +208,16 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
             const result = await toggleAnswerAcceptance(answerId, questionId);
             if (!result.success) throw new Error(result.error);
 
-            // Optimistic update
             setAnswers(answers.map(a => {
                 if (a.id === answerId) {
                     return { ...a, is_accepted: !a.is_accepted };
                 }
-                // If we are accepting this one, unaccept others
                 if (!answers.find(ans => ans.id === answerId)?.is_accepted) {
                     return { ...a, is_accepted: false };
                 }
                 return a;
             }).sort((a, b) => {
-                // Re-sort
-                if (a.id === answerId && !a.is_accepted) return -1; // Newly accepted goes top
+                if (a.id === answerId && !a.is_accepted) return -1;
                 if (b.id === answerId && !b.is_accepted) return 1;
                 if (a.is_accepted === b.is_accepted) return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
                 return a.is_accepted ? -1 : 1;
@@ -237,164 +230,181 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     };
 
     return (
-        <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-4 sm:space-y-5">
             {/* Answer List */}
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-4">
                 {answers.length === 0 ? (
-                    <div className="py-8 sm:py-12 text-center border rounded-xl sm:rounded-2xl bg-muted/10 border-dashed border-muted-foreground/20">
-                        <div className="bg-muted/20 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+                    <div className="py-12 text-center border rounded-xl bg-muted/10 border-dashed border-muted-foreground/20">
+                        <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <MessageSquare className="h-6 w-6 text-muted-foreground" />
                         </div>
-                        <h3 className="text-base sm:text-lg font-medium mb-1">Henüz cevap yok</h3>
-                        <p className="text-muted-foreground text-xs sm:text-sm">Bu soruya ilk cevabı sen ver!</p>
+                        <h3 className="text-lg font-medium mb-1">Henüz cevap yok</h3>
+                        <p className="text-muted-foreground text-sm">Bu soruya ilk cevabı sen ver!</p>
                     </div>
                 ) : (
                     answers.map((answer) => (
-                        <div key={answer.id} className={`group relative rounded-lg sm:rounded-xl border-2 p-4 sm:p-5 md:p-6 transition-all ${answer.is_accepted ? 'border-green-500 bg-green-500/5 shadow-[8px_8px_0px_0px_rgba(34,197,94,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]' : 'border-black dark:border-white bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'} duration-200`}>
+                        <div
+                            key={answer.id}
+                            className={cn(
+                                "group bg-card border-2 transition-all duration-200",
+                                answer.is_accepted
+                                    ? "border-green-500/50 bg-green-500/5"
+                                    : "border-border hover:border-border/80"
+                            )}
+                        >
+                            {/* Accepted Badge */}
                             {answer.is_accepted && (
-                                <div className="absolute -top-2 sm:-top-3 right-4 sm:right-6 bg-green-500 text-white text-[10px] sm:text-xs font-black px-2 sm:px-3 py-0.5 sm:py-1 rounded border-2 border-white dark:border-black flex items-center gap-0.5 sm:gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                    <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                                    ÇÖZÜM
+                                <div className="bg-green-500 text-white text-xs font-bold px-4 py-1.5 flex items-center gap-1.5">
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    KABUL EDİLEN CEVAP
                                 </div>
                             )}
 
-                            <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2">
-                                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                                    <Link
-                                        href={`/kullanici/${answer.profiles?.username}`}
-                                        className="relative flex-shrink-0"
-                                    >
-                                        <Avatar className="h-8 w-8 sm:h-10 sm:w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
-                                            <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="text-xs sm:text-sm font-bold bg-primary/10 text-primary">
-                                                {answer.profiles?.username?.[0]?.toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </Link>
-                                    <div className="min-w-0 flex-1">
-                                        <div className="flex items-center gap-1">
-                                            <Link
-                                                href={`/kullanici/${answer.profiles?.username}`}
-                                                className="font-semibold text-xs sm:text-sm hover:text-primary transition-colors truncate block"
-                                            >
-                                                @{answer.profiles?.username || "Anonim"}
-                                            </Link>
-                                            {answer.profiles?.is_verified && (
-                                                <BadgeCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-500 fill-blue-500/10 flex-shrink-0" />
-                                            )}
-                                        </div>
-                                        <span className="text-[10px] sm:text-xs text-muted-foreground block">
-                                            <span className="hidden sm:inline">{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
-                                            <span className="sm:hidden">{formatDistanceToNow(new Date(answer.created_at), { locale: tr })}</span>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1 flex-shrink-0">
-                                    {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleToggleAccept(answer.id)}
-                                            className={`h-7 w-7 sm:h-8 sm:w-8 p-0 ${answer.is_accepted ? 'text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20' : 'text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/10'}`}
-                                            title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
-                                        >
-                                            <CheckCircle2 className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${answer.is_accepted ? 'fill-current' : ''}`} />
-                                        </Button>
-                                    )}
-                                    <DeleteAnswerButton
-                                        answerId={answer.id}
-                                        questionId={questionId}
-                                        authorId={answer.author_id}
-                                    />
-                                    <ReportDialog
-                                        resourceId={answer.id}
-                                        resourceType="answer"
-                                        trigger={
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-                                                <Flag className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                            </Button>
-                                        }
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none pl-0 sm:pl-12">
-                                <MarkdownRenderer content={answer.content} className="text-sm leading-relaxed" />
-                            </div>
-
-                            {/* Like Button & Comments */}
-                            <div className="mt-4 pl-0 sm:pl-12 space-y-4">
-                                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                            <div className="flex gap-4 p-5 sm:p-6">
+                                {/* Left: Vote Section - Quora Style */}
+                                <div className="flex flex-col items-center gap-2 min-w-[48px]">
                                     <AnswerLikeButton
                                         answerId={answer.id}
                                         initialLikeCount={answer.likeCount || 0}
                                         initialIsLiked={answer.isLiked || false}
                                         isLoggedIn={!!user}
                                     />
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-8 text-muted-foreground hover:text-foreground gap-2 px-2"
-                                        onClick={() => toggleComments(answer.id)}
-                                    >
-                                        <MessageSquare className="h-4 w-4" />
-                                        <span className="text-xs font-medium">
-                                            {answer.comments && answer.comments.length > 0
-                                                ? `${answer.comments.length} Yorum`
-                                                : "Yorum Yap"}
-                                        </span>
-                                    </Button>
                                 </div>
 
-                                {/* Comments Section */}
-                                {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
-                                    <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <RealtimeCommentList
-                                            answerId={answer.id}
-                                            initialComments={answer.comments || []}
-                                            currentUserId={user?.id}
-                                            questionId={questionId}
-                                            onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
-                                            onCommentsChange={(comments) => {
-                                                setAnswers(prev => prev.map(a => {
-                                                    if (a.id === answer.id) {
-                                                        // Only update if comments array reference or length changed significantly
-                                                        // to avoid unnecessary re-renders if deep equality check is expensive.
-                                                        // However, since we get a new array from realtime, we should update.
-                                                        // But we must ensure this doesn't trigger a loop.
-                                                        // The loop happened because onCountChange triggered setAnswers -> re-render AnswerList -> new onCountChange -> re-render RealtimeCommentList -> useEffect -> onCountChange...
-                                                        // Now RealtimeCommentList has stable callback ref, so it won't re-run useEffect on parent re-render.
-                                                        // We just need to update the state here.
-                                                        if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
-                                                            return { ...a, comments };
-                                                        }
-                                                    }
-                                                    return a;
-                                                }));
-                                            }}
-                                        />
+                                {/* Right: Content Section */}
+                                <div className="flex-1 min-w-0 space-y-4">
+                                    {/* Author Header */}
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex items-center gap-2.5">
+                                            <Link href={`/kullanici/${answer.profiles?.username}`}>
+                                                <Avatar className="h-10 w-10 ring-2 ring-border hover:ring-primary/30 transition-all">
+                                                    <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
+                                                    <AvatarFallback className="text-sm font-bold bg-primary/10 text-primary">
+                                                        {answer.profiles?.username?.[0]?.toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            </Link>
+                                            <div>
+                                                <div className="flex items-center gap-1.5">
+                                                    <Link
+                                                        href={`/kullanici/${answer.profiles?.username}`}
+                                                        className="font-semibold text-sm hover:text-primary transition-colors"
+                                                    >
+                                                        @{answer.profiles?.username || "Anonim"}
+                                                    </Link>
+                                                    {answer.profiles?.is_verified && (
+                                                        <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500/10" />
+                                                    )}
+                                                </div>
+                                                <span className="text-xs text-muted-foreground">
+                                                    <span className="hidden sm:inline">{formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}</span>
+                                                    <span className="sm:hidden">{formatDistanceToNow(new Date(answer.created_at), { locale: tr })}</span>
+                                                </span>
+                                            </div>
+                                        </div>
 
-                                        {expandedComments[answer.id] ? (
-                                            <AnswerCommentForm
-                                                answerId={answer.id}
-                                                questionId={questionId}
-                                                onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
-                                                onCancel={() => toggleComments(answer.id)}
-                                            />
-                                        ) : (
-                                            user && (
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-1">
+                                            {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="mt-2 pl-0 sm:ml-6 text-xs text-muted-foreground hover:text-primary"
-                                                    onClick={() => toggleComments(answer.id)}
+                                                    onClick={() => handleToggleAccept(answer.id)}
+                                                    className={cn(
+                                                        "h-8 w-8 p-0",
+                                                        answer.is_accepted
+                                                            ? "text-green-600 hover:text-green-700"
+                                                            : "text-muted-foreground hover:text-green-600"
+                                                    )}
+                                                    title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
                                                 >
-                                                    Yorum Yaz
+                                                    <CheckCircle2 className={cn("h-4 w-4", answer.is_accepted && "fill-current")} />
                                                 </Button>
-                                            )
+                                            )}
+                                            <DeleteAnswerButton
+                                                answerId={answer.id}
+                                                questionId={questionId}
+                                                authorId={answer.author_id}
+                                            />
+                                            <ReportDialog
+                                                resourceId={answer.id}
+                                                resourceType="answer"
+                                                trigger={
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                                        <Flag className="h-4 w-4" />
+                                                    </Button>
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none">
+                                        <MarkdownRenderer content={answer.content} className="leading-relaxed" />
+                                    </div>
+
+                                    {/* Comments */}
+                                    <div className="pt-3 border-t border-border/50 space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 text-muted-foreground hover:text-foreground gap-2 px-2 -ml-2"
+                                                onClick={() => toggleComments(answer.id)}
+                                            >
+                                                <MessageSquare className="h-4 w-4" />
+                                                <span className="text-xs font-medium">
+                                                    {answer.comments && answer.comments.length > 0
+                                                        ? `${answer.comments.length} Yorum`
+                                                        : "Yorum Yap"}
+                                                </span>
+                                            </Button>
+                                        </div>
+
+                                        {/* Comments Section */}
+                                        {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
+                                            <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                                                <RealtimeCommentList
+                                                    answerId={answer.id}
+                                                    initialComments={answer.comments || []}
+                                                    currentUserId={user?.id}
+                                                    questionId={questionId}
+                                                    onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
+                                                    onCommentsChange={(comments) => {
+                                                        setAnswers(prev => prev.map(a => {
+                                                            if (a.id === answer.id) {
+                                                                if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
+                                                                    return { ...a, comments };
+                                                                }
+                                                            }
+                                                            return a;
+                                                        }));
+                                                    }}
+                                                />
+
+                                                {expandedComments[answer.id] ? (
+                                                    <AnswerCommentForm
+                                                        answerId={answer.id}
+                                                        questionId={questionId}
+                                                        onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
+                                                        onCancel={() => toggleComments(answer.id)}
+                                                    />
+                                                ) : (
+                                                    user && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="mt-2 text-xs text-muted-foreground hover:text-primary -ml-2"
+                                                            onClick={() => toggleComments(answer.id)}
+                                                        >
+                                                            Yorum Yaz
+                                                        </Button>
+                                                    )
+                                                )}
+                                            </div>
                                         )}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         </div>
                     ))
@@ -403,10 +413,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
             {/* New Answer Form */}
             {user ? (
-                <div className="border-2 border-black dark:border-white rounded-xl sm:rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-4 sm:p-6 bg-card">
-                    <h3 className="text-base sm:text-lg font-black mb-3 sm:mb-4 uppercase tracking-wider">CEVAP YAZ</h3>
-                    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-                        <div className="min-h-[180px] sm:min-h-[200px] border rounded-lg sm:rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                <div className="border-2 border-border bg-card p-5 sm:p-6">
+                    <h3 className="text-base font-bold mb-4">Cevabınızı Yazın</h3>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="min-h-[200px] border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                             <MarkdownEditor
                                 value={newAnswer}
                                 onChange={setNewAnswer}
@@ -417,7 +427,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || !newAnswer.trim()}
-                                className="min-w-[100px] sm:min-w-[120px] rounded-full h-9 sm:h-10 text-sm sm:text-base"
+                                className="px-6"
                             >
                                 {isSubmitting ? "Gönderiliyor..." : "Cevabı Gönder"}
                             </Button>
@@ -425,9 +435,9 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                     </form>
                 </div>
             ) : (
-                <div className="p-4 sm:p-6 rounded-lg sm:rounded-xl bg-muted/20 text-center border border-dashed">
-                    <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">Cevap yazmak için giriş yapmalısın.</p>
-                    <Button variant="outline" size="sm" className="rounded-full" asChild>
+                <div className="p-6 rounded-lg bg-muted/20 text-center border border-dashed">
+                    <p className="text-sm text-muted-foreground mb-4">Cevap yazmak için giriş yapmalısın.</p>
+                    <Button variant="outline" size="sm" asChild>
                         <a href="/login">Giriş Yap</a>
                     </Button>
                 </div>

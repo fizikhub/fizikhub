@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
@@ -236,78 +235,58 @@ export default async function QuestionPage({ params }: PageProps) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 sm:gap-6 lg:gap-8">
                     {/* Main Content */}
-                    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+                    <div className="space-y-6">
                         {/* Question Card */}
-                        <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 bg-card overflow-hidden">
-                            <CardContent className="p-4 sm:p-6 md:p-8">
+                        <div className="bg-card border-2 border-border overflow-hidden">
+                            <div className="p-6 sm:p-8">
                                 {/* Author Header */}
-                                <div className="flex items-start justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 flex-wrap">
-                                    <div className="flex items-center gap-2 sm:gap-3">
-                                        <Link href={`/kullanici/${question.profiles?.username}`}>
-                                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 cursor-pointer hover:ring-2 hover:ring-primary/30 transition-all">
-                                                <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                                <AvatarFallback className="text-base sm:text-lg bg-primary/10 text-primary font-bold">
-                                                    {question.profiles?.username?.[0]?.toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        </Link>
-                                        <div>
-                                            {question.profiles?.username ? (
-                                                <div className="flex items-center gap-1">
-                                                    <Link
-                                                        href={`/kullanici/${question.profiles.username}`}
-                                                        className="font-semibold text-sm sm:text-base text-foreground hover:text-primary transition-colors"
-                                                    >
-                                                        @{question.profiles.username}
-                                                    </Link>
-                                                    {question.profiles.is_verified && (
-                                                        <BadgeCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500 fill-blue-500/10" />
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <span className="font-semibold text-sm sm:text-base text-foreground">
-                                                    Anonim
-                                                </span>
+                                <div className="flex items-center gap-3 mb-5">
+                                    <Link href={`/kullanici/${question.profiles?.username}`}>
+                                        <Avatar className="h-12 w-12 ring-2 ring-border hover:ring-primary/30 transition-all">
+                                            <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
+                                            <AvatarFallback className="text-lg bg-primary/10 text-primary font-bold">
+                                                {question.profiles?.username?.[0]?.toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Link>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-1.5 mb-0.5">
+                                            <Link
+                                                href={`/kullanici/${question.profiles?.username}`}
+                                                className="font-semibold text-base hover:text-primary transition-colors"
+                                            >
+                                                @{question.profiles?.username || "Anonim"}
+                                            </Link>
+                                            {question.profiles?.is_verified && (
+                                                <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
-                                            <p className="text-xs sm:text-sm text-muted-foreground">
-                                                <span className="hidden sm:inline">{formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}</span>
-                                                <span className="sm:hidden">{formatDistanceToNow(new Date(question.created_at), { locale: tr })}</span>
-                                            </p>
                                         </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                                        </p>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                                    {/* Status Badges */}
+                                    <div className="flex flex-wrap gap-1.5">
                                         {isSolved && (
-                                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-6 text-[10px] sm:text-xs px-2">
+                                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-6 text-xs">
                                                 <CheckCircle2 className="h-3 w-3" />
-                                                <span className="hidden sm:inline">Çözüldü</span>
+                                                Çözüldü
                                             </Badge>
                                         )}
-                                        {isHot && !isSolved && (
-                                            <Badge className="bg-orange-500/10 text-orange-600 border-orange-500/20 gap-1 h-6 text-[10px] sm:text-xs px-2">
-                                                <Flame className="h-3 w-3" />
-                                                <span className="hidden sm:inline">Hot</span>
-                                            </Badge>
-                                        )}
-                                        {isNew && !isSolved && !isHot && (
-                                            <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 gap-1 h-6 text-[10px] sm:text-xs px-2">
-                                                <Zap className="h-3 w-3" />
-                                                <span className="hidden sm:inline">Yeni</span>
-                                            </Badge>
-                                        )}
-                                        <Badge variant="secondary" className="bg-secondary/50 h-6 text-[10px] sm:text-xs px-2">
+                                        <Badge variant="secondary" className="bg-secondary/50 h-6 text-xs">
                                             {question.category || "Genel"}
                                         </Badge>
                                     </div>
                                 </div>
 
                                 {/* Title */}
-                                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-4 sm:mb-6 leading-tight uppercase tracking-tight">
+                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-5 leading-tight">
                                     {question.title}
                                 </h1>
 
                                 {/* Content */}
-                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-6 sm:mb-8">
+                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-6">
                                     <MarkdownRenderer content={question.content} />
                                     {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
                                         <div className="mt-4 text-xs text-muted-foreground italic flex items-center gap-1">
@@ -319,9 +298,9 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Tags */}
                                 {question.tags && question.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-6 sm:mb-8">
+                                    <div className="flex flex-wrap gap-2 mb-6">
                                         {question.tags.map((tag: string) => (
-                                            <Badge key={tag} variant="outline" className="text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 border-muted-foreground/20 hover:bg-muted/50 transition-colors">
+                                            <Badge key={tag} variant="outline" className="text-sm px-3 py-1 border-muted-foreground/20 hover:bg-muted/50 transition-colors">
                                                 #{tag}
                                             </Badge>
                                         ))}
@@ -329,20 +308,20 @@ export default async function QuestionPage({ params }: PageProps) {
                                 )}
 
                                 {/* Actions Bar */}
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-border/50">
-                                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                                <div className="flex items-center justify-between gap-4 pt-5 border-t border-border/50">
+                                    <div className="flex items-center gap-3 flex-wrap">
                                         <VoteButton
                                             questionId={question.id}
                                             initialVotes={question.votes || 0}
                                             initialHasVoted={hasVoted}
-                                            className="h-8 sm:h-9"
                                         />
 
-                                        <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-muted/30 text-xs sm:text-sm">
-                                            <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        <div className="flex items-center gap-2 text-muted-foreground px-3 py-1.5 rounded-full bg-muted/30 text-sm">
+                                            <MessageSquare className="h-4 w-4" />
                                             <span className="font-medium">{answers?.length || 0}</span>
                                             <span className="hidden sm:inline">Cevap</span>
                                         </div>
+
                                         <BookmarkButton
                                             type="question"
                                             itemId={question.id}
@@ -354,26 +333,25 @@ export default async function QuestionPage({ params }: PageProps) {
                                             contentId={question.id}
                                         />
 
-                                        {/* Edit Button (Mobile & Desktop) */}
                                         {(isAdmin || user?.id === question.author_id) && (
                                             <EditQuestionDialog questionId={question.id} initialContent={question.content} />
                                         )}
                                     </div>
 
-                                    <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground px-2 sm:px-3 py-1.5 sm:py-2 rounded-full bg-muted/30">
-                                        <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Eye className="h-4 w-4" />
                                         <span>{(question.views || 0).toLocaleString('tr-TR')}</span>
                                         <span className="hidden sm:inline">görüntülenme</span>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
 
                         {/* Answers Section */}
-                        <div className="space-y-4 sm:space-y-6">
+                        <div className="space-y-4">
                             <div className="flex items-center justify-between px-1">
-                                <h2 className="text-lg sm:text-xl md:text-2xl font-black uppercase tracking-tight">
-                                    {answers?.length || 0} CEVAP
+                                <h2 className="text-xl sm:text-2xl font-bold">
+                                    {answers?.length || 0} Cevap
                                 </h2>
                             </div>
 
@@ -386,15 +364,15 @@ export default async function QuestionPage({ params }: PageProps) {
                     </div>
 
                     {/* Stats Sidebar (Desktop) */}
-                    <aside className="hidden lg:block space-y-6">
+                    <aside className="hidden lg:block space-y-4">
                         {/* Stats Card */}
-                        <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] sticky top-24 bg-card">
-                            <CardHeader className="pb-3 border-b-2 border-black dark:border-white">
-                                <CardTitle className="text-xs font-black text-foreground uppercase tracking-wider">
-                                    İSTATİSTİKLER
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                        <div className="border-2 border-border bg-card sticky top-24">
+                            <div className="p-4 border-b-2 border-border">
+                                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                    İstatistikler
+                                </h3>
+                            </div>
+                            <div className="p-4 space-y-4">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-primary/10">
                                         <Eye className="h-4 w-4 text-primary" />
@@ -424,20 +402,20 @@ export default async function QuestionPage({ params }: PageProps) {
                                         <p className="text-xs text-muted-foreground">Oy</p>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
 
                         {/* Admin/Author Actions */}
                         {(isAdmin || user?.id === question.author_id) && (
-                            <Card className="border-2 border-destructive shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] bg-card">
-                                <CardHeader className="pb-3 border-b-2 border-destructive">
-                                    <CardTitle className="text-xs font-black text-destructive uppercase tracking-wider">İŞLEMLER</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
+                            <div className="border-2 border-destructive/50 bg-card">
+                                <div className="p-4 border-b-2 border-destructive/50">
+                                    <h3 className="text-xs font-bold text-destructive uppercase tracking-wider">İşlemler</h3>
+                                </div>
+                                <div className="p-4 space-y-2">
                                     <EditQuestionDialog questionId={question.id} initialContent={question.content} />
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         )}
                     </aside>
                 </div>

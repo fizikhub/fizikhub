@@ -43,7 +43,7 @@ interface AnswerCommentListProps {
 
 export function AnswerCommentList({ comments, currentUserId, questionId, onDelete }: AnswerCommentListProps) {
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
-    const isAdmin = currentUserId === 'barannnbozkurttb.b@gmail.com'; // Simplified check, ideally pass via props
+    const isAdmin = currentUserId === 'barannnbozkurttb.b@gmail.com';
 
     const handleDelete = async (commentId: number) => {
         setIsDeleting(commentId);
@@ -65,26 +65,35 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
     if (comments.length === 0) return null;
 
     return (
-        <div className="space-y-3 mt-4 pl-4 sm:pl-6 border-l-2 border-muted/50">
+        <div className="space-y-2 mt-3 pl-3 border-l-2 border-border/30">
             {comments.map((comment) => (
-                <div key={comment.id} className="group text-sm bg-muted/20 rounded-lg p-3">
-                    <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
+                <div key={comment.id} className="group text-sm py-2">
+                    <div className="flex items-start gap-2">
+                        <Link href={`/kullanici/${comment.profiles?.username}`}>
+                            <Avatar className="h-6 w-6 border border-border">
+                                <AvatarImage src={comment.profiles?.avatar_url || ""} />
+                                <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">
+                                    {comment.profiles?.username?.[0]?.toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                        </Link>
+
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 mb-0.5">
                                 <Link
                                     href={`/kullanici/${comment.profiles?.username}`}
-                                    className="font-semibold hover:text-primary transition-colors flex items-center gap-1"
+                                    className="font-semibold text-xs hover:text-primary transition-colors"
                                 >
-                                    {comment.profiles?.username || "Anonim"}
-                                    {comment.profiles?.is_verified && (
-                                        <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
-                                    )}
+                                    @{comment.profiles?.username || "Anonim"}
                                 </Link>
-                                <span className="text-xs text-muted-foreground">
+                                {comment.profiles?.is_verified && (
+                                    <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
+                                )}
+                                <span className="text-[10px] text-muted-foreground">
                                     • {formatDistanceToNow(new Date(comment.created_at), { locale: tr })}
                                 </span>
                             </div>
-                            <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed">
+                            <p className="text-xs text-foreground/90 leading-relaxed">
                                 {comment.content}
                             </p>
                         </div>
@@ -97,7 +106,7 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                                         size="icon"
                                         className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                                     >
-                                        <Trash2 className="h-3.5 w-3.5" />
+                                        <Trash2 className="h-3 w-3" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { ArrowBigUp } from "lucide-react";
 import { toggleAnswerLike } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AnswerLikeButtonProps {
     answerId: number;
@@ -14,58 +14,94 @@ interface AnswerLikeButtonProps {
     isLoggedIn: boolean;
 }
 
-export function AnswerLikeButton({ answerId, initialLikeCount, initialIsLiked, isLoggedIn }: AnswerLikeButtonProps) {
+export function AnswerLikeButton({
+    answerId,
+    initialLikeCount,
+    initialIsLiked,
+    isLoggedIn
+}: AnswerLikeButtonProps) {
     const [likeCount, setLikeCount] = useState(initialLikeCount);
     const [isLiked, setIsLiked] = useState(initialIsLiked);
-    const [isPending, startTransition] = useTransition();
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLike = async () => {
+    const handleLike = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!isLoggedIn) {
-            toast.error("Beğenmek için giriş yapmalısın ulan!");
+            toast.error("Beğenmek için giriş yapmalısınız.");
             return;
         }
 
+        if (isLoading) return;
+
         // Optimistic update
-        const previousLikeCount = likeCount;
-        const previousIsLiked = isLiked;
+        const newIsLiked = !isLiked;
+        const newLikeCount = newIsLiked ? likeCount + 1 : likeCount - 1;
 
-        setIsLiked(!isLiked);
-        setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+        setIsLiked(newIsLiked);
+        setLikeCount(newLikeCount);
+        setIsLoading(true);
 
-        startTransition(async () => {
+        try {
             const result = await toggleAnswerLike(answerId);
-
             if (!result.success) {
                 // Revert on error
-                setIsLiked(previousIsLiked);
-                setLikeCount(previousLikeCount);
-                toast.error(result.error || "Bir hata oluştu hocam");
-            } else {
-                // Update with server values
-                setLikeCount(result.likeCount ?? previousLikeCount);
-                setIsLiked(result.isLiked ?? previousIsLiked);
+                setIsLiked(isLiked);
+                setLikeCount(likeCount);
+                toast.error(result.error || "Bir hata oluştu.");
             }
-        });
+        } catch (error) {
+            // Revert on error
+            setIsLiked(isLiked);
+            setLikeCount(likeCount);
+            toast.error("Bağlantı hatası.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <Button
-            variant="ghost"
-            size="sm"
+        <motion.button
             onClick={handleLike}
-            disabled={isPending}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className={cn(
-                "gap-1.5 transition-all duration-200",
-                isLiked && "text-red-500 hover:text-red-600"
+                "flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors",
+                isLiked
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted/50"
             )}
+            title={isLiked ? "Beğeniyi geri al" : "Beğen"}
         >
-            <Heart
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={isLiked ? "liked" : "not-liked"}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                >
+                    <ArrowBigUp
+                        className={cn(
+                            "h-6 w-6 transition-all",
+                            isLiked && "fill-primary"
+                        )}
+                    />
+                </motion.div>
+            </AnimatePresence>
+
+            <motion.span
+                key={likeCount}
+                initial={{ y: 5, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
                 className={cn(
-                    "w-4 h-4 transition-all",
-                    isLiked && "fill-current scale-110"
+                    "text-xs font-medium tabular-nums",
+                    isLiked && "font-bold"
                 )}
-            />
-            <span className="text-sm font-medium">{likeCount}</span>
-        </Button>
+            >
+                {likeCount}
+            </motion.span>
+        </motion.button>
     );
 }

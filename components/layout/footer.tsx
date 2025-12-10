@@ -13,6 +13,14 @@ export function Footer() {
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isSingularityActive, setIsSingularityActive] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const [debris, setDebris] = useState<Array<{
+        id: number;
+        angle: number;
+        distance: number;
+        size: number;
+        duration: number;
+        delay: number;
+    }>>([]);
 
     useEffect(() => {
         setIsMobile(window.innerWidth < 768);
@@ -21,18 +29,22 @@ export function Footer() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    if (isMessagesPage) return null;
+    // Generate debris on client-side only to avoid hydration mismatch
+    useEffect(() => {
+        const mobile = window.innerWidth < 768;
+        const debrisCount = mobile ? 18 : 25;
+        const newDebris = Array.from({ length: debrisCount }).map((_, i) => ({
+            id: i,
+            angle: Math.random() * 360,
+            distance: 300 + Math.random() * 500,
+            size: mobile ? 2 : (Math.random() * 3 + 1),
+            duration: Math.random() * 2 + 1,
+            delay: Math.random() * 2
+        }));
+        setDebris(newDebris);
+    }, []);
 
-    // OPTIMIZATION: High particle density (mobile optimized)
-    const debrisCount = isMobile ? 18 : 25;
-    const debris = Array.from({ length: debrisCount }).map((_, i) => ({
-        id: i,
-        angle: Math.random() * 360,
-        distance: 300 + Math.random() * 500,
-        size: isMobile ? 2 : (Math.random() * 3 + 1),
-        duration: Math.random() * 2 + 1,
-        delay: Math.random() * 2
-    }));
+    if (isMessagesPage) return null;
 
     return (
         <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
