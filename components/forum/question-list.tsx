@@ -5,7 +5,7 @@ import { useRealtimeQuestions } from "@/hooks/useRealtimeQuestions";
 
 interface QuestionListProps {
     initialQuestions: any[];
-    userVotes: Set<number>;
+    userVotes: Map<number, number>;
 }
 
 export function QuestionList({ initialQuestions, userVotes }: QuestionListProps) {
@@ -17,7 +17,7 @@ export function QuestionList({ initialQuestions, userVotes }: QuestionListProps)
                 <QuestionCard
                     key={question.id}
                     question={question}
-                    hasVoted={userVotes.has(question.id)}
+                    userVote={userVotes.get(question.id)}
                 />
             ))}
         </div>

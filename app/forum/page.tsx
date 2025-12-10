@@ -55,18 +55,18 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     const { data: questions } = await query;
 
     // Fetch user's votes to show "voted" state
-    let userVotes = new Set<number>();
+    let userVotes = new Map<number, number>();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user && questions && questions.length > 0) {
         const { data: votes } = await supabase
             .from('question_votes')
-            .select('question_id')
+            .select('question_id, vote_type')
             .eq('user_id', user.id)
             .in('question_id', questions.map(q => q.id));
 
         if (votes) {
-            votes.forEach(v => userVotes.add(v.question_id));
+            votes.forEach(v => userVotes.set(v.question_id, v.vote_type));
         }
     }
 
