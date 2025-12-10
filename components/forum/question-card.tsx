@@ -132,21 +132,23 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                 {/* Content */}
                 <div className="text-[15px] text-foreground/90 leading-relaxed mb-3">
                     <span>{contentPreview}</span>
-                    {shouldTruncate && !isExpanded && (
-                        <>
-                            <span className="text-muted-foreground">... </span>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsExpanded(true);
-                                }}
-                                className="text-blue-500 hover:underline font-medium"
-                            >
-                                Read more
-                            </button>
-                        </>
-                    )}
                 </div>
+
+                {/* Continue Reading Button - Quora Style */}
+                {shouldTruncate && !isExpanded && (
+                    <div className="flex justify-center mb-3">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsExpanded(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/80 hover:bg-muted border border-border/50 text-sm font-medium text-foreground transition-colors"
+                        >
+                            <span>devamını oku</span>
+                            <ChevronDown className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
 
                 {/* Action Bar - Quora Style */}
                 <div className="flex items-center gap-2 pt-2">
