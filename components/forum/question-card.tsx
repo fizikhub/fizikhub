@@ -74,9 +74,9 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
     };
 
     const rawContent = question.content?.replace(/[#*`]/g, '') || "";
-    const shouldTruncate = rawContent.length > 180;
+    const shouldTruncate = rawContent.length > 300;
     const contentPreview = shouldTruncate && !isExpanded
-        ? rawContent.slice(0, 180)
+        ? rawContent.slice(0, 300)
         : rawContent;
 
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
@@ -129,9 +129,18 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                     {question.title}
                 </h3>
 
-                {/* Content */}
-                <div className="text-[15px] text-foreground/90 leading-relaxed mb-3">
-                    <span>{contentPreview}</span>
+                {/* Content with Gradient Fade - Quora Style */}
+                <div className="relative mb-3">
+                    <div className={cn(
+                        "text-[15px] text-foreground/90 leading-relaxed",
+                        shouldTruncate && !isExpanded && "max-h-[120px] overflow-hidden"
+                    )}>
+                        <p className="whitespace-pre-wrap">{contentPreview}</p>
+                    </div>
+                    {/* Gradient Overlay on truncated content */}
+                    {shouldTruncate && !isExpanded && (
+                        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
+                    )}
                 </div>
 
                 {/* Continue Reading Button - Quora Style */}
