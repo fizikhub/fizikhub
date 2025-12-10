@@ -83,10 +83,10 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
 
     return (
         <div
-            className="bg-card border-b border-border/50 cursor-pointer hover:bg-muted/30 transition-colors"
+            className="bg-card border border-border/50 rounded-lg cursor-pointer hover:bg-muted/30 transition-colors overflow-hidden"
             onClick={handleCardClick}
         >
-            <div className="px-4 py-5 sm:px-6">
+            <div className="px-3 py-5 sm:px-5 sm:py-5">
                 {/* Author Row */}
                 <div className="flex items-center gap-3 mb-3">
                     <button

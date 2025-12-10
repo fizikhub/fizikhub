@@ -12,7 +12,7 @@ export function QuestionList({ initialQuestions, userVotes }: QuestionListProps)
     const questions = useRealtimeQuestions(initialQuestions);
 
     return (
-        <div className="divide-y divide-border/50 rounded-xl overflow-hidden border border-border bg-card">
+        <div className="space-y-3">
             {questions.map((question) => (
                 <QuestionCard
                     key={question.id}

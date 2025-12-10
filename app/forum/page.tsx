@@ -102,7 +102,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <div className="bg-background pb-20">
-                <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-7xl mx-auto">
+                <div className="container py-4 sm:py-6 md:py-10 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
                     <ModernForumHeader />
 
                     {/* Mobile Question of the Week */}
