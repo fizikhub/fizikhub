@@ -5,19 +5,19 @@ import { useRealtimeQuestions } from "@/hooks/useRealtimeQuestions";
 
 interface QuestionListProps {
     initialQuestions: any[];
-    userVotes: Set<number>;
+    userVotes: Map<number, number>;
 }
 
 export function QuestionList({ initialQuestions, userVotes }: QuestionListProps) {
     const questions = useRealtimeQuestions(initialQuestions);
 
     return (
-        <div className="space-y-4">
+        <div className="divide-y divide-border/50 rounded-xl overflow-hidden border border-border bg-card">
             {questions.map((question) => (
                 <QuestionCard
                     key={question.id}
                     question={question}
-                    hasVoted={userVotes.has(question.id)}
+                    userVote={userVotes.get(question.id)}
                 />
             ))}
         </div>
