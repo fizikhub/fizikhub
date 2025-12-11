@@ -86,7 +86,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
     return (
         <div
-            className="group bg-card border-2 border-black dark:border-white rounded-lg cursor-pointer transition-all duration-200 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none overflow-hidden"
+            className="group bg-card border-[1.5px] border-black dark:border-white rounded-lg cursor-pointer transition-all duration-200 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none overflow-hidden"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}
@@ -165,11 +165,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
                 )}
 
                 {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-3 pt-4 border-t-2 border-dashed border-black/20 dark:border-white/20">
+                <div className="flex items-center gap-3 pt-4 border-t-[1.5px] border-dashed border-black/20 dark:border-white/20">
                     {/* Upvote Pill - Brutalist */}
                     <div
                         className={cn(
-                            "flex items-center rounded-lg border-2 border-black dark:border-white overflow-hidden transition-all duration-200 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
+                            "flex items-center rounded-lg border-[1.5px] border-black dark:border-white overflow-hidden transition-all duration-200 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
                             voteState !== 0 ? "bg-primary/20" : "bg-transparent"
                         )}
                         onClick={(e) => e.stopPropagation()}
@@ -208,7 +208,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
                     {/* Comments - Brutalist */}
                     <button
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border-[1.5px] border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent"
                     >
                         <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
                         <span className="text-sm font-black">{answerCount}</span>
@@ -216,7 +216,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
                     {/* Share - Brutalist */}
                     <button
-                        className="p-1.5 rounded-lg border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent ml-auto"
+                        className="p-1.5 rounded-lg border-[1.5px] border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent ml-auto"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
