@@ -11,6 +11,7 @@ import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
+import { ScrollToAnswerButton } from "@/components/forum/scroll-to-answer-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
@@ -370,14 +371,7 @@ export default async function QuestionPage({ params }: PageProps) {
 
                         {/* Answer Button - Scroll to form */}
                         <div className="mt-6">
-                            <Button
-                                onClick={() => {
-                                    document.getElementById('answer-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }}
-                                className="w-full sm:w-auto px-6 py-3 border-2 border-primary hover:border-primary/80 active:scale-95 transition-all font-bold text-base"
-                            >
-                                📝 Cevap Yaz
-                            </Button>
+                            <ScrollToAnswerButton />
                         </div>
 
                         {/* Answers Section */}
