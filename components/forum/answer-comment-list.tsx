@@ -20,12 +20,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { CommentLikeButton } from "./comment-like-button";
 
 interface Comment {
     id: number;
     content: string;
     created_at: string;
     author_id: string;
+    likeCount?: number;
+    isLiked?: boolean;
     profiles?: {
         username: string | null;
         full_name: string | null;
@@ -65,12 +68,12 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
     if (comments.length === 0) return null;
 
     return (
-        <div className="space-y-2 mt-3 pl-3 border-l-2 border-border/30">
+        <div className="space-y-3 mt-4">
             {comments.map((comment) => (
-                <div key={comment.id} className="group text-sm py-2">
-                    <div className="flex items-start gap-2">
+                <div key={comment.id} className="group bg-secondary/30 rounded-lg p-3 border-2 border-border/40 hover:border-primary/30 transition-all">
+                    <div className="flex items-start gap-2.5">
                         <Link href={`/kullanici/${comment.profiles?.username}`}>
-                            <Avatar className="h-6 w-6 border border-border">
+                            <Avatar className="h-7 w-7 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
                                 <AvatarImage src={comment.profiles?.avatar_url || ""} />
                                 <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">
                                     {comment.profiles?.username?.[0]?.toUpperCase()}
@@ -79,10 +82,10 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                         </Link>
 
                         <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5 mb-0.5">
+                            <div className="flex items-center gap-1.5 mb-1">
                                 <Link
                                     href={`/kullanici/${comment.profiles?.username}`}
-                                    className="font-semibold text-xs hover:text-primary transition-colors"
+                                    className="font-heading font-bold text-xs hover:text-primary transition-colors"
                                 >
                                     @{comment.profiles?.username || "Anonim"}
                                 </Link>
@@ -93,9 +96,17 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                                     • {formatDistanceToNow(new Date(comment.created_at), { locale: tr })}
                                 </span>
                             </div>
-                            <p className="text-xs text-foreground/90 leading-relaxed">
+                            <p className="text-xs text-foreground/90 leading-relaxed mb-2">
                                 {comment.content}
                             </p>
+
+                            {/* Like button */}
+                            <CommentLikeButton
+                                commentId={comment.id}
+                                initialLikeCount={comment.likeCount || 0}
+                                initialIsLiked={comment.isLiked || false}
+                                isLoggedIn={!!currentUserId}
+                            />
                         </div>
 
                         {(currentUserId === comment.author_id || isAdmin) && (
@@ -104,7 +115,7 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive border-2 border-transparent hover:border-destructive/40 rounded-lg active:scale-95"
                                     >
                                         <Trash2 className="h-3 w-3" />
                                     </Button>

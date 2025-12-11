@@ -521,3 +521,84 @@ export async function deleteAnswerComment(commentId: number, questionId: number)
     revalidatePath(`/forum/${questionId}`);
     return { success: true };
 }
+
+export async function toggleCommentLike(commentId: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Get comment details
+    const { data: comment } = await supabase
+        .from('answer_comments')
+        .select('author_id, answer_id')
+        .eq('id', commentId)
+        .single();
+
+    if (!comment) {
+        return { success: false, error: "Yorum bulunamadı." };
+    }
+
+    // Prevent self-liking
+    if (comment.author_id === user.id) {
+        return { success: false, error: "Kendi yorumunuzu beğenemezsiniz." };
+    }
+
+    // Check if user already liked this comment
+    const { data: existingLike } = await supabase
+        .from('answer_comment_likes')
+        .select('id')
+        .eq('comment_id', commentId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (existingLike) {
+        // Unlike
+        const { error } = await supabase
+            .from('answer_comment_likes')
+            .delete()
+            .eq('id', existingLike.id);
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+
+        // Remove reputation
+        await supabase.rpc('adjust_reputation', {
+            target_user_id: comment.author_id,
+            amount: -1
+        });
+
+        return { success: true };
+    } else {
+        // Like
+        const { error } = await supabase
+            .from('answer_comment_likes')
+            .insert({
+                comment_id: commentId,
+                user_id: user.id
+            });
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+
+        // Add reputation
+        await supabase.rpc('adjust_reputation', {
+            target_user_id: comment.author_id,
+            amount: 1
+        });
+
+        // Send notification to comment author
+        await createNotification({
+            recipientId: comment.author_id,
+            actorId: user.id,
+            type: 'like',
+            content: 'yorumunu beğendi'
+        });
+
+        return { success: true };
+    }
+}

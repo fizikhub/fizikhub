@@ -136,7 +136,7 @@ export default async function QuestionPage({ params }: PageProps) {
             .select('*', { count: 'exact', head: true })
             .eq('answer_id', answer.id);
 
-        // Fetch comments
+        // Fetch comments with like information
         const { data: comments } = await supabase
             .from('answer_comments')
             .select(`
@@ -145,6 +145,27 @@ export default async function QuestionPage({ params }: PageProps) {
             `)
             .eq('answer_id', answer.id)
             .order('created_at', { ascending: true });
+
+        // Add like counts and isLiked status to comments
+        const commentsWithLikes = await Promise.all((comments || []).map(async (comment) => {
+            const { count: commentLikeCount } = await supabase
+                .from('answer_comment_likes')
+                .select('*', { count: 'exact', head: true })
+                .eq('comment_id', comment.id);
+
+            let isCommentLiked = false;
+            if (user) {
+                const { data: userCommentLike } = await supabase
+                    .from('answer_comment_likes')
+                    .select('id')
+                    .eq('comment_id', comment.id)
+                    .eq('user_id', user.id)
+                    .single();
+                isCommentLiked = !!userCommentLike;
+            }
+
+            return { ...comment, likeCount: commentLikeCount || 0, isLiked: isCommentLiked };
+        }));
 
         let isLiked = false;
         if (user) {
@@ -157,7 +178,7 @@ export default async function QuestionPage({ params }: PageProps) {
             isLiked = !!userLike;
         }
 
-        return { ...answer, likeCount: likeCount || 0, isLiked, comments: comments || [] };
+        return { ...answer, likeCount: likeCount || 0, isLiked, comments: commentsWithLikes };
     }));
 
 
