@@ -89,11 +89,11 @@ export function ChatWindow({
     };
 
     return (
-        <div className="flex flex-col flex-1 overflow-hidden pb-20 md:pb-0">
+        <div className="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-100px)] overflow-hidden">
             {/* Messages */}
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto p-4 space-y-4"
+                className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-muted-foreground/20"
             >
                 {messages.length === 0 ? (
                     <div className="text-center text-muted-foreground py-20">
@@ -121,20 +121,22 @@ export function ChatWindow({
                 )}
             </div>
 
-            {/* Input */}
-            <form onSubmit={handleSend} className="border-t p-4 flex gap-2 bg-card">
-                <Input
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Mesajınızı yazın..."
-                    disabled={sending}
-                    className="flex-1"
-                    autoFocus
-                />
-                <Button type="submit" disabled={!inputText.trim() || sending} size="icon">
-                    <Send className="h-4 w-4" />
-                </Button>
-            </form>
+            {/* Input - Sticky Bottom */}
+            <div className="p-4 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-t mt-auto">
+                <form onSubmit={handleSend} className="flex gap-2">
+                    <Input
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        placeholder="Mesajınızı yazın..."
+                        disabled={sending}
+                        className="flex-1"
+                        autoFocus
+                    />
+                    <Button type="submit" disabled={!inputText.trim() || sending} size="icon">
+                        <Send className="h-4 w-4" />
+                    </Button>
+                </form>
+            </div>
         </div>
     );
 }
