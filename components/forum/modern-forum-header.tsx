@@ -136,13 +136,13 @@ export function ModernForumHeader() {
                                 trigger={
                                     <div className="w-full bg-black/40 backdrop-blur-md border-2 border-white/50 hover:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] active:translate-y-0 active:shadow-none bg-card/10">
                                         <div className="w-full bg-black/50 p-3 md:p-4 flex items-center gap-4">
-                                            <div className="p-2 bg-white text-black border-2 border-transparent group-hover/input:border-primary transition-colors">
+                                            <div className="p-2 bg-transparent text-white border-2 border-white/30 group-hover/input:border-primary group-hover/input:text-primary transition-colors">
                                                 <Sparkles className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 flex items-center gap-2">
                                                 <span className="text-primary font-bold">{">"}</span>
                                                 <span className="text-gray-300 font-bold text-lg uppercase tracking-wide flex-1 text-left">
-                                                    Sorgu Başlat...
+                                                    Sorunu Sor...
                                                 </span>
                                                 <div className="w-3 h-6 bg-primary animate-pulse hidden md:block" />
                                             </div>

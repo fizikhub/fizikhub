@@ -97,27 +97,26 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
                     <span className="font-black tracking-wide">SORU SOR</span>
                 </Button>
             )}
-            <DialogContent className="sm:max-w-[800px] border-white/10 bg-black/80 backdrop-blur-3xl shadow-2xl shadow-black/80 rounded-[32px] p-0 overflow-hidden ring-1 ring-white/10">
-                {/* Animated Background Mesh */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background/0 to-background/0 pointer-events-none" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-purple-500/10 via-background/0 to-background/0 pointer-events-none" />
+            <DialogContent className="sm:max-w-[900px] border-2 border-black dark:border-white bg-background shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] p-0 overflow-hidden rounded-none">
 
                 <div className="relative flex flex-col h-[85vh] md:h-auto md:max-h-[85vh]">
-                    {/* Header */}
-                    <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between bg-white/5 backdrop-blur-sm z-20">
-                        <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
-                                {step === 1 ? "Kategori Seçimi" : "Soru Detayları"}
+                    {/* Header - Industrial */}
+                    <div className="px-6 py-6 border-b-2 border-black dark:border-white bg-muted/20 flex items-center justify-between">
+                        <DialogTitle className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+                            <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1">
+                                {step === 1 ? "ADIM 1" : "ADIM 2"}
                             </span>
+                            <span>{step === 1 ? "KATEGORİ SEÇİMİ" : "SORU DETAYLARI"}</span>
                         </DialogTitle>
-                        <div className="flex items-center gap-2">
-                            <div className={`h-2 w-2 rounded-full transition-colors duration-300 ${step >= 1 ? "bg-primary" : "bg-white/10"}`} />
-                            <div className={`h-1 w-8 rounded-full transition-colors duration-300 ${step >= 2 ? "bg-primary" : "bg-white/10"}`} />
-                            <div className={`h-2 w-2 rounded-full transition-colors duration-300 ${step >= 2 ? "bg-primary" : "bg-white/10"}`} />
+                        <div className="flex items-center gap-1">
+                            {/* Step Indicators - Squares */}
+                            <div className={cn("w-3 h-3 border-2 border-black dark:border-white transition-colors", step >= 1 ? "bg-primary" : "bg-transparent")} />
+                            <div className="w-4 h-0.5 bg-black dark:bg-white" />
+                            <div className={cn("w-3 h-3 border-2 border-black dark:border-white transition-colors", step >= 2 ? "bg-primary" : "bg-transparent")} />
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-0 bg-background">
                         <AnimatePresence mode="wait">
                             {step === 1 ? (
                                 <motion.div
@@ -132,19 +131,16 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
                                             key={cat.id}
                                             onClick={() => handleCategorySelect(cat.id)}
                                             className={cn(
-                                                "group relative flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border transition-all duration-300 hover:scale-105",
-                                                "bg-white/5 hover:bg-white/10",
-                                                cat.border,
-                                                formData.category === cat.id ? "ring-2 ring-primary bg-primary/10" : ""
+                                                "group relative flex flex-col items-center justify-center gap-4 p-6 border-2 border-black dark:border-white transition-all duration-200",
+                                                "hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1",
+                                                "bg-card hover:bg-primary/5",
+                                                formData.category === cat.id ? "bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -translate-y-1 -translate-x-1" : ""
                                             )}
                                         >
-                                            <div className={cn("p-4 rounded-full bg-white/5 transition-transform duration-500 group-hover:rotate-12", cat.bg)}>
-                                                <cat.icon className={cn("h-8 w-8", cat.color)} />
+                                            <div className="p-3 border-2 border-black dark:border-white bg-white dark:bg-black text-black dark:text-white transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
+                                                <cat.icon className="h-6 w-6" />
                                             </div>
-                                            <span className="font-medium text-lg text-foreground/90">{cat.label}</span>
-
-                                            {/* Hover Glow */}
-                                            <div className={cn("absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10", cat.bg)} />
+                                            <span className="font-bold text-lg uppercase tracking-tight">{cat.label}</span>
                                         </button>
                                     ))}
                                 </motion.div>
@@ -156,40 +152,42 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
                                     exit={{ opacity: 0, x: -20 }}
                                     className="p-6 md:p-8 space-y-8"
                                 >
-                                    {/* Selected Category Badge */}
+                                    {/* Selected Category Tag */}
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => setStep(1)}
-                                            className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                                            className="text-xs font-bold px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black uppercase tracking-wider flex items-center gap-2 hover:opacity-80 transition-opacity"
                                         >
                                             <Tag className="h-3 w-3" />
                                             {formData.category}
-                                            <span className="ml-1 opacity-50">Değiştir</span>
+                                            <span className="opacity-70 ml-1">/ DEĞİŞTİR</span>
                                         </button>
                                     </div>
 
-                                    <div className="space-y-6">
-                                        <div className="space-y-2">
+                                    <div className="space-y-8">
+                                        <div className="space-y-2 group">
+                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-focus-within:text-primary">Başlık</Label>
                                             <Input
-                                                placeholder="Soru Başlığı"
+                                                placeholder="SORUNUN BAŞLIĞI NE?"
                                                 value={formData.title}
                                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                                className="text-2xl md:text-3xl font-bold bg-transparent border-none px-0 placeholder:text-muted-foreground/30 focus-visible:ring-0 h-auto py-2"
+                                                className="text-xl md:text-2xl font-black bg-muted/20 border-2 border-black dark:border-white rounded-none p-6 h-auto focus-visible:ring-0 focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all placeholder:text-muted-foreground/40"
                                                 autoFocus
                                             />
-                                            <div className="h-px w-full bg-gradient-to-r from-primary/50 to-transparent" />
                                         </div>
 
-                                        <div className="min-h-[300px] relative group">
-                                            <div className="absolute -inset-2 bg-gradient-to-b from-primary/5 to-purple-500/5 rounded-xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-                                            <MarkdownEditor
-                                                id="content"
-                                                label=""
-                                                placeholder="Aklındakileri dök... (Markdown kullanabilirsin)"
-                                                value={formData.content}
-                                                onChange={(value) => setFormData({ ...formData, content: value })}
-                                                minHeight="300px"
-                                            />
+                                        <div className="space-y-2 group">
+                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground group-focus-within:text-primary">Detaylar</Label>
+                                            <div className="border-2 border-black dark:border-white p-1 focus-within:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-within:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all bg-card">
+                                                <MarkdownEditor
+                                                    id="content"
+                                                    label=""
+                                                    placeholder="Aklındakileri dök... (Markdown desteklenir)"
+                                                    value={formData.content}
+                                                    onChange={(value) => setFormData({ ...formData, content: value })}
+                                                    minHeight="300px"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -199,27 +197,27 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
 
                     {/* Footer */}
                     {step === 2 && (
-                        <div className="p-6 border-t border-white/5 bg-white/5 backdrop-blur-sm flex justify-between items-center z-20">
+                        <div className="p-6 border-t-2 border-black dark:border-white bg-muted/20 flex justify-between items-center">
                             <Button
                                 variant="ghost"
                                 onClick={() => setStep(1)}
-                                className="text-muted-foreground hover:text-foreground"
+                                className="font-bold uppercase tracking-wider hover:bg-transparent hover:underline"
                             >
-                                Geri
+                                <span className="mr-2">{"<"}</span> Geri Dön
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="rounded-xl px-8 h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-105"
+                                className="h-12 px-8 rounded-none bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest hover:bg-primary hover:text-black border-2 border-transparent hover:border-black dark:hover:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                             >
                                 {loading ? (
                                     <span className="flex items-center gap-2">
-                                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        Gönderiliyor...
+                                        <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                        YÜKLENİYOR...
                                     </span>
                                 ) : (
-                                    <span className="flex items-center gap-2 font-semibold">
-                                        Yayınla <Sparkles className="h-4 w-4" />
+                                    <span className="flex items-center gap-2">
+                                        YAYINLA <Rocket className="h-4 w-4" />
                                     </span>
                                 )}
                             </Button>
