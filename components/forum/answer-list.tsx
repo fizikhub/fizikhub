@@ -409,7 +409,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
 
             {/* New Answer Form */}
             {user ? (
-                <div className="border-2 border-border/60 bg-card rounded-xl p-5 sm:p-6 hover:border-primary/40 transition-colors duration-300">
+                <div id="answer-form" className="border-2 border-border/60 bg-card rounded-xl p-5 sm:p-6 hover:border-primary/40 transition-colors duration-300 scroll-mt-24">
                     <h3 className="text-lg font-heading font-bold mb-4">Cevabınızı Yazın</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="min-h-[200px] border-2 border-border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all">

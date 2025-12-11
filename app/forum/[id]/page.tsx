@@ -368,8 +368,20 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
                         </div>
 
+                        {/* Answer Button - Scroll to form */}
+                        <div className="mt-6">
+                            <Button
+                                onClick={() => {
+                                    document.getElementById('answer-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }}
+                                className="w-full sm:w-auto px-6 py-3 border-2 border-primary hover:border-primary/80 active:scale-95 transition-all font-bold text-base"
+                            >
+                                📝 Cevap Yaz
+                            </Button>
+                        </div>
+
                         {/* Answers Section */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 mt-8">
                             <div className="flex items-center justify-between px-1">
                                 <h2 className="text-xl sm:text-2xl font-bold">
                                     {answers?.length || 0} Cevap
