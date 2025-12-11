@@ -1,9 +1,10 @@
 "use client";
 
 import { motion, useAnimation } from "framer-motion";
-import { Rocket, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { CustomRocketIcon } from "@/components/ui/custom-rocket-icon";
 
 const Particle = ({ delay }: { delay: number }) => {
     const [randoms, setRandoms] = useState({ x: 0, y: 0, delay: 0 });
@@ -156,7 +157,7 @@ export function Logo() {
                         className="relative z-10"
                     >
                         {/* Rocket Container */}
-                        <Rocket className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
+                        <CustomRocketIcon className={`h-7 w-7 text-primary drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] ${warpState === 'charging' ? 'animate-pulse' : ''}`} />
 
                         {/* Engine Glow */}
                         <motion.div
