@@ -11,12 +11,12 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
     return (
         <div className={cn("relative inline-block aspect-square select-none", className)}>
             <Image
-                src="/images/rocket-logo-final.jpg"
+                src="/images/rocket-logo-v3.png"
                 alt="FizikHub Rocket Logo"
                 fill
-                className="object-contain" // Ensures the logo is fully visible without distortion
-                priority // Priority loading for LCP since it's a key brand element
-                sizes="(max-width: 768px) 32px, 64px" // Optimization for common icon sizes
+                className="object-contain scale-110" // Added slight scale-110 to optimize visual size within the container
+                priority
+                sizes="(max-width: 768px) 32px, 64px"
             />
         </div>
     );
