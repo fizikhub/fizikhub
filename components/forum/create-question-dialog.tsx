@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MarkdownEditor } from "@/components/markdown-editor";
@@ -11,6 +11,7 @@ import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { toast } from "sonner";
 import { createQuestion } from "@/app/forum/actions";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 const CATEGORIES = [
@@ -66,14 +67,26 @@ export function CreateQuestionDialog() {
         setStep(2);
     };
 
+    const [supabase] = useState(() => createClient());
+
+    const handleOpen = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            toast.error("Soru sormak için giriş yapmalısınız.");
+            return;
+        }
+        setOpen(true);
+    };
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] border-2 border-transparent hover:border-black dark:hover:border-white">
-                    <Plus className="h-5 w-5" />
-                    <span className="font-black tracking-wide">SORU SOR</span>
-                </Button>
-            </DialogTrigger>
+            <Button
+                onClick={handleOpen}
+                className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] border border-transparent hover:border-black dark:hover:border-white"
+            >
+                <Plus className="h-5 w-5" />
+                <span className="font-black tracking-wide">SORU SOR</span>
+            </Button>
             <DialogContent className="sm:max-w-[800px] border-white/10 bg-black/80 backdrop-blur-3xl shadow-2xl shadow-black/80 rounded-[32px] p-0 overflow-hidden ring-1 ring-white/10">
                 {/* Animated Background Mesh */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background/0 to-background/0 pointer-events-none" />
