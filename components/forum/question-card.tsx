@@ -25,12 +25,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleCardClick = () => {
-        router.push(`/ forum / ${question.id} `);
+        router.push(`/forum/${question.id}`);
     };
 
     const handleProfileClick = (e: React.MouseEvent, username: string) => {
         e.stopPropagation();
-        router.push(`/ kullanici / ${username} `);
+        router.push(`/kullanici/${username}`);
     };
 
     const handleVote = async (e: React.MouseEvent, type: 1 | -1) => {
