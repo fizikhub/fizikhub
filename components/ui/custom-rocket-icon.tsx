@@ -11,7 +11,7 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
     return (
         <div className={cn("relative inline-block aspect-square select-none", className)}>
             <Image
-                src="/images/rocket-logo.jpg"
+                src="/images/rocket-logo-final.jpg"
                 alt="FizikHub Rocket Logo"
                 fill
                 className="object-contain" // Ensures the logo is fully visible without distortion
