@@ -11,7 +11,7 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
     return (
         <div className={cn("relative inline-block aspect-square select-none", className)}>
             <Image
-                src="/images/rocket-logo-v3.png"
+                src="/images/rocket-logo-v4.png"
                 alt="FizikHub Rocket Logo"
                 fill
                 className="object-contain scale-[1.3]" // Scaled up 30% as per user request
