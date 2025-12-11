@@ -178,9 +178,8 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                                 "w-5 h-5 stroke-[2.5px]",
                                 voteState === 1 && "text-amber-500"
                             )} />
-                            <span className="text-sm font-medium">
-                                Upvote
-                                {votes > 0 && <span className="ml-1">· {votes}</span>}
+                            <span className="text-sm font-bold">
+                                {votes}
                             </span>
                         </button>
                         <div className="w-px h-5 bg-zinc-700"></div>
