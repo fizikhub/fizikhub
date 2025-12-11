@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { MarkdownEditor } from "@/components/markdown-editor";
+const MarkdownEditor = lazy(() => import("@/components/markdown-editor").then(mod => ({ default: mod.MarkdownEditor })));
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -413,11 +413,13 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
                     <h3 className="text-lg font-heading font-bold mb-4">Cevabınızı Yazın</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="min-h-[200px] border-2 border-border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all">
-                            <MarkdownEditor
-                                value={newAnswer}
-                                onChange={setNewAnswer}
-                                placeholder="Cevabınızı buraya yazın... (Markdown desteklenir)"
-                            />
+                            <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
+                                <MarkdownEditor
+                                    value={newAnswer}
+                                    onChange={setNewAnswer}
+                                    placeholder="Cevabınızı buraya yazın... (Markdown desteklenir)"
+                                />
+                            </Suspense>
                         </div>
                         <div className="flex justify-end">
                             <Button
