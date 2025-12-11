@@ -124,15 +124,15 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                     </div>
                 </div>
 
-                {/* Title - Bold, slightly blue tint on hover */}
-                <h3 className="font-bold text-[17px] sm:text-lg leading-snug mb-2 text-foreground group-hover:text-blue-400">
+                {/* Title - Clean and readable */}
+                <h3 className="font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 group-hover:text-blue-400 transition-colors">
                     {question.title}
                 </h3>
 
-                {/* Content with Gradient Fade - Quora Style */}
+                {/* Content with Gradient Fade - Optimized for reading */}
                 <div className="relative mb-3">
                     <div className={cn(
-                        "text-[15px] text-foreground/90 leading-relaxed",
+                        "text-[15.5px] text-foreground/85 leading-[1.7] font-sans",
                         shouldTruncate && !isExpanded && "max-h-[120px] overflow-hidden"
                     )}>
                         <p className="whitespace-pre-wrap">{contentPreview}</p>
