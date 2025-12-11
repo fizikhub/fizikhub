@@ -83,19 +83,19 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
 
     return (
         <div
-            className="bg-card border border-border/50 rounded-lg cursor-pointer hover:bg-muted/30 transition-colors overflow-hidden"
+            className="group bg-card border border-border/60 rounded-xl cursor-pointer hover:border-primary/30 hover:shadow-[0_0_20px_-10px_rgba(var(--primary),0.15)] transition-all duration-300 overflow-hidden relative"
             onClick={handleCardClick}
         >
-            <div className="px-3 py-5 sm:px-5 sm:py-5">
+            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
                 {/* Author Row */}
                 <div className="flex items-center gap-3 mb-3">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="flex-shrink-0"
+                        className="flex-shrink-0 relative group/avatar"
                     >
-                        <Avatar className="w-10 h-10">
+                        <Avatar className="w-10 h-10 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="bg-gradient-to-br from-amber-500 to-orange-600 text-white font-bold">
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
@@ -143,18 +143,17 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                     )}
                 </div>
 
-                {/* Continue Reading Button - Quora Style */}
                 {shouldTruncate && !isExpanded && (
-                    <div className="flex justify-center mb-3">
+                    <div className="flex justify-center mb-3 pt-2">
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
                                 setIsExpanded(true);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/80 hover:bg-muted border border-border/50 text-sm font-medium text-foreground transition-colors"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-primary/40 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn"
                         >
-                            <span>devamını oku</span>
-                            <ChevronDown className="w-4 h-4" />
+                            <span className="group-hover/btn:translate-y-0.5 transition-transform duration-300">devamını oku</span>
+                            <ChevronDown className="w-4 h-4 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
                         </button>
                     </div>
                 )}
