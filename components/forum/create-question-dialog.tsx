@@ -25,7 +25,11 @@ const CATEGORIES = [
     { id: "Diğer", label: "Diğer", icon: Layers, color: "text-gray-400", bg: "bg-gray-400/10", border: "border-gray-400/20" },
 ];
 
-export function CreateQuestionDialog() {
+interface CreateQuestionDialogProps {
+    trigger?: React.ReactNode;
+}
+
+export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1); // 1: Category, 2: Details
@@ -80,13 +84,19 @@ export function CreateQuestionDialog() {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <Button
-                onClick={handleOpen}
-                className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] border border-transparent hover:border-black dark:hover:border-white"
-            >
-                <Plus className="h-5 w-5" />
-                <span className="font-black tracking-wide">SORU SOR</span>
-            </Button>
+            {trigger ? (
+                <div onClick={handleOpen} className="cursor-pointer">
+                    {trigger}
+                </div>
+            ) : (
+                <Button
+                    onClick={handleOpen}
+                    className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none active:translate-x-[4px] active:translate-y-[4px] border border-transparent hover:border-black dark:hover:border-white"
+                >
+                    <Plus className="h-5 w-5" />
+                    <span className="font-black tracking-wide">SORU SOR</span>
+                </Button>
+            )}
             <DialogContent className="sm:max-w-[800px] border-white/10 bg-black/80 backdrop-blur-3xl shadow-2xl shadow-black/80 rounded-[32px] p-0 overflow-hidden ring-1 ring-white/10">
                 {/* Animated Background Mesh */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background/0 to-background/0 pointer-events-none" />
