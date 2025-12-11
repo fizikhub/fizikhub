@@ -105,11 +105,20 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-8 mb-8">
             {/* New Conversational Header - Neo-Brutalist Style */}
-            <div className="bg-card border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 relative overflow-hidden group">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.05)_50%,transparent_75%)] dark:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:20px_20px]" />
+            <div className="bg-card border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 relative overflow-hidden group min-h-[300px] flex items-center">
 
-                <div className="max-w-4xl mx-auto relative z-10">
+                {/* Space Background Image */}
+                <div className="absolute inset-0 z-0">
+                    <img
+                        src="/images/forum-header-space-bg.png"
+                        alt="Space Background"
+                        className="w-full h-full object-cover opacity-80"
+                    />
+                    {/* Dark Overlay for Text Readability */}
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+                </div>
+
+                <div className="max-w-4xl mx-auto relative z-10 w-full">
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
                         {/* User Avatar - Brutalist */}
                         <div className="hidden md:flex flex-col items-center gap-2">
@@ -121,10 +130,10 @@ export function ModernForumHeader() {
                         <div className="flex-1 space-y-6 w-full text-center md:text-left">
                             {/* Greeting & Prompt */}
                             <div className="space-y-2">
-                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground">
+                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-lg">
                                     AKLINDA NE VAR?
                                 </h1>
-                                <p className="text-muted-foreground font-medium md:text-lg max-w-2xl">
+                                <p className="text-gray-200 font-medium md:text-lg max-w-2xl drop-shadow-md">
                                     BİLİM TOPLULUĞU SORULARINI BEKLİYOR. CEVAPLAR YILDIZLARIN ARASINDA.
                                 </p>
                             </div>
@@ -132,20 +141,20 @@ export function ModernForumHeader() {
                             {/* Fake Input Trigger - Terminal Style */}
                             <CreateQuestionDialog
                                 trigger={
-                                    <div className="w-full bg-background border-2 border-black dark:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-y-0 active:shadow-none">
-                                        <div className="w-full bg-muted/30 p-3 md:p-4 flex items-center gap-4">
-                                            <div className="p-2 bg-black dark:bg-white text-white dark:text-black border-2 border-transparent group-hover/input:border-primary transition-colors">
+                                    <div className="w-full bg-black/40 backdrop-blur-md border-2 border-white/50 hover:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] active:translate-y-0 active:shadow-none bg-card/10">
+                                        <div className="w-full bg-black/50 p-3 md:p-4 flex items-center gap-4">
+                                            <div className="p-2 bg-white text-black border-2 border-transparent group-hover/input:border-primary transition-colors">
                                                 <Sparkles className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 flex items-center gap-2">
                                                 <span className="text-primary font-bold">{">"}</span>
-                                                <span className="text-muted-foreground font-bold text-lg uppercase tracking-wide flex-1 text-left">
+                                                <span className="text-gray-300 font-bold text-lg uppercase tracking-wide flex-1 text-left">
                                                     Sorgu Başlat...
                                                 </span>
                                                 <div className="w-3 h-6 bg-primary animate-pulse hidden md:block" />
                                             </div>
                                             <div className="hidden sm:flex items-center gap-2">
-                                                <div className="px-4 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                                <div className="px-4 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                                                     ENTER
                                                 </div>
                                             </div>
