@@ -11,57 +11,66 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
             className={className}
         >
             {/* 
-               Modern Minimalist Rocket Design 
-               Designed to work with currentColor for professional theme integration.
+                Professional Custom Rocket Icon v3
+                Style: Modern, Tech, Aerodynamic
+                Characteristics: Sharp angles, negative space, sleek profile
             */}
 
-            {/* Main Fuselage & Fins - Unified Shape */}
-            <path
-                d="M12 2C12 2 15.5 8 16.2 13.5C16.4 15.2 16.5 16 19.5 19C19.8 19.3 19.5 20 19 20H5C4.5 20 4.2 19.3 4.5 19C7.5 16 7.6 15.2 7.8 13.5C8.5 8 12 2 12 2Z"
-                fill="currentColor"
-            />
+            <g transform="rotate(-45 12 12)">
+                {/* Main Body - Split Design for Tech Feel */}
+                <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M12 2C12 2 16 9 16.5 15C16.634 16.6075 16 20 16 20L12 18L8 20C8 20 7.36603 16.6075 7.5 15C8 9 12 2 12 2Z"
+                    fill="currentColor"
+                />
 
-            {/* Center Vertical Highlight/Shadow (Negative Space for depth) */}
-            <path
-                d="M12 4V18"
-                stroke="var(--background)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                opacity="0.2"
-                style={{ stroke: 'var(--background)' }} // fallback
-            />
+                {/* Center Groove / Detail Line (Negative space) */}
+                <path
+                    d="M12 5V14"
+                    stroke="var(--background)"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                />
 
-            {/* Cockpit Window (Negative Space - showing background color) */}
-            <circle
-                cx="12"
-                cy="10"
-                r="2.2"
-                fill="var(--background)"
-            />
-            <circle
-                cx="12"
-                cy="10"
-                r="1.2"
-                fill="currentColor"
-            />
+                {/* Cockpit / Tech Node */}
+                <circle cx="12" cy="11" r="1.5" fill="var(--background)" />
+                <circle cx="12" cy="11" r="0.8" fill="currentColor" />
 
-            {/* Engine Area */}
-            <path
-                d="M9 20L9.5 21.5C9.7 22.1 10.3 22.5 11 22.5H13C13.7 22.5 14.3 22.1 14.5 21.5L15 20H9Z"
-                fill="currentColor"
-                opacity="0.8"
-            />
+                {/* Aerodynamic Fins - Sharp and angular */}
+                <path
+                    d="M7.5 14L4 17.5L5.5 19L8 18"
+                    fill="currentColor"
+                    fillOpacity="0.8"
+                />
+                <path
+                    d="M16.5 14L20 17.5L18.5 19L16 18"
+                    fill="currentColor"
+                    fillOpacity="0.8"
+                />
 
-            {/* Flame (Only visible via stroke/fill if needed, otherwise part of the main icon) 
-                Here adding a separate dynamic flame part 
-            */}
-            <path
-                d="M12 22.5V24.5M10 22L8 24M14 22L16 24"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                opacity="0.7"
-            />
+                {/* Propulsion / Exhaust */}
+                <path
+                    d="M12 18V21"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                />
+                <path
+                    d="M10 19.5L9 21.5"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    opacity="0.6"
+                />
+                <path
+                    d="M14 19.5L15 21.5"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    opacity="0.6"
+                />
+            </g>
         </svg>
     );
 }
