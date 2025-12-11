@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { loadingMessages } from "@/lib/data";
-import { Rocket } from "lucide-react";
+import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 
 export default function Loading() {
     const [message, setMessage] = useState("");

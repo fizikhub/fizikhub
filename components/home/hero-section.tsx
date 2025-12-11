@@ -3,7 +3,8 @@
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, Atom, Rocket, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Atom, Star, Sparkles } from "lucide-react";
+import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { TypeAnimation } from "react-type-animation";
 import { useState } from "react";
 import { SpaceBackground } from "./space-background";

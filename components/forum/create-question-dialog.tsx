@@ -6,7 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { Plus, Sparkles, PenLine, Hash, Tag, Atom, Rocket, Brain, Globe, Zap, Microscope, BookOpen, Layers } from "lucide-react";
+import { Plus, Sparkles, PenLine, Hash, Tag, Atom, Brain, Globe, Zap, Microscope, BookOpen, Layers } from "lucide-react";
+import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { toast } from "sonner";
 import { createQuestion } from "@/app/forum/actions";
 import { motion, AnimatePresence } from "framer-motion";
