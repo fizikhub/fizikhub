@@ -10,142 +10,57 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
             xmlns="http://www.w3.org/2000/svg"
             className={className}
         >
-            <defs>
-                {/* Gradient for 3D body effect */}
-                <linearGradient id="rocketBodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.6" />
-                    <stop offset="50%" stopColor="currentColor" stopOpacity="1" />
-                    <stop offset="100%" stopColor="currentColor" stopOpacity="0.7" />
-                </linearGradient>
+            {/* 
+               Modern Minimalist Rocket Design 
+               Designed to work with currentColor for professional theme integration.
+            */}
 
-                {/* Gradient for nose cone */}
-                <linearGradient id="noseConeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.8" />
-                    <stop offset="50%" stopColor="currentColor" stopOpacity="1" />
-                    <stop offset="100%" stopColor="currentColor" stopOpacity="0.8" />
-                </linearGradient>
-
-                {/* Gradient for flames */}
-                <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#ffeb3b" />
-                    <stop offset="40%" stopColor="#ff9800" />
-                    <stop offset="100%" stopColor="#ff5722" />
-                </linearGradient>
-            </defs>
-
-            {/* Left fin - classic rocket fin shape */}
+            {/* Main Fuselage & Fins - Unified Shape */}
             <path
-                d="M8 13 L4 17 L4 18 L8 16 Z"
-                fill="url(#rocketBodyGradient)"
-                stroke="currentColor"
-                strokeWidth="0.5"
-                opacity="0.9"
+                d="M12 2C12 2 15.5 8 16.2 13.5C16.4 15.2 16.5 16 19.5 19C19.8 19.3 19.5 20 19 20H5C4.5 20 4.2 19.3 4.5 19C7.5 16 7.6 15.2 7.8 13.5C8.5 8 12 2 12 2Z"
+                fill="currentColor"
             />
 
-            {/* Right fin - classic rocket fin shape */}
+            {/* Center Vertical Highlight/Shadow (Negative Space for depth) */}
             <path
-                d="M16 13 L20 17 L20 18 L16 16 Z"
-                fill="url(#rocketBodyGradient)"
-                stroke="currentColor"
-                strokeWidth="0.5"
-                opacity="0.9"
+                d="M12 4V18"
+                stroke="var(--background)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                opacity="0.2"
+                style={{ stroke: 'var(--background)' }} // fallback
             />
 
-            {/* Main rocket body - cylindrical with proper proportions */}
-            <path
-                d="M10 7 L10 18 C10 18.5 10.5 19 11 19 L13 19 C13.5 19 14 18.5 14 18 L14 7 Z"
-                fill="url(#rocketBodyGradient)"
-                stroke="currentColor"
-                strokeWidth="0.4"
-            />
-
-            {/* Nose cone - pointed tip */}
-            <path
-                d="M12 2 L10 7 L14 7 Z"
-                fill="url(#noseConeGradient)"
-                stroke="currentColor"
-                strokeWidth="0.4"
-            />
-
-            {/* Window/porthole - round with glass effect */}
+            {/* Cockpit Window (Negative Space - showing background color) */}
             <circle
                 cx="12"
                 cy="10"
-                r="1.3"
-                fill="#87ceeb"
+                r="2.2"
+                fill="var(--background)"
+            />
+            <circle
+                cx="12"
+                cy="10"
+                r="1.2"
+                fill="currentColor"
+            />
+
+            {/* Engine Area */}
+            <path
+                d="M9 20L9.5 21.5C9.7 22.1 10.3 22.5 11 22.5H13C13.7 22.5 14.3 22.1 14.5 21.5L15 20H9Z"
+                fill="currentColor"
+                opacity="0.8"
+            />
+
+            {/* Flame (Only visible via stroke/fill if needed, otherwise part of the main icon) 
+                Here adding a separate dynamic flame part 
+            */}
+            <path
+                d="M12 22.5V24.5M10 22L8 24M14 22L16 24"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
                 opacity="0.7"
-                stroke="currentColor"
-                strokeWidth="0.3"
-            />
-            <circle
-                cx="12"
-                cy="10"
-                r="1.3"
-                fill="url(#noseConeGradient)"
-                opacity="0.15"
-            />
-
-            {/* Detail band/stripe on body */}
-            <rect
-                x="10"
-                y="13"
-                width="4"
-                height="0.8"
-                fill="currentColor"
-                opacity="0.3"
-                rx="0.2"
-            />
-
-            {/* Engine nozzle base */}
-            <path
-                d="M10 18.5 L10 19.5 L14 19.5 L14 18.5 Z"
-                fill="currentColor"
-                opacity="0.5"
-            />
-
-            {/* Rocket fire/exhaust - layered flames */}
-            {/* Outer flame layer - red/orange */}
-            <path
-                d="M10.5 19.5 L9.5 21.5 L10 23 L10.5 21.5 Z"
-                fill="url(#flameGradient)"
-                opacity="0.8"
-            />
-            <path
-                d="M13.5 19.5 L14.5 21.5 L14 23 L13.5 21.5 Z"
-                fill="url(#flameGradient)"
-                opacity="0.8"
-            />
-
-            {/* Main center flame - brightest */}
-            <path
-                d="M11.5 19.5 L11 22 L11.5 24 L12 22 Z"
-                fill="url(#flameGradient)"
-                opacity="0.95"
-            />
-            <path
-                d="M12.5 19.5 L13 22 L12.5 24 L12 22 Z"
-                fill="url(#flameGradient)"
-                opacity="0.95"
-            />
-
-            {/* Inner white-hot flame core */}
-            <ellipse
-                cx="12"
-                cy="20.5"
-                rx="0.8"
-                ry="1.5"
-                fill="#fff9c4"
-                opacity="0.9"
-            />
-
-            {/* Highlight on body for 3D depth */}
-            <ellipse
-                cx="11"
-                cy="12"
-                rx="0.5"
-                ry="3"
-                fill="white"
-                opacity="0.15"
             />
         </svg>
     );

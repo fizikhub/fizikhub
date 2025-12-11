@@ -3,6 +3,7 @@
 import { Rocket, Github, Twitter, Instagram } from "lucide-react"
 import Link from "next/link";
 import { DidYouKnow } from "@/components/ui/did-you-know";
+import { CustomRocketIcon } from "@/components/ui/custom-rocket-icon";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -254,7 +255,7 @@ export function Footer() {
                 {/* Bottom Bar - Safe Distance */}
                 <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-white/10 pt-8 gap-6 bg-black/80 backdrop-blur-md rounded-t-2xl p-4 mt-20 relative z-40">
                     <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground text-center md:text-left">
-                        <Rocket className="h-6 w-6 text-primary animate-bounce" />
+                        <CustomRocketIcon className="h-6 w-6 text-primary animate-bounce" />
                         <p>
                             &copy; 2025 FİZİKHUB // TÜM HAKLARI SAKLIDIR.
                             <br />
