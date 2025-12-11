@@ -14,7 +14,7 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
                 src="/images/rocket-logo-v3.png"
                 alt="FizikHub Rocket Logo"
                 fill
-                className="object-contain scale-110" // Added slight scale-110 to optimize visual size within the container
+                className="object-contain scale-[1.3]" // Scaled up 30% as per user request
                 priority
                 sizes="(max-width: 768px) 32px, 64px"
             />
