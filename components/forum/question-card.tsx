@@ -86,7 +86,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
     return (
         <div
-            className="group bg-card border-2 border-border/60 rounded-xl cursor-pointer hover:border-primary/40 hover:shadow-[0_0_25px_-10px_rgba(var(--primary),0.25)] transition-all duration-300 overflow-hidden relative"
+            className="group bg-card border-2 border-black dark:border-white rounded-lg cursor-pointer transition-all duration-200 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none overflow-hidden"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}
@@ -165,67 +165,65 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
                 )}
 
                 {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-2 pt-3 border-t-2 border-border/40">
+                <div className="flex items-center gap-3 pt-4 border-t-2 border-dashed border-black/20 dark:border-white/20">
                     {/* Upvote Pill - Brutalist */}
                     <div
                         className={cn(
-                            "flex items-center rounded-lg border-2 overflow-hidden transition-all duration-300",
-                            voteState === 1
-                                ? "border-primary bg-primary/10 shadow-[0_0_10px_rgba(var(--primary),0.2)]"
-                                : "border-border bg-secondary/50 hover:border-primary/40"
+                            "flex items-center rounded-lg border-2 border-black dark:border-white overflow-hidden transition-all duration-200 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
+                            voteState !== 0 ? "bg-primary/20" : "bg-transparent"
                         )}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={(e) => handleVote(e, 1)}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-2 hover:bg-primary/5 transition-all active:scale-95",
-                                voteState === 1 && "text-primary"
+                                "flex items-center gap-1.5 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors active:bg-black/10",
+                                voteState === 1 && "text-primary font-black"
                             )}
                             disabled={isVoting}
                         >
                             <ChevronUp className={cn(
-                                "w-5 h-5 stroke-[2.5px]",
-                                voteState === 1 && "fill-primary/20"
+                                "w-5 h-5 stroke-[3px]",
+                                voteState === 1 && "stroke-primary"
                             )} />
-                            <span className="text-sm font-bold min-w-[20px] text-center">
+                            <span className="text-sm font-black min-w-[20px] text-center">
                                 {votes}
                             </span>
                         </button>
-                        <div className="w-0.5 h-6 bg-border"></div>
+                        <div className="w-0.5 h-full bg-black dark:bg-white"></div>
                         <button
                             onClick={(e) => handleVote(e, -1)}
                             className={cn(
-                                "px-2.5 py-2 hover:bg-destructive/5 transition-all active:scale-95",
-                                voteState === -1 && "text-destructive"
+                                "px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors active:bg-black/10",
+                                voteState === -1 && "text-destructive font-black"
                             )}
                             disabled={isVoting}
                         >
                             <ChevronDown className={cn(
-                                "w-5 h-5 stroke-[2.5px]",
-                                voteState === -1 && "fill-destructive/20"
+                                "w-5 h-5 stroke-[3px]",
+                                voteState === -1 && "stroke-destructive"
                             )} />
                         </button>
                     </div>
 
                     {/* Comments - Brutalist */}
                     <button
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-border bg-secondary/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 active:scale-95"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent"
                     >
-                        <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm font-bold">{answerCount}</span>
+                        <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
+                        <span className="text-sm font-black">{answerCount}</span>
                     </button>
 
                     {/* Share - Brutalist */}
                     <button
-                        className="p-2 rounded-lg border-2 border-border bg-secondary/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 active:scale-95"
+                        className="p-1.5 rounded-lg border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 active:scale-95 bg-transparent ml-auto"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
                             toast.success("Link kopyalandı!");
                         }}
                     >
-                        <Share className="w-4 h-4" />
+                        <Share className="w-4 h-4 stroke-[2.5px]" />
                     </button>
                 </div>
             </div>
