@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, Sparkles, Atom, Zap, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -107,16 +108,8 @@ export function ModernForumHeader() {
             {/* New Conversational Header - Neo-Brutalist Style */}
             <div className="bg-card border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 relative overflow-hidden group min-h-[300px] flex items-center">
 
-                {/* Space Background Image */}
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="/images/forum-header-space-bg.png"
-                        alt="Space Background"
-                        className="w-full h-full object-cover opacity-80"
-                    />
-                    {/* Dark Overlay for Text Readability */}
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
-                </div>
+                {/* Dynamic Space Background (No UFOs) */}
+                <HeaderSpaceBackground />
 
                 <div className="max-w-4xl mx-auto relative z-10 w-full">
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
