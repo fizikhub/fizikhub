@@ -25,6 +25,9 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     const sort = typeof params.sort === 'string' ? params.sort : 'newest';
     const searchQuery = typeof params.q === 'string' ? params.q : undefined;
     const filter = typeof params.filter === 'string' ? params.filter : undefined;
+    const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
+    const limit = 30; // Limit for performance
+    const offset = (page - 1) * limit;
 
     // Build query
     let query = supabase
@@ -33,7 +36,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             *,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
-        `);
+        `, { count: 'exact' });
 
     // Apply filters
     if (category && category !== "Tümü") {
@@ -52,7 +55,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         query = query.order('votes', { ascending: false });
     }
 
-    const { data: questions } = await query;
+    // Add pagination
+    query = query.range(offset, offset + limit - 1);
+
+    const { data: questions, count: totalCount } = await query;
 
     // Fetch user's votes to show "voted" state
     let userVotes = new Map<number, number>();
