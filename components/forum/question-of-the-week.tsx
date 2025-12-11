@@ -23,7 +23,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
         >
-            <div className="relative overflow-hidden group transition-all duration-200 bg-card border-[1.5px] border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="relative overflow-hidden group transition-all duration-200 bg-card border border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 {/* Lab Grid Background */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px]" />
 
@@ -71,7 +71,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
 
                     {/* Action Button */}
                     <Link href={targetUrl} className="block pt-2">
-                        <Button className="w-full h-12 gap-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase border-[1.5px] border-transparent hover:border-black dark:hover:border-white hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] active:scale-95 group relative overflow-hidden">
+                        <Button className="w-full h-12 gap-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase border border-transparent hover:border-black dark:hover:border-white hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] active:scale-95 group relative overflow-hidden">
                             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] animate-[shimmer_2s_infinite] opacity-0 group-hover:opacity-100 transition-opacity" />
                             <Microscope className="h-4 w-4" />
                             <span>Analiz Başlat</span>
