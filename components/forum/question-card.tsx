@@ -83,9 +83,12 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
 
     return (
         <div
-            className="group bg-card border border-border/60 rounded-xl cursor-pointer hover:border-primary/30 hover:shadow-[0_0_20px_-10px_rgba(var(--primary),0.15)] transition-all duration-300 overflow-hidden relative"
+            className="group bg-card border-2 border-border/60 rounded-xl cursor-pointer hover:border-primary/40 hover:shadow-[0_0_25px_-10px_rgba(var(--primary),0.25)] transition-all duration-300 overflow-hidden relative"
             onClick={handleCardClick}
         >
+            {/* Cosmic background effect */}
+            <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
             <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
                 {/* Author Row */}
                 <div className="flex items-center gap-3 mb-3">
@@ -158,56 +161,61 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
                     </div>
                 )}
 
-                {/* Action Bar - Quora Style */}
-                <div className="flex items-center gap-2 pt-2">
-                    {/* Upvote Pill */}
+                {/* Action Bar - Brutalist Space Style */}
+                <div className="flex items-center gap-2 pt-3 border-t-2 border-border/40">
+                    {/* Upvote Pill - Brutalist */}
                     <div
-                        className="flex items-center rounded-full bg-zinc-800/80 border border-zinc-700/50 overflow-hidden"
+                        className={cn(
+                            "flex items-center rounded-lg border-2 overflow-hidden transition-all duration-300",
+                            voteState === 1
+                                ? "border-primary bg-primary/10 shadow-[0_0_10px_rgba(var(--primary),0.2)]"
+                                : "border-border bg-secondary/50 hover:border-primary/40"
+                        )}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <button
                             onClick={(e) => handleVote(e, 1)}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 hover:bg-zinc-700/50 transition-colors",
-                                voteState === 1 && "text-amber-500"
+                                "flex items-center gap-1.5 px-3 py-2 hover:bg-primary/5 transition-all active:scale-95",
+                                voteState === 1 && "text-primary"
                             )}
                             disabled={isVoting}
                         >
                             <ChevronUp className={cn(
                                 "w-5 h-5 stroke-[2.5px]",
-                                voteState === 1 && "text-amber-500"
+                                voteState === 1 && "fill-primary/20"
                             )} />
-                            <span className="text-sm font-bold">
+                            <span className="text-sm font-bold min-w-[20px] text-center">
                                 {votes}
                             </span>
                         </button>
-                        <div className="w-px h-5 bg-zinc-700"></div>
+                        <div className="w-0.5 h-6 bg-border"></div>
                         <button
                             onClick={(e) => handleVote(e, -1)}
                             className={cn(
-                                "px-2.5 py-1.5 hover:bg-zinc-700/50 transition-colors",
-                                voteState === -1 && "text-blue-500"
+                                "px-2.5 py-2 hover:bg-destructive/5 transition-all active:scale-95",
+                                voteState === -1 && "text-destructive"
                             )}
                             disabled={isVoting}
                         >
                             <ChevronDown className={cn(
                                 "w-5 h-5 stroke-[2.5px]",
-                                voteState === -1 && "text-blue-500"
+                                voteState === -1 && "fill-destructive/20"
                             )} />
                         </button>
                     </div>
 
-                    {/* Comments */}
+                    {/* Comments - Brutalist */}
                     <button
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700/50 hover:bg-zinc-700/50 transition-colors text-muted-foreground hover:text-foreground"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-border bg-secondary/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 active:scale-95"
                     >
                         <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">{answerCount}</span>
+                        <span className="text-sm font-bold">{answerCount}</span>
                     </button>
 
-                    {/* Share */}
+                    {/* Share - Brutalist */}
                     <button
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-800/80 border border-zinc-700/50 hover:bg-zinc-700/50 transition-colors text-muted-foreground hover:text-foreground"
+                        className="p-2 rounded-lg border-2 border-border bg-secondary/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 active:scale-95"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);

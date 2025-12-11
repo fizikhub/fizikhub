@@ -259,6 +259,11 @@
     }
   }
 
+  /* Radial Gradient for Cosmic Effects */
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
+  }
+
   /* 3. Cosmic Border */
   .cosmic-border {
     position: relative;
