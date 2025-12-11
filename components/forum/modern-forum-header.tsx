@@ -104,41 +104,50 @@ export function ModernForumHeader() {
 
     return (
         <div className="flex flex-col gap-8 mb-8">
-            {/* New Conversational Header - Evrim Agaci Style */}
-            <div className="bg-card border-b border-border shadow-sm p-4 md:p-6 mb-4">
-                <div className="max-w-4xl mx-auto">
-                    <div className="flex items-start gap-4">
-                        {/* User Avatar Placeholder */}
-                        <div className="hidden md:flex flex-col items-center gap-2 pt-1">
-                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                                <Atom className="w-6 h-6" />
+            {/* New Conversational Header - Neo-Brutalist Style */}
+            <div className="bg-card border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 relative overflow-hidden group">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.05)_50%,transparent_75%)] dark:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:20px_20px]" />
+
+                <div className="max-w-4xl mx-auto relative z-10">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                        {/* User Avatar - Brutalist */}
+                        <div className="hidden md:flex flex-col items-center gap-2">
+                            <div className="w-16 h-16 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                <Atom className="w-8 h-8 text-primary-foreground" />
                             </div>
                         </div>
 
-                        <div className="flex-1 space-y-4">
+                        <div className="flex-1 space-y-6 w-full text-center md:text-left">
                             {/* Greeting & Prompt */}
-                            <div>
-                                <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                                    Aklına takılan soruyu sor...
+                            <div className="space-y-2">
+                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground">
+                                    AKLINDA NE VAR?
                                 </h1>
-                                <p className="text-muted-foreground text-sm mt-1">
-                                    Bilim topluluğu sorularını bekliyor. Cevaplar yıldızların arasında olabilir.
+                                <p className="text-muted-foreground font-medium md:text-lg max-w-2xl">
+                                    BİLİM TOPLULUĞU SORULARINI BEKLİYOR. CEVAPLAR YILDIZLARIN ARASINDA.
                                 </p>
                             </div>
 
-                            {/* Fake Input Trigger */}
+                            {/* Fake Input Trigger - Terminal Style */}
                             <CreateQuestionDialog
                                 trigger={
-                                    <div className="w-full bg-muted/50 hover:bg-muted/80 border border-input rounded-xl p-4 flex items-center gap-3 transition-all duration-200 cursor-text group">
-                                        <div className="p-2 bg-background rounded-full text-primary group-hover:scale-110 transition-transform duration-200">
-                                            <Sparkles className="w-5 h-5" />
-                                        </div>
-                                        <span className="text-muted-foreground font-medium text-lg flex-1">
-                                            Merak ettiğin ne?
-                                        </span>
-                                        <div className="hidden sm:flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                                            <div className="px-3 py-1.5 bg-background rounded-lg text-xs font-bold uppercase tracking-wide border border-border">
-                                                Soru Oluştur
+                                    <div className="w-full bg-background border-2 border-black dark:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-y-0 active:shadow-none">
+                                        <div className="w-full bg-muted/30 p-3 md:p-4 flex items-center gap-4">
+                                            <div className="p-2 bg-black dark:bg-white text-white dark:text-black border-2 border-transparent group-hover/input:border-primary transition-colors">
+                                                <Sparkles className="w-5 h-5" />
+                                            </div>
+                                            <div className="flex-1 flex items-center gap-2">
+                                                <span className="text-primary font-bold">{">"}</span>
+                                                <span className="text-muted-foreground font-bold text-lg uppercase tracking-wide flex-1 text-left">
+                                                    Sorgu Başlat...
+                                                </span>
+                                                <div className="w-3 h-6 bg-primary animate-pulse hidden md:block" />
+                                            </div>
+                                            <div className="hidden sm:flex items-center gap-2">
+                                                <div className="px-4 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                                    ENTER
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
