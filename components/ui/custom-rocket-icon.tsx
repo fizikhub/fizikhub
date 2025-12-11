@@ -7,70 +7,31 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
         <svg
             viewBox="0 0 24 24"
             fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             xmlns="http://www.w3.org/2000/svg"
             className={className}
         >
             {/* 
-                Professional Custom Rocket Icon v3
-                Style: Modern, Tech, Aerodynamic
-                Characteristics: Sharp angles, negative space, sleek profile
+                Custom Rocket Icon - Lucide Style but Unique
+                Clean stroke-based design matching the quality of icon libraries
             */}
 
-            <g transform="rotate(-45 12 12)">
-                {/* Main Body - Split Design for Tech Feel */}
-                <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M12 2C12 2 16 9 16.5 15C16.634 16.6075 16 20 16 20L12 18L8 20C8 20 7.36603 16.6075 7.5 15C8 9 12 2 12 2Z"
-                    fill="currentColor"
-                />
+            {/* Main rocket body - aerodynamic teardrop shape */}
+            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
 
-                {/* Center Groove / Detail Line (Negative space) */}
-                <path
-                    d="M12 5V14"
-                    stroke="var(--background)"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                />
+            {/* Rocket fuselage */}
+            <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
 
-                {/* Cockpit / Tech Node */}
-                <circle cx="12" cy="11" r="1.5" fill="var(--background)" />
-                <circle cx="12" cy="11" r="0.8" fill="currentColor" />
+            {/* Window/porthole */}
+            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
 
-                {/* Aerodynamic Fins - Sharp and angular */}
-                <path
-                    d="M7.5 14L4 17.5L5.5 19L8 18"
-                    fill="currentColor"
-                    fillOpacity="0.8"
-                />
-                <path
-                    d="M16.5 14L20 17.5L18.5 19L16 18"
-                    fill="currentColor"
-                    fillOpacity="0.8"
-                />
-
-                {/* Propulsion / Exhaust */}
-                <path
-                    d="M12 18V21"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                />
-                <path
-                    d="M10 19.5L9 21.5"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    opacity="0.6"
-                />
-                <path
-                    d="M14 19.5L15 21.5"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    opacity="0.6"
-                />
-            </g>
+            {/* Flame trails */}
+            <path d="M14 22s1-2 1-4" opacity="0.6" />
+            <path d="M2 10s2-1 4-1" opacity="0.6" />
         </svg>
     );
 }
