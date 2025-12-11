@@ -15,23 +15,27 @@ export function CustomRocketIcon({ className = "" }: CustomRocketIconProps) {
             className={className}
         >
             {/* 
-                Custom Rocket Icon - Lucide Style but Unique
-                Clean stroke-based design matching the quality of icon libraries
+                Custom Rocket Logo
+                Replica of the provided neon-style image.
+                Composition: Rotated 45deg right structure.
             */}
 
-            {/* Main rocket body - aerodynamic teardrop shape */}
-            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+            {/* We use a group rotated -45deg to draw upright, then rotate to match logic if needed, 
+                BUT the image is already diagonal. Let's draw it diagonally directly for best control.
+            */}
 
-            {/* Rocket fuselage */}
-            <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+            {/* Main Body - The large loop pointing top-right */}
+            <path d="M13 3 C13 3 8 8 7 13 C6.5 15.5 7.5 18 10 19 C12.5 20 15.5 19 18 17 C22 13 22 8 22 8 C22 8 18 3 13 3 Z" />
 
-            {/* Window/porthole */}
-            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+            {/* Left Wing - Loop attached to body */}
+            <path d="M7.5 12.5 L5 12.5 C3.5 12.5 2.5 13.5 2.5 15 C2.5 16.5 3.5 17.5 5 17.5 L8 16.5" />
 
-            {/* Flame trails */}
-            <path d="M14 22s1-2 1-4" opacity="0.6" />
-            <path d="M2 10s2-1 4-1" opacity="0.6" />
+            {/* Right Wing / Fin - Loop attached to bottom right of body */}
+            <path d="M12 18.5 L12 21 C12 22.5 13 23.5 14.5 23.5 C16 23.5 17 22.5 17 21 L16 18" />
+
+            {/* Flame - Detached loop at bottom left */}
+            <path d="M3.5 20.5 C2.5 21.5 2.5 23 3.5 24 C4.5 25 6 25 7 24 C8 23 8 21.5 7 20.5 C6 19.5 4.5 19.5 3.5 20.5 Z" transform="translate(1 -1)" />
+
         </svg>
     );
 }
