@@ -1,21 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { MessageCircle, Share, ChevronUp, ChevronDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { ChevronUp, ChevronDown, MessageCircle, Share, BadgeCheck } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
-import { useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 interface QuestionCardProps {
     question: any;
     userVote?: number;
 }
 
-export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
+export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCardProps) => {
     const router = useRouter();
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
@@ -23,12 +25,12 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleCardClick = () => {
-        router.push(`/forum/${question.id}`);
+        router.push(`/ forum / ${question.id} `);
     };
 
     const handleProfileClick = (e: React.MouseEvent, username: string) => {
         e.stopPropagation();
-        router.push(`/kullanici/${username}`);
+        router.push(`/ kullanici / ${username} `);
     };
 
     const handleVote = async (e: React.MouseEvent, type: 1 | -1) => {
@@ -228,4 +230,6 @@ export function QuestionCard({ question, userVote = 0 }: QuestionCardProps) {
             </div>
         </div>
     );
-}
+});
+
+QuestionCard.displayName = 'QuestionCard';
