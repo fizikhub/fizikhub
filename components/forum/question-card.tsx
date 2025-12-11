@@ -26,6 +26,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
     const handleCardClick = () => {
         router.push(`/forum/${question.id}`);
+        if (typeof window !== 'undefined') window.scrollTo(0, 0);
     };
 
     const handleProfileClick = (e: React.MouseEvent, username: string) => {

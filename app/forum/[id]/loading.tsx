@@ -3,7 +3,7 @@ import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 export default function Loading() {
     return (
-        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden">
+        <div className="min-h-[150vh] bg-background pb-20 relative overflow-x-hidden">
             <BackgroundWrapper />
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto relative z-10">
                 {/* Back Button Skeleton */}

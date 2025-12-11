@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export function ScrollFixer() {
     const pathname = usePathname();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         // Smooth scroll'u geçici olarak devre dışı bırak
         document.documentElement.style.scrollBehavior = "auto";
         window.scrollTo(0, 0);
