@@ -104,91 +104,47 @@ export function ModernForumHeader() {
 
     return (
         <div className="flex flex-col gap-8 mb-8">
-            {/* Industrial Header */}
-            <div className="relative border-2 border-black dark:border-white bg-card p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-                {/* Decorative Corner */}
-                <div className="absolute top-0 left-0 w-4 h-4 bg-black dark:bg-white" />
-                <div className="absolute top-0 right-0 w-4 h-4 bg-black dark:bg-white" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 bg-black dark:bg-white" />
-                <div className="absolute bottom-0 right-0 w-4 h-4 bg-black dark:bg-white" />
+            {/* New Conversational Header - Evrim Agaci Style */}
+            <div className="bg-card border-b border-border shadow-sm p-4 md:p-6 mb-4">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex items-start gap-4">
+                        {/* User Avatar Placeholder */}
+                        <div className="hidden md:flex flex-col items-center gap-2 pt-1">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                                <Atom className="w-6 h-6" />
+                            </div>
+                        </div>
 
-                <div className="max-w-4xl mx-auto text-center space-y-6">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest border-2 border-black dark:border-white">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>FizikHub Forum</span>
-                    </div>
+                        <div className="flex-1 space-y-4">
+                            {/* Greeting & Prompt */}
+                            <div>
+                                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                                    Aklına takılan soruyu sor...
+                                </h1>
+                                <p className="text-muted-foreground text-sm mt-1">
+                                    Bilim topluluğu sorularını bekliyor. Cevaplar yıldızların arasında olabilir.
+                                </p>
+                            </div>
 
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9]">
-                        FİZİKHUB FORUM
-                    </h1>
-
-                    <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto">
-                        Aklındaki soruları sor, bildiklerini paylaş ve bilim topluluğunun bir parçası ol.
-                    </p>
-
-                    {/* Search Bar */}
-                    <div ref={searchRef} className="relative max-w-xl mx-auto mt-8">
-                        <form onSubmit={handleSearch} className="relative flex items-center">
-                            <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                placeholder="Aradığın şey kara delikte kaybolmuş olabilir..."
-                                className="pl-12 pr-24 h-14 rounded-none border-2 border-black dark:border-white bg-background text-lg font-medium focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-colors"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => {
-                                    if (searchQuery.length > 2 && results.length > 0) setShowResults(true);
-                                }}
+                            {/* Fake Input Trigger */}
+                            <CreateQuestionDialog
+                                trigger={
+                                    <div className="w-full bg-muted/50 hover:bg-muted/80 border border-input rounded-xl p-4 flex items-center gap-3 transition-all duration-200 cursor-text group">
+                                        <div className="p-2 bg-background rounded-full text-primary group-hover:scale-110 transition-transform duration-200">
+                                            <Sparkles className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-muted-foreground font-medium text-lg flex-1">
+                                            Merak ettiğin ne?
+                                        </span>
+                                        <div className="hidden sm:flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                                            <div className="px-3 py-1.5 bg-background rounded-lg text-xs font-bold uppercase tracking-wide border border-border">
+                                                Soru Oluştur
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             />
-                            <Button
-                                type="submit"
-                                className="absolute right-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase hover:bg-primary hover:text-black transition-colors"
-                            >
-                                ARA
-                            </Button>
-                        </form>
-
-                        {/* Instant Search Results */}
-                        <AnimatePresence>
-                            {showResults && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] z-50"
-                                >
-                                    {isSearching ? (
-                                        <div className="p-4 text-center text-muted-foreground font-medium">
-                                            Veriler taranıyor...
-                                        </div>
-                                    ) : results.length > 0 ? (
-                                        <div className="divide-y-2 divide-border">
-                                            {results.map((result) => (
-                                                <button
-                                                    key={result.id}
-                                                    onClick={() => {
-                                                        router.push(`/forum/${result.id}`);
-                                                        setShowResults(false);
-                                                    }}
-                                                    className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 group"
-                                                >
-                                                    <div className="p-2 bg-primary/10 text-primary border-2 border-transparent group-hover:border-black dark:group-hover:border-white transition-colors">
-                                                        <Sparkles className="h-4 w-4" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-bold truncate">{result.title}</p>
-                                                        <p className="text-xs font-bold text-muted-foreground uppercase">{result.category}</p>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="p-4 text-center text-muted-foreground font-medium">
-                                            Sonuç yok. Belki de paralel evrendedir.
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -239,8 +195,15 @@ export function ModernForumHeader() {
                         </button>
                     </div>
 
-                    <div className="relative z-10">
-                        <CreateQuestionDialog />
+                    {/* Filter Icon for Mobile (New) */}
+                    <div className="md:hidden relative z-10">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="rounded-none border-2 border-black dark:border-white"
+                        >
+                            <Search className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
             </div>
