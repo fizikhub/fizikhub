@@ -141,8 +141,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-screen flex flex-col pb-16 md:pb-0`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           themes={["light", "dark", "pink"]}
           disableTransitionOnChange
         >
