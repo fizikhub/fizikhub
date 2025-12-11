@@ -554,6 +554,8 @@ export async function toggleCommentLike(commentId: number) {
         .eq('user_id', user.id)
         .single();
 
+    // ... (previous code)
+
     if (existingLike) {
         // Unlike
         const { error } = await supabase
@@ -565,10 +567,13 @@ export async function toggleCommentLike(commentId: number) {
             return { success: false, error: error.message };
         }
 
-        // Remove reputation
-        await supabase.rpc('adjust_reputation', {
-            target_user_id: comment.author_id,
-            amount: -1
+        // Remove reputation (deduct 1 point)
+        await supabase.rpc('add_reputation', {
+            p_user_id: comment.author_id,
+            p_points: -1,
+            p_reason: 'answer_comment_like_removed',
+            p_reference_type: 'answer_comment',
+            p_reference_id: commentId
         });
 
         return { success: true };
@@ -585,19 +590,26 @@ export async function toggleCommentLike(commentId: number) {
             return { success: false, error: error.message };
         }
 
-        // Add reputation
-        await supabase.rpc('adjust_reputation', {
-            target_user_id: comment.author_id,
-            amount: 1
+        // Add reputation (add 1 point)
+        await supabase.rpc('add_reputation', {
+            p_user_id: comment.author_id,
+            p_points: 1,
+            p_reason: 'answer_comment_liked',
+            p_reference_type: 'answer_comment',
+            p_reference_id: commentId
         });
 
         // Send notification to comment author
-        await createNotification({
-            recipientId: comment.author_id,
-            actorId: user.id,
-            type: 'like',
-            content: 'yorumunu beğendi'
-        });
+        if (comment.author_id !== user.id) {
+            await createNotification({
+                recipientId: comment.author_id,
+                actorId: user.id,
+                type: 'like',
+                content: 'yorumunu beğendi',
+                resourceId: comment.answer_id.toString(), // Linking back to answer for context
+                resourceType: 'answer' // The notification system likely handles 'answer' best
+            });
+        }
 
         return { success: true };
     }

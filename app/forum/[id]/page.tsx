@@ -388,6 +388,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                 questionId={question.id}
                                 initialAnswers={answersWithLikes || []}
                                 questionAuthorId={question.author_id}
+                                currentUser={user}
                             />
                         </div>
                     </div>

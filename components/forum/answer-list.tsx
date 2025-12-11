@@ -38,9 +38,10 @@ interface AnswerListProps {
     questionId: number;
     initialAnswers: Answer[];
     questionAuthorId: string;
+    currentUser: any;
 }
 
-export function AnswerList({ questionId, initialAnswers, questionAuthorId }: AnswerListProps) {
+export function AnswerList({ questionId, initialAnswers, questionAuthorId, currentUser }: AnswerListProps) {
     const sortedAnswers = [...initialAnswers].sort((a, b) => {
         if (a.is_accepted === b.is_accepted) {
             return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -51,7 +52,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     const [answers, setAnswers] = useState<Answer[]>(sortedAnswers);
     const [newAnswer, setNewAnswer] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<any>(currentUser);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
     const [supabase] = useState(() => createClient());
 
@@ -88,13 +89,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId }: Ans
     };
 
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user ?? null);
-        };
-
-        getUser();
-
+        // Only verify session on client side if props are stale (though props update on navigation)
+        // But mainly listen for changes (login/logout)
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
