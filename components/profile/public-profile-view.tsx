@@ -23,6 +23,7 @@ interface PublicProfileViewProps {
     followersCount: number;
     followingCount: number;
     userBadges: any[];
+    articles: any[];
     questions: any[];
     answersCount: number;
     user: any;
@@ -35,6 +36,7 @@ export function PublicProfileView({
     followersCount,
     followingCount,
     userBadges,
+    articles,
     questions,
     answersCount,
     user
@@ -210,8 +212,9 @@ export function PublicProfileView({
                     <motion.div variants={itemVariants} className="lg:col-span-8 space-y-6">
 
                         {/* Stats Row */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                             {[
+                                { label: "MAKALE", value: articles?.length || 0 },
                                 { label: "TAKİPÇİ", value: followersCount },
                                 { label: "TAKİP", value: followingCount },
                                 { label: "SORU", value: questions?.length || 0 },

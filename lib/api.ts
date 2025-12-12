@@ -7,6 +7,8 @@ export type Article = Database['public']['Tables']['articles']['Row'] & {
     is_featured?: boolean;
     views?: number;
     profiles?: Database['public']['Tables']['profiles']['Row'] | null; // Alias for author in some queries
+    cover_url?: string | null;
+    status?: string | null;
 };
 
 export type Question = Database['public']['Tables']['questions']['Row'] & {

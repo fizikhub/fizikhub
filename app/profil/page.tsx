@@ -24,6 +24,7 @@ export default async function ProfilePage() {
         { data: questions },
         { data: answers },
         { data: userBadges },
+        { data: articles },
         conversations,
         followStats,
         { data: bookmarkedArticles },
@@ -41,16 +42,19 @@ export default async function ProfilePage() {
         // 4. Fetch Badges
         supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
 
-        // 5. Fetch Conversations
+        // 5. Fetch Articles
+        supabase.from('articles').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
+
+        // 6. Fetch Conversations
         getConversations(),
 
-        // 6. Fetch Follow Stats
+        // 7. Fetch Follow Stats
         getFollowStats(user.id),
 
-        // 7. Fetch Bookmarked Articles
+        // 8. Fetch Bookmarked Articles
         supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
 
-        // 8. Fetch Bookmarked Questions
+        // 9. Fetch Bookmarked Questions
         supabase.from('question_bookmarks').select('created_at, questions(id, title, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false })
     ]);
 
@@ -89,11 +93,13 @@ export default async function ProfilePage() {
                     followingCount={followStats.followingCount}
                     questionsCount={questions?.length || 0}
                     answersCount={answers?.length || 0}
+                    articlesCount={articles?.length || 0}
                 />
 
                 <ProfileBadges userBadges={userBadges || []} />
 
                 <ProfileTabs
+                    articles={articles || []}
                     questions={questions || []}
                     answers={answers || []}
                     conversations={conversations}

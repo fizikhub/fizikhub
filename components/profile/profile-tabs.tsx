@@ -11,8 +11,10 @@ import { formatDistanceToNow, format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { NotificationsList } from "@/components/profile/notifications-list";
 import { ConversationList } from "@/components/messaging/conversation-list";
+import { ProfileArticleCard } from "@/components/profile/profile-article-card";
 
 interface ProfileTabsProps {
+    articles: any[];
     questions: any[];
     answers: any[];
     conversations: any[];
@@ -23,6 +25,7 @@ interface ProfileTabsProps {
 }
 
 export function ProfileTabs({
+    articles,
     questions,
     answers,
     conversations,
@@ -32,8 +35,18 @@ export function ProfileTabs({
     profile
 }: ProfileTabsProps) {
     return (
-        <Tabs defaultValue="questions" className="mb-20">
+        <Tabs defaultValue="articles" className="mb-20">
             <TabsList className="bg-black/40 backdrop-blur-md border border-amber-500/20 p-2 gap-4 h-auto flex flex-wrap justify-start">
+                <TabsTrigger
+                    value="articles"
+                    className="rounded-lg border border-transparent data-[state=active]:border-cyan-500 data-[state=active]:bg-cyan-500/10 data-[state=active]:text-cyan-400 text-amber-100/60 font-mono font-bold uppercase tracking-wider transition-all hover:bg-cyan-500/5 group"
+                >
+                    <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 group-hover:text-cyan-400 transition-colors" />
+                        <span>Makaleler</span>
+                    </div>
+                </TabsTrigger>
+
                 <TabsTrigger
                     value="questions"
                     className="rounded-lg border border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-amber-500/10 data-[state=active]:text-amber-400 text-amber-100/60 font-mono font-bold uppercase tracking-wider transition-all hover:bg-amber-500/5 group"
@@ -85,8 +98,25 @@ export function ProfileTabs({
                 </TabsTrigger>
             </TabsList>
 
+            {/* Articles Tab Content - NEW */}
+            <TabsContent value="articles" className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {articles.length > 0 ? (
+                        articles.map((article) => (
+                            <ProfileArticleCard key={article.id} article={article} />
+                        ))
+                    ) : (
+                        <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 border border-dashed border-cyan-500/20 rounded-xl bg-cyan-950/10">
+                            <FileText className="h-12 w-12 mx-auto mb-4 text-cyan-500/20" />
+                            <p className="text-cyan-200/50 font-mono uppercase tracking-widest mb-4">Henüz makale yok</p>
+                            <p className="text-sm text-cyan-300/30">İlk makaleni yazarak başla!</p>
+                        </div>
+                    )}
+                </div>
+            </TabsContent>
+
             {/* Questions Tab Content */}
-            <TabsContent value="questions" className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            <TabsContent value="questions" className="space-y-6 animate-in fade-in zoom-in-95 duration-300">\
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {questions.length > 0 ? (
                         questions.map((question) => (

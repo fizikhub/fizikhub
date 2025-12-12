@@ -5,11 +5,31 @@ interface ProfileStatsProps {
     followingCount: number;
     questionsCount: number;
     answersCount: number;
+    articlesCount: number;
 }
 
-export function ProfileStats({ followersCount, followingCount, questionsCount, answersCount }: ProfileStatsProps) {
+export function ProfileStats({ followersCount, followingCount, questionsCount, answersCount, articlesCount }: ProfileStatsProps) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            {/* ARTICLES - NEW */}
+            <div className="relative group">
+                <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent w-full animate-scan-y shadow-[0_0_10px_rgba(6,182,212,0.5)]" />
+
+                <div className="bg-black/40 backdrop-blur-md border border-cyan-500/20 p-4 relative overflow-hidden group hover:border-cyan-500/50 transition-colors h-full">
+                    <div className="flex flex-col items-center justify-center space-y-2 relative z-10">
+                        <span className="text-4xl font-black font-mono text-white tracking-tighter drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]">
+                            {articlesCount}
+                        </span>
+                        <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-cyan-400">Makale</span>
+                    </div>
+                    {/* Corner Accents */}
+                    <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-500/30 group-hover:border-cyan-500 transition-colors" />
+                    <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-cyan-500/30 group-hover:border-cyan-500 transition-colors" />
+                    <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-cyan-500/30 group-hover:border-cyan-500 transition-colors" />
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-500/30 group-hover:border-cyan-500 transition-colors" />
+                </div>
+            </div>
+
             {/* FOLLOWERS */}
             <div className="relative group">
                 <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent w-full animate-scan-y shadow-[0_0_10px_rgba(245,158,11,0.5)]" />

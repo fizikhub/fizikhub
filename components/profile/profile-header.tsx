@@ -14,6 +14,7 @@ import { ProfileMessagesButton } from "@/components/profile/profile-messages-but
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { ModeToggle } from "@/components/mode-toggle";
 import { ReputationDisplay } from "@/components/reputation-display";
+import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
 
 interface ProfileHeaderProps {
     profile: any;
@@ -74,6 +75,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
 
                         {/* Action Toolbar */}
                         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+                            <CreateArticleDialog />
                             <div>
                                 <ModeToggle />
                             </div>

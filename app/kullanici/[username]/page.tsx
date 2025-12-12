@@ -39,6 +39,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         followStatus,
         followStats,
         { data: userBadges },
+        { data: articles },
         { data: questions },
         { count: answersCount }
     ] = await Promise.all([
@@ -64,7 +65,14 @@ export default async function PublicProfilePage({ params }: PageProps) {
             .eq('user_id', profile.id)
             .order('awarded_at', { ascending: false }),
 
-        // 4. User questions
+        // 4. User articles
+        supabase
+            .from('articles')
+            .select('*')
+            .eq('author_id', profile.id)
+            .order('created_at', { ascending: false }),
+
+        // 5. User questions
         supabase
             .from('questions')
             .select(`
@@ -75,7 +83,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false }),
 
-        // 5. User answers count
+        // 6. User answers count
         supabase
             .from('answers')
             .select('*', { count: 'exact', head: true })
@@ -93,6 +101,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
             followersCount={followersCount}
             followingCount={followingCount}
             userBadges={userBadges || []}
+            articles={articles || []}
             questions={questions || []}
             answersCount={answersCount || 0}
             user={user}
