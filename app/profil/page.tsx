@@ -1,13 +1,9 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
-import { getConversations } from "@/app/mesajlar/actions";
 import { getFollowStats } from "@/app/profil/actions";
-import { ProfileHeader } from "@/components/profile/profile-header";
-import { ProfileStats } from "@/components/profile/profile-stats";
-import { ProfileTabs } from "@/components/profile/profile-tabs";
-import { ProfileBadges } from "@/components/profile/profile-badges";
-import { EditableCover } from "@/components/profile/editable-cover";
-
+import { ProfileHero } from "@/components/profile/profile-hero";
+import { ProfileAboutSidebar } from "@/components/profile/profile-about-sidebar";
+import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
 import { SpaceBackground } from "@/components/home/space-background";
 
 export default async function ProfilePage() {
@@ -21,11 +17,10 @@ export default async function ProfilePage() {
     // Parallel Data Fetching
     const [
         { data: profile },
+        { data: articles },
         { data: questions },
         { data: answers },
         { data: userBadges },
-        { data: articles },
-        conversations,
         followStats,
         { data: bookmarkedArticles },
         { data: bookmarkedQuestions }
@@ -33,81 +28,70 @@ export default async function ProfilePage() {
         // 1. Fetch Profile
         supabase.from('profiles').select('*').eq('id', user.id).single(),
 
-        // 2. Fetch Questions
-        supabase.from('questions').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
-
-        // 3. Fetch Answers
-        supabase.from('answers').select('*, questions(id, title)').eq('author_id', user.id).order('created_at', { ascending: false }),
-
-        // 4. Fetch Badges
-        supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
-
-        // 5. Fetch Articles
+        // 2. Fetch Articles
         supabase.from('articles').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
 
-        // 6. Fetch Conversations
-        getConversations(),
+        // 3. Fetch Questions
+        supabase.from('questions').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
 
-        // 7. Fetch Follow Stats
+        // 4. Fetch Answers
+        supabase.from('answers').select('*, questions(id, title)').eq('author_id', user.id).order('created_at', { ascending: false }),
+
+        // 5. Fetch Badges
+        supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
+
+        // 6. Fetch Follow Stats
         getFollowStats(user.id),
 
-        // 8. Fetch Bookmarked Articles
-        supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
+        // 7. Fetch Bookmarked Articles
+        supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, category, cover_url, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
 
-        // 9. Fetch Bookmarked Questions
+        // 8. Fetch Bookmarked Questions
         supabase.from('question_bookmarks').select('created_at, questions(id, title, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false })
     ]);
 
-    // Generate gradient for cover
-    const gradients = [
-        "from-blue-500 to-indigo-600",
-        "from-emerald-500 to-teal-600",
-        "from-orange-500 to-amber-600",
-        "from-pink-500 to-rose-600",
-        "from-violet-500 to-purple-600"
-    ];
-    const gradientIndex = (profile?.username?.length || 0 + (profile?.full_name?.length || 0)) % gradients.length;
-    const coverGradient = gradients[gradientIndex];
-
     return (
-        <div className="min-h-screen pb-20 relative overflow-hidden bg-black">
+        <div className="min-h-screen bg-background relative overflow-hidden pb-20">
+            {/* Space Background */}
             <SpaceBackground />
 
-            {/* Editable Cover Image */}
+            {/* Hero Section */}
             <div className="relative z-10">
-                <EditableCover
-                    url={profile?.cover_url}
-                    gradient={coverGradient}
-                    editable={true}
+                <ProfileHero
+                    profile={profile}
+                    user={user}
+                    isOwnProfile={true}
                 />
             </div>
 
-            <div className="container mx-auto max-w-5xl px-4 -mt-20 relative z-10">
-                <ProfileHeader
-                    profile={profile}
-                    user={user}
-                />
+            {/* Main Content */}
+            <div className="container max-w-7xl mx-auto px-4 py-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8">
+                    {/* Left Sidebar */}
+                    <div className="lg:sticky lg:top-24 lg:self-start">
+                        <ProfileAboutSidebar
+                            profile={profile}
+                            stats={{
+                                articlesCount: articles?.length || 0,
+                                questionsCount: questions?.length || 0,
+                                answersCount: answers?.length || 0,
+                                followersCount: followStats.followersCount,
+                                followingCount: followStats.followingCount
+                            }}
+                            badges={userBadges || []}
+                            createdAt={user.created_at}
+                        />
+                    </div>
 
-                <ProfileStats
-                    followersCount={followStats.followersCount}
-                    followingCount={followStats.followingCount}
-                    questionsCount={questions?.length || 0}
-                    answersCount={answers?.length || 0}
-                    articlesCount={articles?.length || 0}
-                />
-
-                <ProfileBadges userBadges={userBadges || []} />
-
-                <ProfileTabs
-                    articles={articles || []}
-                    questions={questions || []}
-                    answers={answers || []}
-                    conversations={conversations}
-                    bookmarkedArticles={bookmarkedArticles || []}
-                    bookmarkedQuestions={bookmarkedQuestions || []}
-                    userId={user.id}
-                    profile={profile}
-                />
+                    {/* Main Content Feed */}
+                    <ProfileContentFeed
+                        articles={articles || []}
+                        questions={questions || []}
+                        answers={answers || []}
+                        bookmarkedArticles={bookmarkedArticles || []}
+                        bookmarkedQuestions={bookmarkedQuestions || []}
+                    />
+                </div>
             </div>
         </div>
     );
