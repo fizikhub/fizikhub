@@ -4,41 +4,38 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 
 export async function createArticle(formData: FormData) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-        return { success: false, error: "Giriş yapmalısınız." };
-    }
+        if (!user) {
+            return { success: false, error: "Giriş yapmalısınız." };
+        }
 
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
-    const excerpt = formData.get("excerpt") as string;
-    const category = formData.get("category") as string;
-    const coverUrl = formData.get("cover_url") as string;
-    const status = formData.get("status") as string || "draft";
+        const title = formData.get("title") as string;
+        const content = formData.get("content") as string;
+        const excerpt = formData.get("excerpt") as string;
+        const category = formData.get("category") as string;
+        const coverUrl = formData.get("cover_url") as string;
+        const status = formData.get("status") as string || "draft";
 
-    if (!title || !content) {
-        return { success: false, error: "Başlık ve içerik gereklidir." };
-    }
+        if (!title || !content) {
+            return { success: false, error: "Başlık ve içerik gereklidir." };
+        }
 
-    // Generate slug from title
-    const slug = title
-        .toLowerCase()
-        .replace(/ğ/g, 'g')
-        .replace(/ü/g, 'u')
-        .replace(/ş/g, 's')
-        .replace(/ı/g, 'i')
-        .replace(/ö/g, 'o')
-        .replace(/ç/g, 'c')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+        // Generate slug
+        const slug = title
+            .toLowerCase()
+            .replace(/ğ/g, 'g')
+            .replace(/ü/g, 'u')
+            .replace(/ş/g, 's')
+            .replace(/ı/g, 'i')
+            .replace(/ö/g, 'o')
+            .replace(/ç/g, 'c')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '');
 
-    console.log("Creating article with title:", title);
-
-    const { data, error } = await supabase
-        .from("articles")
-        .insert({
+        const { data, error } = await supabase.from("articles").insert({
             title,
             content,
             excerpt: excerpt || content.substring(0, 200),
@@ -47,21 +44,18 @@ export async function createArticle(formData: FormData) {
             slug,
             status,
             author_id: user.id,
-        })
-        .select()
-        .single();
+        }).select().single();
 
-    if (error) {
-        console.error("Article insert error:", error);
-        return { success: false, error: `Hata: ${error.message}` };
+        if (error) {
+            console.error("Article insert error:", error);
+            return { success: false, error: error.message };
+        }
+
+        return { success: true, article: data };
+    } catch (error: any) {
+        console.error("Unexpected error:", error);
+        return { success: false, error: error?.message || "Beklenmeyen hata" };
     }
-
-    console.log("Article created successfully:", data.id);
-
-    // REMOVED revalidatePath calls temporarily to fix hanging issue
-    // Pages will update on next navigation
-
-    return { success: true, article: data };
 }
 
 export async function updateArticle(articleId: number, formData: FormData) {
