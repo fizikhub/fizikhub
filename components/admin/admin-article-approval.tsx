@@ -83,7 +83,7 @@ export function AdminArticleApproval({ pendingArticles }: AdminArticleApprovalPr
                                     {article.title}
                                 </CardTitle>
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <span>Yazar: <span className="font-medium text-foreground">{article.profiles?.full_name || article.profiles?.username}</span></span>
+                                    <span>Yazar: <span className="font-medium text-foreground">{article.author?.full_name || article.author?.username}</span></span>
                                     <span>•</span>
                                     <span>Kategori: {article.category}</span>
                                 </div>

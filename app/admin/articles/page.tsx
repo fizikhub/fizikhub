@@ -16,11 +16,12 @@ export default async function AdminArticlesPage() {
     console.log("🔍 Admin Panel: Fetching pending articles...");
 
     // Fetch pending articles - RLS should allow admin to see all
+    // Use explicit relationship name to avoid ambiguity (author_id vs reviewed_by)
     const { data: pendingArticles, error } = await supabase
         .from('articles')
         .select(`
             *,
-            profiles (
+            author:profiles!author_id (
                 username,
                 full_name
             )
