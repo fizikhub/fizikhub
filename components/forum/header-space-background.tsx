@@ -49,7 +49,7 @@ export function HeaderSpaceBackground() {
     }, []);
 
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-black">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-black">
             {/* Pure Black Background */}
             <div className="absolute inset-0 bg-black" />
 
