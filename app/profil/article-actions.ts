@@ -56,6 +56,8 @@ export async function createArticle(formData: FormData) {
 
     revalidatePath("/profil");
     revalidatePath("/blog");
+    revalidatePath("/admin");
+    revalidatePath("/admin/articles");
 
     return { success: true, article: data };
 }
