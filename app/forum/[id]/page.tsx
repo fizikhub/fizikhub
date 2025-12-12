@@ -248,7 +248,7 @@ export default async function QuestionPage({ params }: PageProps) {
             <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto relative z-10">
                 {/* Back Button */}
                 <div className="mb-4 sm:mb-6">
-                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0 font-bold uppercase text-xs tracking-wider" asChild>
+                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0 font-semibold uppercase text-xs tracking-wider" asChild>
                         <Link href="/forum">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline">FORUMA DÖN</span>
@@ -261,7 +261,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Main Content */}
                     <div className="space-y-6">
                         {/* Question Card */}
-                        <div className="bg-card border-2 border-border overflow-hidden">
+                        <div className="bg-card border border-gray-300/60 dark:border-gray-700/60 overflow-hidden rounded-2xl shadow-sm">
                             <div className="p-6 sm:p-8">
                                 {/* Author Header */}
                                 <div className="flex items-center gap-3 mb-5">
@@ -396,9 +396,9 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Stats Sidebar (Desktop) */}
                     <aside className="hidden lg:block space-y-4">
                         {/* Stats Card */}
-                        <div className="border-2 border-border bg-card sticky top-24">
-                            <div className="p-4 border-b-2 border-border">
-                                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        <div className="border border-gray-300/60 dark:border-gray-700/60 bg-card rounded-2xl sticky top-24 shadow-sm">
+                            <div className="p-4 border-b border-gray-300/40 dark:border-gray-700/40">
+                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                     İstatistikler
                                 </h3>
                             </div>
@@ -437,9 +437,9 @@ export default async function QuestionPage({ params }: PageProps) {
 
                         {/* Admin/Author Actions */}
                         {(isAdmin || user?.id === question.author_id) && (
-                            <div className="border-2 border-destructive/50 bg-card">
-                                <div className="p-4 border-b-2 border-destructive/50">
-                                    <h3 className="text-xs font-bold text-destructive uppercase tracking-wider">İşlemler</h3>
+                            <div className="border border-destructive/40 bg-card rounded-2xl shadow-sm">
+                                <div className="p-4 border-b border-destructive/30">
+                                    <h3 className="text-xs font-semibold text-destructive uppercase tracking-wider">İşlemler</h3>
                                 </div>
                                 <div className="p-4 space-y-2">
                                     <EditQuestionDialog questionId={question.id} initialContent={question.content} />
