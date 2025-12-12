@@ -106,7 +106,7 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-8 mb-8">
             {/* New Conversational Header - Neo-Brutalist Style */}
-            <div className="bg-card border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 relative overflow-hidden group min-h-[300px] flex items-center">
+            <div className="relative border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 overflow-hidden group min-h-[300px] flex items-center bg-black">
 
                 {/* Dynamic Space Background (No UFOs) */}
                 <HeaderSpaceBackground />
@@ -123,7 +123,7 @@ export function ModernForumHeader() {
                         <div className="flex-1 space-y-6 w-full text-center md:text-left">
                             {/* Greeting & Prompt */}
                             <div className="space-y-2">
-                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-lg">
+                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.2em] text-white drop-shadow-lg">
                                     AKLINDA NE VAR?
                                 </h1>
                                 <p className="text-gray-200 font-medium md:text-lg max-w-2xl drop-shadow-md">

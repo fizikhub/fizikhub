@@ -76,7 +76,13 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
     const handleOpen = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-            toast.error("Soru sormak için giriş yapmalısınız.");
+            toast("GİRİŞ YAPMAN GEREKİYOR", {
+                description: "Soru sormak, cevap yazmak ve topluluğa katılmak için hemen giriş yap.",
+                action: {
+                    label: "GİRİŞ YAP",
+                    onClick: () => window.location.href = "/login"
+                },
+            });
             return;
         }
         setOpen(true);

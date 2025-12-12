@@ -8,6 +8,7 @@ export async function getLeaderboard() {
     const { data, error } = await supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, reputation, badges:user_badges(count)')
+        .neq('username', 'baranbozkurt')
         .order('reputation', { ascending: false })
         .limit(50);
 
