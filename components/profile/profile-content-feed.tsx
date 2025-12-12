@@ -27,39 +27,39 @@ export function ProfileContentFeed({
         <div className="space-y-6">
             <Tabs defaultValue="articles" className="w-full">
                 {/* Tab Navigation */}
-                <TabsList className="w-full justify-start bg-card border border-gray-300/50 dark:border-gray-700/50 rounded-xl p-1.5 mb-8 flex-wrap h-auto gap-2">
+                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-lg p-1.5 mb-8 flex-wrap h-auto gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]">
                     <TabsTrigger
                         value="articles"
-                        className="rounded-lg data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all font-semibold"
+                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
                     >
-                        <FileText className="w-4 h-4 mr-2" />
+                        <FileText className="w-3.5 h-3.5 mr-1.5" />
                         Makaleler
-                        <span className="ml-2 text-xs opacity-75">({articles.length})</span>
+                        <span className="ml-1.5 opacity-75">({articles.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="questions"
-                        className="rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all font-semibold"
+                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
                     >
-                        <MessageSquare className="w-4 h-4 mr-2" />
+                        <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                         Sorular
-                        <span className="ml-2 text-xs opacity-75">({questions.length})</span>
+                        <span className="ml-1.5 opacity-75">({questions.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="answers"
-                        className="rounded-lg data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all font-semibold"
+                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
                     >
-                        <MessageCircle className="w-4 h-4 mr-2" />
+                        <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                         Cevaplar
-                        <span className="ml-2 text-xs opacity-75">({answers.length})</span>
+                        <span className="ml-1.5 opacity-75">({answers.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="saved"
-                        className="rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg transition-all font-semibold"
+                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
                     >
-                        <Bookmark className="w-4 h-4 mr-2" />
+                        <Bookmark className="w-3.5 h-3.5 mr-1.5" />
                         Kaydedilenler
                     </TabsTrigger>
                 </TabsList>
