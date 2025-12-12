@@ -201,25 +201,25 @@ export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
                         </AnimatePresence>
                     </div>
 
-                    {/* Footer */}
+                    {/* Footer - Fixed at bottom on mobile */}
                     {step === 2 && (
-                        <div className="p-6 border-t-2 border-black dark:border-white bg-muted/20 flex justify-between items-center">
+                        <div className="sticky bottom-0 left-0 right-0 p-4 md:p-6 border-t-2 border-black dark:border-white bg-muted/20 backdrop-blur-sm flex justify-between items-center gap-3 z-20">
                             <Button
                                 variant="ghost"
                                 onClick={() => setStep(1)}
-                                className="font-bold uppercase tracking-wider hover:bg-transparent hover:underline"
+                                className="font-bold uppercase tracking-wider hover:bg-transparent hover:underline flex-shrink-0"
                             >
-                                <span className="mr-2">{"<"}</span> Geri Dön
+                                <span className="mr-2">{'<'}</span> <span className="hidden sm:inline">Geri Dön</span>
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={loading}
-                                className="h-12 px-8 rounded-none bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest hover:bg-primary hover:text-black border-2 border-transparent hover:border-black dark:hover:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                                className="h-12 px-6 md:px-8 rounded-none bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest hover:bg-primary hover:text-black border-2 border-transparent hover:border-black dark:hover:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all flex-shrink-0"
                             >
                                 {loading ? (
                                     <span className="flex items-center gap-2">
                                         <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                                        YÜKLENİYOR...
+                                        <span className="hidden sm:inline">YÜKLENİYOR...</span>
                                     </span>
                                 ) : (
                                     <span className="flex items-center gap-2">

@@ -122,32 +122,32 @@ export function ModernForumHeader() {
 
                         <div className="flex-1 space-y-6 w-full text-center md:text-left">
                             {/* Greeting & Prompt */}
-                            <div className="space-y-2">
-                                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-[0.2em] text-white drop-shadow-lg">
+                            <div className="space-y-3">
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-[0.15em] text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                                     AKLINDA NE VAR?
                                 </h1>
-                                <p className="text-gray-200 font-medium md:text-lg max-w-2xl drop-shadow-md">
-                                    BİLİM TOPLULUĞU SORULARINI BEKLİYOR. CEVAPLAR YILDIZLARIN ARASINDA.
+                                <p className="text-gray-100 font-bold md:text-xl max-w-2xl drop-shadow-md">
+                                    Bilim topluluğu sorularını bekliyor. Cevaplar yıldızların arasında.
                                 </p>
                             </div>
 
-                            {/* Fake Input Trigger - Terminal Style */}
+                            {/* Enhanced Input Trigger - More Dynamic */}
                             <CreateQuestionDialog
                                 trigger={
-                                    <div className="w-full bg-black/40 backdrop-blur-md border-2 border-white/50 hover:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] active:translate-y-0 active:shadow-none bg-card/10">
-                                        <div className="w-full bg-black/50 p-3 md:p-4 flex items-center gap-4">
-                                            <div className="p-2 bg-transparent text-white border-2 border-white/30 group-hover/input:border-primary group-hover/input:text-primary transition-colors">
-                                                <Sparkles className="w-5 h-5" />
+                                    <div className="w-full bg-black/60 backdrop-blur-lg border-2 border-white/60 hover:border-primary p-1.5 flex items-center transition-all duration-300 cursor-pointer group/input hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.6)] active:translate-y-0 active:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.4)]">
+                                        <div className="w-full bg-gradient-to-r from-black/70 to-black/50 p-4 md:p-5 flex items-center gap-4">
+                                            <div className="p-3 bg-primary border-2 border-white group-hover/input:scale-110 group-hover/input:rotate-12 transition-all duration-300">
+                                                <Sparkles className="w-6 h-6 text-white" />
                                             </div>
-                                            <div className="flex-1 flex items-center gap-2">
-                                                <span className="text-primary font-bold">{">"}</span>
-                                                <span className="text-gray-300 font-bold text-lg uppercase tracking-wide flex-1 text-left">
+                                            <div className="flex-1 flex items-center gap-3">
+                                                <span className="text-primary font-black text-xl">{'>'}</span>
+                                                <span className="text-white font-black text-xl uppercase tracking-wider flex-1 text-left group-hover/input:text-primary transition-colors">
                                                     Sorunu Sor...
                                                 </span>
-                                                <div className="w-3 h-6 bg-primary animate-pulse hidden md:block" />
+                                                <div className="w-4 h-7 bg-primary animate-pulse hidden md:block" />
                                             </div>
                                             <div className="hidden sm:flex items-center gap-2">
-                                                <div className="px-4 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                                <div className="px-5 py-2.5 bg-white text-black text-sm font-black uppercase tracking-widest border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] group-hover/input:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] group-hover/input:-translate-x-0.5 group-hover/input:-translate-y-0.5 transition-all">
                                                     ENTER
                                                 </div>
                                             </div>

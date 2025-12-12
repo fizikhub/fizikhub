@@ -168,8 +168,8 @@ export function ModernLogin() {
                     </p>
                 </div>
 
-                {/* Card */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                {/* Card - Glassmorphism + Brutalist Hybrid */}
+                <div className="bg-white/5 backdrop-blur-xl border-2 border-white/20 rounded-lg p-8 shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[16px_16px_0px_0px_rgba(255,255,255,0.15)] transition-all duration-300">
                     <form onSubmit={handleEmailAuth} className="space-y-5">
                         {/* Email */}
                         <div className="space-y-2">
@@ -183,7 +183,7 @@ export function ModernLogin() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="h-12 bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/15 focus:border-primary transition-all"
+                                className="h-12 bg-white/10 border-2 border-white/30 text-white placeholder:text-gray-500 focus:bg-white/15 focus:border-primary focus:shadow-[4px_4px_0px_0px_rgba(var(--primary),0.3)] transition-all rounded-md"
                             />
                         </div>
 
@@ -199,7 +199,7 @@ export function ModernLogin() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="h-12 bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:bg-white/15 focus:border-primary transition-all pr-12"
+                                    className="h-12 bg-white/10 border-2 border-white/30 text-white placeholder:text-gray-500 focus:bg-white/15 focus:border-primary focus:shadow-[4px_4px_0px_0px_rgba(var(--primary),0.3)] transition-all pr-12 rounded-md"
                                 />
                                 <button
                                     type="button"
@@ -225,7 +225,7 @@ export function ModernLogin() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold text-base transition-all shadow-lg shadow-primary/20 hover:shadow-primary/30"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold text-base transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none border-2 border-white/10 rounded-md"
                         >
                             {loading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -268,7 +268,7 @@ export function ModernLogin() {
                             variant="outline"
                             onClick={() => handleOAuthLogin('github')}
                             disabled={loading}
-                            className="h-12 bg-white/5 border-white/20 text-white hover:bg-white/10 transition-all"
+                            className="h-12 bg-white/5 border-2 border-white/30 text-white hover:bg-white/10 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] hover:-translate-x-0.5 hover:-translate-y-0.5 rounded-md"
                         >
                             <Github className="h-5 w-5 mr-2" />
                             GitHub
@@ -277,7 +277,7 @@ export function ModernLogin() {
                             variant="outline"
                             onClick={() => handleOAuthLogin('google')}
                             disabled={loading}
-                            className="h-12 bg-white/5 border-white/20 text-white hover:bg-white/10 transition-all"
+                            className="h-12 bg-white/5 border-2 border-white/30 text-white hover:bg-white/10 transition-all shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)] hover:-translate-x-0.5 hover:-translate-y-0.5 rounded-md"
                         >
                             <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
