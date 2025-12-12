@@ -53,20 +53,13 @@ export async function createArticle(formData: FormData) {
 
     if (error) {
         console.error("Article insert error:", error);
-        return { success: false, error: `Veritabanı hatası: ${error.message}` };
+        return { success: false, error: `Hata: ${error.message}` };
     }
 
     console.log("Article created successfully:", data.id);
 
-    try {
-        revalidatePath("/profil");
-        revalidatePath("/blog");
-        revalidatePath("/admin");
-        revalidatePath("/admin/articles");
-    } catch (e) {
-        console.error("Revalidation error:", e);
-        // Continue even if revalidation fails
-    }
+    // REMOVED revalidatePath calls temporarily to fix hanging issue
+    // Pages will update on next navigation
 
     return { success: true, article: data };
 }
