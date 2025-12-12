@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Sparkles, Atom, Zap, MessageSquare } from "lucide-react";
+import { Search, Sparkles, Atom, Zap, MessageSquare, Plus, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CreateQuestionDialog } from "./create-question-dialog";
@@ -134,22 +134,30 @@ export function ModernForumHeader() {
                             {/* Fake Input Trigger - Terminal Style */}
                             <CreateQuestionDialog
                                 trigger={
-                                    <div className="w-full bg-black/40 backdrop-blur-md border-2 border-white/50 hover:border-white p-1 flex items-center transition-all duration-200 cursor-text group/input hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] active:translate-y-0 active:shadow-none bg-card/10">
-                                        <div className="w-full bg-black/50 p-3 md:p-4 flex items-center gap-4">
-                                            <div className="p-2 bg-transparent text-white border-2 border-white/30 group-hover/input:border-primary group-hover/input:text-primary transition-colors">
-                                                <Sparkles className="w-5 h-5" />
-                                            </div>
-                                            <div className="flex-1 flex items-center gap-2">
-                                                <span className="text-primary font-bold">{">"}</span>
-                                                <span className="text-gray-300 font-bold text-lg uppercase tracking-wide flex-1 text-left">
-                                                    Sorunu Sor...
-                                                </span>
-                                                <div className="w-3 h-6 bg-primary animate-pulse hidden md:block" />
-                                            </div>
-                                            <div className="hidden sm:flex items-center gap-2">
-                                                <div className="px-4 py-2 bg-primary text-primary-foreground text-xs font-black uppercase tracking-widest border-2 border-white shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                                                    ENTER
+                                    <div className="w-full group/btn cursor-pointer">
+                                        <div className="relative bg-green-500 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 flex items-center justify-center gap-4 md:gap-8 transition-all duration-150 active:translate-y-2 active:translate-x-2 active:shadow-none hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]">
+
+                                            {/* Pulsing Icon Container */}
+                                            <div className="relative">
+                                                <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+                                                <div className="relative bg-white border-4 border-black p-3 rounded-full">
+                                                    <Plus className="w-8 h-8 md:w-12 md:h-12 text-black" strokeWidth={4} />
                                                 </div>
+                                            </div>
+
+                                            {/* Text Content */}
+                                            <div className="flex flex-col items-start">
+                                                <span className="text-2xl md:text-4xl font-black text-black uppercase tracking-tighter leading-none">
+                                                    SORU SOR
+                                                </span>
+                                                <span className="text-xs md:text-sm font-bold text-black/80 uppercase tracking-widest bg-white/20 px-2 py-1 rounded-sm mt-1 border-2 border-black/10">
+                                                    BAŞLAMAK İÇİN TIKLA
+                                                </span>
+                                            </div>
+
+                                            {/* Decorative Arrow */}
+                                            <div className="hidden md:block absolute right-8 animate-pulse">
+                                                <ArrowRight className="w-12 h-12 text-black/40" />
                                             </div>
                                         </div>
                                     </div>
@@ -218,6 +226,6 @@ export function ModernForumHeader() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
