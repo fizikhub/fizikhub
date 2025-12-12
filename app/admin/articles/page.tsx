@@ -23,6 +23,12 @@ export default async function AdminArticlesPage() {
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
+    if (!pendingArticles) {
+        console.log("No pending articles found or error occurred");
+    } else {
+        console.log(`Found ${pendingArticles.length} pending articles`);
+    }
+
     return (
         <div className="space-y-6">
             <div>
