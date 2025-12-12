@@ -34,6 +34,8 @@ export async function createArticle(formData: FormData) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
 
+    console.log("Creating article with title:", title);
+
     const { data, error } = await supabase
         .from("articles")
         .insert({
@@ -50,14 +52,21 @@ export async function createArticle(formData: FormData) {
         .single();
 
     if (error) {
-        console.error("Article creation error:", error);
-        return { success: false, error: `Hata: ${error.message}` };
+        console.error("Article insert error:", error);
+        return { success: false, error: `Veritabanı hatası: ${error.message}` };
     }
 
-    revalidatePath("/profil");
-    revalidatePath("/blog");
-    revalidatePath("/admin");
-    revalidatePath("/admin/articles");
+    console.log("Article created successfully:", data.id);
+
+    try {
+        revalidatePath("/profil");
+        revalidatePath("/blog");
+        revalidatePath("/admin");
+        revalidatePath("/admin/articles");
+    } catch (e) {
+        console.error("Revalidation error:", e);
+        // Continue even if revalidation fails
+    }
 
     return { success: true, article: data };
 }
