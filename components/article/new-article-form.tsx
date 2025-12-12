@@ -128,9 +128,10 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
 
             router.push("/profil");
             router.refresh();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Article creation error:", error);
-            toast.error(error instanceof Error ? error.message : "Makale oluşturulurken hata oluştu");
+            const errorMessage = error?.message || error?.error || "Makale oluşturulurken hata oluştu";
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }

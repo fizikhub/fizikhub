@@ -23,8 +23,8 @@ export async function createArticle(formData: FormData) {
             return { success: false, error: "Başlık ve içerik gereklidir." };
         }
 
-        // Generate slug
-        const slug = title
+        // Generate slug with timestamp to ensure uniqueness
+        const baseSlug = title
             .toLowerCase()
             .replace(/ğ/g, 'g')
             .replace(/ü/g, 'u')
@@ -34,6 +34,8 @@ export async function createArticle(formData: FormData) {
             .replace(/ç/g, 'c')
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '');
+
+        const slug = `${baseSlug}-${Date.now()}`;
 
         const { data, error } = await supabase.from("articles").insert({
             title,
