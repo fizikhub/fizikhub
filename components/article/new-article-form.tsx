@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
+import { createArticle } from "@/app/profil/article-actions";
 
 interface NewArticleFormProps {
     userId: string;
@@ -96,34 +97,19 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
         setIsLoading(true);
 
         try {
-            const supabase = createClient();
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("content", content);
+            formData.append("excerpt", excerpt);
+            formData.append("category", category);
+            if (coverUrl) formData.append("cover_url", coverUrl);
+            formData.append("status", status);
 
-            // Generate slug
-            const slug = title
-                .toLowerCase()
-                .replace(/ğ/g, "g")
-                .replace(/ü/g, "u")
-                .replace(/ş/g, "s")
-                .replace(/ı/g, "i")
-                .replace(/ö/g, "o")
-                .replace(/ç/g, "c")
-                .replace(/[^a-z0-9\s-]/g, "")
-                .replace(/\s+/g, "-")
-                .replace(/-+/g, "-")
-                .trim();
+            const result = await createArticle(formData);
 
-            const { error } = await supabase.from("articles").insert({
-                title,
-                slug,
-                excerpt: excerpt || null,
-                content,
-                category,
-                cover_url: coverUrl || null,
-                author_id: userId,
-                status,
-            });
-
-            if (error) throw error;
+            if (!result.success) {
+                throw new Error(result.error);
+            }
 
             // Mark user as having written an article
             if (isFirstArticle) {
@@ -143,7 +129,7 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
             router.refresh();
         } catch (error) {
             console.error("Article creation error:", error);
-            toast.error("Makale oluşturulurken hata oluştu");
+            toast.error(error instanceof Error ? error.message : "Makale oluşturulurken hata oluştu");
         } finally {
             setIsLoading(false);
         }
