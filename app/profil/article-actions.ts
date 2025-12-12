@@ -51,7 +51,7 @@ export async function createArticle(formData: FormData) {
 
     if (error) {
         console.error("Article creation error:", error);
-        return { success: false, error: "Makale oluşturulurken hata oluştu." };
+        return { success: false, error: `Hata: ${error.message}` };
     }
 
     revalidatePath("/profil");
