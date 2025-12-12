@@ -6,24 +6,26 @@ import { revalidatePath } from "next/cache";
 export async function createArticle(formData: FormData) {
     try {
         const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
 
+        // 1. Auth Check
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
             return { success: false, error: "Giriş yapmalısınız." };
         }
 
+        // 2. Data Extraction
         const title = formData.get("title") as string;
         const content = formData.get("content") as string;
         const excerpt = formData.get("excerpt") as string;
         const category = formData.get("category") as string;
         const coverUrl = formData.get("cover_url") as string;
-        const status = formData.get("status") as string || "draft";
+        const status = formData.get("status") as string || "draft"; // Admin approval if 'pending'
 
         if (!title || !content) {
             return { success: false, error: "Başlık ve içerik gereklidir." };
         }
 
-        // Generate slug with timestamp to ensure uniqueness
+        // 3. Robust Slug Generation (Title + Random Suffix)
         const baseSlug = title
             .toLowerCase()
             .replace(/ğ/g, 'g')
@@ -35,13 +37,16 @@ export async function createArticle(formData: FormData) {
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/(^-|-$)/g, '');
 
-        const slug = `${baseSlug}-${Date.now()}`;
+        // Add random suffix to guarantee uniqueness (timestamp + random chars)
+        const suffix = Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+        const slug = `${baseSlug}-${suffix}`;
 
+        // 4. Database Insert
         const { data, error } = await supabase.from("articles").insert({
             title,
             content,
             excerpt: excerpt || content.substring(0, 200),
-            category,
+            category: category || "Genel",
             cover_url: coverUrl || null,
             slug,
             status,
@@ -49,14 +54,16 @@ export async function createArticle(formData: FormData) {
         }).select().single();
 
         if (error) {
-            console.error("Article insert error:", error);
-            return { success: false, error: error.message };
+            console.error("Article insert details:", error);
+            return { success: false, error: `Veritabanı hatası: ${error.message}` };
         }
 
-        return { success: true, article: data };
+        // 5. Success
+        return { success: true, articleId: data.id, slug: data.slug };
+
     } catch (error: any) {
-        console.error("Unexpected error:", error);
-        return { success: false, error: error?.message || "Beklenmeyen hata" };
+        console.error("Unexpected error in createArticle:", error);
+        return { success: false, error: error?.message || "Beklenmeyen sunucu hatası" };
     }
 }
 
