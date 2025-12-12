@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useTransition } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, HelpCircle, X } from "lucide-react";
+import { Loader2, HelpCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -20,28 +20,28 @@ interface NewArticleFormProps {
 }
 
 const categories = [
-    "Kuantum Fiziği",
-    "Astrofizik",
-    "Termodinamik",
-    "Mekanik",
-    "Elektromanyetizma",
-    "Genel Görelilik",
-    "Parçacık Fiziği",
-    "Genel"
+    "Kuantum Fiziği", "Astrofizik", "Termodinamik", "Mekanik",
+    "Elektromanyetizma", "Genel Görelilik", "Parçacık Fiziği", "Genel"
 ];
 
 export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) {
+    // Form States
     const [title, setTitle] = useState("");
     const [category, setCategory] = useState("Genel");
     const [excerpt, setExcerpt] = useState("");
     const [content, setContent] = useState("");
     const [coverUrl, setCoverUrl] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+
+    // UI States
+    const [isPending, startTransition] = useTransition();
     const [showGuide, setShowGuide] = useState(isFirstArticle);
     const [dontShowAgain, setDontShowAgain] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
+    // 1. Image Upload Handler
     const handleImageUpload = () => {
         fileInputRef.current?.click();
     };
@@ -50,315 +50,247 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Check file size (3MB max)
         if (file.size > 3 * 1024 * 1024) {
-            toast.error("Fotoğraf 3MB'dan küçük olmalıdır");
+            toast.error("Dosya boyutu 3MB'dan küçük olmalı.");
             return;
         }
 
-        // Check file type
         if (!file.type.startsWith("image/")) {
-            toast.error("Sadece resim dosyaları yüklenebilir");
+            toast.error("Sadece resim dosyası yükleyebilirsiniz.");
             return;
         }
 
         try {
+            setUploadingImage(true);
             const supabase = createClient();
+            const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-            // Upload to Supabase Storage
-            const fileName = `${userId}/${Date.now()}-${file.name}`;
-            const { data, error } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from("article-images")
                 .upload(fileName, file);
 
-            if (error) throw error;
+            if (uploadError) throw uploadError;
 
-            // Get public URL
             const { data: { publicUrl } } = supabase.storage
                 .from("article-images")
                 .getPublicUrl(fileName);
 
-            // Insert image into editor at cursor
-            setContent(prev => prev + `<img src="${publicUrl}" alt="Yüklenen fotoğraf" />`);
-
-            toast.success("Fotoğraf yüklendi!");
+            // Insert image markdown/html into content
+            setContent(prev => prev + `<img src="${publicUrl}" alt="Makale görseli" />`);
+            toast.success("Görsel eklendi!");
         } catch (error) {
-            console.error("Image upload error:", error);
-            toast.error("Fotoğraf yüklenirken hata oluştu");
+            console.error("Image upload failed:", error);
+            toast.error("Görsel yüklenirken hata oluştu.");
+        } finally {
+            setUploadingImage(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
         }
     };
 
-    const handleSubmit = async (status: "draft" | "pending") => {
+    // 2. Submit Handler
+    const handleSubmit = (targetStatus: "draft" | "pending") => {
         if (!title.trim() || !content.trim()) {
-            toast.error("Başlık ve içerik gereklidir");
+            toast.error("Başlık ve içerik doldurulmalıdır.");
             return;
         }
 
-        setIsLoading(true);
-
-        try {
+        startTransition(async () => {
             const formData = new FormData();
             formData.append("title", title);
             formData.append("content", content);
             formData.append("excerpt", excerpt);
             formData.append("category", category);
-            if (coverUrl) formData.append("cover_url", coverUrl);
-            formData.append("status", status);
+            formData.append("cover_url", coverUrl);
+            formData.append("status", targetStatus);
 
             const result = await createArticle(formData);
 
-            if (!result.success) {
-                throw new Error(result.error);
+            if (result.success) {
+                toast.success(targetStatus === "pending" ? "İncelemeye gönderildi!" : "Taslak kaydedildi!");
+
+                // Update profile if first article
+                if (isFirstArticle) {
+                    const supabase = createClient();
+                    await supabase.from("profiles").update({ has_written_article: true }).eq("id", userId);
+                }
+
+                router.push("/profil");
+            } else {
+                toast.error(result.error || "Bir hata oluştu.");
             }
-
-            // Mark user as having written an article
-            if (isFirstArticle) {
-                const supabase = createClient();
-                await supabase
-                    .from("profiles")
-                    .update({ has_written_article: true })
-                    .eq("id", userId);
-            }
-
-            toast.success(
-                status === "draft"
-                    ? "Taslak kaydedildi!"
-                    : "Makale incelemeye gönderildi!"
-            );
-
-            router.push("/profil");
-            router.refresh();
-        } catch (error: any) {
-            console.error("Article creation error:", error);
-            const errorMessage = error?.message || error?.error || "Makale oluşturulurken hata oluştu";
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
+    // 3. Guide Handler
     const closeGuide = () => {
         setShowGuide(false);
         if (dontShowAgain && isFirstArticle) {
-            // Mark guide as seen
             const supabase = createClient();
-            supabase
-                .from("profiles")
-                .update({ has_seen_article_guide: true })
-                .eq("id", userId)
-                .then(() => { });
+            supabase.from("profiles").update({ has_seen_article_guide: true }).eq("id", userId).then(() => { });
         }
     };
 
     return (
         <>
-            {/* Beginner Guide Dialog */}
+            {/* Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-xl border-2 border-primary/20">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                            <HelpCircle className="w-6 h-6" />
+                            <HelpCircle className="w-6 h-6 text-primary" />
                             Makale Yazma Rehberi
                         </DialogTitle>
                         <DialogDescription>
-                            İlk makalenizi mi yazıyorsunuz? Bu kısa rehber size yardımcı olacak!
+                            Bilimsel makalenizi oluştururken dikkat etmeniz gerekenler:
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-lg">1. Başlık Yazın</h3>
+                        <div className="p-4 bg-muted/50 rounded-lg border border-border">
+                            <h3 className="font-bold text-lg mb-2">📸 Görsel Ekleme</h3>
                             <p className="text-sm text-muted-foreground">
-                                Dikkat çekici ve açıklayıcı bir başlık seçin. Örnek: "Kuantum Dolanıklığı Nedir?"
+                                Paragraflar arasına görsel eklemek için editörün üstündeki <b>Resim İkonuna</b> tıklayın.
+                                Cihazınızdan fotoğraf seçtiğinizde otomatik olarak imlecin olduğu yere eklenecektir.
                             </p>
                         </div>
 
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-lg">2. Kategori Seçin</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Makalenizin hangi fizik alanına ait olduğunu belirtin.
-                            </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-3 bg-muted/30 rounded border">
+                                <h4 className="font-bold">✨ Formatlama</h4>
+                                <p className="text-sm text-muted-foreground">Kalın, İtalik, Başlık özelliklerini kullanarak yazınızı zenginleştirin.</p>
+                            </div>
+                            <div className="p-3 bg-muted/30 rounded border">
+                                <h4 className="font-bold">🚀 Onay Süreci</h4>
+                                <p className="text-sm text-muted-foreground">Makaleniz önce admin onayına düşer, onaylandıktan sonra keşfette yayınlanır.</p>
+                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-lg">3. İçerik Yazın</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Editörün üst kısmındaki toolbar'ı kullanarak yazınızı formatlayabilirsiniz:
-                            </p>
-                            <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                                <li><strong>B</strong> - Kalın yazı</li>
-                                <li><strong>I</strong> - İtalik yazı</li>
-                                <li><strong>U</strong> - Altı çizili yazı</li>
-                                <li><strong>H1/H2</strong> - Başlıklar</li>
-                                <li><strong>📷</strong> - Fotoğraf ekle</li>
-                            </ul>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-lg">4. Fotoğraf Ekleyin</h3>
-                            <p className="text-sm text-muted-foreground">
-                                📷 butonuna tıklayarak cihazınızdan fotoğraf seçebilirsiniz. Fotoğraf paragraflar arasına otomatik olarak eklenir.
-                            </p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <h3 className="font-bold text-lg">5. Gönder</h3>
-                            <p className="text-sm text-muted-foreground">
-                                "İncelemeye Gönder" butonuna tıkladığınızda makaleniz admin onayı için gönderilir. Onaylandıktan sonra yayınlanacaktır.
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-2 pt-4">
+                        <div className="flex items-center gap-2 pt-2">
                             <input
                                 type="checkbox"
                                 id="dont-show-again"
                                 checked={dontShowAgain}
                                 onChange={(e) => setDontShowAgain(e.target.checked)}
-                                className="w-4 h-4"
+                                className="w-4 h-4 rounded border-primary"
                             />
-                            <label htmlFor="dont-show-again" className="text-sm">
+                            <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none">
                                 Bir daha gösterme
                             </label>
                         </div>
                     </div>
 
-                    <Button onClick={closeGuide} className="w-full">
-                        Anladım, Başlayalım!
+                    <Button onClick={closeGuide} className="w-full font-bold text-lg py-6">
+                        Anladım, Yazmaya Başla! 🚀
                     </Button>
                 </DialogContent>
             </Dialog>
 
-            {/* Article Form */}
-            <div className="space-y-6">
-                {/* Help Button */}
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowGuide(true)}
-                        className="gap-2"
-                    >
+            <div className="space-y-8 animate-in fade-in duration-500">
+                {/* Header Actions */}
+                <div className="flex justify-between items-center">
+                    <h1 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">
+                        {isFirstArticle ? "İlk Makaleni Yaz" : "Yeni Makale Oluştur"}
+                    </h1>
+                    <Button variant="outline" size="sm" onClick={() => setShowGuide(true)} className="gap-2">
                         <HelpCircle className="w-4 h-4" />
-                        Yardım
+                        Rehber
                     </Button>
                 </div>
 
-                {/* Title */}
-                <div className="space-y-2">
-                    <Label htmlFor="title" className="text-sm font-black uppercase tracking-wider">
-                        Başlık <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                        id="title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Kuantum Dolanıklığı Nedir?"
-                        className="text-xl font-bold border-2"
-                        maxLength={200}
-                    />
-                    <p className="text-xs text-muted-foreground">{title.length}/200</p>
-                </div>
+                {/* Main Form Form */}
+                <div className="grid gap-6 p-6 border-2 border-dashed border-muted rounded-2xl bg-muted/10">
 
-                {/* Category & Cover URL */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Title */}
                     <div className="space-y-2">
-                        <Label className="text-sm font-black uppercase tracking-wider">
-                            Kategori
-                        </Label>
-                        <Select value={category} onValueChange={setCategory}>
-                            <SelectTrigger className="border-2">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {categories.map((cat) => (
-                                    <SelectItem key={cat} value={cat}>
-                                        {cat}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <Label className="text-base font-bold uppercase text-muted-foreground">Makale Başlığı</Label>
+                        <Input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Örn: Kara Deliklerin Gizemi..."
+                            className="text-xl font-bold p-6 bg-background/50 border-2 focus-visible:ring-primary/50"
+                            maxLength={150}
+                        />
                     </div>
 
+                    {/* Category & Cover */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="font-bold text-muted-foreground">Kategori</Label>
+                            <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger className="border-2 h-12">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="font-bold text-muted-foreground">Kapak Resmi URL (Opsiyonel)</Label>
+                            <Input
+                                value={coverUrl}
+                                onChange={(e) => setCoverUrl(e.target.value)}
+                                placeholder="https://..."
+                                className="border-2 h-12"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Excerpt */}
                     <div className="space-y-2">
-                        <Label htmlFor="cover_url" className="text-sm font-black uppercase tracking-wider">
-                            Kapak Resmi URL (opsiyonel)
+                        <Label className="font-bold text-muted-foreground">Kısa Özet (Opsiyonel)</Label>
+                        <Textarea
+                            value={excerpt}
+                            onChange={(e) => setExcerpt(e.target.value)}
+                            placeholder="Okuyucular için kısa bir giriş yazısı..."
+                            className="border-2 resize-none"
+                            rows={3}
+                        />
+                    </div>
+
+                    {/* Editor */}
+                    <div className="space-y-2">
+                        <Label className="font-bold text-muted-foreground flex justify-between">
+                            <span>İçerik</span>
+                            {uploadingImage && <span className="text-primary animate-pulse text-xs">Görsel yükleniyor...</span>}
                         </Label>
-                        <Input
-                            id="cover_url"
-                            value={coverUrl}
-                            onChange={(e) => setCoverUrl(e.target.value)}
-                            type="url"
-                            placeholder="https://..."
-                            className="border-2"
+                        <ArticleEditor
+                            content={content}
+                            onChange={setContent}
+                            onImageUpload={handleImageUpload}
+                        />
+                        {/* Hidden File Input */}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileSelect}
                         />
                     </div>
                 </div>
 
-                {/* Excerpt */}
-                <div className="space-y-2">
-                    <Label htmlFor="excerpt" className="text-sm font-black uppercase tracking-wider">
-                        Özet (opsiyonel)
-                    </Label>
-                    <Textarea
-                        id="excerpt"
-                        value={excerpt}
-                        onChange={(e) => setExcerpt(e.target.value)}
-                        placeholder="Makalenizin kısa bir özeti..."
-                        rows={3}
-                        className="resize-none border-2"
-                        maxLength={500}
-                    />
-                    <p className="text-xs text-muted-foreground">{excerpt.length}/500</p>
-                </div>
-
-                {/* Rich Text Editor */}
-                <div className="space-y-2">
-                    <Label className="text-sm font-black uppercase tracking-wider">
-                        İçerik <span className="text-destructive">*</span>
-                    </Label>
-                    <ArticleEditor
-                        content={content}
-                        onChange={setContent}
-                        onImageUpload={handleImageUpload}
-                    />
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                    />
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 pt-6">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => router.back()}
-                        disabled={isLoading}
-                        className="border-2"
-                    >
+                {/* Footer Actions */}
+                <div className="flex items-center justify-end gap-4 pt-4 border-t">
+                    <Button variant="ghost" onClick={() => router.back()} disabled={isPending}>
                         İptal
                     </Button>
                     <Button
-                        type="button"
-                        variant="secondary"
+                        variant="outline"
                         onClick={() => handleSubmit("draft")}
-                        disabled={isLoading}
-                        className="border-2"
+                        disabled={isPending || uploadingImage}
                     >
-                        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                        Taslak Kaydet
+                        {(isPending) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                        Taslak Olarak Kaydet
                     </Button>
                     <Button
-                        type="button"
                         onClick={() => handleSubmit("pending")}
-                        disabled={isLoading}
-                        className="bg-foreground text-background hover:bg-foreground/90"
+                        disabled={isPending || uploadingImage}
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all px-8"
                     >
-                        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                        {(isPending) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                         İncelemeye Gönder
                     </Button>
                 </div>
