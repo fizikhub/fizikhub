@@ -3,10 +3,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Settings, PenSquare } from "lucide-react";
-import { EditProfileButton } from "@/components/profile/edit-profile-button";
-import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
+import { BadgeCheck, PenSquare } from "lucide-react";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { EditProfileButton } from "@/components/profile/edit-profile-button";
 
 interface ProfileHeroProps {
     profile: any;
@@ -114,7 +114,12 @@ export function ProfileHero({ profile, user, isOwnProfile }: ProfileHeroProps) {
                                 transition={{ duration: 0.3, delay: 0.2 }}
                                 className="flex gap-3 justify-center md:justify-start flex-wrap"
                             >
-                                <CreateArticleDialog />
+                                <Link href="/makale/yeni">
+                                    <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                        <PenSquare className="w-4 h-4" />
+                                        <span>Makale Yaz</span>
+                                    </Button>
+                                </Link>
                                 <EditProfileButton
                                     currentUsername={profile?.username || null}
                                     currentFullName={profile?.full_name || null}
