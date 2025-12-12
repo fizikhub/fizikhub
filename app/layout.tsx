@@ -153,16 +153,16 @@ export default function RootLayout({
           </NavigationWrapper>
           <Toaster
             toastOptions={{
-              className: "font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none p-4",
+              className: "font-sans border border-white/10 bg-black/80 backdrop-blur-xl text-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.3)] rounded-lg p-5",
               style: {
-                borderRadius: "0px",
+                borderRadius: "8px", // Slight curve for modern feel
               },
               classNames: {
-                toast: "bg-background text-foreground group",
-                title: "text-lg uppercase",
-                description: "text-muted-foreground",
-                actionButton: "bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-wide border-2 border-transparent hover:border-primary hover:text-primary transition-colors",
-                cancelButton: "bg-muted text-muted-foreground font-bold uppercase",
+                toast: "group",
+                title: "text-base font-bold uppercase tracking-wide text-white",
+                description: "text-sm text-gray-400 font-medium",
+                actionButton: "bg-white text-black font-bold uppercase text-xs px-4 py-2 hover:bg-gray-200 transition-colors rounded-md",
+                cancelButton: "bg-white/10 text-gray-400 hover:text-white font-bold uppercase text-xs px-4 py-2 rounded-md",
               }
             }}
           />

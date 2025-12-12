@@ -106,7 +106,7 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-8 mb-8">
             {/* New Conversational Header - Neo-Brutalist Style */}
-            <div className="relative border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 overflow-hidden group min-h-[300px] flex items-center bg-black">
+            <div className="relative border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 mb-4 overflow-hidden group min-h-[300px] flex items-center bg-transparent">
 
                 {/* Dynamic Space Background (No UFOs) */}
                 <HeaderSpaceBackground />
