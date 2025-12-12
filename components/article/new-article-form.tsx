@@ -113,6 +113,7 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
 
             // Mark user as having written an article
             if (isFirstArticle) {
+                const supabase = createClient();
                 await supabase
                     .from("profiles")
                     .update({ has_written_article: true })
