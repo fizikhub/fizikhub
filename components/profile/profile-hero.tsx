@@ -7,6 +7,7 @@ import { BadgeCheck, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
+import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 
 interface ProfileHeroProps {
     profile: any;
@@ -120,6 +121,7 @@ export function ProfileHero({ profile, user, isOwnProfile }: ProfileHeroProps) {
                                         <span>Makale Yaz</span>
                                     </Button>
                                 </Link>
+                                <ProfileMessagesButton />
                                 <EditProfileButton
                                     currentUsername={profile?.username || null}
                                     currentFullName={profile?.full_name || null}
