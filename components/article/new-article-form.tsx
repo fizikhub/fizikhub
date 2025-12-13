@@ -12,6 +12,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
 import { createArticle } from "@/app/profil/article-actions";
+import { Orbitron } from "next/font/google"; // Futuristic font
+import { X, Upload, Image as ImageIcon, Trash2 } from "lucide-react"; // Added Trash2, Upload, X
+
+const orbitron = Orbitron({ subsets: ["latin"] });
 
 interface NewArticleFormProps {
     userId: string;
@@ -37,51 +41,45 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
     const [dontShowAgain, setDontShowAgain] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const coverInputRef = useRef<HTMLInputElement>(null);
 
-    // 1. Image Upload Handler
-    const handleImageUpload = () => {
-        fileInputRef.current?.click();
+    // Generic Upload Helper
+    const uploadToSupabase = async (file: File): Promise<string> => {
+        if (file.size > 5 * 1024 * 1024) throw new Error("Dosya boyutu 5MB'dan küçük olmalı.");
+        if (!file.type.startsWith("image/")) throw new Error("Sadece resim dosyası yükleyebilirsiniz.");
+
+        const supabase = createClient();
+        const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from("article-images")
+            .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+            .from("article-images")
+            .getPublicUrl(fileName);
+
+        return publicUrl;
     };
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Cover Image Handler
+    const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 3 * 1024 * 1024) {
-            toast.error("Dosya boyutu 3MB'dan küçük olmalı.");
-            return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-            toast.error("Sadece resim dosyası yükleyebilirsiniz.");
-            return;
-        }
-
         try {
             setUploadingImage(true);
-            const supabase = createClient();
-            const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from("article-images")
-                .upload(fileName, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from("article-images")
-                .getPublicUrl(fileName);
-
-            // Insert image markdown/html into content
-            setContent(prev => prev + `<img src="${publicUrl}" alt="Makale görseli" />`);
-            toast.success("Görsel eklendi!");
-        } catch (error) {
-            console.error("Image upload failed:", error);
-            toast.error("Görsel yüklenirken hata oluştu.");
+            const url = await uploadToSupabase(file);
+            setCoverUrl(url);
+            toast.success("Kapak resmi yüklendi!");
+        } catch (error: any) {
+            console.error("Cover upload failed:", error);
+            toast.error(error.message || "Görsel yüklenirken hata oluştu.");
         } finally {
             setUploadingImage(false);
-            if (fileInputRef.current) fileInputRef.current.value = "";
+            if (coverInputRef.current) coverInputRef.current.value = "";
         }
     };
 
@@ -214,7 +212,7 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
             <div className="space-y-8 animate-in fade-in duration-500">
                 {/* Header Actions */}
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">
+                    <h1 className={`${orbitron.className} text-3xl font-black tracking-tight text-primary`}>
                         {isFirstArticle ? "İlk Makaleni Yaz" : "Yeni Makale Oluştur"}
                     </h1>
                     <Button variant="outline" size="sm" onClick={() => setShowGuide(true)} className="gap-2">
@@ -254,13 +252,40 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label className="font-bold text-muted-foreground">Kapak Resmi URL (Opsiyonel)</Label>
-                            <Input
-                                value={coverUrl}
-                                onChange={(e) => setCoverUrl(e.target.value)}
-                                placeholder="https://..."
-                                className="border-2 h-12"
-                            />
+                            <Label className="font-bold text-muted-foreground">Kapak Resmi</Label>
+                            <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-4 hover:bg-muted/30 transition-colors text-center">
+                                {coverUrl ? (
+                                    <div className="relative aspect-video w-full max-h-[200px] rounded overflow-hidden group">
+                                        <img src={coverUrl} alt="Kapak" className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => setCoverUrl("")}
+                                                className="gap-2"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                                Kaldır
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        onClick={() => coverInputRef.current?.click()}
+                                        className="cursor-pointer py-8 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <Upload className="w-8 h-8" />
+                                        <span className="font-medium text-sm">Kapak resmi yüklemek için tıkla</span>
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    ref={coverInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleCoverSelect}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -285,15 +310,7 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
                         <ArticleEditor
                             content={content}
                             onChange={setContent}
-                            onImageUpload={handleImageUpload}
-                        />
-                        {/* Hidden File Input */}
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleFileSelect}
+                            onUploadImage={uploadToSupabase}
                         />
                     </div>
                 </div>

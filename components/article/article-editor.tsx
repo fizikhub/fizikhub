@@ -1,26 +1,31 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
+import BubbleMenuExtension from "@tiptap/extension-bubble-menu";
 import {
     Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2,
     List, ListOrdered, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight,
-    Undo2, Redo2
+    Undo2, Redo2, Trash2
 } from "lucide-react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ArticleEditorProps {
     content: string;
     onChange: (content: string) => void;
-    onImageUpload: () => void;
+    onUploadImage: (file: File) => Promise<string>;
 }
 
-export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEditorProps) {
+export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEditorProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -30,8 +35,9 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
             }),
             Image.configure({
                 HTMLAttributes: {
-                    class: "rounded-lg max-w-full h-auto my-4",
+                    class: "rounded-lg max-w-full h-auto my-4 border-2 border-transparent hover:border-primary/50 transition-all cursor-pointer",
                 },
+                allowBase64: true,
             }),
             Placeholder.configure({
                 placeholder: "Makalenizi yazmaya başlayın...",
@@ -40,6 +46,9 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
                 types: ["heading", "paragraph"],
             }),
             Underline,
+            BubbleMenuExtension.configure({
+                pluginKey: 'bubbleMenu',
+            }),
         ],
         content,
         editorProps: {
@@ -57,23 +66,48 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
         return null;
     }
 
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            setIsUploading(true);
+            const url = await onUploadImage(file);
+            if (url) {
+                editor.chain().focus().setImage({ src: url }).run();
+            }
+        } catch (error) {
+            console.error("Editor upload error:", error);
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
     const ToolbarButton = ({
         onClick,
         isActive = false,
         children,
-        title
+        title,
+        disabled = false
     }: {
         onClick: () => void;
         isActive?: boolean;
         children: React.ReactNode;
         title: string;
+        disabled?: boolean;
     }) => (
         <button
             type="button"
             onClick={onClick}
             title={title}
+            disabled={disabled}
             className={cn(
-                "p-2 hover:bg-muted rounded transition-colors",
+                "p-2 hover:bg-muted rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                 isActive && "bg-muted text-foreground"
             )}
         >
@@ -82,9 +116,30 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
     );
 
     return (
-        <div className="border-2 border-foreground/10 rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]">
+        <div className="border-2 border-foreground/10 rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] bg-background relative">
+
+            {/* Image Bubble Menu */}
+            {editor && (
+                <BubbleMenu
+                    editor={editor}
+                    tippyOptions={{ duration: 100 }}
+                    shouldShow={({ editor }) => editor.isActive("image")}
+                    className="flex items-center gap-1 p-1 bg-background border rounded-lg shadow-lg"
+                >
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => editor.chain().focus().deleteSelection().run()}
+                        className="h-8 px-2 text-xs"
+                    >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Resmi Sil
+                    </Button>
+                </BubbleMenu>
+            )}
+
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-1 p-2 bg-muted/50 border-b-2 border-foreground/10">
+            <div className="flex flex-wrap items-center gap-1 p-2 bg-muted/50 border-b-2 border-foreground/10 sticky top-0 z-20 backdrop-blur-sm">
                 <ToolbarButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     isActive={editor.isActive("bold")}
@@ -148,11 +203,20 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
                 <div className="w-px h-6 bg-foreground/10 mx-1" />
 
                 <ToolbarButton
-                    onClick={onImageUpload}
+                    onClick={handleImageClick}
                     title="Fotoğraf Ekle"
+                    disabled={isUploading}
+                    isActive={isUploading}
                 >
-                    <ImageIcon className="w-4 h-4" />
+                    <ImageIcon className={cn("w-4 h-4", isUploading && "animate-pulse text-primary")} />
                 </ToolbarButton>
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                />
 
                 <div className="w-px h-6 bg-foreground/10 mx-1" />
 
@@ -198,7 +262,14 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
             </div>
 
             {/* Editor Content */}
-            <EditorContent editor={editor} />
+            <div className="relative min-h-[400px]">
+                <EditorContent editor={editor} />
+                {editor.isEmpty && (
+                    <div className="absolute top-4 left-6 text-muted-foreground pointer-events-none">
+                        {/* Placeholder handled by extension, just ensuring container sizing */}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
