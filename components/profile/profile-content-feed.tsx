@@ -14,6 +14,7 @@ interface ProfileContentFeedProps {
     answers: any[];
     bookmarkedArticles: any[];
     bookmarkedQuestions: any[];
+    isOwnProfile?: boolean; // Add this prop
 }
 
 export function ProfileContentFeed({
@@ -21,7 +22,8 @@ export function ProfileContentFeed({
     questions,
     answers,
     bookmarkedArticles,
-    bookmarkedQuestions
+    bookmarkedQuestions,
+    isOwnProfile = true // Default to true for backward compatibility
 }: ProfileContentFeedProps) {
     return (
         <div className="space-y-6">
@@ -55,13 +57,16 @@ export function ProfileContentFeed({
                         <span className="ml-1.5 opacity-75">({answers.length})</span>
                     </TabsTrigger>
 
-                    <TabsTrigger
-                        value="saved"
-                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
-                    >
-                        <Bookmark className="w-3.5 h-3.5 mr-1.5" />
-                        Kaydedilenler
-                    </TabsTrigger>
+                    {/* Only show saved tab for own profile */}
+                    {isOwnProfile && (
+                        <TabsTrigger
+                            value="saved"
+                            className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
+                        >
+                            <Bookmark className="w-3.5 h-3.5 mr-1.5" />
+                            Kaydedilenler
+                        </TabsTrigger>
+                    )}
                 </TabsList>
 
                 {/* Articles Tab */}

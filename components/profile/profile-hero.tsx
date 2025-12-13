@@ -8,14 +8,19 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
+import { StartChatButton } from "@/components/messaging/start-chat-button";
+import { FollowButton } from "@/components/profile/follow-button";
 
 interface ProfileHeroProps {
     profile: any;
     user: any;
     isOwnProfile: boolean;
+    // Optional props for public profiles
+    isFollowing?: boolean;
+    targetUserId?: string;
 }
 
-export function ProfileHero({ profile, user, isOwnProfile }: ProfileHeroProps) {
+export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUserId }: ProfileHeroProps) {
     // Generate gradient if no cover image
     const gradients = [
         "from-slate-600 via-gray-700 to-zinc-800",
@@ -108,32 +113,42 @@ export function ProfileHero({ profile, user, isOwnProfile }: ProfileHeroProps) {
                         </motion.div>
 
                         {/* Action Buttons */}
-                        {isOwnProfile && (
-                            <motion.div
-                                initial={{ y: 10, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 0.3, delay: 0.2 }}
-                                className="flex gap-3 justify-center md:justify-start flex-wrap"
-                            >
-                                <Link href="/makale/yeni">
-                                    <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                        <PenSquare className="w-4 h-4" />
-                                        <span>Makale Yaz</span>
-                                    </Button>
-                                </Link>
-                                <ProfileMessagesButton />
-                                <EditProfileButton
-                                    currentUsername={profile?.username || null}
-                                    currentFullName={profile?.full_name || null}
-                                    currentBio={profile?.bio || null}
-                                    currentAvatarUrl={profile?.avatar_url || null}
-                                    currentCoverUrl={profile?.cover_url || null}
-                                    currentWebsite={profile?.website || null}
-                                    currentSocialLinks={profile?.social_links || null}
-                                    userEmail={user?.email || null}
-                                />
-                            </motion.div>
-                        )}
+                        <motion.div
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ duration: 0.3, delay: 0.2 }}
+                            className="flex gap-3 justify-center md:justify-start flex-wrap"
+                        >
+                            {isOwnProfile ? (
+                                <>
+                                    <Link href="/makale/yeni">
+                                        <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <PenSquare className="w-4 h-4" />
+                                            <span>Makale Yaz</span>
+                                        </Button>
+                                    </Link>
+                                    <ProfileMessagesButton />
+                                    <EditProfileButton
+                                        currentUsername={profile?.username || null}
+                                        currentFullName={profile?.full_name || null}
+                                        currentBio={profile?.bio || null}
+                                        currentAvatarUrl={profile?.avatar_url || null}
+                                        currentCoverUrl={profile?.cover_url || null}
+                                        currentWebsite={profile?.website || null}
+                                        currentSocialLinks={profile?.social_links || null}
+                                        userEmail={user?.email || null}
+                                    />
+                                </>
+                            ) : (
+                                user && targetUserId && (
+                                    <>
+                                        {/* Import needed components at top of file */}
+                                        <StartChatButton otherUserId={targetUserId} />
+                                        <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
+                                    </>
+                                )
+                            )}
+                        </motion.div>
                     </div>
                 </div>
             </div>
