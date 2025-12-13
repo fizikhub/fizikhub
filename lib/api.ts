@@ -22,7 +22,7 @@ export async function getArticles(
     options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
     // Default to all fields if not specified, but for homepage we will want to restrict this
-    const selectFields = options.fields || '*, author:profiles!inner(*)';
+    const selectFields = options.fields || '*, author:profiles!articles_author_id_fkey(*)';
 
     let query = supabase
         .from('articles')
@@ -44,7 +44,7 @@ export async function getArticles(
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching articles:', error);
+        console.error('Error fetching articles:', JSON.stringify(error, null, 2));
         return [];
     }
 
@@ -55,7 +55,7 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
     // First try to find by slug
     const { data, error } = await supabase
         .from('articles')
-        .select('*, author:profiles(*)')
+        .select('*, author:profiles!articles_author_id_fkey(*)')
         .eq('slug', slug)
         .single();
 
@@ -68,7 +68,7 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
     if (/^\d+$/.test(slug)) {
         const { data: byId, error: errorId } = await supabase
             .from('articles')
-            .select('*, author:profiles(*)')
+            .select('*, author:profiles!articles_author_id_fkey(*)')
             .eq('id', parseInt(slug))
             .single();
 
@@ -78,7 +78,7 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
     }
 
     if (error) {
-        console.error('Error fetching article:', error);
+        console.error('Error fetching article:', JSON.stringify(error, null, 2));
         return null;
     }
 

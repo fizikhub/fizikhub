@@ -13,11 +13,10 @@ export const metadata = {
 export default async function DiscoverPage({
     searchParams,
 }: {
-    searchParams: { q?: string; category?: string };
+    searchParams: Promise<{ q?: string; category?: string }>;
 }) {
     const supabase = await createClient();
-    const query = searchParams.q;
-    const category = searchParams.category;
+    const { q: query, category } = await searchParams;
 
     let dbQuery = supabase
         .from("articles")

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Atom, ArrowRight, FlaskConical, Microscope, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
 interface QuestionOfTheWeekProps {
     questionId?: number;
@@ -15,6 +16,29 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
     const targetUrl = questionId
         ? `/forum/${questionId}`
         : `/forum?q=${encodeURIComponent(questionTitle)}`;
+
+    // Generate stars on client-side only to avoid hydration mismatch
+    const [stars, setStars] = useState<Array<{
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+        opacity: number;
+        duration: number;
+    }>>([]);
+
+    useEffect(() => {
+        setStars(
+            Array.from({ length: 30 }, () => ({
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+                width: Math.random() * 2 + 1,
+                height: Math.random() * 2 + 1,
+                opacity: Math.random() * 0.5 + 0.3,
+                duration: Math.random() * 3 + 2,
+            }))
+        );
+    }, []);
 
     return (
         <motion.div
@@ -29,23 +53,23 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
                     <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-50" />
 
                     {/* Animated stars */}
-                    {[...Array(30)].map((_, i) => (
+                    {stars.map((star, i) => (
                         <motion.div
                             key={i}
                             className="absolute bg-white rounded-full"
                             style={{
-                                left: `${Math.random() * 100}%`,
-                                top: `${Math.random() * 100}%`,
-                                width: Math.random() * 2 + 1,
-                                height: Math.random() * 2 + 1,
-                                opacity: Math.random() * 0.5 + 0.3,
+                                left: `${star.left}%`,
+                                top: `${star.top}%`,
+                                width: star.width,
+                                height: star.height,
+                                opacity: star.opacity,
                             }}
                             animate={{
                                 opacity: [0.3, 0.8, 0.3],
                                 scale: [1, 1.2, 1],
                             }}
                             transition={{
-                                duration: Math.random() * 3 + 2,
+                                duration: star.duration,
                                 repeat: Infinity,
                                 ease: "easeInOut",
                             }}

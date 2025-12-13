@@ -35,9 +35,15 @@ export async function updateSession(request: NextRequest) {
         return supabaseResponse;
     }
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    let user = null
+    try {
+        const { data: { user: supabaseUser }, error } = await supabase.auth.getUser()
+        if (!error && supabaseUser) {
+            user = supabaseUser
+        }
+    } catch (e) {
+        // Ignore auth errors, treat as logged out
+    }
 
     // Protected routes
     if (request.nextUrl.pathname.startsWith('/admin') && user?.email !== 'barannnbozkurttb.b@gmail.com' && user?.email !== 'barannnnbozkurttb.b@gmail.com') {

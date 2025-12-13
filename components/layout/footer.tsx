@@ -76,105 +76,181 @@ export function Footer() {
                 </motion.div>
             </div>
 
-            {/* Massive Black Hole Background Effect - ENHANCED */}
+            {/* Massive Black Hole Background Effect - CINEMATIC ULTRA-REALISTIC */}
             <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
-                {/* Accretion Disk - Layer 1 (Outermost, Slowest) */}
-                <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '80s' }}>
-                    <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-transparent via-primary/15 via-transparent to-transparent blur-2xl will-change-transform"
-                    )} />
+
+                {/* Warped Spacetime Background - Gravitational Lensing Field */}
+                <div className="absolute inset-[-100px]">
+                    {[...Array(12)].map((_, i) => (
+                        <motion.div
+                            key={`warp-${i}`}
+                            className="absolute rounded-full border border-white/[0.03]"
+                            style={{ inset: `${i * 35}px` }}
+                            animate={{
+                                rotate: i % 2 === 0 ? 360 : -360,
+                                scale: [1, 1.02, 1]
+                            }}
+                            transition={{
+                                rotate: { duration: 80 + i * 10, repeat: Infinity, ease: "linear" },
+                                scale: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 }
+                            }}
+                        />
+                    ))}
                 </div>
 
-                {/* Accretion Disk - Layer 2 */}
-                <div className="absolute inset-[50px] rounded-full animate-spin" style={{ animationDuration: '50s', animationDirection: 'reverse' }}>
-                    <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-orange-600/20 via-transparent via-primary/25 to-transparent blur-xl will-change-transform"
-                    )} />
-                </div>
-
-                {/* Accretion Disk - Layer 3 (Fast Inner) */}
-                <div className="absolute inset-[100px] rounded-full animate-spin" style={{ animationDuration: '30s' }}>
-                    <div className={cn(
-                        "absolute inset-0 rounded-full bg-gradient-conic from-primary/30 via-orange-500/20 to-transparent blur-lg will-change-transform"
-                    )} />
-                </div>
-
-                {/* Gravitational Lensing Rings */}
+                {/* Outer Accretion Disk - Redshifted (Moving Away) - Doppler Effect */}
                 <motion.div
-                    animate={{ rotate: 360, scale: [1, 1.02, 1] }}
-                    transition={{ rotate: { duration: 100, repeat: Infinity, ease: "linear" }, scale: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
-                    className="absolute inset-[200px] rounded-full border border-white/20 z-10"
+                    className="absolute inset-[-20px] rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,transparent_0deg,rgba(180,50,0,0.3)_60deg,rgba(255,100,0,0.2)_120deg,transparent_180deg,rgba(100,20,0,0.15)_240deg,rgba(180,50,0,0.25)_300deg,transparent_360deg)] blur-2xl" />
+                </motion.div>
+
+                {/* Main Accretion Disk - Hot Orange/Yellow Core */}
+                <motion.div
+                    className="absolute inset-[40px] rounded-full"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_90deg,transparent_0deg,rgba(255,150,0,0.5)_30deg,rgba(255,200,50,0.7)_60deg,rgba(255,220,100,0.6)_90deg,transparent_120deg,rgba(255,100,0,0.3)_180deg,transparent_240deg,rgba(255,180,0,0.5)_300deg,rgba(255,200,50,0.6)_330deg,transparent_360deg)] blur-xl" />
+                </motion.div>
+
+                {/* Inner Accretion Disk - Superheated White/Blue (Relativistic) */}
+                <motion.div
+                    className="absolute inset-[100px] rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(255,255,200,0.8)_20deg,rgba(200,220,255,0.6)_40deg,transparent_80deg,rgba(255,200,100,0.4)_160deg,transparent_200deg,rgba(255,255,220,0.7)_280deg,rgba(180,200,255,0.5)_320deg,transparent_360deg)] blur-lg" />
+                    {/* Bright spot from relativistic beaming */}
+                    <motion.div
+                        className="absolute top-0 left-1/2 -translate-x-1/2 w-[60px] h-[30px] bg-white/40 rounded-full blur-md"
+                        animate={{ opacity: [0.3, 0.7, 0.3] }}
+                        transition={{ duration: 0.5, repeat: Infinity }}
+                    />
+                </motion.div>
+
+                {/* Innermost Stable Circular Orbit (ISCO) Ring */}
+                <motion.div
+                    className="absolute inset-[180px] rounded-full"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute inset-0 rounded-full border-[8px] border-t-yellow-300/60 border-r-orange-400/40 border-b-orange-600/20 border-l-yellow-200/50 blur-sm" />
+                </motion.div>
+
+                {/* Einstein Ring / Gravitational Lensing Arcs */}
+                <motion.div
+                    animate={{ rotate: 360, scale: [1, 1.03, 1] }}
+                    transition={{ rotate: { duration: 120, repeat: Infinity, ease: "linear" }, scale: { duration: 5, repeat: Infinity, ease: "easeInOut" } }}
+                    className="absolute inset-[220px] rounded-full border-2 border-white/30 shadow-[0_0_30px_rgba(255,255,255,0.3)] z-10"
                 />
                 <motion.div
-                    animate={{ rotate: -360, scale: [1.02, 1, 1.02] }}
-                    transition={{ rotate: { duration: 120, repeat: Infinity, ease: "linear" }, scale: { duration: 4, repeat: Infinity, ease: "easeInOut" } }}
-                    className="absolute inset-[240px] rounded-full border border-primary/30 z-10"
+                    animate={{ rotate: -360, opacity: [0.4, 0.7, 0.4] }}
+                    transition={{ rotate: { duration: 100, repeat: Infinity, ease: "linear" }, opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" } }}
+                    className="absolute inset-[250px] rounded-full border border-orange-300/40 shadow-[0_0_20px_rgba(251,146,60,0.4)] z-10"
                 />
 
-                {/* Photon Ring - Enhanced Pulsing */}
+                {/* Photon Sphere - Critical Light Orbit */}
                 <motion.div
-                    animate={{ opacity: [0.8, 1, 0.8], scale: [1, 1.01, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className={cn(
-                        "absolute inset-[290px] rounded-full border-[3px] border-white/90 z-20 shadow-[0_0_20px_rgba(255,255,255,0.8)] will-change-transform"
-                    )}
+                    animate={{ opacity: [0.85, 1, 0.85], scale: [0.995, 1.005, 0.995] }}
+                    transition={{ duration: 0.15, repeat: Infinity }}
+                    className="absolute inset-[278px] rounded-full border-[3px] border-white z-20 shadow-[0_0_25px_rgba(255,255,255,1),0_0_50px_rgba(255,200,100,0.6)]"
                 />
+                {/* Secondary photon ring - orange glow */}
                 <motion.div
-                    animate={{ opacity: [0.6, 0.9, 0.6], scale: [1.01, 1, 1.01] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                    className={cn(
-                        "absolute inset-[288px] rounded-full border-[6px] border-primary/60 z-19 shadow-[0_0_40px_rgba(234,88,12,0.8)] will-change-transform"
-                    )}
+                    animate={{ opacity: [0.6, 1, 0.6], scale: [1.005, 0.995, 1.005] }}
+                    transition={{ duration: 0.2, repeat: Infinity, delay: 0.05 }}
+                    className="absolute inset-[275px] rounded-full border-[5px] border-orange-500/70 z-19 shadow-[0_0_40px_rgba(234,88,12,1),0_0_80px_rgba(234,88,12,0.5)]"
                 />
 
-                {/* Event Horizon (The Void) - Breathing */}
+                {/* Hawking Radiation - Quantum Glow at Event Horizon */}
                 <motion.div
-                    animate={{ scale: [1, 1.015, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-[300px] rounded-full bg-black z-30"
+                    animate={{ opacity: [0.15, 0.4, 0.15], scale: [1, 1.03, 1] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-[245px] rounded-full bg-gradient-radial from-cyan-400/25 via-blue-500/15 to-transparent blur-lg z-15"
                 />
 
-                {/* Energy Jets (Polar) */}
+                {/* Event Horizon - The Absolute Void - ENLARGED & ULTRA-REALISTIC */}
+                {/* Outer gravitational shadow */}
+                <div className="absolute inset-[248px] rounded-full bg-gradient-radial from-black via-black/95 to-transparent z-28" />
+                {/* Main event horizon */}
+                <motion.div
+                    animate={{ scale: [1, 1.005, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-[250px] rounded-full bg-[#000000] z-30 shadow-[inset_0_0_100px_rgba(0,0,0,1),inset_0_0_40px_rgba(20,20,30,0.5),0_0_60px_rgba(0,0,0,0.9)]"
+                >
+                    {/* Deep void center - pure nothingness */}
+                    <div className="absolute inset-[20px] rounded-full bg-[#000000]" />
+                    {/* Subtle edge definition */}
+                    <div className="absolute inset-0 rounded-full border border-white/[0.02]" />
+                </motion.div>
+
+                {/* Relativistic Jets - Upper */}
                 {!isMobile && (
                     <>
                         <motion.div
-                            animate={{ opacity: [0.3, 0.7, 0.3], scaleY: [1, 1.2, 1] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute left-1/2 -translate-x-1/2 top-[280px] w-[4px] h-[100px] bg-gradient-to-t from-primary/80 to-transparent z-5"
-                        />
+                            className="absolute left-1/2 -translate-x-1/2 bottom-[50%] w-[80px] h-[350px] origin-bottom z-5"
+                            animate={{ scaleY: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ duration: 0.08, repeat: Infinity }}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-t from-blue-400/50 via-cyan-300/30 to-transparent blur-lg" />
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[6px] h-full bg-gradient-to-t from-white/80 via-cyan-200/60 to-transparent blur-[2px]" />
+                            {/* Jet particles */}
+                            {[...Array(5)].map((_, i) => (
+                                <motion.div
+                                    key={`jet-up-${i}`}
+                                    className="absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full"
+                                    style={{ bottom: `${20 + i * 15}%` }}
+                                    animate={{
+                                        y: [-20, -100],
+                                        opacity: [1, 0],
+                                        scale: [1, 0.3]
+                                    }}
+                                    transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15, ease: "easeOut" }}
+                                />
+                            ))}
+                        </motion.div>
+                        {/* Lower Jet */}
                         <motion.div
-                            animate={{ opacity: [0.3, 0.7, 0.3], scaleY: [1, 1.2, 1] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                            className="absolute left-1/2 -translate-x-1/2 bottom-[280px] w-[4px] h-[100px] bg-gradient-to-b from-primary/80 to-transparent z-5"
-                        />
+                            className="absolute left-1/2 -translate-x-1/2 top-[50%] w-[80px] h-[350px] origin-top z-5"
+                            animate={{ scaleY: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+                            transition={{ duration: 0.08, repeat: Infinity, delay: 0.04 }}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-b from-blue-400/50 via-cyan-300/30 to-transparent blur-lg" />
+                            <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[6px] h-full bg-gradient-to-b from-white/80 via-cyan-200/60 to-transparent blur-[2px]" />
+                        </motion.div>
                     </>
                 )}
 
-                {/* Suction Particles - Enhanced Variety & Physics */}
+                {/* Infalling Matter - Spaghettification Effect */}
                 {debris.map((d) => (
                     <motion.div
                         key={d.id}
-                        className="absolute rounded-full z-10 will-change-transform"
+                        className="absolute z-20"
                         style={{
-                            width: d.size,
-                            height: d.size,
+                            width: d.size * 1.5,
+                            height: d.size * 0.6,
                             left: '50%',
                             top: '50%',
-                            backgroundColor: d.id % 3 === 0 ? '#fff' : (d.id % 3 === 1 ? '#ea580c' : '#fb923c'),
+                            background: d.id % 4 === 0 ? '#fff' : (d.id % 4 === 1 ? '#fbbf24' : (d.id % 4 === 2 ? '#f97316' : '#60a5fa')),
+                            boxShadow: `0 0 ${d.size * 3}px ${d.id % 4 === 0 ? '#fff' : (d.id % 4 === 1 ? '#fbbf24' : (d.id % 4 === 2 ? '#f97316' : '#60a5fa'))}`,
+                            borderRadius: '50%',
                         }}
                         animate={isSingularityActive ? {
-                            x: [Math.cos(d.angle * Math.PI / 180) * (isMobile ? 150 : 300), 0], // Reduced start distance on mobile for visibility
-                            y: [Math.sin(d.angle * Math.PI / 180) * (isMobile ? 150 : 300), 0],
-                            opacity: [0, 1, 0], // Fade in then out
-                            scale: [0.5, 1, 0], // Grow then shrink into void
-                        } : {
-                            opacity: 0
-                        }}
+                            x: [Math.cos(d.angle * Math.PI / 180) * 380, 0],
+                            y: [Math.sin(d.angle * Math.PI / 180) * 380, 0],
+                            rotate: [0, 720 + d.angle],
+                            scaleX: [1, 3, 0.1],
+                            scaleY: [1, 0.3, 0.1],
+                            opacity: [0, 1, 1, 0],
+                        } : { opacity: 0 }}
                         transition={{
-                            duration: isMobile ? 1.5 : d.duration, // Faster suction on mobile for impact
+                            duration: d.duration * 0.7,
                             repeat: Infinity,
                             delay: d.delay,
-                            ease: "easeIn" // Gravity acceleration feel
+                            ease: [0.32, 0, 0.67, 0]
                         }}
                     />
                 ))}
@@ -184,38 +260,38 @@ export function Footer() {
                 <DidYouKnow />
             </div>
 
-            <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
-
-                {/* Center Singularity Brand & Toggle - FIXED LAYOUT */}
-                <div className="absolute bottom-[300px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-50">
-                    <div className="relative flex items-center justify-center">
-                        {/* The Singularity Core - NOW INTERACTIVE */}
-                        <div
-                            className="relative cursor-pointer z-50 group"
-                            onClick={() => setIsSingularityActive(!isSingularityActive)}
-                        >
-                            <motion.div
-                                animate={{ scale: isSingularityActive ? [1, 1.2, 1] : 1, opacity: isSingularityActive ? [0.5, 0.8, 0.5] : 0.2 }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                className={cn(
-                                    "absolute inset-0 bg-primary/50 rounded-full group-hover:scale-110 transition-transform duration-500",
-                                    isMobile ? "" : "blur-xl"
-                                )}
-                            />
+            {/* Center Singularity Brand & Toggle - FIXED LAYOUT */}
+            <div className="absolute bottom-[300px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-50">
+                <div className="relative flex items-center justify-center">
+                    {/* The Singularity Core - NOW INTERACTIVE */}
+                    <div
+                        className="relative cursor-pointer z-50 group"
+                        onClick={() => setIsSingularityActive(!isSingularityActive)}
+                    >
+                        <motion.div
+                            animate={{ scale: isSingularityActive ? [1, 1.2, 1] : 1, opacity: isSingularityActive ? [0.5, 0.8, 0.5] : 0.2 }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className={cn(
+                                "absolute inset-0 bg-primary/50 rounded-full group-hover:scale-110 transition-transform duration-500",
+                                isMobile ? "" : "blur-xl"
+                            )}
+                        />
+                        <div className={cn(
+                            "relative p-8 bg-black border-2 rounded-full transition-all duration-500 group-hover:border-primary group-hover:scale-105",
+                            isSingularityActive ? "border-primary shadow-[0_0_40px_rgba(234,88,12,0.6)]" : "border-white/10 hover:border-white/30",
+                            !isMobile && isSingularityActive && "shadow-[0_0_60px_rgba(234,88,12,0.7)]"
+                        )}>
+                            {/* Solid Singularity Core - ENLARGED */}
                             <div className={cn(
-                                "relative p-6 bg-black border-2 rounded-full transition-all duration-500 group-hover:border-primary group-hover:scale-105",
-                                isSingularityActive ? "border-primary shadow-[0_0_30px_rgba(234,88,12,0.5)]" : "border-white/10 hover:border-white/30",
-                                !isMobile && isSingularityActive && "shadow-[0_0_50px_rgba(234,88,12,0.6)]"
-                            )}>
-                                {/* Solid Singularity Core */}
-                                <div className={cn(
-                                    "w-8 h-8 rounded-full transition-all duration-1000",
-                                    isSingularityActive ? "bg-white shadow-[0_0_20px_#fff,0_0_40px_#ea580c] scale-100 animate-pulse" : "bg-zinc-900 scale-75"
-                                )} />
-                            </div>
+                                "w-16 h-16 rounded-full transition-all duration-1000",
+                                isSingularityActive ? "bg-white shadow-[0_0_30px_#fff,0_0_60px_#ea580c] scale-100 animate-pulse" : "bg-zinc-800 scale-90"
+                            )} />
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
 
                 {/* Technical Links Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-2 gap-8 text-center md:text-left w-full max-w-2xl mx-auto pt-8 relative min-h-[300px]">
@@ -276,6 +352,6 @@ export function Footer() {
                     </div>
                 </div>
             </div>
-        </footer>
+        </footer >
     )
 }

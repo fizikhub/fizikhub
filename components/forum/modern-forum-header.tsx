@@ -103,62 +103,216 @@ export function ModernForumHeader() {
         router.push(`/forum?${params.toString()}`);
     };
 
+    // Mouse tracking for 3D tilt effect
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isHovering, setIsHovering] = useState(false);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setMousePosition({ x, y });
+    };
+
     return (
         <div className="flex flex-col gap-8 mb-8">
-            {/* Forum Header - Clean & Brutalist */}
+            {/* Forum Header - Premium Enhanced */}
             <div className="relative border-2 border-border bg-card p-8 md:p-12 mb-4 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
 
                 {/* Dynamic Space Background */}
                 <HeaderSpaceBackground />
 
+                {/* Animated gradient overlay */}
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none"
+                    animate={{
+                        opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                />
+
+                {/* Shimmer Effect */}
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent pointer-events-none"
+                    animate={{
+                        x: ['-100%', '200%'],
+                    }}
+                    transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear",
+                        repeatDelay: 2,
+                    }}
+                />
+
+
                 <div className="max-w-4xl mx-auto relative z-10 w-full">
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                        {/* Simple Icon */}
-                        <div className="hidden md:block">
-                            <div className="w-16 h-16 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                <Atom className="w-8 h-8 text-primary-foreground" />
+                        {/* Enhanced Icon with Multiple Effects */}
+                        <motion.div
+                            className="hidden md:block relative"
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ type: "spring", duration: 0.8 }}
+                        >
+                            {/* Orbiting ring */}
+                            <motion.div
+                                className="absolute inset-0 border-2 border-primary/20 rounded-full"
+                                animate={{
+                                    rotate: 360,
+                                    scale: [1, 1.2, 1],
+                                }}
+                                transition={{
+                                    rotate: { duration: 8, repeat: Infinity, ease: "linear" },
+                                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                                }}
+                            />
+
+                            <div className="relative w-16 h-16 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                {/* Pulsing glow */}
+                                <motion.div
+                                    className="absolute inset-0 bg-primary/30 blur-lg"
+                                    animate={{
+                                        scale: [1, 1.5, 1],
+                                        opacity: [0.5, 1, 0.5],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                />
+                                <Atom className="w-8 h-8 text-primary-foreground relative z-10" />
                             </div>
-                        </div>
+                        </motion.div>
 
                         <div className="flex-1 space-y-5 w-full text-center md:text-left">
-                            {/* Clean Title */}
-                            <div className="space-y-3">
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-                                    Aklında Ne Var?
+                            {/* Enhanced Title with Multiple Effects */}
+                            <motion.div
+                                className="space-y-3"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight relative">
+                                    <span className="relative inline-block">
+                                        Aklında Ne Var?
+                                        {/* Animated underline */}
+                                        <motion.div
+                                            className="absolute -bottom-1 left-0 h-1 bg-primary"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: "100%" }}
+                                            transition={{ delay: 0.3, duration: 0.8 }}
+                                        />
+                                        {/* Glow effect on text */}
+                                        <motion.div
+                                            className="absolute inset-0 bg-primary/20 blur-xl"
+                                            animate={{
+                                                opacity: [0, 0.3, 0],
+                                            }}
+                                            transition={{
+                                                duration: 3,
+                                                repeat: Infinity,
+                                                ease: "easeInOut",
+                                            }}
+                                        />
+                                    </span>
                                 </h1>
-                                <p className="text-base md:text-lg text-muted-foreground font-medium">
-                                    Merak ettiğin fizik sorusu mu var? <span className="text-foreground font-bold">Sor, öğren, tartış!</span>
-                                </p>
-                            </div>
+                                <motion.p
+                                    className="text-base md:text-lg text-muted-foreground font-medium"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.4, duration: 0.6 }}
+                                >
+                                    Her sorunun cevabı yıldızların arasında gizli. <span className="text-foreground font-bold">Sor, keşfet, öğren.</span>
+                                </motion.p>
 
-                            {/* Simplified Input */}
-                            <CreateQuestionDialog
-                                trigger={
-                                    <div className="w-full group/input cursor-pointer">
-                                        <div className="border-2 border-border bg-background p-4 md:p-5 flex items-center gap-4 hover:border-primary transition-colors hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50">
-                                            {/* Simple Icon */}
-                                            <div className="p-2.5 bg-primary border-2 border-black dark:border-white">
-                                                <Sparkles className="w-5 h-5 text-primary-foreground" />
-                                            </div>
 
-                                            {/* Input Text */}
-                                            <div className="flex-1 flex items-center">
-                                                <span className="text-muted-foreground font-semibold text-base md:text-lg group-hover/input:text-foreground transition-colors">
-                                                    Sorunu sor, keşfet...
-                                                </span>
-                                            </div>
+                            </motion.div>
 
-                                            {/* CTA Button */}
-                                            <div className="hidden sm:block">
-                                                <div className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground transition-colors flex items-center gap-2">
-                                                    Yaz
-                                                    <ArrowRight className="w-4 h-4" />
+                            {/* Premium Enhanced Input */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.6 }}
+                            >
+                                <CreateQuestionDialog
+                                    trigger={
+                                        <div className="w-full group/input cursor-pointer">
+                                            <div className="relative border-2 border-border bg-background p-4 md:p-5 flex items-center gap-4 transition-all duration-300 hover:border-primary hover:shadow-[6px_6px_0px_0px] hover:shadow-primary/50 hover:scale-[1.02] hover:-translate-y-1">
+                                                {/* Enhanced focus ring */}
+                                                <div className="absolute -inset-1 bg-primary/20 rounded-sm opacity-0 group-hover/input:opacity-100 blur-md transition-opacity duration-300" />
+
+                                                {/* Multiple shine effects */}
+                                                <motion.div
+                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover/input:opacity-100"
+                                                    animate={{
+                                                        x: ['-100%', '200%'],
+                                                    }}
+                                                    transition={{
+                                                        duration: 1,
+                                                        ease: "linear",
+                                                    }}
+                                                />
+
+                                                {/* Icon with advanced animation */}
+                                                <motion.div
+                                                    className="p-2.5 bg-primary border-2 border-black dark:border-white relative z-10"
+                                                    whileHover={{ rotate: 360, scale: 1.1 }}
+                                                    transition={{ duration: 0.6 }}
+                                                >
+                                                    <Sparkles className="w-5 h-5 text-primary-foreground" />
+                                                </motion.div>
+
+                                                {/* Input Text with typing effect hint */}
+                                                <div className="flex-1 flex items-center relative z-10">
+                                                    <span className="text-muted-foreground font-semibold text-base md:text-lg group-hover/input:text-foreground transition-colors">
+                                                        Sorunu sor...
+                                                    </span>
+                                                    <motion.span
+                                                        className="ml-1 inline-block w-0.5 h-5 bg-primary"
+                                                        animate={{
+                                                            opacity: [0, 1, 0],
+                                                        }}
+                                                        transition={{
+                                                            duration: 1.5,
+                                                            repeat: Infinity,
+                                                            ease: "easeInOut",
+                                                        }}
+                                                    />
                                                 </div>
+
+                                                {/* Premium CTA Button */}
+                                                <motion.div
+                                                    className="hidden sm:block relative z-10"
+                                                    whileHover={{ x: 5, scale: 1.05 }}
+                                                >
+                                                    <div className="relative px-5 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground group-hover/input:border-primary transition-all flex items-center gap-2 overflow-hidden">
+                                                        {/* Button shimmer */}
+                                                        <motion.div
+                                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                                            animate={{
+                                                                x: ['-100%', '200%'],
+                                                            }}
+                                                            transition={{
+                                                                duration: 2,
+                                                                repeat: Infinity,
+                                                                repeatDelay: 1,
+                                                            }}
+                                                        />
+                                                        <span className="relative z-10">Yaz</span>
+                                                        <ArrowRight className="w-4 h-4 group-hover/input:translate-x-1 transition-transform relative z-10" />
+                                                    </div>
+                                                </motion.div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            />
+                                    }
+                                />
+                            </motion.div>
                         </div>
                     </div>
                 </div>

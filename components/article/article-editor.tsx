@@ -50,6 +50,7 @@ export function ArticleEditor({ content, onChange, onImageUpload }: ArticleEdito
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
+        immediatelyRender: false,
     });
 
     if (!editor) {
