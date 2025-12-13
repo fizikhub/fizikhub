@@ -105,69 +105,54 @@ export function ModernForumHeader() {
 
     return (
         <div className="flex flex-col gap-8 mb-8">
-            {/* New Conversational Header - Neo-Brutalist Style */}
-            <div className="relative border border-gray-300/40 dark:border-gray-700/40 rounded-3xl shadow-[5px_5px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.08)] p-8 md:p-10 mb-4 overflow-hidden group min-h-[320px] flex items-center bg-gradient-to-br from-background via-background to-primary/5">
+            {/* Forum Header - Clean & Brutalist */}
+            <div className="relative border-2 border-border bg-card p-8 md:p-12 mb-4 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
 
-                {/* Dynamic Space Background (No UFOs) */}
+                {/* Dynamic Space Background */}
                 <HeaderSpaceBackground />
 
                 <div className="max-w-4xl mx-auto relative z-10 w-full">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-                        {/* User Avatar - Softened */}
-                        <div className="hidden md:flex flex-col items-center gap-2">
-                            <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 border border-white/20 rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm group-hover:scale-105 transition-transform duration-500">
-                                <Atom className="w-10 h-10 text-white animate-pulse" />
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                        {/* Simple Icon */}
+                        <div className="hidden md:block">
+                            <div className="w-16 h-16 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                <Atom className="w-8 h-8 text-primary-foreground" />
                             </div>
                         </div>
 
-                        <div className="flex-1 space-y-6 w-full text-center md:text-left">
-                            {/* Greeting & Prompt - More Elegant */}
-                            <div className="space-y-4">
-                                <div className="inline-block">
-                                    <h1 className="text-4xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-white to-primary bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)] animate-in fade-in slide-in-from-bottom-4 duration-700">
-                                        Aklında Ne Var?
-                                    </h1>
-                                    <div className="h-1 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-full mt-2 animate-in slide-in-from-left duration-1000" />
-                                </div>
-                                <p className="text-gray-200/90 font-medium text-lg md:text-xl max-w-2xl drop-shadow-sm">
-                                    Bilim topluluğu sorularını bekliyor. <span className="text-primary font-semibold">Cevaplar yıldızların arasında.</span>
+                        <div className="flex-1 space-y-5 w-full text-center md:text-left">
+                            {/* Clean Title */}
+                            <div className="space-y-3">
+                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+                                    Aklında Ne Var?
+                                </h1>
+                                <p className="text-base md:text-lg text-muted-foreground font-medium">
+                                    Merak ettiğin fizik sorusu mu var? <span className="text-foreground font-bold">Sor, öğren, tartış!</span>
                                 </p>
                             </div>
 
-                            {/* Enhanced Input Trigger - Modern & Elegant */}
+                            {/* Simplified Input */}
                             <CreateQuestionDialog
                                 trigger={
                                     <div className="w-full group/input cursor-pointer">
-                                        <div className="relative bg-gradient-to-r from-black/40 via-black/30 to-black/40 backdrop-blur-xl border border-white/30 rounded-2xl p-1 hover:border-primary/60 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-1">
-                                            <div className="bg-gradient-to-br from-black/60 to-black/40 rounded-xl p-5 md:p-6 flex items-center gap-4">
-                                                {/* Icon */}
-                                                <div className="relative">
-                                                    <div className="absolute inset-0 bg-primary/30 rounded-xl blur-xl group-hover/input:blur-2xl transition-all" />
-                                                    <div className="relative p-3 bg-gradient-to-br from-primary to-primary/80 rounded-xl group-hover/input:scale-110 group-hover/input:rotate-6 transition-all duration-500 shadow-lg">
-                                                        <Sparkles className="w-6 h-6 text-white" />
-                                                    </div>
-                                                </div>
+                                        <div className="border-2 border-border bg-background p-4 md:p-5 flex items-center gap-4 hover:border-primary transition-colors hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50">
+                                            {/* Simple Icon */}
+                                            <div className="p-2.5 bg-primary border-2 border-black dark:border-white">
+                                                <Sparkles className="w-5 h-5 text-primary-foreground" />
+                                            </div>
 
-                                                {/* Input Area */}
-                                                <div className="flex-1 flex items-center gap-3">
-                                                    <div className="flex items-center gap-2 flex-1">
-                                                        <span className="text-primary font-bold text-lg">›</span>
-                                                        <span className="text-white/90 font-semibold text-lg tracking-wide flex-1 text-left group-hover/input:text-white transition-colors">
-                                                            Sorunu sor, keşfet...
-                                                        </span>
-                                                    </div>
-                                                    <div className="w-0.5 h-6 bg-primary/60 animate-pulse hidden md:block" />
-                                                </div>
+                                            {/* Input Text */}
+                                            <div className="flex-1 flex items-center">
+                                                <span className="text-muted-foreground font-semibold text-base md:text-lg group-hover/input:text-foreground transition-colors">
+                                                    Sorunu sor, keşfet...
+                                                </span>
+                                            </div>
 
-                                                {/* CTA Button */}
-                                                <div className="hidden sm:flex items-center gap-2">
-                                                    <div className="relative group/cta">
-                                                        <div className="absolute inset-0 bg-primary/50 rounded-lg blur group-hover/input:blur-md transition-all" />
-                                                        <div className="relative px-6 py-2.5 bg-gradient-to-r from-white to-gray-100 text-black rounded-lg text-sm font-bold uppercase tracking-wider shadow-md group-hover/input:shadow-lg group-hover/input:scale-105 transition-all flex items-center gap-2">
-                                                            Yaz
-                                                            <ArrowRight className="w-4 h-4 group-hover/input:translate-x-1 transition-transform" />
-                                                        </div>
-                                                    </div>
+                                            {/* CTA Button */}
+                                            <div className="hidden sm:block">
+                                                <div className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground transition-colors flex items-center gap-2">
+                                                    Yaz
+                                                    <ArrowRight className="w-4 h-4" />
                                                 </div>
                                             </div>
                                         </div>
