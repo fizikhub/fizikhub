@@ -228,7 +228,7 @@ export function ModernForumHeader() {
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4, duration: 0.6 }}
                                 >
-                                    Her sorunun cevabı yıldızların arasında gizli. <span className="text-foreground font-bold">Sor, keşfet, öğren.</span>
+                                    Bilim topluluğu sorularını bekliyor. <span className="text-foreground font-bold">Cevaplar yıldızların arasında.</span>
                                 </motion.p>
 
 

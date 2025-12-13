@@ -144,54 +144,70 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
         <>
             {/* Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-xl border-2 border-primary/20">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                            <HelpCircle className="w-6 h-6 text-primary" />
-                            Makale Yazma Rehberi
+                <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-xl border-2 border-primary/20 p-0 overflow-hidden">
+                    <div className="bg-gradient-to-r from-primary to-purple-600 p-6 text-white text-center">
+                        <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-90" />
+                        <DialogTitle className="text-3xl font-black tracking-tight mb-2">
+                            Evrenin Sırlarını Açığa Çıkarmaya Hazır Mısın? 🌌
                         </DialogTitle>
-                        <DialogDescription>
-                            Bilimsel makalenizi oluştururken dikkat etmeniz gerekenler:
+                        <DialogDescription className="text-blue-100 font-medium text-lg">
+                            Bilimi ciddiye alıyoruz, ama sıkıcı olmasına izin vermiyoruz!
                         </DialogDescription>
-                    </DialogHeader>
+                    </div>
 
-                    <div className="space-y-4 py-4">
-                        <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                            <h3 className="font-bold text-lg mb-2">📸 Görsel Ekleme</h3>
+                    <div className="p-6 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-muted/30 rounded-xl border border-border hover:border-primary/50 transition-colors">
+                                <h4 className="font-black text-lg mb-2 flex items-center gap-2">
+                                    <span className="text-2xl">📸</span> Görsel Şölen
+                                </h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    "Bir resim bin formüle bedeldir" dememişler ama deselerdi haklı olurlardı.
+                                    Editördeki <b>Resim İkonuna</b> tıklayarak makaleni renklendir.
+                                </p>
+                            </div>
+
+                            <div className="p-4 bg-muted/30 rounded-xl border border-border hover:border-primary/50 transition-colors">
+                                <h4 className="font-black text-lg mb-2 flex items-center gap-2">
+                                    <span className="text-2xl">✨</span> Biçim Önemli
+                                </h4>
+                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                    Okuyucuların gözünü yormamak için <b>Kalın</b>, <i>İtalik</i> ve Başlıkları
+                                    kullan. Dümdüz yazı duvarı kara delik gibi okuyucuyu yutar, yapma.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                            <h4 className="font-black text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
+                                <span className="text-2xl">🚀</span> Houston, Bir Sorunumuz Yok!
+                            </h4>
                             <p className="text-sm text-muted-foreground">
-                                Paragraflar arasına görsel eklemek için editörün üstündeki <b>Resim İkonuna</b> tıklayın.
-                                Cihazınızdan fotoğraf seçtiğinizde otomatik olarak imlecin olduğu yere eklenecektir.
+                                Makalen bittikten sonra "İncelemeye Gönder" butonuna bas.
+                                Editörlerimiz makaleni ışık hızıyla inceleyip (belki biraz daha yavaş) onaylayacak.
+                                Onaylandıktan sonra tüm FizikHub evreninde yayınlanacak!
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-3 bg-muted/30 rounded border">
-                                <h4 className="font-bold">✨ Formatlama</h4>
-                                <p className="text-sm text-muted-foreground">Kalın, İtalik, Başlık özelliklerini kullanarak yazınızı zenginleştirin.</p>
-                            </div>
-                            <div className="p-3 bg-muted/30 rounded border">
-                                <h4 className="font-bold">🚀 Onay Süreci</h4>
-                                <p className="text-sm text-muted-foreground">Makaleniz önce admin onayına düşer, onaylandıktan sonra keşfette yayınlanır.</p>
+                        <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="dont-show-again"
+                                    checked={dontShowAgain}
+                                    onChange={(e) => setDontShowAgain(e.target.checked)}
+                                    className="w-4 h-4 rounded border-primary"
+                                />
+                                <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
+                                    Bu rehberi bir daha gösterme (Zaten dâhiyim)
+                                </label>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 pt-2">
-                            <input
-                                type="checkbox"
-                                id="dont-show-again"
-                                checked={dontShowAgain}
-                                onChange={(e) => setDontShowAgain(e.target.checked)}
-                                className="w-4 h-4 rounded border-primary"
-                            />
-                            <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none">
-                                Bir daha gösterme
-                            </label>
-                        </div>
+                        <Button onClick={closeGuide} className="w-full font-black text-lg py-6 bg-gradient-to-r from-primary to-purple-600 hover:scale-[1.02] transition-transform">
+                            Teorimi Yazmaya Başlıyorum! 🧪
+                        </Button>
                     </div>
-
-                    <Button onClick={closeGuide} className="w-full font-bold text-lg py-6">
-                        Anladım, Yazmaya Başla! 🚀
-                    </Button>
                 </DialogContent>
             </Dialog>
 
