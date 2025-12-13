@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
+import rehypeRaw from "rehype-raw";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.css";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,7 @@ export function MarkdownRenderer({
         )}>
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
                 components={{
                     p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
                     a: ({ node, ...props }) => <a className="text-secondary hover:underline" {...props} />,

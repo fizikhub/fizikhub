@@ -50,6 +50,7 @@
     "react-use": "^17.6.0",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
     "remark-math": "^6.0.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0"
