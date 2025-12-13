@@ -162,7 +162,11 @@ export async function approveArticle(id: number) {
 
     const { error } = await adminCheck.supabase!
         .from('articles')
-        .update({ status: 'published' })
+        .update({
+            status: 'published',
+            reviewed_at: new Date().toISOString(),
+            reviewed_by: (await adminCheck.supabase!.auth.getUser()).data.user?.id
+        })
         .eq('id', id);
 
     if (error) {
@@ -172,6 +176,7 @@ export async function approveArticle(id: number) {
 
     revalidatePath('/admin');
     revalidatePath('/kesfet');
+    revalidatePath('/'); // Also revalidate home if it shows articles
     return { success: true };
 }
 
