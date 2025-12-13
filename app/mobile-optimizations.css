@@ -1,0 +1,64 @@
+/* ===================================
+   MOBILE OPTIMIZATION & PERFORMANCE
+   =================================== */
+
+/* Minimum touch target size for mobile accessibility */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Apply to common interactive elements */
+button:not([class*="ghost"]):not([class*="link"]),
+[role="button"],
+.like-button,
+.vote-button,
+.icon-button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+}
+
+/* Remove 300ms tap delay on mobile */
+a,
+button,
+input,
+textarea,
+select {
+    touch-action: manipulation;
+}
+
+/* Smooth scroll for better mobile UX */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent text size adjustment after orientation change */
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+/*  Improve font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* GPU acceleration for transforms and animations */
+.will-change-transform {
+    will-change: transform;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+/* Optimize expensive hover effects on mobile */
+@media (hover: none) {
+    *:hover {
+        transition-duration: 0s !important;
+    }
+}

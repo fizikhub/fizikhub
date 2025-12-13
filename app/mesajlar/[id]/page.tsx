@@ -20,12 +20,16 @@ export default async function ConversationPage({
 
     const { id: conversationId } = await params;
 
-    console.log("Conversation Page: Fetching data for conversation", conversationId);
+    if (process.env.NODE_ENV === 'development') {
+        console.log("Conversation Page: Fetching data for conversation", conversationId);
+    }
 
     let messages: Message[] = [];
     try {
         messages = await getMessages(conversationId);
-        console.log(`Conversation Page: Fetched ${messages.length} messages`);
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`Conversation Page: Fetched ${messages.length} messages`);
+        }
     } catch (e) {
         console.error("Conversation Page: Error fetching messages", e);
     }

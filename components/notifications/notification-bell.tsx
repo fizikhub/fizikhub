@@ -51,14 +51,18 @@ export function NotificationBell() {
     const fetchNotifications = async () => {
         try {
             setIsLoading(true);
-            console.log('[NotificationBell] Fetching notifications...');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[NotificationBell] Fetching notifications...');
+            }
 
             const [data, count] = await Promise.all([
                 getNotifications(),
                 getUnreadCount()
             ]);
 
-            console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
+            }
 
             setNotifications(data as any);
             setUnreadCount(count);
@@ -73,7 +77,9 @@ export function NotificationBell() {
                 setTimeout(() => setShowConfetti(false), 7000);
             }
         } catch (error) {
-            console.error('[NotificationBell] Error fetching notifications:', error);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('[NotificationBell] Error fetching notifications:', error);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -92,7 +98,9 @@ export function NotificationBell() {
                     table: 'notifications',
                 },
                 (payload) => {
-                    console.log('[NotificationBell] New notification received:', payload);
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log('[NotificationBell] New notification received:', payload);
+                    }
                     setUnreadCount(prev => prev + 1);
                     fetchNotifications();
                 }
@@ -105,7 +113,9 @@ export function NotificationBell() {
                     table: 'notifications',
                 },
                 (payload) => {
-                    console.log('[NotificationBell] Notification updated:', payload);
+                    if (process.env.NODE_ENV === 'development') {
+                        console.log('[NotificationBell] Notification updated:', payload);
+                    }
                     fetchNotifications();
                 }
             )

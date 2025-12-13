@@ -13,8 +13,6 @@ export default async function AdminArticlesPage() {
     // Fetch all articles
     const articles = await getArticles(supabase, { status: null, authorRole: 'all' });
 
-    console.log("🔍 Admin Panel: Fetching pending articles...");
-
     // Fetch pending articles - RLS should allow admin to see all
     // Use explicit relationship name to avoid ambiguity (author_id vs reviewed_by)
     const { data: pendingArticles, error } = await supabase
@@ -29,7 +27,7 @@ export default async function AdminArticlesPage() {
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
-    if (error) {
+    if (error && process.env.NODE_ENV === 'development') {
         console.error("❌ Admin Panel Error:", error);
     }
 
@@ -42,15 +40,19 @@ export default async function AdminArticlesPage() {
             .eq('id', user.id)
             .single();
 
-        console.log("👤 Current user role:", profile?.role);
+        if (process.env.NODE_ENV === 'development') {
+            console.log("👤 Current user role:", profile?.role);
+        }
     }
 
-    if (!pendingArticles || pendingArticles.length === 0) {
-        console.log("⚠️ NO PENDING ARTICLES RETURNED (check RLS policies)");
-    } else {
-        console.log(`✅ Found ${pendingArticles.length} pending articles:`,
-            pendingArticles.map(a => ({ id: a.id, title: a.title, status: a.status }))
-        );
+    if (process.env.NODE_ENV === 'development') {
+        if (!pendingArticles || pendingArticles.length === 0) {
+            console.log("⚠️ NO PENDING ARTICLES RETURNED (check RLS policies)");
+        } else {
+            console.log(`✅ Found ${pendingArticles.length} pending articles:`,
+                pendingArticles.map(a => ({ id: a.id, title: a.title, status: a.status }))
+            );
+        }
     }
 
     return (

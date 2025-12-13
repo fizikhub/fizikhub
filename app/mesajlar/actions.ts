@@ -204,21 +204,35 @@ export async function startConversation(otherUserId: string) {
     console.log("Current user ID:", user?.id);
     console.log("Other user ID:", otherUserId);
 
+    if (process.env.NODE_ENV === 'development') {
+        console.log("=== START CONVERSATION DEBUG ===");
+        console.log("Current user ID:", user?.id);
+        console.log("Other user ID:", otherUserId);
+    }
+
     if (!user) {
-        console.error("User not authenticated");
+        if (process.env.NODE_ENV === 'development') {
+            console.error("User not authenticated");
+        }
         return { success: false, error: "Not authenticated" };
     }
 
     // Use the database function to create or get conversation
-    console.log("Calling create_conversation RPC...");
+    if (process.env.NODE_ENV === 'development') {
+        console.log("Calling create_conversation RPC...");
+    }
     const { data: conversationId, error } = await supabase
         .rpc('create_conversation', { other_user_id: otherUserId });
 
-    console.log("RPC Response - conversationId:", conversationId);
-    console.log("RPC Response - error:", error);
+    if (process.env.NODE_ENV === 'development') {
+        console.log("RPC Response - conversationId:", conversationId);
+        console.log("RPC Response - error:", error);
+    }
 
     if (error) {
-        console.error("Start conversation error:", error);
+        if (process.env.NODE_ENV === 'development') {
+            console.error("Start conversation error:", error);
+        }
         return { success: false, error: error.message };
     }
 
@@ -228,8 +242,10 @@ export async function startConversation(otherUserId: string) {
         .select('*')
         .eq('conversation_id', conversationId);
 
-    console.log("Participants in conversation:", participants);
-    console.log("Participants error:", participantsError);
+    if (process.env.NODE_ENV === 'development') {
+        console.log("Participants in conversation:", participants);
+        console.log("Participants error:", participantsError);
+    }
 
     revalidatePath('/mesajlar');
     return { success: true, conversationId };

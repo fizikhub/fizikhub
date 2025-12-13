@@ -9,7 +9,9 @@ export async function getNotifications() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-            console.log('[Notifications] No user logged in');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[Notifications] No user logged in');
+            }
             return [];
         }
 
@@ -22,7 +24,9 @@ export async function getNotifications() {
             .limit(20);
 
         if (error) {
-            console.error('[Notifications] Error fetching notifications:', error);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('[Notifications] Error fetching notifications:', error);
+            }
             return [];
         }
 
@@ -39,12 +43,8 @@ export async function getNotifications() {
             .select('id, username, full_name, avatar_url')
             .in('id', actorIds);
 
-        if (profilesError) {
+        if (profilesError && process.env.NODE_ENV === 'development') {
             console.error('[Notifications] Error fetching profiles:', profilesError);
-            // Return notifications without actor details if profiles fail (fallback)
-            // But the UI expects actor, so we might need to handle that.
-            // Let's return them with minimal actor info or filter them out.
-            // For now, let's try to map what we can.
         }
 
         // 4. Map profiles to notifications
@@ -64,11 +64,15 @@ export async function getNotifications() {
             };
         });
 
-        console.log('[Notifications] Fetched notifications with actors:', notificationsWithActors.length);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[Notifications] Fetched notifications with actors:', notificationsWithActors.length);
+        }
         return notificationsWithActors;
 
     } catch (error) {
-        console.error('[Notifications] Unexpected error:', error);
+        if (process.env.NODE_ENV === 'development') {
+            console.error('[Notifications] Unexpected error:', error);
+        }
         return [];
     }
 }
@@ -79,7 +83,9 @@ export async function getUnreadCount() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-            console.log('[Notifications] No user for unread count');
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[Notifications] No user for unread count');
+            }
             return 0;
         }
 
@@ -90,11 +96,15 @@ export async function getUnreadCount() {
             .eq('is_read', false);
 
         if (error) {
-            console.error('[Notifications] Error fetching unread count:', error);
+            if (process.env.NODE_ENV === 'development') {
+                console.error('[Notifications] Error fetching unread count:', error);
+            }
             return 0;
         }
 
-        console.log('[Notifications] Unread count:', count);
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[Notifications] Unread count:', count);
+        }
         return count || 0;
     } catch (error) {
         console.error('[Notifications] Unexpected error getting unread count:', error);
