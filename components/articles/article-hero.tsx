@@ -39,7 +39,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                 className="absolute inset-0 z-0"
             >
                 <Image
-                    src={article.image_url || "/images/placeholder-hero.jpg"}
+                    src={article.cover_url || "/images/placeholder-hero.jpg"}
                     alt={article.title}
                     fill
                     className="object-cover"

@@ -30,8 +30,6 @@ export default async function DiscoverPage({
             )
         `)
         .in("status", ["pending", "published"])
-        .not("profiles.is_writer", "eq", true)
-        .order("reviewed_at", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
 
     if (query) {

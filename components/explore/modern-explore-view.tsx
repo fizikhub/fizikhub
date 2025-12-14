@@ -17,7 +17,7 @@ interface Article {
     content: string;
     slug: string;
     category: string;
-    image_url: string | null;
+    cover_url: string | null;
     created_at: string;
     profiles: {
         username: string | null;
@@ -161,9 +161,9 @@ export function ModernExploreView({
                                     <div className="bg-zinc-900/40 border-2 border-zinc-800/60 rounded-3xl overflow-hidden h-full flex flex-col transition-all duration-300 hover:border-primary/50 hover:bg-zinc-900/60 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1">
                                         {/* Image Area */}
                                         <div className="aspect-[16/9] relative overflow-hidden bg-zinc-950 border-b-2 border-zinc-800/60">
-                                            {article.image_url ? (
+                                            {article.cover_url ? (
                                                 <img
-                                                    src={article.image_url}
+                                                    src={article.cover_url}
                                                     alt={article.title}
                                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                                 />

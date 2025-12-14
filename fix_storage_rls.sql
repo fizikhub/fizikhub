@@ -8,9 +8,13 @@ ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- 2. Drop ALL existing policies to avoid conflicts
 DROP POLICY IF EXISTS "Public Access" ON storage.objects;
+DROP POLICY IF EXISTS "Public read access" ON storage.objects; -- Added this
 DROP POLICY IF EXISTS "Writers Upload" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated upload" ON storage.objects; -- Added this
 DROP POLICY IF EXISTS "Writers Update" ON storage.objects;
+DROP POLICY IF EXISTS "Owner update" ON storage.objects; -- Added this
 DROP POLICY IF EXISTS "Writers Delete" ON storage.objects;
+DROP POLICY IF EXISTS "Owner delete" ON storage.objects; -- Added this
 DROP POLICY IF EXISTS "Authenticated users can upload article images" ON storage.objects;
 DROP POLICY IF EXISTS "Public read access to article images" ON storage.objects;
 DROP POLICY IF EXISTS "Users can delete their own article images" ON storage.objects;

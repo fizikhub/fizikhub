@@ -34,13 +34,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             type: "article",
             publishedTime: article.created_at,
             authors: ["Fizikhub"],
-            images: [article.image_url || "/og-image.png"],
+            images: [article.cover_url || "/og-image.png"],
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
             description: (article.content || "").substring(0, 160) + "...",
-            images: [article.image_url || "/og-image.png"],
+            images: [article.cover_url || "/og-image.png"],
         },
     };
 }
@@ -120,7 +120,8 @@ export default async function ArticlePage({ params }: PageProps) {
             title,
             slug,
             excerpt,
-            image_url,
+            excerpt,
+            cover_url,
             category,
             created_at,
             author:author_id (
@@ -146,7 +147,7 @@ export default async function ArticlePage({ params }: PageProps) {
         '@type': 'Article',
         headline: article.title,
         description: (article.content || "").substring(0, 160) + "...",
-        image: article.image_url || 'https://fizikhub.com/og-image.png',
+        image: article.cover_url || 'https://fizikhub.com/og-image.png',
         datePublished: article.created_at,
         dateModified: (article as any).updated_at || article.created_at,
         author: {
