@@ -4,12 +4,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Atom, Cpu, Radio, Globe, Zap } from "lucide-react";
+import { Search, Atom, Cpu, Radio, Globe } from "lucide-react";
 import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { SpaceBackground } from "./space-background";
 import { cn } from "@/lib/utils";
 
 interface Article {
@@ -35,34 +34,6 @@ interface ModernExploreViewProps {
     currentCategory?: string;
 }
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.9 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        scale: 1
-    }
-};
-
-const hudVariants = {
-    hidden: { opacity: 0, scale: 0.9, filter: "blur(10px)" },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        filter: "blur(0px)"
-    }
-};
-
 export function ModernExploreView({
     initialArticles,
     categories,
@@ -70,106 +41,109 @@ export function ModernExploreView({
     currentCategory
 }: ModernExploreViewProps) {
     const [searchQuery, setSearchQuery] = useState(currentQuery || "");
-    const [isFocused, setIsFocused] = useState(false);
 
     return (
-        <div className="min-h-screen bg-black pb-20 md:pb-0 relative overflow-x-hidden font-sans selection:bg-cyan-500/30">
-            {/* Space Station Viewport Background */}
-            <SpaceBackground />
+        <div className="min-h-screen bg-black pb-20 md:pb-0 relative overflow-hidden">
+            {/* Grid Overlay */}
+            <div className="fixed inset-0 opacity-5 pointer-events-none z-0">
+                <div className="w-full h-full" style={{
+                    backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent)',
+                    backgroundSize: '80px 80px'
+                }} />
+            </div>
 
-            <div className="container max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-20">
-                {/* HUD Header Section */}
-                <motion.div
-                    variants={hudVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ duration: 0.8, ease: "circOut" }}
-                    className="space-y-8 mb-12"
-                >
-                    {/* Command Center Title Area */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6 relative">
-                        {/* Decorative HUD Lines */}
-                        <div className="absolute bottom-0 left-0 w-20 h-[2px] bg-cyan-500" />
-                        <div className="absolute bottom-0 right-0 w-20 h-[2px] bg-cyan-500" />
+            {/* Scan Lines */}
+            <div className="fixed inset-0 pointer-events-none z-0 opacity-10">
+                <div className="w-full h-full bg-gradient-to-b from-transparent via-white to-transparent animate-scan" style={{
+                    backgroundSize: '100% 4px',
+                    animation: 'scan 8s linear infinite'
+                }} />
+            </div>
 
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-cyan-500/20 blur-xl rounded-full" />
-                                    <Rocket className="relative h-8 w-8 text-cyan-400 animate-pulse" />
-                                </div>
-                                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-500 mt-1 uppercase">
-                                    KEŞFET
-                                </h1>
-                            </div>
-                            Topluluğumuzun kaleminden çıkan bilimsel makaleleri, özgün içerikleri ve derinlemesine analizleri keşfedin. Bilgi paylaştıkça çoğalır.
-                        </div>
+            <div className="container max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-16 relative z-10">
+                {/* BRUTALIST HEADER */}
+                <div className="mb-12 border-b-4 border-white pb-6">
+                    <div className="flex items-start justify-between mb-4">
+                        {/* Corner Bracket TOP LEFT */}
+                        <div className="w-12 h-12 border-t-4 border-l-4 border-primary" />
 
-                        {/* Stats / Status Hologram */}
-                        <div className="hidden md:flex gap-8">
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest">Bağlantı</span>
-                                <div className="flex items-center gap-2 text-cyan-400">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-ping" />
-                                    <span className="font-bold">STABIL</span>
+                        {/* Status Indicators */}
+                        <div className="flex gap-6">
+                            <div className="text-right">
+                                <div className="text-xs font-mono text-primary/50 mb-1">DURUM</div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 animate-pulse" />
+                                    <span className="text-sm font-bold text-white">AKTİF</span>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-end">
-                                <span className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest">Konum</span>
-                                <span className="font-bold text-white">YÖRÜNGE</span>
+                            <div className="text-right">
+                                <div className="text-xs font-mono text-primary/50 mb-1">MAKALE</div>
+                                <div className="text-2xl font-black text-primary">{initialArticles?.length || 0}</div>
                             </div>
                         </div>
+
+                        {/* Corner Bracket TOP RIGHT */}
+                        <div className="w-12 h-12 border-t-4 border-r-4 border-primary" />
                     </div>
 
-                    {/* Navigation Console (Search) */}
-                    <div className="relative max-w-3xl mx-auto">
-                        <div className={cn(
-                            "absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 opacity-20 blur transition-opacity duration-500",
-                            isFocused ? "opacity-60" : "opacity-20"
-                        )} />
-                        <div className="relative bg-black/80 backdrop-blur-md border border-cyan-500/30 rounded-lg p-1 flex items-center shadow-[0_0_50px_rgba(6,182,212,0.15)]">
-                            <div className="pl-4 pr-3 text-cyan-500/50">
-                                <Search className="w-6 h-6" />
+                    {/* MASSIVE TITLE */}
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-none tracking-tighter mb-3 uppercase">
+                        KEŞFET
+                    </h1>
+
+                    <div className="h-1 w-24 bg-primary mb-4" />
+
+                    <p className="text-base md:text-lg text-white/70 max-w-3xl font-light leading-relaxed">
+                        Topluluğumuzun kaleminden çıkan bilimsel makaleleri, özgün içerikleri ve derinlemesine analizleri keşfedin.
+                    </p>
+
+                    <div className="flex items-end justify-between mt-4">
+                        {/* Corner Bracket BOTTOM LEFT */}
+                        <div className="w-12 h-12 border-b-4 border-l-4 border-primary" />
+
+                        {/* Corner Bracket BOTTOM RIGHT */}
+                        <div className="w-12 h-12 border-b-4 border-r-4 border-primary" />
+                    </div>
+                </div>
+
+                {/* SEARCH BAR - BRUTALIST */}
+                <div className="mb-10 max-w-3xl mx-auto">
+                    <form action="/kesfet" method="GET" className="relative">
+                        <div className="bg-black border-3 border-white flex items-center shadow-[4px_4px_0px_0px_rgba(168,85,247,1)] hover:shadow-[6px_6px_0px_0px_rgba(168,85,247,1)] transition-all">
+                            <div className="pl-5 pr-3">
+                                <Search className="w-5 h-5 text-primary" />
                             </div>
-                            <form action="/kesfet" method="GET" className="flex-1">
-                                <Input
-                                    name="q"
-                                    placeholder="EVRENDE ARA..."
-                                    className="h-14 bg-transparent border-none text-lg text-white placeholder:text-cyan-900/50 focus-visible:ring-0 font-medium tracking-wide"
-                                    defaultValue={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    onFocus={() => setIsFocused(true)}
-                                    onBlur={() => setIsFocused(false)}
-                                    autoComplete="off"
-                                />
-                                {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
-                            </form>
-                            <div className="pr-4 hidden md:block">
-                                <span className="text-[10px] font-mono text-cyan-500/30 border border-cyan-500/20 px-2 py-1 rounded">
-                                    CMD + K
-                                </span>
-                            </div>
+                            <Input
+                                name="q"
+                                placeholder="ARA..."
+                                className="h-14 bg-transparent border-none text-base text-white placeholder:text-white/30 focus-visible:ring-0 font-bold uppercase tracking-wider"
+                                defaultValue={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                autoComplete="off"
+                            />
+                            {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
                         </div>
-                    </div>
+                    </form>
+                </div>
 
-                    {/* System Modules (Categories) */}
-                    <div className="flex flex-wrap justify-center gap-3">
+                {/* CATEGORIES - HORIZONTAL SCROLL */}
+                <div className="mb-12">
+                    <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-hide">
                         <Link href="/kesfet">
                             <Badge
                                 variant="outline"
                                 className={cn(
-                                    "cursor-pointer px-6 py-3 text-xs font-bold tracking-widest uppercase rounded-sm border transition-all duration-300",
+                                    "cursor-pointer px-5 py-2.5 text-xs font-black tracking-widest uppercase border-2 transition-all whitespace-nowrap",
                                     !currentCategory
-                                        ? "bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                                        : "bg-black/50 border-white/10 text-white/50 hover:border-cyan-500/50 hover:text-cyan-300"
+                                        ? "bg-primary text-black border-primary shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                                        : "bg-black text-white border-white hover:bg-white hover:text-black active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)]"
                                 )}
                             >
-                                <Globe className="w-3 h-3 mr-2 animate-spin-slow" />
-                                TÜM VERİLER
+                                <Globe className="w-3 h-3 mr-2" />
+                                TÜMÜ
                             </Badge>
                         </Link>
                         {categories.map((catString) => {
-                            // Map text icons for fun
                             const iconMap: Record<string, any> = {
                                 "Kuantum": Atom,
                                 "Astrofizik": Rocket,
@@ -186,10 +160,10 @@ export function ModernExploreView({
                                     <Badge
                                         variant="outline"
                                         className={cn(
-                                            "cursor-pointer px-6 py-3 text-xs font-bold tracking-widest uppercase rounded-sm border transition-all duration-300",
+                                            "cursor-pointer px-5 py-2.5 text-xs font-black tracking-widest uppercase border-2 transition-all whitespace-nowrap",
                                             currentCategory === catString
-                                                ? "bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-                                                : "bg-black/50 border-white/10 text-white/50 hover:border-cyan-500/50 hover:text-cyan-300"
+                                                ? "bg-primary text-black border-primary shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                                                : "bg-black text-white border-white hover:bg-white hover:text-black active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)]"
                                         )}
                                     >
                                         <Icon className="w-3 h-3 mr-2" />
@@ -199,112 +173,85 @@ export function ModernExploreView({
                             )
                         })}
                     </div>
-                </motion.div>
+                </div>
 
-                {/* Data Logs Grid (Zero-G Cards) */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                >
+                {/* ARTICLES GRID - BRUTALIST CARDS */}
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <motion.div
-                            variants={itemVariants}
-                            transition={{ type: "spring", stiffness: 50, damping: 15 }}
-                            className="col-span-full flex flex-col items-center justify-center py-32 border border-white/5 rounded-lg bg-white/5 backdrop-blur-sm"
-                        >
-                            <Radio className="h-16 w-16 text-cyan-500/20 mb-6 animate-pulse" />
-                            <h3 className="text-xl font-bold text-white uppercase tracking-widest">Sinyal Yok</h3>
-                            <p className="text-cyan-500/50 font-mono mt-2">Kriterlere uygun veri bulunamadı.</p>
-                        </motion.div>
+                        <div className="col-span-full flex flex-col items-center justify-center py-32 border-4 border-white/20 bg-black">
+                            <Radio className="h-20 w-20 text-white/10 mb-6" />
+                            <h3 className="text-3xl font-black text-white uppercase tracking-wider mb-2">VERİ YOK</h3>
+                            <p className="text-white/50 font-mono text-sm">Kriterlere uygun makale bulunamadı</p>
+                        </div>
                     ) : (
-                        initialArticles.map((article, index) => {
-                            // Calculate random float animation parameters for Zero-G effect
-                            const randomDuration = 3 + Math.random() * 2;
-                            const randomDelay = Math.random() * 2;
+                        initialArticles.map((article) => (
+                            <motion.div
+                                key={article.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="group"
+                            >
+                                <Link href={`/blog/${article.slug}`} className="block">
+                                    <div className="bg-black border-3 border-white overflow-hidden transition-all hover:shadow-[8px_8px_0px_0px_rgba(168,85,247,1)] hover:-translate-y-1 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)] h-full flex flex-col">
+                                        {/* Category Bar */}
+                                        <div className="bg-primary border-b-4 border-white px-4 py-2 flex items-center justify-between">
+                                            <span className="text-xs font-black text-black uppercase tracking-widest">{article.category}</span>
+                                            <div className="w-2 h-2 bg-black" />
+                                        </div>
 
-                            return (
-                                <motion.div
-                                    key={article.id}
-                                    variants={itemVariants}
-                                    transition={{ type: "spring", stiffness: 50, damping: 15 }}
-                                    className="h-full"
-                                >
-                                    <motion.div
-                                        className="h-full group relative"
-                                        animate={{
-                                            y: [0, -10, 0],
-                                        }}
-                                        transition={{
-                                            duration: randomDuration,
-                                            repeat: Infinity,
-                                            ease: "easeInOut",
-                                            delay: randomDelay
-                                        }}
-                                    >
-                                        <Link href={`/blog/${article.slug}`} className="block h-full">
-                                            {/* Holographic Card Container */}
-                                            <div className="h-full bg-black/40 backdrop-blur-md border border-white/10 overflow-hidden relative transition-all duration-500 group-hover:border-cyan-500/50 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] clip-path-polygon">
-
-                                                {/* Corner Accents */}
-                                                <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                                <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500 opacity-50 group-hover:opacity-100 transition-opacity" />
-
-                                                {/* Image Window */}
-                                                <div className="aspect-video w-full relative overflow-hidden border-b border-white/5">
-                                                    <div className="absolute inset-0 bg-cyan-500/10 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 mix-blend-overlay" />
-
-                                                    {article.image_url ? (
-                                                        <img
-                                                            src={article.image_url}
-                                                            alt={article.title}
-                                                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1"
-                                                        />
-                                                    ) : (
-                                                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
-                                                            <Atom className="h-16 w-16 text-cyan-900/40" />
-                                                        </div>
-                                                    )}
-
-                                                    <div className="absolute bottom-3 left-3 z-20">
-                                                        <Badge className="bg-black/80 text-cyan-400 border border-cyan-500/30 backdrop-blur-sm font-mono text-[10px] tracking-widest uppercase">
-                                                            {article.category}
-                                                        </Badge>
-                                                    </div>
+                                        {/* Image */}
+                                        <div className="aspect-video w-full relative overflow-hidden border-b-4 border-white bg-zinc-900">
+                                            {article.image_url ? (
+                                                <img
+                                                    src={article.image_url}
+                                                    alt={article.title}
+                                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                />
+                                            ) : (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <Atom className="h-20 w-20 text-white/10" />
                                                 </div>
+                                            )}
+                                            {/* Grid Overlay */}
+                                            <div className="absolute inset-0 opacity-20" style={{
+                                                backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(168,85,247, .5) 25%, rgba(168,85,247, .5) 26%, transparent 27%, transparent 74%, rgba(168,85,247, .5) 75%, rgba(168,85,247, .5) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(168,85,247, .5) 25%, rgba(168,85,247, .5) 26%, transparent 27%, transparent 74%, rgba(168,85,247, .5) 75%, rgba(168,85,247, .5) 76%, transparent 77%, transparent)',
+                                                backgroundSize: '40px 40px'
+                                            }} />
+                                        </div>
 
-                                                {/* Data Readout (Content) */}
-                                                <div className="p-6 flex flex-col gap-4">
-                                                    <div>
-                                                        <h3 className="text-lg font-bold text-white leading-tight group-hover:text-cyan-300 transition-colors uppercase tracking-wide">
-                                                            {article.title}
-                                                        </h3>
-                                                        <div className="h-[1px] w-10 bg-cyan-900 my-3 group-hover:w-full group-hover:bg-cyan-500/50 transition-all duration-700" />
-                                                        <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 font-light">
-                                                            {article.excerpt || article.content.substring(0, 150)}...
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="mt-auto flex items-center justify-between text-xs font-mono text-cyan-500/60 pt-4 border-t border-white/5">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500/50 group-hover:bg-cyan-400 group-hover:animate-ping" />
-                                                            <span>AUTHOR: {article.profiles?.username?.toUpperCase() || 'UNKNOWN'}</span>
-                                                        </div>
-                                                        <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
-                                                    </div>
-                                                </div>
+                                        {/* Content */}
+                                        <div className="p-6 flex flex-col gap-4 flex-1">
+                                            <div>
+                                                <h3 className="text-xl font-black text-white leading-tight uppercase tracking-tight mb-3 group-hover:text-primary transition-colors">
+                                                    {article.title}
+                                                </h3>
+                                                <div className="h-1 w-12 bg-primary mb-3" />
+                                                <p className="text-white/70 text-sm leading-relaxed line-clamp-3">
+                                                    {article.excerpt || article.content.substring(0, 150)}...
+                                                </p>
                                             </div>
-                                        </Link>
-                                    </motion.div>
-                                </motion.div>
-                            );
-                        })
+
+                                            {/* Footer */}
+                                            <div className="mt-auto pt-4 border-t-2 border-white/10 flex items-center justify-between text-xs font-mono text-white/50">
+                                                <span className="uppercase">{article.profiles?.username || 'UNKNOWN'}</span>
+                                                <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        ))
                     )}
-                </motion.div>
+                </div>
             </div>
+
+            <style jsx global>{`
+                @keyframes scan {
+                    0% { transform: translateY(-100%); }
+                    100% { transform: translateY(100%); }
+                }
+            `}</style>
         </div>
     );
 }

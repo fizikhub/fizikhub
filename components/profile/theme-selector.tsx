@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Monitor, Moon, Sun, Heart } from "lucide-react";
+import { Moon, Sun, Heart } from "lucide-react";
 
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
@@ -36,19 +36,13 @@ export function ThemeSelector() {
             label: "Pembe",
             icon: Heart,
             color: "bg-pink-500 border-pink-600"
-        },
-        {
-            value: "system",
-            label: "Sistem",
-            icon: Monitor,
-            color: "bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
         }
     ];
 
     return (
         <div className="space-y-3">
             <Label>Görünüm</Label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
                 {themes.map((t) => {
                     const isActive = theme === t.value;
                     const Icon = t.icon;

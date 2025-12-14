@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { BadgeCheck, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { EditProfileButton } from "@/components/profile/edit-profile-button";
+import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { FollowButton } from "@/components/profile/follow-button";
@@ -128,7 +128,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                                         </Button>
                                     </Link>
                                     <ProfileMessagesButton />
-                                    <EditProfileButton
+                                    <ProfileSettingsButton
                                         currentUsername={profile?.username || null}
                                         currentFullName={profile?.full_name || null}
                                         currentBio={profile?.bio || null}

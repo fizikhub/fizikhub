@@ -22,31 +22,46 @@ export function BlackHoleBackground() {
             {/* Distant Singularity - Top Right */}
             <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] opacity-[0.15] dark:opacity-[0.2]">
                 {/* Accretion Disk */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 200, repeat: Infinity, ease: "linear" }}
-                    className={`absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent ${isMobile ? 'blur-2xl' : 'blur-3xl'} will-change-transform`}
-                />
+                {isMobile ? (
+                    // Static version for mobile - no animation, no blur
+                    <div className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent opacity-60" />
+                ) : (
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 200, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl will-change-transform"
+                    />
+                )}
 
                 {/* Inner Ring */}
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                    className={`absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent ${isMobile ? 'blur-xl' : 'blur-2xl'} border-[50px] border-primary/20 will-change-transform`}
-                />
+                {isMobile ? (
+                    // Static version for mobile
+                    <div className="absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent border-[50px] border-primary/20" />
+                ) : (
+                    <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent blur-2xl border-[50px] border-primary/20 will-change-transform"
+                    />
+                )}
             </div>
 
             {/* Distant Singularity - Bottom Left (Echo) */}
             <div className="absolute -bottom-[20%] -left-[10%] w-[60vw] h-[60vw] max-w-[800px] max-h-[800px] opacity-[0.1] dark:opacity-[0.15]">
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 250, repeat: Infinity, ease: "linear" }}
-                    className={`absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent ${isMobile ? 'blur-2xl' : 'blur-3xl'} will-change-transform`}
-                />
+                {isMobile ? (
+                    // Static version for mobile
+                    <div className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent opacity-60" />
+                ) : (
+                    <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 250, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl will-change-transform"
+                    />
+                )}
             </div>
 
-            {/* Floating Particles - Reduced on Mobile */}
-            {[...Array(isMobile ? 6 : 15)].map((_, i) => (
+            {/* Floating Particles - Heavily reduced on mobile, disabled on very small screens */}
+            {!isMobile && [...Array(15)].map((_, i) => (
                 <motion.div
                     key={i}
                     className="absolute w-1 h-1 bg-primary/20 rounded-full will-change-transform"
