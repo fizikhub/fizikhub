@@ -19,21 +19,21 @@ export function ChristmasLights() {
     return (
         <>
             {/* Christmas Lights Container */}
-            <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none h-12 md:h-16 select-none">
+            <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none h-8 md:h-10 select-none">
                 {/* Decorative Wire/String with SVG Path */}
-                <svg className="w-full h-10 md:h-12" preserveAspectRatio="none" viewBox="0 0 1200 50">
+                <svg className="w-full h-6 md:h-8" preserveAspectRatio="none" viewBox="0 0 1200 50">
                     {/* Main wire */}
                     <path
                         d="M0,25 Q100,35 200,25 Q300,15 400,25 Q500,35 600,25 Q700,15 800,25 Q900,35 1000,25 Q1100,15 1200,25"
-                        stroke="rgba(100,100,100,0.3)"
-                        strokeWidth="3"
+                        stroke="rgba(100,100,100,0.25)"
+                        strokeWidth="2"
                         fill="none"
                         className="drop-shadow-sm"
                     />
                 </svg>
 
                 {/* Light Bulbs */}
-                <div className="absolute top-4 md:top-6 left-0 right-0 px-2 md:px-4 flex justify-between items-start">
+                <div className="absolute top-2 md:top-3 left-0 right-0 px-2 md:px-4 flex justify-between items-start">
                     {Array.from({ length: lightCount }).map((_, i) => {
                         const color = colors[i % colors.length];
                         const delay = (i * 0.15).toFixed(2);
@@ -49,10 +49,10 @@ export function ChristmasLights() {
                                 }}
                             >
                                 {/* Wire connector */}
-                                <div className="w-0.5 h-3 md:h-4 bg-gradient-to-b from-zinc-700 to-zinc-600 rounded-full" />
+                                <div className="w-0.5 h-2 md:h-3 bg-gradient-to-b from-zinc-700 to-zinc-600 rounded-full" />
 
                                 {/* Bulb Socket (top part) */}
-                                <div className="w-3 h-2 md:w-4 md:h-2.5 bg-gradient-to-b from-zinc-400 to-zinc-600 rounded-t-sm" />
+                                <div className="w-2.5 h-1.5 md:w-3 md:h-2 bg-gradient-to-b from-zinc-400 to-zinc-600 rounded-t-sm" />
 
                                 {/* Light Bulb */}
                                 <div className="relative">
@@ -61,8 +61,8 @@ export function ChristmasLights() {
                                         className="absolute inset-0 rounded-full blur-md animate-pulse"
                                         style={{
                                             backgroundColor: color,
-                                            width: '20px',
-                                            height: '20px',
+                                            width: isMobile ? '12px' : '16px',
+                                            height: isMobile ? '12px' : '16px',
                                             transform: 'translate(-50%, -50%)',
                                             left: '50%',
                                             top: '50%',
@@ -73,14 +73,14 @@ export function ChristmasLights() {
                                     />
                                     {/* Actual bulb */}
                                     <div
-                                        className="relative w-4 h-5 md:w-5 md:h-6 rounded-full shadow-lg"
+                                        className="relative w-3 h-4 md:w-4 md:h-5 rounded-full shadow-lg"
                                         style={{
                                             background: `linear-gradient(145deg, ${color}ee, ${color}88)`,
-                                            boxShadow: `0 0 8px ${color}, inset -2px -2px 4px rgba(0,0,0,0.3), inset 2px 2px 4px rgba(255,255,255,0.3)`,
+                                            boxShadow: `0 0 6px ${color}, inset -1px -1px 3px rgba(0,0,0,0.3), inset 1px 1px 3px rgba(255,255,255,0.3)`,
                                         }}
                                     >
                                         {/* Highlight shine */}
-                                        <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-white/60 rounded-full blur-[1px]" />
+                                        <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-white/60 rounded-full blur-[0.5px]" />
                                     </div>
                                 </div>
                             </div>
@@ -89,16 +89,16 @@ export function ChristmasLights() {
                 </div>
 
                 {/* Festive Corner Decorations */}
-                <div className="absolute top-1 left-2 md:left-4 text-xl md:text-2xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0s' }}>
+                <div className="absolute top-0 left-2 md:left-4 text-base md:text-lg animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0s' }}>
                     🎄
                 </div>
-                <div className="absolute top-1 left-12 md:left-16 text-lg md:text-xl" style={{ animation: 'twinkle 2s ease-in-out infinite', animationDelay: '0.5s' }}>
+                <div className="absolute top-0 left-10 md:left-14 text-sm md:text-base" style={{ animation: 'twinkle 2s ease-in-out infinite', animationDelay: '0.5s' }}>
                     ❄️
                 </div>
-                <div className="absolute top-1 right-12 md:right-16 text-lg md:text-xl" style={{ animation: 'twinkle 2s ease-in-out infinite', animationDelay: '1s' }}>
+                <div className="absolute top-0 right-10 md:right-14 text-sm md:text-base" style={{ animation: 'twinkle 2s ease-in-out infinite', animationDelay: '1s' }}>
                     ⭐
                 </div>
-                <div className="absolute top-1 right-2 md:right-4 text-xl md:text-2xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '1s' }}>
+                <div className="absolute top-0 right-2 md:right-4 text-base md:text-lg animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '1s' }}>
                     🎅
                 </div>
             </div>
