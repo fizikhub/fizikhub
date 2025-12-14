@@ -47,25 +47,38 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
     const uploadToSupabase = async (file: File): Promise<string> => {
         console.log("🚀 Upload başladı:", { fileName: file.name, fileSize: file.size, fileType: file.type });
 
-        if (file.size > 5 * 1024 * 1024) {
-            throw new Error("Dosya boyutu 5MB'dan küçük olmalı.");
-        }
-        if (!file.type.startsWith("image/")) {
-            throw new Error("Sadece resim dosyası yükleyebilirsiniz.");
-        }
+        if (file.size > 5 * 1024 * 1024) throw new Error("Dosya boyutu 5MB'dan küçük olmalı.");
+        if (!file.type.startsWith("image/")) throw new Error("Sadece resim dosyası yükleyebilirsiniz.");
 
         const supabase = createClient();
-        const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        console.log("📤 Supabase'e yükleniyor:", fileName);
+        // Uzantıyı ekle (önemli!)
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        console.log("📤 Supabase'e yükleniyor (path):", fileName);
+
+        // Timeout Promise oluştur
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Yükleme zaman aşımına uğradı (15sn). İnternet bağlantınızı kontrol edin.")), 15000);
+        });
+
+        // Upload Promise
+        const uploadPromise = supabase.storage
             .from("article-images")
-            .upload(fileName, file);
+            .upload(fileName, file, {
+                cacheControl: '3600',
+                upsert: false,
+                contentType: file.type // Explicit content type
+            });
+
+        // Race between upload and timeout
+        // @ts-ignore
+        const { data: uploadData, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
 
         if (uploadError) {
             console.error("❌ Upload hatası:", uploadError);
-            throw new Error(`Yükleme hatası: ${uploadError.message || "Bilinmeyen hata"}`);
+            throw new Error(`Yükleme hatası: ${(uploadError as any).message || "Bilinmeyen hata"}`);
         }
 
         console.log("✅ Upload başarılı:", uploadData);
