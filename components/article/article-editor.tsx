@@ -78,7 +78,13 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
             setIsUploading(true);
             const url = await onUploadImage(file);
             if (url) {
-                editor.chain().focus().setImage({ src: url }).run();
+                // Insert image and move cursor after it
+                editor
+                    .chain()
+                    .focus()
+                    .setImage({ src: url })
+                    .enter() // Create new paragraph after image
+                    .run();
             }
         } catch (error) {
             console.error("Editor upload error:", error);

@@ -28,7 +28,7 @@ export default async function DiscoverPage({
                 avatar_url
             )
         `)
-        .eq("status", "published")
+        .in("status", ["pending", "published"])
         // Sort by reviewed_at (publication time) if available, otherwise created_at
         // Using created_at as primary descending sort is usually fine, but let's try strict consistency.
         // Actually, let's keep it simple: Sort by created_at DESC for now, 

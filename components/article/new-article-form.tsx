@@ -142,7 +142,7 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
         <>
             {/* Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-xl border-2 border-primary/20 p-0 overflow-hidden">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-2 border-primary/20 p-0">
                     <div className="bg-gradient-to-r from-primary to-purple-600 p-6 text-white text-center">
                         <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-90" />
                         <DialogTitle className="text-3xl font-black tracking-tight mb-2">
