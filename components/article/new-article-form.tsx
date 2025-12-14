@@ -45,22 +45,36 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
 
     // Generic Upload Helper
     const uploadToSupabase = async (file: File): Promise<string> => {
-        if (file.size > 5 * 1024 * 1024) throw new Error("Dosya boyutu 5MB'dan küçük olmalı.");
-        if (!file.type.startsWith("image/")) throw new Error("Sadece resim dosyası yükleyebilirsiniz.");
+        console.log("🚀 Upload başladı:", { fileName: file.name, fileSize: file.size, fileType: file.type });
+
+        if (file.size > 5 * 1024 * 1024) {
+            throw new Error("Dosya boyutu 5MB'dan küçük olmalı.");
+        }
+        if (!file.type.startsWith("image/")) {
+            throw new Error("Sadece resim dosyası yükleyebilirsiniz.");
+        }
 
         const supabase = createClient();
         const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-        const { error: uploadError } = await supabase.storage
+        console.log("📤 Supabase'e yükleniyor:", fileName);
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
             .from("article-images")
             .upload(fileName, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+            console.error("❌ Upload hatası:", uploadError);
+            throw new Error(`Yükleme hatası: ${uploadError.message || "Bilinmeyen hata"}`);
+        }
+
+        console.log("✅ Upload başarılı:", uploadData);
 
         const { data: { publicUrl } } = supabase.storage
             .from("article-images")
             .getPublicUrl(fileName);
 
+        console.log("🔗 Public URL alındı:", publicUrl);
         return publicUrl;
     };
 
