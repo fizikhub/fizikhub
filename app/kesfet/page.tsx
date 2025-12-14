@@ -22,22 +22,15 @@ export default async function DiscoverPage({
         .from("articles")
         .select(`
             *,
-            profiles (
+            profiles!articles_author_id_fkey (
                 username,
                 full_name,
-                avatar_url
+                avatar_url,
+                is_writer
             )
         `)
         .in("status", ["pending", "published"])
-        // Sort by reviewed_at (publication time) if available, otherwise created_at
-        // Using created_at as primary descending sort is usually fine, but let's try strict consistency.
-        // Actually, let's keep it simple: Sort by created_at DESC for now, 
-        // as changing sort logic might confuse "old" articles appearing on top if they were just approved.
-        // Wait, "Recently Approved" SHOULD appear on top? 
-        // If sorting by created_at, an old draft approved today will appear at the bottom.
-        // Let's sort by reviewed_at if possible. But old articles have reviewed_at NULL.
-        // So fallback to created_at is needed. 
-        // Easy fix: sort by reviewed_at DESC NULLS LAST, created_at DESC.
+        .not("profiles.is_writer", "eq", true)
         .order("reviewed_at", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
 

@@ -17,19 +17,31 @@ export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
     const supabase = await createClient();
-    const articles = await getArticles(supabase, { status: 'published', authorRole: 'all' });
+
+    // Fetch ONLY published articles from WRITERS (is_writer = true)
+    const { data: articles } = await supabase
+        .from('articles')
+        .select(`
+            *,
+            author:profiles!articles_author_id_fkey(*)
+        `)
+        .eq('status', 'published')
+        .eq('author.is_writer', true)
+        .order('created_at', { ascending: false });
+
+    const writerArticles = articles || [];
 
     // Featured articles for Hero (First 3)
-    const featuredArticles = articles.slice(0, 3);
+    const featuredArticles = writerArticles.slice(0, 3);
 
     // Remaining articles for the list
-    const listArticles = articles.slice(3);
+    const listArticles = writerArticles.slice(3);
 
     // Mock Popular Articles (In real app, fetch by views)
-    const popularArticles = articles.slice().sort(() => 0.5 - Math.random()).slice(0, 4);
+    const popularArticles = writerArticles.slice().sort(() => 0.5 - Math.random()).slice(0, 4);
 
     // Extract categories
-    const categories = Array.from(new Set(articles.map(a => a.category).filter(Boolean))) as string[];
+    const categories = Array.from(new Set(writerArticles.map(a => a.category).filter(Boolean))) as string[];
 
     return (
         <div className="min-h-screen pb-20 relative overflow-hidden">
