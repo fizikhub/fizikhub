@@ -39,12 +39,12 @@ export function FeaturesSection() {
                             transition={{ delay: index * 0.1 }}
                             className="group relative"
                         >
-                            <div className="h-full p-8 border-2 border-border hover:border-black dark:hover:border-white transition-colors bg-card relative overflow-hidden">
+                            <div className="h-full p-8 border-2 border-border hover:border-black dark:hover:border-white transition-all duration-300 bg-card relative overflow-hidden hover:-translate-y-1 hover:shadow-lg">
                                 <div className="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl text-foreground select-none">
                                     {feature.number}
                                 </div>
 
-                                <div className="w-12 h-12 flex items-center justify-center mb-6 border-2 border-black dark:border-white bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                <div className="w-12 h-12 flex items-center justify-center mb-6 border-2 border-black dark:border-white bg-primary text-primary-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-transform duration-300 group-hover:scale-110">
                                     <feature.icon className="w-6 h-6" />
                                 </div>
 

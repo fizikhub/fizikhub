@@ -68,10 +68,10 @@ export function DailyFact() {
                         <AnimatePresence mode="wait">
                             <motion.p
                                 key={currentFactIndex}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 1.05 }}
-                                transition={{ duration: 0.2 }}
+                                initial={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
+                                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                                exit={{ opacity: 0, scale: 1.02, filter: "blur(4px)" }}
+                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                                 className="text-2xl md:text-4xl font-black leading-tight"
                             >
                                 "{facts[currentFactIndex]}"
@@ -81,7 +81,7 @@ export function DailyFact() {
 
                     <button
                         onClick={nextFact}
-                        className="px-6 py-3 bg-black text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors border-2 border-transparent hover:border-black"
+                        className="px-6 py-3 bg-black text-white font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 border-2 border-transparent hover:border-black hover:scale-105 hover:shadow-lg"
                     >
                         BAŞKA BİR TANE DAHA
                     </button>

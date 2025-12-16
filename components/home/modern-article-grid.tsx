@@ -72,12 +72,12 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                     <div className="lg:col-span-7">
                         <Link href={`/blog/${featuredArticle.slug}`} className="group block h-full">
                             <article className="h-full flex flex-col">
-                                <div className="relative aspect-[16/9] w-full mb-6 overflow-hidden border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-200">
+                                <div className="relative aspect-[16/9] w-full mb-6 overflow-hidden border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
                                     <Image
                                         src={featuredArticle.image_url || "/placeholder-article.jpg"}
                                         alt={featuredArticle.title}
                                         fill
-                                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
                                     <div className="absolute top-4 left-4">
                                         <span className="px-3 py-1 bg-primary text-primary-foreground font-bold text-xs uppercase border-2 border-black dark:border-white">
@@ -112,13 +112,13 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                     <div className="lg:col-span-5 flex flex-col gap-8">
                         {sideArticles.map((article) => (
                             <Link key={article.id} href={`/blog/${article.slug}`} className="group block flex-1">
-                                <article className="flex flex-col sm:flex-row gap-6 h-full p-6 border-2 border-border hover:border-black dark:hover:border-white transition-colors bg-card">
+                                <article className="flex flex-col sm:flex-row gap-6 h-full p-6 border-2 border-border hover:border-black dark:hover:border-white transition-all duration-300 bg-card hover:shadow-lg">
                                     <div className="relative w-full sm:w-32 aspect-square flex-shrink-0 border-2 border-black dark:border-white overflow-hidden">
                                         <Image
                                             src={article.image_url || "/placeholder-article.jpg"}
                                             alt={article.title}
                                             fill
-                                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                                            className="object-cover transition-transform duration-300 group-hover:scale-110"
                                         />
                                     </div>
                                     <div className="flex flex-col justify-center">

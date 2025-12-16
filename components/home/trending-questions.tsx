@@ -51,7 +51,7 @@ export function TrendingQuestions({ questions }: { questions: Question[] }) {
                             transition={{ delay: index * 0.1 }}
                         >
                             <Link href={`/forum/${question.id}`} className="group block">
-                                <div className="bg-background border-2 border-border p-6 hover:border-black dark:hover:border-white transition-all duration-200 flex flex-col sm:flex-row sm:items-center gap-6 shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1">
+                                <div className="bg-background border-2 border-border p-6 hover:border-black dark:hover:border-white transition-all duration-300 flex flex-col sm:flex-row sm:items-center gap-6 shadow-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1),0_0_20px_rgba(var(--primary),0.1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1),0_0_20px_rgba(var(--primary),0.1)] hover:-translate-y-1 hover:-translate-x-1">
 
                                     <div className="flex items-center gap-4 min-w-[200px]">
                                         <Avatar className="w-10 h-10 border-2 border-black dark:border-white">
