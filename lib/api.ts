@@ -57,29 +57,28 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
         .from('articles')
         .select('*, author:profiles!articles_author_id_fkey(*)')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
 
-    if (!error && data) {
+    if (data) {
         return data as Article;
     }
 
     // If not found and slug looks like a numeric ID, try to find by ID
     // This handles cases where we link to /blog/[id] instead of /blog/[slug]
     if (/^\d+$/.test(slug)) {
-        const { data: byId, error: errorId } = await supabase
+        const { data: byId } = await supabase
             .from('articles')
             .select('*, author:profiles!articles_author_id_fkey(*)')
             .eq('id', parseInt(slug))
-            .single();
+            .maybeSingle();
 
-        if (!errorId && byId) {
+        if (byId) {
             return byId as Article;
         }
     }
 
     if (error) {
         console.error('Error fetching article:', JSON.stringify(error, null, 2));
-        return null;
     }
 
     return null;
