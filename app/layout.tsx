@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ChristmasLights } from "@/components/ui/christmas-lights";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -148,7 +148,7 @@ export default function RootLayout({
           themes={["light", "dark", "pink"]}
           disableTransitionOnChange
         >
-          <ChristmasLights />
+
           <GlobalAdminNotification />
 
           <NavigationWrapper>
