@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface RippleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface RippleButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
     children: React.ReactNode;
     variant?: "default" | "primary" | "ghost";
 }
@@ -32,7 +32,7 @@ export function RippleButton({
 }
 
 // Animated Focus Input
-interface AnimatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface AnimatedInputProps extends Omit<HTMLMotionProps<"input">, "ref"> {
     label?: string;
 }
 
