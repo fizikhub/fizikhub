@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
-import { getMessages, markAsRead, Message } from "../actions";
+import { getMessages, markAsRead, getMessageLikes, Message } from "../actions";
 import { ChatWindow } from "@/components/messaging/chat-window";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -25,8 +25,17 @@ export default async function ConversationPage({
     }
 
     let messages: Message[] = [];
+    let initialLikes: { [messageId: number]: { count: number; likedByMe: boolean } } = {};
+
     try {
-        messages = await getMessages(conversationId);
+        // Fetch messages and likes in parallel
+        const [messagesResult, likesResult] = await Promise.all([
+            getMessages(conversationId),
+            getMessageLikes(conversationId)
+        ]);
+        messages = messagesResult;
+        initialLikes = likesResult;
+
         if (process.env.NODE_ENV === 'development') {
             console.log(`Conversation Page: Fetched ${messages.length} messages`);
         }
@@ -85,6 +94,7 @@ export default async function ConversationPage({
                 conversationId={conversationId}
                 initialMessages={messages}
                 currentUserId={user.id}
+                initialLikes={initialLikes}
             />
         </div>
     );

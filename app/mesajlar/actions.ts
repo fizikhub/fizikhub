@@ -250,3 +250,128 @@ export async function startConversation(otherUserId: string) {
     revalidatePath('/mesajlar');
     return { success: true, conversationId };
 }
+
+/**
+ * Delete a message (only sender can delete)
+ */
+export async function deleteMessage(messageId: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+
+    // Verify ownership
+    const { data: message } = await supabase
+        .from('messages')
+        .select('sender_id, conversation_id')
+        .eq('id', messageId)
+        .single();
+
+    if (!message || message.sender_id !== user.id) {
+        return { success: false, error: "Bu mesajı silme yetkiniz yok" };
+    }
+
+    const { error } = await supabase
+        .from('messages')
+        .delete()
+        .eq('id', messageId);
+
+    if (error) {
+        console.error("Delete message error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/mesajlar');
+    return { success: true };
+}
+
+/**
+ * Like a message (double-click to like)
+ */
+export async function likeMessage(messageId: number) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Not authenticated" };
+    }
+
+    // Check if already liked
+    const { data: existingLike } = await supabase
+        .from('message_likes')
+        .select('id')
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (existingLike) {
+        // Unlike if already liked
+        const { error } = await supabase
+            .from('message_likes')
+            .delete()
+            .eq('id', existingLike.id);
+
+        if (error) {
+            return { success: false, error: error.message };
+        }
+        return { success: true, liked: false };
+    }
+
+    // Like
+    const { error } = await supabase
+        .from('message_likes')
+        .insert({
+            message_id: messageId,
+            user_id: user.id
+        });
+
+    if (error) {
+        console.error("Like message error:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true, liked: true };
+}
+
+/**
+ * Get likes for messages in a conversation
+ */
+export async function getMessageLikes(conversationId: string): Promise<{ [messageId: number]: { count: number; likedByMe: boolean } }> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return {};
+
+    // Get all messages in conversation
+    const { data: messages } = await supabase
+        .from('messages')
+        .select('id')
+        .eq('conversation_id', conversationId);
+
+    if (!messages || messages.length === 0) return {};
+
+    const messageIds = messages.map(m => m.id);
+
+    // Get likes for these messages
+    const { data: likes } = await supabase
+        .from('message_likes')
+        .select('message_id, user_id')
+        .in('message_id', messageIds);
+
+    if (!likes) return {};
+
+    // Build result
+    const result: { [messageId: number]: { count: number; likedByMe: boolean } } = {};
+
+    for (const msg of messages) {
+        const msgLikes = likes.filter(l => l.message_id === msg.id);
+        result[msg.id] = {
+            count: msgLikes.length,
+            likedByMe: msgLikes.some(l => l.user_id === user.id)
+        };
+    }
+
+    return result;
+}
