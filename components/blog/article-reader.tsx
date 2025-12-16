@@ -40,10 +40,10 @@ export function ArticleReader({
 }: ArticleReaderProps) {
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('lg');
-    const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('serif');
+    const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
 
     return (
-        <div className={cn("relative z-20", isZenMode ? "z-50" : "")}>
+        <div className={cn("relative", isZenMode ? "z-50" : "")}>
             {/* Zen Mode Backdrop */}
             <AnimatePresence>
                 {isZenMode && (
@@ -51,7 +51,7 @@ export function ArticleReader({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-background z-40"
+                        className="fixed inset-0 bg-zinc-100 dark:bg-zinc-900 z-40"
                     />
                 )}
             </AnimatePresence>
@@ -62,51 +62,58 @@ export function ArticleReader({
             )}>
                 <div className={cn(
                     "container mx-auto",
-                    isZenMode ? "max-w-2xl" : "max-w-3xl px-4 py-8"
+                    isZenMode ? "max-w-3xl" : "max-w-4xl px-4 py-10"
                 )}>
                     {/* Article Content */}
-                    <article className="min-h-screen">
+                    <article>
                         {/* Zen Mode Title */}
                         {isZenMode && (
-                            <div className="mb-12 text-center space-y-4">
-                                <h1 className={cn(
-                                    "text-3xl sm:text-4xl font-bold tracking-tight",
-                                    fontFamily === 'serif' ? 'font-serif' : 'font-sans'
-                                )}>
+                            <div className="mb-10 text-center">
+                                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
                                     {article.title}
                                 </h1>
-                                <p className="text-muted-foreground text-sm">{readingTime} okuma</p>
+                                <p className="text-muted-foreground text-sm">{readingTime}</p>
                             </div>
                         )}
 
-                        {/* Content - Optimized for Reading */}
+                        {/* Content - Evrim Ağacı Style: Clean, Readable */}
                         <div className={cn(
                             "prose prose-lg dark:prose-invert max-w-none",
-                            "prose-headings:font-bold prose-headings:tracking-tight",
-                            "prose-p:leading-relaxed prose-p:text-foreground/90",
-                            "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
-                            "prose-strong:text-foreground prose-strong:font-semibold",
-                            "prose-blockquote:border-l-primary prose-blockquote:bg-muted/30 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:not-italic",
-                            "prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none",
-                            "prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-border",
-                            "prose-img:rounded-lg prose-img:shadow-md",
-                            fontFamily === 'serif' ? 'font-serif' : 'font-sans'
+                            // Typography
+                            "prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground",
+                            "prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4",
+                            "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3",
+                            // Paragraphs - clean reading
+                            "prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:mb-6",
+                            // Links
+                            "prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline",
+                            // Lists
+                            "prose-li:text-foreground/90 prose-li:leading-relaxed",
+                            // Blockquotes
+                            "prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/50 prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-foreground/80",
+                            // Code
+                            "prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
+                            "prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl",
+                            // Images
+                            "prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8",
+                            // Strong
+                            "prose-strong:text-foreground prose-strong:font-semibold"
                         )}>
                             <MarkdownRenderer
                                 content={article.content || ""}
-                                className="leading-relaxed"
+                                className=""
                                 fontSize={fontSize}
                                 fontFamily={fontFamily}
                                 isZenMode={isZenMode}
                             />
                         </div>
 
-                        {/* Actions - Clean, Simple */}
+                        {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-12 pt-8 border-t border-border space-y-12">
-                                {/* Action Buttons */}
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center gap-2">
+                            <div className="mt-16 space-y-12">
+                                {/* Action Bar */}
+                                <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-y border-border">
+                                    <div className="flex items-center gap-3">
                                         <LikeButton
                                             articleId={article.id}
                                             initialLiked={initialLiked}
@@ -131,14 +138,16 @@ export function ArticleReader({
                                 {/* Related Articles */}
                                 {relatedArticles.length > 0 && (
                                     <div className="space-y-6">
-                                        <h3 className="text-xl font-bold">İlgili Makaleler</h3>
+                                        <h3 className="text-xl font-bold text-foreground">Benzer Makaleler</h3>
                                         <RelatedArticles articles={relatedArticles} />
                                     </div>
                                 )}
 
                                 {/* Comments */}
                                 <div className="space-y-6">
-                                    <h3 className="text-xl font-bold">Yorumlar ({comments.length})</h3>
+                                    <h3 className="text-xl font-bold text-foreground">
+                                        Yorumlar {comments.length > 0 && `(${comments.length})`}
+                                    </h3>
                                     <CommentSection
                                         articleId={article.id}
                                         comments={comments || []}

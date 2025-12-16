@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Clock, Calendar, ArrowLeft } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Clock, Calendar, ArrowLeft, User } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Article } from "@/lib/api";
@@ -17,97 +15,102 @@ interface ArticleHeroProps {
 
 export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
     return (
-        <div className="relative w-full bg-background">
-            {/* Back Button - Fixed */}
-            <div className="absolute top-4 left-4 z-50">
+        <div className="w-full">
+            {/* Back Button */}
+            <div className="container max-w-4xl mx-auto px-4 pt-4">
                 <Link href="/kesfet">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="gap-2 rounded-full bg-background/80 backdrop-blur-sm border-border/50 hover:bg-background"
+                        className="gap-2 text-muted-foreground hover:text-foreground -ml-2"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        <span className="hidden sm:inline">Geri</span>
+                        Geri Dön
                     </Button>
                 </Link>
             </div>
 
-            {/* Cover Image - Optional, Clean Style */}
+            {/* Cover Image - Full Width, Proper Display */}
             {article.cover_url && (
-                <div className="relative w-full h-[40vh] sm:h-[50vh] max-h-[500px]">
-                    <Image
-                        src={article.cover_url}
-                        alt={article.title}
-                        fill
-                        className="object-cover"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                <div className="w-full mt-4">
+                    <div className="container max-w-4xl mx-auto px-4">
+                        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-800">
+                            <Image
+                                src={article.cover_url}
+                                alt={article.title}
+                                fill
+                                className="object-cover"
+                                priority
+                                sizes="(max-width: 768px) 100vw, 896px"
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
-            {/* Content */}
-            <div className={`container max-w-3xl mx-auto px-4 ${article.cover_url ? '-mt-20 relative z-10' : 'pt-20'}`}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="space-y-6"
-                >
-                    {/* Category */}
-                    <Badge variant="secondary" className="text-xs font-medium">
+            {/* Article Header */}
+            <div className="container max-w-4xl mx-auto px-4 mt-8">
+                {/* Category */}
+                <div className="mb-4">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
                         {article.category || "Genel"}
-                    </Badge>
+                    </span>
+                </div>
 
-                    {/* Title - Clean, Readable */}
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight tracking-tight">
-                        {article.title}
-                    </h1>
+                {/* Title */}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-6">
+                    {article.title}
+                </h1>
 
-                    {/* Excerpt */}
-                    {article.excerpt && (
-                        <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                            {article.excerpt}
-                        </p>
-                    )}
+                {/* Excerpt */}
+                {article.excerpt && (
+                    <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
+                        {article.excerpt}
+                    </p>
+                )}
 
-                    {/* Author & Meta - Simple Row */}
-                    <div className="flex flex-wrap items-center gap-4 py-4 border-b border-border/50">
-                        {/* Author */}
-                        <Link
-                            href={`/kullanici/${article.author?.username || 'anonim'}`}
-                            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                        >
-                            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted">
+                {/* Author & Meta */}
+                <div className="flex flex-wrap items-center gap-4 pb-6 border-b border-border">
+                    {/* Author */}
+                    <Link
+                        href={`/kullanici/${article.author?.username || 'anonim'}`}
+                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                    >
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                            {article.author?.avatar_url ? (
                                 <Image
-                                    src={article.author?.avatar_url || "/images/default-avatar.png"}
+                                    src={article.author.avatar_url}
                                     alt={article.author?.full_name || "Yazar"}
                                     fill
                                     className="object-cover"
                                 />
-                            </div>
-                            <div>
-                                <span className="font-medium text-foreground block text-sm">
-                                    {article.author?.full_name || article.author?.username || "Anonim"}
-                                </span>
-                            </div>
-                        </Link>
-
-                        <div className="w-px h-6 bg-border hidden sm:block" />
-
-                        {/* Date */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="w-4 h-4" />
-                            <span>{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
+                            ) : (
+                                <User className="w-5 h-5 text-muted-foreground" />
+                            )}
                         </div>
-
-                        {/* Reading Time */}
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Clock className="w-4 h-4" />
-                            <span>{readingTime} okuma</span>
+                        <div>
+                            <span className="font-medium text-foreground text-sm">
+                                {article.author?.full_name || article.author?.username || "Anonim"}
+                            </span>
                         </div>
+                    </Link>
+
+                    <span className="text-muted-foreground">•</span>
+
+                    {/* Date */}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span>{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
                     </div>
-                </motion.div>
+
+                    <span className="text-muted-foreground">•</span>
+
+                    {/* Reading Time */}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4" />
+                        <span>{readingTime}</span>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -44,7 +44,7 @@
   }
 
   .dark {
-    --background: 10 10 12;
+    --background: 18 18 22;
     --foreground: 248 250 252;
 
     --card: 20 22 25;
@@ -74,7 +74,7 @@
   }
 
   .pink {
-    --background: 10 10 12;
+    --background: 18 18 22;
     /* Dark background like dark theme */
     --foreground: 248 250 252;
     /* Light text */
