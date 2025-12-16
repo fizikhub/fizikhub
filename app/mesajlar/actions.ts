@@ -273,6 +273,14 @@ export async function deleteMessage(messageId: number) {
         return { success: false, error: "Bu mesajı silme yetkiniz yok" };
     }
 
+    // Delete related notifications (message and like notifications)
+    await supabase
+        .from('notifications')
+        .delete()
+        .eq('resource_type', 'message')
+        .eq('resource_id', messageId.toString());
+
+    // Delete the message (this will also cascade delete likes)
     const { error } = await supabase
         .from('messages')
         .delete()
