@@ -11,7 +11,7 @@ export function SpaceBackground() {
     useEffect(() => {
         const generateStars = () => {
             const newStars = [];
-            const count = 250;
+            const count = 150;
 
             for (let i = 0; i < count; i++) {
                 newStars.push({
@@ -65,27 +65,21 @@ export function SpaceBackground() {
             <div className="absolute inset-0 bg-black" />
 
             {/* Stars */}
+            {/* Stars - Optimized CSS Animation */}
             {stars.map((star, i) => (
-                <motion.div
+                <div
                     key={i}
-                    className="absolute bg-white rounded-full"
+                    className="absolute bg-white rounded-full animate-twinkle"
                     style={{
                         left: `${star.x}%`,
                         top: `${star.y}%`,
                         width: star.size,
                         height: star.size,
                         opacity: star.opacity,
-                        boxShadow: star.size > 2 ? `0 0 ${star.size * 2}px rgba(255, 255, 255, 0.8)` : 'none'
-                    }}
-                    animate={{
-                        opacity: [star.opacity, star.opacity * 1.5, star.opacity],
-                        scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                        duration: star.duration,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
+                        boxShadow: star.size > 2 ? `0 0 ${star.size * 2}px rgba(255, 255, 255, 0.8)` : 'none',
+                        '--twinkle-duration': `${star.duration}s`,
+                        '--twinkle-delay': `-${Math.random() * 5}s`
+                    } as React.CSSProperties}
                 />
             ))}
 

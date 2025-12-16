@@ -512,6 +512,26 @@ a {
   animation: scale-in var(--duration-normal) var(--ease-bounce);
 }
 
+@keyframes twinkle {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+  will-change: opacity, transform;
+}
+
 /* Skeleton Loading */
 .skeleton {
   background: linear-gradient(90deg,
