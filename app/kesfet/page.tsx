@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase-server";
 import { ModernExploreView } from "@/components/explore/modern-explore-view";
 
-// Force dynamic rendering to ensure fresh content
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// ISR: Regenerate every 60 seconds for fresh content with optimal performance
+export const revalidate = 60;
 
 export const metadata = {
     title: "Keşfet | Fizikhub",
@@ -29,7 +28,7 @@ export default async function DiscoverPage({
                 is_writer
             )
         `)
-        .in("status", ["pending", "published"])
+        .eq("status", "published")
         .order("created_at", { ascending: false });
 
     if (query) {

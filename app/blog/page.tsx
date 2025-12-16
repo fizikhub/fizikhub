@@ -13,7 +13,8 @@ export const metadata: Metadata = {
     description: "Evrenin sırlarını çözmeye çalışanların not defteri.",
 };
 
-export const dynamic = "force-dynamic";
+// ISR: Regenerate every 60 seconds for fresh content
+export const revalidate = 60;
 
 export default async function BlogPage() {
     const supabase = await createClient();

@@ -27,8 +27,8 @@ interface PageProps {
     params: Promise<{ id: string }>;
 }
 
-// Disable static caching for this dynamic page
-export const revalidate = 0;
+// ISR: Regenerate every 30 seconds for forum questions
+export const revalidate = 30;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
