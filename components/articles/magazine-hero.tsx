@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Clock, ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Article } from "@/lib/api";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 interface MagazineHeroProps {
@@ -21,38 +18,41 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
     const mainArticle = articles[0];
     const sideArticles = articles.slice(1, 3);
 
-    // State for main image fallback
     const [mainImgSrc, setMainImgSrc] = useState(mainArticle.image_url || "/images/placeholder-hero.jpg");
 
     return (
-        <section className="mb-8 sm:mb-12 md:mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 md:gap-6 h-auto lg:h-[500px]">
-                {/* Main Featured Article (Large) */}
-                <div className="lg:col-span-8 h-[350px] sm:h-[400px] lg:h-full relative group overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10">
+        <section className="mb-10 sm:mb-14 md:mb-20">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 md:gap-6 h-auto lg:h-[520px]">
+                {/* Main Featured Article */}
+                <div className="lg:col-span-8 h-[380px] sm:h-[420px] lg:h-full relative group overflow-hidden border-2 border-white/10 hover:border-amber-500/50 transition-colors duration-300">
                     <Link href={`/blog/${mainArticle.slug}`} className="block h-full w-full">
                         <Image
                             src={mainImgSrc}
                             alt={mainArticle.title}
                             fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                             priority
-                            onError={() => setMainImgSrc("/images/placeholder-article.jpg")} // Use generic placeholder on error
+                            onError={() => setMainImgSrc("/images/placeholder-article.jpg")}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
-                        <div className="absolute bottom-0 left-0 p-4 sm:p-6 md:p-8 lg:p-10 w-full z-10">
-                            <Badge className="bg-cyan-600 hover:bg-cyan-500 text-white border-0 mb-2 sm:mb-3 px-3 py-1 text-xs sm:text-sm shadow-[0_0_10px_rgba(8,145,178,0.5)]">
+                        <div className="absolute bottom-0 left-0 p-5 sm:p-7 md:p-9 w-full z-10">
+                            {/* Category Tag - Brutalist */}
+                            <span className="inline-block bg-amber-500 text-black font-bold text-xs sm:text-sm px-3 py-1 mb-3 uppercase tracking-wider">
                                 {mainArticle.category}
-                            </Badge>
-                            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-tight text-white mb-2 sm:mb-3 leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] line-clamp-3">
+                            </span>
+
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white mb-3 leading-[1.1] line-clamp-3">
                                 {mainArticle.title}
                             </h2>
-                            <p className="text-blue-100/80 text-sm sm:text-base md:text-lg line-clamp-2 mb-3 sm:mb-4 max-w-2xl hidden sm:block font-medium">
+
+                            <p className="text-white/70 text-sm sm:text-base md:text-lg line-clamp-2 mb-4 max-w-2xl hidden sm:block font-normal leading-relaxed">
                                 {mainArticle.summary}
                             </p>
-                            <div className="flex items-center gap-4 text-white/70 text-xs sm:text-sm font-medium">
-                                <span className="flex items-center gap-1.5">
-                                    <div className="relative w-6 h-6 rounded-full overflow-hidden ring-1 ring-white/30">
+
+                            <div className="flex items-center gap-4 text-white/60 text-xs sm:text-sm">
+                                <span className="flex items-center gap-2">
+                                    <div className="relative w-7 h-7 overflow-hidden border border-white/20">
                                         <Image
                                             src={mainArticle.author?.avatar_url || "/images/default-avatar.png"}
                                             alt="Author"
@@ -60,28 +60,34 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                                             className="object-cover"
                                         />
                                     </div>
-                                    <span className="text-cyan-300">{mainArticle.author?.full_name || mainArticle.author?.username || "Fizikhub"}</span>
+                                    <span className="text-amber-400 font-medium">{mainArticle.author?.full_name || mainArticle.author?.username || "Fizikhub"}</span>
                                 </span>
-                                <span>•</span>
+                                <span className="text-white/30">•</span>
                                 <span className="flex items-center gap-1.5">
                                     <Clock className="w-3.5 h-3.5" />
                                     {formatDistanceToNow(new Date(mainArticle.created_at), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
                         </div>
+
+                        {/* Read indicator */}
+                        <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="bg-amber-500 text-black p-2">
+                                <ArrowRight className="w-5 h-5" />
+                            </div>
+                        </div>
                     </Link>
                 </div>
 
-                {/* Side Articles (Stacked) */}
-                <div className="lg:col-span-4 flex flex-col gap-3 sm:gap-4 md:gap-6">
-                    {sideArticles.map((article, index) => (
+                {/* Side Articles */}
+                <div className="lg:col-span-4 flex flex-col gap-4 sm:gap-5 md:gap-6">
+                    {sideArticles.map((article) => (
                         <SideArticleCard key={article.id} article={article} />
                     ))}
 
-                    {/* "More" Link if needed, or just fill space */}
                     {sideArticles.length < 2 && (
-                        <div className="flex-1 bg-white/5 rounded-2xl flex items-center justify-center border-2 border-dashed border-white/10 backdrop-blur-sm">
-                            <span className="text-white/30 text-sm">Daha fazla içerik yakında...</span>
+                        <div className="flex-1 bg-white/5 flex items-center justify-center border-2 border-dashed border-white/10">
+                            <span className="text-white/30 text-sm font-medium">Daha fazla içerik yakında...</span>
                         </div>
                     )}
                 </div>
@@ -94,25 +100,25 @@ function SideArticleCard({ article }: { article: Article }) {
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
 
     return (
-        <div className="relative flex-1 h-[200px] lg:h-auto group overflow-hidden rounded-2xl shadow-lg border border-white/10">
+        <div className="relative flex-1 h-[200px] lg:h-auto group overflow-hidden border-2 border-white/10 hover:border-amber-500/50 transition-colors duration-300">
             <Link href={`/blog/${article.slug}`} className="block h-full w-full">
                 <Image
                     src={imgSrc}
                     alt={article.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     onError={() => setImgSrc("/images/placeholder-article.jpg")}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
                 <div className="absolute bottom-0 left-0 p-5 sm:p-6 w-full z-10">
-                    <Badge variant="secondary" className="bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 mb-2 px-2 py-0.5 text-xs">
+                    <span className="inline-block bg-white/10 text-white font-semibold text-xs px-2 py-0.5 mb-2 uppercase tracking-wider backdrop-blur-sm">
                         {article.category}
-                    </Badge>
-                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug drop-shadow-md line-clamp-2 group-hover:text-cyan-300 transition-colors">
+                    </span>
+                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
                         {article.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-blue-200/60 text-xs mt-2">
+                    <div className="flex items-center gap-2 text-white/50 text-xs mt-2">
                         <Clock className="w-3 h-3" />
                         {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                     </div>
