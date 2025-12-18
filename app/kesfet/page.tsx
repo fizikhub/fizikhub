@@ -21,7 +21,7 @@ export default async function DiscoverPage({
         .from("articles")
         .select(`
             *,
-            profiles!articles_author_id_fkey (
+            profiles!articles_author_id_fkey!inner (
                 username,
                 full_name,
                 avatar_url,
@@ -29,6 +29,7 @@ export default async function DiscoverPage({
             )
         `)
         .eq("status", "published")
+        .eq("profiles.is_writer", false) // Only non-writers
         .order("created_at", { ascending: false });
 
     if (query) {

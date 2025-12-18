@@ -127,6 +127,14 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                                             <span>Makale Yaz</span>
                                         </Button>
                                     </Link>
+                                    {profile?.is_writer && (
+                                        <Link href="/yazar">
+                                            <Button className="gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                <PenSquare className="w-4 h-4" />
+                                                <span>Yazar Paneli</span>
+                                            </Button>
+                                        </Link>
+                                    )}
                                     <ProfileMessagesButton />
                                     <ProfileSettingsButton
                                         currentUsername={profile?.username || null}
