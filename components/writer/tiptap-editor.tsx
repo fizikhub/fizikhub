@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent, ReactNodeViewRenderer } from '@tiptap/react'
+import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -15,13 +15,13 @@ import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
-    Underline as UnderlineIcon, Divide
+    Underline as UnderlineIcon, Calculator
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
-import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { MathExtension } from './extensions/math-extension'
 
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
@@ -29,8 +29,11 @@ const ImageNodeView = (props: NodeViewProps) => {
     const [altText, setAltText] = useState(node.attrs.alt || '');
 
     useEffect(() => {
-        setAltText(node.attrs.alt || '');
-    }, [node.attrs.alt]);
+        // avoid synchronous state update loop
+        if (altText !== (node.attrs.alt || '')) {
+            setAltText(node.attrs.alt || '');
+        }
+    }, [node.attrs.alt, altText]); // adding altText dependency
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newAlt = e.target.value;
@@ -71,8 +74,10 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [youtubeUrl, setYoutubeUrl] = useState('');
+    const [mathLatex, setMathLatex] = useState('');
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
+    const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -86,6 +91,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                     return ReactNodeViewRenderer(ImageNodeView)
                 },
             }),
+            MathExtension,
             Placeholder.configure({
                 placeholder: 'Hikayenizi anlatmaya başlayın...',
             }),
@@ -166,7 +172,14 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     };
 
     const insertMath = () => {
-        editor?.chain().focus().insertContent('$$Formül$$').run();
+        if (mathLatex) {
+            editor?.chain().focus().insertContent({
+                type: 'math',
+                attrs: { latex: mathLatex }
+            }).run();
+            setIsMathDialogOpen(false);
+            setMathLatex('');
+        }
     };
 
     if (!editor) {
@@ -230,7 +243,45 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                         </DialogContent>
                     </Dialog>
 
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={insertMath} title="Matematik Formülü ($$)"><Divide className="w-4 h-4" /></Button>
+                    <Dialog open={isMathDialogOpen} onOpenChange={setIsMathDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" title="Matematik Formülü (Ekle/Düzenle)"><Calculator className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Matematik Formülü Ekle</DialogTitle></DialogHeader>
+                            <div className="py-4 space-y-4">
+                                <div className="space-y-2">
+                                    <h4 className="text-sm font-medium">LaTeX Formülü</h4>
+                                    <Input
+                                        placeholder="E = mc^2"
+                                        value={mathLatex}
+                                        onChange={(e) => setMathLatex(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                insertMath();
+                                            }
+                                        }}
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        Önizleme editörde görünecektir.
+                                    </p>
+                                </div>
+                                <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
+                                    <p className="font-medium mb-1">Örnekler:</p>
+                                    <ul className="grid grid-cols-2 gap-2 text-xs">
+                                        <li><code>\frac&#123;a&#125;&#123;b&#125;</code> (Kesir)</li>
+                                        <li><code>\sqrt&#123;x&#125;</code> (Kök)</li>
+                                        <li><code>\cdot</code> (Çarpma)</li>
+                                        <li><code>\sum</code> (Toplam)</li>
+                                        <li><code>\int</code> (İntegral)</li>
+                                        <li><code>\pi</code> (Pi sayısı)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <DialogFooter><Button type="button" onClick={insertMath}>Ekle</Button></DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
 
                 <div className="flex-1" />
