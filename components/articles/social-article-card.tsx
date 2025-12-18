@@ -133,8 +133,8 @@ export function SocialArticleCard({
             <div className="absolute inset-0 bg-gradient-radial from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
             <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
-                {/* Author Row */}
-                <div className="flex items-center gap-3 mb-3">
+                {/* Author Row - Enable pointer events for interactive elements */}
+                <div className="flex items-center gap-3 mb-3 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
                         <Avatar className="w-10 h-10 ring-2 ring-transparent group-hover/avatar:ring-amber-500/20 transition-all duration-300">
                             <AvatarImage src={article.author?.avatar_url || ""} />
@@ -158,7 +158,7 @@ export function SocialArticleCard({
                     </div>
                 </div>
 
-                <Link href={`/blog/${article.slug}`} className="block group/content">
+                <div className="block group/content">
                     {/* Title */}
                     <h3 className="font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 group-hover/content:text-amber-500 transition-colors">
                         {article.title}
@@ -189,10 +189,10 @@ export function SocialArticleCard({
                             />
                         </div>
                     )}
-                </Link>
+                </div>
 
                 {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
+                <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
                     {/* Like Pill */}
                     <div
                         className={cn(
