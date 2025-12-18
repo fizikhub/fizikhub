@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion'],
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
   },
 };
 
