@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { MagazineHero } from "@/components/articles/magazine-hero";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
+import { SearchInput } from "@/components/blog/search-input";
 import { Search, TrendingUp, Tag, Telescope, Flame, Clock, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -21,6 +22,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const resolvedSearchParams = await searchParams;
     const categoryParam = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined;
     const sortParam = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
+    const searchParam = typeof resolvedSearchParams.search === 'string' ? resolvedSearchParams.search : undefined;
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -38,6 +40,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     // Apply Category Filter
     if (categoryParam && categoryParam !== 'Tümü' && categoryParam !== 'Popüler' && categoryParam !== 'En Yeni') {
         query = query.eq('category', categoryParam);
+    }
+
+    // Apply Search Filter
+    if (searchParam) {
+        query = query.ilike('title', `%${searchParam}%`);
     }
 
     // Apply Sorting
@@ -146,20 +153,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white leading-[0.9] mb-3">
                                 Bilim <span className="text-amber-400">Arşivi</span>
                             </h1>
-                            <p className="text-base sm:text-lg text-white/50 font-normal max-w-md leading-relaxed">
-                                Bilim insanlarının paylaşım platformu
-                            </p>
                         </div>
 
                         {/* Search */}
-                        <div className="relative w-full lg:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
-                            <input
-                                type="text"
-                                placeholder="Makale, konu veya yazar ara..."
-                                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-white/30 focus:border-amber-500/50 focus:bg-white/[0.07] focus:outline-none transition-all duration-300"
-                            />
-                        </div>
+                        <SearchInput />
                     </div>
                 </header>
 
@@ -172,8 +169,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         <Link
                             href="/blog"
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest'
-                                    ? 'bg-amber-500 text-black border-amber-500'
-                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                ? 'bg-amber-500 text-black border-amber-500'
+                                : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
                             <Sparkles className="w-4 h-4" />
@@ -182,8 +179,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         <Link
                             href="/blog?sort=popular"
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${sortParam === 'popular'
-                                    ? 'bg-amber-500 text-black border-amber-500'
-                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                ? 'bg-amber-500 text-black border-amber-500'
+                                : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
                             <Flame className="w-4 h-4" />
@@ -192,8 +189,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         <Link
                             href="/blog?sort=latest"
                             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest' // Default is latest essentially
-                                    ? 'hidden' // Hide duplicate if 'Tümü' implies latest, or differentiate? Let's keep interaction simple.
-                                    : 'hidden' // Let's merge 'Tümü' and 'En Yeni' concept or keep distinct?
+                                ? 'hidden' // Hide duplicate if 'Tümü' implies latest, or differentiate? Let's keep interaction simple.
+                                : 'hidden' // Let's merge 'Tümü' and 'En Yeni' concept or keep distinct?
                                 }`}
                         >
                             <Clock className="w-4 h-4" />
@@ -205,8 +202,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                 key={cat}
                                 href={`/blog?category=${encodeURIComponent(cat)}`}
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${categoryParam === cat
-                                        ? 'bg-amber-500 text-black border-amber-500'
-                                        : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                    ? 'bg-amber-500 text-black border-amber-500'
+                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
                                     }`}
                             >
                                 {cat}
