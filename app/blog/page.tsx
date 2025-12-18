@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { MagazineHero } from "@/components/articles/magazine-hero";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
 import { SearchInput } from "@/components/blog/search-input";
+import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { Search, TrendingUp, Tag, Telescope, Flame, Clock, Sparkles } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -217,15 +218,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     <div className="lg:col-span-8">
                         <div className="space-y-6">
                             {feedArticles.map((article, index) => (
-                                <SocialArticleCard
-                                    key={article.id}
-                                    article={article}
-                                    index={index}
-                                    initialLikes={article.likes_count}
-                                    initialComments={article.comments_count}
-                                    initialIsLiked={article.is_liked}
-                                    initialIsBookmarked={article.is_bookmarked}
-                                />
+                                <div key={article.id}>
+                                    <SocialArticleCard
+                                        article={article}
+                                        index={index}
+                                        initialLikes={article.likes_count}
+                                        initialComments={article.comments_count}
+                                        initialIsLiked={article.is_liked}
+                                        initialIsBookmarked={article.is_bookmarked}
+                                    />
+                                    {index === 2 && <ForumTeaserCard />}
+                                </div>
                             ))}
                         </div>
 
