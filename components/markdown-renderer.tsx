@@ -82,28 +82,35 @@ export function MarkdownRenderer({
                         }
 
                         return (
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <div className="relative group cursor-zoom-in my-6">
-                                        <img
-                                            className="rounded-lg w-full shadow-lg border border-white/5 transition-transform duration-300 group-hover:scale-[1.01]"
-                                            {...props}
-                                        />
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-lg">
-                                            <div className="bg-black/50 backdrop-blur-sm p-2 rounded-full text-white">
-                                                <ZoomIn className="h-6 w-6" />
+                            <div className="flex flex-col items-center my-8">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <div className="relative group cursor-zoom-in w-full flex justify-center">
+                                            <img
+                                                className="rounded-lg shadow-lg border border-white/5 transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
+                                                {...props}
+                                            />
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-lg">
+                                                <div className="bg-black/50 backdrop-blur-sm p-2 rounded-full text-white">
+                                                    <ZoomIn className="h-6 w-6" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none flex items-center justify-center overflow-hidden p-0">
-                                    <img
-                                        src={src}
-                                        alt={props.alt || "Makale görseli"}
-                                        className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
-                                    />
-                                </DialogContent>
-                            </Dialog>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none flex items-center justify-center overflow-hidden p-0">
+                                        <img
+                                            src={src}
+                                            alt={props.alt || "Makale görseli"}
+                                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
+                                        />
+                                    </DialogContent>
+                                </Dialog>
+                                {props.alt && props.alt !== "Makale görseli" && (
+                                    <span className="text-sm text-muted-foreground mt-2 text-center italic border-b-2 border-primary/20 pb-1 px-4">
+                                        {props.alt}
+                                    </span>
+                                )}
+                            </div>
                         );
                     },
                 }}

@@ -3,12 +3,13 @@ import { redirect, notFound } from "next/navigation";
 import { ArticleEditor } from "@/components/writer/article-editor";
 
 interface EditArticlePageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 export default async function EditArticlePage({ params }: EditArticlePageProps) {
+    const { id } = await params;
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,7 +31,7 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
     const { data: article } = await supabase
         .from("articles")
         .select("*")
-        .eq("id", params.id)
+        .eq("id", id)
         .eq("author_id", user.id)
         .single();
 

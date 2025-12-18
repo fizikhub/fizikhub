@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
 import NextImage from "next/image";
+import { TiptapEditor } from "./tiptap-editor";
 
 interface ArticleEditorProps {
     article?: {
@@ -116,12 +117,15 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         }
     };
 
+    const [content, setContent] = useState(article?.content || "");
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         const formData = new FormData(e.currentTarget);
         formData.set("image_url", imageUrl);
+        formData.set("content", content); // Use state content from Tiptap
 
         try {
             let result;
@@ -233,54 +237,11 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="content">İçerik (Markdown)</Label>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-8 gap-2 border-dashed border-primary/40 hover:border-primary hover:bg-primary/5 hover:text-primary transition-all"
-                            onClick={() => inlineImageInputRef.current?.click()}
-                            disabled={isInlineUploading}
-                        >
-                            {isInlineUploading ? (
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                                <ImagePlus className="h-3.5 w-3.5" />
-                            )}
-                            Görsel Ekle
-                        </Button>
-                        {/* Hidden input for inline images */}
-                        <input
-                            type="file"
-                            ref={inlineImageInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={handleInlineImageUpload}
-                        />
-                    </div>
-                    <div className="relative">
-                        <Textarea
-                            id="content"
-                            ref={textareaRef}
-                            name="content"
-                            defaultValue={article?.content}
-                            placeholder="# Başlık\n\nİçeriğinizi buraya yazın..."
-                            required
-                            className="min-h-[400px] font-mono text-sm leading-relaxed"
-                        />
-                        <div className="absolute top-2 right-2">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="text-xs text-muted-foreground hover:text-foreground"
-                                onClick={() => window.open('https://www.markdownguide.org/cheat-sheet/', '_blank')}
-                            >
-                                Markdown Rehberi
-                            </Button>
-                        </div>
-                    </div>
+                    <Label>İçerik</Label>
+                    <TiptapEditor
+                        content={content}
+                        onChange={setContent}
+                    />
                 </div>
             </div>
 
