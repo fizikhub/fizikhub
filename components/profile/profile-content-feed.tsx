@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, MessageSquare, MessageCircle, Bookmark } from "lucide-react";
+import { FileText, MessageSquare, MessageCircle, Bookmark, ExternalLink } from "lucide-react";
 import { ProfileArticleCard } from "@/components/profile/profile-article-card";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -14,7 +13,7 @@ interface ProfileContentFeedProps {
     answers: any[];
     bookmarkedArticles: any[];
     bookmarkedQuestions: any[];
-    isOwnProfile?: boolean; // Add this prop
+    isOwnProfile?: boolean;
 }
 
 export function ProfileContentFeed({
@@ -23,48 +22,67 @@ export function ProfileContentFeed({
     answers,
     bookmarkedArticles,
     bookmarkedQuestions,
-    isOwnProfile = true // Default to true for backward compatibility
+    isOwnProfile = true
 }: ProfileContentFeedProps) {
+    // Combine bookmarked items into single list with type indicator
+    const savedItems = [
+        ...(bookmarkedArticles || []).map((item: any) => ({
+            type: 'article' as const,
+            id: item.articles?.id,
+            title: item.articles?.title,
+            slug: item.articles?.slug,
+            date: item.created_at,
+            category: item.articles?.category
+        })),
+        ...(bookmarkedQuestions || []).map((item: any) => ({
+            type: 'question' as const,
+            id: item.questions?.id,
+            title: item.questions?.title,
+            date: item.created_at,
+            category: item.questions?.category
+        }))
+    ].filter(item => item.id).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
     return (
         <div className="space-y-6">
             <Tabs defaultValue="articles" className="w-full">
-                {/* Tab Navigation */}
-                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-lg p-1.5 mb-8 flex-wrap h-auto gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]">
+                {/* Tab Navigation - Cleaner */}
+                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-xl p-1 mb-6 flex-wrap h-auto gap-1">
                     <TabsTrigger
                         value="articles"
-                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
+                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
                     >
                         <FileText className="w-3.5 h-3.5 mr-1.5" />
                         Makaleler
-                        <span className="ml-1.5 opacity-75">({articles.length})</span>
+                        <span className="ml-1.5 opacity-60">({articles.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="questions"
-                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
+                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
                     >
                         <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                         Sorular
-                        <span className="ml-1.5 opacity-75">({questions.length})</span>
+                        <span className="ml-1.5 opacity-60">({questions.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="answers"
-                        className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
+                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
                     >
                         <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                         Cevaplar
-                        <span className="ml-1.5 opacity-75">({answers.length})</span>
+                        <span className="ml-1.5 opacity-60">({answers.length})</span>
                     </TabsTrigger>
 
-                    {/* Only show saved tab for own profile */}
                     {isOwnProfile && (
                         <TabsTrigger
                             value="saved"
-                            className="rounded data-[state=active]:bg-foreground data-[state=active]:text-background data-[state=active]:shadow-none text-muted-foreground transition-all font-black uppercase text-[10px] tracking-wider"
+                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
                         >
                             <Bookmark className="w-3.5 h-3.5 mr-1.5" />
                             Kaydedilenler
+                            <span className="ml-1.5 opacity-60">({savedItems.length})</span>
                         </TabsTrigger>
                     )}
                 </TabsList>
@@ -72,7 +90,7 @@ export function ProfileContentFeed({
                 {/* Articles Tab */}
                 <TabsContent value="articles" className="mt-0">
                     {articles.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {articles.map((article) => (
                                 <ProfileArticleCard key={article.id} article={article} />
                             ))}
@@ -82,7 +100,6 @@ export function ProfileContentFeed({
                             icon={FileText}
                             title="Henüz makale yok"
                             description="İlk makaleni yazarak başla!"
-                            color="cyan"
                         />
                     )}
                 </TabsContent>
@@ -90,18 +107,18 @@ export function ProfileContentFeed({
                 {/* Questions Tab */}
                 <TabsContent value="questions" className="mt-0">
                     {questions.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {questions.map((question) => (
                                 <Link key={question.id} href={`/forum/${question.id}`}>
-                                    <div className="group p-6 rounded-2xl border border-gray-300/50 dark:border-gray-700/50 shadow-[3px_3px_0px_rgba(0,0,0,0.08)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.08)] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.12)] dark:hover:shadow-[5px_5px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 bg-card">
-                                        <h3 className="text-xl font-bold text-foreground group-hover:text-amber-500 transition-colors mb-3">
+                                    <div className="group p-4 rounded-xl border border-foreground/10 hover:border-amber-500/30 bg-card hover:bg-amber-500/5 transition-all duration-200">
+                                        <h3 className="text-base font-bold text-foreground group-hover:text-amber-500 transition-colors mb-2 line-clamp-1">
                                             {question.title}
                                         </h3>
-                                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
                                             <span>{format(new Date(question.created_at), 'dd MMM yyyy', { locale: tr })}</span>
                                             <span>•</span>
                                             <span className="flex items-center gap-1">
-                                                <MessageSquare className="w-4 h-4" />
+                                                <MessageSquare className="w-3 h-3" />
                                                 {question.answers?.length || 0} cevap
                                             </span>
                                         </div>
@@ -112,9 +129,8 @@ export function ProfileContentFeed({
                     ) : (
                         <EmptyState
                             icon={MessageSquare}
-                            title="Henüz soru sorulmamış"
+                            title="Henüz soru yok"
                             description="İlk soruyu sen sor!"
-                            color="amber"
                         />
                     )}
                 </TabsContent>
@@ -122,117 +138,92 @@ export function ProfileContentFeed({
                 {/* Answers Tab */}
                 <TabsContent value="answers" className="mt-0">
                     {answers.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {answers.map((answer) => (
-                                <div
-                                    key={answer.id}
-                                    className="p-6 rounded-2xl border border-gray-300/50 dark:border-gray-700/50 shadow-[3px_3px_0px_rgba(0,0,0,0.08)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.08)] bg-card"
-                                >
-                                    <p className="text-foreground/90 leading-relaxed mb-3 line-clamp-3">
-                                        {answer.content}
-                                    </p>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <MessageCircle className="w-4 h-4" />
-                                        <span>Soru #{answer.question_id} · {format(new Date(answer.created_at), 'dd MMM yyyy', { locale: tr })}</span>
+                                <Link key={answer.id} href={`/forum/${answer.question_id}`}>
+                                    <div className="p-4 rounded-xl border border-foreground/10 bg-card hover:bg-foreground/5 transition-colors">
+                                        <p className="text-foreground/80 text-sm leading-relaxed mb-2 line-clamp-2">
+                                            {answer.content}
+                                        </p>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                            <MessageCircle className="w-3 h-3" />
+                                            <span className="line-clamp-1">{answer.questions?.title || `Soru #${answer.question_id}`}</span>
+                                            <span>•</span>
+                                            <span>{format(new Date(answer.created_at), 'dd MMM', { locale: tr })}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     ) : (
                         <EmptyState
                             icon={MessageCircle}
-                            title="Henüz cevap verilmemiş"
+                            title="Henüz cevap yok"
                             description="Soruları cevaplamaya başla!"
-                            color="purple"
                         />
                     )}
                 </TabsContent>
 
-                {/* Saved Tab */}
+                {/* Saved Tab - Unified List (No Nested Tabs) */}
                 <TabsContent value="saved" className="mt-0">
-                    <Tabs defaultValue="saved-articles" className="w-full">
-                        <TabsList className="mb-6">
-                            <TabsTrigger value="saved-articles">
-                                Makaleler ({bookmarkedArticles?.length || 0})
-                            </TabsTrigger>
-                            <TabsTrigger value="saved-questions">
-                                Sorular ({bookmarkedQuestions?.length || 0})
-                            </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="saved-articles">
-                            {bookmarkedArticles && bookmarkedArticles.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {bookmarkedArticles.map((item: any) => (
-                                        <ProfileArticleCard key={item.articles.id} article={item.articles} />
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState
-                                    icon={Bookmark}
-                                    title="Kaydedilen makale yok"
-                                    description="İlginç makaleleri kaydet!"
-                                    color="pink"
-                                />
-                            )}
-                        </TabsContent>
-
-                        <TabsContent value="saved-questions">
-                            {bookmarkedQuestions && bookmarkedQuestions.length > 0 ? (
-                                <div className="space-y-4">
-                                    {bookmarkedQuestions.map((item: any) => (
-                                        <Link key={item.questions.id} href={`/forum/${item.questions.id}`}>
-                                            <div className="group p-6 rounded-2xl border border-gray-300/50 dark:border-gray-700/50 shadow-[3px_3px_0px_rgba(0,0,0,0.08)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.08)] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.12)] dark:hover:shadow-[5px_5px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 transition-all duration-300 bg-card">
-                                                <h3 className="text-xl font-bold text-foreground group-hover:text-pink-500 transition-colors mb-3">
-                                                    {item.questions.title}
-                                                </h3>
-                                                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                                                    {item.questions.content?.substring(0, 150)}...
-                                                </p>
+                    {savedItems.length > 0 ? (
+                        <div className="space-y-2">
+                            {savedItems.map((item) => (
+                                <Link
+                                    key={`${item.type}-${item.id}`}
+                                    href={item.type === 'article' ? `/blog/${item.slug}` : `/forum/${item.id}`}
+                                >
+                                    <div className="group flex items-center gap-3 p-3 rounded-xl border border-foreground/10 hover:border-amber-500/30 bg-card hover:bg-amber-500/5 transition-all duration-200">
+                                        <div className={`p-2 rounded-lg ${item.type === 'article' ? 'bg-cyan-500/10 text-cyan-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                            {item.type === 'article' ? <FileText className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-semibold text-foreground group-hover:text-amber-500 transition-colors line-clamp-1">
+                                                {item.title}
+                                            </h4>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <span className="uppercase">{item.type === 'article' ? 'Makale' : 'Soru'}</span>
+                                                {item.category && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>{item.category}</span>
+                                                    </>
+                                                )}
                                             </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <EmptyState
-                                    icon={Bookmark}
-                                    title="Kaydedilen soru yok"
-                                    description="İlginç soruları kaydet!"
-                                    color="pink"
-                                />
-                            )}
-                        </TabsContent>
-                    </Tabs>
+                                        </div>
+                                        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            icon={Bookmark}
+                            title="Kaydedilen içerik yok"
+                            description="İlginç içerikleri kaydet!"
+                        />
+                    )}
                 </TabsContent>
             </Tabs>
         </div>
     );
 }
 
-// Empty State Component
+// Simplified Empty State Component
 function EmptyState({
     icon: Icon,
     title,
-    description,
-    color
+    description
 }: {
     icon: any;
     title: string;
     description: string;
-    color: string;
 }) {
-    const colorClasses = {
-        cyan: "text-cyan-500 border-cyan-500/20 bg-cyan-500/5",
-        amber: "text-amber-500 border-amber-500/20 bg-amber-500/5",
-        purple: "text-purple-500 border-purple-500/20 bg-purple-500/5",
-        pink: "text-pink-500 border-pink-500/20 bg-pink-500/5"
-    };
-
     return (
-        <div className={`text-center py-20 rounded-2xl border-2 border-dashed ${colorClasses[color as keyof typeof colorClasses]}`}>
-            <Icon className={`w-16 h-16 mx-auto mb-4 ${color === 'cyan' ? 'text-cyan-500/30' : color === 'amber' ? 'text-amber-500/30' : color === 'purple' ? 'text-purple-500/30' : 'text-pink-500/30'}`} />
-            <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
-            <p className="text-muted-foreground">{description}</p>
+        <div className="text-center py-16 rounded-xl border-2 border-dashed border-foreground/10 bg-foreground/[0.02]">
+            <Icon className="w-12 h-12 mx-auto mb-3 text-foreground/20" />
+            <h3 className="text-base font-bold text-foreground mb-1">{title}</h3>
+            <p className="text-sm text-muted-foreground">{description}</p>
         </div>
     );
 }
