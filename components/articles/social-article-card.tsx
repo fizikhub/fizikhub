@@ -85,7 +85,15 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
 
                     {/* Summary */}
                     <div className="text-[15.5px] text-foreground/85 leading-[1.7] font-sans mb-4 line-clamp-3">
-                        {article.summary}
+                        {article.summary || "Bu makalede bilimsel konular ele alınıyor ve detaylı bir şekilde inceleniyor."}
+                    </div>
+
+                    {/* Read More Button - Forum Style */}
+                    <div className="flex justify-start mb-4">
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/30 hover:bg-secondary/60 border border-border/50 hover:border-primary/40 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn">
+                            <span className="group-hover/btn:translate-x-0.5 transition-transform duration-300">Devamını Oku</span>
+                            <ChevronDown className="w-4 h-4 -rotate-90 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
+                        </div>
                     </div>
 
                     {/* Image */}
