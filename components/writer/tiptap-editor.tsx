@@ -1,6 +1,6 @@
 "use client";
 
-import { useEditor, EditorContent, ReactNodeViewRenderer, BubbleMenu } from '@tiptap/react'
+import { useEditor, EditorContent, ReactNodeViewRenderer } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -15,23 +15,19 @@ import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
-    Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
-    Calculator, Divide, X
+    Underline as UnderlineIcon, Divide
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
     const { node, updateAttributes, selected } = props;
     const [altText, setAltText] = useState(node.attrs.alt || '');
 
-    // Update alt text when node attrs change externally
     useEffect(() => {
         setAltText(node.attrs.alt || '');
     }, [node.attrs.alt]);
@@ -115,7 +111,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            const markdown = editor.storage.markdown.getMarkdown();
+            // @ts-ignore - tiptap-markdown adds 'markdown' to storage
+            const markdown = editor.storage.markdown?.getMarkdown() || editor.getHTML();
             onChange(markdown);
         },
     });
@@ -169,7 +166,6 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     };
 
     const insertMath = () => {
-        // Insert a math block placeholder
         editor?.chain().focus().insertContent('$$Formül$$').run();
     };
 
@@ -179,31 +175,6 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
     return (
         <div className="border rounded-lg bg-card shadow-sm overflow-hidden relative">
-            {/* Bubble Menu */}
-            {editor && (
-                <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-                    <div className="flex items-center gap-1 p-1 bg-popover border rounded-lg shadow-lg">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBold().run()} data-active={editor.isActive('bold')}>
-                            <Bold className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleItalic().run()} data-active={editor.isActive('italic')}>
-                            <Italic className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleUnderline().run()} data-active={editor.isActive('underline')}>
-                            <UnderlineIcon className="w-4 h-4" />
-                        </Button>
-                        <div className="w-px h-4 bg-border mx-1" />
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-active={editor.isActive('heading', { level: 2 })}>
-                            <Heading2 className="w-4 h-4" />
-                        </Button>
-                        <div className="w-px h-4 bg-border mx-1" />
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsLinkDialogOpen(true)} data-active={editor.isActive('link')}>
-                            <LinkIcon className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </BubbleMenu>
-            )}
-
             {/* Main Toolbar */}
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
                 {/* Text Formatting */}
@@ -224,7 +195,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
                 <div className="w-px h-6 bg-border mx-1" />
 
-                {/* Lists & Alignment */}
+                {/* Lists */}
                 <div className="flex items-center gap-0.5 mr-2">
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
@@ -250,7 +221,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
                     <Dialog open={isYoutubeDialogOpen} onOpenChange={setIsYoutubeDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" data-state={editor.isActive('youtube') ? 'on' : 'off'}><YoutubeIcon className="w-4 h-4" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8"><YoutubeIcon className="w-4 h-4" /></Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader><DialogTitle>YouTube Videosu Ekle</DialogTitle></DialogHeader>
@@ -260,6 +231,14 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                     </Dialog>
 
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={insertMath} title="Matematik Formülü ($$)"><Divide className="w-4 h-4" /></Button>
+                </div>
+
+                <div className="flex-1" />
+
+                {/* Undo/Redo */}
+                <div className="flex items-center gap-0.5">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}><Undo className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}><Redo className="w-4 h-4" /></Button>
                 </div>
             </div>
 

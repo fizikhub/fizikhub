@@ -1,12 +1,11 @@
 "use client";
 
-import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
-import BubbleMenuExtension from "@tiptap/extension-bubble-menu";
 import {
     Bold, Italic, Underline as UnderlineIcon, Heading1, Heading2,
     List, ListOrdered, Image as ImageIcon, AlignLeft, AlignCenter, AlignRight,
@@ -46,9 +45,6 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
                 types: ["heading", "paragraph"],
             }),
             Underline,
-            BubbleMenuExtension.configure({
-                pluginKey: 'bubbleMenu',
-            }),
         ],
         content,
         editorProps: {
@@ -78,12 +74,11 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
             setIsUploading(true);
             const url = await onUploadImage(file);
             if (url) {
-                // Insert image and move cursor after it
                 editor
                     .chain()
                     .focus()
                     .setImage({ src: url })
-                    .enter() // Create new paragraph after image
+                    .enter()
                     .run();
             }
         } catch (error) {
@@ -123,27 +118,6 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
 
     return (
         <div className="border-2 border-foreground/10 rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] bg-background relative">
-
-            {/* Image Bubble Menu */}
-            {editor && (
-                <BubbleMenu
-                    editor={editor}
-                    tippyOptions={{ duration: 100 }}
-                    shouldShow={({ editor }) => editor.isActive("image")}
-                    className="flex items-center gap-1 p-1 bg-background border rounded-lg shadow-lg"
-                >
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => editor.chain().focus().deleteSelection().run()}
-                        className="h-8 px-2 text-xs"
-                    >
-                        <Trash2 className="w-3 h-3 mr-1" />
-                        Resmi Sil
-                    </Button>
-                </BubbleMenu>
-            )}
-
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-1 p-2 bg-muted/50 border-b-2 border-foreground/10 sticky top-0 z-20 backdrop-blur-sm">
                 <ToolbarButton
@@ -272,7 +246,7 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
                 <EditorContent editor={editor} />
                 {editor.isEmpty && (
                     <div className="absolute top-4 left-6 text-muted-foreground pointer-events-none">
-                        {/* Placeholder handled by extension, just ensuring container sizing */}
+                        {/* Placeholder handled by extension */}
                     </div>
                 )}
             </div>
