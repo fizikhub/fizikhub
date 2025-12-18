@@ -198,31 +198,23 @@ export function SocialArticleCard({
 
                 {/* Action Bar - Brutalist Space Style */}
                 <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
-                    {/* Like Pill */}
-                    <div
+                    {/* Like Button - Same size as Comment */}
+                    <button
+                        onClick={handleLike}
+                        disabled={isLikeLoading}
                         className={cn(
-                            "flex items-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
-                            isLiked ? "bg-rose-500/10 border-rose-500/30" : "bg-transparent"
+                            "flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                            isLiked ? "text-rose-500 border-rose-500/30 bg-rose-500/10" : "hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
                         )}
-                        onClick={(e) => e.stopPropagation()}
                     >
-                        <button
-                            onClick={handleLike}
-                            disabled={isLikeLoading}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50",
-                                isLiked && "text-rose-500 font-bold"
-                            )}
-                        >
-                            <Heart className={cn(
-                                "w-4 h-4 stroke-[2px]",
-                                isLiked ? "fill-current" : ""
-                            )} />
-                            <span className="text-sm font-semibold min-w-[16px] text-center">
-                                {likeCount}
-                            </span>
-                        </button>
-                    </div>
+                        <Heart className={cn(
+                            "w-4 h-4 stroke-[1.8px]", // Match stroke width of other icons
+                            isLiked ? "fill-current" : ""
+                        )} />
+                        <span className="text-sm font-semibold min-w-[16px] text-center">
+                            {likeCount}
+                        </span>
+                    </button>
 
                     {/* Comments - Brutalist */}
                     <Link

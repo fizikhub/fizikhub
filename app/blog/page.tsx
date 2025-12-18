@@ -141,7 +141,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
     return (
         <div className="min-h-screen pb-20 bg-background">
-            <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+            <div className="container mx-auto max-w-7xl px-2 sm:px-6 py-8 sm:py-12 md:py-16">
 
                 {/* Header */}
                 <header className="mb-10 sm:mb-14">
