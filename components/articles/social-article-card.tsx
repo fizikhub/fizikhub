@@ -132,7 +132,12 @@ export function SocialArticleCard({
             {/* Cosmic background effect */}
             <div className="absolute inset-0 bg-gradient-radial from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
+            {/* Main Navigation Link - covers entire card */}
+            <Link href={`/blog/${article.slug}`} className="absolute inset-0 z-[1]" prefetch={false}>
+                <span className="sr-only">{article.title}</span>
+            </Link>
+
+            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10 pointer-events-none">
                 {/* Author Row - Enable pointer events for interactive elements */}
                 <div className="flex items-center gap-3 mb-3 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
