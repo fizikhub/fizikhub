@@ -198,17 +198,17 @@ export function SocialArticleCard({
 
                 {/* Action Bar - Brutalist Space Style */}
                 <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
-                    {/* Like Button - Same size as Comment */}
+                    {/* Like Button */}
                     <button
                         onClick={handleLike}
                         disabled={isLikeLoading}
                         className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                            "flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
                             isLiked ? "text-rose-500 border-rose-500/30 bg-rose-500/10" : "hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
                         )}
                     >
                         <Heart className={cn(
-                            "w-4 h-4 stroke-[1.8px]", // Match stroke width of other icons
+                            "w-4 h-4 stroke-[1.8px]",
                             isLiked ? "fill-current" : ""
                         )} />
                         <span className="text-sm font-semibold min-w-[16px] text-center">
@@ -216,17 +216,17 @@ export function SocialArticleCard({
                         </span>
                     </button>
 
-                    {/* Comments - Brutalist */}
+                    {/* Comments */}
                     <Link
                         href={`/blog/${article.slug}#comments`}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
+                        className="flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent text-foreground"
                     >
                         <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
                         <span className="text-sm font-semibold">{initialComments}</span>
                     </Link>
 
-                    {/* Read Time - Brutalist */}
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
+                    {/* Read Time */}
+                    <div className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
                         <BookOpen className="w-3.5 h-3.5" />
                         {getReadingTime(article.content)} dk
                     </div>
@@ -236,7 +236,7 @@ export function SocialArticleCard({
                         <button
                             onClick={handleBookmark}
                             className={cn(
-                                "p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                                "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
                                 isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
                             )}
                         >
@@ -244,7 +244,7 @@ export function SocialArticleCard({
                         </button>
 
                         <button
-                            className="p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
+                            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
                             onClick={handleShare}
                         >
                             <Share className="w-4 h-4 stroke-[1.8px]" />
