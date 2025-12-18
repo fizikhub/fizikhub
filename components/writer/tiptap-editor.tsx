@@ -1,22 +1,30 @@
 "use client";
 
-import { useEditor, EditorContent, ReactNodeViewRenderer } from '@tiptap/react'
+import { useEditor, EditorContent, ReactNodeViewRenderer, BubbleMenu } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import Link from '@tiptap/extension-link'
+import Youtube from '@tiptap/extension-youtube'
+import Underline from '@tiptap/extension-underline'
+import TextAlign from '@tiptap/extension-text-align'
 import { Markdown } from 'tiptap-markdown'
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
-    ImagePlus, Loader2
+    ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
+    Underline as UnderlineIcon, AlignLeft, AlignCenter, AlignRight,
+    Calculator, Divide, X
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
-import NextImage from 'next/image'
-import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
@@ -40,12 +48,10 @@ const ImageNodeView = (props: NodeViewProps) => {
                 <img
                     src={node.attrs.src}
                     alt={node.attrs.alt}
-                    className="max-w-full h-auto rounded-lg shadow-sm" // Use standard img for editor to avoid NextImage layout complexity in editor
+                    className="max-w-full h-auto rounded-lg shadow-sm"
                     style={{ maxHeight: '500px' }}
                 />
             </div>
-
-            {/* Caption Input - Always visible or on hover/select? Let's make it intuitive. */}
             <div className="mt-2 w-full max-w-md">
                 <Input
                     value={altText}
@@ -67,6 +73,10 @@ interface TiptapEditorProps {
 export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [linkUrl, setLinkUrl] = useState('');
+    const [youtubeUrl, setYoutubeUrl] = useState('');
+    const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+    const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -83,15 +93,28 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             Placeholder.configure({
                 placeholder: 'Hikayenizi anlatmaya başlayın...',
             }),
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    class: 'text-primary underline cursor-pointer',
+                },
+            }),
+            Youtube.configure({
+                controls: false,
+                nocookie: true,
+            }),
+            Underline,
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
         ],
-        content: content, // Initial markdown content
+        content: content,
         editorProps: {
             attributes: {
-                class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px]',
+                class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
             },
         },
         onUpdate: ({ editor }) => {
-            // Get content as Markdown
             const markdown = editor.storage.markdown.getMarkdown();
             onChange(markdown);
         },
@@ -129,112 +152,119 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         }
     };
 
+    const setLink = () => {
+        if (linkUrl) {
+            editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+            setIsLinkDialogOpen(false);
+            setLinkUrl('');
+        }
+    };
+
+    const addYoutubeVideo = () => {
+        if (youtubeUrl) {
+            editor?.chain().focus().setYoutubeVideo({ src: youtubeUrl }).run();
+            setIsYoutubeDialogOpen(false);
+            setYoutubeUrl('');
+        }
+    };
+
+    const insertMath = () => {
+        // Insert a math block placeholder
+        editor?.chain().focus().insertContent('$$Formül$$').run();
+    };
+
     if (!editor) {
         return null;
     }
 
     return (
-        <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
-            {/* Toolbar */}
-            <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl">
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    disabled={!editor.can().chain().focus().toggleBold().run()}
-                    className={editor.isActive('bold') ? 'bg-muted' : ''}
-                >
-                    <Bold className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    disabled={!editor.can().chain().focus().toggleItalic().run()}
-                    className={editor.isActive('italic') ? 'bg-muted' : ''}
-                >
-                    <Italic className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 self-center" />
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    className={editor.isActive('heading', { level: 1 }) ? 'bg-muted' : ''}
-                >
-                    <Heading1 className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    className={editor.isActive('heading', { level: 2 }) ? 'bg-muted' : ''}
-                >
-                    <Heading2 className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                    className={editor.isActive('heading', { level: 3 }) ? 'bg-muted' : ''}
-                >
-                    <Heading3 className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 self-center" />
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    className={editor.isActive('bulletList') ? 'bg-muted' : ''}
-                >
-                    <List className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                    className={editor.isActive('orderedList') ? 'bg-muted' : ''}
-                >
-                    <ListOrdered className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                    className={editor.isActive('blockquote') ? 'bg-muted' : ''}
-                >
-                    <Quote className="w-4 h-4" />
-                </Button>
-                <div className="w-px h-6 bg-border mx-1 self-center" />
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={addImage}
-                    disabled={isUploading}
-                >
-                    {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
-                </Button>
-                <div className="flex-1" />
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().undo().run()}
-                    disabled={!editor.can().chain().focus().undo().run()}
-                >
-                    <Undo className="w-4 h-4" />
-                </Button>
-                <Button
-                    variant="ghost" size="sm"
-                    onClick={() => editor.chain().focus().redo().run()}
-                    disabled={!editor.can().chain().focus().redo().run()}
-                >
-                    <Redo className="w-4 h-4" />
-                </Button>
+        <div className="border rounded-lg bg-card shadow-sm overflow-hidden relative">
+            {/* Bubble Menu */}
+            {editor && (
+                <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+                    <div className="flex items-center gap-1 p-1 bg-popover border rounded-lg shadow-lg">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBold().run()} data-active={editor.isActive('bold')}>
+                            <Bold className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleItalic().run()} data-active={editor.isActive('italic')}>
+                            <Italic className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleUnderline().run()} data-active={editor.isActive('underline')}>
+                            <UnderlineIcon className="w-4 h-4" />
+                        </Button>
+                        <div className="w-px h-4 bg-border mx-1" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-active={editor.isActive('heading', { level: 2 })}>
+                            <Heading2 className="w-4 h-4" />
+                        </Button>
+                        <div className="w-px h-4 bg-border mx-1" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsLinkDialogOpen(true)} data-active={editor.isActive('link')}>
+                            <LinkIcon className="w-4 h-4" />
+                        </Button>
+                    </div>
+                </BubbleMenu>
+            )}
 
-                {/* Hidden File Input */}
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                />
+            {/* Main Toolbar */}
+            <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
+                {/* Text Formatting */}
+                <div className="flex items-center gap-0.5 mr-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} data-state={editor.isActive('italic') ? 'on' : 'off'}><Italic className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
+                </div>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
+                {/* Headings */}
+                <div className="flex items-center gap-0.5 mr-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} data-state={editor.isActive('heading', { level: 1 }) ? 'on' : 'off'}><Heading1 className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}><Heading2 className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
+                </div>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
+                {/* Lists & Alignment */}
+                <div className="flex items-center gap-0.5 mr-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
+                </div>
+
+                <div className="w-px h-6 bg-border mx-1" />
+
+                {/* Media & Special */}
+                <div className="flex items-center gap-0.5">
+                    <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" data-state={editor.isActive('link') ? 'on' : 'off'}><LinkIcon className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Bağlantı Ekle</DialogTitle></DialogHeader>
+                            <div className="py-4"><Input placeholder="https://..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} /></div>
+                            <DialogFooter><Button onClick={setLink}>Ekle</Button></DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={addImage} disabled={isUploading}>{isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}</Button>
+
+                    <Dialog open={isYoutubeDialogOpen} onOpenChange={setIsYoutubeDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" data-state={editor.isActive('youtube') ? 'on' : 'off'}><YoutubeIcon className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>YouTube Videosu Ekle</DialogTitle></DialogHeader>
+                            <div className="py-4"><Input placeholder="https://youtube.com/watch?v=..." value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} /></div>
+                            <DialogFooter><Button onClick={addYoutubeVideo}>Ekle</Button></DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={insertMath} title="Matematik Formülü ($$)"><Divide className="w-4 h-4" /></Button>
+                </div>
             </div>
 
-            {/* Editor Content */}
-            <div className="p-4 bg-background">
-                <EditorContent editor={editor} />
-            </div>
+            <EditorContent editor={editor} />
+            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
         </div>
     )
 }
