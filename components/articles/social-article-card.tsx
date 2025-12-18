@@ -20,6 +20,7 @@ interface SocialArticleCardProps {
     initialComments?: number;
     initialIsLiked?: boolean;
     initialIsBookmarked?: boolean;
+    variant?: "writer" | "community";
 }
 
 // Calculate reading time
@@ -36,8 +37,13 @@ export function SocialArticleCard({
     initialLikes = 0,
     initialComments = 0,
     initialIsLiked = false,
-    initialIsBookmarked = false
+    initialIsBookmarked = false,
+    variant = "writer"
 }: SocialArticleCardProps) {
+    // Color theming based on variant
+    const isWriter = variant === "writer";
+    const accentColor = isWriter ? "amber" : "emerald";
+    const badgeText = isWriter ? "Yazar" : "Topluluk";
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
 
     // Optimistic UI States
@@ -130,7 +136,7 @@ export function SocialArticleCard({
             className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
         >
             {/* Cosmic background effect */}
-            <div className="absolute inset-0 bg-gradient-radial from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className={cn("absolute inset-0 bg-gradient-radial via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none", isWriter ? "from-amber-500/5" : "from-emerald-500/5")} />
 
             {/* Main Navigation Link - covers entire card */}
             <Link href={`/blog/${article.slug}`} className="absolute inset-0 z-[1]" prefetch={false}>
@@ -141,19 +147,19 @@ export function SocialArticleCard({
                 {/* Author Row - Enable pointer events for interactive elements */}
                 <div className="flex items-center gap-3 mb-3 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
-                        <Avatar className="w-10 h-10 ring-2 ring-transparent group-hover/avatar:ring-amber-500/20 transition-all duration-300">
+                        <Avatar className={cn("w-10 h-10 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
                             <AvatarImage src={article.author?.avatar_url || ""} />
-                            <AvatarFallback className="bg-amber-500/10 text-amber-500 font-bold">
+                            <AvatarFallback className={cn("font-bold", isWriter ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500")}>
                                 {article.author?.username?.[0]?.toUpperCase() || "F"}
                             </AvatarFallback>
                         </Avatar>
                     </Link>
                     <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
-                            <Link href={`/kullanici/${article.author?.username}`} className="font-semibold text-foreground hover:underline text-[15px] hover:text-amber-500 transition-colors">
+                            <Link href={`/kullanici/${article.author?.username}`} className={cn("font-semibold text-foreground hover:underline text-[15px] transition-colors", isWriter ? "hover:text-amber-500" : "hover:text-emerald-500")}>
                                 {article.author?.full_name || article.author?.username || "Fizikhub"}
                             </Link>
-                            <span className="text-[10px] uppercase tracking-wider font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">Yazar</span>
+                            <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10")}>{badgeText}</span>
                         </div>
                         <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
                             <span>{article.category}</span>
@@ -165,7 +171,7 @@ export function SocialArticleCard({
 
                 <div className="block group/content">
                     {/* Title */}
-                    <h3 className="font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 group-hover/content:text-amber-500 transition-colors">
+                    <h3 className={cn("font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 transition-colors", isWriter ? "group-hover/content:text-amber-500" : "group-hover/content:text-emerald-500")}>
                         {article.title}
                     </h3>
 
