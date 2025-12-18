@@ -229,7 +229,7 @@ export function SocialArticleCard({
                     </Link>
 
                     {/* Read Time - Brutalist */}
-                    <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
                         <BookOpen className="w-3.5 h-3.5" />
                         {getReadingTime(article.content)} dk
                     </div>
