@@ -4,10 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Heart, MessageCircle, Bookmark, Eye, Clock, ArrowRight } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, BookOpen, ChevronUp, ChevronDown, Share } from "lucide-react";
 import { Article } from "@/lib/api";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SocialArticleCardProps {
     article: Article;
@@ -26,137 +28,148 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
     const [isLiked, setIsLiked] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 50) + 10);
+
+    const handleLike = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isLiked) {
+            setLikeCount(prev => prev - 1);
+        } else {
+            setLikeCount(prev => prev + 1);
+        }
+        setIsLiked(!isLiked);
+    };
 
     return (
         <motion.article
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
-            className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] backdrop-blur-sm rounded-3xl border border-white/10 hover:border-amber-500/30 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-500 overflow-hidden group"
+            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
         >
-            {/* Top Section - Author & Meta */}
-            <div className="p-6 pb-4">
-                <div className="flex items-start gap-4">
-                    <Link href={`/kullanici/${article.author?.username}`} className="relative">
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-amber-500/20 group-hover:ring-amber-500/40 transition-all">
+            {/* Cosmic background effect */}
+            <div className="absolute inset-0 bg-gradient-radial from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
+                {/* Author Row */}
+                <div className="flex items-center gap-3 mb-3">
+                    <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
+                        <Avatar className="w-10 h-10 ring-2 ring-transparent group-hover/avatar:ring-amber-500/20 transition-all duration-300">
+                            <AvatarImage src={article.author?.avatar_url || ""} />
+                            <AvatarFallback className="bg-amber-500/10 text-amber-500 font-bold">
+                                {article.author?.username?.[0]?.toUpperCase() || "F"}
+                            </AvatarFallback>
+                        </Avatar>
+                    </Link>
+                    <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-1.5">
+                            <Link href={`/kullanici/${article.author?.username}`} className="font-semibold text-foreground hover:underline text-[15px] hover:text-amber-500 transition-colors">
+                                {article.author?.full_name || article.author?.username || "Fizikhub"}
+                            </Link>
+                            <span className="text-[10px] uppercase tracking-wider font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">Yazar</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
+                            <span>{article.category}</span>
+                            <span>·</span>
+                            <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <Link href={`/blog/${article.slug}`} className="block group/content">
+                    {/* Title */}
+                    <h3 className="font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 group-hover/content:text-amber-500 transition-colors">
+                        {article.title}
+                    </h3>
+
+                    {/* Summary */}
+                    <div className="text-[15.5px] text-foreground/85 leading-[1.7] font-sans mb-4 line-clamp-3">
+                        {article.summary}
+                    </div>
+
+                    {/* Image */}
+                    {article.image_url && (
+                        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-300/30 dark:border-gray-700/30 mb-4 group-hover/content:border-amber-500/20 transition-colors">
                             <Image
-                                src={article.author?.avatar_url || "/images/default-avatar.png"}
-                                alt={article.author?.full_name || "Yazar"}
+                                src={imgSrc}
+                                alt={article.title}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform duration-500 group-hover/content:scale-[1.02]"
+                                onError={() => setImgSrc("/images/placeholder-article.jpg")}
                             />
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-background" />
-                    </Link>
+                    )}
+                </Link>
 
-                    <div className="flex-1 min-w-0">
-                        <Link href={`/kullanici/${article.author?.username}`} className="block">
-                            <h3 className="font-bold text-white hover:text-amber-400 transition-colors truncate">
-                                {article.author?.full_name || article.author?.username || "Fizikhub"}
-                            </h3>
-                        </Link>
-                        <div className="flex items-center gap-2 text-xs text-white/40 mt-0.5">
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-full font-medium">
-                                Yazar
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Image Section */}
-            <Link href={`/blog/${article.slug}`} className="block px-6 pb-4">
-                {article.image_url && (
-                    <div className="relative aspect-[21/9] overflow-hidden rounded-2xl">
-                        <Image
-                            src={imgSrc}
-                            alt={article.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                            onError={() => setImgSrc("/images/placeholder-article.jpg")}
-                        />
-                        {/* Gradient overlay on image */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                        {/* Category badge on image */}
-                        <div className="absolute top-3 left-3">
-                            <span className="px-3 py-1 bg-black/70 backdrop-blur-md text-white text-xs font-semibold rounded-full border border-white/10">
-                                {article.category}
-                            </span>
-                        </div>
-
-                        {/* Reading time on image */}
-                        <div className="absolute top-3 right-3">
-                            <span className="px-3 py-1 bg-black/70 backdrop-blur-md text-white text-xs font-medium rounded-full border border-white/10 flex items-center gap-1">
-                                <Eye className="w-3 h-3" />
-                                {getReadingTime(article.content)} dk
-                            </span>
-                        </div>
-                    </div>
-                )}
-            </Link>
-
-            {/* Content Section */}
-            <Link href={`/blog/${article.slug}`} className="block px-6 pb-5">
-                <h2 className="text-xl font-bold text-white leading-tight mb-3 group-hover:text-amber-400 transition-colors line-clamp-2">
-                    {article.title}
-                </h2>
-
-                {/* Summary - Prominent */}
-                <p className="text-white/60 text-sm leading-relaxed line-clamp-3 mb-4">
-                    {article.summary || "Bu makalede bilimsel konular ele alınıyor ve detaylı bir şekilde inceleniyor. Okumak için tıklayın."}
-                </p>
-
-                {/* Read more link */}
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 group/link">
-                    <span>Devamını Oku</span>
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
-                </div>
-            </Link>
-
-            {/* Actions Bar */}
-            <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setIsLiked(!isLiked);
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${isLiked
-                                ? 'text-rose-400 bg-rose-500/10'
-                                : 'text-white/40 hover:text-rose-400 hover:bg-rose-500/10'
-                            }`}
+                {/* Action Bar - Brutalist Space Style */}
+                <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
+                    {/* Like Pill */}
+                    <div
+                        className={cn(
+                            "flex items-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
+                            isLiked ? "bg-rose-500/10 border-rose-500/30" : "bg-transparent"
+                        )}
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-                        <span className="text-sm font-medium">{Math.floor(Math.random() * 100) + 20}</span>
-                    </button>
+                        <button
+                            onClick={handleLike}
+                            className={cn(
+                                "flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50",
+                                isLiked && "text-rose-500 font-bold"
+                            )}
+                        >
+                            <Heart className={cn(
+                                "w-4 h-4 stroke-[2px]",
+                                isLiked ? "fill-current" : ""
+                            )} />
+                            <span className="text-sm font-semibold min-w-[16px] text-center">
+                                {likeCount}
+                            </span>
+                        </button>
+                    </div>
 
+                    {/* Comments - Brutalist */}
                     <Link
                         href={`/blog/${article.slug}#comments`}
-                        className="flex items-center gap-2 px-4 py-2 rounded-full text-white/40 hover:text-sky-400 hover:bg-sky-500/10 transition-all"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
                     >
-                        <MessageCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">{Math.floor(Math.random() * 30)}</span>
+                        <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
+                        <span className="text-sm font-semibold">{Math.floor(Math.random() * 30)}</span>
                     </Link>
-                </div>
 
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setIsBookmarked(!isBookmarked);
-                    }}
-                    className={`p-2.5 rounded-full transition-all ${isBookmarked
-                            ? 'text-amber-400 bg-amber-500/10'
-                            : 'text-white/40 hover:text-amber-400 hover:bg-amber-500/10'
-                        }`}
-                >
-                    <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                </button>
+                    {/* Read Time - Brutalist */}
+                    <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
+                        <BookOpen className="w-3.5 h-3.5" />
+                        {getReadingTime(article.content)} dk
+                    </div>
+
+                    {/* Share & Bookmark Group */}
+                    <div className="ml-auto flex items-center gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsBookmarked(!isBookmarked);
+                            }}
+                            className={cn(
+                                "p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                                isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
+                            )}
+                        >
+                            <Bookmark className={cn("w-4 h-4 stroke-[1.8px]", isBookmarked && "fill-current")} />
+                        </button>
+
+                        <button
+                            className="p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                // Share logic
+                            }}
+                        >
+                            <Share className="w-4 h-4 stroke-[1.8px]" />
+                        </button>
+                    </div>
+                </div>
             </div>
         </motion.article>
     );
