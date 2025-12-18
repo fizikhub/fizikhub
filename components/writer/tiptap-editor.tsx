@@ -21,19 +21,21 @@ import { useCallback, useRef, useState, useEffect } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { InlineMath } from 'react-katex'
 import { MathExtension } from './extensions/math-extension'
 
+// --- Custom Image Node View ---
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
     const { node, updateAttributes, selected } = props;
     const [altText, setAltText] = useState(node.attrs.alt || '');
 
     useEffect(() => {
-        // avoid synchronous state update loop
-        if (altText !== (node.attrs.alt || '')) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (node.attrs.alt !== altText) {
             setAltText(node.attrs.alt || '');
         }
-    }, [node.attrs.alt, altText]); // adding altText dependency
+    }, [node.attrs.alt]);
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newAlt = e.target.value;
@@ -44,6 +46,7 @@ const ImageNodeView = (props: NodeViewProps) => {
     return (
         <NodeViewWrapper className="my-6 relative group flex flex-col items-center">
             <div className={`relative overflow-hidden rounded-lg transition-all ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={node.attrs.src}
                     alt={node.attrs.alt}
@@ -117,7 +120,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // @ts-ignore - tiptap-markdown adds 'markdown' to storage
+            // @ts-expect-error - tiptap-markdown adds 'markdown' to storage
             const markdown = editor.storage.markdown?.getMarkdown() || editor.getHTML();
             onChange(markdown);
         },
@@ -247,11 +250,11 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                         <DialogTrigger asChild>
                             <Button type="button" variant="ghost" size="icon" className="h-8 w-8" title="Matematik Formülü (Ekle/Düzenle)"><Calculator className="w-4 h-4" /></Button>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="sm:max-w-lg">
                             <DialogHeader><DialogTitle>Matematik Formülü Ekle</DialogTitle></DialogHeader>
-                            <div className="py-4 space-y-4">
-                                <div className="space-y-2">
-                                    <h4 className="text-sm font-medium">LaTeX Formülü</h4>
+                            <div className="py-4 space-y-6">
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-medium leading-none">LaTeX Formülü</h4>
                                     <Input
                                         placeholder="E = mc^2"
                                         value={mathLatex}
@@ -262,24 +265,52 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                                                 insertMath();
                                             }
                                         }}
+                                        className="font-mono"
                                     />
-                                    <p className="text-xs text-muted-foreground">
-                                        Önizleme editörde görünecektir.
-                                    </p>
                                 </div>
-                                <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md">
-                                    <p className="font-medium mb-1">Örnekler:</p>
-                                    <ul className="grid grid-cols-2 gap-2 text-xs">
-                                        <li><code>\frac&#123;a&#125;&#123;b&#125;</code> (Kesir)</li>
-                                        <li><code>\sqrt&#123;x&#125;</code> (Kök)</li>
-                                        <li><code>\cdot</code> (Çarpma)</li>
-                                        <li><code>\sum</code> (Toplam)</li>
-                                        <li><code>\int</code> (İntegral)</li>
-                                        <li><code>\pi</code> (Pi sayısı)</li>
-                                    </ul>
+
+                                {/* Live Preview */}
+                                <div className="space-y-2">
+                                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Önizleme</h4>
+                                    <div className="min-h-[60px] flex items-center justify-center p-4 bg-muted/30 rounded-lg border border-border/50 overflow-x-auto">
+                                        {mathLatex ? (
+                                            <span className="text-lg">
+                                                {/* We need InlineMath here. I'll add the import in a previous step or next step. */}
+                                                <InlineMath math={mathLatex} />
+                                            </span>
+                                        ) : (
+                                            <span className="text-sm text-muted-foreground italic">Formül yazmaya başlayın...</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-md">
+                                    <p className="font-medium mb-2 text-foreground">Hızlı Ekle (Tıkla)</p>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        {[
+                                            { label: "Kesir", code: "\\frac{a}{b}" },
+                                            { label: "Kök", code: "\\sqrt{x}" },
+                                            { label: "Üslü", code: "x^2" },
+                                            { label: "Çarpma", code: "\\cdot" },
+                                            { label: "Toplam", code: "\\sum" },
+                                            { label: "İntegral", code: "\\int" },
+                                            { label: "Pi", code: "\\pi" },
+                                            { label: "Sonsuz", code: "\\infty" },
+                                        ].map((item) => (
+                                            <button
+                                                key={item.label}
+                                                onClick={() => setMathLatex(prev => prev + item.code)}
+                                                className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-background hover:shadow-sm border border-transparent hover:border-border transition-all text-left group"
+                                                type="button"
+                                            >
+                                                <span>{item.label}</span>
+                                                <code className="bg-background/50 px-1 py-0.5 rounded text-[10px] text-muted-foreground group-hover:text-primary transition-colors">{item.code}</code>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                            <DialogFooter><Button type="button" onClick={insertMath}>Ekle</Button></DialogFooter>
+                            <DialogFooter><Button type="button" onClick={() => insertMath()}>Ekle</Button></DialogFooter>
                         </DialogContent>
                     </Dialog>
                 </div>

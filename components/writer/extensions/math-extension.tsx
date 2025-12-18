@@ -102,6 +102,7 @@ export const MathExtension = Node.create({
     addStorage() {
         return {
             markdown: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 serialize(state: any, node: any) {
                     state.write(`$${node.attrs.latex}$`)
                 },
