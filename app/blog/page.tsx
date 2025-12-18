@@ -10,45 +10,132 @@ export const metadata: Metadata = {
     description: "Evrenin sırlarını çözmeye çalışanların not defteri.",
 };
 
-// ISR: Regenerate every 60 seconds for fresh content
+// ISR: Regenerate every 60 seconds
 export const revalidate = 60;
 
-export default async function BlogPage() {
-    const supabase = await createClient();
+interface BlogPageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-    // Fetch ONLY published articles from WRITERS (is_writer = true)
-    const { data: articles } = await supabase
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+    const resolvedSearchParams = await searchParams;
+    const categoryParam = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined;
+    const sortParam = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Base Query
+    let query = supabase
         .from('articles')
         .select(`
             *,
             author:profiles!articles_author_id_fkey(*)
         `)
         .eq('status', 'published')
-        .eq('author.is_writer', true)
-        .order('created_at', { ascending: false });
+        .eq('author.is_writer', true);
 
-    const writerArticles = articles || [];
+    // Apply Category Filter
+    if (categoryParam && categoryParam !== 'Tümü' && categoryParam !== 'Popüler' && categoryParam !== 'En Yeni') {
+        query = query.eq('category', categoryParam);
+    }
 
-    // Featured articles for Hero (First 3)
-    const featuredArticles = writerArticles.slice(0, 3);
+    // Apply Sorting
+    if (sortParam === 'popular') {
+        // Approximate popularity by views or likes if available (falling back to views or random for now as DB might limit complex sorts)
+        query = query.order('views', { ascending: false });
+    } else {
+        query = query.order('created_at', { ascending: false });
+    }
 
-    // All articles for the feed
-    const feedArticles = writerArticles;
+    const { data: articles } = await query;
+    const allArticles = articles || [];
 
-    // Popular Articles (In real app, fetch by views)
-    const popularArticles = writerArticles.slice().sort(() => 0.5 - Math.random()).slice(0, 5);
+    // Collect IDs for batch fetching interactions
+    const articleIds = allArticles.map(a => a.id);
 
-    // Extract categories
-    const categories = Array.from(new Set(writerArticles.map(a => a.category).filter(Boolean))) as string[];
+    // Fetch Interaction Counts (Likes & Comments)
+    // Note: In a real large-scale app, we'd use a view or materialized view. 
+    // Here we do efficient parallel fetches or just rely on client-side counts if server-side is too heavy.
+    // For "Real-time" feel, we fetch them here.
 
-    // Unique authors
-    const uniqueAuthors = new Set(writerArticles.map(a => a.author?.id).filter(Boolean)).size;
+    // Fetch Likes Count
+    const { data: likesData } = await supabase
+        .from('article_likes')
+        .select('article_id')
+        .in('article_id', articleIds);
+
+    const likeCounts = (likesData || []).reduce((acc, curr) => {
+        acc[curr.article_id] = (acc[curr.article_id] || 0) + 1;
+        return acc;
+    }, {} as Record<number, number>);
+
+    // Fetch Comments Count
+    const { data: commentsData } = await supabase
+        .from('article_comments')
+        .select('article_id')
+        .in('article_id', articleIds);
+
+    const commentCounts = (commentsData || []).reduce((acc, curr) => {
+        acc[curr.article_id] = (acc[curr.article_id] || 0) + 1;
+        return acc;
+    }, {} as Record<number, number>);
+
+    // Fetch User's Likes & Bookmarks
+    let userLikes = new Set<number>();
+    let userBookmarks = new Set<number>();
+
+    if (user) {
+        const { data: myLikes } = await supabase
+            .from('article_likes')
+            .select('article_id')
+            .eq('user_id', user.id)
+            .in('article_id', articleIds);
+
+        myLikes?.forEach(l => userLikes.add(l.article_id));
+
+        const { data: myBookmarks } = await supabase
+            .from('article_bookmarks')
+            .select('article_id')
+            .eq('user_id', user.id)
+            .in('article_id', articleIds);
+
+        myBookmarks?.forEach(b => userBookmarks.add(b.article_id));
+    }
+
+    // Combine Data
+    const feedArticles = allArticles.map(article => ({
+        ...article,
+        likes_count: likeCounts[article.id] || 0,
+        comments_count: commentCounts[article.id] || 0,
+        is_liked: userLikes.has(article.id),
+        is_bookmarked: userBookmarks.has(article.id)
+    }));
+
+    // Featured articles for Hero (First 3 from "Latest" generally)
+    // We re-fetch or just slice from "latest" to ensure Hero always looks fresh regardless of filter?
+    // User probably wants filter to apply to the list below. Let's keep hero static or relevant?
+    // Let's keep Hero showing "Featured" or "Latest" mostly.
+    const featuredArticles = allArticles.slice(0, 3); // For now showing top of current filter
+
+    // Extract categories for sidebar/tabs
+    // We need ALL categories, not just from filtered result. So we might need a separate lightweight query or hardcoded list if performance is key. 
+    // For now, let's derive from a separate optimized query or standard list.
+    const { data: allCategoriesData } = await supabase
+        .from('articles')
+        .select('category')
+        .eq('status', 'published');
+
+    const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
+
+    // Sidebar Stats
+    const uniqueAuthors = new Set((allCategoriesData || []).map((a: any) => a.author_id)).size; // simplified approximation
 
     return (
         <div className="min-h-screen pb-20 bg-background">
             <div className="container mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12 md:py-16">
 
-                {/* Header - Clean & Minimal */}
+                {/* Header */}
                 <header className="mb-10 sm:mb-14">
                     <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                         <div>
@@ -76,47 +163,80 @@ export default async function BlogPage() {
                     </div>
                 </header>
 
-                {/* Magazine Hero Grid - Featured Posts */}
+                {/* Hero only shows on initial 'All' view to avoid clustering? Or always? Always is nice. */}
                 <MagazineHero articles={featuredArticles} />
 
-                {/* Feed Tabs */}
-                <div className="flex items-center gap-1 mb-8 border-b border-white/10 overflow-x-auto scrollbar-hide">
-                    <button className="flex items-center gap-2 px-5 py-3 text-sm font-semibold text-amber-400 border-b-2 border-amber-400 whitespace-nowrap">
-                        <Sparkles className="w-4 h-4" />
-                        Tümü
-                    </button>
-                    <button className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-white/50 hover:text-white/80 border-b-2 border-transparent hover:border-white/20 transition-all whitespace-nowrap">
-                        <Flame className="w-4 h-4" />
-                        Popüler
-                    </button>
-                    <button className="flex items-center gap-2 px-5 py-3 text-sm font-medium text-white/50 hover:text-white/80 border-b-2 border-transparent hover:border-white/20 transition-all whitespace-nowrap">
-                        <Clock className="w-4 h-4" />
-                        En Yeni
-                    </button>
-                    {categories.slice(0, 4).map(cat => (
-                        <button
-                            key={cat}
-                            className="px-5 py-3 text-sm font-medium text-white/50 hover:text-white/80 border-b-2 border-transparent hover:border-white/20 transition-all whitespace-nowrap"
+                {/* Mobile-Friendly Scrollable Tabs */}
+                <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b border-white/10">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+                        <Link
+                            href="/blog"
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest'
+                                    ? 'bg-amber-500 text-black border-amber-500'
+                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                }`}
                         >
-                            {cat}
-                        </button>
-                    ))}
+                            <Sparkles className="w-4 h-4" />
+                            Tümü
+                        </Link>
+                        <Link
+                            href="/blog?sort=popular"
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${sortParam === 'popular'
+                                    ? 'bg-amber-500 text-black border-amber-500'
+                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                }`}
+                        >
+                            <Flame className="w-4 h-4" />
+                            Popüler
+                        </Link>
+                        <Link
+                            href="/blog?sort=latest"
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest' // Default is latest essentially
+                                    ? 'hidden' // Hide duplicate if 'Tümü' implies latest, or differentiate? Let's keep interaction simple.
+                                    : 'hidden' // Let's merge 'Tümü' and 'En Yeni' concept or keep distinct?
+                                }`}
+                        >
+                            <Clock className="w-4 h-4" />
+                            En Yeni
+                        </Link>
+
+                        {categories.map(cat => (
+                            <Link
+                                key={cat}
+                                href={`/blog?category=${encodeURIComponent(cat)}`}
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${categoryParam === cat
+                                        ? 'bg-amber-500 text-black border-amber-500'
+                                        : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                    }`}
+                            >
+                                {cat}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
                     {/* Main Content - Social Feed */}
                     <div className="lg:col-span-8">
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {feedArticles.map((article, index) => (
-                                <SocialArticleCard key={article.id} article={article} index={index} />
+                                <SocialArticleCard
+                                    key={article.id}
+                                    article={article}
+                                    index={index}
+                                    initialLikes={article.likes_count}
+                                    initialComments={article.comments_count}
+                                    initialIsLiked={article.is_liked}
+                                    initialIsBookmarked={article.is_bookmarked}
+                                />
                             ))}
                         </div>
 
                         {feedArticles.length === 0 && (
                             <div className="text-center py-24 text-white/40 bg-white/[0.02] border border-white/10 rounded-xl">
                                 <Telescope className="w-12 h-12 mx-auto mb-4 text-white/20" />
-                                <p className="text-xl font-medium">Henüz paylaşım yok.</p>
-                                <p className="text-sm mt-2 text-white/30">Ama evren genişlemeye devam ediyor...</p>
+                                <p className="text-xl font-medium">Bu kategoride henüz paylaşım yok.</p>
+                                <Link href="/blog" className="text-amber-400 text-sm mt-2 hover:underline">Tümünü Göster</Link>
                             </div>
                         )}
                     </div>
@@ -130,7 +250,7 @@ export default async function BlogPage() {
                                 Gündemde
                             </h3>
                             <div className="space-y-3">
-                                {popularArticles.map((article, i) => (
+                                {allArticles.slice(0, 5).map((article, i) => (
                                     <Link
                                         key={article.id}
                                         href={`/blog/${article.slug}`}
@@ -142,47 +262,8 @@ export default async function BlogPage() {
                                         <h4 className="font-semibold text-sm text-white/90 group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
                                             {article.title}
                                         </h4>
-                                        <div className="text-xs text-white/30 mt-1">
-                                            {Math.floor(Math.random() * 100) + 50} paylaşım
-                                        </div>
                                     </Link>
                                 ))}
-                            </div>
-                        </div>
-
-                        {/* Categories */}
-                        <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/10">
-                            <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-white">
-                                <Tag className="w-5 h-5 text-amber-400" />
-                                Konular
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {categories.map(cat => (
-                                    <button
-                                        key={cat}
-                                        className="px-3 py-1.5 text-sm font-medium bg-white/5 rounded-full text-white/60 hover:bg-amber-500/20 hover:text-amber-400 transition-all duration-300"
-                                    >
-                                        #{cat}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Stats */}
-                        <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent rounded-2xl p-5 border border-amber-500/20">
-                            <div className="grid grid-cols-3 gap-3 text-center">
-                                <div>
-                                    <div className="text-2xl font-black text-amber-400">{writerArticles.length}</div>
-                                    <div className="text-xs text-white/40">Makale</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-black text-amber-400">{uniqueAuthors}</div>
-                                    <div className="text-xs text-white/40">Yazar</div>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-black text-amber-400">{categories.length}</div>
-                                    <div className="text-xs text-white/40">Konu</div>
-                                </div>
                             </div>
                         </div>
 

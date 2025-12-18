@@ -10,10 +10,16 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toggleArticleLike, toggleArticleBookmark } from "@/app/blog/actions";
+import { toast } from "sonner";
 
 interface SocialArticleCardProps {
     article: Article;
     index?: number;
+    initialLikes?: number;
+    initialComments?: number;
+    initialIsLiked?: boolean;
+    initialIsBookmarked?: boolean;
 }
 
 // Calculate reading time
@@ -24,21 +30,96 @@ function getReadingTime(content: string | null): number {
     return Math.max(1, Math.ceil(words / wordsPerMinute));
 }
 
-export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps) {
+export function SocialArticleCard({
+    article,
+    index = 0,
+    initialLikes = 0,
+    initialComments = 0,
+    initialIsLiked = false,
+    initialIsBookmarked = false
+}: SocialArticleCardProps) {
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
-    const [isLiked, setIsLiked] = useState(false);
-    const [isBookmarked, setIsBookmarked] = useState(false);
-    const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 50) + 10);
 
-    const handleLike = (e: React.MouseEvent) => {
+    // Optimistic UI States
+    const [isLiked, setIsLiked] = useState(initialIsLiked);
+    const [likeCount, setLikeCount] = useState(initialLikes);
+    const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+    const [isLikeLoading, setIsLikeLoading] = useState(false);
+
+    const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        if (isLiked) {
-            setLikeCount(prev => prev - 1);
-        } else {
-            setLikeCount(prev => prev + 1);
-        }
+        if (isLikeLoading) return;
+
+        // Optimistic Update
+        const previousLiked = isLiked;
+        const previousCount = likeCount;
+
         setIsLiked(!isLiked);
+        setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+        setIsLikeLoading(true);
+
+        try {
+            const result = await toggleArticleLike(article.id);
+            if (!result.success) {
+                // Revert
+                setIsLiked(previousLiked);
+                setLikeCount(previousCount);
+                if (result.error === "Giriş yapmalısınız.") {
+                    toast.error("Beğenmek için giriş yapmalısınız.");
+                } else {
+                    toast.error("Bir hata oluştu.");
+                }
+            }
+        } catch (error) {
+            setIsLiked(previousLiked);
+            setLikeCount(previousCount);
+            toast.error("Bağlantı hatası.");
+        } finally {
+            setIsLikeLoading(false);
+        }
+    };
+
+    const handleBookmark = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Optimistic
+        const previousBookmarked = isBookmarked;
+        setIsBookmarked(!isBookmarked);
+
+        try {
+            const result = await toggleArticleBookmark(article.id);
+            if (!result.success) {
+                setIsBookmarked(previousBookmarked);
+                if (result.error === "Giriş yapmalısınız.") {
+                    toast.error("Kaydetmek için giriş yapmalısınız.");
+                } else {
+                    toast.error("Bir hata oluştu.");
+                }
+            } else {
+                if (!previousBookmarked) toast.success("Makale kaydedildi.");
+                else toast.info("Makale kaydedilenlerden çıkarıldı.");
+            }
+        } catch (error) {
+            setIsBookmarked(previousBookmarked);
+        }
+    };
+
+    const handleShare = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const url = `${window.location.origin}/blog/${article.slug}`;
+        if (navigator.share) {
+            navigator.share({
+                title: article.title,
+                text: article.summary || article.title,
+                url: url
+            }).catch(() => { });
+        } else {
+            navigator.clipboard.writeText(url);
+            toast.success("Link kopyalandı!");
+        }
     };
 
     return (
@@ -122,6 +203,7 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
                     >
                         <button
                             onClick={handleLike}
+                            disabled={isLikeLoading}
                             className={cn(
                                 "flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50",
                                 isLiked && "text-rose-500 font-bold"
@@ -143,7 +225,7 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
                         className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
                     >
                         <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
-                        <span className="text-sm font-semibold">{Math.floor(Math.random() * 30)}</span>
+                        <span className="text-sm font-semibold">{initialComments}</span>
                     </Link>
 
                     {/* Read Time - Brutalist */}
@@ -155,10 +237,7 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
                     {/* Share & Bookmark Group */}
                     <div className="ml-auto flex items-center gap-2">
                         <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsBookmarked(!isBookmarked);
-                            }}
+                            onClick={handleBookmark}
                             className={cn(
                                 "p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
                                 isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
@@ -169,10 +248,7 @@ export function SocialArticleCard({ article, index = 0 }: SocialArticleCardProps
 
                         <button
                             className="p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                // Share logic
-                            }}
+                            onClick={handleShare}
                         >
                             <Share className="w-4 h-4 stroke-[1.8px]" />
                         </button>
