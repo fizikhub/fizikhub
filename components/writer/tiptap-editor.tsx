@@ -179,27 +179,27 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
                 {/* Text Formatting */}
                 <div className="flex items-center gap-0.5 mr-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} data-state={editor.isActive('italic') ? 'on' : 'off'}><Italic className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} data-state={editor.isActive('italic') ? 'on' : 'off'}><Italic className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
                 </div>
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Headings */}
                 <div className="flex items-center gap-0.5 mr-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} data-state={editor.isActive('heading', { level: 1 }) ? 'on' : 'off'}><Heading1 className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}><Heading2 className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} data-state={editor.isActive('heading', { level: 1 }) ? 'on' : 'off'}><Heading1 className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}><Heading2 className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
                 </div>
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Lists */}
                 <div className="flex items-center gap-0.5 mr-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
                 </div>
 
                 <div className="w-px h-6 bg-border mx-1" />
@@ -208,37 +208,37 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <div className="flex items-center gap-0.5">
                     <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" data-state={editor.isActive('link') ? 'on' : 'off'}><LinkIcon className="w-4 h-4" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" data-state={editor.isActive('link') ? 'on' : 'off'}><LinkIcon className="w-4 h-4" /></Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader><DialogTitle>Bağlantı Ekle</DialogTitle></DialogHeader>
                             <div className="py-4"><Input placeholder="https://..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} /></div>
-                            <DialogFooter><Button onClick={setLink}>Ekle</Button></DialogFooter>
+                            <DialogFooter><Button type="button" onClick={setLink}>Ekle</Button></DialogFooter>
                         </DialogContent>
                     </Dialog>
 
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={addImage} disabled={isUploading}>{isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}</Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={addImage} disabled={isUploading}>{isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}</Button>
 
                     <Dialog open={isYoutubeDialogOpen} onOpenChange={setIsYoutubeDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8"><YoutubeIcon className="w-4 h-4" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8"><YoutubeIcon className="w-4 h-4" /></Button>
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader><DialogTitle>YouTube Videosu Ekle</DialogTitle></DialogHeader>
                             <div className="py-4"><Input placeholder="https://youtube.com/watch?v=..." value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} /></div>
-                            <DialogFooter><Button onClick={addYoutubeVideo}>Ekle</Button></DialogFooter>
+                            <DialogFooter><Button type="button" onClick={addYoutubeVideo}>Ekle</Button></DialogFooter>
                         </DialogContent>
                     </Dialog>
 
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={insertMath} title="Matematik Formülü ($$)"><Divide className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={insertMath} title="Matematik Formülü ($$)"><Divide className="w-4 h-4" /></Button>
                 </div>
 
                 <div className="flex-1" />
 
                 {/* Undo/Redo */}
                 <div className="flex items-center gap-0.5">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}><Undo className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}><Redo className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}><Undo className="w-4 h-4" /></Button>
+                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}><Redo className="w-4 h-4" /></Button>
                 </div>
             </div>
 
