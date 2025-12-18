@@ -177,7 +177,7 @@ export function SocialArticleCard({
 
                     {/* Summary */}
                     <div className="text-[15.5px] text-foreground/85 leading-[1.7] font-sans mb-4 line-clamp-3">
-                        {article.summary || "Bu makalede bilimsel konular ele alınıyor ve detaylı bir şekilde inceleniyor."}
+                        {article.summary || (article.content ? article.content.replace(/[#*`_]/g, '').slice(0, 150) + "..." : "Özet bulunmuyor.")}
                     </div>
 
                     {/* Read More Button - Forum Style */}
