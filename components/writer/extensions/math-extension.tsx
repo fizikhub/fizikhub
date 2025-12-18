@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react'
 import { InlineMath } from 'react-katex'
-import { InputRule } from '@tiptap/core'
+import { InputRule, PasteRule } from '@tiptap/core'
 
 export const MathExtension = Node.create({
     name: 'math',
@@ -72,6 +72,27 @@ export const MathExtension = Node.create({
                     const latex = match[1]
 
                     tr.replaceWith(start, end, this.type.create({ latex }))
+                },
+            }),
+        ]
+    },
+
+    addPasteRules() {
+        return [
+            new PasteRule({
+                find: /\$\$([^\$]+)\$\$/g, // Block math syntax (double dollar)
+                handler: ({ state, range, match }) => {
+                    const { tr } = state
+                    const latex = match[1].trim()
+                    tr.replaceWith(range.from, range.to, this.type.create({ latex }))
+                },
+            }),
+            new PasteRule({
+                find: /\$([^\$]+)\$/g, // Inline math syntax (single dollar)
+                handler: ({ state, range, match }) => {
+                    const { tr } = state
+                    const latex = match[1].trim()
+                    tr.replaceWith(range.from, range.to, this.type.create({ latex }))
                 },
             }),
         ]
