@@ -84,6 +84,14 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         .limit(1)
         .single();
 
+    // Fetch Latest Article for Ad
+    const { data: latestArticle } = await supabase
+        .from('articles')
+        .select('title, slug, image_url, summary, category, created_at, author:profiles(full_name)')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
@@ -142,6 +150,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 <QuestionList
                                     initialQuestions={questions}
                                     userVotes={userVotes}
+                                    latestArticle={latestArticle}
                                 />
                             )}
                         </div>
