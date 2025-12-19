@@ -122,9 +122,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // @ts-expect-error - tiptap-markdown adds 'markdown' to storage
-            const markdown = editor.storage.markdown?.getMarkdown() || editor.getHTML();
-            onChange(markdown);
+            // Use HTML output for proper rendering
+            const html = editor.getHTML();
+            onChange(html);
         },
     });
 
