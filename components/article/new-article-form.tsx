@@ -169,52 +169,96 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
         <>
             {/* Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-2 border-primary/20 p-0">
-                    <div className="bg-gradient-to-r from-primary to-purple-600 p-6 text-white text-center">
-                        <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-90" />
-                        <DialogTitle className="text-3xl font-black tracking-tight mb-2">
-                            Evrenin Sırlarını Açığa Çıkarmaya Hazır Mısın? 🌌
+                <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-background/95 backdrop-blur-xl border-2 border-primary/20 p-0">
+                    <div className="bg-gradient-to-r from-primary to-purple-600 p-8 text-white text-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+                        <HelpCircle className="w-16 h-16 mx-auto mb-4 opacity-90 animate-bounce" />
+                        <DialogTitle className="text-4xl font-black tracking-tight mb-2 uppercase">
+                            Editör Kullanım Kılavuzu 101
                         </DialogTitle>
-                        <DialogDescription className="text-blue-100 font-medium text-lg">
-                            Bilimi ciddiye alıyoruz, ama sıkıcı olmasına izin vermiyoruz!
+                        <DialogDescription className="text-blue-100 font-bold text-lg max-w-lg mx-auto">
+                            "Bu buton ne işe yarıyor?" dememen için her şeyi tane tane anlattık.
                         </DialogDescription>
                     </div>
 
-                    <div className="p-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-4 bg-muted/30 rounded-xl border border-border hover:border-primary/50 transition-colors">
-                                <h4 className="font-black text-lg mb-2 flex items-center gap-2">
-                                    <span className="text-2xl">📸</span> Görsel Şölen
-                                </h4>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    "Bir resim bin formüle bedeldir" dememişler ama deselerdi haklı olurlardı.
-                                    Editördeki <b>Resim İkonuna</b> tıklayarak makaleni renklendir.
-                                </p>
+                    <div className="p-8 space-y-8">
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Feature 1: Bold/Italic */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-2xl font-black text-primary">B</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Kalın & İtalik</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        <b>Kalın (B)</b> butonu yazıyı şişmanlatır, önemli yerleri vurgular. <i>İtalik (I)</i> butonu yazıyı yana yatırır, havalı kelimeler için birebirdir.
+                                    </p>
+                                </div>
                             </div>
 
-                            <div className="p-4 bg-muted/30 rounded-xl border border-border hover:border-primary/50 transition-colors">
-                                <h4 className="font-black text-lg mb-2 flex items-center gap-2">
-                                    <span className="text-2xl">✨</span> Biçim Önemli
-                                </h4>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                    Okuyucuların gözünü yormamak için <b>Kalın</b>, <i>İtalik</i> ve Başlıkları
-                                    kullan. Dümdüz yazı duvarı kara delik gibi okuyucuyu yutar, yapma.
-                                </p>
+                            {/* Feature 2: Headings */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xl font-black text-primary">H1</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Başlıklar</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Yazının patronu sensin. <b>H1</b> en büyük ana başlıktır. <b>H2</b> ise onun alt başlığıdır. Kitap bölümü ve alt bölümü gibi düşün.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 3: Lists */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xl font-black text-primary">📋</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Listeler</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Market listesi yapar gibi alt alta yazmak için <b>Madde İşaretli</b> veya <b>Numaralı Liste</b> butonlarına bas. Okuması çok daha kolay olur.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 4: Media */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xl font-black text-primary">📷</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Görsel & Video</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Kuru kuru yazı gitmez. <b>Resim</b> butonuna basıp fotoğraf yükle veya <b>Youtube</b> butonuyla video yapıştır. Şenlensin ortalık.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 5: Math */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xl font-black text-primary">∑</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Matematik</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Einstein değilsen çok kurcalama ama lazım olursa <b>Hesap Makinesi</b> ikonuna bas. Latex kodlarıyla havalı formüller yazabilirsin (örn: E=mc^2).
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Feature 6: Link */}
+                            <div className="flex gap-4 p-4 rounded-xl bg-muted/30 border-2 border-transparent hover:border-primary/20 transition-all">
+                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-xl font-black text-primary">🔗</div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Bağlantı (Link)</h4>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        Başka sayfalara kapı açmak istersen yazıyı seç ve <b>Zincir</b> ikonuna tıkla. Kaynak göstermek için birebirdir.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                            <h4 className="font-black text-blue-600 dark:text-blue-400 mb-2 flex items-center gap-2">
-                                <span className="text-2xl">🚀</span> Houston, Bir Sorunumuz Yok!
-                            </h4>
+                        <div className="p-4 bg-yellow-500/10 rounded-xl border-l-4 border-yellow-500">
+                            <h4 className="font-black text-yellow-600 dark:text-yellow-400 mb-1">💡 Küçük Bir İpucu</h4>
                             <p className="text-sm text-muted-foreground">
-                                Makalen bittikten sonra "İncelemeye Gönder" butonuna bas.
-                                Editörlerimiz makaleni ışık hızıyla inceleyip (belki biraz daha yavaş) onaylayacak.
-                                Onaylandıktan sonra tüm FizikHub evreninde yayınlanacak!
+                                Yazarken <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Ctrl + Z</kbd> ile geri alabilir, <kbd className="px-1 py-0.5 rounded bg-muted font-mono text-xs">Ctrl + B</kbd> ile kalın yazabilirsin. Kısa yolları kullan, hız kazan.
                             </p>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2">
+                        <div className="flex items-center justify-between pt-4 border-t">
                             <div className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -224,14 +268,14 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
                                     className="w-4 h-4 rounded border-primary"
                                 />
                                 <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
-                                    Bu rehberi bir daha gösterme (Zaten dâhiyim)
+                                    Bu rehberi ezberledim, bir daha gösterme.
                                 </label>
                             </div>
-                        </div>
 
-                        <Button onClick={closeGuide} className="w-full font-black text-lg py-6 bg-gradient-to-r from-primary to-purple-600 hover:scale-[1.02] transition-transform">
-                            Teorimi Yazmaya Başlıyorum! 🧪
-                        </Button>
+                            <Button onClick={closeGuide} className="font-black px-8">
+                                Tamamdır, Anlaşıldı! 👍
+                            </Button>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
