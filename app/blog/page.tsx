@@ -164,47 +164,35 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 {/* Hero only shows on initial 'All' view to avoid clustering? Or always? Always is nice. */}
                 <MagazineHero articles={featuredArticles} />
 
-                {/* Mobile-Friendly Scrollable Tabs */}
-                <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b border-white/10">
-                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+                {/* Category Tabs - Brutalist Style */}
+                <div className="sticky top-0 z-30 bg-background py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-y-4 border-black dark:border-white">
+                    <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
                         <Link
                             href="/blog"
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest'
-                                ? 'bg-amber-500 text-black border-amber-500'
-                                : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                            className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors border-r-2 border-black dark:border-white ${!categoryParam && sortParam === 'latest'
+                                ? 'bg-black dark:bg-white text-white dark:text-black'
+                                : 'bg-transparent hover:bg-accent'
                                 }`}
                         >
-                            <Sparkles className="w-4 h-4" />
                             Tümü
                         </Link>
                         <Link
                             href="/blog?sort=popular"
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${sortParam === 'popular'
-                                ? 'bg-amber-500 text-black border-amber-500'
-                                : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                            className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors border-r-2 border-black dark:border-white ${sortParam === 'popular'
+                                ? 'bg-black dark:bg-white text-white dark:text-black'
+                                : 'bg-transparent hover:bg-accent'
                                 }`}
                         >
-                            <Flame className="w-4 h-4" />
                             Popüler
                         </Link>
-                        <Link
-                            href="/blog?sort=latest"
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${!categoryParam && sortParam === 'latest' // Default is latest essentially
-                                ? 'hidden' // Hide duplicate if 'Tümü' implies latest, or differentiate? Let's keep interaction simple.
-                                : 'hidden' // Let's merge 'Tümü' and 'En Yeni' concept or keep distinct?
-                                }`}
-                        >
-                            <Clock className="w-4 h-4" />
-                            En Yeni
-                        </Link>
 
-                        {categories.map(cat => (
+                        {categories.map((cat, index) => (
                             <Link
                                 key={cat}
                                 href={`/blog?category=${encodeURIComponent(cat)}`}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border ${categoryParam === cat
-                                    ? 'bg-amber-500 text-black border-amber-500'
-                                    : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white'
+                                className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors ${index < categories.length - 1 ? 'border-r-2 border-black dark:border-white' : ''} ${categoryParam === cat
+                                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                                    : 'bg-transparent hover:bg-accent'
                                     }`}
                             >
                                 {cat}

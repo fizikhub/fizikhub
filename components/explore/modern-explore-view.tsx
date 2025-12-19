@@ -64,7 +64,7 @@ export function ModernExploreView({
                 <div className="mb-10 md:mb-14 space-y-4">
                     <div className="flex items-center gap-3">
                         <div className="w-3 h-3 md:w-4 md:h-4 bg-emerald-500 rounded-full animate-pulse" />
-                        <span className="text-xs md:text-sm font-bold tracking-widest text-muted-foreground uppercase">Topluluk Makaleleri</span>
+                        <span className="text-xs md:text-sm font-bold tracking-widest text-muted-foreground uppercase">Fizikhub Topluluk Blogu</span>
                     </div>
 
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-[0.9]">
@@ -72,7 +72,7 @@ export function ModernExploreView({
                     </h1>
 
                     <p className="text-muted-foreground text-base md:text-xl max-w-2xl leading-relaxed">
-                        Topluluğumuzun kaleminden çıkan bilimsel makaleleri, özgün içerikleri ve derinlemesine analizleri inceleyin.
+                        Topluluğumuzun kaleminden çıkan bilimsel blogları, özgün içerikleri ve derinlemesine analizleri inceleyin.
                     </p>
                 </div>
 
