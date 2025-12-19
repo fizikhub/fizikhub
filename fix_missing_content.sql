@@ -19,6 +19,13 @@ BEGIN
 
     RAISE NOTICE 'Using User ID: %', target_user_id;
 
+    -- 1.5 Ensure 'summary' column exists (Fix for Schema Mismatch)
+    BEGIN
+        ALTER TABLE public.articles ADD COLUMN summary text;
+    EXCEPTION
+        WHEN duplicate_column THEN RAISE NOTICE 'column summary already exists in articles.';
+    END;
+
     -- 2. Upsert Articles (Force status to published)
     INSERT INTO public.articles (title, slug, summary, content, category, author_id, status, image_url, created_at, views)
     VALUES
