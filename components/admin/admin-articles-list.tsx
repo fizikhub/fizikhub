@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -17,6 +17,8 @@ import {
 import { toast } from "sonner";
 import { deleteArticle } from "@/app/admin/actions";
 import { Article } from "@/lib/api";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 interface AdminArticlesListProps {
     initialArticles: Article[];
@@ -44,6 +46,19 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
         setDeleteId(null);
     };
 
+    const getStatusBadge = (status?: string | null) => {
+        switch (status) {
+            case 'published':
+                return <Badge variant="default" className="bg-green-600">Yayında</Badge>;
+            case 'draft':
+                return <Badge variant="secondary">Taslak</Badge>;
+            case 'pending':
+                return <Badge variant="outline" className="border-yellow-500 text-yellow-500">Beklemede</Badge>;
+            default:
+                return <Badge variant="outline">{status || 'Bilinmiyor'}</Badge>;
+        }
+    };
+
     return (
         <>
             <div className="space-y-4">
@@ -54,19 +69,29 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
                         <Card key={article.id}>
                             <CardHeader>
                                 <div className="flex justify-between items-start">
-                                    <div>
-                                        <CardTitle className="text-lg">{article.title}</CardTitle>
-                                        <p className="text-sm text-muted-foreground mt-1">
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <CardTitle className="text-lg">{article.title}</CardTitle>
+                                            {getStatusBadge(article.status)}
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
                                             {article.category} • {new Date(article.created_at).toLocaleDateString('tr-TR')}
                                         </p>
                                     </div>
-                                    <Button
-                                        variant="destructive"
-                                        size="sm"
-                                        onClick={() => setDeleteId(article.id)}
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Link href={`/admin/articles/${article.id}/edit`}>
+                                            <Button variant="outline" size="sm">
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => setDeleteId(article.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardHeader>
                             {article.excerpt && (

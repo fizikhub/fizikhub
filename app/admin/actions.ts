@@ -219,3 +219,44 @@ export async function toggleWriterStatus(userId: string, isWriter: boolean) {
     revalidatePath('/admin');
     return { success: true };
 }
+
+export async function updateArticle(id: number, data: {
+    title?: string;
+    slug?: string;
+    excerpt?: string;
+    content?: string;
+    category?: string;
+    image_url?: string;
+    status?: string;
+}) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const updateData: Record<string, any> = {};
+    if (data.title) updateData.title = data.title;
+    if (data.slug) updateData.slug = data.slug;
+    if (data.excerpt !== undefined) updateData.excerpt = data.excerpt;
+    if (data.content) updateData.content = data.content;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.image_url !== undefined) updateData.image_url = data.image_url;
+    if (data.status) updateData.status = data.status;
+
+    const { error } = await adminCheck.supabase!
+        .from('articles')
+        .update(updateData)
+        .eq('id', id);
+
+    if (error) {
+        console.error("Update Article Error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/admin/articles');
+    revalidatePath('/blog');
+    revalidatePath('/kesfet');
+    revalidatePath('/');
+    return { success: true };
+}
