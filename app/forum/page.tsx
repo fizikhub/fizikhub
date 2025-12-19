@@ -82,7 +82,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         .select('id')
         .contains('tags', ['haftanin-sorusu'])
         .limit(1)
-        .single();
+        .maybeSingle();
 
     // Fetch Latest Article for Ad
     const { data: latestArticle } = await supabase

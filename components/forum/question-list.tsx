@@ -1,3 +1,5 @@
+"use client";
+
 import { QuestionCard } from "@/components/forum/question-card";
 import { useRealtimeQuestions } from "@/hooks/useRealtimeQuestions";
 import Link from "next/link";
