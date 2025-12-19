@@ -12,7 +12,7 @@ import { EditProfileButton } from "@/components/profile/edit-profile-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
-import { ModeToggle } from "@/components/mode-toggle";
+
 import { ReputationDisplay } from "@/components/reputation-display";
 import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
 
@@ -77,7 +77,6 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
                             <CreateArticleDialog />
                             <div>
-                                <ModeToggle />
                             </div>
                             {profile?.is_writer && (
                                 <Link href="/yazar">
