@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+
 
 interface SiteLogoProps {
     className?: string;
@@ -7,13 +7,19 @@ interface SiteLogoProps {
 
 export function SiteLogo({ className }: SiteLogoProps) {
     return (
-        <Image
-            src="/logo-no-bg.svg"
-            alt="FizikHub Logo"
-            width={53}
-            height={53}
-            className={cn("w-auto h-[53px]", className)}
-            priority
+        <div
+            className={cn("w-[53px] h-[53px] bg-primary", className)}
+            style={{
+                maskImage: 'url("/logo-no-bg.svg")',
+                maskSize: 'contain',
+                maskRepeat: 'no-repeat',
+                maskPosition: 'center',
+                WebkitMaskImage: 'url("/logo-no-bg.svg")',
+                WebkitMaskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'center',
+            }}
+            aria-label="FizikHub Logo"
         />
     );
 }
