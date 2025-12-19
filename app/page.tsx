@@ -34,7 +34,7 @@ const getCachedHomepageData = unstable_cache(
     const [articlesResult, questionsResult] = await Promise.all([
       supabase
         .from('articles')
-        .select('id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)')
+        .select('id, title, slug, content, created_at, image_url, views, category, author:profiles!articles_author_id_fkey(full_name, username, avatar_url)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(3),
@@ -51,6 +51,14 @@ const getCachedHomepageData = unstable_cache(
         .order('votes', { ascending: false })
         .limit(3)
     ]);
+
+    // Log errors for debugging
+    if (articlesResult.error) {
+      console.error('Articles fetch error:', articlesResult.error);
+    }
+    if (questionsResult.error) {
+      console.error('Questions fetch error:', questionsResult.error);
+    }
 
     return {
       articles: articlesResult.data || [],
@@ -75,7 +83,7 @@ export default async function Home() {
 
   const articles = rawArticles.map(a => ({
     ...a,
-    summary: a.summary || null,
+    summary: null, // DB doesn't have summary column
     content: a.content || "",
     category: a.category || undefined
   }));
