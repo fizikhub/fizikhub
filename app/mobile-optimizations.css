@@ -1,17 +1,79 @@
 /* ===================================
-   MOBILE OPTIMIZATION & PERFORMANCE
+   GLOBAL PERFORMANCE OPTIMIZATIONS
+   "Yağ Gibi Akışkanlık" 🧈
    =================================== */
 
-/* Minimum touch target size for mobile accessibility */
-.touch-target {
-    min-width: 44px;
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+/* ========== BASE PERFORMANCE ========== */
+
+/* Smooth scrolling everywhere */
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Apply to common interactive elements */
+/* GPU acceleration for main layout */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Hint to browser for optimization */
+    contain: layout style;
+}
+
+/* ========== GLOBAL TRANSITIONS ========== */
+
+/* Default smooth transition for ALL elements */
+*,
+*::before,
+*::after {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for common elements */
+a, button, input, textarea, select,
+[role="button"], [role="link"] {
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+    transition-duration: 200ms;
+    touch-action: manipulation;
+}
+
+/* Cards and interactive containers */
+.card, [class*="card"],
+article, section > div,
+.group {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 200ms ease;
+}
+
+/* ========== GPU ACCELERATION ========== */
+
+/* Force GPU rendering for animated elements */
+.will-change-transform,
+[class*="animate-"],
+.transition-all,
+.hover\:scale,
+.group-hover\:scale {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+.will-change-opacity {
+    will-change: opacity;
+}
+
+/* Images - smooth loading */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    transform: translateZ(0);
+}
+
+/* ========== TOUCH OPTIMIZATION ========== */
+
+/* Minimum touch target size */
+.touch-target,
 button:not([class*="ghost"]):not([class*="link"]),
 [role="button"],
 .like-button,
@@ -21,44 +83,125 @@ button:not([class*="ghost"]):not([class*="link"]),
     min-height: 44px !important;
 }
 
-/* Remove 300ms tap delay on mobile */
-a,
-button,
-input,
-textarea,
-select {
+/* Remove tap delay */
+a, button, input, textarea, select {
     touch-action: manipulation;
 }
 
-/* Smooth scroll for better mobile UX */
-html {
+/* ========== SCROLL PERFORMANCE ========== */
+
+/* Smooth momentum scrolling */
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-auto,
+[class*="scroll"] {
+    -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
 }
 
-/* Prevent text size adjustment after orientation change */
-html {
-    -webkit-text-size-adjust: 100%;
+/* Content stability */
+main, article, .content {
+    contain: layout style paint;
 }
 
-/*  Improve font rendering */
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
+/* ========== ANIMATION OPTIMIZATIONS ========== */
 
-/* GPU acceleration for transforms and animations */
-.will-change-transform {
-    will-change: transform;
-}
-
-.will-change-opacity {
-    will-change: opacity;
-}
-
-/* Optimize expensive hover effects on mobile */
-@media (hover: none) {
+/* Disable hover effects on touch devices for performance */
+@media (hover: none) and (pointer: coarse) {
     *:hover {
         transition-duration: 0s !important;
     }
+    
+    /* But keep click feedback */
+    *:active {
+        transition-duration: 100ms !important;
+    }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========== IMAGE PERFORMANCE ========== */
+
+/* Lazy loading optimization */
+img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 400ms ease-in-out;
+}
+
+img[loading="lazy"].loaded,
+img[loading="lazy"]:not([src=""]) {
+    opacity: 1;
+}
+
+/* Prevent layout shift */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ========== DIALOG/MODAL PERFORMANCE ========== */
+
+/* GPU accelerate dialogs */
+[role="dialog"],
+[data-state="open"],
+.dialog-content,
+.modal {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+/* ========== SKELETON LOADING ========== */
+
+.skeleton,
+[class*="skeleton"] {
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: skeleton-shimmer 1.5s infinite;
+    transform: translateZ(0);
+}
+
+@keyframes skeleton-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ========== UTILITY CLASSES ========== */
+
+/* Force smooth GPU rendering */
+.gpu-smooth {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+}
+
+/* Instant feedback on click */
+.click-feedback:active {
+    transform: scale(0.97);
+    transition-duration: 50ms !important;
+}
+
+/* Smooth opacity transitions */
+.fade-transition {
+    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
