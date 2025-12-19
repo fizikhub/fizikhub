@@ -13,10 +13,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Ana Sayfa",
-  description: "Evrenin sırlarını çözmeye çalışanların buluşma noktası. Fizik, uzay ve bilim üzerine eğlenceli içerikler, soru-cevap forumu ve bilim sözlüğü.",
+  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   openGraph: {
     title: "Fizikhub | Eğlenceli Bilim Platformu",
-    description: "Evrenin sırlarını çözmeye çalışanların buluşma noktası. Fizik, uzay ve bilim üzerine eğlenceli içerikler.",
+    description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
     type: "website",
   },
 };
