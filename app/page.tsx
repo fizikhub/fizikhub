@@ -34,7 +34,7 @@ const getCachedHomepageData = unstable_cache(
     const [articlesResult, questionsResult] = await Promise.all([
       supabase
         .from('articles')
-        .select('id, title, slug, content, created_at, image_url, views, category, author:profiles!articles_author_id_fkey(full_name, username, avatar_url)')
+        .select('id, title, slug, content, created_at, image_url, category, author:profiles!articles_author_id_fkey(full_name, username, avatar_url)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(3),
