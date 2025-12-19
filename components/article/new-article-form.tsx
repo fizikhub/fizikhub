@@ -58,9 +58,9 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
 
         console.log("📤 Supabase'e yükleniyor (path):", fileName);
 
-        // Timeout Promise oluştur
+        // Timeout Promise oluştur (60 saniye - daha uzun)
         const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("Yükleme zaman aşımına uğradı (15sn). İnternet bağlantınızı kontrol edin.")), 15000);
+            setTimeout(() => reject(new Error("Yükleme zaman aşımına uğradı (60sn). Dosya boyutunu küçültmeyi veya farklı bir resim denemeyi düşünün.")), 60000);
         });
 
         // Upload Promise
