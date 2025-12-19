@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Search, Shield, PenTool, Eye } from "lucide-react";
+import { BadgeCheck, Search, Shield, PenTool, Eye, Activity } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
