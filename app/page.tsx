@@ -65,7 +65,13 @@ const getCachedHomepageData = unstable_cache(
 );
 
 export default async function Home() {
-  const { articles: rawArticles, trendingQuestions } = await getCachedHomepageData();
+  const { articles: rawArticles, trendingQuestions, error } = await getCachedHomepageData().then(data => ({ ...data, error: null })).catch(e => ({ articles: [], trendingQuestions: [], error: e }));
+
+  if (error) {
+    console.error("Homepage Data Fetch Error:", error);
+  } else if (!rawArticles || rawArticles.length === 0) {
+    console.error("Homepage: No articles found.");
+  }
 
   const articles = rawArticles.map(a => ({
     ...a,
