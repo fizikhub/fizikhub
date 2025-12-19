@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, Shield } from "lucide-react";
-import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
+import { Eye, EyeOff, Lock, ArrowRight, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updatePassword } from "./actions";
 import { toast } from "sonner";
@@ -18,6 +17,23 @@ export default function ResetPasswordPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    // Stars
+    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
+
+    useEffect(() => {
+        const newStars = [];
+        for (let i = 0; i < 100; i++) {
+            newStars.push({
+                x: Math.random() * 100,
+                y: Math.random() * 100,
+                size: Math.random() * 2 + 0.5,
+                opacity: Math.random() * 0.5 + 0.2,
+                delay: Math.random() * 5,
+            });
+        }
+        setStars(newStars);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,7 +53,7 @@ export default function ResetPasswordPage() {
         const result = await updatePassword(newPassword);
 
         if (result.success) {
-            toast.success("Şifren güncellendi! Giriş yapabilirsin.");
+            toast.success("Şifren güncellendi!");
             setTimeout(() => {
                 router.push("/login");
             }, 1500);
@@ -60,130 +76,145 @@ export default function ResetPasswordPage() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Simple Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-black to-black" />
+            {/* Stars */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {stars.map((star, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute bg-white rounded-full"
+                        style={{
+                            left: `${star.x}%`,
+                            top: `${star.y}%`,
+                            width: star.size,
+                            height: star.size,
+                        }}
+                        animate={{
+                            opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            delay: star.delay,
+                            ease: "easeInOut",
+                        }}
+                    />
+                ))}
+            </div>
 
-            {/* Main Container */}
+            {/* Grid */}
+            <div
+                className="absolute inset-0 opacity-[0.03]"
+                style={{
+                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                    backgroundSize: '60px 60px'
+                }}
+            />
+
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-md relative z-10"
+                className="w-full max-w-[420px] relative z-10"
             >
-                <div className="bg-black border border-white/10 p-1 rounded-2xl shadow-2xl relative overflow-hidden">
-                    {/* Industrial Hazard Stripes */}
-                    <div className="absolute top-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
-                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
+                {/* Card */}
+                <div className="bg-zinc-950 border-2 border-white/10 p-8 relative">
+                    {/* Corner Accents */}
+                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary -translate-x-px -translate-y-px" />
+                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary translate-x-px -translate-y-px" />
+                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary -translate-x-px translate-y-px" />
+                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-px translate-y-px" />
 
-                    {/* Corner Brackets */}
-                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary z-30" />
-                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary z-30" />
-                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary z-30" />
-                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary z-30" />
+                    <div className="text-center mb-8">
+                        <div className="w-14 h-14 mx-auto bg-primary/10 border border-primary/30 flex items-center justify-center mb-4">
+                            <Shield className="h-6 w-6 text-primary" />
+                        </div>
+                        <h1 className="text-2xl font-black text-white uppercase tracking-tight">
+                            Yeni Şifre Belirle
+                        </h1>
+                        <p className="text-white/40 text-sm mt-2">
+                            Güçlü bir şifre seç.
+                        </p>
+                    </div>
 
-                    <div className="bg-black/60 p-6 md:p-8 rounded-xl relative z-10">
-                        <div className="text-center mb-6">
-                            <div className="w-16 h-16 mx-auto bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                                <Shield className="h-8 w-8 text-primary" />
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                Yeni Şifre
+                            </Label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                    className="h-12 bg-black border-2 border-white/20 text-white focus:border-primary pl-10 pr-12 rounded-none transition-all"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                             </div>
-                            <h1 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
-                                Yeni Şifre Belirle
-                            </h1>
-                            <p className="text-white/60 text-sm font-medium">
-                                Güçlü bir şifre seç ve tekrar unutma! 🔐
-                            </p>
+
+                            {/* Strength Indicator */}
+                            {newPassword.length > 0 && (
+                                <div className="space-y-1">
+                                    <div className="flex gap-1">
+                                        {[1, 2, 3, 4].map((level) => (
+                                            <div
+                                                key={level}
+                                                className={`h-1 flex-1 transition-all ${level <= strength.strength ? strength.color : "bg-white/10"}`}
+                                            />
+                                        ))}
+                                    </div>
+                                    <p className={`text-xs font-bold uppercase ${strength.color.replace('bg-', 'text-')}`}>
+                                        {strength.label}
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="newPassword" className="text-xs font-bold uppercase text-white/60 tracking-wider flex items-center gap-2">
-                                    <div className="w-1 h-1 bg-primary rounded-full" />
-                                    Yeni Şifre
-                                </Label>
-                                <div className="relative group">
-                                    <Input
-                                        id="newPassword"
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="••••••••"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        required
-                                        className="h-12 border-white/10 rounded-none bg-white/5 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-primary transition-all font-medium pl-10 pr-10 border-l-2 border-l-primary/50"
-                                    />
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-colors" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-primary transition-colors"
-                                    >
-                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                    </button>
-                                </div>
-
-                                {/* Password Strength Indicator */}
-                                {newPassword.length > 0 && (
-                                    <div className="space-y-1">
-                                        <div className="flex gap-1">
-                                            {[1, 2, 3, 4].map((level) => (
-                                                <div
-                                                    key={level}
-                                                    className={`h-1 flex-1 rounded-full transition-all ${level <= strength.strength ? strength.color : "bg-white/10"
-                                                        }`}
-                                                />
-                                            ))}
-                                        </div>
-                                        <p className={`text-xs font-bold uppercase ${strength.color.replace('bg-', 'text-')}`}>
-                                            {strength.label}
-                                        </p>
-                                    </div>
-                                )}
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                Şifreyi Onayla
+                            </Label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                                <Input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    className="h-12 bg-black border-2 border-white/20 text-white focus:border-primary pl-10 pr-12 rounded-none transition-all"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
                             </div>
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-xs font-bold uppercase text-white/60 tracking-wider flex items-center gap-2">
-                                    <div className="w-1 h-1 bg-primary rounded-full" />
-                                    Şifreyi Onayla
-                                </Label>
-                                <div className="relative group">
-                                    <Input
-                                        id="confirmPassword"
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        placeholder="••••••••"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        required
-                                        className="h-12 border-white/10 rounded-none bg-white/5 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-primary transition-all font-medium pl-10 pr-10 border-l-2 border-l-primary/50"
-                                    />
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/20 group-focus-within:text-primary transition-colors" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-primary transition-colors"
-                                    >
-                                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full h-12 text-base font-bold uppercase rounded-none bg-primary text-white hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] hover:scale-[1.02] active:scale-[0.98] border border-white/20"
-                                disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
-                            >
-                                {loading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                        Güncelleniyor...
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        Şifreyi Güncelle
-                                        <Rocket className="h-5 w-5" />
-                                    </span>
-                                )}
-                            </Button>
-                        </form>
-                    </div>
+                        <Button
+                            type="submit"
+                            disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-wide rounded-none border-2 border-primary hover:border-white transition-all group disabled:opacity-50"
+                        >
+                            {loading ? (
+                                <div className="h-5 w-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    Şifreyi Güncelle
+                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                            )}
+                        </Button>
+                    </form>
                 </div>
             </motion.div>
         </div>
