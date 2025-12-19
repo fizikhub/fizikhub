@@ -90,7 +90,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         .select('title, slug, image_url, summary, category, created_at, author:profiles(full_name)')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
     const jsonLd = {
         '@context': 'https://schema.org',
