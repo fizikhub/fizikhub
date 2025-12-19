@@ -56,7 +56,7 @@ const getCachedHomepageData = unstable_cache(
       trendingQuestions: questionsResult.data || []
     };
   },
-  ['homepage-data-debug-v2'], // Cache key updated
+  ['homepage-data-debug-v3'], // Cache key updated
   {
     revalidate: 1, // Revalidate every 1 second for debugging
     tags: ['homepage']
