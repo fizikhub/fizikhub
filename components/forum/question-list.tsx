@@ -25,44 +25,34 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
                         userVote={userVotes.get(question.id)}
                     />
                     {index === 2 && latestArticle && (
-                        <Link href={`/blog/${latestArticle.slug}`} className="block group">
-                            <div className="relative overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent p-1 transition-all hover:border-primary/40 hover:shadow-[0_0_20px_rgba(var(--primary),0.15)]">
-                                <div className="absolute top-0 right-0 p-2 opacity-10">
-                                    <Sparkles className="h-24 w-24 -rotate-12 text-primary" />
+                        <Link href={`/blog/${latestArticle.slug}`} className="block group my-2">
+                            <div className="border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200 flex flex-col sm:flex-row">
+                                {/* Image */}
+                                <div className="relative w-full sm:w-32 md:w-40 aspect-video sm:aspect-square flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
+                                    <Image
+                                        src={latestArticle.image_url || "/placeholder-article.jpg"}
+                                        alt={latestArticle.title}
+                                        fill
+                                        className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-200"
+                                    />
+                                    <div className="absolute top-0 left-0 bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-[10px] font-black uppercase tracking-wider">
+                                        Makale
+                                    </div>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-4 bg-background/50 backdrop-blur-sm rounded-lg p-4 h-full items-center">
-                                    {/* Image */}
-                                    <div className="relative h-24 w-24 sm:h-20 sm:w-32 flex-shrink-0 rounded-lg overflow-hidden border border-white/10 shadow-sm">
-                                        <Image
-                                            src={latestArticle.image_url || "/placeholder-article.jpg"}
-                                            alt={latestArticle.title}
-                                            fill
-                                            className="object-cover transition-transform duration-500 group-hover:scale-110"
-                                        />
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="flex-1 text-center sm:text-left min-w-0">
-                                        <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                                            <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary ring-1 ring-inset ring-primary/20 animate-pulse">
-                                                <Sparkles className="h-3 w-3" />
-                                                YENİ MAKALE
-                                            </span>
-                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
-                                                {latestArticle.category || "Genel"}
-                                            </span>
-                                        </div>
-                                        <h3 className="font-bold text-lg leading-tight mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                {/* Content */}
+                                <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                                    <div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground block mb-1">
+                                            {latestArticle.category || "Genel"}
+                                        </span>
+                                        <h3 className="font-black text-base md:text-lg uppercase leading-tight line-clamp-2 group-hover:underline decoration-2 underline-offset-4">
                                             {latestArticle.title}
                                         </h3>
-                                        <p className="text-sm text-muted-foreground line-clamp-2 sm:line-clamp-1 mb-2">
-                                            {latestArticle.content?.replace(/<[^>]*>/g, '').substring(0, 100) || "Makaleyi okumak için tıklayın"}
-                                        </p>
-                                        <div className="flex items-center justify-center sm:justify-start text-xs font-bold text-primary group-hover:underline decoration-2 underline-offset-4">
-                                            HEMEN OKU
-                                            <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
-                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mt-3 pt-2 border-t-2 border-border text-xs">
+                                        <span className="font-bold">Oku →</span>
                                     </div>
                                 </div>
                             </div>
