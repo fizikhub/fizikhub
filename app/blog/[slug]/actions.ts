@@ -33,7 +33,19 @@ export async function toggleLike(articleId: number) {
             return { success: false, error: "Beğeni kaldırılamadı." };
         }
 
-        revalidatePath(`/blog/${articleId}`);
+        // Fetch article slug for revalidation
+        const { data: article } = await supabase
+            .from('articles')
+            .select('slug')
+            .eq('id', articleId)
+            .single();
+
+        if (article) {
+             revalidatePath(`/blog/${article.slug}`);
+        } else {
+             revalidatePath(`/blog/${articleId}`);
+        }
+        
         return { success: true, liked: false };
     } else {
         // Like
@@ -49,7 +61,7 @@ export async function toggleLike(articleId: number) {
         // First get article details to find author
         const { data: article } = await supabase
             .from('articles')
-            .select('author_id, title, slug') // Assuming slug exists for linking
+            .select('author_id, title, slug')
             .eq('id', articleId)
             .single();
 
@@ -62,9 +74,12 @@ export async function toggleLike(articleId: number) {
                 resourceType: 'article',
                 content: `"${article.title}" makaleni beğendi.`
             });
+            
+            revalidatePath(`/blog/${article.slug}`);
+        } else {
+             revalidatePath(`/blog/${articleId}`);
         }
-
-        revalidatePath(`/blog/${articleId}`);
+        
         return { success: true, liked: true };
     }
 }
@@ -131,6 +146,7 @@ export async function createComment(articleId: number, content: string, parentCo
             .single();
 
         if (article) {
+        if (article) {
             await createNotification({
                 recipientId: article.author_id,
                 actorId: user.id,
@@ -142,7 +158,21 @@ export async function createComment(articleId: number, content: string, parentCo
         }
     }
 
-    revalidatePath(`/blog/${articleId}`);
+    // Fetch article slug for revalidation if we haven't already (we likely have it in 'article' variable from above blocks but let's be safe or just use what we have if scope allows, though scoping in if/else is tricky here without refactor. The 'article' variable in 'else' block is scoped there. Let's just fetch it once at top or re-fetch properly).
+    // Actually, 'article' is defined in both if/else blocks locally. Let's fetch it at the start of the function to be cleaner, OR just fetch it for revalidation here.
+    
+    const { data: articleForReval } = await supabase
+        .from('articles')
+        .select('slug')
+        .eq('id', articleId)
+        .single();
+        
+    if (articleForReval) {
+         revalidatePath(`/blog/${articleForReval.slug}`);
+    } else {
+         revalidatePath(`/blog/${articleId}`);
+    }
+
     return { success: true };
 }
 
@@ -172,6 +202,23 @@ export async function deleteComment(commentId: number) {
     // If admin, use service role to bypass RLS if needed, or just rely on RLS
     // For now, we rely on RLS but the explicit check helps us return better errors
 
+    // Get article slug before deleting
+    const { data: commentData } = await supabase
+        .from('article_comments')
+        .select('article_id')
+        .eq('id', commentId)
+        .single();
+        
+    let articleSlug = null;
+    if (commentData) {
+        const { data: article } = await supabase
+            .from('articles')
+            .select('slug')
+            .eq('id', commentData.article_id)
+            .single();
+        articleSlug = article?.slug;
+    }
+
     const { error } = await supabase
         .from('article_comments')
         .delete()
@@ -182,6 +229,11 @@ export async function deleteComment(commentId: number) {
         return { success: false, error: "Yorum silinemedi. Yetkiniz olmayabilir." };
     }
 
-    revalidatePath(`/blog/*`);
+    if (articleSlug) {
+        revalidatePath(`/blog/${articleSlug}`);
+    } else {
+        revalidatePath(`/blog/*`);
+    }
+
     return { success: true };
 }

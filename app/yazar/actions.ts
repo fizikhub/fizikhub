@@ -64,6 +64,9 @@ export async function createArticle(formData: FormData) {
     }
 
     revalidatePath("/yazar");
+    revalidatePath("/kesfet");
+    revalidatePath("/blog");
+    revalidatePath("/");
     return { success: true };
 }
 
@@ -116,6 +119,9 @@ export async function updateArticle(articleId: number, formData: FormData) {
 
     revalidatePath("/yazar");
     revalidatePath(`/yazar/${articleId}`);
+    revalidatePath("/kesfet");
+    revalidatePath("/blog");
+    revalidatePath("/");
     return { success: true };
 }
 
