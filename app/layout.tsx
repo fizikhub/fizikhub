@@ -47,6 +47,9 @@ export const metadata: Metadata = {
     default: "Fizikhub",
     template: "%s | Fizikhub"
   },
+  alternates: {
+    canonical: './',
+  },
   description: "Evrenin sınırlarını çözmeye çalışanların buluşma noktası.",
   keywords: [
     "fizik", "bilim", "uzay", "teknoloji", "fizikhub", "forum", "soru cevap",
@@ -135,6 +138,7 @@ export default function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link rel="canonical" href="https://fizikhub.com" />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
