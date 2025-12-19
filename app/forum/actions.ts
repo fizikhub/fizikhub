@@ -121,7 +121,7 @@ export async function createQuestion(formData: { title: string; content: string;
     // Add reputation for asking question
     await supabase.rpc('add_reputation', {
         p_user_id: user.id,
-        p_points: 2,
+        p_points: 5,
         p_reason: 'question_created',
         p_reference_type: 'question',
         p_reference_id: data.id
@@ -366,11 +366,39 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
     const newStatus = !currentAnswer.is_accepted;
 
     if (newStatus) {
-        // If marking as accepted, first unmark all others
+        // If marking as accepted, first find existing accepted answer to remove points
+        const { data: previousAccepted } = await supabase
+            .from('answers')
+            .select('id, author_id')
+            .eq('question_id', questionId)
+            .eq('is_accepted', true)
+            .single();
+
+        if (previousAccepted) {
+            // Remove points from previous owner
+            await supabase.rpc('add_reputation', {
+                p_user_id: previousAccepted.author_id,
+                p_points: -15,
+                p_reason: 'answer_unaccepted',
+                p_reference_type: 'answer',
+                p_reference_id: previousAccepted.id
+            });
+        }
+
+        // Unmark all others
         await supabase
             .from('answers')
             .update({ is_accepted: false })
             .eq('question_id', questionId);
+    } else {
+        // If unmarking (newStatus is false), remove points from current author
+        await supabase.rpc('add_reputation', {
+            p_user_id: currentAnswer.author_id,
+            p_points: -15,
+            p_reason: 'answer_unaccepted',
+            p_reference_type: 'answer',
+            p_reference_id: answerId
+        });
     }
 
     // Update status
@@ -381,6 +409,17 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
     if (error) {
         return { success: false, error: error.message };
+    }
+
+    // Add points if accepted
+    if (newStatus) {
+        await supabase.rpc('add_reputation', {
+            p_user_id: currentAnswer.author_id,
+            p_points: 15,
+            p_reason: 'answer_accepted',
+            p_reference_type: 'answer',
+            p_reference_id: answerId
+        });
     }
 
     // Notify answer author if accepted

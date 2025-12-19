@@ -174,6 +174,23 @@ export async function approveArticle(id: number) {
         return { success: false, error: error.message };
     }
 
+    // Award 20 points to author
+    const { data: article } = await adminCheck.supabase!
+        .from('articles')
+        .select('author_id')
+        .eq('id', id)
+        .single();
+
+    if (article) {
+        await adminCheck.supabase!.rpc('add_reputation', {
+            p_user_id: article.author_id,
+            p_points: 20,
+            p_reason: 'article_published',
+            p_reference_type: 'article',
+            p_reference_id: id
+        });
+    }
+
     revalidatePath('/admin');
     revalidatePath('/kesfet');
     revalidatePath('/'); // Also revalidate home if it shows articles

@@ -57,55 +57,161 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
         );
     }
 
-    // Curie Badge (Flask/Radioactivity)
+    // Curie Badge (Glowing Flask - Redesigned)
     if (normalizedName.includes("curie") || normalizedName.includes("radyoaktif")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M12 4V10" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
-                <path d="M9 10L7 19H17L15 10H9Z" fill="currentColor" className="text-purple-200 dark:text-purple-900" stroke="currentColor" strokeWidth="1.5" />
-                <circle cx="12" cy="15" r="2" fill="currentColor" className="text-green-400 animate-pulse" />
-                <path d="M12 20V22" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
-                <path d="M8 22H16" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
+                {/* Flask Body */}
+                <path d="M12 3V9L6 19C5.5 19.8 6 21 7 21H17C18 21 18.5 19.8 18 19L12 9" stroke="currentColor" strokeWidth="1.5" className="text-purple-400" fill="none" />
+                {/* Liquid Level */}
+                <path d="M8 15.5H16" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" className="text-green-400" />
+                {/* Bubbles/Glow */}
+                <circle cx="12" cy="18" r="1.5" fill="currentColor" className="text-green-400 animate-pulse" />
+                <circle cx="10" cy="16" r="1" fill="currentColor" className="text-green-300 animate-ping" style={{ animationDuration: '3s' }} />
+                <circle cx="14" cy="14" r="0.5" fill="currentColor" className="text-green-300" />
+                {/* Radioactive Symbol Hint */}
+                <path d="M12 12L13.5 10.5" stroke="currentColor" strokeWidth="1" className="text-green-500" />
+                <path d="M12 12L10.5 10.5" stroke="currentColor" strokeWidth="1" className="text-green-500" />
             </svg>
         );
     }
 
-    // Galileo Badge (Solar System/Telescope Redesign)
+    // Galileo Badge (Telescope & Jupiter Moons - Redesigned)
     if (normalizedName.includes("galileo") || normalizedName.includes("teleskop")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                {/* Sun */}
-                <circle cx="4" cy="20" r="3" fill="currentColor" className="text-yellow-500" />
-                {/* Orbit 1 */}
-                <path d="M4 20C4 20 10 14 16 14" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" className="text-slate-400" />
-                <circle cx="16" cy="14" r="1.5" fill="currentColor" className="text-blue-400" />
-                {/* Orbit 2 */}
-                <path d="M4 20C4 20 14 8 20 8" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" className="text-slate-400" />
-                <circle cx="20" cy="8" r="2" fill="currentColor" className="text-red-400" />
-                {/* Telescope */}
-                <path d="M16 18L20 22" stroke="currentColor" strokeWidth="2" className="text-slate-600" />
-                <path d="M14 16L18 20" stroke="currentColor" strokeWidth="3" className="text-amber-700" />
+                {/* Telescope Tube */}
+                <rect x="5" y="5" width="4" height="14" transform="rotate(-45 7 12)" rx="1" fill="currentColor" className="text-amber-700" />
+                {/* Lens */}
+                <path d="M14 8L16 6" stroke="currentColor" strokeWidth="3" className="text-slate-400" />
+                {/* Stand */}
+                <path d="M6 18L4 22M6 18L8 22" stroke="currentColor" strokeWidth="1.5" className="text-amber-900" />
+                {/* Jupiter & Moons */}
+                <circle cx="18" cy="6" r="3" fill="currentColor" className="text-orange-300" />
+                <circle cx="18" cy="6" r="2.5" stroke="currentColor" strokeWidth="0.5" className="text-orange-400" />
+                <circle cx="13" cy="4" r="0.5" fill="currentColor" className="text-white" />
+                <circle cx="22" cy="7" r="0.8" fill="currentColor" className="text-white" />
+                <circle cx="16" cy="10" r="0.6" fill="currentColor" className="text-white" />
             </svg>
         );
     }
 
-    // Hawking Badge (Black Hole + Wheelchair)
+    // Hawking Badge (Wheelchair & Black Hole - Redesigned)
     if (normalizedName.includes("hawking") || normalizedName.includes("kara delik")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                {/* Black Hole */}
-                <circle cx="12" cy="10" r="5" fill="currentColor" className="text-black dark:text-white" />
-                <ellipse cx="12" cy="10" rx="8" ry="2" stroke="currentColor" strokeWidth="1" className="text-purple-500" transform="rotate(15 12 10)" />
+                {/* Black Hole Background */}
+                <circle cx="18" cy="6" r="5" fill="black" className="dark:fill-white opacity-20" />
+                <path d="M18 6m-5 0a5 5 0 1 0 10 0a5 5 0 1 0 -10 0" stroke="currentColor" strokeWidth="0.5" className="text-indigo-500 animate-[spin_10s_linear_infinite]" />
 
-                {/* Wheelchair Symbol (Simplified) */}
-                <path d="M9 17C9 18.6569 10.3431 20 12 20C13.6569 20 15 18.6569 15 17" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
-                <path d="M12 17V14H15" stroke="currentColor" strokeWidth="1.5" className="text-slate-500" />
-                <circle cx="12" cy="17" r="1" fill="currentColor" className="text-slate-500" />
+                {/* Wheelchair Side View */}
+                {/* Back rest */}
+                <path d="M7 8L7 16" stroke="currentColor" strokeWidth="1.5" className="text-slate-600 dark:text-slate-400" />
+                {/* Seat */}
+                <path d="M7 16H12" stroke="currentColor" strokeWidth="1.5" className="text-slate-600 dark:text-slate-400" />
+                {/* Main Wheel */}
+                <circle cx="10" cy="19" r="3" stroke="currentColor" strokeWidth="1.5" className="text-slate-700 dark:text-slate-300" />
+                <circle cx="10" cy="19" r="1" fill="currentColor" className="text-slate-500" />
+                {/* Small front wheel */}
+                <circle cx="14" cy="19" r="1.5" stroke="currentColor" strokeWidth="1.5" className="text-slate-700 dark:text-slate-300" />
+                {/* Handle */}
+                <path d="M7 8L5 8" stroke="currentColor" strokeWidth="1.5" className="text-slate-600 dark:text-slate-400" />
+
+                {/* Silhouette Hint */}
+                <path d="M8 10C8 9 9 8 10 8C11 8 11 9 11 11L10 15L13 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-slate-800 dark:text-slate-200" fill="none" />
             </svg>
         );
     }
 
-    // Kaşif (Explorer) Badge - First Question
+    // Da Vinci (Vitruvian/Sketch - Redesigned)
+    if (normalizedName.includes("vinci") || normalizedName.includes("sanat")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                {/* Circle */}
+                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="0.5" className="text-amber-700" strokeDasharray="2 2" />
+                {/* Square */}
+                <rect x="5" y="5" width="14" height="14" stroke="currentColor" strokeWidth="0.5" className="text-amber-700" />
+                {/* Human Figure Abstract */}
+                <path d="M12 6V18" stroke="currentColor" strokeWidth="1" className="text-amber-500" />
+                <path d="M7 10L12 7L17 10" stroke="currentColor" strokeWidth="1" className="text-amber-500" />
+                <path d="M7 14L12 18L17 14" stroke="currentColor" strokeWidth="1" className="text-amber-500" />
+                {/* Arms */}
+                <path d="M6 9H18" stroke="currentColor" strokeWidth="0.5" className="text-amber-500 opacity-60" />
+                <path d="M5 8L19 8" stroke="currentColor" strokeWidth="0.5" className="text-amber-500 opacity-40" />
+            </svg>
+        );
+    }
+
+    // Writer/Pen Badge (Feather Quill - Redesigned)
+    if (normalizedName.includes("yazar") || normalizedName.includes("kalem") || normalizedName.includes("içerik")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                {/* Ink Pot */}
+                <path d="M16 16V20C16 21.1 15.1 22 14 22H10C8.9 22 8 21.1 8 20V16" stroke="currentColor" strokeWidth="1.5" className="text-slate-600 dark:text-slate-400" />
+                <path d="M7 16H17" stroke="currentColor" strokeWidth="1.5" className="text-slate-600 dark:text-slate-400" />
+
+                {/* Quill */}
+                <path d="M12 16L18 4C19 2 21 2 21 2C21 2 20 5 18 7C16 9 12 16 12 16Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" className="text-slate-800 dark:text-slate-200" />
+                <path d="M12 16L12 20" stroke="currentColor" strokeWidth="1" className="text-slate-800" />
+
+                {/* Ink drop */}
+                <circle cx="15" cy="20" r="1" fill="currentColor" className="text-slate-800 dark:text-white" />
+            </svg>
+        );
+    }
+
+    // Rank Badges
+    if (normalizedName.includes("evrensel")) { // Evrensel Zeka
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" className="text-sky-500" />
+                <path d="M12 2V22" stroke="currentColor" strokeWidth="1" className="text-sky-300 opacity-50" />
+                <path d="M2 12H22" stroke="currentColor" strokeWidth="1" className="text-sky-300 opacity-50" />
+                <circle cx="12" cy="12" r="3" fill="currentColor" className="text-sky-400" />
+                <path d="M12 4A8 8 0 0 1 20 12" stroke="currentColor" strokeWidth="1.5" className="text-sky-200" strokeDasharray="2 2" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("teorisyen")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M12 3L14.5 9H20.5L15.5 13L17.5 19L12 15.5L6.5 19L8.5 13L3.5 9H9.5L12 3Z" fill="currentColor" className="text-amber-500" />
+                <path d="M12 7L13.5 10H17L14 12.5L15 16L12 14L9 16L10 12.5L7 10H10.5L12 7Z" fill="white" className="opacity-30" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("araştırmacı")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" className="text-purple-500" />
+                <path d="M16 16L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-purple-500" />
+                <path d="M11 8V11H14" stroke="currentColor" strokeWidth="1.5" className="text-purple-400" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("gözlemci")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" stroke="currentColor" strokeWidth="2" className="text-blue-500" fill="none" />
+                <circle cx="12" cy="12" r="3" fill="currentColor" className="text-blue-400" />
+            </svg>
+        );
+    }
+
+    if (normalizedName.includes("çaylak") || normalizedName.includes("meraklı")) {
+        return (
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5" className="text-green-500" />
+                <path d="M12 16V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-green-500" />
+                <circle cx="12" cy="8" r="1" fill="currentColor" className="text-green-500" />
+            </svg>
+        );
+    }
+
+    // Kaşif Badge (Existing but refreshed)
     if (normalizedName.includes("kaşif") || normalizedName.includes("explorer")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
@@ -121,86 +227,51 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
         );
     }
 
-    // Yardımsever (Helper) Badge - First Answer
-    if (normalizedName.includes("yardımsever") || normalizedName.includes("helper")) {
+
+    // Point-based Badges
+    if (normalizedName.includes("yıldız tozu") || normalizedName.includes("stardust")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                {/* Heart in Hand */}
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" className="text-rose-500" />
-                <path d="M12 12L15 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M9 9L12 12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M12 2L14 9L21 9L15 14L17 21L12 17L7 21L9 14L3 9L10 9L12 2Z" fill="url(#star-gradient)" stroke="currentColor" strokeWidth="1" className="text-yellow-500" />
+                <defs>
+                    <linearGradient id="star-gradient" x1="12" y1="2" x2="12" y2="21" gradientUnits="userSpaceOnUse">
+                        <stop stopColor="#FCD34D" />
+                        <stop offset="1" stopColor="#F59E0B" />
+                    </linearGradient>
+                </defs>
+                <circle cx="12" cy="12" r="2" fill="white" className="opacity-50" />
             </svg>
         );
     }
 
-    // Da Vinci Badge (Vitruvian/Geometry)
-    if (normalizedName.includes("vinci") || normalizedName.includes("sanat")) {
+    if (normalizedName.includes("kuyruklu yıldız") || normalizedName.includes("comet")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1" className="text-amber-600" />
-                <rect x="6.5" y="6.5" width="11" height="11" stroke="currentColor" strokeWidth="1" className="text-amber-800" />
-                <path d="M12 6V18" stroke="currentColor" strokeWidth="0.5" className="text-amber-500" />
-                <path d="M6 12H18" stroke="currentColor" strokeWidth="0.5" className="text-amber-500" />
+                <path d="M18 6C18 6 14 6 10 10C6 14 4 18 4 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-slate-500" />
+                <path d="M16 4C16 4 12 4 8 8" stroke="currentColor" strokeWidth="1" strokeLinecap="round" className="text-slate-400" />
+                <path d="M20 8C20 8 16 8 12 12" stroke="currentColor" strokeWidth="1" strokeLinecap="round" className="text-slate-400" />
+                <circle cx="19" cy="5" r="3" fill="currentColor" className="text-blue-400" />
+                <circle cx="19" cy="5" r="1.5" fill="white" />
             </svg>
         );
     }
 
-    // Writer/Pen Badge
-    if (normalizedName.includes("yazar") || normalizedName.includes("kalem") || normalizedName.includes("içerik")) {
+    if (normalizedName.includes("galaksi") || normalizedName.includes("galaxy")) {
         return (
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M12 19L19 12L22 15L15 22L12 19Z" fill="currentColor" className="text-blue-500" />
-                <path d="M18 13L16.5 11.5L2 22L2.5 22.5L18 13Z" fill="currentColor" className="text-amber-700" />
-                <path d="M2 22L5 22L16.5 11.5L13.5 8.5L2 19V22Z" fill="currentColor" className="text-amber-500" />
+                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" stroke="currentColor" strokeWidth="0.5" className="text-purple-500 animate-[spin_20s_linear_infinite]" strokeDasharray="4 4" />
+                <path d="M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0" stroke="currentColor" strokeWidth="1" className="text-purple-400" transform="rotate(45 12 12)" />
+                <ellipse cx="12" cy="12" rx="9" ry="3" stroke="currentColor" strokeWidth="1" className="text-pink-500" transform="rotate(-30 12 12)" />
+                <circle cx="12" cy="12" r="2" fill="currentColor" className="text-white" />
             </svg>
         );
     }
 
-    // Rank Badges
-    if (normalizedName.includes("efsane")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14v2H5z" fill="currentColor" className="text-amber-500" />
-            </svg>
-        );
-    }
-
-    if (normalizedName.includes("uzman")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" className="text-purple-500" />
-            </svg>
-        );
-    }
-
-    if (normalizedName.includes("aktif")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor" className="text-blue-500" />
-            </svg>
-        );
-    }
-
-    if (normalizedName.includes("yeni")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" className="text-gray-400" />
-                <circle cx="12" cy="12" r="6" fill="currentColor" className="text-gray-400" />
-            </svg>
-        );
-    }
-
-    if (normalizedName.includes("doğrulanmış")) {
-        return (
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none" className="text-blue-500" />
-                <circle cx="12" cy="12" r="9" fill="currentColor" className="text-blue-100 dark:text-blue-900/30" />
-            </svg>
-        );
-    }
+    // Default fallback
     return (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-full h-full", className)}>
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" className="text-yellow-400" />
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" className="text-gray-400" />
+            <path d="M12 7L13.5 11H17.5L14.5 14L15.5 18L12 15.5L8.5 18L9.5 14L6.5 11H10.5L12 7Z" fill="currentColor" className="text-gray-400" />
         </svg>
     );
 }

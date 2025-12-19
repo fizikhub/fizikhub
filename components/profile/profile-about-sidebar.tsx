@@ -50,7 +50,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                             <div className="text-right">
                                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Seviye</div>
                                 <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                                    {profile?.reputation >= 1000 ? "Uzman" : profile?.reputation >= 500 ? "Deneyimli" : profile?.reputation >= 100 ? "Aktif" : "Yeni"}
+                                    {profile?.reputation >= 5000 ? "Evrensel Zeka" : profile?.reputation >= 1000 ? "Teorisyen" : profile?.reputation >= 500 ? "Araştırmacı" : profile?.reputation >= 100 ? "Gözlemci" : "Çaylak"}
                                 </div>
                             </div>
                         </div>
