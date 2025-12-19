@@ -58,27 +58,18 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
 
         console.log("📤 Supabase'e yükleniyor (path):", fileName);
 
-        // Timeout Promise oluştur (60 saniye - daha uzun)
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error("Yükleme zaman aşımına uğradı (60sn). Dosya boyutunu küçültmeyi veya farklı bir resim denemeyi düşünün.")), 60000);
-        });
-
-        // Upload Promise
-        const uploadPromise = supabase.storage
+        // Direct upload - no timeout, let it complete naturally
+        const { data: uploadData, error: uploadError } = await supabase.storage
             .from("article-images")
             .upload(fileName, file, {
                 cacheControl: '3600',
                 upsert: false,
-                contentType: file.type // Explicit content type
+                contentType: file.type
             });
-
-        // Race between upload and timeout
-        // @ts-ignore
-        const { data: uploadData, error: uploadError } = await Promise.race([uploadPromise, timeoutPromise]);
 
         if (uploadError) {
             console.error("❌ Upload hatası:", uploadError);
-            throw new Error(`Yükleme hatası: ${(uploadError as any).message || "Bilinmeyen hata"}`);
+            throw new Error(`Yükleme hatası: ${uploadError.message || "Bilinmeyen hata"}`);
         }
 
         console.log("✅ Upload başarılı:", uploadData);
