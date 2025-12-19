@@ -74,7 +74,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                     <Link href={`/blog/${featuredArticle.slug}`} className="group block lg:row-span-2">
                         <article className="h-full border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200">
                             {/* Image */}
-                            <div className="relative aspect-[4/3] w-full overflow-hidden border-b-4 border-black dark:border-white">
+                            <div className="relative aspect-[16/10] w-full overflow-hidden border-b-4 border-black dark:border-white">
                                 <Image
                                     src={featuredArticle.image_url || "/placeholder-article.jpg"}
                                     alt={featuredArticle.title}
@@ -88,16 +88,12 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                             </div>
 
                             {/* Content */}
-                            <div className="p-6 md:p-8">
-                                <h3 className="text-2xl md:text-3xl font-black leading-tight uppercase mb-4 group-hover:underline decoration-4 underline-offset-4">
+                            <div className="p-4 md:p-5">
+                                <h3 className="text-xl md:text-2xl font-black leading-tight uppercase mb-3 group-hover:underline decoration-2 underline-offset-4 line-clamp-2">
                                     {featuredArticle.title}
                                 </h3>
 
-                                <p className="text-muted-foreground text-base leading-relaxed mb-6 line-clamp-3">
-                                    {featuredArticle.content.replace(/<[^>]*>/g, '').substring(0, 180)}...
-                                </p>
-
-                                <div className="flex items-center justify-between pt-4 border-t-2 border-border">
+                                <div className="flex items-center justify-between pt-3 border-t-2 border-border">
                                     <span className="font-bold text-sm">
                                         {authorData?.full_name || authorData?.username || "Anonim"}
                                     </span>
@@ -116,7 +112,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                             <Link key={article.id} href={`/blog/${article.slug}`} className="group block">
                                 <article className="h-full border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200 flex flex-col sm:flex-row">
                                     {/* Image */}
-                                    <div className="relative w-full sm:w-40 md:w-48 aspect-square sm:aspect-auto flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
+                                    <div className="relative w-full sm:w-32 md:w-36 aspect-video sm:aspect-square flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
                                         <Image
                                             src={article.image_url || "/placeholder-article.jpg"}
                                             alt={article.title}
