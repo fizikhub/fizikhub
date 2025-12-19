@@ -57,7 +57,7 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
                                             {latestArticle.title}
                                         </h3>
                                         <p className="text-sm text-muted-foreground line-clamp-2 sm:line-clamp-1 mb-2">
-                                            {latestArticle.summary}
+                                            {latestArticle.content?.replace(/<[^>]*>/g, '').substring(0, 100) || "Makaleyi okumak için tıklayın"}
                                         </p>
                                         <div className="flex items-center justify-center sm:justify-start text-xs font-bold text-primary group-hover:underline decoration-2 underline-offset-4">
                                             HEMEN OKU
