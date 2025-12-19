@@ -1,5 +1,7 @@
 "use client";
 
+import imageCompression from 'browser-image-compression';
+
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -134,22 +136,30 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Dosya boyutu 5MB'den küçük olmalı");
-            return;
-        }
+        // Compression options
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: "image/webp"
+        };
 
         setIsUploading(true);
         try {
-            const result = await uploadArticleImage(file);
+            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            const compressedFile = await imageCompression(file, options);
+            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+
+            const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
                 editor?.chain().focus().setImage({ src: result.url }).run();
-                toast.success("Görsel eklendi");
+                toast.success("Görsel sıkıştırılarak eklendi");
             } else {
                 toast.error(result.error || "Yükleme başarısız");
             }
-        } catch {
-            toast.error("Bir hata oluştu");
+        } catch (error) {
+            console.error("Compression/Upload error:", error);
+            toast.error("Görsel işlenirken bir hata oluştu");
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) {

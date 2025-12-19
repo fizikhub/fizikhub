@@ -1,5 +1,7 @@
 "use client";
 
+import imageCompression from 'browser-image-compression';
+
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -54,22 +56,30 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Dosya boyutu 5MB'den küçük olmalı");
-            return;
-        }
+        // Compression options
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: "image/webp"
+        };
 
         setIsUploading(true);
         try {
-            const result = await uploadArticleImage(file);
+            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            const compressedFile = await imageCompression(file, options);
+            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+
+            const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
                 setImageUrl(result.url);
-                toast.success("Resim yüklendi");
+                toast.success("Resim sıkıştırılarak yüklendi");
             } else {
                 toast.error(result.error || "Resim yüklenemedi");
             }
-        } catch {
-            toast.error("Bir hata oluştu");
+        } catch (error) {
+            console.error("Compression/Upload error:", error);
+            toast.error("Görsel işlenirken bir hata oluştu");
         } finally {
             setIsUploading(false);
         }
@@ -79,14 +89,21 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Dosya boyutu 5MB'den küçük olmalı");
-            return;
-        }
+        // Compression options
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+            fileType: "image/webp"
+        };
 
         setIsInlineUploading(true);
         try {
-            const result = await uploadArticleImage(file);
+            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            const compressedFile = await imageCompression(file, options);
+            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+
+            const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
                 const textarea = textareaRef.current;
                 if (textarea) {
@@ -103,12 +120,13 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                     const newCursorPos = start + markdownImage.length;
                     textarea.setSelectionRange(newCursorPos, newCursorPos);
                 }
-                toast.success("Görsel içeriğe eklendi");
+                toast.success("Görsel sıkıştırılarak eklendi");
             } else {
                 toast.error(result.error || "Yükleme başarısız");
             }
-        } catch {
-            toast.error("Bir hata oluştu");
+        } catch (error) {
+            console.error("Compression/Upload error:", error);
+            toast.error("Görsel işlenirken bir hata oluştu");
         } finally {
             setIsInlineUploading(false);
             if (inlineImageInputRef.current) {
