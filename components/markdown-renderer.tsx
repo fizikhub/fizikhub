@@ -57,6 +57,12 @@ export function MarkdownRenderer({
                     ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4" {...props} />,
                     ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4" {...props} />,
                     li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                    h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mt-8 mb-4 text-primary" {...props} />,
+                    h2: ({ node, ...props }) => <h2 className="text-2xl font-bold mt-8 mb-4 text-primary border-b border-white/10 pb-2" {...props} />,
+                    h3: ({ node, ...props }) => <h3 className="text-xl font-bold mt-6 mb-3 text-secondary" {...props} />,
+                    blockquote: ({ node, ...props }) => (
+                        <blockquote className="border-l-4 border-primary pl-4 py-1 my-4 italic bg-white/5 rounded-r-lg" {...props} />
+                    ),
                     code: ({ node, inline, className, children, ...props }: any) => {
                         return inline ? (
                             <code className="bg-secondary/20 rounded px-1 py-0.5 text-sm font-mono" {...props}>
