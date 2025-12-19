@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { loadingMessages } from "@/lib/data";
-import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
+import { SiteLogo } from "@/components/icons/site-logo";
 
 export default function Loading() {
     const [message, setMessage] = useState("");
@@ -27,7 +27,7 @@ export default function Loading() {
                     ease: "easeInOut",
                 }}
             >
-                <Rocket className="h-16 w-16 text-primary" />
+                <SiteLogo className="h-24 w-24" />
             </motion.div>
             <motion.p
                 initial={{ opacity: 0 }}

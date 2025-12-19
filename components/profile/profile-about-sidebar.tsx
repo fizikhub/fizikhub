@@ -33,14 +33,14 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
             {/* HubPuan - Prominent Display with Popover (Mobile Friendly) */}
             <Popover>
                 <PopoverTrigger asChild>
-                    <Card className="p-5 border-2 border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 rounded-xl shadow-[3px_3px_0px_0px_rgba(6,182,212,0.2)] cursor-pointer hover:border-cyan-500/50 transition-colors">
+                    <Card className="p-5 border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-1.5 bg-cyan-500/20 rounded-lg border border-cyan-500/30">
+                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                                     <SiteLogo className="!w-7 !h-7" />
                                 </div>
                                 <div>
-                                    <div className="text-xs font-bold uppercase text-cyan-500/80 tracking-wider flex items-center gap-1">
+                                    <div className="text-xs font-bold uppercase text-blue-600 dark:text-blue-400 tracking-wider flex items-center gap-1">
                                         HubPuan
                                         <HelpCircle className="w-3 h-3 opacity-60" />
                                     </div>
@@ -49,7 +49,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Seviye</div>
-                                <div className="text-lg font-bold text-cyan-500">
+                                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                                     {profile?.reputation >= 1000 ? "Uzman" : profile?.reputation >= 500 ? "Deneyimli" : profile?.reputation >= 100 ? "Aktif" : "Yeni"}
                                 </div>
                             </div>
@@ -62,7 +62,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                         <p className="text-sm text-muted-foreground">
                             HubPuan, topluluktaki katkılarınızı ölçen bir puanlama sistemidir. Makale yazarak, soru sorarak, cevap vererek ve beğeni alarak puan kazanırsınız.
                         </p>
-                        <Link href="/puanlar-nedir" className="text-xs text-cyan-500 hover:underline inline-flex items-center gap-1">
+                        <Link href="/puanlar-nedir" className="text-xs text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
                             Daha fazla bilgi →
                         </Link>
                     </div>
