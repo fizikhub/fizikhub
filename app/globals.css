@@ -85,8 +85,8 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
-    --primary: 331 80% 85%;
-    /* Hex: #F7B9D7 - Pastel Pink */
+    --primary: 325 100% 55%;
+    /* Vivid Pink */
     --primary-foreground: 0 0% 0%;
 
     --secondary: 30 33 37;
@@ -103,8 +103,8 @@
 
     --border: 38 42 47;
     --input: 38 42 47;
-    --ring: 331 80% 85%;
-    /* Hex: #F7B9D7 - Pastel Pink */
+    --ring: 325 100% 55%;
+    /* Vivid Pink */
   }
 }
 
