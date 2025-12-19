@@ -35,6 +35,7 @@ const getCachedHomepageData = unstable_cache(
       supabase
         .from('articles')
         .select('id, title, slug, summary, content, created_at, image_url, views, category, author:profiles(full_name, username, avatar_url)')
+        .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(3),
       supabase
