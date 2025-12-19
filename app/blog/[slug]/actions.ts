@@ -41,11 +41,11 @@ export async function toggleLike(articleId: number) {
             .single();
 
         if (article) {
-             revalidatePath(`/blog/${article.slug}`);
+            revalidatePath(`/blog/${article.slug}`);
         } else {
-             revalidatePath(`/blog/${articleId}`);
+            revalidatePath(`/blog/${articleId}`);
         }
-        
+
         return { success: true, liked: false };
     } else {
         // Like
@@ -74,12 +74,12 @@ export async function toggleLike(articleId: number) {
                 resourceType: 'article',
                 content: `"${article.title}" makaleni beğendi.`
             });
-            
+
             revalidatePath(`/blog/${article.slug}`);
         } else {
-             revalidatePath(`/blog/${articleId}`);
+            revalidatePath(`/blog/${articleId}`);
         }
-        
+
         return { success: true, liked: true };
     }
 }
@@ -146,7 +146,6 @@ export async function createComment(articleId: number, content: string, parentCo
             .single();
 
         if (article) {
-        if (article) {
             await createNotification({
                 recipientId: article.author_id,
                 actorId: user.id,
@@ -160,17 +159,17 @@ export async function createComment(articleId: number, content: string, parentCo
 
     // Fetch article slug for revalidation if we haven't already (we likely have it in 'article' variable from above blocks but let's be safe or just use what we have if scope allows, though scoping in if/else is tricky here without refactor. The 'article' variable in 'else' block is scoped there. Let's just fetch it once at top or re-fetch properly).
     // Actually, 'article' is defined in both if/else blocks locally. Let's fetch it at the start of the function to be cleaner, OR just fetch it for revalidation here.
-    
+
     const { data: articleForReval } = await supabase
         .from('articles')
         .select('slug')
         .eq('id', articleId)
         .single();
-        
+
     if (articleForReval) {
-         revalidatePath(`/blog/${articleForReval.slug}`);
+        revalidatePath(`/blog/${articleForReval.slug}`);
     } else {
-         revalidatePath(`/blog/${articleId}`);
+        revalidatePath(`/blog/${articleId}`);
     }
 
     return { success: true };
@@ -208,7 +207,7 @@ export async function deleteComment(commentId: number) {
         .select('article_id')
         .eq('id', commentId)
         .single();
-        
+
     let articleSlug = null;
     if (commentData) {
         const { data: article } = await supabase
