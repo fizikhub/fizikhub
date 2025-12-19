@@ -138,6 +138,20 @@ export function ModernLogin() {
                     </p>
                 </div>
 
+                {/* Toggle - Moved higher */}
+                <div className="text-center mb-4 text-sm">
+                    <span className="text-white/40">
+                        {isSignUp ? "Zaten hesabın var mı?" : "Hesabın yok mu?"}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => setIsSignUp(!isSignUp)}
+                        className="ml-2 text-primary hover:text-white font-bold transition-colors uppercase text-xs tracking-wide"
+                    >
+                        {isSignUp ? "Giriş Yap" : "Kayıt Ol"}
+                    </button>
+                </div>
+
                 {/* Card */}
                 <div className="bg-zinc-950 border-2 border-white/10 p-8 relative">
                     {/* Corner Accents */}
@@ -254,20 +268,6 @@ export function ModernLogin() {
                             Google
                         </Button>
                     </div>
-                </div>
-
-                {/* Toggle */}
-                <div className="text-center mt-6 text-sm">
-                    <span className="text-white/40">
-                        {isSignUp ? "Zaten hesabın var mı?" : "Hesabın yok mu?"}
-                    </span>
-                    <button
-                        type="button"
-                        onClick={() => setIsSignUp(!isSignUp)}
-                        className="ml-2 text-primary hover:text-white font-bold transition-colors uppercase text-xs tracking-wide"
-                    >
-                        {isSignUp ? "Giriş Yap" : "Kayıt Ol"}
-                    </button>
                 </div>
             </motion.div>
         </div>
