@@ -123,11 +123,9 @@ const jsonLd = {
 };
 
 import { Toaster } from "sonner";
-
 import { GlobalAdminNotification } from "@/components/global-admin-notification";
-
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
-
+import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 
 export default function RootLayout({
   children,
@@ -150,6 +148,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-screen flex flex-col pb-16 md:pb-0`}>
+        <UserActivityTracker />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -157,7 +156,6 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-
           <GlobalAdminNotification />
 
           <NavigationWrapper>
@@ -169,13 +167,6 @@ export default function RootLayout({
               style: {
                 borderRadius: "8px", // Slight curve for modern feel
               },
-              classNames: {
-                toast: "group",
-                title: "text-base font-bold uppercase tracking-wide text-white",
-                description: "text-sm text-gray-400 font-medium",
-                actionButton: "bg-white text-black font-bold uppercase text-xs px-4 py-2 hover:bg-gray-200 transition-colors rounded-md",
-                cancelButton: "bg-white/10 text-gray-400 hover:text-white font-bold uppercase text-xs px-4 py-2 rounded-md",
-              }
             }}
           />
         </ThemeProvider>

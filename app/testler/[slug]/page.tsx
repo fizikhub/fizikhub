@@ -5,14 +5,13 @@ import { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 
 interface Props {
-    params: Promise<{
+    params: {
         slug: string;
-    }>;
+    };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
-    const quiz = await getQuizBySlug(slug);
+    const quiz = await getQuizBySlug(params.slug);
     if (!quiz) return { title: "Test Bulunamadı" };
 
     return {
@@ -22,8 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function QuizPage({ params }: Props) {
-    const { slug } = await params;
-    const quiz = await getQuizBySlug(slug);
+    const quiz = await getQuizBySlug(params.slug);
 
     if (!quiz) {
         notFound();

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Search, Shield, PenTool } from "lucide-react";
+import { BadgeCheck, Search, Shield, PenTool, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
@@ -21,6 +21,7 @@ interface Profile {
     created_at: string;
     is_verified?: boolean;
     is_writer?: boolean;
+    last_seen?: string | null;
 }
 
 interface AdminUsersListProps {
@@ -75,6 +76,7 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                             <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Kullanıcı</th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Kayıt Tarihi</th>
+                                <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Son Görülme</th>
                                 <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Roller</th>
                                 <th className="h-12 px-4 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 text-right">İşlemler</th>
                             </tr>
@@ -82,7 +84,7 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                         <tbody className="[&_tr:last-child]:border-0">
                             {filteredUsers.length === 0 ? (
                                 <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                    <td colSpan={4} className="p-4 align-middle [&:has([role=checkbox])]:pr-0 h-24 text-center">
+                                    <td colSpan={5} className="p-4 align-middle [&:has([role=checkbox])]:pr-0 h-24 text-center">
                                         Kullanıcı bulunamadı.
                                     </td>
                                 </tr>
@@ -116,6 +118,9 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                                         <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
                                             {format(new Date(user.created_at), "d MMM yyyy", { locale: tr })}
                                         </td>
+                                        <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-muted-foreground">
+                                            {user.last_seen ? format(new Date(user.last_seen), "d MMM HH:mm", { locale: tr }) : "-"}
+                                        </td>
                                         <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
                                             <div className="flex gap-1">
                                                 {user.is_writer && (
@@ -136,9 +141,14 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                                                 >
                                                     {user.is_writer ? "Yazarlığı Al" : "Yazar Yap"}
                                                 </Button>
+                                                <Button variant="outline" size="sm" asChild>
+                                                    <Link href={`/admin/users/${user.id}`}>
+                                                        <Activity className="h-4 w-4 mr-1" /> Aktivite
+                                                    </Link>
+                                                </Button>
                                                 <Button variant="ghost" size="sm" asChild>
                                                     <Link href={`/profil/${user.username}`}>
-                                                        Profili Gör
+                                                        <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             </div>
