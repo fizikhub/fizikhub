@@ -270,36 +270,34 @@ export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArtic
                             </p>
                         </div>
 
-                    </div>
+                        <div className="flex items-center justify-between pt-4 border-t">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="dont-show-again"
+                                    checked={dontShowAgain}
+                                    onChange={(e) => setDontShowAgain(e.target.checked)}
+                                    className="w-4 h-4 rounded border-primary"
+                                />
+                                <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
+                                    Bu rehberi ezberledim, bir daha gösterme.
+                                </label>
+                            </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t">
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                id="dont-show-again"
-                                checked={dontShowAgain}
-                                onChange={(e) => setDontShowAgain(e.target.checked)}
-                                className="w-4 h-4 rounded border-primary"
-                            />
-                            <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
-                                Bu rehberi ezberledim, bir daha gösterme.
-                            </label>
+                            <Button onClick={closeGuide} className="font-black px-8">
+                                Tamamdır, Anlaşıldı! 👍
+                            </Button>
                         </div>
 
-                        <Button onClick={closeGuide} className="font-black px-8">
-                            Tamamdır, Anlaşıldı! 👍
-                        </Button>
+                        <div className="p-4 bg-blue-500/10 rounded-xl border-l-4 border-blue-500 mt-4">
+                            <h4 className="font-black text-blue-600 dark:text-blue-400 mb-1">📝 Taslak Özelliği</h4>
+                            <p className="text-sm text-muted-foreground">
+                                Yazarken yoruldun mu? "Taslak Olarak Kaydet" butonuna basıp çıkabilirsin. Daha sonra profilindeki <b>Taslaklarım</b> sekmesinden kaldığın yerden devam edebilirsin.
+                            </p>
+                        </div>
                     </div>
-
-                    <div className="p-4 bg-blue-500/10 rounded-xl border-l-4 border-blue-500 mt-4">
-                        <h4 className="font-black text-blue-600 dark:text-blue-400 mb-1">📝 Taslak Özelliği</h4>
-                        <p className="text-sm text-muted-foreground">
-                            Yazarken yoruldun mu? "Taslak Olarak Kaydet" butonuna basıp çıkabilirsin. Daha sonra profilindeki <b>Taslaklarım</b> sekmesinden kaldığın yerden devam edebilirsin.
-                        </p>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog >
+                </DialogContent>
+            </Dialog>
 
             <div className="space-y-8 animate-in fade-in duration-500">
                 {/* Header Actions */}
