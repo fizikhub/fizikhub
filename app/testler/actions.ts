@@ -24,10 +24,7 @@ export async function getQuizBySlug(slug: string) {
 
     const { data: quiz, error } = await supabase
         .from('quizzes')
-        .select(`
-            *,
-            questions:quiz_questions(*)
-        `)
+        .select('*')
         .eq('slug', slug)
         .single();
 
@@ -36,10 +33,26 @@ export async function getQuizBySlug(slug: string) {
         return null;
     }
 
-    // Sort questions by order
-    if (quiz.questions) {
-        quiz.questions.sort((a: any, b: any) => a.order - b.order);
+    if (!quiz) {
+        return null;
     }
+
+    // Fetch questions separately to avoid relationship issues
+    const { data: questions, error: questionsError } = await supabase
+        .from('quiz_questions')
+        .select('*')
+        .eq('quiz_id', quiz.id)
+        .order('order', { ascending: true });
+
+    if (questionsError) {
+        console.error("Error fetching questions:", questionsError);
+        quiz.questions = [];
+    } else {
+        quiz.questions = questions || [];
+    }
+
+    // Double sort to be safe
+    quiz.questions.sort((a: any, b: any) => a.order - b.order);
 
     return quiz;
 }
