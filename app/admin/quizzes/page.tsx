@@ -5,6 +5,7 @@ import { Plus, GraduationCap, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { DeleteQuizButton } from "@/components/admin/delete-quiz-button";
 
 export default async function AdminQuizzesPage() {
     const supabase = await createClient();
@@ -43,7 +44,7 @@ export default async function AdminQuizzesPage() {
                                         <Settings className="h-4 w-4" />
                                     </Button>
                                 </Link>
-                                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                                <DeleteQuizButton quizId={quiz.id} variant="ghost" size="icon" showText={false} />
                             </div>
                         </CardHeader>
                         <CardContent>

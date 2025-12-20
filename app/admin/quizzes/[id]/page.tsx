@@ -5,6 +5,7 @@ import { ArrowLeft, Trash2, Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { deleteQuizQuestion } from "@/app/admin/actions";
+import { DeleteQuizButton } from "@/components/admin/delete-quiz-button";
 import { notFound } from "next/navigation";
 
 export default async function QuizManagePage({ params }: { params: Promise<{ id: string }> }) {
@@ -57,6 +58,7 @@ export default async function QuizManagePage({ params }: { params: Promise<{ id:
                         {questions?.length || 0} Soru
                     </Badge>
                 </div>
+                <DeleteQuizButton quizId={quiz.id} redirectAfter={true} />
                 {/* Future: Add Question Button */}
             </div>
 
@@ -96,8 +98,8 @@ export default async function QuizManagePage({ params }: { params: Promise<{ id:
                                         <div
                                             key={optIndex}
                                             className={`p-2 rounded border ${optIndex === question.correct_answer
-                                                    ? "bg-green-100 border-green-500 text-green-900 dark:bg-green-900/40 dark:text-white"
-                                                    : "bg-muted/50"
+                                                ? "bg-green-100 border-green-500 text-green-900 dark:bg-green-900/40 dark:text-white"
+                                                : "bg-muted/50"
                                                 }`}
                                         >
                                             {option}
