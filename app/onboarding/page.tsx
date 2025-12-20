@@ -212,7 +212,23 @@ export default function OnboardingPage() {
                                     <Input
                                         placeholder="kullaniciadi"
                                         value={formData.username}
-                                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                        onChange={(e) => {
+                                            let value = e.target.value.toLowerCase();
+
+                                            // Replace Turkish chars
+                                            const trMap: { [key: string]: string } = {
+                                                'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c'
+                                            };
+                                            value = value.replace(/[ğüşıöç]/g, char => trMap[char] || char);
+
+                                            // Remove spaces
+                                            value = value.replace(/\s+/g, '');
+
+                                            // Remove invalid characters (only allow a-z, 0-9, ., _, -)
+                                            value = value.replace(/[^a-z0-9_.-]/g, '');
+
+                                            setFormData({ ...formData, username: value });
+                                        }}
                                         className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary pl-8 rounded-none transition-all font-medium"
                                         required
                                         minLength={3}

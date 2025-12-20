@@ -14,6 +14,8 @@ import Link from "next/link";
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [fullName, setFullName] = useState("");
     const [password, setPassword] = useState("");
     const [isSignUp, setIsSignUp] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -55,10 +57,20 @@ export function ModernLogin() {
         setLoading(true);
         try {
             if (isSignUp) {
+                // Check if username is valid
+                if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
+
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
-                    options: { emailRedirectTo: `${location.origin}/auth/callback` },
+                    options: {
+                        emailRedirectTo: `${location.origin}/auth/callback`,
+                        data: {
+                            username,
+                            full_name: fullName,
+                            onboarding_completed: true // Mark as completed since we collected data here
+                        }
+                    },
                 });
                 if (error) throw error;
                 window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
@@ -161,6 +173,42 @@ export function ModernLogin() {
                     <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-px translate-y-px" />
 
                     <form onSubmit={handleEmailAuth} className="space-y-5">
+                        {/* Username & Full Name (Sign Up Only) */}
+                        {isSignUp && (
+                            <>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                        Kullanıcı Adı
+                                    </Label>
+                                    <Input
+                                        placeholder="kullaniciadi"
+                                        value={username}
+                                        onChange={(e) => {
+                                            let value = e.target.value.toLowerCase();
+                                            const trMap: { [key: string]: string } = { 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c' };
+                                            value = value.replace(/[ğüşıöç]/g, char => trMap[char] || char);
+                                            value = value.replace(/[^a-z0-9_.-]/g, '');
+                                            setUsername(value);
+                                        }}
+                                        required
+                                        className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary focus:bg-black rounded-none transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                        Ad Soyad
+                                    </Label>
+                                    <Input
+                                        placeholder="Ad Soyad"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        required
+                                        className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary focus:bg-black rounded-none transition-all"
+                                    />
+                                </div>
+                            </>
+                        )}
+
                         {/* Email */}
                         <div className="space-y-2">
                             <Label className="text-xs font-bold uppercase tracking-widest text-white/50">

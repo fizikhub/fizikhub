@@ -69,11 +69,22 @@ export async function completeOnboarding(formData: { username: string; fullName:
         return { success: false, error: "Kullanıcı bulunamadı." };
     }
 
+    // Normalize username just in case client-side validation was bypassed
+    let username = formData.username.toLowerCase();
+    const trMap: { [key: string]: string } = { 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c' };
+    username = username.replace(/[ğüşıöç]/g, char => trMap[char] || char);
+    username = username.replace(/[^a-z0-9_.-]/g, '');
+
+    if (username.length < 3) {
+        return { success: false, error: "Kullanıcı adı en az 3 karakter olmalıdır." };
+    }
+
     // Check username uniqueness
     const { data: existingUser } = await supabase
         .from('profiles')
         .select('id')
-        .eq('username', formData.username)
+        .eq('username', username)
+        .neq('id', user.id) // Exclude self if updating
         .single();
 
     if (existingUser) {
