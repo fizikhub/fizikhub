@@ -1,11 +1,12 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, MessageSquare, MessageCircle, Bookmark, ExternalLink } from "lucide-react";
+import { FileText, MessageSquare, MessageCircle, Bookmark, ExternalLink, Edit2, FileEdit } from "lucide-react";
 import { ProfileArticleCard } from "@/components/profile/profile-article-card";
 import Link from "next/link";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
 
 interface ProfileContentFeedProps {
     articles: any[];
@@ -13,6 +14,7 @@ interface ProfileContentFeedProps {
     answers: any[];
     bookmarkedArticles: any[];
     bookmarkedQuestions: any[];
+    drafts?: any[];
     isOwnProfile?: boolean;
 }
 
@@ -22,6 +24,7 @@ export function ProfileContentFeed({
     answers,
     bookmarkedArticles,
     bookmarkedQuestions,
+    drafts = [],
     isOwnProfile = true
 }: ProfileContentFeedProps) {
     // Combine bookmarked items into single list with type indicator
@@ -74,6 +77,17 @@ export function ProfileContentFeed({
                         Cevaplar
                         <span className="ml-1.5 opacity-60">({answers.length})</span>
                     </TabsTrigger>
+
+                    {isOwnProfile && drafts.length > 0 && (
+                        <TabsTrigger
+                            value="drafts"
+                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        >
+                            <FileEdit className="w-3.5 h-3.5 mr-1.5" />
+                            Taslaklar
+                            <span className="ml-1.5 opacity-60">({drafts.length})</span>
+                        </TabsTrigger>
+                    )}
 
                     {isOwnProfile && (
                         <TabsTrigger
@@ -160,6 +174,38 @@ export function ProfileContentFeed({
                             icon={MessageCircle}
                             title="Henüz cevap yok"
                             description="Soruları cevaplamaya başla!"
+                        />
+                    )}
+                </TabsContent>
+
+                <TabsContent value="drafts" className="mt-0">
+                    {drafts.length > 0 ? (
+                        <div className="space-y-3">
+                            {drafts.map((draft) => (
+                                <div key={draft.id} className="group p-4 rounded-xl border-2 border-dashed border-foreground/20 bg-card hover:bg-foreground/5 transition-all flex justify-between items-center">
+                                    <div className="flex-1 min-w-0 mr-4">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 rounded">Taslak</span>
+                                            <span className="text-xs text-muted-foreground">{format(new Date(draft.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}</span>
+                                        </div>
+                                        <h3 className="text-base font-bold text-foreground line-clamp-1">
+                                            {draft.title || "(Başlıksız Taslak)"}
+                                        </h3>
+                                    </div>
+                                    <Link href={`/makale/duzenle/${draft.id}`}>
+                                        <Button size="sm" variant="outline" className="gap-2 font-bold border-2">
+                                            <Edit2 className="w-4 h-4" />
+                                            Düzenle
+                                        </Button>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            icon={FileEdit}
+                            title="Taslak yok"
+                            description="Yarım kalan işin yok, harika!"
                         />
                     )}
                 </TabsContent>

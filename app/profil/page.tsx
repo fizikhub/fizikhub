@@ -23,13 +23,14 @@ export default async function ProfilePage() {
         { data: userBadges },
         followStats,
         { data: bookmarkedArticles },
-        { data: bookmarkedQuestions }
+        { data: bookmarkedQuestions },
+        { data: drafts }
     ] = await Promise.all([
         // 1. Fetch Profile
         supabase.from('profiles').select('*').eq('id', user.id).single(),
 
-        // 2. Fetch Articles
-        supabase.from('articles').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
+        // 2. Fetch Articles (Published only)
+        supabase.from('articles').select('*').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
 
         // 3. Fetch Questions
         supabase.from('questions').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
@@ -47,7 +48,10 @@ export default async function ProfilePage() {
         supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, category, cover_url, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
 
         // 8. Fetch Bookmarked Questions
-        supabase.from('question_bookmarks').select('created_at, questions(id, title, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false })
+        supabase.from('question_bookmarks').select('created_at, questions(id, title, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false }),
+
+        // 9. Fetch Drafts (Only for own profile)
+        supabase.from('articles').select('*').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false })
     ]);
 
     return (
@@ -90,6 +94,7 @@ export default async function ProfilePage() {
                         answers={answers || []}
                         bookmarkedArticles={bookmarkedArticles || []}
                         bookmarkedQuestions={bookmarkedQuestions || []}
+                        drafts={drafts || []}
                     />
                 </div>
             </div>

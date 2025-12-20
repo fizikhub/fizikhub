@@ -67,12 +67,17 @@ export async function createArticle(formData: FormData) {
     }
 }
 
-export async function updateArticle(articleId: number, formData: FormData) {
+export async function updateArticle(formData: FormData) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
         return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    const articleId = formData.get("id");
+    if (!articleId) {
+        return { success: false, error: "Makale ID eksik." };
     }
 
     // Verify ownership

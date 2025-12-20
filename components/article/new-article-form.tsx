@@ -11,7 +11,7 @@ import { Loader2, HelpCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
-import { createArticle } from "@/app/profil/article-actions";
+import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { Orbitron } from "next/font/google"; // Futuristic font
 import { X, Upload, Image as ImageIcon, Trash2 } from "lucide-react"; // Added Trash2, Upload, X
 
@@ -20,6 +20,15 @@ const orbitron = Orbitron({ subsets: ["latin"] });
 interface NewArticleFormProps {
     userId: string;
     isFirstArticle: boolean;
+    initialData?: {
+        id?: number;
+        title: string;
+        content: string;
+        excerpt: string | null;
+        category: string;
+        coverUrl: string | null;
+        status: string;
+    };
 }
 
 const categories = [
@@ -27,13 +36,13 @@ const categories = [
     "Elektromanyetizma", "Genel Görelilik", "Parçacık Fiziği", "Genel"
 ];
 
-export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) {
+export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArticleFormProps) {
     // Form States
-    const [title, setTitle] = useState("");
-    const [category, setCategory] = useState("Genel");
-    const [excerpt, setExcerpt] = useState("");
-    const [content, setContent] = useState("");
-    const [coverUrl, setCoverUrl] = useState("");
+    const [title, setTitle] = useState(initialData?.title || "");
+    const [category, setCategory] = useState(initialData?.category || "Genel");
+    const [excerpt, setExcerpt] = useState(initialData?.excerpt || "");
+    const [content, setContent] = useState(initialData?.content || "");
+    const [coverUrl, setCoverUrl] = useState(initialData?.coverUrl || "");
 
     // UI States
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,7 +128,19 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
             formData.append("cover_url", coverUrl);
             formData.append("status", targetStatus);
 
-            const result = await createArticle(formData);
+            formData.append("status", targetStatus);
+
+            let result;
+            if (initialData?.id) {
+                // Update mode
+                formData.append("id", initialData.id.toString());
+                // We need to implement updateArticle action or reuse create with logic
+                // But typically update is a separate action or we pass ID
+                result = await updateArticle(formData);
+            } else {
+                // Create mode
+                result = await createArticle(formData);
+            }
 
             if (!result.success) {
                 throw new Error(result.error || "Makale oluşturulamadı");
@@ -249,38 +270,55 @@ export function NewArticleForm({ userId, isFirstArticle }: NewArticleFormProps) 
                             </p>
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t">
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    id="dont-show-again"
-                                    checked={dontShowAgain}
-                                    onChange={(e) => setDontShowAgain(e.target.checked)}
-                                    className="w-4 h-4 rounded border-primary"
-                                />
-                                <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
-                                    Bu rehberi ezberledim, bir daha gösterme.
-                                </label>
-                            </div>
-
-                            <Button onClick={closeGuide} className="font-black px-8">
-                                Tamamdır, Anlaşıldı! 👍
-                            </Button>
-                        </div>
                     </div>
-                </DialogContent>
-            </Dialog>
+
+                    <div className="flex items-center justify-between pt-4 border-t">
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="dont-show-again"
+                                checked={dontShowAgain}
+                                onChange={(e) => setDontShowAgain(e.target.checked)}
+                                className="w-4 h-4 rounded border-primary"
+                            />
+                            <label htmlFor="dont-show-again" className="text-sm cursor-pointer select-none font-medium">
+                                Bu rehberi ezberledim, bir daha gösterme.
+                            </label>
+                        </div>
+
+                        <Button onClick={closeGuide} className="font-black px-8">
+                            Tamamdır, Anlaşıldı! 👍
+                        </Button>
+                    </div>
+
+                    <div className="p-4 bg-blue-500/10 rounded-xl border-l-4 border-blue-500 mt-4">
+                        <h4 className="font-black text-blue-600 dark:text-blue-400 mb-1">📝 Taslak Özelliği</h4>
+                        <p className="text-sm text-muted-foreground">
+                            Yazarken yoruldun mu? "Taslak Olarak Kaydet" butonuna basıp çıkabilirsin. Daha sonra profilindeki <b>Taslaklarım</b> sekmesinden kaldığın yerden devam edebilirsin.
+                        </p>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog >
 
             <div className="space-y-8 animate-in fade-in duration-500">
                 {/* Header Actions */}
                 <div className="flex justify-between items-center">
                     <h1 className={`${orbitron.className} text-3xl font-black tracking-tight text-primary`}>
-                        {isFirstArticle ? "İlk Makaleni Yaz" : "Yeni Makale Oluştur"}
+                        {initialData ? "Makaleni Düzenle" : (isFirstArticle ? "İlk Makaleni Yaz" : "Yeni Makale Oluştur")}
                     </h1>
-                    <Button variant="outline" size="sm" onClick={() => setShowGuide(true)} className="gap-2">
-                        <HelpCircle className="w-4 h-4" />
-                        Rehber
-                    </Button>
+                    <div className="flex gap-2">
+                        {!dontShowAgain && (
+                            <Button variant="outline" size="sm" onClick={() => setShowGuide(true)} className="gap-2">
+                                <HelpCircle className="w-4 h-4" />
+                                Rehber
+                            </Button>
+                        )}
+                        <Button variant="outline" size="sm" onClick={() => setShowGuide(true)} className="gap-2">
+                            <HelpCircle className="w-4 h-4" />
+                            Rehber
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Main Form Form */}
