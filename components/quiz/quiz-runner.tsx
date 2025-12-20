@@ -11,7 +11,7 @@ import { submitQuizResult } from "@/app/testler/actions";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import Link from "next/link";
-import { toast } from "sonner"; // Using toast for some fallbacks just in case
+import { toast } from "sonner";
 
 interface Question {
     id: string;
@@ -122,7 +122,7 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
 
         try {
             const result = await submitQuizResult(quizId, score, questions.length);
-            // @ts-ignore - Ignoring type check for brevity as success is guaranteed in this logic flow if handled correctly
+            // @ts-ignore
             if (result.success) {
                 setPointsEarned(result.pointsEarned || 0);
                 setAlreadyCompleted(!!result.alreadyCompleted);
@@ -135,25 +135,25 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
     if (!isStarted) {
         return (
             <div className="container max-w-3xl py-12 px-4 mx-auto min-h-[60vh] flex flex-col justify-center items-center">
-                <Card className="w-full text-center p-8 md:p-12 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-                    <CardHeader className="space-y-6">
-                        <Badge className="mx-auto text-lg py-1 px-4 border-2 border-black dark:border-white bg-primary text-primary-foreground hover:bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -rotate-2">
+                <Card className="w-full text-center p-8 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+                    <CardHeader className="space-y-4">
+                        <Badge className="mx-auto text-base py-1 px-4 border-2 border-black dark:border-white bg-primary text-primary-foreground hover:bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -rotate-2">
                             FİZİK TESTİ
                         </Badge>
-                        <CardTitle className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
+                        <CardTitle className="text-3xl md:text-5xl font-black uppercase tracking-tighter">
                             {title}
                         </CardTitle>
-                        <p className="text-xl text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
                             {description}
                         </p>
                     </CardHeader>
-                    <CardFooter className="justify-center pt-8">
+                    <CardFooter className="justify-center pt-6">
                         <Button
                             onClick={handleStart}
                             size="lg"
-                            className="text-xl font-black px-12 py-8 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 border-2 border-transparent hover:scale-105 transition-transform shadow-xl"
+                            className="text-lg font-black px-10 py-6 bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 border-2 border-transparent hover:scale-105 transition-transform shadow-xl"
                         >
-                            <Play className="mr-3 h-6 w-6 fill-current" />
+                            <Play className="mr-3 h-5 w-5 fill-current" />
                             TESTE BAŞLA
                         </Button>
                     </CardFooter>
@@ -167,39 +167,39 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
         const isSuccess = percentage > 50;
 
         return (
-            <div className="container max-w-xl py-12 px-4 mx-auto">
-                <Card className="w-full text-center p-6 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden relative">
+            <div className="container max-w-md py-8 px-4 mx-auto">
+                <Card className="w-full text-center p-4 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden relative">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-5 pointer-events-none"
                         style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '20px 20px' }}
                     />
 
-                    <CardHeader>
+                    <CardHeader className="pb-2">
                         <motion.div
                             initial={{ scale: 0, rotate: -180 }}
                             animate={{ scale: 1, rotate: 0 }}
                             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                            className={`mx-auto p-6 rounded-full mb-6 ring-4 ring-black dark:ring-white shadow-xl ${isSuccess ? 'bg-yellow-400' : 'bg-red-400'}`}
+                            className={`mx-auto p-4 rounded-full mb-4 ring-4 ring-black dark:ring-white shadow-xl ${isSuccess ? 'bg-yellow-400' : 'bg-red-400'}`}
                         >
                             {isSuccess ?
-                                <Trophy className="h-16 w-16 text-black" /> :
-                                <Frown className="h-16 w-16 text-black" />
+                                <Trophy className="h-12 w-12 text-black" /> :
+                                <Frown className="h-12 w-12 text-black" />
                             }
                         </motion.div>
-                        <CardTitle className="text-3xl md:text-4xl font-black uppercase transform -rotate-1">
+                        <CardTitle className="text-2xl md:text-3xl font-black uppercase transform -rotate-1">
                             {isSuccess ? "Helal Olsun!" : "Geçmiş Olsun!"}
                         </CardTitle>
                     </CardHeader>
 
-                    <CardContent className="space-y-8 relative z-10">
-                        <div className="space-y-2">
-                            <div className="text-7xl font-black tracking-tighter tabular-nums">
-                                {score}<span className="text-3xl text-muted-foreground">/{questions.length}</span>
+                    <CardContent className="space-y-6 relative z-10 pb-2">
+                        <div className="space-y-1">
+                            <div className="text-6xl font-black tracking-tighter tabular-nums">
+                                {score}<span className="text-2xl text-muted-foreground">/{questions.length}</span>
                             </div>
                         </div>
 
-                        <div className="p-4 bg-muted/50 rounded-xl border-2 border-black/10 dark:border-white/10">
-                            <p className="font-bold text-lg md:text-xl leading-snug">
+                        <div className="p-3 bg-muted/50 rounded-xl border-2 border-black/10 dark:border-white/10">
+                            <p className="font-bold text-base leading-snug">
                                 {score === questions.length ? "Hatasız kul olmaz derler ama sen oldun! Mükemmelsin." :
                                     score > questions.length / 2 ? "Ortalamanın üstündesin, havanı atabilirsin." :
                                         "Fizik kitabının kapağını hiç açmayı denedin mi? Merak ettim sadece."}
@@ -212,31 +212,31 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                                 initial={{ y: 20, opacity: 0 }}
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="flex items-center justify-center gap-3 bg-green-100 dark:bg-green-900/30 border-2 border-green-600 p-4 rounded-xl text-green-800 dark:text-green-100"
+                                className="flex items-center justify-center gap-2 bg-green-100 dark:bg-green-900/30 border-2 border-green-600 p-3 rounded-xl text-green-800 dark:text-green-100"
                             >
-                                <PartyPopper className="h-6 w-6" />
-                                <span className="text-xl font-black">+{pointsEarned} HubPuan Kazandın!</span>
+                                <PartyPopper className="h-5 w-5" />
+                                <span className="text-lg font-black">+{pointsEarned} HubPuan</span>
                             </motion.div>
                         )}
 
                         {alreadyCompleted && score > 0 && (
-                            <div className="text-sm font-bold text-muted-foreground bg-muted p-2 rounded-lg">
-                                (Bu testi daha önce çözdüğün için tekrar puan kazanamazsın çakal 😉)
+                            <div className="text-xs font-bold text-muted-foreground bg-muted p-2 rounded-lg">
+                                (Daha önce çözdüğün için tekrar puan yok 😉)
                             </div>
                         )}
                     </CardContent>
 
-                    <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
-                        <Link href="/testler" className="w-full sm:w-auto">
-                            <Button variant="outline" className="w-full border-2 font-bold h-12 text-lg">Listeye Dön</Button>
-                        </Link>
+                    <CardFooter className="flex flex-col gap-2 pt-2">
                         <Button
                             onClick={() => window.location.reload()}
-                            className="w-full sm:w-auto border-2 border-black font-bold h-12 text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                            className="w-full border-2 border-black font-bold h-10 text-base shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                         >
-                            <RotateCcw className="mr-2 h-5 w-5" />
+                            <RotateCcw className="mr-2 h-4 w-4" />
                             Tekrar Dene
                         </Button>
+                        <Link href="/testler" className="w-full">
+                            <Button variant="outline" className="w-full border-2 font-bold h-10 text-base">Testlere Dön</Button>
+                        </Link>
                     </CardFooter>
                 </Card>
             </div>
@@ -244,40 +244,40 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
     }
 
     return (
-        <div className="w-full max-w-xl mx-auto space-y-6 pt-8">
+        <div className="w-full max-w-xl mx-auto space-y-4 pt-4 pb-12">
             <div className="flex justify-between items-center px-2">
                 <span className="font-bold text-muted-foreground uppercase tracking-widest text-xs">
                     Soru {currentQuestionIndex + 1} / {questions.length}
                 </span>
-                <div className="flex items-center gap-2 font-black text-lg bg-black text-white px-3 py-1 rounded-md -rotate-2 shadow-lg">
-                    <Trophy className="h-4 w-4 text-yellow-400" />
+                <div className="flex items-center gap-2 font-black text-base bg-black text-white px-2 py-0.5 rounded-md -rotate-2 shadow-lg">
+                    <Trophy className="h-3 w-3 text-yellow-400" />
                     <span>{score}</span>
                 </div>
             </div>
 
-            <div className="h-3 w-full bg-secondary border-2 border-black dark:border-white rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-secondary border-2 border-black dark:border-white rounded-full overflow-hidden">
                 <div
                     className="h-full bg-primary transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                 />
             </div>
 
-            <Card className="mt-4 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden relative">
-                <CardHeader className="bg-secondary/30 border-b-2 border-black dark:border-white p-6">
-                    <CardTitle className="text-xl md:text-2xl font-black leading-tight selection:bg-primary selection:text-white">
+            <Card className="mt-2 border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden relative">
+                <CardHeader className="bg-secondary/30 border-b-2 border-black dark:border-white p-4">
+                    <CardTitle className="text-lg md:text-xl font-black leading-tight selection:bg-primary selection:text-white">
                         {currentQuestion.question_text}
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
+                <CardContent className="p-4 space-y-4">
                     <RadioGroup
                         key={currentQuestion.id} // Forces reset on new question
                         value={selectedOption?.toString()}
                         onValueChange={handleOptionSelect}
-                        className="space-y-3"
+                        className="space-y-2"
                     >
                         <AnimatePresence mode="popLayout">
                             {currentQuestion.options.map((option, index) => {
-                                let itemStyle = "border-2 border-black dark:border-white bg-card hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]";
+                                let itemStyle = "border-2 border-black dark:border-white bg-card hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]";
                                 if (isAnswered) {
                                     if (index === currentQuestion.correct_answer) {
                                         itemStyle = "border-2 border-green-600 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-100 scale-[1.01]";
@@ -287,7 +287,7 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                                         itemStyle = "border-2 opacity-40 grayscale border-dashed";
                                     }
                                 } else if (selectedOption === index) {
-                                    itemStyle = "border-2 border-primary bg-primary/10 ring-2 ring-primary ring-offset-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]";
+                                    itemStyle = "border-2 border-primary bg-primary/10 ring-2 ring-primary ring-offset-2 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]";
                                 }
 
                                 return (
@@ -297,21 +297,21 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                     >
-                                        <div className={`flex items-center space-x-3 rounded-lg p-3 cursor-pointer transition-all duration-200 ${itemStyle}`}>
+                                        <div className={`flex items-center space-x-3 rounded-lg p-2.5 cursor-pointer transition-all duration-200 ${itemStyle}`}>
                                             <RadioGroupItem
                                                 value={index.toString()}
                                                 id={`option-${index}`}
                                                 disabled={isAnswered}
-                                                className="w-5 h-5 border-2 border-black data-[state=checked]:bg-primary data-[state=checked]:text-black"
+                                                className="w-4 h-4 border-2 border-black data-[state=checked]:bg-primary data-[state=checked]:text-black"
                                             />
                                             <Label
                                                 htmlFor={`option-${index}`}
-                                                className="flex-1 cursor-pointer font-bold text-base leading-snug"
+                                                className="flex-1 cursor-pointer font-bold text-sm leading-snug"
                                             >
                                                 {option}
                                             </Label>
                                             {isAnswered && index === currentQuestion.correct_answer && (
-                                                <CheckCircle2 className="h-6 w-6 text-green-600" />
+                                                <CheckCircle2 className="h-5 w-5 text-green-600" />
                                             )}
                                         </div>
                                     </motion.div>
@@ -320,14 +320,14 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                         </AnimatePresence>
                     </RadioGroup>
 
-                    {/* Feedback Message */}
+                    {/* Feedback Message - Made smaller and less intrusive */}
                     <AnimatePresence>
                         {feedback && (
                             <motion.div
                                 initial={{ opacity: 0, y: 10, scale: 0.9 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className={`p-4 rounded-lg text-center font-black text-white transform -rotate-1 shadow-lg ${selectedOption === currentQuestion.correct_answer ? 'bg-green-500' : 'bg-red-500'
+                                className={`p-3 rounded-lg text-center font-bold text-sm text-white transform -rotate-1 shadow-md ${selectedOption === currentQuestion.correct_answer ? 'bg-green-500' : 'bg-red-500'
                                     }`}
                             >
                                 {feedback}
@@ -335,28 +335,28 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                         )}
                     </AnimatePresence>
 
-                    {/* Action Button - Moved inside content for tightening */}
-                    <div className="pt-2">
+                    {/* Action Button - Compact */}
+                    <div className="pt-1">
                         {!isAnswered ? (
                             <Button
                                 onClick={handleCheckAnswer}
                                 disabled={selectedOption === null}
-                                className="w-full h-12 text-lg font-black uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                                className="w-full h-10 text-base font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
                             >
                                 Cevabı Kontrol Et
                             </Button>
                         ) : (
                             <Button
                                 onClick={handleNextQuestion}
-                                className="w-full h-12 text-lg font-black uppercase tracking-wider border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-zinc-900 text-white hover:bg-zinc-800"
+                                className="w-full h-10 text-base font-black uppercase tracking-wider border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-zinc-900 text-white hover:bg-zinc-800"
                             >
                                 {currentQuestionIndex < questions.length - 1 ? (
                                     <>
-                                        Sıradaki Gelsin
-                                        <ArrowRight className="ml-2 h-5 w-5" />
+                                        Sıradaki
+                                        <ArrowRight className="ml-2 h-4 w-4" />
                                     </>
                                 ) : (
-                                    "Sonuçları Gör"
+                                    "Sonuçlar"
                                 )}
                             </Button>
                         )}
