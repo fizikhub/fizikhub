@@ -60,6 +60,17 @@ export function ModernLogin() {
                 // Check if username is valid
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
 
+                // Check username uniqueness
+                const { data: existingUser } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', username)
+                    .single();
+
+                if (existingUser) {
+                    throw new Error("Bu kullanıcı adı zaten alınmış.");
+                }
+
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
