@@ -145,6 +145,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                                         currentWebsite={profile?.website || null}
                                         currentSocialLinks={profile?.social_links || null}
                                         userEmail={user?.email || null}
+                                        usernameChangeCount={profile?.username_changes_count || 0}
                                     />
                                 </>
                             ) : (

@@ -125,7 +125,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
     return { success: true };
 }
 
-export async function uploadArticleImage(file: File) {
+export async function uploadArticleImage(file: File | Blob) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -133,21 +133,35 @@ export async function uploadArticleImage(file: File) {
         return { success: false, error: "Oturum açmanız gerekiyor." };
     }
 
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    // Handle both File and Blob (browser-image-compression returns Blob)
+    let fileName: string;
+    if (file instanceof File && file.name) {
+        const fileExt = file.name.split(".").pop() || "webp";
+        fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    } else {
+        // Blob case - default to webp since we compress to webp
+        fileName = `${user.id}/${Date.now()}.webp`;
+    }
+
+    console.log(`[Upload] Uploading ${fileName}, size: ${(file.size / 1024).toFixed(2)}KB`);
 
     const { error: uploadError, data } = await supabase.storage
         .from("article-images")
-        .upload(fileName, file);
+        .upload(fileName, file, {
+            contentType: file.type || "image/webp",
+            cacheControl: "3600",
+            upsert: false
+        });
 
     if (uploadError) {
-        console.error("Error uploading image:", uploadError);
-        return { success: false, error: "Resim yüklenirken bir hata oluştu." };
+        console.error("[Upload] Error:", uploadError);
+        return { success: false, error: `Resim yüklenirken hata: ${uploadError.message}` };
     }
 
     const { data: { publicUrl } } = supabase.storage
         .from("article-images")
         .getPublicUrl(fileName);
 
+    console.log(`[Upload] Success! URL: ${publicUrl}`);
     return { success: true, url: publicUrl };
 }

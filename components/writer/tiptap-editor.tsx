@@ -136,12 +136,13 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Compression options
+        // Compression options - high quality settings
         const options = {
-            maxSizeMB: 1,
+            maxSizeMB: 2,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
-            fileType: "image/webp"
+            fileType: "image/webp" as const,
+            initialQuality: 0.9 // Higher quality to preserve details
         };
 
         setIsUploading(true);

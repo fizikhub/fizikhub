@@ -52,6 +52,7 @@ interface ProfileSettingsButtonProps {
     currentSocialLinks?: any;
     currentUsername: string;
     userEmail?: string | null;
+    usernameChangeCount?: number;
 }
 
 export function ProfileSettingsButton({
@@ -62,7 +63,8 @@ export function ProfileSettingsButton({
     currentWebsite,
     currentSocialLinks,
     currentUsername,
-    userEmail
+    userEmail,
+    usernameChangeCount = 0
 }: ProfileSettingsButtonProps) {
     const [open, setOpen] = useState(false);
     const [showSignOutDialog, setShowSignOutDialog] = useState(false);
@@ -80,6 +82,9 @@ export function ProfileSettingsButton({
     const router = useRouter();
     const isAdmin = userEmail === 'barannnbozkurttb.b@gmail.com';
     const userInitial = currentFullName?.charAt(0) || currentUsername?.charAt(0)?.toUpperCase() || "U";
+
+    // Check if allowed to change username
+    const canChangeUsername = isAdmin || (usernameChangeCount < 1);
 
     // Check if mobile on mount and resize
     useEffect(() => {
@@ -167,10 +172,14 @@ export function ProfileSettingsButton({
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="username"
-                    disabled={!isAdmin || isUpdating}
+                    disabled={!canChangeUsername || isUpdating}
                 />
                 <p className="text-xs text-muted-foreground">
-                    {isAdmin ? "Benzersiz olmalı, sadece harf, rakam ve alt çizgi." : "Kullanıcı adı sadece yönetici tarafından değiştirilebilir."}
+                    {isAdmin
+                        ? "Benzersiz olmalı, sadece harf, rakam ve alt çizgi. (Admin)"
+                        : canChangeUsername
+                            ? "Kullanıcı adınızı sadece bir kez değiştirebilirsiniz."
+                            : "Kullanıcı adı değiştirme hakkınız doldu."}
                 </p>
             </div>
 

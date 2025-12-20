@@ -1,0 +1,2 @@
+ALTER TABLE profiles 
+ADD COLUMN IF NOT EXISTS username_changes_count INTEGER DEFAULT 0;

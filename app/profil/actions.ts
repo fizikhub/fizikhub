@@ -12,11 +12,6 @@ export async function updateUsername(newUsername: string) {
         return { success: false, error: "Giriş yapmalısınız." };
     }
 
-    // Sadece admin değiştirebilir
-    if (user.email?.toLowerCase() !== 'barannnbozkurttb.b@gmail.com') {
-        return { success: false, error: "Kullanıcı adını değiştirme yetkiniz yok." };
-    }
-
     // Username boş olamaz
     if (!newUsername || newUsername.trim().length === 0) {
         return { success: false, error: "Kullanıcı adı boş olamaz." };
@@ -26,6 +21,22 @@ export async function updateUsername(newUsername: string) {
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
     if (!usernameRegex.test(newUsername)) {
         return { success: false, error: "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir." };
+    }
+
+    // Mevcut profil bilgilerini ve değişim hakkını kontrol et (username_changes_count)
+    const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('id, username_changes_count')
+        .eq('id', user.id)
+        .single();
+
+    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const changeCount = currentProfile?.username_changes_count || 0;
+
+    // Eğer admin değilse ve zaten değiştirdiyse hata ver
+    // (Varsayılan olarak 0, 1 kere değiştirebilir -> 0 ise izin ver, 1 ise durdur)
+    if (!isAdmin && changeCount >= 1) {
+        return { success: false, error: "Kullanıcı adınızı sadece bir kez değiştirebilirsiniz." };
     }
 
     // Kullanıcı adının benzersiz olup olmadığını kontrol et
@@ -40,10 +51,13 @@ export async function updateUsername(newUsername: string) {
         return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
     }
 
-    // Kullanıcı adını güncelle
+    // Kullanıcı adını güncelle ve sayacı artır
     const { error: updateError } = await supabase
         .from('profiles')
-        .update({ username: newUsername })
+        .update({
+            username: newUsername,
+            username_changes_count: changeCount + 1
+        })
         .eq('id', user.id);
 
     if (updateError) {
