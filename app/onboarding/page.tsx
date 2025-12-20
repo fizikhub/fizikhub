@@ -30,6 +30,7 @@ export default function OnboardingPage() {
     const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
 
     useEffect(() => {
+        // Initialize stars
         const newStars = [];
         for (let i = 0; i < 120; i++) {
             newStars.push({
@@ -41,7 +42,24 @@ export default function OnboardingPage() {
             });
         }
         setStars(newStars);
-    }, []);
+
+        // Check if user already completed onboarding
+        const checkStatus = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('onboarding_completed')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile?.onboarding_completed) {
+                    router.push('/profil');
+                }
+            }
+        };
+        checkStatus();
+    }, [router, supabase]);
 
     const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
