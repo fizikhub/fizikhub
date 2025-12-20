@@ -106,37 +106,59 @@ export default async function AdminUserDetailsPage({ params }: Props) {
                                 <TableHead>Zaman</TableHead>
                                 <TableHead>Eylem</TableHead>
                                 <TableHead>Yol / Detay</TableHead>
+                                <TableHead>Cihaz</TableHead>
                                 <TableHead>IP</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {logs && logs.length > 0 ? (
-                                logs.map((log) => (
-                                    <TableRow key={log.id}>
-                                        <TableCell className="whitespace-nowrap font-mono text-xs">
-                                            {format(new Date(log.created_at), "dd.MM.yyyy HH:mm:ss", { locale: tr })}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline" className="font-bold">
-                                                {log.action_type}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="max-w-md truncate" title={log.path}>
-                                            <div className="font-medium text-sm">{log.path}</div>
-                                            {log.details && Object.keys(log.details).length > 0 && (
-                                                <pre className="text-[10px] text-muted-foreground mt-1 overflow-hidden">
-                                                    {JSON.stringify(log.details)}
-                                                </pre>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="text-xs text-muted-foreground font-mono">
-                                            {log.ip_address}
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                logs.map((log) => {
+                                    // Simple UA Parser
+                                    const ua = log.user_agent || "";
+                                    let device = "Bilinmiyor";
+                                    let icon = "❓";
+
+                                    if (ua.includes("Mobile") || ua.includes("Android") || ua.includes("iPhone")) {
+                                        device = "Mobil";
+                                        icon = "📱";
+                                    } else if (ua.includes("Windows") || ua.includes("Mac") || ua.includes("Linux")) {
+                                        device = "Bilgisayar";
+                                        icon = "💻";
+                                    }
+
+                                    return (
+                                        <TableRow key={log.id}>
+                                            <TableCell className="whitespace-nowrap font-mono text-xs">
+                                                {format(new Date(log.created_at), "dd.MM.yyyy HH:mm:ss", { locale: tr })}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="font-bold">
+                                                    {log.action_type}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="max-w-md truncate" title={log.path}>
+                                                <div className="font-medium text-sm">{log.path}</div>
+                                                {log.details && Object.keys(log.details).length > 0 && (
+                                                    <pre className="text-[10px] text-muted-foreground mt-1 overflow-hidden">
+                                                        {JSON.stringify(log.details)}
+                                                    </pre>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-xs">
+                                                <div className="flex items-center gap-2" title={ua}>
+                                                    <span>{icon}</span>
+                                                    <span>{device}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-xs text-muted-foreground font-mono">
+                                                {log.ip_address}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                                         Henüz aktivite kaydı yok.
                                     </TableCell>
                                 </TableRow>

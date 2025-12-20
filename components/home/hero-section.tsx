@@ -115,133 +115,42 @@ export function HeroSection() {
                         </Link>
                     </motion.div>
 
-                    {/* Aklında Ne Var Section */}
+                    {/* Quick Actions Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
-                        className="mt-12 sm:mt-16 md:mt-20 w-full max-w-4xl px-4 sm:px-6"
+                        className="mt-10 sm:mt-14 w-full max-w-2xl px-4 sm:px-6"
                     >
-                        {/* Question Prompt */}
-                        <div className="mb-6 sm:mb-8 p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-background/40 via-background/60 to-background/40 backdrop-blur-xl border border-primary/10 shadow-2xl">
-                            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-foreground/90 mb-0">
-                                Bugün bilimseverlerle ne paylaşmak istersin?
-                            </h2>
-                        </div>
+                        {/* Simple Text Prompt */}
+                        <p className="text-sm sm:text-base text-muted-foreground mb-6 font-medium">
+                            Hadi bir şeyler yapalım →
+                        </p>
 
-                        {/* Action Buttons */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                            {/* Yaz Button */}
-                            <Link href="/blog/yeni" className="group">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, y: -5 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-red-500/20 via-rose-600/20 to-pink-500/20 backdrop-blur-lg border border-red-500/30 hover:border-red-400/60 transition-all duration-300 cursor-pointer overflow-hidden shadow-lg hover:shadow-red-500/20"
-                                >
-                                    {/* Glow Effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                    <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-4">
-                                        <div className="p-3 sm:p-4 rounded-xl bg-red-500/20 group-hover:bg-red-500/30 transition-colors duration-300">
-                                            <PenLine className="w-8 h-8 sm:w-10 sm:h-10 text-red-400 group-hover:text-red-300 transition-colors duration-300" strokeWidth={2.5} />
-                                        </div>
-                                        <span className="text-lg sm:text-xl font-bold text-red-300 group-hover:text-red-200 transition-colors duration-300">
-                                            Yaz
-                                        </span>
-                                    </div>
-
-                                    {/* Animated Border */}
-                                    <motion.div
-                                        className="absolute inset-0 rounded-2xl"
-                                        style={{
-                                            background: 'linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.3), transparent)',
-                                        }}
-                                        animate={{
-                                            x: ['-100%', '100%'],
-                                        }}
-                                        transition={{
-                                            duration: 2,
-                                            repeat: Infinity,
-                                            ease: 'linear',
-                                        }}
-                                    />
-                                </motion.div>
+                        {/* Action Buttons - Simple Grid */}
+                        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                            {/* Yaz */}
+                            <Link href="/makale/yeni" className="group">
+                                <div className="p-4 sm:p-6 rounded-xl bg-card border-2 border-border hover:border-primary/50 transition-all duration-200 text-center hover:bg-primary/5">
+                                    <PenLine className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
+                                    <span className="text-xs sm:text-sm font-bold text-foreground">Yaz</span>
+                                </div>
                             </Link>
 
-                            {/* Ekle Button */}
+                            {/* Ekle */}
                             <Link href="/forum/soru-sor" className="group">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, y: -5 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-blue-600/20 to-sky-500/20 backdrop-blur-lg border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 cursor-pointer overflow-hidden shadow-lg hover:shadow-cyan-500/20"
-                                >
-                                    {/* Glow Effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                    <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-4">
-                                        <div className="p-3 sm:p-4 rounded-xl bg-cyan-500/20 group-hover:bg-cyan-500/30 transition-colors duration-300">
-                                            <Plus className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 group-hover:text-cyan-300 transition-colors duration-300" strokeWidth={2.5} />
-                                        </div>
-                                        <span className="text-lg sm:text-xl font-bold text-cyan-300 group-hover:text-cyan-200 transition-colors duration-300">
-                                            Ekle
-                                        </span>
-                                    </div>
-
-                                    {/* Animated Border */}
-                                    <motion.div
-                                        className="absolute inset-0 rounded-2xl"
-                                        style={{
-                                            background: 'linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent)',
-                                        }}
-                                        animate={{
-                                            x: ['-100%', '100%'],
-                                        }}
-                                        transition={{
-                                            duration: 2,
-                                            repeat: Infinity,
-                                            ease: 'linear',
-                                            delay: 0.3,
-                                        }}
-                                    />
-                                </motion.div>
+                                <div className="p-4 sm:p-6 rounded-xl bg-card border-2 border-border hover:border-primary/50 transition-all duration-200 text-center hover:bg-primary/5">
+                                    <Plus className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
+                                    <span className="text-xs sm:text-sm font-bold text-foreground">Ekle</span>
+                                </div>
                             </Link>
 
-                            {/* Soru Sor Button */}
+                            {/* Sor */}
                             <Link href="/forum" className="group">
-                                <motion.div
-                                    whileHover={{ scale: 1.05, y: -5 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="relative p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-yellow-500/20 via-amber-600/20 to-orange-500/20 backdrop-blur-lg border border-yellow-500/30 hover:border-yellow-400/60 transition-all duration-300 cursor-pointer overflow-hidden shadow-lg hover:shadow-yellow-500/20"
-                                >
-                                    {/* Glow Effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                    <div className="relative z-10 flex flex-col items-center gap-3 sm:gap-4">
-                                        <div className="p-3 sm:p-4 rounded-xl bg-yellow-500/20 group-hover:bg-yellow-500/30 transition-colors duration-300">
-                                            <HelpCircle className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" strokeWidth={2.5} />
-                                        </div>
-                                        <span className="text-lg sm:text-xl font-bold text-yellow-300 group-hover:text-yellow-200 transition-colors duration-300">
-                                            Soru Sor
-                                        </span>
-                                    </div>
-
-                                    {/* Animated Border */}
-                                    <motion.div
-                                        className="absolute inset-0 rounded-2xl"
-                                        style={{
-                                            background: 'linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.3), transparent)',
-                                        }}
-                                        animate={{
-                                            x: ['-100%', '100%'],
-                                        }}
-                                        transition={{
-                                            duration: 2,
-                                            repeat: Infinity,
-                                            ease: 'linear',
-                                            delay: 0.6,
-                                        }}
-                                    />
-                                </motion.div>
+                                <div className="p-4 sm:p-6 rounded-xl bg-card border-2 border-border hover:border-primary/50 transition-all duration-200 text-center hover:bg-primary/5">
+                                    <HelpCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
+                                    <span className="text-xs sm:text-sm font-bold text-foreground">Sor</span>
+                                </div>
                             </Link>
                         </div>
                     </motion.div>
