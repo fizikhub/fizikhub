@@ -41,6 +41,7 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { ThemeSelector } from "@/components/profile/theme-selector";
 import { createClient } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/app/auth/actions";
 
 interface ProfileSettingsButtonProps {
     currentFullName: string | null;
@@ -131,11 +132,8 @@ export function ProfileSettingsButton({
     };
 
     const handleConfirmSignOut = async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
         toast.success("Görüşmek üzere! 👋");
-        router.push("/login");
-        router.refresh();
+        await signOut();
     };
 
     const SettingsContent = () => (
