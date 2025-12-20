@@ -9,9 +9,7 @@ export async function getNotifications() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-            if (process.env.NODE_ENV === 'development') {
-                console.log('[Notifications] No user logged in');
-            }
+
             return [];
         }
 
@@ -64,9 +62,7 @@ export async function getNotifications() {
             };
         });
 
-        if (process.env.NODE_ENV === 'development') {
-            console.log('[Notifications] Fetched notifications with actors:', notificationsWithActors.length);
-        }
+
         return notificationsWithActors;
 
     } catch (error) {
@@ -83,9 +79,7 @@ export async function getUnreadCount() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
-            if (process.env.NODE_ENV === 'development') {
-                console.log('[Notifications] No user for unread count');
-            }
+
             return 0;
         }
 
@@ -102,9 +96,7 @@ export async function getUnreadCount() {
             return 0;
         }
 
-        if (process.env.NODE_ENV === 'development') {
-            console.log('[Notifications] Unread count:', count);
-        }
+
         return count || 0;
     } catch (error) {
         console.error('[Notifications] Unexpected error getting unread count:', error);

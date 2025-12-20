@@ -94,9 +94,9 @@ export default async function ArticlePage({ params }: PageProps) {
         .eq('article_id', article.id)
         .order('created_at', { ascending: true });
 
-    console.log(`[DEBUG] Article Page: slug=${slug}, id=${article.id}, title="${article.title}", comments=${commentsData?.length || 0}`);
+
     if (commentsData && commentsData.length > 0) {
-        console.log(`[DEBUG] First comment:`, commentsData[0]);
+
     }
 
     // Fetch profiles separately

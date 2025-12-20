@@ -31,29 +31,9 @@ export default async function AdminArticlesPage() {
         console.error("❌ Admin Panel Error:", error);
     }
 
-    // Check current user role
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
 
-        if (process.env.NODE_ENV === 'development') {
-            console.log("👤 Current user role:", profile?.role);
-        }
-    }
 
-    if (process.env.NODE_ENV === 'development') {
-        if (!pendingArticles || pendingArticles.length === 0) {
-            console.log("⚠️ NO PENDING ARTICLES RETURNED (check RLS policies)");
-        } else {
-            console.log(`✅ Found ${pendingArticles.length} pending articles:`,
-                pendingArticles.map(a => ({ id: a.id, title: a.title, status: a.status }))
-            );
-        }
-    }
+
 
     return (
         <div className="space-y-6">

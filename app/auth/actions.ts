@@ -14,7 +14,7 @@ export async function verifyOtp(email: string, token: string) {
     // Remove any non-alphanumeric characters (spaces, dashes, etc.)
     const cleanToken = token.replace(/[^a-zA-Z0-9]/g, '');
 
-    console.log(`Attempting verification for ${email} with token length ${cleanToken.length}`);
+
 
     // Array of types to try in order
     // 'signup': For new users
@@ -31,11 +31,11 @@ export async function verifyOtp(email: string, token: string) {
         });
 
         if (!error) {
-            console.log(`Verification successful with type: ${type}`);
+
             return { success: true };
         }
 
-        console.log(`Verification failed for type ${type}:`, error.message);
+
         // Capture the error from the 'signup' attempt as it's the most likely one for new users
         if (type === 'signup') {
             lastError = error.message;

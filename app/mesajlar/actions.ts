@@ -200,15 +200,7 @@ export async function startConversation(otherUserId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    console.log("=== START CONVERSATION DEBUG ===");
-    console.log("Current user ID:", user?.id);
-    console.log("Other user ID:", otherUserId);
 
-    if (process.env.NODE_ENV === 'development') {
-        console.log("=== START CONVERSATION DEBUG ===");
-        console.log("Current user ID:", user?.id);
-        console.log("Other user ID:", otherUserId);
-    }
 
     if (!user) {
         if (process.env.NODE_ENV === 'development') {
@@ -242,10 +234,7 @@ export async function startConversation(otherUserId: string) {
         .select('*')
         .eq('conversation_id', conversationId);
 
-    if (process.env.NODE_ENV === 'development') {
-        console.log("Participants in conversation:", participants);
-        console.log("Participants error:", participantsError);
-    }
+
 
     revalidatePath('/mesajlar');
     return { success: true, conversationId };

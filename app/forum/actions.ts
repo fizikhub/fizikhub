@@ -168,9 +168,7 @@ export async function updateQuestion(questionId: number, content: string) {
         return { success: false, error: "Soru güncellenirken hata oluştu." };
     }
 
-    if (process.env.NODE_ENV === 'development') {
-        console.log('[updateQuestion] Update successful:', data);
-    }
+
 
     revalidatePath('/forum');
     revalidatePath(`/forum/${questionId}`);
