@@ -270,10 +270,27 @@ export async function updateArticle(id: number, data: {
         return { success: false, error: error.message };
     }
 
-    revalidatePath('/admin');
     revalidatePath('/admin/articles');
     revalidatePath('/blog');
     revalidatePath('/kesfet');
     revalidatePath('/');
+    return { success: true };
+}
+
+export async function deleteQuizQuestion(id: string) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    const { error } = await adminCheck.supabase!.from('quiz_questions').delete().eq('id', id);
+
+    if (error) {
+        console.error("Delete Quiz Question Error:", error);
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/testler');
     return { success: true };
 }

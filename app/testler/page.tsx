@@ -22,7 +22,7 @@ export default async function QuizzesPage() {
                             <BrainCircuit className="h-8 w-8" />
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
-                            Fizik Testleri
+                            QUİZLER
                         </h1>
                     </div>
                     <p className="text-xl text-muted-foreground font-medium max-w-2xl">

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, GraduationCap } from "lucide-react";
+import { Plus, GraduationCap, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -37,7 +37,14 @@ export default async function AdminQuizzesPage() {
                             <CardTitle className="text-lg font-bold line-clamp-1">
                                 {quiz.title}
                             </CardTitle>
-                            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                            <div className="flex items-center gap-2">
+                                <Link href={`/admin/quizzes/${quiz.id}`}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                        <Settings className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+                                <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <p className="text-sm text-muted-foreground line-clamp-2 mb-4 h-10">
