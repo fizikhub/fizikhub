@@ -2,25 +2,16 @@
 
 @layer base {
   :root {
-    /* --background: 255 255 255; White */
-    --background: 255 105 180;
-    /* Hot Pink */
+    --background: 255 255 255;
     --foreground: 24 24 27;
 
-    /* --card: 255 255 255; White */
-    --card: 255 105 180;
-    /* Hot Pink */
+    --card: 255 255 255;
     --card-foreground: 24 24 27;
 
-    /* --popover: 255 255 255; White */
-    --popover: 255 105 180;
-    /* Hot Pink */
+    --popover: 255 255 255;
     --popover-foreground: 24 24 27;
 
-    /* --primary: 325 100% 55%; Hot Pink Invalid HSL */
-    /* --primary: 245 158 11; Original Amber */
-    --primary: 255 105 180;
-    /* Hot Pink RGB */
+    --primary: 245 158 11;
     --primary-foreground: 255 255 255;
 
     --secondary: 244 244 245;
@@ -37,10 +28,7 @@
 
     --border: 228 228 231;
     --input: 228 228 231;
-    /* --ring: 325 100% 55%; Hot Pink Invalid HSL */
-    /* --ring: 245 158 11; Original Amber */
-    --ring: 255 105 180;
-    /* Hot Pink RGB */
+    --ring: 245 158 11;
 
     --radius: 0.75rem;
 
@@ -65,10 +53,7 @@
     --popover: 20 22 25;
     --popover-foreground: 248 250 252;
 
-    /* --primary: 325 100% 55%; Hot Pink Invalid HSL */
-    /* --primary: 245 158 11; Original Amber */
-    --primary: 255 105 180;
-    /* Hot Pink RGB */
+    --primary: 245 158 11;
     --primary-foreground: 15 15 17;
 
     --secondary: 30 33 37;
@@ -85,10 +70,7 @@
 
     --border: 38 42 47;
     --input: 38 42 47;
-    /* --ring: 325 100% 55%; Hot Pink Invalid HSL */
-    /* --ring: 251 146 60; Original Orange */
-    --ring: 255 105 180;
-    /* Hot Pink RGB */
+    --ring: 251 146 60;
   }
 
   .pink {
