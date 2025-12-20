@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, Play, Frown, PartyPopper } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, Play, Frown, PartyPopper, Zap, ThumbsDown } from "lucide-react";
 import { submitQuizResult } from "@/app/testler/actions";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -112,12 +112,30 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
 
     const finishQuiz = async () => {
         setIsFinished(true);
+        // Sarcastic Confetti for high scores
         if (score > questions.length / 2) {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            const end = Date.now() + 1000;
+            const colors = ['#bb0000', '#ffffff'];
+            (function frame() {
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
         }
 
         try {
@@ -165,15 +183,20 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
     if (isFinished) {
         const percentage = (score / questions.length) * 100;
         const isSuccess = percentage > 50;
+        const isPerfect = score === questions.length;
+
+        let titleText = "Helal Olsun!";
+        if (!isSuccess) titleText = "Geçmiş Olsun!";
+        if (isPerfect) titleText = "İnanılmaz!";
+
+        let messageText = "";
+        if (isPerfect) messageText = "Hatasız kul olmaz derler ama sen oldun! Mükemmelsin.";
+        else if (isSuccess) messageText = "Ortalamanın üstündesin, havanı atabilirsin. (Ama çok değil)";
+        else messageText = "Fizik kitabının kapağını hiç açmayı denedin mi? Merak ettim sadece.";
 
         return (
             <div className="container max-w-md py-8 px-4 mx-auto">
                 <Card className="w-full text-center p-4 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden relative">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-5 pointer-events-none"
-                        style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '20px 20px' }}
-                    />
-
                     <CardHeader className="pb-2">
                         <motion.div
                             initial={{ scale: 0, rotate: -180 }}
@@ -182,12 +205,23 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                             className={`mx-auto p-4 rounded-full mb-4 ring-4 ring-black dark:ring-white shadow-xl ${isSuccess ? 'bg-yellow-400' : 'bg-red-400'}`}
                         >
                             {isSuccess ?
-                                <Trophy className="h-12 w-12 text-black" /> :
-                                <Frown className="h-12 w-12 text-black" />
+                                <motion.div
+                                    animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                                    transition={{ duration: 1.5, loop: Infinity, delay: 1 }}
+                                >
+                                    <Trophy className="h-12 w-12 text-black" />
+                                </motion.div>
+                                :
+                                <motion.div
+                                    animate={{ y: [0, 5, 0, 5, 0] }}
+                                    transition={{ duration: 2, loop: Infinity, repeatDelay: 1 }}
+                                >
+                                    <ThumbsDown className="h-12 w-12 text-black" />
+                                </motion.div>
                             }
                         </motion.div>
                         <CardTitle className="text-2xl md:text-3xl font-black uppercase transform -rotate-1">
-                            {isSuccess ? "Helal Olsun!" : "Geçmiş Olsun!"}
+                            {titleText}
                         </CardTitle>
                     </CardHeader>
 
@@ -200,9 +234,7 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
 
                         <div className="p-3 bg-muted/50 rounded-xl border-2 border-black/10 dark:border-white/10">
                             <p className="font-bold text-base leading-snug">
-                                {score === questions.length ? "Hatasız kul olmaz derler ama sen oldun! Mükemmelsin." :
-                                    score > questions.length / 2 ? "Ortalamanın üstündesin, havanı atabilirsin." :
-                                        "Fizik kitabının kapağını hiç açmayı denedin mi? Merak ettim sadece."}
+                                {messageText}
                             </p>
                         </div>
 
@@ -215,13 +247,13 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                                 className="flex items-center justify-center gap-2 bg-green-100 dark:bg-green-900/30 border-2 border-green-600 p-3 rounded-xl text-green-800 dark:text-green-100"
                             >
                                 <PartyPopper className="h-5 w-5" />
-                                <span className="text-lg font-black">+{pointsEarned} HubPuan</span>
+                                <span className="text-lg font-black">{pointsEarned} HubPuan Kazandın!</span>
                             </motion.div>
                         )}
 
-                        {alreadyCompleted && score > 0 && (
-                            <div className="text-xs font-bold text-muted-foreground bg-muted p-2 rounded-lg">
-                                (Daha önce çözdüğün için tekrar puan yok 😉)
+                        {(alreadyCompleted || (!alreadyCompleted && pointsEarned === 0 && score > 0)) && (
+                            <div className="text-xs font-bold text-muted-foreground bg-muted p-2 rounded-lg relative overflow-hidden group">
+                                <span className="relative z-10">(Daha önce çözdüğün için tekrar puan yok çakal 😉)</span>
                             </div>
                         )}
                     </CardContent>
