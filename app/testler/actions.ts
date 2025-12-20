@@ -65,7 +65,20 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
         return { success: false, error: "Giriş yapmalısınız." };
     }
 
-    // 1. Record the attempt
+    // 0. Check if user ALREADY got points for this quiz (score > 0)
+    // We treat any previous attempt with score > 0 as "completed for points"
+    const { data: existingAttempts } = await supabase
+        .from('user_quiz_attempts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('quiz_id', quizId)
+        .gt('score', 0)
+        .limit(1);
+
+    const alreadyCompleted = existingAttempts && existingAttempts.length > 0;
+    let pointsEarned = 0;
+
+    // 1. Record the attempt (Always record valid attempts)
     const { error: attemptError } = await supabase
         .from('user_quiz_attempts')
         .insert({
@@ -80,12 +93,8 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
         return { success: false, error: "Sonuç kaydedilemedi." };
     }
 
-    // 2. Award points (only if score > 0)
-    // In a real app, we might want to check if they already got points for this quiz
-    if (score > 0) {
-        // Calculate points based on percentage
-        // For simplicity, let's just give fixed points for now if they pass a threshold
-        // Or fetch the quiz points
+    // 2. Award points ONLY if not already completed and score > 0
+    if (!alreadyCompleted && score > 0) {
         const { data: quiz } = await supabase
             .from('quizzes')
             .select('points')
@@ -93,15 +102,14 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
             .single();
 
         if (quiz) {
-            const percentage = (score / totalQuestions) * 100;
-            const pointsToAward = Math.round((percentage / 100) * quiz.points);
+            // Simple logic: If score is > 50%, give full points. 
+            // Or proportional? User request implies "Unlimited points farming" so block repeats.
+            // Let's go with: Proportional points based on score
+            const percentage = (score / totalQuestions);
+            pointsEarned = Math.round(percentage * quiz.points);
 
-            if (pointsToAward > 0) {
-                // Update profile reputation
-                // We use a stored procedure or just increment directly if RLS allows
-                // Since we don't have a procedure, we fetch, increment, update (prone to race conditions but ok for now)
-                // Better: use rpc if available, or just update.
-
+            if (pointsEarned > 0) {
+                // Fetch current profile to increment
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('reputation')
@@ -111,7 +119,7 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
                 if (profile) {
                     await supabase
                         .from('profiles')
-                        .update({ reputation: profile.reputation + pointsToAward })
+                        .update({ reputation: profile.reputation + pointsEarned })
                         .eq('id', user.id);
                 }
             }
@@ -122,5 +130,5 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
     revalidatePath('/profil');
     revalidatePath('/siralamalar');
 
-    return { success: true };
+    return { success: true, pointsEarned, alreadyCompleted };
 }
