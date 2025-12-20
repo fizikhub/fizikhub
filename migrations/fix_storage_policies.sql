@@ -1,31 +1,33 @@
--- Create the storage bucket 'article-images' if it doesn't exist
+-- "article-images" depolama alanını oluştur veya varsa güncelle
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('article-images', 'article-images', true)
-ON CONFLICT (id) DO UPDATE
-SET public = true;
+ON CONFLICT (id) DO UPDATE SET public = true;
 
--- Enable RLS
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+-- NOT: storage.objects tablosunda RLS zaten aktiftir, o satırı sildik.
 
--- Allow public access to view images
-CREATE POLICY "Public Access"
-ON storage.objects FOR SELECT
+-- Varolan politikaları temizle (Hata vermemesi için)
+DROP POLICY IF EXISTS "Public View" ON storage.objects;
+DROP POLICY IF EXISTS "User Upload" ON storage.objects;
+DROP POLICY IF EXISTS "Users Update Own Images" ON storage.objects;
+DROP POLICY IF EXISTS "Users Delete Own Images" ON storage.objects;
+
+-- 1. Herkesin resimleri görmesine izin ver
+CREATE POLICY "Public View" ON storage.objects FOR SELECT
 USING ( bucket_id = 'article-images' );
 
--- Allow authenticated users to upload images
-CREATE POLICY "Authenticated Users Upload"
-ON storage.objects FOR INSERT
+-- 2. Giriş yapmış kullanıcıların resim yüklemesine izin ver
+CREATE POLICY "User Upload" ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK ( bucket_id = 'article-images' );
 
--- Allow users to update their own images (optional, but good)
+-- 3. Opsiyonel: Kendi resimlerini güncelleyebilsinler
 CREATE POLICY "Users Update Own Images"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING ( bucket_id = 'article-images' AND auth.uid() = owner )
 WITH CHECK ( bucket_id = 'article-images' AND auth.uid() = owner );
 
--- Allow users to delete their own images
+-- 4. Opsiyonel: Kendi resimlerini silebilsinler
 CREATE POLICY "Users Delete Own Images"
 ON storage.objects FOR DELETE
 TO authenticated

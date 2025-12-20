@@ -29,11 +29,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Base Query
+    // 1. In blog/page.tsx
+    // Replace the query definition
     let query = supabase
         .from('articles')
         .select(`
             *,
-            author:profiles!articles_author_id_fkey(*)
+            author:profiles!articles_author_id_fkey!inner(*)
         `)
         .eq('status', 'published')
         .eq('author.is_writer', true);
