@@ -207,14 +207,14 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                             {isSuccess ?
                                 <motion.div
                                     animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
-                                    transition={{ duration: 1.5, loop: Infinity, delay: 1 }}
+                                    transition={{ duration: 1.5, repeat: Infinity, delay: 1 }}
                                 >
                                     <Trophy className="h-12 w-12 text-black" />
                                 </motion.div>
                                 :
                                 <motion.div
                                     animate={{ y: [0, 5, 0, 5, 0] }}
-                                    transition={{ duration: 2, loop: Infinity, repeatDelay: 1 }}
+                                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
                                 >
                                     <ThumbsDown className="h-12 w-12 text-black" />
                                 </motion.div>
