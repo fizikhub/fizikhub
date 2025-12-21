@@ -4,9 +4,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function BottomNav() {
     const pathname = usePathname();
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            // Show if at top or scrolling up
+            if (currentScrollY < 10 || currentScrollY < lastScrollY) {
+                setIsVisible(true);
+            }
+            // Hide if scrolling down and not at top
+            else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+                setIsVisible(false);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     const links = [
         {
@@ -37,9 +60,12 @@ export function BottomNav() {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 z-[100] w-full md:hidden">
-            <div className="bg-background border-t border-black dark:border-white shadow-[0_-4px_0_0_rgba(0,0,0,1)] dark:shadow-[0_-4px_0_0_rgba(255,255,255,1)]">
-                <div className="flex h-16 items-center justify-around px-2">
+        <div className={cn(
+            "fixed bottom-4 left-4 right-4 z-[100] md:hidden transition-all duration-300 ease-in-out",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-[150%] opacity-0"
+        )}>
+            <div className="bg-background/80 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-2xl overflow-hidden">
+                <div className="flex h-14 items-center justify-around px-2">
                     {links.map((link) => {
                         const Icon = link.icon;
                         const isActive = pathname === link.href || (link.href !== "/" && link.href !== "#search" && pathname.startsWith(link.href));
@@ -50,26 +76,26 @@ export function BottomNav() {
                                 href={link.href}
                                 prefetch={true}
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center gap-1 px-1 min-w-[60px] h-full group transition-all",
+                                    "relative flex flex-col items-center justify-center gap-0.5 px-1 min-w-[50px] h-full group transition-all",
                                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {isActive && (
-                                    <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+                                    <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
                                 )}
 
                                 <div className="relative z-10 transition-transform duration-200 group-active:scale-90">
                                     <Icon
                                         className={cn(
-                                            "h-6 w-6",
+                                            "h-5 w-5",
                                             isActive ? "stroke-[2.5px]" : "stroke-[1.5px]"
                                         )}
                                     />
                                 </div>
 
                                 <span className={cn(
-                                    "text-[9px] font-black uppercase tracking-wider transition-colors duration-200",
-                                    isActive ? "text-primary" : "text-muted-foreground"
+                                    "text-[8px] font-black uppercase tracking-wider transition-colors duration-200",
+                                    isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-70"
                                 )}>
                                     {link.label}
                                 </span>
@@ -78,7 +104,6 @@ export function BottomNav() {
                     })}
                 </div>
             </div>
-            <div className="h-safe-area-bottom bg-background border-t-0"></div>
         </div>
     );
 }

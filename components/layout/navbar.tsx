@@ -97,7 +97,7 @@ export function Navbar() {
                     ? "glass-panel shadow-[0_4px_0_0_rgba(0,0,0,1)] dark:shadow-[0_4px_0_0_rgba(255,255,255,1)]"
                     : "bg-transparent border-transparent"
             )}>
-                <div className="container flex h-20 items-center justify-between px-4 md:px-6">
+                <div className="container flex h-14 md:h-20 items-center justify-between px-4 md:px-6">
                     <Logo />
 
                     {/* Desktop Navigation */}
