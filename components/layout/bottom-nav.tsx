@@ -61,10 +61,10 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-4 left-4 right-4 z-[100] md:hidden transition-all duration-300 ease-in-out",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-[150%] opacity-0"
+            "fixed bottom-0 left-0 w-full z-[100] md:hidden transition-all duration-300 ease-in-out",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-[100%] opacity-0"
         )}>
-            <div className="bg-background/80 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] rounded-2xl overflow-hidden">
+            <div className="bg-background/80 backdrop-blur-md border-t border-black dark:border-white shadow-[0_-4px_0_0_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_0_0_rgba(255,255,255,0.1)]">
                 <div className="flex h-14 items-center justify-around px-2">
                     {links.map((link) => {
                         const Icon = link.icon;
@@ -81,7 +81,7 @@ export function BottomNav() {
                                 )}
                             >
                                 {isActive && (
-                                    <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+                                    <div className="absolute top-0 w-full h-0.5 bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
                                 )}
 
                                 <div className="relative z-10 transition-transform duration-200 group-active:scale-90">
@@ -103,6 +103,8 @@ export function BottomNav() {
                         );
                     })}
                 </div>
+                {/* Safe area padding for newer iPhones */}
+                <div className="h-safe-area-bottom"></div>
             </div>
         </div>
     );
