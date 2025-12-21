@@ -1,48 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { PenLine, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Plus, ArrowRight } from "lucide-react";
 
 export function CommunityInviteBanner() {
     return (
-        <div className="relative overflow-hidden mb-8 md:mb-12">
-            {/* Background with subtle gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 rounded-2xl" />
+        <div className="relative mb-8 md:mb-12 group">
+            {/* Brutalist Hard Shadow Decoration */}
+            <div className="absolute top-2 left-2 w-full h-full bg-black dark:bg-white border-2 border-black dark:border-white z-0" />
 
-            <div className="relative border-2 border-dashed border-emerald-500/30 rounded-2xl p-6 md:p-8 bg-card/50 backdrop-blur-sm">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                    {/* Text Content */}
-                    <div className="space-y-3 max-w-xl">
-                        <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-emerald-500" />
-                            <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                                Topluluk Blogu
-                            </span>
-                        </div>
+            <div className="relative z-10 bg-background border-2 border-black dark:border-white p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:-translate-x-[2px] hover:-translate-y-[2px] transition-transform duration-200">
 
-                        <h2 className="text-xl md:text-2xl font-bold text-foreground leading-tight">
-                            Senin de anlatacak bir hikayen var mı?
+                {/* Decorative Corner Squares */}
+                <div className="absolute top-0 left-0 w-3 h-3 bg-black dark:bg-white" />
+                <div className="absolute top-0 right-0 w-3 h-3 bg-black dark:bg-white" />
+                <div className="absolute bottom-0 left-0 w-3 h-3 bg-black dark:bg-white" />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-black dark:bg-white" />
+
+                {/* Left Content */}
+                <div className="space-y-4 max-w-2xl">
+                    <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-1 bg-secondary/50">
+                        <div className="w-2 h-2 bg-green-500 animate-pulse" />
+                        <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
+                            KATKI_MODÜLÜ__V.1.0
+                        </span>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight leading-[0.9]">
+                            ARAŞTIRMALARINI <span className="bg-emerald-500 text-white px-1">PAYLAŞ</span>
                         </h2>
-
-                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                            Burası senin alanın. Öğrendiklerini, merak ettiklerini veya keşfettiklerini
-                            topluluğumuzla paylaş. Her ses önemli, her yazı değerli.
+                        <p className="text-muted-foreground font-mono text-xs md:text-sm leading-relaxed max-w-lg">
+                            {`> Sadece veriyi tüketme. Analiz et, hipotez kur ve sonuçlarını yayınla.`}
+                            <br />
+                            {`> Bilimsel tartışmalara yön ver.`}
                         </p>
                     </div>
+                </div>
 
-                    {/* CTA Button */}
-                    <div className="flex-shrink-0">
-                        <Link href="/makale/yeni">
-                            <Button
-                                size="lg"
-                                className="w-full md:w-auto gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:shadow-none active:translate-x-[4px] active:translate-y-[4px]"
-                            >
-                                <PenLine className="w-4 h-4" />
-                                Yazını Paylaş
-                            </Button>
-                        </Link>
-                    </div>
+                {/* Right Action */}
+                <div className="flex-shrink-0 w-full md:w-auto">
+                    <Link href="/makale/yeni" className="block w-full">
+                        <button className="w-full md:w-auto flex items-center justify-center gap-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-wider px-8 py-4 hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white transition-colors duration-200 group-hover:shadow-none">
+                            <span>MAKALE OLUŞTUR</span>
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>
