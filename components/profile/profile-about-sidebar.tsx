@@ -8,6 +8,7 @@ import { BadgeDisplay } from "@/components/badge-display";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from "next/link";
+import { ProfileTimeLimitDisplay } from "@/components/time-limit/profile-time-limit-display";
 
 interface ProfileAboutSidebarProps {
     profile: any;
@@ -29,6 +30,8 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
     return (
 
         <aside className="space-y-4">
+            {/* Time Limit Display for restricted users */}
+            <ProfileTimeLimitDisplay />
             {/* HubPuan - Prominent Display with Tooltip */}
             {/* HubPuan - Prominent Display with Popover (Mobile Friendly) */}
             <Popover>
