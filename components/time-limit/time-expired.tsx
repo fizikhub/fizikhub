@@ -1,16 +1,52 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Moon, Hourglass, Frown, ThumbsDown, Ban, Skull, XCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Moon, Hourglass, ThumbsDown, Ban, Skull } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface TimeExpiredProps {
     hoursUntilReset: number;
     minutesUntilReset: number;
 }
 
+// Rotating messages component - shows one message at a time
+function RotatingMessages() {
+    const messages = [
+        "Hadi yürü git 🚶",
+        "10 dk çok hızlı geçti ⏰",
+        "Süren bitti güle güle 👋"
+    ];
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % messages.length);
+        }, 2500);
+        return () => clearInterval(interval);
+    }, [messages.length]);
+
+    return (
+        <div className="h-10 mb-6 flex items-center justify-center">
+            <AnimatePresence mode="wait">
+                <motion.p
+                    key={currentIndex}
+                    className="text-lg md:text-xl text-white/60"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.4 }}
+                >
+                    {messages[currentIndex]}
+                </motion.p>
+            </AnimatePresence>
+        </div>
+    );
+}
+
 export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredProps) {
-    // Mocking emoji array for floating animation
-    const mockingEmojis = ["😂", "🤣", "😭", "💀", "🫵", "👋", "⏰", "🚫", "❌", "🪦"];
+    // Mocking emoji array for floating animation - reduced for mobile
+    const mockingEmojis = ["😂", "💀", "👋", "🚫", "🪦"];
+
 
     return (
         <div className="fixed inset-0 z-[9999] bg-black overflow-hidden flex items-center justify-center">
@@ -37,30 +73,30 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                 ))}
             </div>
 
-            {/* Floating mocking emojis around the screen */}
-            {mockingEmojis.map((emoji, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute text-4xl md:text-6xl"
-                    style={{
-                        left: `${10 + (i * 8)}%`,
-                        top: `${10 + Math.random() * 80}%`,
-                    }}
-                    animate={{
-                        y: [0, -30, 0, 30, 0],
-                        x: [0, 20, 0, -20, 0],
-                        rotate: [0, 15, 0, -15, 0],
-                        scale: [1, 1.2, 1, 1.2, 1],
-                    }}
-                    transition={{
-                        duration: 3 + Math.random() * 2,
-                        repeat: Infinity,
-                        delay: i * 0.3,
-                    }}
-                >
-                    {emoji}
-                </motion.div>
-            ))}
+            {/* Floating mocking emojis - hidden on mobile for cleaner look */}
+            <div className="hidden md:block">
+                {mockingEmojis.map((emoji, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute text-4xl md:text-5xl"
+                        style={{
+                            left: `${10 + (i * 18)}%`,
+                            top: `${20 + (i * 12)}%`,
+                        }}
+                        animate={{
+                            y: [0, -20, 0, 20, 0],
+                            rotate: [0, 10, 0, -10, 0],
+                        }}
+                        transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            delay: i * 0.5,
+                        }}
+                    >
+                        {emoji}
+                    </motion.div>
+                ))}
+            </div>
 
             {/* Nebula glow effects */}
             <div className="absolute inset-0 overflow-hidden">
@@ -195,70 +231,25 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                     </span>
                 </motion.div>
 
-                {/* Mocking messages rotating */}
-                <motion.div
-                    className="text-xl md:text-2xl text-white/60 mb-6 h-8"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6 }}
-                >
-                    {["10 dakikanız puf oldu! 💨", "Süre bitti, bay bay! 👋", "Zaman senin dostun değilmiş 😂", "Hadi yürü git! 🚶‍♂️"].map((text, i) => (
-                        <motion.span
-                            key={i}
-                            className="absolute left-0 right-0"
-                            animate={{
-                                opacity: [0, 1, 1, 0],
-                                y: [20, 0, 0, -20],
-                            }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                delay: i * 3,
-                                times: [0, 0.1, 0.9, 1],
-                            }}
-                        >
-                            {text}
-                        </motion.span>
-                    ))}
-                </motion.div>
+                {/* Mocking messages - one at a time */}
+                <RotatingMessages />
 
-                {/* Dramatic timer death animation with explosion effect */}
+                {/* Timer display - simplified for mobile */}
                 <motion.div
-                    className="flex justify-center gap-2 mb-8 relative"
+                    className="flex justify-center gap-2 mb-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
                 >
-                    {/* Explosion particles */}
-                    {[...Array(12)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            className="absolute w-2 h-2 bg-red-500 rounded-full"
-                            animate={{
-                                x: [0, Math.cos(i * 30 * Math.PI / 180) * 80],
-                                y: [0, Math.sin(i * 30 * Math.PI / 180) * 80],
-                                opacity: [1, 0],
-                                scale: [1, 0],
-                            }}
-                            transition={{
-                                duration: 1,
-                                repeat: Infinity,
-                                repeatDelay: 2,
-                            }}
-                        />
-                    ))}
-
                     {["0", "0", ":", "0", "0"].map((char, i) => (
                         <motion.span
                             key={i}
-                            className="text-5xl font-mono font-bold text-red-500"
+                            className="text-4xl md:text-5xl font-mono font-bold text-red-500"
                             animate={{
-                                opacity: [1, 0.2, 1],
-                                scale: [1, 0.8, 1],
-                                rotate: [0, 10, -10, 0],
+                                opacity: [1, 0.3, 1],
                             }}
                             transition={{
-                                duration: 0.8,
+                                duration: 1,
                                 repeat: Infinity,
                                 delay: i * 0.1,
                             }}
@@ -268,28 +259,28 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                     ))}
                 </motion.div>
 
-                {/* Mocking icons row */}
+                {/* Mocking icons row - hidden on mobile */}
                 <motion.div
-                    className="flex justify-center gap-4 mb-8"
+                    className="hidden md:flex justify-center gap-4 mb-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
                 >
-                    {[ThumbsDown, Ban, Skull, XCircle, Frown].map((Icon, i) => (
+                    {[ThumbsDown, Ban, Skull].map((Icon, i) => (
                         <motion.div
                             key={i}
                             className="text-red-400"
                             animate={{
-                                rotate: [0, -20, 20, -20, 20, 0],
-                                scale: [1, 1.3, 1],
+                                rotate: [0, -15, 15, 0],
+                                scale: [1, 1.2, 1],
                             }}
                             transition={{
-                                duration: 1,
+                                duration: 1.5,
                                 repeat: Infinity,
-                                delay: i * 0.2,
+                                delay: i * 0.3,
                             }}
                         >
-                            <Icon className="w-8 h-8" />
+                            <Icon className="w-6 h-6" />
                         </motion.div>
                     ))}
                 </motion.div>
@@ -303,7 +294,7 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                 >
                     <div className="flex items-center gap-2 text-white/40 text-sm mb-3">
                         <Moon className="w-4 h-4" />
-                        <span>Süre yenilenene kadar bekle 😏</span>
+                        <span>Süren yenilenene kadar ders çalış �</span>
                     </div>
                     <div className="flex items-center justify-center gap-4">
                         <div className="text-center">
