@@ -122,7 +122,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                     <ModernForumHeader />
 
                     {/* Mobile Question of the Week */}
-                    <div className="md:hidden mb-6">
+                    <div className="md:hidden mb-4">
                         <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
                     </div>
 

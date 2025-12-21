@@ -3,11 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Sparkles, Atom, Zap, MessageSquare, Plus, ArrowRight } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search, Sparkles, Atom, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateQuestionDialog } from "./create-question-dialog";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -103,21 +102,10 @@ export function ModernForumHeader() {
         router.push(`/forum?${params.toString()}`);
     };
 
-    // Mouse tracking for 3D tilt effect
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [isHovering, setIsHovering] = useState(false);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        setMousePosition({ x, y });
-    };
-
     return (
-        <div className="flex flex-col gap-8 mb-8">
+        <div className="flex flex-col gap-4 mb-4">
             {/* Forum Header - Premium Enhanced */}
-            <div className="relative border-2 border-border bg-card p-8 md:p-12 mb-4 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+            <div className="relative border-2 border-border bg-card p-4 md:p-6 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
 
                 {/* Dynamic Space Background */}
                 <HeaderSpaceBackground />
@@ -151,8 +139,8 @@ export function ModernForumHeader() {
 
 
                 <div className="max-w-4xl mx-auto relative z-10 w-full">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                        {/* Enhanced Icon with Multiple Effects */}
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+                        {/* Enhanced Icon with Multiple Effects - Smaller on mobile */}
                         <motion.div
                             className="hidden md:block relative"
                             initial={{ scale: 0, rotate: -180 }}
@@ -172,7 +160,7 @@ export function ModernForumHeader() {
                                 }}
                             />
 
-                            <div className="relative w-16 h-16 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <div className="relative w-12 h-12 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
                                 {/* Pulsing glow */}
                                 <motion.div
                                     className="absolute inset-0 bg-primary/30 blur-lg"
@@ -186,19 +174,19 @@ export function ModernForumHeader() {
                                         ease: "easeInOut"
                                     }}
                                 />
-                                <Atom className="w-8 h-8 text-primary-foreground relative z-10" />
+                                <Atom className="w-6 h-6 text-primary-foreground relative z-10" />
                             </div>
                         </motion.div>
 
-                        <div className="flex-1 space-y-5 w-full text-center md:text-left">
+                        <div className="flex-1 space-y-3 w-full text-center md:text-left">
                             {/* Enhanced Title with Multiple Effects */}
                             <motion.div
-                                className="space-y-3"
+                                className="space-y-1 md:space-y-2"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6 }}
                             >
-                                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight relative">
+                                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight relative">
                                     <span className="relative inline-block">
                                         Aklında Ne Var?
                                         {/* Animated underline */}
@@ -223,15 +211,13 @@ export function ModernForumHeader() {
                                     </span>
                                 </h1>
                                 <motion.p
-                                    className="text-base md:text-lg text-muted-foreground font-medium"
+                                    className="text-sm md:text-base text-muted-foreground font-medium"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.4, duration: 0.6 }}
                                 >
-                                    Bilim topluluğu sorularını bekliyor. <span className="text-foreground font-bold">Cevaplar yıldızların arasında.</span>
+                                    Bilim topluluğu sorularını bekliyor.
                                 </motion.p>
-
-
                             </motion.div>
 
                             {/* Premium Enhanced Input */}
@@ -243,7 +229,7 @@ export function ModernForumHeader() {
                                 <CreateQuestionDialog
                                     trigger={
                                         <div className="w-full group/input cursor-pointer">
-                                            <div className="relative border-2 border-border bg-background p-4 md:p-5 flex items-center gap-4 transition-all duration-300 hover:border-primary hover:shadow-[6px_6px_0px_0px] hover:shadow-primary/50 hover:scale-[1.02] hover:-translate-y-1">
+                                            <div className="relative border-2 border-border bg-background p-3 md:p-4 flex items-center gap-3 transition-all duration-300 hover:border-primary hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50 hover:scale-[1.01] hover:-translate-y-0.5">
                                                 {/* Enhanced focus ring */}
                                                 <div className="absolute -inset-1 bg-primary/20 rounded-sm opacity-0 group-hover/input:opacity-100 blur-md transition-opacity duration-300" />
 
@@ -261,20 +247,20 @@ export function ModernForumHeader() {
 
                                                 {/* Icon with advanced animation */}
                                                 <motion.div
-                                                    className="p-2.5 bg-primary border-2 border-black dark:border-white relative z-10"
+                                                    className="p-2 bg-primary border-2 border-black dark:border-white relative z-10"
                                                     whileHover={{ rotate: 360, scale: 1.1 }}
                                                     transition={{ duration: 0.6 }}
                                                 >
-                                                    <Sparkles className="w-5 h-5 text-primary-foreground" />
+                                                    <Sparkles className="w-4 h-4 text-primary-foreground" />
                                                 </motion.div>
 
                                                 {/* Input Text with typing effect hint */}
                                                 <div className="flex-1 flex items-center relative z-10">
-                                                    <span className="text-muted-foreground font-semibold text-base md:text-lg group-hover/input:text-foreground transition-colors">
+                                                    <span className="text-muted-foreground font-semibold text-sm md:text-base group-hover/input:text-foreground transition-colors">
                                                         Sorunu sor...
                                                     </span>
                                                     <motion.span
-                                                        className="ml-1 inline-block w-0.5 h-5 bg-primary"
+                                                        className="ml-1 inline-block w-0.5 h-4 bg-primary"
                                                         animate={{
                                                             opacity: [0, 1, 0],
                                                         }}
@@ -291,7 +277,7 @@ export function ModernForumHeader() {
                                                     className="hidden sm:block relative z-10"
                                                     whileHover={{ x: 5, scale: 1.05 }}
                                                 >
-                                                    <div className="relative px-5 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground group-hover/input:border-primary transition-all flex items-center gap-2 overflow-hidden">
+                                                    <div className="relative px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs md:text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground group-hover/input:border-primary transition-all flex items-center gap-2 overflow-hidden">
                                                         {/* Button shimmer */}
                                                         <motion.div
                                                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -305,7 +291,7 @@ export function ModernForumHeader() {
                                                             }}
                                                         />
                                                         <span className="relative z-10">Yaz</span>
-                                                        <ArrowRight className="w-4 h-4 group-hover/input:translate-x-1 transition-transform relative z-10" />
+                                                        <ArrowRight className="w-3 h-3 group-hover/input:translate-x-1 transition-transform relative z-10" />
                                                     </div>
                                                 </motion.div>
                                             </div>
@@ -318,19 +304,19 @@ export function ModernForumHeader() {
                 </div>
             </div>
 
-            {/* Categories & Actions Bar */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between sticky top-[70px] z-30 py-4 bg-background/95 backdrop-blur-sm border-b-2 border-border">
+            {/* Categories & Actions Bar - Compact */}
+            <div className="flex flex-col md:flex-row gap-2 items-center justify-between sticky top-[60px] z-30 py-2 bg-background/95 backdrop-blur-sm border-b-2 border-border">
                 {/* Categories - Horizontal Scroll */}
-                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide">
+                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-1">
                     <div className="flex gap-2 min-w-max px-1">
                         {categories.map((category) => (
                             <button
                                 key={category}
                                 onClick={() => handleCategoryChange(category)}
                                 className={cn(
-                                    "px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200",
+                                    "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200",
                                     currentCategory === category
-                                        ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -translate-y-1"
+                                        ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
                                         : "bg-background border-border hover:border-black dark:hover:border-white hover:-translate-y-0.5"
                                 )}
                             >
@@ -341,12 +327,12 @@ export function ModernForumHeader() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
                     <div className="flex border-2 border-border bg-background">
                         <button
                             onClick={() => handleSortChange("newest")}
                             className={cn(
-                                "px-4 py-2 text-sm font-bold uppercase transition-colors",
+                                "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
                                 currentSort === "newest" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
                             )}
                         >
@@ -356,7 +342,7 @@ export function ModernForumHeader() {
                         <button
                             onClick={() => handleSortChange("popular")}
                             className={cn(
-                                "px-4 py-2 text-sm font-bold uppercase transition-colors",
+                                "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
                                 currentSort === "popular" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
                             )}
                         >
@@ -369,9 +355,9 @@ export function ModernForumHeader() {
                         <Button
                             variant="outline"
                             size="icon"
-                            className="rounded-none border-2 border-black dark:border-white"
+                            className="h-8 w-8 rounded-none border-2 border-black dark:border-white"
                         >
-                            <Search className="h-4 w-4" />
+                            <Search className="h-3 w-3" />
                         </Button>
                     </div>
                 </div>

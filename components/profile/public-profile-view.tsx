@@ -69,17 +69,17 @@ export function PublicProfileView({
             <SpaceBackground />
 
             {/* Cover Area */}
-            <div className="relative h-48 md:h-64 w-full overflow-hidden border-b border-amber-500/20 bg-muted/10">
+            <div className="relative h-40 md:h-56 w-full overflow-hidden border-b border-border/50">
                 {profile.cover_url ? (
                     <div
-                        className="absolute inset-0 bg-cover bg-center opacity-80"
+                        className="absolute inset-0 bg-cover bg-center"
                         style={{ backgroundImage: `url(${profile.cover_url})` }}
                     />
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-950 to-black" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted-foreground/10" />
                 )}
                 {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
             </div>
 
             <motion.div
@@ -92,37 +92,34 @@ export function PublicProfileView({
                     {/* Left Sidebar: Profile Identity */}
                     <motion.div variants={itemVariants} className="lg:col-span-4 space-y-6">
                         {/* Identity Card */}
-                        <div className="bg-black/60 backdrop-blur-md border border-amber-500/20 p-6 rounded-2xl relative shadow-[0_0_20px_rgba(251,191,36,0.1)]">
+                        <div className="bg-card border border-border/50 p-6 rounded-2xl">
                             <div className="flex flex-col items-center text-center">
-                                {/* Avatar Orbit */}
+                                {/* Avatar */}
                                 <div className="relative mb-6">
-                                    <div className="absolute inset-0 border-2 border-dashed border-amber-500/30 rounded-full animate-[spin_10s_linear_infinite]" />
-                                    <div className="h-32 w-32 rounded-full p-2 relative z-10">
-                                        <Avatar className="h-full w-full border-2 border-amber-500/50">
+                                    <div className="h-28 w-28 rounded-full relative">
+                                        <Avatar className="h-full w-full border-2 border-foreground/10">
                                             <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="text-4xl bg-amber-950 text-amber-500 font-mono">
+                                            <AvatarFallback className="text-3xl bg-muted text-foreground font-medium">
                                                 {profile.full_name?.charAt(0) || profile.username?.charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </div>
                                 </div>
 
-                                <h1 className="text-3xl font-black tracking-tight uppercase text-white drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
-                                    {profile.full_name || "BİLİNMEYEN ÜYE"}
+                                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                                    {profile.full_name || "Anonim Kullanıcı"}
                                 </h1>
-                                <div className="flex items-center gap-2 mt-2 mb-6">
-                                    <span className="font-mono text-sm text-amber-400 bg-amber-950/30 px-3 py-1 rounded-full border border-amber-500/30">
+                                <div className="flex items-center gap-2 mt-2 mb-5">
+                                    <span className="text-sm text-muted-foreground">
                                         @{profile.username}
                                     </span>
                                     <ReputationDisplay reputation={profile.reputation || 0} size="sm" showLabel={true} />
                                 </div>
 
                                 {profile.bio && (
-                                    <div className="w-full bg-amber-950/10 border-l-2 border-amber-500/50 p-4 text-left mb-6 rounded-r-lg">
-                                        <p className="text-sm text-amber-100/80 leading-relaxed font-sans font-medium">
-                                            "{profile.bio}"
-                                        </p>
-                                    </div>
+                                    <p className="w-full text-sm text-muted-foreground leading-relaxed text-left mb-5">
+                                        {profile.bio}
+                                    </p>
                                 )}
 
                                 {/* Actions */}
@@ -148,15 +145,15 @@ export function PublicProfileView({
                                 </div>
 
                                 {/* Meta Data */}
-                                <div className="w-full mt-6 space-y-2 text-xs font-mono text-amber-200/50 text-left pt-6 border-t border-amber-500/10">
+                                <div className="w-full mt-5 space-y-2 text-xs text-muted-foreground text-left pt-5 border-t border-border/50">
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="h-3 w-3 text-amber-500" />
-                                        <span>KAYIT: {format(new Date(profile.created_at || new Date()), 'dd.MM.yyyy', { locale: tr })}</span>
+                                        <Calendar className="h-3 w-3" />
+                                        <span>{format(new Date(profile.created_at || new Date()), 'MMMM yyyy', { locale: tr })} tarihinden beri üye</span>
                                     </div>
                                     {profile.website && (
                                         <div className="flex items-center gap-2">
-                                            <LinkIcon className="h-3 w-3 text-amber-500" />
-                                            <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-amber-400 truncate max-w-[200px] transition-colors">
+                                            <LinkIcon className="h-3 w-3" />
+                                            <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground truncate max-w-[200px] transition-colors">
                                                 {profile.website.replace(/^https?:\/\//, '')}
                                             </a>
                                         </div>
@@ -164,24 +161,24 @@ export function PublicProfileView({
                                 </div>
 
                                 {/* Social Links */}
-                                <div className="flex gap-4 mt-4 justify-center">
+                                <div className="flex gap-3 mt-4 justify-center">
                                     {profile.social_links?.twitter && (
-                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-amber-500/50 hover:text-amber-400 transition-colors">
+                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Twitter className="h-4 w-4" />
                                         </a>
                                     )}
                                     {profile.social_links?.github && (
-                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-amber-500/50 hover:text-amber-400 transition-colors">
+                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Github className="h-4 w-4" />
                                         </a>
                                     )}
                                     {profile.social_links?.linkedin && (
-                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-amber-500/50 hover:text-amber-400 transition-colors">
+                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Linkedin className="h-4 w-4" />
                                         </a>
                                     )}
                                     {profile.social_links?.instagram && (
-                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-amber-500/50 hover:text-amber-400 transition-colors">
+                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Instagram className="h-4 w-4" />
                                         </a>
                                     )}
@@ -190,103 +187,90 @@ export function PublicProfileView({
                         </div>
 
                         {/* Badges Module */}
-                        <div className="bg-black/60 backdrop-blur-md border border-amber-500/20 p-4 rounded-2xl relative">
-                            <div className="absolute -top-3 left-4 bg-black px-2 text-xs font-bold uppercase tracking-wider text-amber-500 border border-amber-500/30 rounded-full">
-                                BAŞARI KAYITLARI
-                            </div>
-                            {userBadges && userBadges.length > 0 ? (
+                        {userBadges && userBadges.length > 0 && (
+                            <div className="bg-card border border-border/50 p-4 rounded-2xl">
+                                <h3 className="text-xs font-semibold text-muted-foreground mb-3">Rozetler</h3>
                                 <BadgeDisplay
                                     userBadges={userBadges}
                                     maxDisplay={8}
                                     size="sm"
                                 />
-                            ) : (
-                                <div className="text-center py-4 text-xs font-mono text-amber-200/30">
-                                    KAYIT BULUNAMADI
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Right Content: Observation Data */}
                     <motion.div variants={itemVariants} className="lg:col-span-8 space-y-6">
 
                         {/* Stats Row */}
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                             {[
-                                { label: "MAKALE", value: articles?.length || 0 },
-                                { label: "TAKİPÇİ", value: followersCount },
-                                { label: "TAKİP", value: followingCount },
-                                { label: "SORU", value: questions?.length || 0 },
-                                { label: "CEVAP", value: answersCount || 0 }
+                                { label: "Makale", value: articles?.length || 0 },
+                                { label: "Takipçi", value: followersCount },
+                                { label: "Takip", value: followingCount },
+                                { label: "Soru", value: questions?.length || 0 },
+                                { label: "Cevap", value: answersCount || 0 }
                             ].map((stat, i) => (
-                                <div key={i} className="bg-black/60 backdrop-blur-md border border-amber-500/20 p-4 flex flex-col items-center justify-center hover:border-amber-500/50 transition-colors rounded-xl group relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                    </div>
-                                    <span className="text-2xl font-mono font-bold text-white group-hover:text-amber-400 transition-colors">{stat.value}</span>
-                                    <span className="text-[10px] uppercase tracking-widest text-amber-500/70">{stat.label}</span>
+                                <div key={i} className="bg-card border border-border/50 p-4 flex flex-col items-center justify-center rounded-xl">
+                                    <span className="text-2xl font-bold text-foreground">{stat.value}</span>
+                                    <span className="text-xs text-muted-foreground">{stat.label}</span>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Data Tabs */}
+                        {/* Content Tabs */}
                         <Tabs defaultValue="questions" className="w-full">
-                            <div className="mb-6">
-                                <TabsList className="bg-black/40 backdrop-blur-md border border-amber-500/20 p-1 gap-2 h-auto rounded-xl">
+                            <div className="mb-5">
+                                <TabsList className="bg-card border border-border/50 p-1 gap-1 h-auto rounded-xl">
                                     <TabsTrigger
                                         value="questions"
-                                        className="rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-black text-amber-100/60 font-bold uppercase tracking-wide transition-all"
+                                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground font-medium transition-all px-4 py-2"
                                     >
                                         <div className="flex items-center gap-2">
                                             <Microscope className="h-4 w-4" />
-                                            <span>SORULAR</span>
+                                            <span>Sorular</span>
                                         </div>
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="answers"
-                                        className="rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-black text-amber-100/60 font-bold uppercase tracking-wide transition-all"
+                                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground font-medium transition-all px-4 py-2"
                                     >
                                         <div className="flex items-center gap-2">
                                             <Activity className="h-4 w-4" />
-                                            <span>CEVAPLAR</span>
+                                            <span>Cevaplar</span>
                                         </div>
                                     </TabsTrigger>
                                 </TabsList>
                             </div>
 
-                            <div className="min-h-[400px]">
-                                <TabsContent value="questions" className="space-y-4 mt-0">
+                            <div className="min-h-[300px]">
+                                <TabsContent value="questions" className="space-y-3 mt-0">
                                     <AnimatePresence mode="popLayout">
                                         {questions?.length === 0 ? (
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                className="text-center py-20 border border-dashed border-amber-500/20 bg-amber-950/5 rounded-xl"
-                                            >
-                                                <h3 className="text-lg font-bold uppercase mb-2 text-amber-500/50">VERİ TESPİT EDİLEMEDİ</h3>
-                                                <p className="text-amber-200/30 font-mono text-xs">
-                                                    Bu kullanıcının henüz bir sorusu bulunmuyor.
+                                            <div className="text-center py-16 border border-dashed border-border/50 rounded-xl">
+                                                <Microscope className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+                                                <h3 className="text-base font-medium mb-1 text-muted-foreground">Henüz soru yok</h3>
+                                                <p className="text-sm text-muted-foreground/60">
+                                                    Bu kullanıcı henüz soru sormamış.
                                                 </p>
-                                            </motion.div>
+                                            </div>
                                         ) : (
                                             questions?.map((question, index) => (
                                                 <motion.div
                                                     key={question.id}
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: index * 0.05 }}
+                                                    transition={{ delay: index * 0.03 }}
                                                 >
                                                     <Link href={`/forum/${question.id}`} className="block group">
-                                                        <div className="bg-black/60 backdrop-blur-md border border-amber-500/20 p-5 rounded-xl hover:border-amber-500/60 transition-all relative overflow-hidden">
-                                                            <div className="absolute left-0 top-0 w-1 h-full bg-amber-500/0 group-hover:bg-amber-500 transition-colors" />
-                                                            <h3 className="font-bold text-lg text-amber-100 group-hover:text-amber-400 transition-colors mb-2">
+                                                        <div className="bg-card border border-border/50 p-4 rounded-xl hover:border-foreground/20 transition-all">
+                                                            <h3 className="font-semibold text-foreground group-hover:text-foreground/80 transition-colors mb-2 line-clamp-2">
                                                                 {question.title}
                                                             </h3>
-                                                            <div className="flex items-center gap-4 text-xs font-mono text-amber-200/40">
-                                                                <span>{format(new Date(question.created_at), 'dd.MM.yyyy', { locale: tr })}</span>
+                                                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                                                <span>{format(new Date(question.created_at), 'dd MMM yyyy', { locale: tr })}</span>
                                                                 <span>•</span>
-                                                                <span>{question.answers?.length || 0} CEVAP</span>
+                                                                <span>{question.answers?.length || 0} cevap</span>
                                                             </div>
                                                         </div>
                                                     </Link>
@@ -296,18 +280,14 @@ export function PublicProfileView({
                                     </AnimatePresence>
                                 </TabsContent>
 
-                                <TabsContent value="answers" className="space-y-4 mt-0">
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="text-center py-20 border border-dashed border-amber-500/20 bg-amber-950/5 rounded-xl"
-                                    >
-                                        <Activity className="h-8 w-8 text-amber-500/20 mx-auto mb-4" />
-                                        <h3 className="text-lg font-bold uppercase mb-2 text-amber-500/50">VERİLER İŞLENİYOR</h3>
-                                        <p className="text-amber-200/30 font-mono text-xs">
-                                            Cevap geçmişi şu an görüntülenemiyor.
+                                <TabsContent value="answers" className="space-y-3 mt-0">
+                                    <div className="text-center py-16 border border-dashed border-border/50 rounded-xl">
+                                        <Activity className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+                                        <h3 className="text-base font-medium mb-1 text-muted-foreground">Yakında</h3>
+                                        <p className="text-sm text-muted-foreground/60">
+                                            Cevap geçmişi yakında burada olacak.
                                         </p>
-                                    </motion.div>
+                                    </div>
                                 </TabsContent>
                             </div>
                         </Tabs>
