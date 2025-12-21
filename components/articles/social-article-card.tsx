@@ -146,25 +146,25 @@ export function SocialArticleCard({
                 <span className="sr-only">{article.title}</span>
             </Link>
 
-            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10 pointer-events-none">
+            <div className="px-3 py-4 sm:px-5 sm:py-4 relative z-10 pointer-events-none">
                 {/* Author Row - Enable pointer events for interactive elements */}
-                <div className="flex items-center gap-3 mb-3 pointer-events-auto w-fit">
+                <div className="flex items-center gap-2.5 mb-2 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
-                        <Avatar className={cn("w-10 h-10 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
+                        <Avatar className={cn("w-9 h-9 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
                             <AvatarImage src={article.author?.avatar_url || ""} />
-                            <AvatarFallback className={cn("font-bold", isWriter ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500")}>
+                            <AvatarFallback className={cn("font-bold text-xs", isWriter ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500")}>
                                 {article.author?.username?.[0]?.toUpperCase() || "F"}
                             </AvatarFallback>
                         </Avatar>
                     </Link>
                     <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
-                            <Link href={`/kullanici/${article.author?.username}`} className={cn("font-semibold text-foreground hover:underline text-[15px] transition-colors", isWriter ? "hover:text-amber-500" : "hover:text-emerald-500")}>
+                            <Link href={`/kullanici/${article.author?.username}`} className={cn("font-semibold text-foreground hover:underline text-sm transition-colors", isWriter ? "hover:text-amber-500" : "hover:text-emerald-500")}>
                                 {article.author?.full_name || article.author?.username || "Fizikhub"}
                             </Link>
-                            <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10")}>{badgeText}</span>
+                            <span className={cn("text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10")}>{badgeText}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
+                        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                             <span>{article.category}</span>
                             <span>·</span>
                             <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
@@ -174,26 +174,26 @@ export function SocialArticleCard({
 
                 <div className="block group/content">
                     {/* Title */}
-                    <h3 className={cn("font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 transition-colors", isWriter ? "group-hover/content:text-amber-500" : "group-hover/content:text-emerald-500")}>
+                    <h3 className={cn("font-heading font-bold text-[17px] sm:text-[18px] leading-[1.3] mb-2 text-foreground/95 transition-colors", isWriter ? "group-hover/content:text-amber-500" : "group-hover/content:text-emerald-500")}>
                         {article.title}
                     </h3>
 
                     {/* Summary */}
-                    <div className="text-[15.5px] text-foreground/85 leading-[1.7] font-sans mb-4 line-clamp-3">
+                    <div className="text-[14px] text-foreground/85 leading-[1.6] font-sans mb-3 line-clamp-2">
                         {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 150) + "..." : "Özet bulunmuyor.")}
                     </div>
 
                     {/* Read More Button - Forum Style */}
-                    <div className="flex justify-start mb-4">
-                        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/30 hover:bg-secondary/60 border border-border/50 hover:border-primary/40 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn">
+                    <div className="flex justify-start mb-3">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/30 hover:bg-secondary/60 border border-border/50 hover:border-primary/40 text-xs font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn">
                             <span className="group-hover/btn:translate-x-0.5 transition-transform duration-300">Devamını Oku</span>
-                            <ChevronDown className="w-4 h-4 -rotate-90 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
+                            <ChevronDown className="w-3.5 h-3.5 -rotate-90 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
                         </div>
                     </div>
 
                     {/* Image */}
                     {article.image_url && (
-                        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-300/30 dark:border-gray-700/30 mb-4 group-hover/content:border-amber-500/20 transition-colors">
+                        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-300/30 dark:border-gray-700/30 mb-3 group-hover/content:border-amber-500/20 transition-colors">
                             <Image
                                 src={imgSrc}
                                 alt={article.title}
