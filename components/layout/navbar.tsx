@@ -155,27 +155,40 @@ export function Navbar() {
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="right" className="w-[280px] sm:w-[350px] border-l-2 border-black dark:border-white p-0 bg-background">
-                                <SheetHeader className="relative p-6 border-b-2 border-black dark:border-white overflow-hidden bg-black min-h-[120px] flex items-end">
-                                    {/* Space Background */}
-                                    <div className="absolute inset-0">
-                                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/50 via-black to-black" />
+                                <SheetHeader className="relative p-6 border-b-2 border-black dark:border-white overflow-hidden bg-black min-h-[140px] flex items-center justify-center">
+                                    {/* Space Background Layer 1 (Base) */}
+                                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/80 via-black to-black" />
 
-                                        {/* Stars */}
-                                        <div className="absolute h-[1px] w-[1px] bg-white top-1/4 left-1/4 animate-pulse opacity-70" />
-                                        <div className="absolute h-[2px] w-[2px] bg-white top-1/3 left-2/3 animate-pulse opacity-90" style={{ animationDuration: '3s' }} />
-                                        <div className="absolute h-[1px] w-[1px] bg-blue-300 top-2/3 left-1/3 animate-pulse opacity-80" style={{ animationDuration: '4s' }} />
-                                        <div className="absolute h-[2px] w-[2px] bg-purple-300 top-1/2 left-1/2 animate-pulse opacity-60" style={{ animationDuration: '5s' }} />
-
-                                        {/* Shooting Star */}
-                                        <div className="absolute top-0 right-0 h-[100px] w-[1px] bg-gradient-to-b from-transparent via-white to-transparent opacity-30 rotate-[45deg] animate-[spin_3s_linear_infinite]" style={{ animationDuration: '8s' }} />
+                                    {/* Stars Layer 1 (Small & Dense) */}
+                                    <div className="absolute inset-0 opacity-40">
+                                        <div className="absolute top-[10%] left-[20%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '3s' }} />
+                                        <div className="absolute top-[30%] left-[80%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '4s' }} />
+                                        <div className="absolute top-[15%] left-[50%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '2.5s' }} />
+                                        <div className="absolute top-[60%] left-[10%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '3.5s' }} />
+                                        <div className="absolute top-[80%] left-[70%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '4.5s' }} />
+                                        {/* More random stars */}
+                                        <div className="absolute top-[40%] left-[30%] w-[1.5px] h-[1.5px] bg-blue-200/60" />
+                                        <div className="absolute top-[70%] left-[90%] w-[1px] h-[1px] bg-purple-200/60" />
+                                        <div className="absolute top-[20%] right-[10%] w-[2px] h-[2px] bg-white/40" />
                                     </div>
 
-                                    <div className="relative z-10 w-full flex justify-start">
-                                        <div className="bg-black/40 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
-                                            <span className="text-2xl font-black tracking-tighter text-white">
-                                                Fizikhub
-                                            </span>
-                                        </div>
+                                    {/* Stars Layer 2 (Bright & Featured) */}
+                                    <div className="absolute inset-0">
+                                        <div className="absolute top-1/4 left-1/4 h-[2px] w-[2px] bg-white shadow-[0_0_2px_#fff] animate-pulse" style={{ animationDuration: '2s' }} />
+                                        <div className="absolute top-1/3 right-1/4 h-[3px] w-[3px] bg-blue-100 shadow-[0_0_3px_#fff] animate-pulse" style={{ animationDuration: '3s' }} />
+                                        <div className="absolute bottom-1/3 left-1/3 h-[2px] w-[2px] bg-purple-100 shadow-[0_0_2px_#fff] animate-pulse" style={{ animationDuration: '4s' }} />
+                                    </div>
+
+                                    {/* Shooting Stars */}
+                                    <div className="absolute inset-0 overflow-hidden">
+                                        <div className="absolute -top-[10px] right-[100px] h-[100px] w-[1px] bg-gradient-to-b from-transparent via-white to-transparent opacity-40 rotate-[45deg] animate-[spin_5s_linear_infinite]" />
+                                        <div className="absolute -top-[50px] left-[50px] h-[150px] w-[1px] bg-gradient-to-b from-transparent via-white to-transparent opacity-20 rotate-[15deg] animate-[spin_7s_linear_infinite]" style={{ animationDelay: '2s' }} />
+                                    </div>
+
+                                    <div className="relative z-10 w-full flex justify-center items-center">
+                                        <span className="text-3xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_1px_20px_rgba(255,255,255,0.4)]">
+                                            Fizikhub
+                                        </span>
                                     </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>
                                 </SheetHeader>
