@@ -171,13 +171,15 @@ export function Navbar() {
                                     </div>
 
                                     <div className="relative z-10 w-full flex justify-start">
-                                        <div className="bg-black/40 backdrop-blur-sm p-2 rounded-lg border border-white/10">
-                                            <Logo />
+                                        <div className="bg-black/40 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
+                                            <span className="text-2xl font-black tracking-tighter text-white">
+                                                Fizikhub
+                                            </span>
                                         </div>
                                     </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>
                                 </SheetHeader>
-                                <div className="flex flex-col p-4 gap-2.5 overflow-y-auto h-[calc(100vh-140px)]">
+                                <div className="flex flex-col p-4 pb-32 gap-2.5 overflow-y-auto h-[calc(100vh-140px)]">
                                     {navLinks.map((link) => (
                                         <Link
                                             key={link.href}
