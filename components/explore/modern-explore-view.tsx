@@ -8,6 +8,7 @@ import { Search, Atom, Telescope } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
+import { CommunityInviteBanner } from "@/components/explore/community-invite-banner";
 
 interface Article {
     id: number;
@@ -75,6 +76,9 @@ export function ModernExploreView({
                         Topluluğumuzun kaleminden çıkan bilimsel blogları, özgün içerikleri ve derinlemesine analizleri inceleyin.
                     </p>
                 </div>
+
+                {/* Community Invite Banner */}
+                <CommunityInviteBanner />
 
                 {/* Mobile Search & Filter Area */}
                 <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-foreground/5 py-4 -mx-2 sm:-mx-4 px-2 sm:px-4 mb-8 md:static md:bg-transparent md:border-none md:p-0 md:mb-12 md:mx-0">
