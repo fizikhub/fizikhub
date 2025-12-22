@@ -1,15 +1,17 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, PenSquare } from "lucide-react";
+import { BadgeCheck, PenSquare, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { FollowButton } from "@/components/profile/follow-button";
+import { toast } from "sonner";
 
 interface ProfileHeroProps {
     profile: any;
@@ -21,6 +23,82 @@ interface ProfileHeroProps {
 }
 
 export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUserId }: ProfileHeroProps) {
+    const [isRepositioning, setIsRepositioning] = useState(false);
+    // Use local state for immediate feedback, initialize with DB value or default 50
+    const [offsetY, setOffsetY] = useState(profile?.cover_offset_y ?? 50);
+    const [isSaving, setIsSaving] = useState(false);
+    const dragStartY = useRef<number | null>(null);
+    const initialOffset = useRef<number>(50);
+
+    // Update local state if profile changes (e.g. initial load)
+    useEffect(() => {
+        setOffsetY(profile?.cover_offset_y ?? 50);
+    }, [profile?.cover_offset_y]);
+
+    const handleStartReposition = () => {
+        setIsRepositioning(true);
+        initialOffset.current = offsetY;
+    };
+
+    const handleCancelReposition = () => {
+        setIsRepositioning(false);
+        setOffsetY(profile?.cover_offset_y ?? 50);
+    };
+
+    const handleSaveReposition = async () => {
+        setIsSaving(true);
+        try {
+            // Dynamically import to avoid server/client issues if any, though here it's client comp
+            const { updateProfile } = await import("@/app/profil/actions");
+            const result = await updateProfile({ cover_offset_y: offsetY });
+
+            if (result.success) {
+                toast.success("Kapak konumu güncellendi");
+                setIsRepositioning(false);
+            } else {
+                toast.error("Güncelleme başarısız");
+            }
+        } catch (error) {
+            toast.error("Bir hata oluştu");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isRepositioning) return;
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+        dragStartY.current = clientY;
+        initialOffset.current = offsetY;
+    };
+
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isRepositioning || dragStartY.current === null) return;
+
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+        const deltaY = clientY - dragStartY.current;
+
+        // Sensitivity: 1px moves 0.2% (adjust as needed)
+        // If dragging DOWN (positive delta), image should move DOWN, meaning we see HIGHER % of the image (top hidden)?
+        // background-position-y: 0% = top of image. 100% = bottom of image.
+        // If we drag mouse DOWN, we want to pull the image DOWN.
+        // Pulling image DOWN means showing more of the TOP. So we go towards 0%.
+        // Wait. CSS bg-pos-y: 0% aligns top of image with top of container.
+        // 100% aligns bottom of image with bottom of container.
+        // If I drag user finger DOWN, I expect the image to slide DOWN.
+        // Sliding image DOWN means the viewed area moves UP relative to image.
+        // So we approach 0%.
+        // So positive Delta Y (down drag) -> Decrease Percentage.
+
+        const sensitivity = 0.2;
+        const newOffset = Math.max(0, Math.min(100, initialOffset.current - (deltaY * sensitivity)));
+        setOffsetY(newOffset);
+    };
+
+    const handleMouseUp = () => {
+        dragStartY.current = null;
+    };
+
     // Generate gradient if no cover image
     const gradients = [
         "from-slate-600 via-gray-700 to-zinc-800",
@@ -32,32 +110,87 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     const coverGradient = gradients[gradientIndex];
 
     return (
-        <div className="relative w-full border-b-2 border-foreground/10">
+        <div className="relative w-full border-b-2 border-foreground/10 group">
             {/* Cover Image / Gradient */}
-            <div className="relative h-[200px] md:h-[240px] w-full overflow-hidden">
+            <div
+                className={`relative h-[200px] md:h-[240px] w-full overflow-hidden ${isRepositioning ? 'cursor-move select-none' : ''}`}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleMouseDown}
+                onTouchMove={handleMouseMove}
+                onTouchEnd={handleMouseUp}
+            >
                 {profile?.cover_url ? (
                     <div
-                        className="absolute inset-0 bg-cover bg-center grayscale-[30%]"
-                        style={{ backgroundImage: `url(${profile.cover_url})` }}
+                        className="absolute inset-0 bg-cover grayscale-[30%]"
+                        style={{
+                            backgroundImage: `url(${profile.cover_url})`,
+                            backgroundPosition: `center ${offsetY}%`,
+                            transition: isRepositioning ? 'none' : 'background-position 0.2s ease-out'
+                        }}
                     />
                 ) : (
                     <div className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`} />
                 )}
 
                 {/* Overlay Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent pointer-events-none" />
 
-                {/* Grid overlay for brutalist feel */}
-                <div className="absolute inset-0 opacity-5">
+                {/* Grid overlay */}
+                <div className="absolute inset-0 opacity-5 pointer-events-none">
                     <div className="w-full h-full" style={{
                         backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent)',
                         backgroundSize: '50px 50px'
                     }} />
                 </div>
+
+                {/* Reposition Controls Overlay */}
+                {isRepositioning && (
+                    <div className="absolute inset-x-0 top-4 flex justify-center gap-4 z-50 pointer-events-auto px-4">
+                        <div className="bg-black/70 backdrop-blur-md text-white px-6 py-2 rounded-full text-sm font-bold shadow-2xl flex items-center gap-4 border border-white/20">
+                            <span className="hidden sm:inline">Konumu ayarlamak için sürükleyin</span>
+                            <div className="h-4 w-px bg-white/20 hidden sm:block"></div>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-7 hover:bg-white/10 text-white hover:text-white"
+                                onClick={handleCancelReposition}
+                                disabled={isSaving}
+                            >
+                                İptal
+                            </Button>
+                            <Button
+                                size="sm"
+                                className="h-7 bg-white text-black hover:bg-white/90 font-bold"
+                                onClick={handleSaveReposition}
+                                disabled={isSaving}
+                            >
+                                {isSaving ? "Kaydediliyor..." : "Kaydet"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Reposition Trigger Button (Top Right) */}
+                {isOwnProfile && profile?.cover_url && !isRepositioning && (
+                    <div className="absolute top-4 right-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-8 bg-black/50 hover:bg-black/70 text-white backdrop-blur-sm border-0 font-medium text-xs gap-2"
+                            onClick={handleStartReposition}
+                        >
+                            <ArrowUpDown className="w-3.5 h-3.5" />
+                            Konumu Ayarla
+                        </Button>
+                    </div>
+                )}
             </div>
 
             {/* Content Container */}
-            <div className="container max-w-7xl mx-auto px-4 relative">
+            <div className={`container max-w-7xl mx-auto px-4 relative ${isRepositioning ? 'pointer-events-none opacity-50' : ''}`}>
                 {/* Avatar & Info Section */}
                 <div className="relative -mt-14 md:-mt-16 flex flex-col md:flex-row md:items-end gap-5 pb-5">
                     {/* Avatar */}
@@ -136,20 +269,20 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                                         </Link>
                                     )}
                                     <div className="scale-90 origin-left">
-                                      <ProfileMessagesButton />
+                                        <ProfileMessagesButton />
                                     </div>
                                     <div className="scale-90 origin-left">
-                                    <ProfileSettingsButton
-                                        currentUsername={profile?.username || null}
-                                        currentFullName={profile?.full_name || null}
-                                        currentBio={profile?.bio || null}
-                                        currentAvatarUrl={profile?.avatar_url || null}
-                                        currentCoverUrl={profile?.cover_url || null}
-                                        currentWebsite={profile?.website || null}
-                                        currentSocialLinks={profile?.social_links || null}
-                                        userEmail={user?.email || null}
-                                        usernameChangeCount={profile?.username_changes_count || 0}
-                                    />
+                                        <ProfileSettingsButton
+                                            currentUsername={profile?.username || null}
+                                            currentFullName={profile?.full_name || null}
+                                            currentBio={profile?.bio || null}
+                                            currentAvatarUrl={profile?.avatar_url || null}
+                                            currentCoverUrl={profile?.cover_url || null}
+                                            currentWebsite={profile?.website || null}
+                                            currentSocialLinks={profile?.social_links || null}
+                                            userEmail={user?.email || null}
+                                            usernameChangeCount={profile?.username_changes_count || 0}
+                                        />
                                     </div>
                                 </>
                             ) : (
