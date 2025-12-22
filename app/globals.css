@@ -106,6 +106,89 @@
     --ring: 325 100% 55%;
     /* Vivid Pink */
   }
+
+  .christmas {
+    --background: 10 40 30;
+    /* Deep forest green with dark tones */
+    --foreground: 253 246 227;
+    /* Warm cream white */
+
+    --card: 20 50 40;
+    /* Rich pine green */
+    --card-foreground: 253 246 227;
+
+    --popover: 15 45 35;
+    --popover-foreground: 253 246 227;
+
+    --primary: 0 85% 55%;
+    /* Festive red */
+    --primary-foreground: 253 246 227;
+
+    --secondary: 140 45% 25%;
+    /* Deep evergreen */
+    --secondary-foreground: 253 246 227;
+
+    --muted: 140 35% 20%;
+    --muted-foreground: 180 15% 65%;
+
+    --accent: 45 100% 50%;
+    /* Golden yellow */
+    --accent-foreground: 10 40 30;
+
+    --destructive: 0 75% 45%;
+    --destructive-foreground: 253 246 227;
+
+    --border: 140 30% 30%;
+    --input: 140 35% 25%;
+    --ring: 0 85% 55%;
+
+    /* Christmas specific */
+    --christmas-red: 0 85% 55%;
+    --christmas-green: 140 45% 35%;
+    --christmas-gold: 45 100% 50%;
+  }
+
+  .mars {
+    --background: 15 35% 15%;
+    /* Deep martian night */
+    --foreground: 25 25% 85%;
+    /* Dusty light */
+
+    --card: 15 30% 18%;
+    /* Dark martian surface */
+    --card-foreground: 25 25% 85%;
+
+    --popover: 15 30% 18%;
+    --popover-foreground: 25 25% 85%;
+
+    --primary: 15 85% 50%;
+    /* Mars orange/rust */
+    --primary-foreground: 15 35% 15%;
+
+    --secondary: 20 25% 22%;
+    /* Dusty rock */
+    --secondary-foreground: 25 25% 85%;
+
+    --muted: 18 20% 20%;
+    --muted-foreground: 25 15% 60%;
+
+    --accent: 25 75% 45%;
+    /* Rusty orange */
+    --accent-foreground: 15 35% 15%;
+
+    --destructive: 10 75% 45%;
+    --destructive-foreground: 253 246 227;
+
+    --border: 20 20% 25%;
+    --input: 18 20% 22%;
+    --ring: 15 85% 50%;
+
+    /* Mars specific */
+    --mars-rust: 15 85% 50%;
+    --mars-sand: 25 50% 45%;
+    --mars-rock: 20 30% 30%;
+    --mars-sky: 25 15% 25%;
+  }
 }
 
 @layer base {

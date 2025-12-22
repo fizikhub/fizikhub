@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Sun, Heart } from "lucide-react";
+import { Moon, Sun, Heart, TreePine, Rocket } from "lucide-react";
 
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
@@ -36,6 +36,20 @@ export function ThemeSelector() {
             label: "Pembe",
             icon: Heart,
             color: "bg-pink-500 border-pink-600"
+        },
+        {
+            value: "christmas",
+            label: "Yılbaşı",
+            icon: TreePine,
+            color: "bg-gradient-to-br from-red-600 via-green-700 to-red-600 border-green-800",
+            special: true
+        },
+        {
+            value: "mars",
+            label: "Mars",
+            icon: Rocket,
+            color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
+            special: true
         }
     ];
 
@@ -65,7 +79,7 @@ export function ThemeSelector() {
                             )}>
                                 <Icon className={cn(
                                     "w-5 h-5",
-                                    t.value === "pink" ? "text-white" : "text-foreground"
+                                    t.value === "pink" || t.special ? "text-white" : "text-foreground"
                                 )} />
                             </div>
                             <span className="text-xs font-medium">{t.label}</span>

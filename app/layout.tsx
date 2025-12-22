@@ -127,6 +127,8 @@ import { GlobalAdminNotification } from "@/components/global-admin-notification"
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
+import { SnowfallEffect } from "@/components/effects/snowfall-effect";
+import { MarsEffect } from "@/components/effects/mars-effect";
 
 export default function RootLayout({
   children,
@@ -153,10 +155,11 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >
+          <SnowfallEffect />
+          <MarsEffect />
           <TimeLimitProvider>
             <GlobalAdminNotification />
 
