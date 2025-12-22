@@ -108,86 +108,73 @@
   }
 
   .christmas {
-    --background: 10 40 30;
-    /* Deep forest green with dark tones */
-    --foreground: 253 246 227;
-    /* Warm cream white */
+    /* Koyu kış gecesi - lacivert tonları */
+    --background: 15 23 42;
+    --foreground: 248 250 252;
 
-    --card: 20 50 40;
-    /* Rich pine green */
-    --card-foreground: 253 246 227;
+    /* Kartlar biraz daha açık lacivert */
+    --card: 30 41 59;
+    --card-foreground: 248 250 252;
 
-    --popover: 15 45 35;
-    --popover-foreground: 253 246 227;
+    --popover: 30 41 59;
+    --popover-foreground: 248 250 252;
 
-    --primary: 0 85% 55%;
-    /* Festive red */
-    --primary-foreground: 253 246 227;
+    /* Noel kırmızısı */
+    --primary: 220 38 38;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 140 45% 25%;
-    /* Deep evergreen */
-    --secondary-foreground: 253 246 227;
+    /* Koyu yeşil */
+    --secondary: 20 83 45;
+    --secondary-foreground: 255 255 255;
 
-    --muted: 140 35% 20%;
-    --muted-foreground: 180 15% 65%;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
 
-    --accent: 45 100% 50%;
-    /* Golden yellow */
-    --accent-foreground: 10 40 30;
+    /* Altın sarısı accent */
+    --accent: 234 179 8;
+    --accent-foreground: 15 23 42;
 
-    --destructive: 0 75% 45%;
-    --destructive-foreground: 253 246 227;
+    --destructive: 185 28 28;
+    --destructive-foreground: 255 255 255;
 
-    --border: 140 30% 30%;
-    --input: 140 35% 25%;
-    --ring: 0 85% 55%;
-
-    /* Christmas specific */
-    --christmas-red: 0 85% 55%;
-    --christmas-green: 140 45% 35%;
-    --christmas-gold: 45 100% 50%;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 220 38 38;
   }
 
   .mars {
-    --background: 15 35% 15%;
-    /* Deep martian night */
-    --foreground: 25 25% 85%;
-    /* Dusty light */
+    /* Koyu Mars yüzeyi - kızıl kahverengi */
+    --background: 41 20 15;
+    --foreground: 245 225 210;
 
-    --card: 15 30% 18%;
-    /* Dark martian surface */
-    --card-foreground: 25 25% 85%;
+    /* Kartlar biraz daha açık pas rengi */
+    --card: 60 30 20;
+    --card-foreground: 245 225 210;
 
-    --popover: 15 30% 18%;
-    --popover-foreground: 25 25% 85%;
+    --popover: 60 30 20;
+    --popover-foreground: 245 225 210;
 
-    --primary: 15 85% 50%;
-    /* Mars orange/rust */
-    --primary-foreground: 15 35% 15%;
+    /* Mars turuncusu */
+    --primary: 234 88 12;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 20 25% 22%;
-    /* Dusty rock */
-    --secondary-foreground: 25 25% 85%;
+    /* Koyu kaya rengi */
+    --secondary: 80 45 30;
+    --secondary-foreground: 245 225 210;
 
-    --muted: 18 20% 20%;
-    --muted-foreground: 25 15% 60%;
+    --muted: 70 40 28;
+    --muted-foreground: 180 150 130;
 
-    --accent: 25 75% 45%;
-    /* Rusty orange */
-    --accent-foreground: 15 35% 15%;
+    /* Pas kırmızısı accent */
+    --accent: 194 65 12;
+    --accent-foreground: 255 255 255;
 
-    --destructive: 10 75% 45%;
-    --destructive-foreground: 253 246 227;
+    --destructive: 185 28 28;
+    --destructive-foreground: 255 255 255;
 
-    --border: 20 20% 25%;
-    --input: 18 20% 22%;
-    --ring: 15 85% 50%;
-
-    /* Mars specific */
-    --mars-rust: 15 85% 50%;
-    --mars-sand: 25 50% 45%;
-    --mars-rock: 20 30% 30%;
-    --mars-sky: 25 15% 25%;
+    --border: 90 55 40;
+    --input: 80 45 30;
+    --ring: 234 88 12;
   }
 }
 
