@@ -34,7 +34,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     return (
         <div className="relative w-full border-b-2 border-foreground/10">
             {/* Cover Image / Gradient */}
-            <div className="relative h-[250px] md:h-[300px] w-full overflow-hidden">
+            <div className="relative h-[200px] md:h-[240px] w-full overflow-hidden">
                 {profile?.cover_url ? (
                     <div
                         className="absolute inset-0 bg-cover bg-center grayscale-[30%]"
@@ -59,7 +59,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
             {/* Content Container */}
             <div className="container max-w-7xl mx-auto px-4 relative">
                 {/* Avatar & Info Section */}
-                <div className="relative -mt-16 md:-mt-20 flex flex-col md:flex-row md:items-end gap-6 pb-6">
+                <div className="relative -mt-14 md:-mt-16 flex flex-col md:flex-row md:items-end gap-5 pb-5">
                     {/* Avatar */}
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -72,10 +72,10 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             <div className="absolute -inset-1 bg-foreground/10 rounded-lg" />
 
                             {/* Avatar container with sharp corners */}
-                            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-lg border-4 border-background bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden">
+                            <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-lg border-4 border-background bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden">
                                 <Avatar className="w-full h-full rounded-none">
                                     <AvatarImage src={profile?.avatar_url || ""} className="object-cover" />
-                                    <AvatarFallback className="text-4xl bg-gradient-to-br from-gray-600 to-gray-800 text-white font-bold rounded-none">
+                                    <AvatarFallback className="text-3xl bg-gradient-to-br from-gray-600 to-gray-800 text-white font-bold rounded-none">
                                         {profile?.full_name?.charAt(0) || profile?.username?.charAt(0)?.toUpperCase() || "U"}
                                     </AvatarFallback>
                                 </Avatar>
@@ -83,29 +83,29 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
 
                             {/* Verified Badge */}
                             {profile?.is_verified && (
-                                <div className="absolute -bottom-1 -right-1 bg-background border-2 border-foreground/20 p-1">
-                                    <BadgeCheck className="w-5 h-5 text-foreground" />
+                                <div className="absolute -bottom-1 -right-1 bg-background border-2 border-foreground/20 p-0.5">
+                                    <BadgeCheck className="w-4 h-4 text-foreground" />
                                 </div>
                             )}
                         </div>
                     </motion.div>
 
                     {/* Name & Actions */}
-                    <div className="flex-1 text-center md:text-left space-y-3 pb-4">
+                    <div className="flex-1 text-center md:text-left space-y-2 pb-2">
                         <motion.div
                             initial={{ y: 10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
                         >
-                            <h1 className="text-3xl md:text-5xl font-black text-foreground mb-2 tracking-tight">
+                            <h1 className="text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tight">
                                 {profile?.full_name || "Anonim Kullanıcı"}
                             </h1>
-                            <div className="flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                                <span className="text-lg text-muted-foreground font-bold">
+                            <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">
+                                <span className="text-base text-muted-foreground font-bold">
                                     @{profile?.username || "kullanici"}
                                 </span>
                                 {profile?.role === 'admin' && (
-                                    <Badge className="bg-foreground text-background border-0 font-bold uppercase text-xs">
+                                    <Badge className="bg-foreground text-background border-0 font-bold uppercase text-[10px] h-5">
                                         Admin
                                     </Badge>
                                 )}
@@ -117,25 +117,28 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             initial={{ y: 10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="flex gap-3 justify-center md:justify-start flex-wrap"
+                            className="flex gap-2 justify-center md:justify-start flex-wrap"
                         >
                             {isOwnProfile ? (
                                 <>
                                     <Link href="/makale/yeni">
-                                        <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                            <PenSquare className="w-4 h-4" />
+                                        <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
+                                            <PenSquare className="w-3.5 h-3.5" />
                                             <span>Makale Yaz</span>
                                         </Button>
                                     </Link>
                                     {profile?.is_writer && (
                                         <Link href="/yazar">
-                                            <Button className="gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                                                <PenSquare className="w-4 h-4" />
+                                            <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
+                                                <PenSquare className="w-3.5 h-3.5" />
                                                 <span>Yazar Paneli</span>
                                             </Button>
                                         </Link>
                                     )}
-                                    <ProfileMessagesButton />
+                                    <div className="scale-90 origin-left">
+                                      <ProfileMessagesButton />
+                                    </div>
+                                    <div className="scale-90 origin-left">
                                     <ProfileSettingsButton
                                         currentUsername={profile?.username || null}
                                         currentFullName={profile?.full_name || null}
@@ -147,6 +150,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                                         userEmail={user?.email || null}
                                         usernameChangeCount={profile?.username_changes_count || 0}
                                     />
+                                    </div>
                                 </>
                             ) : (
                                 user && targetUserId && (

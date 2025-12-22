@@ -69,8 +69,8 @@ export default async function ProfilePage() {
             </div>
 
             {/* Main Content */}
-            <div className="container max-w-7xl mx-auto px-4 py-8 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8">
+            <div className="container max-w-7xl mx-auto px-4 py-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                     {/* Left Sidebar */}
                     <div className="lg:sticky lg:top-24 lg:self-start">
                         <ProfileAboutSidebar

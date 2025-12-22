@@ -50,7 +50,7 @@ export function ProfileContentFeed({
         <div className="space-y-6">
             <Tabs defaultValue="articles" className="w-full">
                 {/* Tab Navigation - Cleaner */}
-                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-xl p-1 mb-6 flex-wrap h-auto gap-1">
+                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-xl p-1 mb-4 flex-wrap h-auto gap-1">
                     <TabsTrigger
                         value="articles"
                         className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
@@ -266,7 +266,7 @@ function EmptyState({
     description: string;
 }) {
     return (
-        <div className="text-center py-16 rounded-xl border-2 border-dashed border-foreground/10 bg-foreground/[0.02]">
+        <div className="text-center py-10 rounded-xl border-2 border-dashed border-foreground/10 bg-foreground/[0.02]">
             <Icon className="w-12 h-12 mx-auto mb-3 text-foreground/20" />
             <h3 className="text-base font-bold text-foreground mb-1">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>
