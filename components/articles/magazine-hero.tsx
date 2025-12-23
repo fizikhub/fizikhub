@@ -31,13 +31,13 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
 
     return (
         <section className="mb-12 sm:mb-16 md:mb-24">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 md:gap-6 h-auto lg:h-[560px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 md:gap-6 h-auto lg:h-[480px]">
                 {/* Main Featured Article */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="lg:col-span-8 h-[400px] sm:h-[450px] lg:h-full relative group overflow-hidden border-2 border-white/10 hover:border-amber-500/60 transition-all duration-500"
+                    className="lg:col-span-8 h-[360px] sm:h-[420px] lg:h-full relative group overflow-hidden border-2 border-white/10 hover:border-amber-500/60 transition-all duration-500"
                 >
                     <Link href={`/blog/${mainArticle.slug}`} className="block h-full w-full">
                         <Image
@@ -63,13 +63,13 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                             </div>
                         </div>
 
-                        <div className="absolute bottom-0 left-0 p-6 sm:p-8 md:p-10 w-full z-10">
+                        <div className="absolute bottom-0 left-0 p-5 sm:p-6 md:p-8 w-full z-10">
                             {/* Category */}
                             <span className="inline-block bg-white/10 backdrop-blur-sm text-white/90 font-semibold text-xs px-3 py-1 mb-4 uppercase tracking-wider border border-white/20">
                                 {mainArticle.category}
                             </span>
 
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 leading-[1.05] line-clamp-3 drop-shadow-lg">
+                            <h2 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-black tracking-tight text-white mb-4 leading-[1.05] line-clamp-3 drop-shadow-lg">
                                 {mainArticle.title}
                             </h2>
 
@@ -139,7 +139,7 @@ function SideArticleCard({ article }: { article: Article }) {
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
 
     return (
-        <div className="relative h-full min-h-[200px] group overflow-hidden border-2 border-white/10 hover:border-amber-500/60 transition-all duration-500">
+        <div className="relative h-full min-h-[160px] group overflow-hidden border-2 border-white/10 hover:border-amber-500/60 transition-all duration-500">
             <Link href={`/blog/${article.slug}`} className="block h-full w-full">
                 <Image
                     src={imgSrc}
@@ -154,7 +154,7 @@ function SideArticleCard({ article }: { article: Article }) {
                     <span className="inline-block bg-white/10 backdrop-blur-sm text-white font-semibold text-xs px-2 py-0.5 mb-2 uppercase tracking-wider border border-white/10">
                         {article.category}
                     </span>
-                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-white leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
+                    <h3 className="text-lg sm:text-lg font-bold tracking-tight text-white leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
                         {article.title}
                     </h3>
                     <div className="flex items-center gap-3 text-white/40 text-xs mt-3">
