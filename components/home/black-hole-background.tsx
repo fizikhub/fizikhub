@@ -11,7 +11,7 @@ export function BlackHoleBackground() {
         setMounted(true);
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
-        // OPTIMIZATION: Debounce resize listener (simple check for now)
+
         let timeoutId: NodeJS.Timeout;
         const handleResize = () => {
             clearTimeout(timeoutId);
@@ -36,8 +36,9 @@ export function BlackHoleBackground() {
                 ) : (
                     <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 200, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl will-change-transform translate-z-0"
+                        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent will-change-transform translate-z-0"
+                        style={{ filter: 'blur(40px)' }}
                     />
                 )}
 
@@ -47,8 +48,9 @@ export function BlackHoleBackground() {
                 ) : (
                     <motion.div
                         animate={{ rotate: -360 }}
-                        transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent blur-2xl border-[50px] border-primary/20 will-change-transform translate-z-0"
+                        transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-[15%] rounded-full bg-gradient-radial from-transparent via-black to-transparent border-[50px] border-primary/20 will-change-transform translate-z-0"
+                        style={{ filter: 'blur(20px)' }}
                     />
                 )}
             </div>
@@ -60,14 +62,15 @@ export function BlackHoleBackground() {
                 ) : (
                     <motion.div
                         animate={{ rotate: -360 }}
-                        transition={{ duration: 250, repeat: Infinity, ease: "linear" }}
-                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent blur-3xl will-change-transform translate-z-0"
+                        transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 rounded-full bg-gradient-radial from-transparent via-primary to-transparent will-change-transform translate-z-0"
+                        style={{ filter: 'blur(40px)' }}
                     />
                 )}
             </div>
 
-            {/* Floating Particles - OPTIMIZATION: Reduced count (15 -> 8) */}
-            {!isMobile && [...Array(8)].map((_, i) => (
+            {/* Floating Particles - OPTIMIZATION: Reduced count (15 -> 6) and complexity */}
+            {!isMobile && [...Array(6)].map((_, i) => (
                 <motion.div
                     key={i}
                     className="absolute w-1 h-1 bg-primary/20 rounded-full will-change-transform translate-z-0"

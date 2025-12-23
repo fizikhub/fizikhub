@@ -4,32 +4,81 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export function SpaceBackground() {
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; duration: number; hasGlow: boolean }[]>([]);
+    // Keep high-level state for complex DOM-based animations
     const [shootingStar, setShootingStar] = useState<{ x: number; y: number; delay: number; angle: number } | null>(null);
     const [ufo, setUfo] = useState<{ id: number } | null>(null);
 
-    useEffect(() => {
-        const generateStars = () => {
-            const newStars = [];
-            // OPTIMIZATION: Reduced star count from 150 to 70
-            const count = 70;
+    // Canvas ref for high-performance stars
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-            for (let i = 0; i < count; i++) {
-                const size = Math.random() * 2 + 1; // 1px to 3px
-                newStars.push({
-                    x: Math.random() * 100,
-                    y: Math.random() * 100,
-                    size: size,
-                    opacity: Math.random() * 0.8 + 0.2,
-                    duration: Math.random() * 3 + 2,
-                    // OPTIMIZATION: Only calculate glow flag once
-                    hasGlow: size > 2.5
-                });
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Set canvas size
+        const resizeCanvas = () => {
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             }
-            setStars(newStars);
+        };
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Star properties
+        const starCount = 100; // Increased count slightly since canvas is cheap
+        const stars: { x: number; y: number; size: number; opacity: number; speed: number }[] = [];
+
+        // Initialize stars
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2, // 0 to 2px
+                opacity: Math.random(),
+                speed: Math.random() * 0.05 // scintillation speed
+            });
+        }
+
+        let animationFrameId: number;
+
+        const render = () => {
+            if (!canvas || !ctx) return;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw pure black background (optional, can be done with CSS)
+            // ctx.fillStyle = 'black';
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw stars
+            ctx.fillStyle = 'white';
+            stars.forEach(star => {
+                // Twinkle effect
+                star.opacity += star.speed;
+                if (star.opacity > 1 || star.opacity < 0.2) {
+                    star.speed = -star.speed;
+                }
+
+                ctx.globalAlpha = Math.max(0.2, Math.min(1, star.opacity));
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            animationFrameId = requestAnimationFrame(render);
         };
 
-        generateStars();
+        render();
+
+        return () => {
+            window.removeEventListener('resize', resizeCanvas);
+            cancelAnimationFrame(animationFrameId);
+        };
     }, []);
 
     useEffect(() => {
@@ -46,53 +95,38 @@ export function SpaceBackground() {
             });
 
             setTimeout(() => setShootingStar(null), 1500);
-        }, 8000); // OPTIMIZATION: Slower interval (5s -> 8s)
+        }, 8000);
 
         // Initial UFO
-        setTimeout(() => setUfo({ id: 1 }), 2000);
+        const ufoTimeout = setTimeout(() => setUfo({ id: 1 }), 2000);
 
         const ufoInterval = setInterval(() => {
             setUfo({ id: Date.now() });
             setTimeout(() => setUfo(null), 10000);
-        }, 20000); // OPTIMIZATION: Slower interval (15s -> 20s)
+        }, 20000);
 
         return () => {
             clearInterval(shootingStarInterval);
             clearInterval(ufoInterval);
+            clearTimeout(ufoTimeout);
         };
     }, []);
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 bg-black">
-            {/* Pure Black Background */}
-            <div className="absolute inset-0 bg-black" />
-
-            {/* Stars */}
-            {stars.map((star, i) => (
-                <div
-                    key={i}
-                    className="absolute bg-white rounded-full animate-twinkle will-change-opacity"
-                    style={{
-                        left: `${star.x}%`,
-                        top: `${star.y}%`,
-                        width: star.size,
-                        height: star.size,
-                        opacity: star.opacity,
-                        // OPTIMIZATION: Only apply shadow to very large stars, and use simpler shadow
-                        boxShadow: star.hasGlow ? `0 0 ${star.size}px rgba(255, 255, 255, 0.6)` : 'none',
-                        '--twinkle-duration': `${star.duration}s`,
-                        '--twinkle-delay': `-${Math.random() * 5}s`
-                    } as React.CSSProperties}
-                />
-            ))}
+            {/* Canvas for Stars */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 block w-full h-full"
+                style={{ background: 'black' }}
+            />
 
             {/* Planets - Optimized: Reduced blur and complexity */}
             <motion.div
                 className="absolute top-[10%] right-[5%] w-[100px] h-[100px] sm:w-[200px] sm:h-[200px] rounded-full mix-blend-screen opacity-30 will-change-transform"
                 style={{
-                    // OPTIMIZATION: Simpler gradient, removed blur-md (expensive)
                     background: "radial-gradient(circle at 30% 30%, rgba(100, 100, 200, 0.4), transparent 70%)",
-                    filter: "blur(20px)", // Fixed blur value is often cheaper than implicit heavy blur
+                    filter: "blur(20px)",
                 }}
                 animate={{
                     y: [0, -20, 0],
@@ -103,7 +137,6 @@ export function SpaceBackground() {
             <motion.div
                 className="absolute bottom-[20%] left-[5%] w-[80px] h-[80px] sm:w-[150px] sm:h-[150px] rounded-full mix-blend-screen opacity-20 will-change-transform"
                 style={{
-                    // OPTIMIZATION: Simpler gradient
                     background: "radial-gradient(circle at 70% 30%, rgba(100, 200, 255, 0.4), transparent 70%)",
                     filter: "blur(20px)",
                 }}
@@ -113,7 +146,7 @@ export function SpaceBackground() {
                 transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             />
 
-            {/* Enhanced Shooting Star - Optimized */}
+            {/* Enhanced Shooting Star */}
             {shootingStar && (
                 <motion.div
                     key="shooting-star"
@@ -132,16 +165,14 @@ export function SpaceBackground() {
                     style={{
                         width: "150px",
                         height: "2px",
-                        // OPTIMIZATION: Simpler gradient
                         background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%)",
                     }}
                 >
-                    {/* OPTIMIZATION: Removed box-shadow loop */}
                     <div className="absolute top-1/2 left-[50%] -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full" />
                 </motion.div>
             )}
 
-            {/* Realistic UFO Animation - Optimized */}
+            {/* Realistic UFO Animation */}
             {ufo && (
                 <motion.div
                     key={ufo.id}
@@ -164,9 +195,9 @@ export function SpaceBackground() {
                     }}
                     className="absolute z-20 will-change-transform"
                 >
-                    {/* Metallic Saucer Body - OPTIMIZATION: Removed expensive drop-shadow */}
+                    {/* Metallic Saucer Body */}
                     <div className="relative w-24 h-10">
-                        {/* Glass Dome - OPTIMIZATION: Removed backdrop-blur */}
+                        {/* Glass Dome */}
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-6 bg-cyan-400/30 rounded-t-full border border-cyan-200/50 z-10" />
 
                         {/* Green Alien */}
@@ -184,7 +215,7 @@ export function SpaceBackground() {
 
                         {/* Engine Ring */}
                         <div className="absolute top-[40%] left-[5%] w-[90%] h-[60%] bg-slate-800 rounded-[50%] z-[-1] flex items-center justify-around px-4">
-                            {/* Rotating Lights - OPTIMIZATION: Removed individual box-shadows, relied on simple opacity */}
+                            {/* Rotating Lights */}
                             {[0, 0.15, 0.3, 0.45].map((delay, i) => (
                                 <motion.div
                                     key={i}
@@ -195,7 +226,7 @@ export function SpaceBackground() {
                             ))}
                         </div>
 
-                        {/* Bottom Glow - OPTIMIZATION: Reduced blur radius */}
+                        {/* Bottom Glow */}
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-3 bg-cyan-500/40 blur-sm rounded-[50%]" />
                     </div>
                 </motion.div>

@@ -5,7 +5,12 @@ import { ArrowRight, Atom, Brain, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import { SpaceBackground } from "./space-background";
+import dynamic from "next/dynamic";
+
+const SpaceBackground = dynamic(() => import("./space-background").then(mod => mod.SpaceBackground), {
+    ssr: false,
+    loading: () => <div className="absolute inset-0 bg-black -z-10" />,
+});
 
 export function HeroSection3D() {
     return (
