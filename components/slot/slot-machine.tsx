@@ -153,10 +153,10 @@ export function SlotMachine() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             className={`text-center mb-4 p-3 rounded-lg border-2 ${result.matchType === "jackpot"
-                                    ? "bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500 text-yellow-700 dark:text-yellow-300"
-                                    : result.matchType === "match2"
-                                        ? "bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300"
-                                        : "bg-red-100 dark:bg-red-900/30 border-red-500 text-red-700 dark:text-red-300"
+                                ? "bg-yellow-100 dark:bg-yellow-900/30 border-yellow-500 text-yellow-700 dark:text-yellow-300"
+                                : result.matchType === "match2"
+                                    ? "bg-green-100 dark:bg-green-900/30 border-green-500 text-green-700 dark:text-green-300"
+                                    : "bg-red-100 dark:bg-red-900/30 border-red-500 text-red-700 dark:text-red-300"
                                 }`}
                         >
                             <div className="flex items-center justify-center gap-2">
@@ -166,7 +166,7 @@ export function SlotMachine() {
                                 <span className="font-black text-lg">
                                     {result.matchType === "jackpot" && `JACKPOT! +${result.netChange} HP`}
                                     {result.matchType === "match2" && `Kazandın! +${result.netChange} HP`}
-                                    {result.matchType === "lose" && `Kaybettin! ${result.netChange} HP`}
+                                    {result.matchType === "lose" && `Kazıklandın! ${result.netChange} HP`}
                                 </span>
                             </div>
                             {result.multiplier > 0 && (
@@ -205,11 +205,16 @@ export function SlotMachine() {
                 <div className="mt-6 p-3 bg-muted rounded-lg text-xs text-muted-foreground">
                     <p className="font-bold mb-1">Kazanç Oranları:</p>
                     <ul className="space-y-0.5">
-                        <li>🌟🌟🌟 = 25x (Süper Jackpot!)</li>
+                        <li>🌟🌟🌟 = 25x</li>
                         <li>3 Aynı = 10x</li>
                         <li>2 Aynı = 2x</li>
-                        <li>Eşleşme Yok = Kayıp</li>
+                        <li>Eşleşme Yok = Kazıklandın</li>
                     </ul>
+                </div>
+
+                {/* Uyarı */}
+                <div className="mt-4 p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg text-[10px] text-yellow-700 dark:text-yellow-400 text-center">
+                    ⚠️ Bu tamamen eğlence amaçlıdır ve gerçek para içermez.
                 </div>
             </Card>
         </div>

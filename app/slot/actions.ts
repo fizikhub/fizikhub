@@ -93,8 +93,11 @@ export async function playSlot(betAmount: number = 5) {
 
     // Puanı güncelle
     const { error: updateError } = await supabase.rpc("add_reputation", {
-        user_id: user.id,
-        amount: netChange
+        p_user_id: user.id,
+        p_points: netChange,
+        p_reason: result.matchType === "lose" ? "slot_loss" : "slot_win",
+        p_reference_type: "slot",
+        p_reference_id: Date.now() // Unique reference for this spin
     });
 
     if (updateError) {
