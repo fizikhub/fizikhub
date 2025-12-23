@@ -119,6 +119,16 @@ export function MarkdownRenderer({
                             </div>
                         );
                     },
+                    iframe: ({ node, ...props }: any) => (
+                        <div className="aspect-video w-full my-8 rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/50">
+                            <iframe
+                                className="w-full h-full"
+                                {...props}
+                                loading="lazy"
+                                allowFullScreen
+                            />
+                        </div>
+                    ),
                 }}
             >
                 {content}
