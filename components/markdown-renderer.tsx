@@ -52,7 +52,15 @@ export function MarkdownRenderer({
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
                 components={{
-                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
+                    p: ({ node, children, ...props }) => {
+                        // Check if the paragraph only contains an image (avoids div inside p hydration error)
+                        const hasOnlyImage = node?.children?.length === 1 &&
+                            (node.children[0] as any)?.tagName === 'img';
+                        if (hasOnlyImage) {
+                            return <>{children}</>;
+                        }
+                        return <p className="mb-4 leading-relaxed" {...props}>{children}</p>;
+                    },
                     a: ({ node, ...props }) => <a className="text-secondary hover:underline" {...props} />,
                     ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4" {...props} />,
                     ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4" {...props} />,
