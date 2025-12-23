@@ -189,6 +189,16 @@
     background-attachment: fixed;
   }
 
+  /* Mars Theme Background */
+  .mars body,
+  body.mars {
+    background-image: url('/images/mars-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
   ::selection {
     @apply bg-primary/20 text-primary;
   }
