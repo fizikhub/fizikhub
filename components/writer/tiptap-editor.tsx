@@ -17,7 +17,7 @@ import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
-    Underline as UnderlineIcon, Calculator
+    Underline as UnderlineIcon, Calculator, MonitorPlay
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
@@ -25,8 +25,8 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { InlineMath } from 'react-katex'
 import { MathExtension } from './extensions/math-extension'
+import { IframeExtension } from './extensions/iframe-extension'
 
-// --- Custom Image Node View ---
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
     const { node, updateAttributes, selected } = props;
@@ -79,9 +79,11 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
     const [youtubeUrl, setYoutubeUrl] = useState('');
+    const [iframeUrl, setIframeUrl] = useState('');
     const [mathLatex, setMathLatex] = useState('');
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
+    const [isIframeDialogOpen, setIsIframeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
 
     const editor = useEditor({
@@ -97,6 +99,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 },
             }),
             MathExtension,
+            IframeExtension,
             Placeholder.configure({
                 placeholder: 'Hikayenizi anlatmaya başlayın...',
             }),
@@ -185,6 +188,14 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         }
     };
 
+    const addIframe = () => {
+        if (iframeUrl) {
+            editor?.chain().focus().setIframe({ src: iframeUrl }).run();
+            setIsIframeDialogOpen(false);
+            setIframeUrl('');
+        }
+    };
+
     const insertMath = () => {
         if (mathLatex) {
             editor?.chain().focus().insertContent({
@@ -204,7 +215,6 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         <div className="border rounded-lg bg-card shadow-sm overflow-hidden relative">
             {/* Main Toolbar */}
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
-                {/* Text Formatting */}
                 {/* Text Formatting */}
                 <div className="flex items-center gap-0.5 mr-2">
                     <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
@@ -255,6 +265,20 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                             <DialogHeader><DialogTitle>YouTube Videosu Ekle</DialogTitle></DialogHeader>
                             <div className="py-4"><Input placeholder="https://youtube.com/watch?v=..." value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} /></div>
                             <DialogFooter><Button type="button" onClick={addYoutubeVideo}>Ekle</Button></DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isIframeDialogOpen} onOpenChange={setIsIframeDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" title="Simülasyon Ekle (Embed)"><MonitorPlay className="w-4 h-4" /></Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader><DialogTitle>Simülasyon/Embed Ekle</DialogTitle></DialogHeader>
+                            <div className="py-4 space-y-2">
+                                <Input placeholder="https://phet.colorado.edu/..." value={iframeUrl} onChange={(e) => setIframeUrl(e.target.value)} />
+                                <p className="text-xs text-muted-foreground">Desteklenen simülasyon veya embed bağlantısını yapıştırın.</p>
+                            </div>
+                            <DialogFooter><Button type="button" onClick={addIframe}>Ekle</Button></DialogFooter>
                         </DialogContent>
                     </Dialog>
 
