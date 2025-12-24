@@ -64,7 +64,9 @@ export function BottomNav() {
             "fixed bottom-0 left-0 w-full z-[100] md:hidden transition-all duration-300 ease-in-out",
             isVisible ? "translate-y-0 opacity-100" : "translate-y-[100%] opacity-0"
         )}>
-            <div className="bg-background/80 backdrop-blur-md border-t border-black dark:border-white shadow-[0_-4px_0_0_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_0_0_rgba(255,255,255,0.1)]">
+            <div className="bg-background/70 backdrop-blur-2xl border-t border-border/50 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.3)] dark:shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]">
+                {/* Premium top glow line */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
                 <div className="flex h-14 items-center justify-around px-2">
                     {links.map((link) => {
                         const Icon = link.icon;
@@ -76,7 +78,7 @@ export function BottomNav() {
                                 href={link.href}
                                 prefetch={true}
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center gap-0.5 px-1 min-w-[50px] h-full group transition-all",
+                                    "relative flex flex-col items-center justify-center gap-0.5 px-1 min-w-[50px] h-full group transition-all nav-item-glow",
                                     isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
