@@ -183,21 +183,28 @@
     @apply border-border;
   }
 
+
   body {
     @apply bg-background text-foreground antialiased;
     background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
     background-attachment: fixed;
   }
 
-  /* Mars Theme Background */
-  .mars body,
-  body.mars {
-    background-image: url('/images/mars-bg.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+  /* Mars Theme - Semi-transparent backgrounds to show Mars image */
+  .mars body {
+    background: rgba(41, 20, 15, 0.85);
+    background-image: none;
   }
+
+  .mars .bg-background {
+    background-color: transparent !important;
+  }
+
+  .mars .bg-card {
+    background-color: rgba(60, 30, 20, 0.85) !important;
+    backdrop-filter: blur(8px);
+  }
+
 
   ::selection {
     @apply bg-primary/20 text-primary;
