@@ -54,7 +54,7 @@ export default async function WriterDashboard() {
                         <h3 className="text-lg font-bold font-mono mt-4">Henüz blog yazınız yok</h3>
                         <p className="text-muted-foreground mb-6">İlk makalenizi yazarak topluluğa katkıda bulunun.</p>
                         <Link href="/yazar/yeni">
-                            <Button variant="outline">Blog Yaz</Button>
+                            <Button variant="outline">Makale Yaz</Button>
                         </Link>
                     </div>
                 ) : (

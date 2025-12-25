@@ -58,8 +58,8 @@ export default function PointsInfoPage() {
                             <div className="flex items-start gap-4">
                                 <BookOpen className="h-8 w-8 mt-1" strokeWidth={1.5} />
                                 <div>
-                                    <h3 className="font-bold text-lg uppercase mb-1">Blog Yazmak</h3>
-                                    <p className="text-sm text-muted-foreground font-mono">Blogda onaylanan her bilimsel yazın için.</p>
+                                    <h3 className="font-bold text-lg uppercase mb-1">Makale Yazmak</h3>
+                                    <p className="text-sm text-muted-foreground font-mono">Blogda onaylanan her bilimsel makalen için.</p>
                                 </div>
                             </div>
                         </div>
