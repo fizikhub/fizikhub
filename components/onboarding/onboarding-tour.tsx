@@ -76,119 +76,74 @@ const bottomNavItems = [
     { label: "PROFİL", icon: User },
 ];
 
-// Premium Realistic Rocket SVG Component
+// Stylized Space Rocket - Shorter and wider
 function RocketSVG({ className }: { className?: string }) {
     return (
-        <svg viewBox="0 0 100 220" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 120 140" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                {/* Body Gradient - Metallic silver */}
                 <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#a0a0a0" />
-                    <stop offset="20%" stopColor="#e8e8e8" />
+                    <stop offset="0%" stopColor="#b8b8b8" />
+                    <stop offset="25%" stopColor="#f0f0f0" />
                     <stop offset="50%" stopColor="#ffffff" />
-                    <stop offset="80%" stopColor="#e0e0e0" />
-                    <stop offset="100%" stopColor="#909090" />
+                    <stop offset="75%" stopColor="#e8e8e8" />
+                    <stop offset="100%" stopColor="#a0a0a0" />
                 </linearGradient>
-                {/* Nose Cone Gradient - Red */}
-                <linearGradient id="noseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#aa2020" />
-                    <stop offset="50%" stopColor="#ee3333" />
-                    <stop offset="100%" stopColor="#991515" />
+                <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#cc3300" />
+                    <stop offset="50%" stopColor="#ff4422" />
+                    <stop offset="100%" stopColor="#bb2200" />
                 </linearGradient>
-                {/* Fin Gradient */}
-                <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#dd3333" />
-                    <stop offset="100%" stopColor="#881111" />
-                </linearGradient>
-                {/* Window Glow */}
-                <radialGradient id="windowGlow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#66ffff" />
-                    <stop offset="70%" stopColor="#00aacc" />
-                    <stop offset="100%" stopColor="#006688" />
+                <radialGradient id="windowGlow" cx="40%" cy="40%" r="60%">
+                    <stop offset="0%" stopColor="#aaffff" />
+                    <stop offset="50%" stopColor="#22ccdd" />
+                    <stop offset="100%" stopColor="#0088aa" />
                 </radialGradient>
-                {/* Shadow Filter */}
-                <filter id="rocketShadow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feDropShadow dx="3" dy="3" stdDeviation="4" floodOpacity="0.4" />
-                </filter>
-                {/* Glow Filter */}
-                <filter id="glowFilter">
-                    <feGaussianBlur stdDeviation="2" result="blur" />
-                    <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                    </feMerge>
+                <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.35" />
                 </filter>
             </defs>
 
-            {/* Main Rocket Body - Cylindrical shape */}
+            {/* Body - Wide capsule */}
             <path
-                d="M35 55 L35 160 Q35 170 50 170 Q65 170 65 160 L65 55 Q65 45 50 45 Q35 45 35 55 Z"
+                d="M60 15 C38 15 30 32 30 50 L30 95 C30 105 40 110 60 110 C80 110 90 105 90 95 L90 50 C90 32 82 15 60 15 Z"
                 fill="url(#bodyGradient)"
-                filter="url(#rocketShadow)"
+                filter="url(#shadow)"
             />
 
-            {/* Nose Cone - Smooth pointed tip */}
-            <path
-                d="M50 8 Q35 30 35 55 L65 55 Q65 30 50 8 Z"
-                fill="url(#noseGradient)"
-            />
-            {/* Nose tip highlight */}
-            <ellipse cx="48" cy="25" rx="4" ry="8" fill="#ff6666" opacity="0.4" />
+            {/* Nose - Red dome top */}
+            <ellipse cx="60" cy="20" rx="22" ry="14" fill="url(#redGradient)" />
+            <ellipse cx="54" cy="16" rx="7" ry="5" fill="#ff7766" opacity="0.45" />
 
-            {/* Body-Nose Connection Ring */}
-            <ellipse cx="50" cy="55" rx="15" ry="4" fill="#cc2222" />
-
-            {/* Red Stripe Band */}
-            <rect x="35" y="70" width="30" height="6" fill="#cc2222" rx="1" />
+            {/* Red band */}
+            <rect x="30" y="42" width="60" height="8" fill="url(#redGradient)" />
 
             {/* Window */}
-            <circle cx="50" cy="100" r="14" fill="#0a0a20" stroke="#666" strokeWidth="4" />
-            <circle cx="50" cy="100" r="10" fill="url(#windowGlow)" filter="url(#glowFilter)" />
-            <ellipse cx="46" cy="96" rx="4" ry="3" fill="white" opacity="0.7" />
+            <circle cx="60" cy="68" r="18" fill="#0a1525" stroke="#666" strokeWidth="4" />
+            <circle cx="60" cy="68" r="13" fill="url(#windowGlow)" />
+            <ellipse cx="54" cy="62" rx="5" ry="4" fill="white" opacity="0.55" />
 
-            {/* Lower stripe */}
-            <rect x="35" y="135" width="30" height="4" fill="#222" rx="1" />
-            <rect x="35" y="141" width="30" height="3" fill="#cc2222" rx="1" />
+            {/* Bottom details */}
+            <rect x="30" y="92" width="60" height="5" fill="#333" />
+            <rect x="30" y="98" width="60" height="4" fill="url(#redGradient)" />
 
-            {/* LEFT FIN - Proper swept wing shape */}
-            <path
-                d="M35 145 L35 175 L10 195 L10 190 L30 165 L35 145 Z"
-                fill="url(#finGradient)"
-            />
-            {/* Fin highlight */}
-            <path d="M33 150 L25 175 L33 165 Z" fill="#ff8888" opacity="0.3" />
+            {/* Left Fin */}
+            <path d="M30 88 L30 110 L8 130 L12 125 L26 105 L30 88 Z" fill="url(#redGradient)" />
+            <path d="M28 93 L18 115 L28 105 Z" fill="#ff8866" opacity="0.35" />
 
-            {/* RIGHT FIN - Mirror of left */}
-            <path
-                d="M65 145 L65 175 L90 195 L90 190 L70 165 L65 145 Z"
-                fill="url(#finGradient)"
-            />
-            {/* Fin highlight */}
-            <path d="M67 150 L75 175 L67 165 Z" fill="#ff8888" opacity="0.3" />
+            {/* Right Fin */}
+            <path d="M90 88 L90 110 L112 130 L108 125 L94 105 L90 88 Z" fill="url(#redGradient)" />
+            <path d="M92 93 L102 115 L92 105 Z" fill="#ff8866" opacity="0.35" />
 
-            {/* REAR FIN - Small stabilizer */}
-            <ellipse cx="50" cy="175" rx="12" ry="5" fill="#777" />
+            {/* Engine */}
+            <path d="M42 108 L36 135 C36 138 60 140 60 140 C60 140 84 138 84 135 L78 108 Z" fill="#3a3a3a" />
+            <ellipse cx="60" cy="133" rx="20" ry="6" fill="#2a2a2a" />
+            <ellipse cx="60" cy="130" rx="14" ry="4" fill="#1a1a1a" />
 
-            {/* Engine Nozzle Bell */}
-            <path
-                d="M38 168 L32 200 Q32 205 50 205 Q68 205 68 200 L62 168 Z"
-                fill="#444"
-            />
-            {/* Nozzle inner */}
-            <ellipse cx="50" cy="200" rx="16" ry="5" fill="#333" />
-            <ellipse cx="50" cy="198" rx="12" ry="4" fill="#222" />
-            <ellipse cx="50" cy="196" rx="8" ry="2" fill="#111" />
-
-            {/* Rivets/Panel Details */}
-            {[78, 90, 110, 120, 130].map((y, i) => (
-                <g key={i}>
-                    <circle cx="37" cy={y} r="1.5" fill="#888" />
-                    <circle cx="63" cy={y} r="1.5" fill="#888" />
-                </g>
-            ))}
-
-            {/* Panel lines */}
-            <line x1="50" y1="55" x2="50" y2="168" stroke="#ccc" strokeWidth="0.5" opacity="0.3" />
+            {/* Details */}
+            <circle cx="36" cy="60" r="2.5" fill="#888" />
+            <circle cx="84" cy="60" r="2.5" fill="#888" />
+            <circle cx="36" cy="78" r="2.5" fill="#888" />
+            <circle cx="84" cy="78" r="2.5" fill="#888" />
         </svg>
     );
 }
@@ -397,7 +352,7 @@ export function OnboardingTour() {
                         {Array.from({ length: 30 }).map((_, i) => (
                             <SmokeCloud
                                 key={i}
-                                delay={1.0 + i * 0.15}
+                                delay={3.0 + i * 0.12}
                                 x={(i % 2 === 0 ? -1 : 1) * (20 + Math.random() * 60)}
                                 size={80 + Math.random() * 80}
                                 direction={i % 2 === 0 ? -1 : 1}
@@ -418,42 +373,41 @@ export function OnboardingTour() {
                                 scaleX: [0.3, 1, 1.5, 2.5],
                                 scaleY: [0, 0.8, 1, 1.2],
                             }}
-                            transition={{ duration: 4, delay: 1.0, ease: "easeOut" }}
+                            transition={{ duration: 4, delay: 3.0, ease: "easeOut" }}
                         />
                     </div>
 
-                    {/* Rocket with Slow Liftoff */}
+                    {/* Rocket with Slow Liftoff - AFTER countdown */}
                     <motion.div
                         className="absolute bottom-24 left-1/2 -translate-x-1/2"
                         initial={{ y: 0 }}
                         animate={{ y: -1200 }}
                         transition={{
-                            duration: 5,
-                            delay: 1.5,
-                            ease: [0.2, 0.1, 0.3, 1], // Slow start, gradual acceleration
+                            duration: 4,
+                            delay: 3.5, // Geri sayım bittikten sonra kalk
+                            ease: [0.1, 0.1, 0.2, 1],
                         }}
                     >
-                        {/* Animated Fire/Thrust */}
+                        {/* Animated Fire/Thrust - starts with countdown */}
                         <motion.div
                             className="absolute left-1/2 -translate-x-1/2 top-full -mt-4"
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.8, duration: 0.5 }}
+                            transition={{ delay: 2.5, duration: 0.5 }}
                         >
                             <AnimatedFlame />
                         </motion.div>
 
-                        {/* Vibration effect on rocket - more intense */}
+                        {/* Vibration effect on rocket - starts with fire */}
                         <motion.div
                             initial={{ x: 0 }}
                             animate={{ x: [-2, 2, -2, 1, -1, 2, -2] }}
                             transition={{
                                 duration: 0.1,
                                 repeat: Infinity,
-                                delay: 1.0,
+                                delay: 2.5,
                             }}
                         >
-                            {/* Rocket Glow Effect */}
                             <motion.div
                                 className="absolute inset-0 -z-10"
                                 style={{
@@ -462,9 +416,9 @@ export function OnboardingTour() {
                                 }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: [0, 0.8, 0.6, 0.8] }}
-                                transition={{ delay: 1.0, duration: 0.5, repeat: Infinity }}
+                                transition={{ delay: 2.5, duration: 0.5, repeat: Infinity }}
                             />
-                            <RocketSVG className="w-32 h-64" />
+                            <RocketSVG className="w-36 h-48" />
                         </motion.div>
                     </motion.div>
 
