@@ -71,4 +71,14 @@ export const IframeExtension = Node.create<IframeOptions>({
             },
         }
     },
+
+    addStorage() {
+        return {
+            markdown: {
+                serialize(state: any, node: any) {
+                    state.write(`\n<iframe src="${node.attrs.src}" class="w-full h-[500px]" allowfullscreen></iframe>\n`)
+                }
+            }
+        }
+    }
 })

@@ -125,9 +125,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // Use HTML output for proper rendering
-            const html = editor.getHTML();
-            onChange(html);
+            // Use Markdown output for proper math rendering and compatibility
+            const markdown = (editor.storage as any).markdown.getMarkdown();
+            onChange(markdown);
         },
     });
 
