@@ -151,7 +151,7 @@ function FireParticle({ delay }: { delay: number }) {
 export function OnboardingTour() {
     const [currentStep, setCurrentStep] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
-    const [showLiftoff, setShowLiftoff] = useState(false);
+    const [showLiftoff, setShowLiftoff] = useState(true); // TEST MODE: her yenilemede roket kalkar, sonra false yapılacak
 
     const step = tourSteps[currentStep];
     const isLastStep = currentStep === tourSteps.length - 1;
