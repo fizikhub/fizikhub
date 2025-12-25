@@ -79,74 +79,116 @@ const bottomNavItems = [
 // Premium Realistic Rocket SVG Component
 function RocketSVG({ className }: { className?: string }) {
     return (
-        <svg viewBox="0 0 100 200" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Rocket Body - Main fuselage */}
+        <svg viewBox="0 0 100 220" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
+                {/* Body Gradient - Metallic silver */}
                 <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#d4d4d4" />
-                    <stop offset="30%" stopColor="#ffffff" />
-                    <stop offset="70%" stopColor="#f5f5f5" />
-                    <stop offset="100%" stopColor="#b0b0b0" />
+                    <stop offset="0%" stopColor="#a0a0a0" />
+                    <stop offset="20%" stopColor="#e8e8e8" />
+                    <stop offset="50%" stopColor="#ffffff" />
+                    <stop offset="80%" stopColor="#e0e0e0" />
+                    <stop offset="100%" stopColor="#909090" />
                 </linearGradient>
+                {/* Nose Cone Gradient - Red */}
                 <linearGradient id="noseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#cc2b2b" />
-                    <stop offset="50%" stopColor="#ff4444" />
-                    <stop offset="100%" stopColor="#aa2222" />
+                    <stop offset="0%" stopColor="#aa2020" />
+                    <stop offset="50%" stopColor="#ee3333" />
+                    <stop offset="100%" stopColor="#991515" />
                 </linearGradient>
-                <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#cc2b2b" />
-                    <stop offset="50%" stopColor="#ff3333" />
-                    <stop offset="100%" stopColor="#991111" />
+                {/* Fin Gradient */}
+                <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#dd3333" />
+                    <stop offset="100%" stopColor="#881111" />
                 </linearGradient>
-                <linearGradient id="windowGlow" x1="50%" y1="0%" x2="50%" y2="100%">
-                    <stop offset="0%" stopColor="#00d4ff" />
-                    <stop offset="100%" stopColor="#0088aa" />
-                </linearGradient>
-                <filter id="rocketShadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                {/* Window Glow */}
+                <radialGradient id="windowGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#66ffff" />
+                    <stop offset="70%" stopColor="#00aacc" />
+                    <stop offset="100%" stopColor="#006688" />
+                </radialGradient>
+                {/* Shadow Filter */}
+                <filter id="rocketShadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="3" dy="3" stdDeviation="4" floodOpacity="0.4" />
+                </filter>
+                {/* Glow Filter */}
+                <filter id="glowFilter">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
                 </filter>
             </defs>
 
-            {/* Main Body */}
-            <ellipse cx="50" cy="100" rx="22" ry="70" fill="url(#bodyGradient)" filter="url(#rocketShadow)" />
+            {/* Main Rocket Body - Cylindrical shape */}
+            <path
+                d="M35 55 L35 160 Q35 170 50 170 Q65 170 65 160 L65 55 Q65 45 50 45 Q35 45 35 55 Z"
+                fill="url(#bodyGradient)"
+                filter="url(#rocketShadow)"
+            />
 
-            {/* Nose Cone */}
-            <path d="M50 10 C35 35 30 50 30 65 L70 65 C70 50 65 35 50 10Z" fill="url(#noseGradient)" />
-            <ellipse cx="50" cy="65" rx="20" ry="5" fill="#cc2b2b" />
+            {/* Nose Cone - Smooth pointed tip */}
+            <path
+                d="M50 8 Q35 30 35 55 L65 55 Q65 30 50 8 Z"
+                fill="url(#noseGradient)"
+            />
+            {/* Nose tip highlight */}
+            <ellipse cx="48" cy="25" rx="4" ry="8" fill="#ff6666" opacity="0.4" />
 
-            {/* Body Details - Stripes */}
-            <rect x="28" y="70" width="44" height="4" fill="#cc2b2b" />
-            <rect x="28" y="130" width="44" height="4" fill="#1a1a2e" />
-            <rect x="28" y="136" width="44" height="2" fill="#cc2b2b" />
+            {/* Body-Nose Connection Ring */}
+            <ellipse cx="50" cy="55" rx="15" ry="4" fill="#cc2222" />
+
+            {/* Red Stripe Band */}
+            <rect x="35" y="70" width="30" height="6" fill="#cc2222" rx="1" />
 
             {/* Window */}
-            <circle cx="50" cy="95" r="12" fill="#0a0a15" stroke="#888" strokeWidth="3" />
-            <circle cx="50" cy="95" r="8" fill="url(#windowGlow)" opacity="0.8" />
-            <ellipse cx="47" cy="92" rx="3" ry="2" fill="white" opacity="0.6" />
+            <circle cx="50" cy="100" r="14" fill="#0a0a20" stroke="#666" strokeWidth="4" />
+            <circle cx="50" cy="100" r="10" fill="url(#windowGlow)" filter="url(#glowFilter)" />
+            <ellipse cx="46" cy="96" rx="4" ry="3" fill="white" opacity="0.7" />
 
-            {/* Left Fin */}
-            <path d="M28 140 L8 175 L8 180 L28 165 Z" fill="url(#finGradient)" />
-            <path d="M28 140 L18 160 L28 155 Z" fill="#ff6666" opacity="0.5" />
+            {/* Lower stripe */}
+            <rect x="35" y="135" width="30" height="4" fill="#222" rx="1" />
+            <rect x="35" y="141" width="30" height="3" fill="#cc2222" rx="1" />
 
-            {/* Right Fin */}
-            <path d="M72 140 L92 175 L92 180 L72 165 Z" fill="url(#finGradient)" />
-            <path d="M72 140 L82 160 L72 155 Z" fill="#ff6666" opacity="0.5" />
+            {/* LEFT FIN - Proper swept wing shape */}
+            <path
+                d="M35 145 L35 175 L10 195 L10 190 L30 165 L35 145 Z"
+                fill="url(#finGradient)"
+            />
+            {/* Fin highlight */}
+            <path d="M33 150 L25 175 L33 165 Z" fill="#ff8888" opacity="0.3" />
 
-            {/* Center Fin */}
-            <ellipse cx="50" cy="170" rx="15" ry="8" fill="#888" />
+            {/* RIGHT FIN - Mirror of left */}
+            <path
+                d="M65 145 L65 175 L90 195 L90 190 L70 165 L65 145 Z"
+                fill="url(#finGradient)"
+            />
+            {/* Fin highlight */}
+            <path d="M67 150 L75 175 L67 165 Z" fill="#ff8888" opacity="0.3" />
 
-            {/* Engine Nozzle */}
-            <path d="M35 165 L30 180 L70 180 L65 165 Z" fill="#444" />
-            <ellipse cx="50" cy="180" rx="20" ry="5" fill="#333" />
-            <ellipse cx="50" cy="178" rx="15" ry="4" fill="#222" />
+            {/* REAR FIN - Small stabilizer */}
+            <ellipse cx="50" cy="175" rx="12" ry="5" fill="#777" />
 
-            {/* Rivets/Details */}
-            {[75, 85, 105, 115, 125].map((y, i) => (
+            {/* Engine Nozzle Bell */}
+            <path
+                d="M38 168 L32 200 Q32 205 50 205 Q68 205 68 200 L62 168 Z"
+                fill="#444"
+            />
+            {/* Nozzle inner */}
+            <ellipse cx="50" cy="200" rx="16" ry="5" fill="#333" />
+            <ellipse cx="50" cy="198" rx="12" ry="4" fill="#222" />
+            <ellipse cx="50" cy="196" rx="8" ry="2" fill="#111" />
+
+            {/* Rivets/Panel Details */}
+            {[78, 90, 110, 120, 130].map((y, i) => (
                 <g key={i}>
-                    <circle cx="30" cy={y} r="1.5" fill="#999" />
-                    <circle cx="70" cy={y} r="1.5" fill="#999" />
+                    <circle cx="37" cy={y} r="1.5" fill="#888" />
+                    <circle cx="63" cy={y} r="1.5" fill="#888" />
                 </g>
             ))}
+
+            {/* Panel lines */}
+            <line x1="50" y1="55" x2="50" y2="168" stroke="#ccc" strokeWidth="0.5" opacity="0.3" />
         </svg>
     );
 }
@@ -427,25 +469,73 @@ export function OnboardingTour() {
                     </motion.div>
 
                     {/* Countdown Text */}
-                    <motion.div
-                        className="absolute top-1/4 left-0 right-0 text-center"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                    >
-                        {/* Countdown numbers */}
-                        <AnimatePresence mode="wait">
+                    {/* Animated Countdown - Each number separately */}
+                    <div className="absolute top-1/4 left-0 right-0 text-center">
+                        {/* Number 3 */}
+                        <motion.div
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 3, rotateX: -90 }}
+                            animate={{
+                                opacity: [0, 1, 1, 0],
+                                scale: [3, 1, 1, 0.5],
+                                rotateX: [-90, 0, 0, 90],
+                            }}
+                            transition={{ duration: 1, times: [0, 0.2, 0.8, 1], delay: 0 }}
+                        >
+                            <span className="text-[150px] md:text-[200px] font-black text-transparent bg-clip-text bg-gradient-to-b from-orange-400 via-orange-500 to-red-600 drop-shadow-[0_0_60px_rgba(255,150,0,0.8)]">
+                                3
+                            </span>
+                        </motion.div>
+
+                        {/* Number 2 */}
+                        <motion.div
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 3, rotateX: -90 }}
+                            animate={{
+                                opacity: [0, 1, 1, 0],
+                                scale: [3, 1, 1, 0.5],
+                                rotateX: [-90, 0, 0, 90],
+                            }}
+                            transition={{ duration: 1, times: [0, 0.2, 0.8, 1], delay: 1 }}
+                        >
+                            <span className="text-[150px] md:text-[200px] font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-400 via-orange-500 to-red-600 drop-shadow-[0_0_60px_rgba(255,200,0,0.8)]">
+                                2
+                            </span>
+                        </motion.div>
+
+                        {/* Number 1 */}
+                        <motion.div
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={{ opacity: 0, scale: 3, rotateX: -90 }}
+                            animate={{
+                                opacity: [0, 1, 1, 0],
+                                scale: [3, 1, 1, 0.5],
+                                rotateX: [-90, 0, 0, 90],
+                            }}
+                            transition={{ duration: 1, times: [0, 0.2, 0.8, 1], delay: 2 }}
+                        >
+                            <span className="text-[150px] md:text-[200px] font-black text-transparent bg-clip-text bg-gradient-to-b from-red-400 via-red-500 to-red-700 drop-shadow-[0_0_60px_rgba(255,50,0,0.8)]">
+                                1
+                            </span>
+                        </motion.div>
+
+                        {/* Pulse ring effect for each number */}
+                        {[0, 1, 2].map((i) => (
                             <motion.div
-                                key="countdown"
-                                initial={{ opacity: 0, scale: 0.5 }}
-                                animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1, 1.2] }}
-                                transition={{ duration: 1.5, times: [0, 0.1, 0.9, 1] }}
+                                key={i}
+                                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: [0, 0.5, 0] }}
+                                transition={{ duration: 0.5, delay: i + 0.2 }}
                             >
-                                <span className="text-6xl md:text-8xl font-black text-orange-500 drop-shadow-[0_0_30px_rgba(255,150,0,0.5)]">
-                                    3... 2... 1...
-                                </span>
+                                <div className="w-40 h-40 rounded-full border-4 border-orange-500"
+                                    style={{
+                                        boxShadow: '0 0 40px rgba(255,150,0,0.6), inset 0 0 40px rgba(255,150,0,0.3)'
+                                    }}
+                                />
                             </motion.div>
-                        </AnimatePresence>
-                    </motion.div>
+                        ))}
+                    </div>
 
                     {/* Launch Text */}
                     <motion.div
@@ -457,9 +547,9 @@ export function OnboardingTour() {
                             y: [0, 0, 0, 0, -50],
                         }}
                         transition={{
-                            duration: 4,
-                            times: [0, 0.35, 0.4, 0.8, 1],
-                            delay: 0.5,
+                            duration: 3,
+                            times: [0, 0.1, 0.2, 0.8, 1],
+                            delay: 3, // Geri sayım bittikten sonra
                         }}
                     >
                         <h2 className="text-5xl md:text-7xl font-black text-white tracking-wider mb-4 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
