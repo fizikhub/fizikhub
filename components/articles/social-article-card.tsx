@@ -10,7 +10,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toggleArticleLike, toggleArticleBookmark } from "@/app/blog/actions";
+import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { toast } from "sonner";
 
 interface SocialArticleCardProps {

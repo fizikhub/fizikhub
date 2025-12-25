@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommentItem } from "./comment-item";
-import { createComment } from "@/app/blog/[slug]/actions";
+import { createComment } from "@/app/makale/[slug]/actions";
 import { toast } from "sonner";
 
 interface Comment {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { toggleLike } from "@/app/blog/[slug]/actions";
+import { toggleLike } from "@/app/makale/[slug]/actions";
 import { motion } from "framer-motion";
 
 interface LikeButtonProps {
@@ -54,8 +54,8 @@ export function LikeButton({ articleId, initialLiked, initialCount }: LikeButton
                 >
                     <Heart
                         className={`h-5 w-5 transition-all ${liked
-                                ? "fill-red-500 text-red-500"
-                                : "text-muted-foreground group-hover:text-red-500"
+                            ? "fill-red-500 text-red-500"
+                            : "text-muted-foreground group-hover:text-red-500"
                             }`}
                     />
                 </motion.div>

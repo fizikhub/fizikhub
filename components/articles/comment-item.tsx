@@ -6,7 +6,7 @@ import { tr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Trash2, Reply } from "lucide-react";
-import { deleteComment } from "@/app/blog/[slug]/actions";
+import { deleteComment } from "@/app/makale/[slug]/actions";
 import { toast } from "sonner";
 
 interface CommentItemProps {
