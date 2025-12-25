@@ -198,9 +198,10 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
     const insertMath = () => {
         if (mathLatex) {
+            const cleanLatex = mathLatex.replace(/^\$+|\$+$/g, '');
             editor?.chain().focus().insertContent({
                 type: 'math',
-                attrs: { latex: mathLatex }
+                attrs: { latex: cleanLatex }
             }).run();
             setIsMathDialogOpen(false);
             setMathLatex('');
@@ -312,7 +313,12 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                                         {mathLatex ? (
                                             <span className="text-lg">
                                                 {/* We need InlineMath here. I'll add the import in a previous step or next step. */}
-                                                <InlineMath math={mathLatex} />
+                                                <InlineMath
+                                                    math={mathLatex.replace(/^\$+|\$+$/g, '')}
+                                                    renderError={(error) => {
+                                                        return <span className="text-red-500 font-mono text-sm">{mathLatex}</span>
+                                                    }}
+                                                />
                                             </span>
                                         ) : (
                                             <span className="text-sm text-muted-foreground italic">Formül yazmaya başlayın...</span>

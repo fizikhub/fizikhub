@@ -48,7 +48,12 @@ export const MathExtension = Node.create({
                         className={`inline-block px-1 rounded transition-colors ${selected ? 'bg-primary/20 ring-2 ring-primary/50' : 'hover:bg-muted'}`}
                         title="Düzenlemek için tıklayın"
                     >
-                        <InlineMath math={node.attrs.latex} />
+                        <InlineMath 
+                            math={node.attrs.latex} 
+                            renderError={(error) => {
+                                return <span className="text-red-500 font-mono text-sm" title={error.message}>{node.attrs.latex}</span>
+                            }}
+                        />
                     </span>
                     {/* Minimal input for fallback usually needed, but here we might prefer a dialog or popover. 
                 For now, let's keep it simple: if selected, we could show a popover in the main editor UI 
