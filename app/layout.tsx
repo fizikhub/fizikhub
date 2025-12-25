@@ -101,7 +101,12 @@ export const metadata: Metadata = {
   },
   category: 'science',
   verification: {
-    google: "google-site-verification-code", // Placeholder, user might need to add this later or I can ask
+    google: "yVbS-q4y0y... (User to provide)", // Placeholder
+    yandex: "yandex...",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+    "mobile-web-app-capable": "yes",
   }
 };
 
@@ -127,8 +132,7 @@ import { GlobalAdminNotification } from "@/components/global-admin-notification"
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
-import { SnowfallEffect } from "@/components/effects/snowfall-effect";
-import { MarsEffect } from "@/components/effects/mars-effect";
+import { GlobalEffects } from "@/components/effects/global-effects";
 
 export default function RootLayout({
   children,
@@ -158,8 +162,7 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <SnowfallEffect />
-          <MarsEffect />
+          <GlobalEffects />
           <TimeLimitProvider>
             <GlobalAdminNotification />
 

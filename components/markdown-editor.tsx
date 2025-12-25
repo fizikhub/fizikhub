@@ -2,7 +2,10 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { MarkdownRenderer } from "./markdown-renderer";
+import dynamic from "next/dynamic";
+const MarkdownRenderer = dynamic(() => import("./markdown-renderer").then(mod => mod.MarkdownRenderer), {
+    loading: () => <div className="h-full w-full animate-pulse bg-muted/50 rounded-md" />
+});
 import { Label } from "@/components/ui/label";
 
 interface MarkdownEditorProps {

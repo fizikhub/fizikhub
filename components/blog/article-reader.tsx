@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { ReadingControls } from "./reading-controls";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
+import dynamic from "next/dynamic";
+const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
+    loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
+});
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthorCard } from "@/components/blog/author-card";
