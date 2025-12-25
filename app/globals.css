@@ -44,32 +44,32 @@
   }
 
   .dark {
-    --background: 14 14 17;
-    --foreground: 248 250 252;
+    --background: 0 0 0;
+    --foreground: 255 255 255;
 
-    --card: 28 30 34;
-    --card-foreground: 248 250 252;
+    --card: 10 10 10;
+    --card-foreground: 255 255 255;
 
-    --popover: 20 22 25;
-    --popover-foreground: 248 250 252;
+    --popover: 5 5 5;
+    --popover-foreground: 255 255 255;
 
     --primary: 245 158 11;
-    --primary-foreground: 15 15 17;
+    --primary-foreground: 0 0 0;
 
-    --secondary: 30 33 37;
-    --secondary-foreground: 248 250 252;
+    --secondary: 25 25 25;
+    --secondary-foreground: 255 255 255;
 
-    --muted: 30 33 37;
-    --muted-foreground: 156 163 175;
+    --muted: 30 30 30;
+    --muted-foreground: 160 160 160;
 
-    --accent: 30 33 37;
-    --accent-foreground: 248 250 252;
+    --accent: 40 40 40;
+    --accent-foreground: 255 255 255;
 
     --destructive: 220 38 38;
     --destructive-foreground: 255 255 255;
 
-    --border: 38 42 47;
-    --input: 38 42 47;
+    --border: 60 60 60;
+    --input: 60 60 60;
     --ring: 251 146 60;
   }
 
@@ -269,7 +269,8 @@
   }
 
   .dark .brutalist-card {
-    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.2);
+    box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 
   .brutalist-card:hover {
@@ -278,7 +279,8 @@
   }
 
   .dark .brutalist-card:hover {
-    box-shadow: 2px 2px 0px 0px rgba(255, 255, 255, 0.2);
+    box-shadow: 2px 2px 0px 0px rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.8);
   }
 
   .brutalist-button {
@@ -289,7 +291,9 @@
   }
 
   .dark .brutalist-button {
-    box-shadow: 4px 4px 0px 0px #fff;
+    box-shadow: 4px 4px 0px 0px #ffffff;
+    border-color: #ffffff;
+    color: #ffffff;
   }
 
   .brutalist-button:hover {
