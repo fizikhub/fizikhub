@@ -409,7 +409,7 @@ export function OnboardingTour() {
                                 animate={{ opacity: [0, 0.8, 0.6, 0.8] }}
                                 transition={{ delay: 2.5, duration: 0.5, repeat: Infinity }}
                             />
-                            <RocketSVG className="w-36 h-48" />
+                            <RocketSVG className="w-48 h-72 md:w-64 md:h-96" />
                         </motion.div>
                     </motion.div>
 
