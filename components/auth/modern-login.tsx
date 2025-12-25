@@ -291,7 +291,7 @@ export function ModernLogin() {
                             {/* Turnstile Widget */}
                             <div className="flex justify-center my-4">
                                 <div className="cf-turnstile text-center flex justify-center w-full"
-                                    data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+                                    data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
                                     data-callback="onTurnstileSuccess"
                                     data-theme="dark"
                                 />
