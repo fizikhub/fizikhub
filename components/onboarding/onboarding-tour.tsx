@@ -82,14 +82,18 @@ function RocketSVG({ className }: { className?: string }) {
         <svg viewBox="0 0 100 180" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="rocketBody" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#e0e0e0" />
+                    <stop offset="0%" stopColor="#d8d8d8" />
                     <stop offset="50%" stopColor="#ffffff" />
-                    <stop offset="100%" stopColor="#d0d0d0" />
+                    <stop offset="100%" stopColor="#c0c0c0" />
                 </linearGradient>
                 <linearGradient id="rocketRed" x1="0" y1="0" x2="1" y2="0">
                     <stop offset="0%" stopColor="#cc0000" />
-                    <stop offset="50%" stopColor="#ff3333" />
+                    <stop offset="50%" stopColor="#ff4433" />
                     <stop offset="100%" stopColor="#990000" />
+                </linearGradient>
+                <linearGradient id="finGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#cc0000" />
+                    <stop offset="100%" stopColor="#880000" />
                 </linearGradient>
                 <filter id="rocketShadow">
                     <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.3" />
@@ -97,43 +101,61 @@ function RocketSVG({ className }: { className?: string }) {
             </defs>
 
             <g filter="url(#rocketShadow)">
-                {/* Sol Kanat */}
-                <path d="M20 130 L10 165 L35 155 Z" fill="url(#rocketRed)" />
+                {/* Sol Kanat - Daha aerodinamik */}
+                <path d="M25 125 L10 165 L35 155 L35 125 Z" fill="url(#finGradient)" stroke="#880000" strokeWidth="1" />
+
                 {/* Sağ Kanat */}
-                <path d="M80 130 L90 165 L65 155 Z" fill="url(#rocketRed)" />
+                <path d="M75 125 L90 165 L65 155 L65 125 Z" fill="url(#finGradient)" stroke="#880000" strokeWidth="1" />
 
-                {/* Motor */}
-                <path d="M35 150 L32 170 L68 170 L65 150 Z" fill="#333" />
+                {/* Motor Bağlantı */}
+                <path d="M35 150 L32 170 L68 170 L65 150 Z" fill="#2a2a2a" />
+                <rect x="38" y="170" width="24" height="4" fill="#1a1a1a" />
 
-                {/* Ana Gövde */}
+                {/* Ana Gövde - İnce form */}
                 <path
                     d="M30 60 
-                       C30 30 50 10 50 10 
-                       C50 10 70 30 70 60 
+                       C30 20 50 -5 50 -5 
+                       C50 -5 70 20 70 60 
                        L70 150 
-                       C70 155 65 160 50 160 
-                       C35 160 30 155 30 150 Z"
+                       C70 155 60 160 50 160 
+                       C40 160 30 155 30 150 Z"
                     fill="url(#rocketBody)"
                 />
 
-                {/* Burun Kısmı (Kırmızı) */}
+                {/* Panel Çizgileri - Detay */}
+                <line x1="50" y1="20" x2="50" y2="150" stroke="#aaa" strokeWidth="0.5" opacity="0.5" />
+                <line x1="30" y1="100" x2="70" y2="100" stroke="#aaa" strokeWidth="0.5" opacity="0.5" />
+                <line x1="30" y1="125" x2="70" y2="125" stroke="#aaa" strokeWidth="0.5" opacity="0.5" />
+
+                {/* Perçinler */}
+                <g fill="#999">
+                    <circle cx="35" cy="100" r="1" />
+                    <circle cx="65" cy="100" r="1" />
+                    <circle cx="35" cy="125" r="1" />
+                    <circle cx="65" cy="125" r="1" />
+                    <circle cx="45" cy="155" r="1" />
+                    <circle cx="55" cy="155" r="1" />
+                </g>
+
+                {/* Burun - Kırmızı */}
                 <path
                     d="M30 60 
-                       C30 30 50 10 50 10 
-                       C50 10 70 30 70 60 
-                       C70 65 30 65 30 60 Z"
+                       C30 20 50 -5 50 -5 
+                       C50 -5 70 20 70 60 
+                       C70 70 30 70 30 60 Z"
                     fill="url(#rocketRed)"
                 />
 
-                {/* Orta Kanat (Dikey) */}
-                <rect x="48" y="120" width="4" height="40" fill="#cc0000" rx="2" />
+                {/* Orta Kanat (Dikey Stabilizer) */}
+                <path d="M48 110 L48 160 L52 160 L52 110 L50 105 Z" fill="#cc0000" />
 
-                {/* Pencere */}
-                <circle cx="50" cy="80" r="10" fill="#222" stroke="#666" strokeWidth="2" />
-                <circle cx="50" cy="80" r="7" fill="#88ccff" opacity="0.8" />
+                {/* Pencere - Detaylı */}
+                <circle cx="50" cy="80" r="12" fill="#222" stroke="#444" strokeWidth="2" />
+                <circle cx="50" cy="80" r="9" fill="#88ccff" opacity="0.9" />
+                <path d="M46 76 L49 79" stroke="white" strokeWidth="2" opacity="0.8" />
 
-                {/* Detaylar */}
-                <rect x="30" y="100" width="40" height="2" fill="#cc0000" />
+                {/* Bayrak/Logo Alanı */}
+                <rect x="45" y="40" width="10" height="6" rx="1" fill="#333" opacity="0.2" />
             </g>
         </svg>
     );
