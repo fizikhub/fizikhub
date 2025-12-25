@@ -127,13 +127,26 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
         <div className="relative w-full border-b-2 border-foreground/10 group">
             {/* Cover Image / Gradient */}
             <div
-                className={`relative h-[200px] md:h-[240px] w-full overflow-hidden ${isRepositioning ? 'cursor-move select-none' : ''}`}
+                className={`relative h-[200px] md:h-[240px] w-full overflow-hidden ${isRepositioning ? 'cursor-move select-none touch-none' : ''}`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
-                onTouchStart={handleMouseDown}
-                onTouchMove={handleMouseMove}
+                onTouchStart={(e) => {
+                    // Prevent scroll on mobile when dragging starts
+                    if (isRepositioning) {
+                        e.stopPropagation(); // Stop event bubbling
+                    }
+                    handleMouseDown(e);
+                }}
+                onTouchMove={(e) => {
+                    // Prevent scroll on mobile when dragging
+                    if (isRepositioning && dragStartY.current !== null) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    handleMouseMove(e);
+                }}
                 onTouchEnd={handleMouseUp}
             >
                 {profile?.cover_url ? (
