@@ -86,7 +86,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
     return (
         <div
-            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
+            className="group bg-white dark:bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}

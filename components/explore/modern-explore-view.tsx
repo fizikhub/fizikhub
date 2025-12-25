@@ -62,23 +62,25 @@ export function ModernExploreView({
             <div className="container max-w-5xl mx-auto px-2 sm:px-4 md:px-6 py-8 md:py-16">
 
                 {/* Header Section */}
-                <div className="mb-10 md:mb-14 space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 md:w-4 md:h-4 bg-emerald-500 rounded-full animate-pulse" />
-                        <span className="text-xs md:text-sm font-bold tracking-widest text-muted-foreground uppercase">Fizikhub Topluluk Blogu</span>
+                <div className="mb-4 md:mb-6 space-y-2">
+                    <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 md:w-3 md:h-3 bg-emerald-500 rounded-full animate-pulse" />
+                        <span className="text-[10px] md:text-xs font-bold tracking-widest text-muted-foreground uppercase">Fizikhub Topluluk Blogu</span>
                     </div>
 
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-[0.9]">
+                    <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight leading-[0.9]">
                         BLOG<span className="text-emerald-500">.</span>
                     </h1>
 
-                    <p className="text-muted-foreground text-base md:text-xl max-w-2xl leading-relaxed">
-                        Topluluğumuzun kaleminden çıkan bilimsel blogları, özgün içerikleri ve derinlemesine analizleri inceleyin.
+                    <p className="text-muted-foreground text-sm md:text-lg max-w-xl leading-relaxed">
+                        Topluluğumuzun kaleminden çıkan bilimsel blogları inceleyin.
                     </p>
                 </div>
 
                 {/* Community Invite Banner */}
-                <CommunityInviteBanner />
+                <div className="mb-6">
+                    <CommunityInviteBanner />
+                </div>
 
                 {/* Mobile Search & Filter Area */}
                 <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-foreground/5 py-4 -mx-2 sm:-mx-4 px-2 sm:px-4 mb-8 md:static md:bg-transparent md:border-none md:p-0 md:mb-12 md:mx-0">

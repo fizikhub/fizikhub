@@ -20,7 +20,8 @@ interface SocialArticleCardProps {
     initialComments?: number;
     initialIsLiked?: boolean;
     initialIsBookmarked?: boolean;
-    variant?: "writer" | "community";
+    variant?: "default" | "compact" | "community" | "writer";
+    className?: string;
 }
 
 // Calculate reading time
@@ -38,7 +39,8 @@ export function SocialArticleCard({
     initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
-    variant = "writer"
+    variant = "writer",
+    className
 }: SocialArticleCardProps) {
     // Color theming based on variant
     const isWriter = variant === "writer";
@@ -132,11 +134,17 @@ export function SocialArticleCard({
     };
 
     return (
-        <motion.article
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
-            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+            className={cn(
+                "group relative flex flex-col overflow-hidden rounded-3xl transition-all duration-300",
+                "bg-card border-2 border-border/50 hover:border-border hover:shadow-lg dark:hover:shadow-white/5",
+                variant === "compact" ? "p-4" : "p-0",
+                "shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
+                className
+            )}
         >
             {/* Cosmic background effect */}
             <div className={cn("absolute inset-0 bg-gradient-radial via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none", isWriter ? "from-amber-500/5" : "from-emerald-500/5")} />
@@ -261,6 +269,6 @@ export function SocialArticleCard({
                     </div>
                 </div>
             </div>
-        </motion.article>
+        </motion.div>
     );
 }
