@@ -76,7 +76,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                             {/* Image */}
                             <div className="relative aspect-[2/1] w-full overflow-hidden border-b-4 border-black dark:border-white">
                                 <Image
-                                    src={featuredArticle.image_url || "/placeholder-article.jpg"}
+                                    src={featuredArticle.image_url || "/placeholder-article.webp"}
                                     alt={featuredArticle.title}
                                     fill
                                     className="object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-300 group-hover:scale-[1.02]"
@@ -114,7 +114,7 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                                     {/* Image */}
                                     <div className="relative w-full sm:w-32 md:w-36 aspect-video sm:aspect-[4/3] flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
                                         <Image
-                                            src={article.image_url || "/placeholder-article.jpg"}
+                                            src={article.image_url || "/placeholder-article.webp"}
                                             alt={article.title}
                                             fill
                                             className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-300"

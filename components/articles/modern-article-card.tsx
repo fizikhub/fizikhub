@@ -72,7 +72,7 @@ export function ModernArticleCard({ article, index = 0 }: ModernArticleCardProps
                         />
 
                         <Image
-                            src={article.image_url || "/images/placeholder-article.jpg"}
+                            src={article.image_url || "/images/placeholder-article.webp"}
                             alt={article.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"

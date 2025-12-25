@@ -34,7 +34,7 @@ export function MarsEffect() {
                 style={{ zIndex: 0 }}
             >
                 <Image
-                    src="/images/mars-bg.png"
+                    src="/images/mars-bg.webp"
                     alt="Mars surface"
                     fill
                     priority

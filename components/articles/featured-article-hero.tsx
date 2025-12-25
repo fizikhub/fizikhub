@@ -29,7 +29,7 @@ export function FeaturedArticleHero({ article }: FeaturedArticleHeroProps) {
                 className="absolute inset-0 z-0"
             >
                 <Image
-                    src={article.image_url || "/images/placeholder-hero.jpg"}
+                    src={article.image_url || "/images/placeholder-hero.webp"}
                     alt={article.title}
                     fill
                     className="object-cover"

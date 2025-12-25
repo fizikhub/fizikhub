@@ -27,7 +27,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
     const mainArticle = articles[0];
     const sideArticles = articles.slice(1, 3);
 
-    const [mainImgSrc, setMainImgSrc] = useState(mainArticle.image_url || "/images/placeholder-hero.jpg");
+    const [mainImgSrc, setMainImgSrc] = useState(mainArticle.image_url || "/images/placeholder-hero.webp");
 
     return (
         <section className="mb-12 sm:mb-16 md:mb-24">
@@ -46,7 +46,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
                             fill
                             className="object-cover transition-all duration-700 group-hover:scale-[1.03] group-hover:brightness-110"
                             priority
-                            onError={() => setMainImgSrc("/images/placeholder-article.jpg")}
+                            onError={() => setMainImgSrc("/images/placeholder-article.webp")}
                         />
 
                         {/* Gradient overlay */}
@@ -136,7 +136,7 @@ export function MagazineHero({ articles }: MagazineHeroProps) {
 }
 
 function SideArticleCard({ article }: { article: Article }) {
-    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
+    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
 
     return (
         <div className="relative h-full min-h-[160px] group overflow-hidden border-2 border-white/10 hover:border-amber-500/60 transition-all duration-500">
@@ -146,7 +146,7 @@ function SideArticleCard({ article }: { article: Article }) {
                     alt={article.title}
                     fill
                     className="object-cover transition-all duration-700 group-hover:scale-[1.03] group-hover:brightness-110"
-                    onError={() => setImgSrc("/images/placeholder-article.jpg")}
+                    onError={() => setImgSrc("/images/placeholder-article.webp")}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 

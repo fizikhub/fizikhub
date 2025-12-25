@@ -46,7 +46,7 @@ export function SocialArticleCard({
     const isWriter = variant === "writer";
     const accentColor = isWriter ? "amber" : "emerald";
     const badgeText = isWriter ? "Yazar" : "Topluluk";
-    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
+    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
 
     // Optimistic UI States
     const targetArticleTitle = "Sessiz Bir Varsayım: Yerçekimi";
@@ -207,7 +207,7 @@ export function SocialArticleCard({
                                 alt={article.title}
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover/content:scale-[1.02]"
-                                onError={() => setImgSrc("/images/placeholder-article.jpg")}
+                                onError={() => setImgSrc("/images/placeholder-article.webp")}
                             />
                         </div>
                     )}

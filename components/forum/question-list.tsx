@@ -30,7 +30,7 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
                                 {/* Image */}
                                 <div className="relative w-full sm:w-32 md:w-40 aspect-video sm:aspect-square flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
                                     <Image
-                                        src={latestArticle.image_url || "/placeholder-article.jpg"}
+                                        src={latestArticle.image_url || "/placeholder-article.webp"}
                                         alt={latestArticle.title}
                                         fill
                                         className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-200"

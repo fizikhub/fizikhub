@@ -23,7 +23,7 @@ function getReadingTime(content: string | null): number {
 }
 
 export function EditorialCard({ article, index = 0 }: EditorialCardProps) {
-    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.jpg");
+    const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -45,7 +45,7 @@ export function EditorialCard({ article, index = 0 }: EditorialCardProps) {
                         alt={article.title}
                         fill
                         className="object-cover transition-all duration-700 group-hover:scale-[1.05] group-hover:brightness-110"
-                        onError={() => setImgSrc("/images/placeholder-article.jpg")}
+                        onError={() => setImgSrc("/images/placeholder-article.webp")}
                     />
 
                     {/* Overlay on hover */}
