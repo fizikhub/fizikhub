@@ -156,7 +156,13 @@ export function ProfileSettingsButton({
             {/* Cover Upload */}
             <div className="space-y-2">
                 <Label>Kapak Fotoğrafı</Label>
-                <CoverUpload currentCoverUrl={currentCoverUrl} />
+                <CoverUpload
+                    currentCoverUrl={currentCoverUrl}
+                    onSuccess={() => {
+                        setOpen(false);
+                        router.push('/profil?reposition=true');
+                    }}
+                />
             </div>
 
             {/* Theme Selector */}

@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils";
 interface CoverUploadProps {
     currentCoverUrl?: string | null;
     className?: string;
+    onSuccess?: () => void;
 }
 
-export function CoverUpload({ currentCoverUrl, className }: CoverUploadProps) {
+export function CoverUpload({ currentCoverUrl, className, onSuccess }: CoverUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +54,11 @@ export function CoverUpload({ currentCoverUrl, className }: CoverUploadProps) {
 
             if (result.success) {
                 toast.success("Kapak fotoğrafı güncellendi!");
-                router.refresh();
+                if (onSuccess) {
+                    onSuccess();
+                } else {
+                    router.refresh();
+                }
                 setPreviewUrl(null);
             } else {
                 toast.error(result.error || "Yükleme başarısız");

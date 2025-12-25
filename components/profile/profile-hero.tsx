@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, PenSquare, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
@@ -29,11 +30,24 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     const [isSaving, setIsSaving] = useState(false);
     const dragStartY = useRef<number | null>(null);
     const initialOffset = useRef<number>(50);
+    const searchParams = useSearchParams();
+    const router = useRouter();
 
     // Update local state if profile changes (e.g. initial load)
     useEffect(() => {
         setOffsetY(profile?.cover_offset_y ?? 50);
     }, [profile?.cover_offset_y]);
+
+    // Check for reposition param
+    useEffect(() => {
+        if (searchParams.get('reposition') === 'true') {
+            setIsRepositioning(true);
+            // Clean up URL
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete('reposition');
+            router.replace(`?${newParams.toString()}`, { scroll: false });
+        }
+    }, [searchParams, router]);
 
     const handleStartReposition = () => {
         setIsRepositioning(true);
