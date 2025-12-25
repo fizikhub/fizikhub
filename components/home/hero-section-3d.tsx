@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight, Atom, Brain, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export function HeroSection3D() {
                 <div className="max-w-5xl mx-auto text-center">
 
                     {/* Badge */}
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
@@ -30,10 +30,10 @@ export function HeroSection3D() {
                         <div className="px-4 py-1.5 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                             Fizik & Bilim Platformu
                         </div>
-                    </motion.div>
+                    </m.div>
 
                     {/* Main Heading */}
-                    <motion.h1
+                    <m.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
@@ -49,10 +49,10 @@ export function HeroSection3D() {
                         </span>
                         <br className="sm:hidden" />
                         <span className="inline-block mt-1">ŞEKİLDE.</span>
-                    </motion.h1>
+                    </m.h1>
 
                     {/* Description */}
-                    <motion.p
+                    <m.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
@@ -61,10 +61,10 @@ export function HeroSection3D() {
                         Sıkıcı ders kitaplarını bir kenara bırak.
                         <br className="hidden sm:block" />
                         Burada evrenin sırlarını eğlenerek çözüyoruz.
-                    </motion.p>
+                    </m.p>
 
                     {/* Buttons */}
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
@@ -83,19 +83,19 @@ export function HeroSection3D() {
                                 TARTIŞMALARA KATIL
                             </div>
                         </Link>
-                    </motion.div>
+                    </m.div>
                 </div>
             </div>
 
             {/* Scroll Indicator */}
-            <motion.div
+            <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, y: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                 className="absolute bottom-10 left-1/2 -translate-x-1/2"
             >
                 <ChevronDown className="w-10 h-10 text-muted-foreground" />
-            </motion.div>
+            </m.div>
         </section>
     );
 }

@@ -133,6 +133,7 @@ import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { GlobalEffects } from "@/components/effects/global-effects";
+import { FramerMotionProvider } from "@/components/framer-motion-provider";
 
 export default function RootLayout({
   children,
@@ -162,14 +163,16 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <GlobalEffects />
-          <TimeLimitProvider>
-            <GlobalAdminNotification />
+          <FramerMotionProvider>
+            <GlobalEffects />
+            <TimeLimitProvider>
+              <GlobalAdminNotification />
 
-            <NavigationWrapper>
-              {children}
-            </NavigationWrapper>
-          </TimeLimitProvider>
+              <NavigationWrapper>
+                {children}
+              </NavigationWrapper>
+            </TimeLimitProvider>
+          </FramerMotionProvider>
           <Toaster
             toastOptions={{
               className: "font-sans border border-white/10 bg-black/80 backdrop-blur-xl text-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.3)] rounded-lg p-5",
