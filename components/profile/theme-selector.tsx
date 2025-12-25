@@ -20,12 +20,6 @@ export function ThemeSelector() {
 
     const themes = [
         {
-            value: "light",
-            label: "Aydınlık",
-            icon: Sun,
-            color: "bg-white border-zinc-200"
-        },
-        {
             value: "dark",
             label: "Karanlık",
             icon: Moon,
@@ -38,12 +32,12 @@ export function ThemeSelector() {
             color: "bg-pink-500 border-pink-600"
         },
         {
-            value: "christmas",
-            label: "Yılbaşı",
-            icon: TreePine,
-            color: "bg-gradient-to-br from-red-600 via-green-700 to-red-600 border-green-800",
+            value: "mars",
+            label: "Mars",
+            icon: Rocket,
+            color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
             special: true
-        },
+        }
         {
             value: "mars",
             label: "Mars",

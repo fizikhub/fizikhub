@@ -26,7 +26,7 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
                     />
                     {index === 2 && latestArticle && (
                         <Link href={`/makale/${latestArticle.slug}`} className="block group my-2">
-                            <div className="border-4 border-black dark:border-white bg-white dark:bg-card hover:bg-accent transition-colors duration-200 flex flex-col sm:flex-row">
+                            <div className="border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200 flex flex-col sm:flex-row">
                                 {/* Image */}
                                 <div className="relative w-full sm:w-32 md:w-40 aspect-video sm:aspect-square flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
                                     <Image
