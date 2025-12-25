@@ -135,11 +135,29 @@ import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { GlobalEffects } from "@/components/effects/global-effects";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 
-export default function RootLayout({
+import { createClient } from "@/lib/supabase-server";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let showOnboarding = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('has_seen_onboarding')
+      .eq('id', user.id)
+      .single();
+
+    if (profile && !profile.has_seen_onboarding) {
+      showOnboarding = true;
+    }
+  }
+
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
@@ -168,7 +186,7 @@ export default function RootLayout({
             <TimeLimitProvider>
               <GlobalAdminNotification />
 
-              <NavigationWrapper>
+              <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
             </TimeLimitProvider>

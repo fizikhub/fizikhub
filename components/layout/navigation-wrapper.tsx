@@ -5,7 +5,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
-export function NavigationWrapper({ children }: { children: React.ReactNode }) {
+import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
+
+export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
     const pathname = usePathname();
     // Hide navigation on onboarding and auth pages (login, verify) for a cleaner focus
     const shouldHideNav = pathname?.startsWith("/onboarding") || pathname?.startsWith("/auth");
@@ -16,6 +18,7 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
 
     return (
         <>
+            {showOnboarding && <OnboardingTour />}
             <Navbar />
             <main className="flex-1">
                 {children}
