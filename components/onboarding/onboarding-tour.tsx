@@ -1,14 +1,93 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { completeOnboarding } from "@/app/actions/onboarding";
-import { Rocket, Zap, Navigation, ChevronRight, X } from "lucide-react";
+import { MessageCircle, Feather, BookOpen, Menu, Star, ChevronRight, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const tourSteps = [
+    {
+        id: "welcome",
+        title: "HOŞ GELDİN!",
+        subtitle: "Evrenin en garip köşesine hoş geldin.",
+        description: "Burada bilim ciddi, ama biz değiliz. Hazırsan hızlı bi tur atalım, kaybolmaman için.",
+        icon: Sparkles,
+        position: "center" as const,
+    },
+    {
+        id: "forum",
+        title: "FORUM",
+        subtitle: "Tartışma Arenası",
+        description: "Soru sor, cevap ver, puanları topla. Saçma sapan sorular da olur, kimse yargılamıyor (belki biraz).",
+        icon: MessageCircle,
+        position: "bottom" as const,
+        highlight: "forum",
+    },
+    {
+        id: "blog",
+        title: "BLOG",
+        subtitle: "Güncel İçerikler",
+        description: "Yazarlarımızın kafasından geçenler. Uzaydan tutun kuantuma, bazen de rastgele saçmalıklara.",
+        icon: Feather,
+        position: "bottom" as const,
+        highlight: "blog",
+    },
+    {
+        id: "makale",
+        title: "MAKALE",
+        subtitle: "Ciddi İşler",
+        description: "Burada işler biraz daha akademik. Ama sıkılma, hâlâ eğlenceli tutmaya çalıştık.",
+        icon: BookOpen,
+        position: "bottom" as const,
+        highlight: "makale",
+    },
+    {
+        id: "menu",
+        title: "MENÜ",
+        subtitle: "Lügat, Sıralama, Herşey",
+        description: "Sağ üstteki hamburger menüsünde (evet hamburger) Lügat, Sıralama falan var. Kaybolursan oraya bak.",
+        icon: Menu,
+        position: "top" as const,
+        highlight: "menu",
+    },
+    {
+        id: "hubpoints",
+        title: "HUB PUANI",
+        subtitle: "Sıralama = Ego",
+        description: "Yorum yap, cevap ver, beğeni topla. Puanın artsın, sıralamada yüksel. Basit.",
+        icon: Star,
+        position: "center" as const,
+    },
+    {
+        id: "finish",
+        title: "HAZIRSIN!",
+        subtitle: "Artık içeriden birisin.",
+        description: "Hadi bakalım, keşfetmeye başla. Sorularını merak ediyoruz.",
+        icon: Sparkles,
+        position: "center" as const,
+    },
+];
+
 export function OnboardingTour() {
-    const [step, setStep] = useState<"init" | "nav" | "mission" | "complete">("init");
+    const [currentStep, setCurrentStep] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
+
+    const step = tourSteps[currentStep];
+    const isLastStep = currentStep === tourSteps.length - 1;
+    const Icon = step.icon;
+
+    const handleNext = () => {
+        if (isLastStep) {
+            handleComplete();
+        } else {
+            setCurrentStep((prev) => prev + 1);
+        }
+    };
+
+    const handleSkip = () => {
+        handleComplete();
+    };
 
     const handleComplete = async () => {
         setIsVisible(false);
@@ -18,183 +97,162 @@ export function OnboardingTour() {
     if (!isVisible) return null;
 
     return (
-        <AnimatePresence>
-            {/* Step 1: System Initialization */}
-            {step === "init" && (
-                <motion.div
-                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-md"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                >
-                    <div className="relative max-w-md w-full">
-                        {/* Scanning Effect */}
+        <AnimatePresence mode="wait">
+            <motion.div
+                key={step.id}
+                className="fixed inset-0 z-[200]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+            >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={handleSkip} />
+
+                {/* Spotlight Effect for Bottom Nav Items */}
+                {step.highlight && step.position === "bottom" && (
+                    <motion.div
+                        className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-primary/20 to-transparent pointer-events-none"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                    />
+                )}
+
+                {/* Top Spotlight for Menu */}
+                {step.highlight === "menu" && (
+                    <motion.div
+                        className="absolute top-0 right-0 w-20 h-20"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                    >
+                        <div className="absolute top-2 right-2 w-12 h-12 border-4 border-primary rounded-lg animate-pulse" />
                         <motion.div
-                            className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"
-                            animate={{ top: ["0%", "100%", "0%"] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            className="absolute top-6 right-6 w-4 h-4 bg-primary rounded-full"
+                            animate={{ scale: [1, 1.5, 1] }}
+                            transition={{ repeat: Infinity, duration: 1 }}
                         />
+                    </motion.div>
+                )}
 
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="bg-black/40 border border-primary/30 rounded-lg p-8 relative overflow-hidden backdrop-blur-xl"
+                {/* Main Card */}
+                <motion.div
+                    className={cn(
+                        "absolute left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:max-w-md",
+                        step.position === "bottom" && "bottom-24 md:bottom-32",
+                        step.position === "top" && "top-20 md:top-24",
+                        step.position === "center" && "top-1/2 -translate-y-1/2"
+                    )}
+                    initial={{ opacity: 0, y: step.position === "top" ? -50 : 50, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: step.position === "top" ? -50 : 50, scale: 0.9 }}
+                    transition={{ type: "spring", bounce: 0.3 }}
+                >
+                    {/* Brutalist Card */}
+                    <div className="bg-background border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] relative overflow-hidden">
+                        {/* Top Bar */}
+                        <div className="bg-primary h-2" />
+
+                        {/* Skip Button */}
+                        <button
+                            onClick={handleSkip}
+                            className="absolute top-4 right-4 p-1 text-muted-foreground hover:text-foreground transition-colors z-10"
                         >
-                            {/* Decorative Corners */}
-                            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary" />
-                            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary" />
-                            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary" />
-                            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary" />
+                            <X className="w-5 h-5" />
+                        </button>
 
-                            <div className="text-center space-y-6">
-                                <motion.div
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                                    className="w-16 h-16 border-2 border-primary/20 border-t-primary rounded-full mx-auto"
-                                />
-
-                                <div>
-                                    <h2 className="text-2xl font-mono font-bold text-white mb-2 tracking-widest">SİSTEM BAŞLATILIYOR</h2>
-                                    <p className="text-primary/80 font-mono text-xs">Fizikhub Arayüzü v3.1 Yükleniyor...</p>
-                                </div>
-
-                                <motion.div
-                                    initial={{ width: "0%" }}
-                                    animate={{ width: "100%" }}
-                                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                                    className="h-1 bg-primary rounded-full"
-                                />
-
-                                <button
-                                    onClick={() => setStep("nav")}
-                                    className="group relative px-6 py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/50 transition-all rounded w-full font-mono text-sm uppercase tracking-wider flex items-center justify-center gap-2"
-                                >
-                                    <span>Giriş Yap</span>
-                                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Step 2: Navigation Module */}
-            {step === "nav" && (
-                <div className="fixed inset-0 z-[100]">
-                    {/* Dark Overlay with "Hole" (Simulated via overlay pieces) */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 bg-black/80 pointer-events-auto backdrop-blur-[2px]"
-                        onClick={() => setStep("mission")}
-                    />
-
-                    {/* Spotlight Highlight (Top Left - Approximate Navbar Button Position) */}
-                    {/* Note: In a real spotlight scenario we might use mix-blend-mode or clip-path, but simple highlighting works for stability */}
-                    <motion.div
-                        className="absolute top-2 left-2 w-16 h-16 rounded-full border-2 border-primary shadow-[0_0_50px_rgba(234,88,12,0.5)] z-50 pointer-events-none"
-                        initial={{ scale: 1.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    />
-
-                    {/* Holographic Tooltip */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="absolute top-24 left-8 max-w-sm z-50"
-                    >
-                        <div className="relative">
-                            {/* Connecting Line */}
-                            <div className="absolute -top-12 left-4 w-px h-12 bg-gradient-to-b from-primary/0 to-primary" />
-                            <div className="absolute -top-12 left-4 w-4 h-[1px] bg-primary" /> // L-shape connector
-
-                            <div className="bg-black/90 p-6 rounded-lg border border-white/10 shadow-2xl backdrop-blur-3xl relative overflow-hidden">
-                                {/* Holographic Sheen */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-white/5 to-transparent pointer-events-none" />
-
-                                <div className="flex items-start gap-4 relaitve z-10">
-                                    <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-                                        <Navigation className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-white font-bold font-mono text-lg mb-1">NAVİGASYON MODÜLÜ</h3>
-                                        <p className="text-gray-400 text-sm leading-relaxed">
-                                            Evrenin derinliklerine açılan portal burası. Makaleler, simülasyonlar ve topluluk verilerine tek tıkla erişin.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 flex justify-end">
-                                    <button
-                                        onClick={() => setStep("mission")}
-                                        className="text-white text-xs font-mono border-b border-primary pb-1 hover:text-primary transition-colors flex items-center gap-1"
-                                    >
-                                        ANLAŞILDI <ChevronRight className="w-3 h-3" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            )}
-
-            {/* Step 3: Mission Ready */}
-            {step === "mission" && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 bg-black/80 pointer-events-auto backdrop-blur-sm"
-                        onClick={handleComplete}
-                    />
-
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        transition={{ type: "spring", bounce: 0.4 }}
-                        className="relative z-50 max-w-lg w-full mx-4 pointer-events-auto"
-                    >
-                        {/* Futuristic Card */}
-                        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-[0_0_100px_rgba(234,88,12,0.15)] overflow-hidden relative">
-                            {/* Top Bar */}
-                            <div className="h-1 bg-gradient-to-r from-primary via-white to-primary opacity-50" />
-
-                            <div className="p-8 relative">
-                                {/* Ambient Glow */}
-                                <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-
-                                <div className="flex flex-col items-center text-center relative z-10">
+                        {/* Content */}
+                        <div className="p-6 pt-4">
+                            {/* Step Indicator */}
+                            <div className="flex gap-1.5 mb-4">
+                                {tourSteps.map((_, index) => (
                                     <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ delay: 0.2, type: "spring" }}
-                                        className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 mb-6"
-                                    >
-                                        <Rocket className="w-10 h-10 text-primary" />
-                                    </motion.div>
+                                        key={index}
+                                        className={cn(
+                                            "h-1.5 rounded-full transition-all",
+                                            index === currentStep ? "bg-primary w-8" : index < currentStep ? "bg-primary/50 w-4" : "bg-muted w-4"
+                                        )}
+                                        layout
+                                    />
+                                ))}
+                            </div>
 
-                                    <h2 className="text-3xl font-black text-white mb-2 tracking-tight">GÖREVİNİZ HAZIR</h2>
-                                    <p className="text-lg text-gray-400 mb-8 max-w-sm">
-                                        Keşfedilecek binlerce veri var kaptan. Motorları çalıştırın ve bilim dünyasına dalış yapın.
-                                    </p>
+                            {/* Icon */}
+                            <motion.div
+                                className="w-16 h-16 bg-primary/10 border-2 border-primary flex items-center justify-center mb-4"
+                                initial={{ rotate: -10, scale: 0 }}
+                                animate={{ rotate: 0, scale: 1 }}
+                                transition={{ type: "spring", delay: 0.1 }}
+                            >
+                                <Icon className="w-8 h-8 text-primary" />
+                            </motion.div>
 
-                                    <button
-                                        onClick={handleComplete}
-                                        className="w-full group relative overflow-hidden bg-white text-black font-bold py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
-                                    >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                                        <span className="relative flex items-center justify-center gap-2">
-                                            MOTORLARI ÇALIŞTIR <Zap className="w-4 h-4 fill-black" />
-                                        </span>
-                                    </button>
-                                </div>
+                            {/* Text */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.15 }}
+                            >
+                                <h2 className="text-2xl font-black uppercase tracking-tight mb-1">{step.title}</h2>
+                                <p className="text-sm font-bold text-primary uppercase tracking-wide mb-3">{step.subtitle}</p>
+                                <p className="text-muted-foreground leading-relaxed">{step.description}</p>
+                            </motion.div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    onClick={handleSkip}
+                                    className="flex-1 py-3 px-4 text-sm font-bold uppercase tracking-wide text-muted-foreground hover:text-foreground transition-colors border-2 border-transparent hover:border-muted"
+                                >
+                                    Geç
+                                </button>
+                                <motion.button
+                                    onClick={handleNext}
+                                    className="flex-1 py-3 px-4 text-sm font-black uppercase tracking-wide bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white flex items-center justify-center gap-2 hover:bg-primary hover:border-primary hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                >
+                                    {isLastStep ? "Başla" : "İleri"}
+                                    <ChevronRight className="w-4 h-4" />
+                                </motion.button>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Arrow Pointer (for bottom positioned items) */}
+                    {step.position === "bottom" && step.highlight && (
+                        <motion.div
+                            className="absolute -bottom-8 left-1/2 -translate-x-1/2"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[12px] border-t-black dark:border-t-white" />
+                        </motion.div>
+                    )}
+                </motion.div>
+
+                {/* Bottom Nav Highlight Labels */}
+                {step.highlight && step.position === "bottom" && (
+                    <motion.div
+                        className="absolute bottom-2 left-0 right-0 flex justify-around px-4 pointer-events-none md:hidden"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        {["makale", "blog", "forum"].map((item) => (
+                            <div
+                                key={item}
+                                className={cn(
+                                    "text-[10px] font-black uppercase tracking-wider px-2 py-1",
+                                    step.highlight === item ? "bg-primary text-black" : "opacity-0"
+                                )}
+                            >
+                                {item === "makale" && "📚"}
+                                {item === "blog" && "✍️"}
+                                {item === "forum" && "💬"}
+                            </div>
+                        ))}
                     </motion.div>
-                </div>
-            )}
+                )}
+            </motion.div>
         </AnimatePresence>
     );
 }
