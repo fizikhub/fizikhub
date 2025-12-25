@@ -137,12 +137,12 @@ function RocketSVG({ className }: { className?: string }) {
                     <circle cx="55" cy="155" r="1" />
                 </g>
 
-                {/* Burun - Kırmızı */}
+                {/* Burun - Kırmızı (Düzeltildi) */}
                 <path
                     d="M30 60 
-                       C30 20 50 -5 50 -5 
-                       C50 -5 70 20 70 60 
-                       C70 70 30 70 30 60 Z"
+                       Q30 15 50 10 
+                       Q70 15 70 60 
+                       Q50 65 30 60 Z"
                     fill="url(#rocketRed)"
                 />
 
