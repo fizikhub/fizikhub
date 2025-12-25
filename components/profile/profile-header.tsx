@@ -2,7 +2,7 @@
 
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { Badge } from "@/components/ui/badge";
-import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin, Shield, PenSquare } from "lucide-react";
+import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,6 +14,7 @@ import { ProfileMessagesButton } from "@/components/profile/profile-messages-but
 import { NotificationBell } from "@/components/notifications/notification-bell";
 
 import { ReputationDisplay } from "@/components/reputation-display";
+import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
 
 interface ProfileHeaderProps {
     profile: any;
@@ -74,14 +75,9 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
 
                         {/* Action Toolbar */}
                         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-                            <Link href="/yazar/yeni">
-                                <Button
-                                    className="gap-2 bg-[#A8E6CF] text-black font-bold border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none hover:bg-[#8fdcb9]"
-                                >
-                                    <PenSquare className="w-4 h-4" />
-                                    <span>BLOG YAZ</span>
-                                </Button>
-                            </Link>
+                            <CreateArticleDialog />
+                            <div>
+                            </div>
                             {profile?.is_writer && (
                                 <Link href="/yazar">
                                     <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
