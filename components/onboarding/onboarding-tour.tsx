@@ -76,74 +76,65 @@ const bottomNavItems = [
     { label: "PROFİL", icon: User },
 ];
 
-// Stylized Space Rocket - Shorter and wider
+// Premium Balanced Rocket - Aerodynamic and Esthetic
 function RocketSVG({ className }: { className?: string }) {
     return (
-        <svg viewBox="0 0 120 140" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 100 180" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#b8b8b8" />
-                    <stop offset="25%" stopColor="#f0f0f0" />
+                <linearGradient id="rocketBody" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#e0e0e0" />
                     <stop offset="50%" stopColor="#ffffff" />
-                    <stop offset="75%" stopColor="#e8e8e8" />
-                    <stop offset="100%" stopColor="#a0a0a0" />
+                    <stop offset="100%" stopColor="#d0d0d0" />
                 </linearGradient>
-                <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#cc3300" />
-                    <stop offset="50%" stopColor="#ff4422" />
-                    <stop offset="100%" stopColor="#bb2200" />
+                <linearGradient id="rocketRed" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#cc0000" />
+                    <stop offset="50%" stopColor="#ff3333" />
+                    <stop offset="100%" stopColor="#990000" />
                 </linearGradient>
-                <radialGradient id="windowGlow" cx="40%" cy="40%" r="60%">
-                    <stop offset="0%" stopColor="#aaffff" />
-                    <stop offset="50%" stopColor="#22ccdd" />
-                    <stop offset="100%" stopColor="#0088aa" />
-                </radialGradient>
-                <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.35" />
+                <filter id="rocketShadow">
+                    <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.3" />
                 </filter>
             </defs>
 
-            {/* Body - Wide capsule */}
-            <path
-                d="M60 15 C38 15 30 32 30 50 L30 95 C30 105 40 110 60 110 C80 110 90 105 90 95 L90 50 C90 32 82 15 60 15 Z"
-                fill="url(#bodyGradient)"
-                filter="url(#shadow)"
-            />
+            <g filter="url(#rocketShadow)">
+                {/* Sol Kanat */}
+                <path d="M20 130 L10 165 L35 155 Z" fill="url(#rocketRed)" />
+                {/* Sağ Kanat */}
+                <path d="M80 130 L90 165 L65 155 Z" fill="url(#rocketRed)" />
 
-            {/* Nose - Red dome top */}
-            <ellipse cx="60" cy="20" rx="22" ry="14" fill="url(#redGradient)" />
-            <ellipse cx="54" cy="16" rx="7" ry="5" fill="#ff7766" opacity="0.45" />
+                {/* Motor */}
+                <path d="M35 150 L32 170 L68 170 L65 150 Z" fill="#333" />
 
-            {/* Red band */}
-            <rect x="30" y="42" width="60" height="8" fill="url(#redGradient)" />
+                {/* Ana Gövde */}
+                <path
+                    d="M30 60 
+                       C30 30 50 10 50 10 
+                       C50 10 70 30 70 60 
+                       L70 150 
+                       C70 155 65 160 50 160 
+                       C35 160 30 155 30 150 Z"
+                    fill="url(#rocketBody)"
+                />
 
-            {/* Window */}
-            <circle cx="60" cy="68" r="18" fill="#0a1525" stroke="#666" strokeWidth="4" />
-            <circle cx="60" cy="68" r="13" fill="url(#windowGlow)" />
-            <ellipse cx="54" cy="62" rx="5" ry="4" fill="white" opacity="0.55" />
+                {/* Burun Kısmı (Kırmızı) */}
+                <path
+                    d="M30 60 
+                       C30 30 50 10 50 10 
+                       C50 10 70 30 70 60 
+                       C70 65 30 65 30 60 Z"
+                    fill="url(#rocketRed)"
+                />
 
-            {/* Bottom details */}
-            <rect x="30" y="92" width="60" height="5" fill="#333" />
-            <rect x="30" y="98" width="60" height="4" fill="url(#redGradient)" />
+                {/* Orta Kanat (Dikey) */}
+                <rect x="48" y="120" width="4" height="40" fill="#cc0000" rx="2" />
 
-            {/* Left Fin */}
-            <path d="M30 88 L30 110 L8 130 L12 125 L26 105 L30 88 Z" fill="url(#redGradient)" />
-            <path d="M28 93 L18 115 L28 105 Z" fill="#ff8866" opacity="0.35" />
+                {/* Pencere */}
+                <circle cx="50" cy="80" r="10" fill="#222" stroke="#666" strokeWidth="2" />
+                <circle cx="50" cy="80" r="7" fill="#88ccff" opacity="0.8" />
 
-            {/* Right Fin */}
-            <path d="M90 88 L90 110 L112 130 L108 125 L94 105 L90 88 Z" fill="url(#redGradient)" />
-            <path d="M92 93 L102 115 L92 105 Z" fill="#ff8866" opacity="0.35" />
-
-            {/* Engine */}
-            <path d="M42 108 L36 135 C36 138 60 140 60 140 C60 140 84 138 84 135 L78 108 Z" fill="#3a3a3a" />
-            <ellipse cx="60" cy="133" rx="20" ry="6" fill="#2a2a2a" />
-            <ellipse cx="60" cy="130" rx="14" ry="4" fill="#1a1a1a" />
-
-            {/* Details */}
-            <circle cx="36" cy="60" r="2.5" fill="#888" />
-            <circle cx="84" cy="60" r="2.5" fill="#888" />
-            <circle cx="36" cy="78" r="2.5" fill="#888" />
-            <circle cx="84" cy="78" r="2.5" fill="#888" />
+                {/* Detaylar */}
+                <rect x="30" y="100" width="40" height="2" fill="#cc0000" />
+            </g>
         </svg>
     );
 }
