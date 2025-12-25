@@ -18,7 +18,15 @@ export function ThemeSelector() {
         return null;
     }
 
-    const themes = [
+    interface ThemeOption {
+        value: string;
+        label: string;
+        icon: any;
+        color: string;
+        special?: boolean;
+    }
+
+    const themes: ThemeOption[] = [
         {
             value: "dark",
             label: "Karanlık",
