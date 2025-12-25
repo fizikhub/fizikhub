@@ -44,10 +44,10 @@
   }
 
   .dark {
-    --background: 10 10 12;
+    --background: 14 14 17;
     --foreground: 248 250 252;
 
-    --card: 26 28 32;
+    --card: 28 30 34;
     --card-foreground: 248 250 252;
 
     --popover: 20 22 25;

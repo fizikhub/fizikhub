@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Compass } from "lucide-react";
+import { Home, BookOpen, MessageCircle, User, Compass, Feather } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -16,11 +14,11 @@ export function BottomNav() {
             const currentScrollY = window.scrollY;
 
             // Show if at top or scrolling up
-            if (currentScrollY < 10 || currentScrollY < lastScrollY) {
+            if (currentScrollY < 50 || currentScrollY < lastScrollY) {
                 setIsVisible(true);
             }
-            // Hide if scrolling down and not at top
-            else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+            // Hide if scrolling down and not at top (threshold 50 for smoother initial scroll)
+            else if (currentScrollY > lastScrollY && currentScrollY > 50) {
                 setIsVisible(false);
             }
 
@@ -44,8 +42,8 @@ export function BottomNav() {
         },
         {
             href: "/kesfet",
-            label: "KEŞFET",
-            icon: Compass
+            label: "BLOG",
+            icon: Feather
         },
         {
             href: "/forum",

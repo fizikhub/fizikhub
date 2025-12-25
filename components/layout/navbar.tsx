@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Shield, Home, Feather, MessageCircle, Library, Trophy, Atom, User } from "lucide-react";
+import { Menu, Search, Shield, Home, Feather, MessageCircle, Library, Trophy, Atom, User, Compass } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
@@ -82,10 +82,10 @@ export function Navbar() {
 
     const navLinks = [
         { href: "/", label: "ANA SAYFA", description: "Başladığın yere dön.", icon: Home },
-        { href: "/blog", label: "BİLİM ARŞİVİ", description: "Biraz kültürlen.", icon: Feather },
+        { href: "/blog", label: "MAKALE", description: "Biraz kültürlen.", icon: Feather },
+        { href: "/kesfet", label: "BLOG", description: "Keşfetmeye başla.", icon: Compass },
         { href: "/forum", label: "FORUM", description: "Kavga etme, tartış.", icon: MessageCircle },
         { href: "/sozluk", label: "LÜGAT", description: "Bu ne demek şimdi?", icon: Library },
-        { href: "/testler", label: "QUIZ", description: "Kendini sına.", icon: Atom },
 
         { href: "/siralamalar", label: "SIRALAMA", description: "Sıralamanı gör.", icon: Trophy },
     ];

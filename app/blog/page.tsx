@@ -146,7 +146,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div className="container mx-auto max-w-7xl px-2 sm:px-6 py-8 sm:py-12 md:py-16">
 
                 {/* Header */}
-                <header className="mb-10 sm:mb-14">
+                <header className="mb-4 sm:mb-6">
                     <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                         <div>
                             <div className="inline-flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-widest mb-3">

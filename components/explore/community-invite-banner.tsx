@@ -19,10 +19,10 @@ export function CommunityInviteBanner() {
 
                 {/* Left Content */}
                 <div className="space-y-4 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-1 bg-secondary/50">
+                    <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-1 bg-purple-200/50 dark:bg-purple-900/30">
                         <div className="w-2 h-2 bg-green-500 animate-pulse" />
                         <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
-                            KATKI_MODÜLÜ__V.1.0
+                            KATKI_MODÜLÜ
                         </span>
                     </div>
 
@@ -42,7 +42,7 @@ export function CommunityInviteBanner() {
                 <div className="flex-shrink-0 w-full md:w-auto">
                     <Link href="/makale/yeni" className="block w-full">
                         <button className="w-full md:w-auto flex items-center justify-center gap-3 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-wider px-8 py-4 hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white transition-colors duration-200 group-hover:shadow-none">
-                            <span>MAKALE OLUŞTUR</span>
+                            <span>BLOG OLUŞTUR</span>
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </Link>
