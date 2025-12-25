@@ -311,7 +311,7 @@ export function OnboardingTour() {
                     }}
                     transition={{
                         duration: 0.5,
-                        delay: 1.2,
+                        delay: 3.2, // Geri sayım sonrası
                         repeat: 6,
                         ease: "easeInOut"
                     }}
