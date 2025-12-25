@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Github, Loader2, Eye, EyeOff, ArrowRight, ShieldCheck, Lock } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowRight, ShieldCheck, Lock } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -20,6 +20,9 @@ export function ModernLogin() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [supabase] = useState(() => createClient());
+
+    // Turnstile Token
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     // Stars Background
     const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
@@ -38,6 +41,26 @@ export function ModernLogin() {
         setStars(newStars);
     }, []);
 
+    // Initialize Turnstile
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+
+        // Listen for token success via global callback
+        // Note: The widget requires a global function name string
+        (window as any).onTurnstileSuccess = (token: string) => {
+            setTurnstileToken(token);
+        };
+
+        return () => {
+            document.body.removeChild(script);
+            delete (window as any).onTurnstileSuccess;
+        };
+    }, []);
+
     const handleOAuthLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
         try {
@@ -54,6 +77,12 @@ export function ModernLogin() {
 
     const handleEmailAuth = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!turnstileToken) {
+            toast.error("Lütfen robot olmadığınızı doğrulayın.");
+            return;
+        }
+
         setLoading(true);
         try {
             if (isSignUp) {
@@ -73,6 +102,7 @@ export function ModernLogin() {
                     email,
                     password,
                     options: {
+                        captchaToken: turnstileToken,
                         emailRedirectTo: `${location.origin}/auth/callback`,
                         data: {
                             username,
@@ -84,7 +114,11 @@ export function ModernLogin() {
                 if (error) throw error;
                 window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
             } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                    options: { captchaToken: turnstileToken }
+                });
                 if (error) throw error;
                 window.location.href = "/";
             }
@@ -101,7 +135,7 @@ export function ModernLogin() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black/90">
             {/* Stars Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {stars.map((star, i) => (
@@ -153,34 +187,22 @@ export function ModernLogin() {
                     </div>
 
                     <div className="p-6 sm:p-8 space-y-6">
-                        {/* OAuth Buttons */}
-                        <div className="grid grid-cols-2 gap-3">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => handleOAuthLogin('github')}
-                                disabled={loading}
-                                className="h-10 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all font-medium text-xs sm:text-sm"
-                            >
-                                <Github className="h-4 w-4 mr-2" />
-                                GitHub
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => handleOAuthLogin('google')}
-                                disabled={loading}
-                                className="h-10 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all font-medium text-xs sm:text-sm"
-                            >
-                                <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24">
-                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                                </svg>
-                                Google
-                            </Button>
-                        </div>
+                        {/* Google Button - Full Width */}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => handleOAuthLogin('google')}
+                            disabled={loading}
+                            className="w-full h-11 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all font-medium text-sm flex items-center justify-center"
+                        >
+                            <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                            </svg>
+                            Google ile Devam Et
+                        </Button>
 
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
@@ -206,7 +228,7 @@ export function ModernLogin() {
                                                     setUsername(value);
                                                 }}
                                                 required
-                                                className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-primary/50 focus:bg-black/40 focus:ring-1 focus:ring-primary/50 rounded-xl transition-all pl-10"
+                                                className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all pl-10"
                                             />
                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30">@</div>
                                         </div>
@@ -218,7 +240,7 @@ export function ModernLogin() {
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             required
-                                            className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-primary/50 focus:bg-black/40 focus:ring-1 focus:ring-primary/50 rounded-xl transition-all"
+                                            className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all"
                                         />
                                     </div>
                                 </>
@@ -232,7 +254,7 @@ export function ModernLogin() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-primary/50 focus:bg-black/40 focus:ring-1 focus:ring-primary/50 rounded-xl transition-all"
+                                    className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all"
                                 />
                             </div>
 
@@ -242,7 +264,7 @@ export function ModernLogin() {
                                     {!isSignUp && (
                                         <Link
                                             href="/forgot-password"
-                                            className="text-[10px] text-white/40 hover:text-primary transition-colors"
+                                            className="text-[10px] text-white/40 hover:text-emerald-400 transition-colors"
                                         >
                                             Şifremi unuttum?
                                         </Link>
@@ -254,7 +276,7 @@ export function ModernLogin() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-primary/50 focus:bg-black/40 focus:ring-1 focus:ring-primary/50 pr-10 rounded-xl transition-all"
+                                        className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 pr-10 rounded-xl transition-all"
                                     />
                                     <button
                                         type="button"
@@ -266,18 +288,27 @@ export function ModernLogin() {
                                 </div>
                             </div>
 
+                            {/* Turnstile Widget */}
+                            <div className="flex justify-center my-4">
+                                <div className="cf-turnstile text-center flex justify-center w-full"
+                                    data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
+                                    data-callback="onTurnstileSuccess"
+                                    data-theme="dark"
+                                />
+                            </div>
+
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-11 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-600/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-2"
+                                className="w-full h-11 bg-[#86efac] hover:bg-[#4ade80] text-black font-black uppercase tracking-wide rounded-xl shadow-[0_0_15px_rgba(134,239,172,0.3)] hover:shadow-[0_0_25px_rgba(134,239,172,0.5)] transition-all active:scale-[0.98] mt-2 group"
                             >
                                 {loading ? (
                                     <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
                                     <span className="flex items-center gap-2">
                                         <Lock className="w-4 h-4" />
-                                        {isSignUp ? "Hesap Oluştur" : "Güvenli Giriş Yap"}
-                                        <ArrowRight className="h-4 w-4 opacity-50" />
+                                        {isSignUp ? "Aramıza Katıl" : "Giriş Yap"}
+                                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </span>
                                 )}
                             </Button>
@@ -291,7 +322,7 @@ export function ModernLogin() {
                             <button
                                 type="button"
                                 onClick={() => setIsSignUp(!isSignUp)}
-                                className="ml-2 text-primary hover:text-white font-bold transition-colors"
+                                className="ml-2 text-emerald-400 hover:text-emerald-300 font-bold transition-colors"
                             >
                                 {isSignUp ? "Giriş Yap" : "Hemen Katıl"}
                             </button>
@@ -303,7 +334,7 @@ export function ModernLogin() {
                 <div className="mt-8 text-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[10px] text-white/40 uppercase tracking-widest font-medium">
                         <ShieldCheck className="w-3 h-3" />
-                        SSL ile güvenli bağlantı
+                        Bot koruması aktif
                     </div>
                 </div>
             </motion.div>
