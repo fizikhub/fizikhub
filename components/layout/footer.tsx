@@ -21,10 +21,48 @@ export function Footer() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number }>>([]);
+
+    useEffect(() => {
+        const newStars = Array.from({ length: 50 }).map((_, i) => ({
+            id: i,
+            x: Math.random() * 100,
+            y: Math.random() * 100,
+            size: Math.random() * 2 + 1,
+            duration: Math.random() * 10 + 10,
+        }));
+        setStars(newStars);
+    }, []);
+
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-black pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
+        <footer className="relative bg-[#050505] pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
+            {/* Star Field Background */}
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+                {stars.map((star) => (
+                    <motion.div
+                        key={star.id}
+                        className="absolute bg-white rounded-full"
+                        style={{
+                            left: `${star.x}%`,
+                            top: `${star.y}%`,
+                            width: star.size,
+                            height: star.size,
+                        }}
+                        animate={{
+                            opacity: [0.2, 1, 0.2],
+                            scale: [1, 1.2, 1],
+                        }}
+                        transition={{
+                            duration: star.duration,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            delay: Math.random() * 5,
+                        }}
+                    />
+                ))}
+            </div>
             {/* Event Horizon Warning Line - ENHANCED */}
             <div className={cn(
                 "absolute top-0 left-0 right-0 h-10 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 border-b-2",
