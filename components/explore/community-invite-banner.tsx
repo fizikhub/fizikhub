@@ -19,7 +19,7 @@ export function CommunityInviteBanner() {
 
                 {/* Left Content */}
                 <div className="space-y-4 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-1 bg-purple-200/50 dark:bg-purple-900/30">
+                    <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-1 bg-amber-100/80 dark:bg-amber-900/30">
                         <div className="w-2 h-2 bg-green-500 animate-pulse" />
                         <span className="text-[10px] font-mono uppercase tracking-widest font-bold">
                             KATKI_MODÜLÜ

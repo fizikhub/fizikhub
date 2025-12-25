@@ -82,8 +82,8 @@ export function Navbar() {
 
     const navLinks = [
         { href: "/", label: "ANA SAYFA", description: "Başladığın yere dön.", icon: Home },
-        { href: "/blog", label: "MAKALE", description: "Biraz kültürlen.", icon: Feather },
-        { href: "/kesfet", label: "BLOG", description: "Keşfetmeye başla.", icon: Compass },
+        { href: "/makale", label: "MAKALE", description: "Biraz kültürlen.", icon: Feather },
+        { href: "/blog", label: "BLOG", description: "Keşfetmeye başla.", icon: Compass },
         { href: "/forum", label: "FORUM", description: "Kavga etme, tartış.", icon: MessageCircle },
         { href: "/sozluk", label: "LÜGAT", description: "Bu ne demek şimdi?", icon: Library },
 

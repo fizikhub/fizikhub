@@ -36,12 +36,12 @@ export function BottomNav() {
             icon: Home
         },
         {
-            href: "/blog",
+            href: "/makale",
             label: "MAKALE",
             icon: BookOpen
         },
         {
-            href: "/kesfet",
+            href: "/blog",
             label: "BLOG",
             icon: Feather
         },

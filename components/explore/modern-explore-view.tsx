@@ -69,7 +69,7 @@ export function ModernExploreView({
                     </div>
 
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-[0.9]">
-                        KEŞFET<span className="text-emerald-500">.</span>
+                        BLOG<span className="text-emerald-500">.</span>
                     </h1>
 
                     <p className="text-muted-foreground text-base md:text-xl max-w-2xl leading-relaxed">
@@ -84,7 +84,7 @@ export function ModernExploreView({
                 <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-foreground/5 py-4 -mx-2 sm:-mx-4 px-2 sm:px-4 mb-8 md:static md:bg-transparent md:border-none md:p-0 md:mb-12 md:mx-0">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Search Input */}
-                        <form action="/kesfet" method="GET" className="flex-1 relative group">
+                        <form action="/blog" method="GET" className="flex-1 relative group">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="relative bg-card border-2 border-foreground/10 focus-within:border-emerald-500/50 focus-within:bg-card rounded-2xl flex items-center transition-all duration-300">
                                 <Search className="w-5 h-5 ml-4 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
@@ -101,7 +101,7 @@ export function ModernExploreView({
 
                         {/* Categories - Desktop */}
                         <div className="hidden md:flex flex-wrap gap-2">
-                            <Link href="/kesfet">
+                            <Link href="/blog">
                                 <Badge
                                     className={cn(
                                         "h-14 px-6 rounded-2xl text-sm font-bold cursor-pointer transition-all border-2",
@@ -114,7 +114,7 @@ export function ModernExploreView({
                                 </Badge>
                             </Link>
                             {categories.slice(0, 3).map((cat) => (
-                                <Link key={cat} href={`/kesfet?category=${encodeURIComponent(cat)}`}>
+                                <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`}>
                                     <Badge
                                         className={cn(
                                             "h-14 px-6 rounded-2xl text-sm font-bold cursor-pointer transition-all border-2",
