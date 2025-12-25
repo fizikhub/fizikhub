@@ -281,17 +281,17 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                         >
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/makale/yeni">
-                                        <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
+                                    <Link href="/yazar/yeni">
+                                        <Button size="sm" className="h-8 gap-2 bg-[#A8E6CF] hover:bg-[#8fdcb9] text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all duration-300 text-xs font-black rounded-none">
                                             <PenSquare className="w-3.5 h-3.5" />
-                                            <span>Makale Yaz</span>
+                                            <span>BLOG YAZ</span>
                                         </Button>
                                     </Link>
                                     {profile?.is_writer && (
                                         <Link href="/yazar">
-                                            <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
+                                            <Button size="sm" className="h-8 gap-2 bg-white hover:bg-gray-100 text-black border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all duration-300 text-xs font-black rounded-none">
                                                 <PenSquare className="w-3.5 h-3.5" />
-                                                <span>Yazar Paneli</span>
+                                                <span>BLOG PANELİ</span>
                                             </Button>
                                         </Link>
                                     )}
