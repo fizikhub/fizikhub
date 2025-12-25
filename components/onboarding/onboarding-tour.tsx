@@ -76,57 +76,103 @@ const bottomNavItems = [
     { label: "PROFİL", icon: User },
 ];
 
-// Premium Rocket SVG Component
+// Premium Realistic Rocket SVG Component
 function RocketSVG({ className }: { className?: string }) {
     return (
-        <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Rocket Body */}
-            <path
-                d="M32 4C32 4 24 16 24 32V48L32 56L40 48V32C40 16 32 4 32 4Z"
-                fill="url(#rocketGradient)"
-                stroke="white"
-                strokeWidth="1.5"
-            />
-            {/* Rocket Nose */}
-            <ellipse cx="32" cy="12" rx="4" ry="6" fill="#ff6b35" />
-            {/* Window */}
-            <circle cx="32" cy="24" r="4" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <circle cx="32" cy="24" r="2" fill="#00d4ff" opacity="0.5" />
-            {/* Left Fin */}
-            <path d="M24 40L16 52L24 48V40Z" fill="#ff6b35" stroke="white" strokeWidth="1" />
-            {/* Right Fin */}
-            <path d="M40 40L48 52L40 48V40Z" fill="#ff6b35" stroke="white" strokeWidth="1" />
-            {/* Flame Gradients */}
+        <svg viewBox="0 0 100 200" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Rocket Body - Main fuselage */}
             <defs>
-                <linearGradient id="rocketGradient" x1="32" y1="4" x2="32" y2="56" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#e8e8e8" />
-                    <stop offset="100%" stopColor="#a0a0a0" />
+                <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#d4d4d4" />
+                    <stop offset="30%" stopColor="#ffffff" />
+                    <stop offset="70%" stopColor="#f5f5f5" />
+                    <stop offset="100%" stopColor="#b0b0b0" />
                 </linearGradient>
+                <linearGradient id="noseGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#cc2b2b" />
+                    <stop offset="50%" stopColor="#ff4444" />
+                    <stop offset="100%" stopColor="#aa2222" />
+                </linearGradient>
+                <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#cc2b2b" />
+                    <stop offset="50%" stopColor="#ff3333" />
+                    <stop offset="100%" stopColor="#991111" />
+                </linearGradient>
+                <linearGradient id="windowGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+                    <stop offset="0%" stopColor="#00d4ff" />
+                    <stop offset="100%" stopColor="#0088aa" />
+                </linearGradient>
+                <filter id="rocketShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
+                </filter>
             </defs>
+
+            {/* Main Body */}
+            <ellipse cx="50" cy="100" rx="22" ry="70" fill="url(#bodyGradient)" filter="url(#rocketShadow)" />
+
+            {/* Nose Cone */}
+            <path d="M50 10 C35 35 30 50 30 65 L70 65 C70 50 65 35 50 10Z" fill="url(#noseGradient)" />
+            <ellipse cx="50" cy="65" rx="20" ry="5" fill="#cc2b2b" />
+
+            {/* Body Details - Stripes */}
+            <rect x="28" y="70" width="44" height="4" fill="#cc2b2b" />
+            <rect x="28" y="130" width="44" height="4" fill="#1a1a2e" />
+            <rect x="28" y="136" width="44" height="2" fill="#cc2b2b" />
+
+            {/* Window */}
+            <circle cx="50" cy="95" r="12" fill="#0a0a15" stroke="#888" strokeWidth="3" />
+            <circle cx="50" cy="95" r="8" fill="url(#windowGlow)" opacity="0.8" />
+            <ellipse cx="47" cy="92" rx="3" ry="2" fill="white" opacity="0.6" />
+
+            {/* Left Fin */}
+            <path d="M28 140 L8 175 L8 180 L28 165 Z" fill="url(#finGradient)" />
+            <path d="M28 140 L18 160 L28 155 Z" fill="#ff6666" opacity="0.5" />
+
+            {/* Right Fin */}
+            <path d="M72 140 L92 175 L92 180 L72 165 Z" fill="url(#finGradient)" />
+            <path d="M72 140 L82 160 L72 155 Z" fill="#ff6666" opacity="0.5" />
+
+            {/* Center Fin */}
+            <ellipse cx="50" cy="170" rx="15" ry="8" fill="#888" />
+
+            {/* Engine Nozzle */}
+            <path d="M35 165 L30 180 L70 180 L65 165 Z" fill="#444" />
+            <ellipse cx="50" cy="180" rx="20" ry="5" fill="#333" />
+            <ellipse cx="50" cy="178" rx="15" ry="4" fill="#222" />
+
+            {/* Rivets/Details */}
+            {[75, 85, 105, 115, 125].map((y, i) => (
+                <g key={i}>
+                    <circle cx="30" cy={y} r="1.5" fill="#999" />
+                    <circle cx="70" cy={y} r="1.5" fill="#999" />
+                </g>
+            ))}
         </svg>
     );
 }
 
-// Smoke Particle Component
-function SmokeParticle({ delay, x, size }: { delay: number; x: number; size: number }) {
+// Professional Smoke Cloud Component
+function SmokeCloud({ delay, x, size, direction }: { delay: number; x: number; size: number; direction: number }) {
     return (
         <motion.div
-            className="absolute rounded-full bg-gradient-to-t from-gray-400/80 to-white/60"
+            className="absolute rounded-full"
             style={{
                 width: size,
                 height: size,
                 left: `calc(50% + ${x}px)`,
-                bottom: 0,
+                bottom: 20,
+                background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(200,200,200,0.7) 40%, rgba(150,150,150,0.4) 70%, transparent 100%)`,
+                filter: 'blur(8px)',
             }}
-            initial={{ opacity: 0, y: 0, scale: 0.5 }}
+            initial={{ opacity: 0, y: 0, scale: 0.3, x: 0 }}
             animate={{
-                opacity: [0, 0.8, 0.6, 0],
-                y: [0, -80, -150, -200],
-                scale: [0.5, 1.5, 2, 2.5],
-                x: [0, x * 2, x * 3],
+                opacity: [0, 0.9, 0.7, 0.4, 0],
+                y: [0, -50, -120, -200, -300],
+                scale: [0.3, 1, 1.8, 2.5, 3],
+                x: [0, direction * 20, direction * 50, direction * 80],
             }}
             transition={{
-                duration: 2,
+                duration: 4,
                 delay: delay,
                 ease: "easeOut",
             }}
@@ -134,17 +180,86 @@ function SmokeParticle({ delay, x, size }: { delay: number; x: number; size: num
     );
 }
 
-// Fire/Thrust Particle
-function FireParticle({ delay }: { delay: number }) {
+// Animated Fire/Thrust Component
+function AnimatedFlame() {
     return (
-        <motion.div
-            className="absolute left-1/2 -translate-x-1/2 bottom-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ duration: 0.3, delay, repeat: 3 }}
-        >
-            <div className="w-4 h-12 bg-gradient-to-t from-yellow-500 via-orange-500 to-red-500 rounded-full blur-sm" />
-        </motion.div>
+        <div className="relative w-24 h-40 flex items-start justify-center">
+            {/* Outer flame glow */}
+            <motion.div
+                className="absolute w-20 h-32 rounded-b-full"
+                style={{
+                    background: 'radial-gradient(ellipse at center top, rgba(255,100,0,0.8) 0%, rgba(255,50,0,0.4) 50%, transparent 100%)',
+                    filter: 'blur(10px)',
+                }}
+                animate={{
+                    scaleY: [1, 1.2, 0.9, 1.1, 1],
+                    scaleX: [1, 0.9, 1.1, 0.95, 1],
+                }}
+                transition={{ duration: 0.15, repeat: Infinity }}
+            />
+
+            {/* Main orange flame */}
+            <motion.div
+                className="absolute w-16 h-28 rounded-b-full"
+                style={{
+                    background: 'linear-gradient(to bottom, #ff6600 0%, #ff4400 30%, #ff2200 60%, #cc0000 100%)',
+                }}
+                animate={{
+                    scaleY: [1, 1.3, 0.85, 1.15, 1],
+                    scaleX: [1, 0.85, 1.15, 0.9, 1],
+                }}
+                transition={{ duration: 0.1, repeat: Infinity }}
+            />
+
+            {/* Inner yellow flame */}
+            <motion.div
+                className="absolute w-10 h-20 rounded-b-full"
+                style={{
+                    background: 'linear-gradient(to bottom, #ffffff 0%, #ffff00 20%, #ffcc00 50%, #ff8800 100%)',
+                }}
+                animate={{
+                    scaleY: [1, 1.4, 0.8, 1.2, 1],
+                    scaleX: [1, 0.8, 1.2, 0.85, 1],
+                    y: [0, 2, -1, 1, 0],
+                }}
+                transition={{ duration: 0.08, repeat: Infinity }}
+            />
+
+            {/* Core white-hot center */}
+            <motion.div
+                className="absolute w-5 h-12 rounded-b-full"
+                style={{
+                    background: 'linear-gradient(to bottom, #ffffff 0%, #ffffcc 50%, #ffee88 100%)',
+                }}
+                animate={{
+                    scaleY: [1, 1.5, 0.7, 1.3, 1],
+                    scaleX: [1, 0.7, 1.3, 0.8, 1],
+                }}
+                transition={{ duration: 0.06, repeat: Infinity }}
+            />
+
+            {/* Sparks */}
+            {Array.from({ length: 8 }).map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-yellow-300 rounded-full"
+                    style={{
+                        left: `${40 + (Math.random() - 0.5) * 30}%`,
+                    }}
+                    initial={{ y: 0, opacity: 1 }}
+                    animate={{
+                        y: [0, 60 + Math.random() * 40],
+                        x: [(Math.random() - 0.5) * 40],
+                        opacity: [1, 0],
+                    }}
+                    transition={{
+                        duration: 0.5 + Math.random() * 0.3,
+                        repeat: Infinity,
+                        delay: i * 0.1,
+                    }}
+                />
+            ))}
+        </div>
     );
 }
 
@@ -165,7 +280,7 @@ export function OnboardingTour() {
             setTimeout(async () => {
                 await completeOnboarding();
                 setIsVisible(false);
-            }, 3000);
+            }, 6500); // Animasyon süresi + fade out
         } else {
             setCurrentStep((prev) => prev + 1);
         }
@@ -186,99 +301,184 @@ export function OnboardingTour() {
     if (showLiftoff) {
         return (
             <motion.div
-                className="fixed inset-0 z-[200] bg-black/90 flex items-end justify-center overflow-hidden"
+                className="fixed inset-0 z-[200] bg-gradient-to-b from-black via-[#0a0a1a] to-[#1a1a2e] flex items-end justify-center overflow-hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
             >
-                {/* Stars Background */}
-                <div className="absolute inset-0 overflow-hidden">
-                    {Array.from({ length: 30 }).map((_, i) => (
+                {/* Screen Shake Effect */}
+                <motion.div
+                    className="absolute inset-0"
+                    animate={{
+                        x: [0, -3, 3, -2, 2, -1, 1, 0],
+                        y: [0, 2, -2, 1, -1, 0],
+                    }}
+                    transition={{
+                        duration: 0.5,
+                        delay: 1.2,
+                        repeat: 6,
+                        ease: "easeInOut"
+                    }}
+                >
+                    {/* Stars Background - More stars with better distribution */}
+                    <div className="absolute inset-0 overflow-hidden">
+                        {Array.from({ length: 80 }).map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute rounded-full bg-white"
+                                style={{
+                                    width: Math.random() * 2 + 1,
+                                    height: Math.random() * 2 + 1,
+                                    left: `${Math.random() * 100}%`,
+                                    top: `${Math.random() * 60}%`,
+                                }}
+                                animate={{
+                                    opacity: [0.2, 0.8, 0.2],
+                                    scale: [1, 1.2, 1],
+                                }}
+                                transition={{
+                                    duration: Math.random() * 3 + 2,
+                                    repeat: Infinity,
+                                    delay: Math.random() * 2,
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Launch Pad Platform */}
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#2a2a3a] to-[#1a1a2a] border-t-2 border-[#3a3a4a]">
+                        <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
+                    </div>
+
+                    {/* Professional Smoke Clouds */}
+                    <div className="absolute bottom-0 left-0 right-0 h-80 pointer-events-none overflow-visible">
+                        {/* Large smoke clouds from both sides */}
+                        {Array.from({ length: 30 }).map((_, i) => (
+                            <SmokeCloud
+                                key={i}
+                                delay={1.0 + i * 0.15}
+                                x={(i % 2 === 0 ? -1 : 1) * (20 + Math.random() * 60)}
+                                size={80 + Math.random() * 80}
+                                direction={i % 2 === 0 ? -1 : 1}
+                            />
+                        ))}
+
+                        {/* Central dense smoke */}
                         <motion.div
-                            key={i}
-                            className="absolute w-1 h-1 bg-white rounded-full"
+                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-48"
                             style={{
-                                left: `${Math.random() * 100}%`,
-                                top: `${Math.random() * 70}%`,
+                                background: 'radial-gradient(ellipse at center bottom, rgba(255,255,255,0.95) 0%, rgba(200,200,200,0.8) 30%, rgba(150,150,150,0.5) 60%, transparent 100%)',
+                                filter: 'blur(20px)',
+                                transformOrigin: "center bottom",
                             }}
-                            animate={{ opacity: [0.3, 1, 0.3] }}
-                            transition={{ duration: Math.random() * 2 + 1, repeat: Infinity }}
+                            initial={{ opacity: 0, scaleX: 0.3, scaleY: 0 }}
+                            animate={{
+                                opacity: [0, 1, 0.9, 0.7],
+                                scaleX: [0.3, 1, 1.5, 2.5],
+                                scaleY: [0, 0.8, 1, 1.2],
+                            }}
+                            transition={{ duration: 4, delay: 1.0, ease: "easeOut" }}
                         />
-                    ))}
-                </div>
+                    </div>
 
-                {/* Smoke Cloud at Bottom */}
-                <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none overflow-hidden"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                >
-                    {/* Multiple smoke particles */}
-                    {Array.from({ length: 20 }).map((_, i) => (
-                        <SmokeParticle
-                            key={i}
-                            delay={0.3 + i * 0.1}
-                            x={(Math.random() - 0.5) * 100}
-                            size={Math.random() * 40 + 30}
-                        />
-                    ))}
-
-                    {/* Base smoke layer */}
+                    {/* Rocket with Slow Liftoff */}
                     <motion.div
-                        className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-300/80 via-gray-400/50 to-transparent"
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: [0, 1, 0.8], scaleY: [0, 1, 1.5] }}
-                        transition={{ duration: 1.5, delay: 0.5 }}
-                        style={{ transformOrigin: "bottom" }}
-                    />
-                </motion.div>
-
-                {/* Rocket */}
-                <motion.div
-                    className="absolute bottom-20 left-1/2 -translate-x-1/2"
-                    initial={{ y: 0 }}
-                    animate={{ y: -800 }}
-                    transition={{ duration: 2.5, delay: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                >
-                    {/* Fire/Thrust */}
-                    <motion.div
-                        className="absolute left-1/2 -translate-x-1/2 top-full"
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: 1, scaleY: 1 }}
-                        transition={{ delay: 0.5 }}
+                        className="absolute bottom-24 left-1/2 -translate-x-1/2"
+                        initial={{ y: 0 }}
+                        animate={{ y: -1200 }}
+                        transition={{
+                            duration: 5,
+                            delay: 1.5,
+                            ease: [0.2, 0.1, 0.3, 1], // Slow start, gradual acceleration
+                        }}
                     >
+                        {/* Animated Fire/Thrust */}
                         <motion.div
-                            className="w-8 origin-top"
-                            animate={{ scaleY: [0.8, 1.2, 0.8] }}
-                            transition={{ duration: 0.1, repeat: Infinity }}
+                            className="absolute left-1/2 -translate-x-1/2 top-full -mt-4"
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.8, duration: 0.5 }}
                         >
-                            <div className="w-8 h-20 bg-gradient-to-t from-yellow-400 via-orange-500 to-red-600 rounded-b-full blur-[2px]" />
-                            <div className="absolute inset-0 w-4 h-16 mx-auto bg-gradient-to-t from-white via-yellow-200 to-orange-400 rounded-b-full" />
+                            <AnimatedFlame />
+                        </motion.div>
+
+                        {/* Vibration effect on rocket - more intense */}
+                        <motion.div
+                            initial={{ x: 0 }}
+                            animate={{ x: [-2, 2, -2, 1, -1, 2, -2] }}
+                            transition={{
+                                duration: 0.1,
+                                repeat: Infinity,
+                                delay: 1.0,
+                            }}
+                        >
+                            {/* Rocket Glow Effect */}
+                            <motion.div
+                                className="absolute inset-0 -z-10"
+                                style={{
+                                    background: 'radial-gradient(ellipse at center bottom, rgba(255,150,50,0.4) 0%, transparent 60%)',
+                                    filter: 'blur(20px)',
+                                }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: [0, 0.8, 0.6, 0.8] }}
+                                transition={{ delay: 1.0, duration: 0.5, repeat: Infinity }}
+                            />
+                            <RocketSVG className="w-32 h-64" />
                         </motion.div>
                     </motion.div>
 
-                    {/* Vibration effect on rocket */}
+                    {/* Countdown Text */}
                     <motion.div
-                        animate={{ x: [-1, 1, -1] }}
-                        transition={{ duration: 0.05, repeat: Infinity }}
+                        className="absolute top-1/4 left-0 right-0 text-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                     >
-                        <RocketSVG className="w-16 h-24" />
+                        {/* Countdown numbers */}
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key="countdown"
+                                initial={{ opacity: 0, scale: 0.5 }}
+                                animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1, 1.2] }}
+                                transition={{ duration: 1.5, times: [0, 0.1, 0.9, 1] }}
+                            >
+                                <span className="text-6xl md:text-8xl font-black text-orange-500 drop-shadow-[0_0_30px_rgba(255,150,0,0.5)]">
+                                    3... 2... 1...
+                                </span>
+                            </motion.div>
+                        </AnimatePresence>
                     </motion.div>
-                </motion.div>
 
-                {/* Launch Text */}
-                <motion.div
-                    className="absolute top-1/3 left-0 right-0 text-center"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: [0, 1, 1, 0], y: [20, 0, 0, -20] }}
-                    transition={{ duration: 2.5, times: [0, 0.2, 0.8, 1] }}
-                >
-                    <h2 className="text-3xl md:text-4xl font-black text-white tracking-wider mb-2">
-                        KALKIŞ!
-                    </h2>
-                    <p className="text-primary font-bold uppercase tracking-widest text-sm">
-                        Keşfe hazırsın
-                    </p>
+                    {/* Launch Text */}
+                    <motion.div
+                        className="absolute top-1/3 left-0 right-0 text-center"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{
+                            opacity: [0, 0, 1, 1, 0],
+                            scale: [0.8, 0.8, 1, 1.1, 1.2],
+                            y: [0, 0, 0, 0, -50],
+                        }}
+                        transition={{
+                            duration: 4,
+                            times: [0, 0.35, 0.4, 0.8, 1],
+                            delay: 0.5,
+                        }}
+                    >
+                        <h2 className="text-5xl md:text-7xl font-black text-white tracking-wider mb-4 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                            KALKIŞ!
+                        </h2>
+                        <motion.p
+                            className="text-xl md:text-2xl font-bold text-primary uppercase tracking-widest"
+                            animate={{
+                                textShadow: [
+                                    "0 0 10px rgba(255,100,0,0.5)",
+                                    "0 0 30px rgba(255,100,0,0.8)",
+                                    "0 0 10px rgba(255,100,0,0.5)",
+                                ]
+                            }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                        >
+                            Keşfe hazırsın
+                        </motion.p>
+                    </motion.div>
                 </motion.div>
 
                 {/* Fade out overlay at end */}
@@ -286,7 +486,7 @@ export function OnboardingTour() {
                     className="absolute inset-0 bg-background"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 2.5, duration: 0.5 }}
+                    transition={{ delay: 5.5, duration: 0.8 }}
                 />
             </motion.div>
         );
