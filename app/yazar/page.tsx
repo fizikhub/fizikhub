@@ -36,13 +36,13 @@ export default async function WriterDashboard() {
         <div className="container max-w-5xl py-8 space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Yazar Paneli</h1>
+                    <h1 className="text-3xl font-black tracking-tighter uppercase border-b-4 border-black inline-block pb-1">Blog Paneli</h1>
                     <p className="text-muted-foreground mt-1">Makalelerinizi yönetin ve yeni içerikler oluşturun.</p>
                 </div>
                 <Link href="/yazar/yeni">
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        Yeni Makale
+                        Yeni Blog
                     </Button>
                 </Link>
             </div>
@@ -51,7 +51,7 @@ export default async function WriterDashboard() {
                 {!articles || articles.length === 0 ? (
                     <div className="text-center py-20 border rounded-xl bg-muted/20 border-dashed">
                         <FileText className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
-                        <h3 className="text-lg font-medium">Henüz makaleniz yok</h3>
+                        <h3 className="text-lg font-bold font-mono mt-4">Henüz blog yazınız yok</h3>
                         <p className="text-muted-foreground mb-6">İlk makalenizi yazarak topluluğa katkıda bulunun.</p>
                         <Link href="/yazar/yeni">
                             <Button variant="outline">Makale Yaz</Button>

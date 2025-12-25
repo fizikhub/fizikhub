@@ -46,98 +46,39 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isInlineUploading, setIsInlineUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const inlineImageInputRef = useRef<HTMLInputElement>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
+    const [content, setContent] = useState(article?.content || "");
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Compression options - high quality settings
         const options = {
             maxSizeMB: 2,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
             fileType: "image/webp" as const,
-            initialQuality: 0.9 // Higher quality to preserve details
+            initialQuality: 0.9
         };
 
         setIsUploading(true);
         try {
-            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
             const compressedFile = await imageCompression(file, options);
-            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
-
             const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
                 setImageUrl(result.url);
-                toast.success("Resim sıkıştırılarak yüklendi");
+                toast.success("Kapak görseli eklendi");
             } else {
-                toast.error(result.error || "Resim yüklenemedi");
+                toast.error(result.error || "Görsel yüklenemedi");
             }
         } catch (error) {
-            console.error("Compression/Upload error:", error);
-            toast.error("Görsel işlenirken bir hata oluştu");
+            console.error("Upload error:", error);
+            toast.error("Görsel işlenirken hata oluştu");
         } finally {
             setIsUploading(false);
         }
     };
-
-    const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Compression options - high quality settings
-        const options = {
-            maxSizeMB: 2,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true,
-            fileType: "image/webp" as const,
-            initialQuality: 0.9 // Higher quality to preserve details
-        };
-
-        setIsInlineUploading(true);
-        try {
-            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
-            const compressedFile = await imageCompression(file, options);
-            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
-
-            const result = await uploadArticleImage(compressedFile);
-            if (result.success && result.url) {
-                const textarea = textareaRef.current;
-                if (textarea) {
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-                    const text = textarea.value;
-                    const markdownImage = `\n![Görsel Açıklaması](${result.url})\n`;
-
-                    const newText = text.substring(0, start) + markdownImage + text.substring(end);
-                    textarea.value = newText;
-
-                    // Re-focus and update cursor
-                    textarea.focus();
-                    const newCursorPos = start + markdownImage.length;
-                    textarea.setSelectionRange(newCursorPos, newCursorPos);
-                }
-                toast.success("Görsel sıkıştırılarak eklendi");
-            } else {
-                toast.error(result.error || "Yükleme başarısız");
-            }
-        } catch (error) {
-            console.error("Compression/Upload error:", error);
-            toast.error("Görsel işlenirken bir hata oluştu");
-        } finally {
-            setIsInlineUploading(false);
-            if (inlineImageInputRef.current) {
-                inlineImageInputRef.current.value = "";
-            }
-        }
-    };
-
-    const [content, setContent] = useState(article?.content || "");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -145,139 +86,123 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
         const formData = new FormData(e.currentTarget);
         formData.set("image_url", imageUrl);
-        formData.set("content", content); // Use state content from Tiptap
+        formData.set("content", content);
 
         try {
-            let result;
-            if (article) {
-                result = await updateArticle(article.id, formData);
-            } else {
-                result = await createArticle(formData);
-            }
+            const result = article ? await updateArticle(article.id, formData) : await createArticle(formData);
 
             if (result.success) {
-                toast.success(article ? "Makale güncellendi" : "Makale oluşturuldu");
+                toast.success(article ? "Blog güncellendi! 🚀" : "Blog yayına alındı! 🎉");
                 router.push("/yazar");
             } else {
                 toast.error(result.error || "İşlem başarısız");
             }
         } catch {
-            toast.error("Bir hata oluştu");
+            toast.error("Beklenmeyen bir hata oluştu");
         } finally {
             setIsSubmitting(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto pb-20">
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="title">Başlık</Label>
+        <form onSubmit={handleSubmit} className="min-h-screen bg-white text-black font-mono">
+            {/* Top Bar - Brutalist Header */}
+            <div className="sticky top-0 z-50 border-b-4 border-black bg-[#A8E6CF] px-6 py-4 flex items-center justify-between shadow-[0_4px_0_0_rgba(0,0,0,1)]">
+                <div className="flex items-center gap-4">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => router.back()}
+                        className="hover:bg-black hover:text-white transition-colors border-2 border-transparent hover:border-black rounded-none"
+                    >
+                        ← GERİ
+                    </Button>
+                    <h1 className="text-xl font-black tracking-tight uppercase hidden md:block">
+                        {article ? "BLOG DÜZENLE" : "YENİ BLOG YAZISI"}
+                    </h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="bg-black text-white hover:bg-gray-800 border-2 border-black rounded-none shadow-[4px_4px_0_0_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                    >
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {article ? "GÜNCELLE" : "YAYINLA"}
+                    </Button>
+                </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto py-12 px-6 space-y-12">
+
+                {/* Title Section */}
+                <div className="space-y-4">
                     <Input
                         id="title"
                         name="title"
                         defaultValue={article?.title}
-                        placeholder="Makale başlığı..."
+                        placeholder="BAŞLIK GİRİN..."
                         required
-                        className="text-lg font-medium"
+                        className="text-4xl md:text-6xl font-black border-none bg-transparent placeholder:text-gray-300 focus-visible:ring-0 p-0 h-auto tracking-tight uppercase"
                     />
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* Meta Data Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 border-4 border-black bg-white shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+
+                    {/* Category Selection */}
                     <div className="space-y-2">
-                        <Label htmlFor="category">Kategori</Label>
+                        <Label className="font-bold text-lg uppercase bg-black text-white inline-block px-2 py-1 rotate-1">Kategori</Label>
                         <Select name="category" defaultValue={article?.category} required>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Kategori seçin" />
+                            <SelectTrigger className="border-2 border-black rounded-none focus:ring-0 h-12 bg-gray-50 text-lg font-bold">
+                                <SelectValue placeholder="BİR KATEGORİ SEÇ" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="border-2 border-black rounded-none">
                                 {CATEGORIES.map((cat) => (
-                                    <SelectItem key={cat} value={cat}>
-                                        {cat}
+                                    <SelectItem key={cat} value={cat} className="font-mono focus:bg-black focus:text-white rounded-none cursor-pointer">
+                                        {cat.toUpperCase()}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
 
+                    {/* Cover Image Upload */}
                     <div className="space-y-2">
-                        <Label>Kapak Görseli</Label>
+                        <Label className="font-bold text-lg uppercase bg-black text-white inline-block px-2 py-1 -rotate-1">Kapak Görseli</Label>
                         <div className="flex gap-2">
-                            <Input
-                                name="image_url_input"
-                                value={imageUrl}
-                                onChange={(e) => setImageUrl(e.target.value)}
-                                placeholder="Görsel URL'si veya yükleyin..."
-                                className="flex-1"
-                            />
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                            />
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                            >
-                                {isUploading ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Upload className="h-4 w-4" />
-                                )}
-                            </Button>
+                            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                            <div className="flex-1 flex gap-2">
+                                <Button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploading}
+                                    className="flex-1 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none transition-all"
+                                >
+                                    {isUploading ? <Loader2 className="animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                                    {imageUrl ? "DEĞİŞTİR" : "YÜKLE"}
+                                </Button>
+                            </div>
                         </div>
                     </div>
+                    {/* Preview */}
+                    {imageUrl && (
+                        <div className="col-span-1 md:col-span-2 relative aspect-video border-2 border-black overflow-hidden group">
+                            <NextImage src={imageUrl} alt="Kapak" fill className="object-cover transition-transform group-hover:scale-105" />
+                        </div>
+                    )}
                 </div>
 
-                {imageUrl && (
-                    <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
-                        <NextImage
-                            src={imageUrl}
-                            alt="Kapak önizleme"
-                            fill
-                            className="object-cover"
-                        />
+                {/* Content Editor */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <span className="w-4 h-4 bg-black"></span>
+                        <Label className="text-2xl font-black uppercase">İçerik</Label>
                     </div>
-                )}
-
-                <div className="space-y-2">
-                    <Label htmlFor="excerpt">Özet (İsteğe bağlı)</Label>
-                    <Textarea
-                        id="excerpt"
-                        name="excerpt"
-                        defaultValue={article?.excerpt || ""}
-                        placeholder="Makalenin kısa bir özeti..."
-                        className="h-20 resize-none"
-                    />
+                    <div className="border-4 border-black p-4 min-h-[500px] shadow-[8px_8px_0_0_rgba(168,230,207,1)] bg-white">
+                        <TiptapEditor content={content} onChange={setContent} />
+                    </div>
                 </div>
-
-                <div className="space-y-2">
-                    <Label>İçerik</Label>
-                    <TiptapEditor
-                        content={content}
-                        onChange={setContent}
-                    />
-                </div>
-            </div>
-
-            <div className="flex justify-end gap-4">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                    disabled={isSubmitting}
-                >
-                    İptal
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {article ? "Güncelle ve Onaya Gönder" : "Oluştur ve Onaya Gönder"}
-                </Button>
             </div>
         </form>
     );
