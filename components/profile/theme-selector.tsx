@@ -38,13 +38,7 @@ export function ThemeSelector() {
             color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
             special: true
         }
-        {
-            value: "mars",
-            label: "Mars",
-            icon: Rocket,
-            color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
-            special: true
-        }
+    ];
     ];
 
     return (
