@@ -111,11 +111,11 @@ function RocketSVG({ className }: { className?: string }) {
                 <path d="M35 150 L32 170 L68 170 L65 150 Z" fill="#2a2a2a" />
                 <rect x="38" y="170" width="24" height="4" fill="#1a1a1a" />
 
-                {/* Ana Gövde - İnce form */}
+                {/* Ana Gövde - Düzgün Form */}
                 <path
                     d="M30 60 
-                       C30 20 50 -5 50 -5 
-                       C50 -5 70 20 70 60 
+                       Q30 15 50 10 
+                       Q70 15 70 60 
                        L70 150 
                        C70 155 60 160 50 160 
                        C40 160 30 155 30 150 Z"
