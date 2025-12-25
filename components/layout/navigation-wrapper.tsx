@@ -18,8 +18,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
 
     return (
         <>
-            {/* TEST MODE: her zaman göster, sonra showOnboarding && yapılacak */}
-            <OnboardingTour />
+            {showOnboarding && <OnboardingTour />}
             <Navbar />
             <main className="flex-1">
                 {children}
