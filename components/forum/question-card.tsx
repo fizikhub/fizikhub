@@ -15,9 +15,11 @@ import React from "react";
 interface QuestionCardProps {
     question: any;
     userVote?: number;
+    badgeLabel?: string;
+    badgeClassName?: string;
 }
 
-export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCardProps) => {
+export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, badgeClassName }: QuestionCardProps) => {
     const router = useRouter();
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
@@ -86,7 +88,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
 
     return (
         <div
-            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-300 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] overflow-hidden"
+            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden hover:border-blue-500/30 dark:hover:border-blue-500/30 hover:shadow-[0_8px_30px_-12px_rgba(59,130,246,0.2)] active:border-blue-500/50 hover:-translate-y-1 active:scale-[0.98]"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}
@@ -120,7 +122,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0 }: QuestionCard
                                 </svg>
                             )}
                         </div>
-                        <div className="flex items-center gap-1 text-[13px] text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                            {badgeLabel && (
+                                <>
+                                    <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", badgeClassName || "text-blue-500 bg-blue-500/10")}>
+                                        {badgeLabel}
+                                    </span>
+                                    <span>·</span>
+                                </>
+                            )}
                             <span>{question.category}</span>
                             <span>·</span>
                             <span>

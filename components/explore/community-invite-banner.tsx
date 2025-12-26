@@ -33,7 +33,7 @@ export function CommunityInviteBanner() {
                             <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight leading-[0.9]">
                                 ARAŞTIRMALARINI <span className="bg-emerald-500 text-white px-1">PAYLAŞ</span>
                             </h2>
-                            <p className="text-muted-foreground font-mono text-[10px] md:text-xs leading-relaxed max-w-lg hidden sm:block">
+                            <p className="text-gray-300 font-mono text-[11px] md:text-xs leading-relaxed max-w-lg mt-2">
                                 {`> Sadece veriyi tüketme. Analiz et, hipotez kur ve sonuçlarını yayınla.`}
                             </p>
                         </div>

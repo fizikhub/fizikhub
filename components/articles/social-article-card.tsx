@@ -22,6 +22,8 @@ interface SocialArticleCardProps {
     initialIsBookmarked?: boolean;
     variant?: "default" | "compact" | "community" | "writer";
     className?: string;
+    badgeLabel?: string;
+    badgeClassName?: string;
 }
 
 // Calculate reading time
@@ -40,12 +42,20 @@ export function SocialArticleCard({
     initialIsLiked = false,
     initialIsBookmarked = false,
     variant = "writer",
-    className
+    className,
+    badgeLabel,
+    badgeClassName
 }: SocialArticleCardProps) {
     // Color theming based on variant
     const isWriter = variant === "writer";
-    const accentColor = isWriter ? "amber" : "emerald";
-    const badgeText = isWriter ? "Yazar" : "Topluluk";
+
+    // Default values if not provided
+    const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
+    const finalBadgeText = badgeLabel || defaultBadgeText;
+
+    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10";
+    const finalBadgeClass = badgeClassName || defaultBadgeClass;
+
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
 
     // Optimistic UI States
@@ -140,9 +150,13 @@ export function SocialArticleCard({
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
                 "group relative flex flex-col overflow-hidden rounded-3xl transition-all duration-300",
-                "bg-card border-2 border-border/50 hover:border-border hover:shadow-lg dark:hover:shadow-white/5",
+                "bg-card border-2 border-border/50",
+                // Theme specific hover borders and shadows
+                isWriter
+                    ? "hover:border-amber-500/30 dark:hover:border-amber-500/30 hover:shadow-[0_8px_30px_-12px_rgba(245,158,11,0.2)] active:border-amber-500/50 transition-colors duration-200"
+                    : "hover:border-emerald-500/30 dark:hover:border-emerald-500/30 hover:shadow-[0_8px_30px_-12px_rgba(16,185,129,0.2)] active:border-emerald-500/50 transition-colors duration-200",
                 variant === "compact" ? "p-4" : "p-0",
-                "shadow-[3px_3px_0px_0px_rgba(0,0,0,0.12)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
+                "shadow-sm hover:-translate-y-1 active:scale-[0.98]",
                 className
             )}
         >
@@ -170,7 +184,7 @@ export function SocialArticleCard({
                             <Link href={`/kullanici/${article.author?.username}`} className={cn("font-semibold text-foreground hover:underline text-sm transition-colors", isWriter ? "hover:text-amber-500" : "hover:text-emerald-500")}>
                                 {article.author?.full_name || article.author?.username || "Fizikhub"}
                             </Link>
-                            <span className={cn("text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10")}>{badgeText}</span>
+                            <span className={cn("text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", finalBadgeClass)}>{finalBadgeText}</span>
                         </div>
                         <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                             <span>{article.category}</span>
