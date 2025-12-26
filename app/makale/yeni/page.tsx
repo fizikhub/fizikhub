@@ -13,14 +13,15 @@ export default async function NewArticlePage() {
         redirect("/login");
     }
 
-    // Check if user has written an article before
+    // Check if user has written an article before and seen guide
     const { data: profile } = await supabase
         .from("profiles")
-        .select("has_written_article")
+        .select("has_written_article, has_seen_article_guide")
         .eq("id", user.id)
         .single();
 
     const isFirstArticle = !profile?.has_written_article;
+    const hasSeenGuide = profile?.has_seen_article_guide || false;
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -46,6 +47,7 @@ export default async function NewArticlePage() {
                 <NewArticleForm
                     userId={user.id}
                     isFirstArticle={isFirstArticle}
+                    hasSeenGuide={hasSeenGuide}
                 />
             </div>
         </div>

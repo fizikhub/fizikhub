@@ -31,11 +31,16 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
         redirect("/profil");
     }
 
+    // Check user profile
     const { data: profile } = await supabase
         .from("profiles")
-        .select("has_written_article")
+        .select("has_written_article, has_seen_article_guide")
         .eq("id", user.id)
         .single();
+
+    if (!profile) redirect("/login");
+
+    const hasSeenGuide = profile?.has_seen_article_guide || false;
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -61,6 +66,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
                 <NewArticleForm
                     userId={user.id}
                     isFirstArticle={!profile?.has_written_article}
+                    hasSeenGuide={hasSeenGuide}
                     initialData={{
                         id: article.id, // Important for update logic
                         title: article.title,

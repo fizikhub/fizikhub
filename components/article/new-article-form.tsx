@@ -6,16 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Sparkles, Send } from "lucide-react";
+import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Orbitron } from "next/font/google";
+
+const orbitron = Orbitron({ subsets: ["latin"] });
 
 interface NewArticleFormProps {
     userId: string;
     isFirstArticle: boolean;
+    hasSeenGuide: boolean;
     initialData?: {
         id?: number;
         title: string;
@@ -32,7 +37,7 @@ const categories = [
     "Elektromanyetizma", "Genel Görelilik", "Parçacık Fiziği", "Genel"
 ];
 
-export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArticleFormProps) {
+export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialData }: NewArticleFormProps) {
     // Form States
     const [title, setTitle] = useState(initialData?.title || "");
     const [category, setCategory] = useState(initialData?.category || "Genel");
@@ -43,6 +48,11 @@ export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArtic
     // UI States
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+
+    // Guide State
+    // Show guide if user hasn't seen it yet
+    const [showGuide, setShowGuide] = useState(!hasSeenGuide);
+    const [dontShowAgain, setDontShowAgain] = useState(false);
 
     // Auto-resize title
     const titleRef = useRef<HTMLTextAreaElement>(null);
@@ -95,6 +105,16 @@ export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArtic
         }
     };
 
+    // Guide Handler
+    const handleCloseGuide = async () => {
+        setShowGuide(false);
+        if (dontShowAgain) {
+            const supabase = createClient();
+            await supabase.from("profiles").update({ has_seen_article_guide: true }).eq("id", userId);
+            toast.success("Anlaşıldı, rehberi bir daha göstermeyeceğiz! 🫡");
+        }
+    };
+
     // Submit Handler
     const handleSubmit = async (targetStatus: "draft" | "pending") => {
         if (!title.trim() || !content.trim()) {
@@ -140,6 +160,129 @@ export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArtic
 
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
+
+            {/* Guide Dialog */}
+            <Dialog open={showGuide} onOpenChange={setShowGuide}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-3xl border-2 border-foreground/10 p-0 sm:rounded-3xl shadow-2xl">
+                    <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 p-8 sm:p-12 text-white relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                        <div className="relative z-10 flex flex-col items-center text-center">
+                            <Sparkles className="w-16 h-16 mb-4 opacity-90 animate-pulse text-yellow-300" />
+                            <DialogTitle className={`${orbitron.className} text-3xl sm:text-5xl font-black tracking-tight mb-2 uppercase drop-shadow-md`}>
+                                Blog Yazarlığı 101
+                            </DialogTitle>
+                            <DialogDescription className="text-emerald-50 text-base sm:text-lg font-medium max-w-xl mx-auto opacity-90">
+                                "Sadece yazıp geçme, bir başyapıt yarat!" rehberine hoş geldin. İşte Fizikhub&apos;da etkileyici bir blog yazmanın sırları.
+                            </DialogDescription>
+                        </div>
+                    </div>
+
+                    <div className="p-6 sm:p-10 space-y-10">
+                        {/* Editor Usage Section */}
+                        <section className="space-y-4">
+                            <div className="flex items-center gap-3 pb-2 border-b border-border">
+                                <Fingerprint className="w-6 h-6 text-emerald-500" />
+                                <h3 className="text-xl font-black uppercase tracking-tight">Editörü Efektif Kullanma</h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2"><ImageImageIcon className="w-4 h-4 text-primary" /> Görsel Dünyası</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Kuru yazı okunmaz! Satır aralarına serpiştirmek için <b>Görsel</b> butonunu, kapak fotoğrafı için alttaki barı kullan.
+                                    </p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2"><Hash className="w-4 h-4 text-primary" /> Kategorilendirme</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Yazını doğru rafa koy. Alttaki kategorilerden en uygununu seç ki okuyucular seni eliyle koymuş gibi bulsun.
+                                    </p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2"><AlignLeft className="w-4 h-4 text-primary" /> Özetin Gücü</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Vitrin önemlidir. Kısa özet alanına (alttaki buton) çekici bir giriş cümlesi yazarak tıklanma oranını artırabilirsin.
+                                    </p>
+                                </div>
+                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2"><BookOpen className="w-4 h-4 text-primary" /> Taslak Modu</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        İlham perisi kaçtı mı? "Taslak" butonuna basıp kaydet, sonra profilinden devam et. Acele etme, mükemmeli hedefle.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Scientific Blog Tips */}
+                        <section className="space-y-4">
+                            <div className="flex items-center gap-3 pb-2 border-b border-border">
+                                <Sparkles className="w-6 h-6 text-purple-500" />
+                                <h3 className="text-xl font-black uppercase tracking-tight">Bilimsel Yazarlık Tüyoları</h3>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20">
+                                    <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
+                                        <span className="text-xl">🔍</span>
+                                    </div>
+                                    <h4 className="font-black text-blue-700 dark:text-blue-300 mb-1">Kaynak Göster</h4>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Okurlar kanıt sever. İddialarını makalelere veya güvenilir kaynaklara dayandır. Link vermekten çekinme.
+                                    </p>
+                                </div>
+                                <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20">
+                                    <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center mb-3">
+                                        <span className="text-xl">🎓</span>
+                                    </div>
+                                    <h4 className="font-black text-purple-700 dark:text-purple-300 mb-1">Sadeleştir</h4>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Einstein der ki: "Basitçe anlatamıyorsan, yeterince anlamamışsındır." Terimleri açıkla, herkesi kucakla.
+                                    </p>
+                                </div>
+                                <div className="p-5 rounded-2xl bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20">
+                                    <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center mb-3">
+                                        <span className="text-xl">⚖️</span>
+                                    </div>
+                                    <h4 className="font-black text-orange-700 dark:text-orange-300 mb-1">Objektif Ol</h4>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Bilim duygularla değil, verilerle yapılır. Kişisel yorumunu kat ama gerçekleri bükme.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Footer Action */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-border/50">
+                            <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted transition-colors cursor-pointer group" onClick={() => setDontShowAgain(!dontShowAgain)}>
+                                <div className={cn(
+                                    "w-5 h-5 rounded-md border-2 border-muted-foreground group-hover:border-primary flex items-center justify-center transition-colors",
+                                    dontShowAgain && "bg-primary border-primary text-primary-foreground"
+                                )}>
+                                    {dontShowAgain && <Sparkles className="w-3 h-3" />}
+                                </div>
+                                <label className="text-sm font-bold text-muted-foreground cursor-pointer select-none">
+                                    Bu rehberi ezberledim, bir daha gösterme
+                                </label>
+                            </div>
+
+                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-black px-10 h-12 text-lg rounded-full bg-foreground text-background hover:scale-105 active:scale-95 transition-all shadow-xl">
+                                Anlaşıldı, Başlıyoruz! 🚀
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Guide Trigger (Small) */}
+            <div className="fixed bottom-4 left-4 z-50">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full bg-background/80 backdrop-blur border shadow-lg hover:scale-110 transition-transform w-8 h-8 opacity-50 hover:opacity-100"
+                    onClick={() => setShowGuide(true)}
+                    title="Rehberi Göster"
+                >
+                    <HelpCircle className="w-4 h-4" />
+                </Button>
+            </div>
 
             {/* Main Editor Area */}
             <div className="relative min-h-[60vh] flex flex-col gap-6">
@@ -268,4 +411,8 @@ export function NewArticleForm({ userId, isFirstArticle, initialData }: NewArtic
             </div>
         </div>
     );
+}
+// Helper component for icon
+function ImageImageIcon(props: any) {
+    return <ImageIcon {...props} />
 }
