@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Ana Sayfa",
   description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   openGraph: {
-    title: "Fizikhub | Eğlenceli Bilim Platformu",
+    title: "Fizikhub | Bilim Platformu",
     description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
     type: "website",
   },
@@ -102,7 +102,7 @@ export default async function Home() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Fizikhub',
-    description: 'Eğlenceli bilim platformu - Fizik, uzay ve bilim üzerine içerikler',
+    description: 'Bilim platformu - Fizik, uzay ve bilim üzerine içerikler',
     url: 'https://fizikhub.com',
     potentialAction: {
       '@type': 'SearchAction',
