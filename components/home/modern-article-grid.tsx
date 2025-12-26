@@ -69,9 +69,9 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8">
                     {/* Featured Article */}
-                    <Link href={`/blog/${featuredArticle.slug}`} className="group block lg:row-span-2">
+                    <Link href={`/blog/${featuredArticle.slug}`} className="group block w-full">
                         <article className="h-full border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200">
                             {/* Image */}
                             <div className="relative aspect-[2/1] w-full overflow-hidden border-b-4 border-black dark:border-white">
@@ -82,22 +82,28 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                                     className="object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-300 group-hover:scale-[1.02]"
                                 />
                                 {/* Category Tag */}
-                                <div className="absolute top-0 left-0 bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-xs font-black uppercase tracking-wider">
+                                <div className="absolute top-0 left-0 bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-xs font-black uppercase tracking-wider font-mono">
                                     {featuredArticle.category || "Genel"}
                                 </div>
                             </div>
 
                             {/* Content */}
-                            <div className="p-4">
-                                <h3 className="text-xl md:text-2xl font-black leading-tight uppercase mb-2 group-hover:underline decoration-2 underline-offset-4 line-clamp-2">
+                            <div className="p-4 md:p-6">
+                                <h3 className="text-xl md:text-3xl font-black font-mono leading-tight uppercase mb-3 line-clamp-3 group-hover:underline decoration-4 underline-offset-4 decoration-primary">
                                     {featuredArticle.title}
                                 </h3>
+                                
+                                {featuredArticle.summary && (
+                                    <p className="text-muted-foreground text-base md:text-lg mb-4 line-clamp-2 leading-relaxed font-medium">
+                                        {featuredArticle.summary}
+                                    </p>
+                                )}
 
-                                <div className="flex items-center justify-between pt-2 border-t-2 border-border">
-                                    <span className="font-bold text-sm">
+                                <div className="flex items-center justify-between pt-4 border-t-2 border-border">
+                                    <span className="font-bold text-sm md:text-base">
                                         {authorData?.full_name || authorData?.username || "Anonim"}
                                     </span>
-                                    <span className="text-xs font-mono text-muted-foreground uppercase">
+                                    <span className="text-xs md:text-sm font-mono text-muted-foreground uppercase">
                                         {formatDistanceToNow(new Date(featuredArticle.created_at), { addSuffix: true, locale: tr })}
                                     </span>
                                 </div>
@@ -105,46 +111,48 @@ export function ModernArticleGrid({ articles }: { articles: Article[] }) {
                         </article>
                     </Link>
 
-                    {/* Side Articles */}
-                    {sideArticles.map((article) => {
-                        const articleAuthor = Array.isArray(article.author) ? article.author[0] : article.author;
-                        return (
-                            <Link key={article.id} href={`/blog/${article.slug}`} className="group block">
-                                <article className="h-full border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200 flex flex-col sm:flex-row">
-                                    {/* Image */}
-                                    <div className="relative w-full sm:w-32 md:w-36 aspect-video sm:aspect-[4/3] flex-shrink-0 overflow-hidden border-b-4 sm:border-b-0 sm:border-r-4 border-black dark:border-white">
-                                        <Image
-                                            src={article.image_url || "/placeholder-article.webp"}
-                                            alt={article.title}
-                                            fill
-                                            className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-300"
-                                        />
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="flex-1 p-4 flex flex-col justify-between">
-                                        <div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-1 block">
-                                                {article.category || "Genel"}
-                                            </span>
-                                            <h4 className="text-lg md:text-xl font-black leading-tight uppercase line-clamp-2 group-hover:underline decoration-2 underline-offset-4">
-                                                {article.title}
-                                            </h4>
+                    {/* Side Articles - Carousel on Mobile / Stack on Desktop */}
+                    <div className="flex overflow-x-auto snap-x gap-4 pb-4 -mx-4 px-4 lg:mx-0 lg:px-0 lg:grid lg:grid-cols-1 lg:gap-4 lg:content-start lg:pb-0">
+                        {sideArticles.map((article) => {
+                            const articleAuthor = Array.isArray(article.author) ? article.author[0] : article.author;
+                            return (
+                                <Link key={article.id} href={`/blog/${article.slug}`} className="group block flex-shrink-0 w-[85vw] sm:w-[320px] lg:w-full snap-center h-full">
+                                    <article className="h-full border-4 border-black dark:border-white bg-card hover:bg-accent transition-colors duration-200 flex flex-col lg:flex-row">
+                                        {/* Image */}
+                                        <div className="relative w-full aspect-video lg:w-48 lg:aspect-[4/3] flex-shrink-0 overflow-hidden border-b-4 lg:border-b-0 lg:border-r-4 border-black dark:border-white">
+                                            <Image
+                                                src={article.image_url || "/placeholder-article.webp"}
+                                                alt={article.title}
+                                                fill
+                                                className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-300"
+                                            />
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-3 pt-2 border-t-2 border-border text-xs">
-                                            <span className="font-bold truncate mr-2">
-                                                {articleAuthor?.full_name || articleAuthor?.username || "Anonim"}
-                                            </span>
-                                            <span className="font-mono text-muted-foreground whitespace-nowrap">
-                                                {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                                            </span>
+                                        {/* Content */}
+                                        <div className="flex-1 p-4 flex flex-col justify-between">
+                                            <div>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground mb-1 block font-mono">
+                                                    {article.category || "Genel"}
+                                                </span>
+                                                <h4 className="text-lg font-black font-mono leading-tight uppercase line-clamp-2 group-hover:underline decoration-2 underline-offset-4">
+                                                    {article.title}
+                                                </h4>
+                                            </div>
+
+                                            <div className="flex items-center justify-between mt-3 pt-2 border-t-2 border-border text-xs">
+                                                <span className="font-bold truncate mr-2">
+                                                    {articleAuthor?.full_name || articleAuthor?.username || "Anonim"}
+                                                </span>
+                                                <span className="font-mono text-muted-foreground whitespace-nowrap">
+                                                    {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </article>
-                            </Link>
-                        );
-                    })}
+                                    </article>
+                                </Link>
+                            );
+                        })}
+                    </div>
                 </div>
 
                 {/* CTA */}
