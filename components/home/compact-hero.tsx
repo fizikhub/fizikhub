@@ -149,20 +149,20 @@ const PremiumUFO = () => (
 export function CompactHero() {
     // Only render stars on client to match hydration if we were using random, but here they are deterministic
     return (
-        <div className="relative py-8 px-6 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] mb-8 shadow-2xl shadow-emerald-900/10">
+        <div className="relative py-10 px-6 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] mb-8 shadow-2xl shadow-emerald-900/10">
             {/* Dynamic Starry Background */}
             <StarryBackground />
 
             <div className="relative z-10 flex items-center justify-between gap-6">
                 {/* Slogan */}
                 <div className="flex-1 max-w-xl">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-[0.9] drop-shadow-lg scale-y-[0.9] sm:scale-y-100 origin-left transform-gpu">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-lg origin-left transform-gpu">
                         BİLİMİ Tİ'YE ALIYORUZ<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-md tracking-widest sm:tracking-normal scale-y-[0.9] sm:scale-y-100 inline-block">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-md tracking-wider sm:tracking-normal inline-block mt-1">
                             AMA CİDDİLİ ŞEKİLDE.
                         </span>
                     </h1>
-                    <p className="text-sm font-medium text-slate-400 mt-2 max-w-md leading-relaxed">
+                    <p className="text-sm font-medium text-slate-400 mt-3 max-w-md leading-relaxed hidden xs:block">
                         Evrenin sırlarını çözmeye çalışan meraklı zihinlerin buluşma noktası.
                     </p>
                 </div>
