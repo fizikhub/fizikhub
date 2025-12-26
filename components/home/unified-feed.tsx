@@ -5,6 +5,7 @@ import { QuestionCard } from "@/components/forum/question-card";
 import { CommunityInviteBanner } from "@/components/explore/community-invite-banner";
 import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
+import { WriterApplicationCard } from "@/components/home/writer-application-card";
 import { motion } from "framer-motion";
 
 export interface FeedItem {
@@ -82,6 +83,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                     {index === 5 && (
                         <div className="mt-6">
                             <ForumTeaserCard />
+                        </div>
+                    )}
+
+                    {/* Inject Writer Application Card after the 11th item (index 10) */}
+                    {index === 10 && (
+                        <div className="mt-6">
+                            <WriterApplicationCard />
                         </div>
                     )}
                 </div>
