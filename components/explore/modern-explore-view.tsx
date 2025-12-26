@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Atom, Telescope } from "lucide-react";
+import { Atom, Telescope } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
@@ -82,59 +81,42 @@ export function ModernExploreView({
                     <CommunityInviteBanner />
                 </div>
 
-                {/* Mobile Search & Filter Area */}
+                {/* Categories Area */}
                 <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-foreground/5 py-4 -mx-2 sm:-mx-4 px-2 sm:px-4 mb-8 md:static md:bg-transparent md:border-none md:p-0 md:mb-12 md:mx-0">
-                    <div className="flex flex-col md:flex-row gap-4">
-                        {/* Search Input */}
-                        <form action="/blog" method="GET" className="flex-1 relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            <div className="relative bg-card border-2 border-foreground/10 focus-within:border-emerald-500/50 focus-within:bg-card rounded-2xl flex items-center transition-all duration-300">
-                                <Search className="w-5 h-5 ml-4 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
-                                <Input
-                                    name="q"
-                                    placeholder="Makale, yazar veya konu ara..."
-                                    className="h-12 md:h-14 border-none bg-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-0 text-base md:text-lg"
-                                    defaultValue={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                            {currentCategory && <input type="hidden" name="category" value={currentCategory} />}
-                        </form>
 
-                        {/* Categories - Desktop */}
-                        <div className="hidden md:flex flex-wrap gap-2">
-                            <Link href="/blog">
+                    {/* Categories - Desktop */}
+                    <div className="hidden md:flex flex-wrap gap-2">
+                        <Link href="/blog">
+                            <Badge
+                                className={cn(
+                                    "h-12 px-6 rounded-xl text-sm font-bold cursor-pointer transition-all border-2",
+                                    !currentCategory
+                                        ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600"
+                                        : "bg-card text-muted-foreground border-foreground/10 hover:border-foreground/30 hover:text-foreground"
+                                )}
+                            >
+                                Tümü
+                            </Badge>
+                        </Link>
+                        {categories.map((cat) => (
+                            <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`}>
                                 <Badge
                                     className={cn(
-                                        "h-14 px-6 rounded-2xl text-sm font-bold cursor-pointer transition-all border-2",
-                                        !currentCategory
-                                            ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600"
+                                        "h-12 px-6 rounded-xl text-sm font-bold cursor-pointer transition-all border-2",
+                                        currentCategory === cat
+                                            ? "bg-emerald-500 text-white border-emerald-500"
                                             : "bg-card text-muted-foreground border-foreground/10 hover:border-foreground/30 hover:text-foreground"
                                     )}
                                 >
-                                    Tümü
+                                    {cat}
                                 </Badge>
                             </Link>
-                            {categories.slice(0, 3).map((cat) => (
-                                <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`}>
-                                    <Badge
-                                        className={cn(
-                                            "h-14 px-6 rounded-2xl text-sm font-bold cursor-pointer transition-all border-2",
-                                            currentCategory === cat
-                                                ? "bg-emerald-500 text-white border-emerald-500"
-                                                : "bg-card text-muted-foreground border-foreground/10 hover:border-foreground/30 hover:text-foreground"
-                                        )}
-                                    >
-                                        {cat}
-                                    </Badge>
-                                </Link>
-                            ))}
-                        </div>
+                        ))}
                     </div>
 
                     {/* Categories - Mobile Horizontal Scroll */}
-                    <div className="md:hidden mt-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide flex gap-3">
-                        <Link href="/kesfet" className="shrink-0">
+                    <div className="md:hidden overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide flex gap-3">
+                        <Link href="/blog" className="shrink-0">
                             <Badge
                                 className={cn(
                                     "h-10 px-5 rounded-xl text-sm font-bold border-2 whitespace-nowrap",
@@ -147,7 +129,7 @@ export function ModernExploreView({
                             </Badge>
                         </Link>
                         {categories.map((cat) => (
-                            <Link key={cat} href={`/kesfet?category=${encodeURIComponent(cat)}`} className="shrink-0">
+                            <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className="shrink-0">
                                 <Badge
                                     className={cn(
                                         "h-10 px-5 rounded-xl text-sm font-bold border-2 whitespace-nowrap",
