@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -149,15 +150,32 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                 }}
                 onTouchEnd={handleMouseUp}
             >
+                import Image from "next/image";
+
+                // ... (other imports)
+
+                // Inside ProfileHero component return statement
+                // ...
                 {profile?.cover_url ? (
-                    <div
-                        className="absolute inset-0 bg-cover grayscale-[30%]"
-                        style={{
-                            backgroundImage: `url(${profile.cover_url})`,
-                            backgroundPosition: `center ${offsetY}%`,
-                            transition: isRepositioning ? 'none' : 'background-position 0.2s ease-out'
-                        }}
-                    />
+                    <div className="absolute inset-0">
+                        <Image
+                            src={profile.cover_url}
+                            alt="Cover"
+                            fill
+                            className="object-cover"
+                            style={{
+                                objectPosition: `center ${offsetY}%`,
+                                transition: isRepositioning ? 'none' : 'object-position 0.2s ease-out'
+                            }}
+                            priority
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 1200px"
+                            quality={85}
+                        />
+                        <div
+                            className="absolute inset-0 bg-black/20"
+                            style={{ backdropFilter: "grayscale(30%)" }} // Mimic previous grayscale filter
+                        />
+                    </div>
                 ) : (
                     <div className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`} />
                 )}

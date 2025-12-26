@@ -4,7 +4,7 @@ import { getFollowStats } from "@/app/profil/actions";
 import { ProfileHero } from "@/components/profile/profile-hero";
 import { ProfileAboutSidebar } from "@/components/profile/profile-about-sidebar";
 import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
-import { SpaceBackground } from "@/components/home/space-background";
+import { SpaceBackgroundWrapper } from "@/components/home/space-background-wrapper";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -14,7 +14,7 @@ export default async function ProfilePage() {
         redirect("/login");
     }
 
-    // Parallel Data Fetching
+    // Parallel Data Fetching with Optimized Selections
     const [
         { data: profile },
         { data: articles },
@@ -29,35 +29,58 @@ export default async function ProfilePage() {
         // 1. Fetch Profile
         supabase.from('profiles').select('*').eq('id', user.id).single(),
 
-        // 2. Fetch Articles (Published only)
-        supabase.from('articles').select('*').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
+        // 2. Fetch Articles (Published only) - Optimized Selection
+        supabase.from('articles')
+            .select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count')
+            .eq('author_id', user.id)
+            .neq('status', 'draft')
+            .order('created_at', { ascending: false }),
 
-        // 3. Fetch Questions
-        supabase.from('questions').select('*').eq('author_id', user.id).order('created_at', { ascending: false }),
+        // 3. Fetch Questions - Optimized Selection
+        supabase.from('questions')
+            .select('id, title, slug, created_at, category, views, answers_count')
+            .eq('author_id', user.id)
+            .order('created_at', { ascending: false }),
 
-        // 4. Fetch Answers
-        supabase.from('answers').select('*, questions(id, title)').eq('author_id', user.id).order('created_at', { ascending: false }),
+        // 4. Fetch Answers - Optimized Selection
+        supabase.from('answers')
+            .select('id, content, created_at, is_accepted, questions(id, title, slug)')
+            .eq('author_id', user.id)
+            .order('created_at', { ascending: false }),
 
         // 5. Fetch Badges
-        supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
+        supabase.from('user_badges')
+            .select('awarded_at, badges(id, name, description, icon, category)')
+            .eq('user_id', user.id)
+            .order('awarded_at', { ascending: false }),
 
-        // 6. Fetch Follow Stats
+        // 6. Fetch Follow Stats (keep as is, likely optimized in function)
         getFollowStats(user.id),
 
-        // 7. Fetch Bookmarked Articles
-        supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, category, cover_url, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
+        // 7. Fetch Bookmarked Articles - Optimized Selection
+        supabase.from('article_bookmarks')
+            .select('created_at, articles(id, title, slug, excerpt, created_at, category, cover_url, author:profiles(full_name, username))')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false }),
 
-        // 8. Fetch Bookmarked Questions
-        supabase.from('question_bookmarks').select('created_at, questions(id, title, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false }),
+        // 8. Fetch Bookmarked Questions - Optimized Selection
+        supabase.from('question_bookmarks')
+            .select('created_at, questions(id, title, slug, content, created_at, category, profiles(full_name, username), answers(count))')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false }),
 
-        // 9. Fetch Drafts (Only for own profile)
-        supabase.from('articles').select('*').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false })
+        // 9. Fetch Drafts (Only for own profile) - Optimized Selection
+        supabase.from('articles')
+            .select('id, title, slug, excerpt, created_at, category, cover_url, status')
+            .eq('author_id', user.id)
+            .eq('status', 'draft')
+            .order('created_at', { ascending: false })
     ]);
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden pb-20">
-            {/* Space Background */}
-            <SpaceBackground />
+            {/* Space Background - Lazy Loaded */}
+            <SpaceBackgroundWrapper />
 
             {/* Hero Section */}
             <div className="relative z-10">
