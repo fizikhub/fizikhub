@@ -5,9 +5,7 @@ export const writerApplicationSchema = z.object({
     university: z.string().optional(),
     phone: z.string().optional(),
     interestArea: z.string().min(3, "İlgi alanı belirtmelisin"),
-    menemenPreference: z.enum(["soganli", "sogansiz"], {
-        required_error: "Bu hayati bir soru, cevaplamalısın.",
-    }),
+    menemenPreference: z.enum(["soganli", "sogansiz"]),
     email: z.string().email("Geçerli bir e-posta adresi gir"),
     experience: z.string().optional(),
     about: z.string().min(10, "Kendini biraz daha detaylı anlat"),

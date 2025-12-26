@@ -87,15 +87,15 @@ export function AnimationShowcase() {
                     <Button variant="destructive">Yıkıcı</Button>
                     <Button variant="outline">Kontur</Button>
                     <Button variant="ghost">Hayalet</Button>
-                    <Button variant="neon">
+                    <Button variant="secondary" className="border-cyan-500 text-cyan-500 bg-cyan-500/10 shadow-[0_0_15px_rgba(6,182,212,0.5)]">
                         <Zap className="mr-2 h-4 w-4" />
                         Neon
                     </Button>
                 </div>
-            </Card>
+            </Card >
 
             {/* Animated List */}
-            <Card className="p-8">
+            < Card className="p-8" >
                 <h2 className="text-2xl font-semibold mb-6">📋 Animasyonlu Liste</h2>
                 <div className="space-y-3">
                     {[1, 2, 3, 4].map((item, index) => (
@@ -118,7 +118,7 @@ export function AnimationShowcase() {
                         </div>
                     ))}
                 </div>
-            </Card>
-        </div>
+            </Card >
+        </div >
     );
 }

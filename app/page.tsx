@@ -57,12 +57,18 @@ const getCachedFeedData = unstable_cache(
       suggestedUsers: profilesResult.data || []
     };
   },
-  ['feed-data-v2'], // Bump version to invalidate cache
+  ['feed-data-v3'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
+
+  console.log("---- FEED DEBUG v3 ----");
+  console.log("Articles count:", articles?.length);
+  console.log("Questions count:", questions?.length);
+  console.log("Suggested Users count:", suggestedUsers?.length);
+  console.log("------------------------");
 
   // Process and Merge Data
   const feedItems: FeedItem[] = [];

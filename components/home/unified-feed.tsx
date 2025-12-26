@@ -20,6 +20,7 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
+    console.log("UnifiedFeed Items:", items.length);
     return (
         <div className="space-y-6">
             {items.map((item, index) => (
