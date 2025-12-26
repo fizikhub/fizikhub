@@ -30,12 +30,12 @@ export default async function NewArticlePage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <Link href="/profil">
-                                <Button variant="ghost" size="sm" className="gap-2">
+                                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
                                     <ArrowLeft className="w-4 h-4" />
-                                    <span className="hidden sm:inline">Geri</span>
+                                    <span className="hidden sm:inline">Vazgeç</span>
                                 </Button>
                             </Link>
-                            <h1 className="text-xl md:text-2xl font-black">Yeni Makale</h1>
+                            <h1 className="text-xl md:text-2xl font-black tracking-tight">Blog Oluştur</h1>
                         </div>
                     </div>
                 </div>
