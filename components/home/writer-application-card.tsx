@@ -35,8 +35,7 @@ export function WriterApplicationCard() {
                             Kalemin Kılıçtan Keskin mi? ✍️
                         </h3>
                         <p className="text-muted-foreground text-base leading-relaxed">
-                            "Menemen soğanlı mı olur soğansız mı?" sorusuna bilimsel bir yaklaşımın varsa ve
-                            bildiklerini anlatırken araya soğuk espriler sokuşturmayı seviyorsan...
+                            "Menemen soğanlı mı olur soğansız mı?" sorusuna bilimsel bir yaklaşımın varsa ve bildiklerini anlatırken araya soğuk espriler sokuşturmayı seviyorsan...
                             <span className="block mt-2 font-bold text-amber-600 dark:text-amber-400">
                                 Seni YAZAR kadromuzda görmek isteriz!
                             </span>

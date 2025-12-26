@@ -162,7 +162,7 @@ export function CompactHero() {
                             AMA CİDDİLİ ŞEKİLDE.
                         </span>
                     </h1>
-                    <p className="text-sm font-medium text-slate-400 mt-3 max-w-md leading-relaxed hidden xs:block">
+                    <p className="text-sm font-medium text-slate-400 mt-3 max-w-md leading-relaxed block">
                         Evrenin sırlarını çözmeye çalışan meraklı zihinlerin buluşma noktası.
                     </p>
                 </div>

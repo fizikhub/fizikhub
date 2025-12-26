@@ -194,7 +194,7 @@ export default function WriterApplicationPage() {
                             name="menemenPreference"
                             render={({ field }) => (
                                 <FormItem className="space-y-3 bg-secondary/20 p-4 rounded-xl border border-secondary">
-                                    <FormLabel className="text-lg font-bold">Kritik Soru: Menemen?</FormLabel>
+                                    <FormLabel className="text-lg font-bold">Menemen?</FormLabel>
                                     <FormControl>
                                         <RadioGroup
                                             onValueChange={field.onChange}
@@ -206,7 +206,7 @@ export default function WriterApplicationPage() {
                                                     <RadioGroupItem value="soganli" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal">
-                                                    Soğanlı (Bilimsel olarak daha lezzetli) 🧅
+                                                    Soğanlı
                                                 </FormLabel>
                                             </FormItem>
                                             <FormItem className="flex items-center space-x-3 space-y-0">
@@ -214,7 +214,7 @@ export default function WriterApplicationPage() {
                                                     <RadioGroupItem value="sogansiz" />
                                                 </FormControl>
                                                 <FormLabel className="font-normal">
-                                                    Soğansız (Sadeseverim) 🍳
+                                                    Soğansız
                                                 </FormLabel>
                                             </FormItem>
                                         </RadioGroup>
