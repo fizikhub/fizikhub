@@ -60,10 +60,10 @@ export function CreateArticleDialog({ trigger }: CreateArticleDialogProps) {
             <DialogTrigger asChild>
                 {trigger || (
                     <Button
-                        className="gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                         <PenSquare className="w-4 h-4" />
-                        <span className="hidden sm:inline">Makale Yaz</span>
+                        <span className="hidden sm:inline">Blog Yaz</span>
                         <span className="sm:hidden">Yaz</span>
                     </Button>
                 )}
@@ -180,7 +180,7 @@ export function CreateArticleDialog({ trigger }: CreateArticleDialogProps) {
                             name="status"
                             value="published"
                             disabled={isLoading}
-                            className="bg-gradient-to-r from-cyan-600 to-cyan-500"
+                            className="bg-gradient-to-r from-emerald-600 to-emerald-500"
                         >
                             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Yayınla

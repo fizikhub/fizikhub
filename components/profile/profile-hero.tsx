@@ -282,9 +282,9 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             {isOwnProfile ? (
                                 <>
                                     <Link href="/makale/yeni">
-                                        <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
+                                        <Button size="sm" className="h-8 gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white border-0 shadow-sm hover:shadow-md transition-all duration-300 text-xs font-bold">
                                             <PenSquare className="w-3.5 h-3.5" />
-                                            <span>Makale Yaz</span>
+                                            <span>Blog Yaz</span>
                                         </Button>
                                     </Link>
                                     {profile?.is_writer && (
