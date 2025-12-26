@@ -111,7 +111,7 @@ export default async function Home() {
       <BackgroundWrapper />
 
       <div className="container max-w-7xl mx-auto px-0 sm:px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 active:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-4 px-4 sm:px-0">

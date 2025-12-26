@@ -156,9 +156,9 @@ export function CompactHero() {
             <div className="relative z-10 flex items-center justify-between gap-6">
                 {/* Slogan */}
                 <div className="flex-1 max-w-xl">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-[1.1] drop-shadow-lg">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-[0.9] drop-shadow-lg scale-y-[0.9] sm:scale-y-100 origin-left transform-gpu">
                         BİLİMİ Tİ'YE ALIYORUZ<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-md">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-md tracking-widest sm:tracking-normal scale-y-[0.9] sm:scale-y-100 inline-block">
                             AMA CİDDİLİ ŞEKİLDE.
                         </span>
                     </h1>
