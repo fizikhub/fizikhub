@@ -216,8 +216,11 @@ export function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar - Safe Distance */}
-                <div className="flex flex-col md:flex-row items-center justify-between w-full border-t border-white/10 pt-8 gap-6 bg-black/80 backdrop-blur-md rounded-t-2xl p-4 mt-20 relative z-40">
+            </div>
+
+            {/* Bottom Bar - Flush to bottom */}
+            <div className="relative z-40 w-full border-t border-white/10 bg-black/80 backdrop-blur-md">
+                <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
                     <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground text-center md:text-left">
                         <SiteLogo className="h-8 w-8 animate-bounce" />
                         <p>
