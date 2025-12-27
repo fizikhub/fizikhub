@@ -166,7 +166,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                                 e.stopPropagation();
                                 setIsExpanded(true);
                             }}
-                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 hover:bg-primary/20 border-2 border-primary/40 hover:border-primary text-sm font-bold text-primary hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn"
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary text-xs font-semibold text-primary transition-all duration-300 backdrop-blur-sm group/btn"
                         >
                             <span className="group-hover/btn:translate-y-0.5 transition-transform duration-300">Devamını Oku</span>
                             <ChevronDown className="w-4 h-4 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
@@ -175,11 +175,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 )}
 
                 {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
+                <div className="flex items-center justify-start gap-4 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
                     {/* Upvote Pill - Brutalist */}
                     <div
                         className={cn(
-                            "flex items-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]",
+                            "flex items-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] min-h-[44px]",
                             voteState !== 0 ? "bg-primary/20 border-primary/40" : "bg-transparent"
                         )}
                         onClick={(e) => e.stopPropagation()}
@@ -187,7 +187,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                         <button
                             onClick={(e) => handleVote(e, 1)}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-l-xl",
+                                "flex items-center gap-1.5 px-3 py-2.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-l-xl min-h-[44px]",
                                 voteState === 1 && "text-primary font-bold"
                             )}
                             disabled={isVoting}
@@ -204,7 +204,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                         <button
                             onClick={(e) => handleVote(e, -1)}
                             className={cn(
-                                "px-2.5 py-1.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-r-xl",
+                                "px-3 py-2.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-r-xl min-h-[44px]",
                                 voteState === -1 && "text-destructive font-bold"
                             )}
                             disabled={isVoting}
@@ -226,7 +226,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
                     {/* Share - Brutalist */}
                     <button
-                        className="p-2.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent ml-auto min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        className="p-2.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent min-h-[44px] min-w-[44px] flex items-center justify-center"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);

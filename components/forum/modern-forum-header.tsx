@@ -105,7 +105,7 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-4 mb-4">
             {/* Forum Header - Premium Enhanced */}
-            <div className="relative border-2 border-border bg-card p-4 md:p-6 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="relative border-2 border-border bg-card p-3 md:p-5 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
 
                 {/* Dynamic Space Background */}
                 <HeaderSpaceBackground />
@@ -277,7 +277,7 @@ export function ModernForumHeader() {
                                                     className="block relative z-10"
                                                     whileHover={{ x: 5, scale: 1.05 }}
                                                 >
-                                                    <div className="relative px-4 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm border-2 border-black dark:border-white group-hover/input:bg-primary group-hover/input:text-primary-foreground group-hover/input:border-primary transition-all flex items-center gap-2 overflow-hidden">
+                                                    <div className="relative px-4 py-2 bg-primary text-black font-bold uppercase text-sm border-2 border-black dark:border-white transition-all flex items-center gap-2 overflow-hidden">
                                                         {/* Button shimmer */}
                                                         <motion.div
                                                             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -327,7 +327,7 @@ export function ModernForumHeader() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
+                <div className="flex items-center gap-2 w-full md:w-auto justify-end">
                     <div className="flex border-2 border-border bg-background">
                         <button
                             onClick={() => handleSortChange("newest")}
@@ -349,19 +349,8 @@ export function ModernForumHeader() {
                             POPÜLER
                         </button>
                     </div>
-
-                    {/* Filter Icon for Mobile (New) */}
-                    <div className="md:hidden relative z-10">
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8 rounded-none border-2 border-black dark:border-white"
-                        >
-                            <Search className="h-3 w-3" />
-                        </Button>
-                    </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }

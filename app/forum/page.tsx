@@ -118,13 +118,8 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <div className="bg-background pb-20">
-                <div className="container py-4 sm:py-6 md:py-10 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
+                <div className="container py-2 sm:py-4 md:py-8 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
                     <ModernForumHeader />
-
-                    {/* Mobile Question of the Week */}
-                    <div className="md:hidden mb-4">
-                        <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
-                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
                         {/* Desktop Sidebar */}
@@ -156,6 +151,11 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 />
                             )}
                         </div>
+                    </div>
+
+                    {/* Mobile Question of the Week - Shows AFTER questions */}
+                    <div className="md:hidden mt-8">
+                        <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
                     </div>
                 </div>
             </div>

@@ -20,6 +20,8 @@ import { ReportButton } from "@/components/report-button";
 import { Flag } from "lucide-react";
 import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
 import { ScrollFixer } from "@/components/ui/scroll-fixer";
+import { StickyActionBar } from "@/components/forum/sticky-action-bar";
+import { RelatedQuestions } from "@/components/forum/related-questions";
 
 import { Metadata } from "next";
 
@@ -391,6 +393,12 @@ export default async function QuestionPage({ params }: PageProps) {
                                 currentUser={user}
                             />
                         </div>
+
+                        {/* Related Questions */}
+                        <RelatedQuestions
+                            currentQuestionId={question.id}
+                            category={question.category || "Genel"}
+                        />
                     </div>
 
                     {/* Stats Sidebar (Desktop) */}
@@ -451,6 +459,11 @@ export default async function QuestionPage({ params }: PageProps) {
                 </div>
             </div>
             <ViewTracker questionId={question.id} />
+            <StickyActionBar
+                questionId={question.id}
+                votes={question.votes || 0}
+                hasVoted={hasVoted}
+            />
         </div >
     );
 }

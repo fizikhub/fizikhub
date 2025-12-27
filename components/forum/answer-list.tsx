@@ -247,7 +247,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             id={`answer-${answer.id}`}
                             className={cn(
                                 "group bg-card border-2 border-border/60 rounded-xl overflow-hidden relative transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_25px_-10px_rgba(var(--primary),0.25)]",
-                                answer.is_accepted && "border-primary bg-primary/5"
+                                answer.is_accepted && "border-green-500 bg-green-500/5 hover:border-green-500"
                             )}
                         >
                             {/* Cosmic background effect */}
@@ -255,7 +255,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
                             {/* Accepted Badge */}
                             {answer.is_accepted && (
-                                <div className="bg-primary text-primary-foreground text-sm font-bold px-6 py-2.5 flex items-center gap-2 border-b-2 border-primary/30">
+                                <div className="bg-green-500 text-white text-sm font-bold px-6 py-2.5 flex items-center gap-2 border-b-2 border-green-600/30">
                                     <CheckCircle2 className="h-4 w-4" />
                                     Kabul Edilen Cevap
                                 </div>
