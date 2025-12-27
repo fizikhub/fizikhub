@@ -19,10 +19,8 @@ interface UnifiedFeedProps {
     suggestedUsers?: any[];
 }
 
-import { DailyFactCard } from "@/components/home/daily-fact-card";
-import { HypothesisWidget } from "@/components/home/hypothesis-widget";
-
-import { MemeCorner } from "@/components/home/meme-corner";
+import { DidYouKnow } from "@/components/ui/did-you-know";
+import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     console.log("UnifiedFeed Items:", items.length);
@@ -78,10 +76,10 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         </div>
                     )}
 
-                    {/* Inject Daily Fact after 2nd item (index 1) */}
+                    {/* Inject Encyclopedia (DidYouKnow) after 2nd item (index 1) */}
                     {index === 1 && (
                         <div className="mt-6">
-                            <DailyFactCard />
+                            <DidYouKnow />
                         </div>
                     )}
 
@@ -99,10 +97,10 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         </div>
                     )}
 
-                    {/* Inject Hypothesis Widget after 8th item (index 7) */}
+                    {/* Inject Forum Hypothesis Widget after 8th item (index 7) */}
                     {index === 7 && (
                         <div className="mt-6">
-                            <HypothesisWidget />
+                            <QuestionOfTheWeek />
                         </div>
                     )}
 
@@ -110,13 +108,6 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                     {index === 10 && (
                         <div className="mt-6">
                             <WriterApplicationCard />
-                        </div>
-                    )}
-
-                    {/* Inject Meme Corner after the 13th item (index 12) */}
-                    {index === 12 && (
-                        <div className="mt-6">
-                            <MemeCorner />
                         </div>
                     )}
                 </div>

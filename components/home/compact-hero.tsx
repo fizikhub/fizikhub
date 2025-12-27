@@ -146,37 +146,29 @@ const PremiumUFO = () => (
     </svg>
 );
 
-import { StreakHeader } from "@/components/gamification/streak-header";
-
 export function CompactHero() {
-    // Only render stars on client to match hydration if we were using random, but here they are deterministic
     return (
-        <div className="relative py-10 px-6 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] mb-8 shadow-2xl shadow-emerald-900/10">
+        <div className="relative py-6 px-4 sm:py-10 sm:px-6 overflow-hidden border-2 border-white/20 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617] mb-6 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
             {/* Dynamic Starry Background */}
             <StarryBackground />
 
-            {/* Streak Header - Absolute Top Left */}
-            <div className="absolute top-4 left-6 z-20">
-                <StreakHeader />
-            </div>
-
-            <div className="relative z-10 flex items-center justify-between gap-6 mt-8 md:mt-0">
+            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
                 {/* Slogan */}
-                <div className="flex-1 max-w-xl">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-lg origin-left transform-gpu">
+                <div className="flex-1 max-w-xl text-center sm:text-left">
+                    <h1 className="text-lg sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-lg uppercase">
                         BİLİMİ Tİ'YE ALIYORUZ<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 drop-shadow-md tracking-wider sm:tracking-normal inline-block mt-1">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400 drop-shadow-md inline-block mt-1">
                             AMA CİDDİLİ ŞEKİLDE.
                         </span>
                     </h1>
-                    <p className="text-sm font-medium text-slate-400 mt-3 max-w-md leading-relaxed block">
+                    <p className="text-xs sm:text-sm font-medium text-slate-400 mt-2 sm:mt-3 max-w-md leading-relaxed mx-auto sm:mx-0">
                         Evrenin sırlarını çözmeye çalışan meraklı zihinlerin buluşma noktası.
                     </p>
                 </div>
 
                 {/* Premium UFO Animation */}
                 <motion.div
-                    className="flex-shrink-0 relative w-28 h-24 sm:w-36 sm:h-28"
+                    className="flex-shrink-0 relative w-20 h-16 sm:w-36 sm:h-28"
                     animate={{
                         y: [0, -8, 0],
                         rotate: [0, 3, -3, 0],
@@ -187,6 +179,9 @@ export function CompactHero() {
                     <PremiumUFO />
                 </motion.div>
             </div>
+
+            {/* Bottom Accent Bar - Brutalist */}
+            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary/30 via-primary/60 to-primary/30" />
         </div>
     );
 }
