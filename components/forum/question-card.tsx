@@ -94,14 +94,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             {/* Cosmic background effect */}
             <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            <div className="px-3 py-5 sm:px-5 sm:py-5 relative z-10">
+            <div className="px-4 py-5 sm:px-6 sm:py-6 relative z-10">
                 {/* Author Row */}
                 <div className="flex items-center gap-3 mb-3">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
                         className="flex-shrink-0 relative group/avatar"
                     >
-                        <Avatar className="w-10 h-10 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
+                        <Avatar className="w-11 h-11 sm:w-12 sm:h-12 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
                             <AvatarFallback className="bg-primary/10 text-primary font-bold">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
@@ -166,9 +166,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                                 e.stopPropagation();
                                 setIsExpanded(true);
                             }}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-primary/40 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn"
+                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 hover:bg-primary/20 border-2 border-primary/40 hover:border-primary text-sm font-bold text-primary hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn"
                         >
-                            <span className="group-hover/btn:translate-y-0.5 transition-transform duration-300">devamını oku</span>
+                            <span className="group-hover/btn:translate-y-0.5 transition-transform duration-300">Devamını Oku</span>
                             <ChevronDown className="w-4 h-4 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
                         </button>
                     </div>
@@ -218,15 +218,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
                     {/* Comments - Brutalist */}
                     <button
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent min-h-[44px]"
                     >
-                        <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
+                        <MessageCircle className="w-5 h-5 stroke-[1.8px]" />
                         <span className="text-sm font-semibold">{answerCount}</span>
                     </button>
 
                     {/* Share - Brutalist */}
                     <button
-                        className="p-1.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent ml-auto"
+                        className="p-2.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent ml-auto min-h-[44px] min-w-[44px] flex items-center justify-center"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
