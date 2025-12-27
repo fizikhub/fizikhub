@@ -3,28 +3,28 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-    Atom,
-    Rocket,
-    Globe2,
-    Microscope,
-    TestTube2,
-    GraduationCap,
-    BrainCircuit,
-    Scale,
-    Sparkles
-} from "lucide-react";
+    QuantumIcon,
+    AstroIcon,
+    TechIcon,
+    NatureIcon,
+    BioIcon,
+    ChemIcon,
+    EduIcon,
+    PhysicsIcon,
+    ExploreIcon
+} from "@/components/icons/category-icons";
 
 export function CategoryStories() {
     const categories = [
-        { name: "Kuantum", icon: Atom, href: "/blog?kategori=Kuantum" },
-        { name: "Astrofizik", icon: Rocket, href: "/blog?kategori=Astrofizik" },
-        { name: "Teknoloji", icon: BrainCircuit, href: "/blog?kategori=Teknoloji" },
-        { name: "Doğa", icon: Globe2, href: "/blog?kategori=Doga" },
-        { name: "Biyoloji", icon: Microscope, href: "/blog?kategori=Biyoloji" },
-        { name: "Kimya", icon: TestTube2, href: "/blog?kategori=Kimya" },
-        { name: "Eğitim", icon: GraduationCap, href: "/blog?kategori=Egitim" },
-        { name: "Fizik", icon: Scale, href: "/blog?kategori=Fizik" },
-        { name: "Keşfet", icon: Sparkles, href: "/kesfet" },
+        { name: "Kuantum", icon: QuantumIcon, href: "/blog?kategori=Kuantum" },
+        { name: "Astrofizik", icon: AstroIcon, href: "/blog?kategori=Astrofizik" },
+        { name: "Teknoloji", icon: TechIcon, href: "/blog?kategori=Teknoloji" },
+        { name: "Doğa", icon: NatureIcon, href: "/blog?kategori=Doga" },
+        { name: "Biyoloji", icon: BioIcon, href: "/blog?kategori=Biyoloji" },
+        { name: "Kimya", icon: ChemIcon, href: "/blog?kategori=Kimya" },
+        { name: "Eğitim", icon: EduIcon, href: "/blog?kategori=Egitim" },
+        { name: "Fizik", icon: PhysicsIcon, href: "/blog?kategori=Fizik" },
+        { name: "Keşfet", icon: ExploreIcon, href: "/kesfet" },
     ];
 
     return (
