@@ -146,6 +146,8 @@ const PremiumUFO = () => (
     </svg>
 );
 
+import { StreakHeader } from "@/components/gamification/streak-header";
+
 export function CompactHero() {
     // Only render stars on client to match hydration if we were using random, but here they are deterministic
     return (
@@ -153,7 +155,12 @@ export function CompactHero() {
             {/* Dynamic Starry Background */}
             <StarryBackground />
 
-            <div className="relative z-10 flex items-center justify-between gap-6">
+            {/* Streak Header - Absolute Top Left */}
+            <div className="absolute top-4 left-6 z-20">
+                <StreakHeader />
+            </div>
+
+            <div className="relative z-10 flex items-center justify-between gap-6 mt-8 md:mt-0">
                 {/* Slogan */}
                 <div className="flex-1 max-w-xl">
                     <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-lg origin-left transform-gpu">

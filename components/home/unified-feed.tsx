@@ -19,6 +19,11 @@ interface UnifiedFeedProps {
     suggestedUsers?: any[];
 }
 
+import { DailyFactCard } from "@/components/home/daily-fact-card";
+import { HypothesisWidget } from "@/components/home/hypothesis-widget";
+
+import { MemeCorner } from "@/components/home/meme-corner";
+
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     console.log("UnifiedFeed Items:", items.length);
     return (
@@ -73,6 +78,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         </div>
                     )}
 
+                    {/* Inject Daily Fact after 2nd item (index 1) */}
+                    {index === 1 && (
+                        <div className="mt-6">
+                            <DailyFactCard />
+                        </div>
+                    )}
+
                     {/* Inject Follow Suggestions after the 4th item (index 3) */}
                     {index === 3 && (
                         <div className="mt-6 border-y border-border/40 py-2 bg-secondary/5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:rounded-2xl sm:border sm:bg-card/30">
@@ -87,10 +99,24 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         </div>
                     )}
 
+                    {/* Inject Hypothesis Widget after 8th item (index 7) */}
+                    {index === 7 && (
+                        <div className="mt-6">
+                            <HypothesisWidget />
+                        </div>
+                    )}
+
                     {/* Inject Writer Application Card after the 11th item (index 10) */}
                     {index === 10 && (
                         <div className="mt-6">
                             <WriterApplicationCard />
+                        </div>
+                    )}
+
+                    {/* Inject Meme Corner after the 13th item (index 12) */}
+                    {index === 12 && (
+                        <div className="mt-6">
+                            <MemeCorner />
                         </div>
                     )}
                 </div>

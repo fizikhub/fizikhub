@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { toast } from "sonner";
+import { useHaptic } from "@/hooks/use-haptic";
+import { triggerSmallConfetti } from "@/lib/confetti";
 
 interface SocialArticleCardProps {
     article: Article;
@@ -67,10 +69,19 @@ export function SocialArticleCard({
     const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
     const [isLikeLoading, setIsLikeLoading] = useState(false);
 
+
+    const { triggerHaptic } = useHaptic();
+
     const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (isLikeLoading) return;
+
+        // Feedback
+        if (!isLiked) {
+            triggerHaptic();
+            triggerSmallConfetti(e.clientX, e.clientY);
+        }
 
         // Optimistic Update
         const previousLiked = isLiked;

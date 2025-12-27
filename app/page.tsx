@@ -61,6 +61,8 @@ const getCachedFeedData = unstable_cache(
   { revalidate: 60, tags: ['feed'] }
 );
 
+import { CategoryStories } from "@/components/home/category-stories";
+
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
@@ -117,6 +119,12 @@ export default async function Home() {
       <BackgroundWrapper />
 
       <div className="container max-w-7xl mx-auto px-0 sm:px-4 md:px-6 relative z-10">
+
+        {/* Story-style Categories */}
+        <div className="pt-4 pb-2">
+          <CategoryStories />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
 
           {/* Kompakt Hero Banner - Slogan + UFO */}

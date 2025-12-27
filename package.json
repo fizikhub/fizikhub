@@ -35,7 +35,6 @@
     "@tiptap/extension-youtube": "^3.13.0",
     "@tiptap/react": "^3.13.0",
     "@tiptap/starter-kit": "^3.13.0",
-    "@types/canvas-confetti": "^1.9.0",
     "@vercel/og": "^0.8.5",
     "browser-image-compression": "^2.0.2",
     "canvas-confetti": "^1.9.4",
@@ -72,6 +71,7 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.1",
     "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

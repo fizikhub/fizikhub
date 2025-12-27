@@ -136,6 +136,7 @@ import { GlobalEffects } from "@/components/effects/global-effects";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 
 import { createClient } from "@/lib/supabase-server";
+import { FloatingActionButton } from "@/components/layout/floating-action-button";
 
 export default async function RootLayout({
   children,
@@ -189,6 +190,10 @@ export default async function RootLayout({
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
+
+              {/* Floating Action Button */}
+              <FloatingActionButton />
+
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster
