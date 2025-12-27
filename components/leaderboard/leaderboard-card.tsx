@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Trophy, Medal, User, Star, Crown, Cat } from "lucide-react";
+import { Trophy, Medal, User, Star, Crown, Cat, Sparkles, Heart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -52,7 +52,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                     // Base Brutalist properties
                     "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
                     // Silginim Special Styling
-                    isSilginim ? "bg-gradient-to-r from-pink-200 via-pink-300 to-rose-200 border-pink-500 text-pink-950" :
+                    isSilginim ? "bg-gradient-to-r from-pink-300 via-purple-300 to-pink-300 border-pink-500 text-pink-950 shadow-[0_0_15px_rgba(236,72,153,0.6)] animate-gradient-xy" :
                         // Rank 1
                         user.rank === 1 ? "bg-yellow-400 border-black text-black" :
                             // Rank 2
@@ -65,31 +65,42 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                     {/* Silginim Special Decorations */}
                     {isSilginim && (
                         <>
-                            {/* Decorative Stars (Sparkles) */}
-                            <Star className="absolute top-2 right-12 h-4 w-4 text-pink-400 fill-pink-100 animate-pulse" />
-                            <Star className="absolute bottom-2 left-20 h-3 w-3 text-pink-400 fill-pink-100 animate-pulse delay-700" />
-                            <Star className="absolute top-8 left-8 h-2 w-2 text-pink-400 fill-pink-100 animate-pulse delay-3000" />
+                            {/* Animated Background Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 translate-x-[-100%] animate-shimmer" />
 
-                            <div className="absolute -top-1 -right-1 text-pink-500/20 rotate-12 transform">
+                            {/* Decorative Stars & Hearts & Sparkles */}
+                            <Sparkles className="absolute top-2 right-12 h-6 w-6 text-yellow-400 fill-yellow-200 animate-spin-slow" />
+                            <Heart className="absolute bottom-4 left-1/4 h-4 w-4 text-pink-500 fill-pink-500 animate-bounce delay-100" />
+                            <Star className="absolute bottom-8 left-10 h-3 w-3 text-pink-400 fill-pink-100 animate-pulse delay-700" />
+                            <Sparkles className="absolute top-10 left-4 h-5 w-5 text-white/80 animate-pulse" />
+
+                            {/* Floating Cats */}
+                            <div className="absolute -right-2 -bottom-2 opacity-80 animate-bounce-slow">
+                                <Cat className="h-10 w-10 text-pink-700" />
+                            </div>
+                            <div className="absolute top-1/2 right-4 opacity-20 -rotate-12">
+                                <Cat className="h-16 w-16 text-pink-900" />
+                            </div>
+
+                            <div className="absolute -top-1 -right-1 text-pink-500/30 rotate-12 transform">
                                 <Crown className="h-24 w-24 fill-current" />
                             </div>
-                            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-50 pointer-events-none" />
                         </>
                     )}
 
                     {/* Rank Indicator */}
                     <div className="flex-shrink-0 w-12 flex justify-center items-center z-10 relative">
                         {isSilginim && (
-                            <Crown className="absolute -top-4 left-1/2 -translate-x-1/2 h-6 w-6 text-pink-600 fill-pink-400 animate-bounce" />
+                            <Crown className="absolute -top-5 left-1/2 -translate-x-1/2 h-8 w-8 text-yellow-500 fill-yellow-300 animate-bounce drop-shadow-md" />
                         )}
                         {getRankIcon(user.rank)}
                     </div>
 
                     {/* Avatar */}
-                    <div className="relative">
+                    <div className="relative z-10">
                         <Avatar className={cn(
-                            "h-12 w-12 border-2",
-                            isSilginim ? "border-pink-600 ring-2 ring-pink-300 ring-offset-1" : "border-black shadow-sm"
+                            "h-12 w-12 border-2 transition-transform hover:scale-110 duration-300",
+                            isSilginim ? "border-pink-600 ring-2 ring-pink-400 ring-offset-2 ring-offset-pink-200" : "border-black shadow-sm"
                         )}>
                             <AvatarImage src={user.avatar_url} className="object-cover" />
                             <AvatarFallback className={cn("font-bold", isSilginim ? "bg-pink-100 text-pink-700" : "bg-black text-white")}>
@@ -97,8 +108,8 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                             </AvatarFallback>
                         </Avatar>
                         {isSilginim && (
-                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 border border-pink-400 shadow-sm">
-                                <Cat className="h-4 w-4 text-pink-600" />
+                            <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 border-2 border-pink-400 shadow-lg transform rotate-6">
+                                <Cat className="h-5 w-5 text-pink-600" />
                             </div>
                         )}
                     </div>
@@ -109,18 +120,23 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                             <h3 className={cn(
                                 "font-bold truncate text-lg flex items-center gap-1",
                                 // Text color adjustments based on BG
-                                isSilginim ? "text-pink-900 drop-shadow-sm" :
+                                isSilginim ? "text-pink-950 drop-shadow-sm font-black tracking-tight" :
                                     user.rank <= 2 ? "text-black" :
                                         user.rank === 3 ? "text-white" :
                                             "text-foreground"
                             )}>
                                 {user.full_name || user.username}
-                                {isSilginim && <Crown className="h-4 w-4 text-pink-600 fill-pink-300 inline-block ml-1" />}
+                                {isSilginim && (
+                                    <div className="flex">
+                                        <Heart className="h-4 w-4 text-pink-600 fill-pink-600 animate-pulse ml-1" />
+                                        <Heart className="h-3 w-3 text-pink-400 fill-pink-400 animate-pulse delay-75 ml-0.5" />
+                                    </div>
+                                )}
                             </h3>
                             {isTop3 && (
                                 <div className={cn(
-                                    "text-[10px] font-black px-2 py-0.5 border-2 hidden sm:flex uppercase tracking-wider",
-                                    isSilginim ? "border-pink-500 bg-white/80 text-pink-700" : "border-black bg-white text-black"
+                                    "text-[10px] font-black px-2 py-0.5 border-2 hidden sm:flex uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
+                                    isSilginim ? "border-pink-500 bg-white text-pink-700 rotate-2" : "border-black bg-white text-black"
                                 )}>
                                     Top {user.rank}
                                 </div>
@@ -128,7 +144,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                         </div>
                         <p className={cn(
                             "text-sm font-medium truncate opacity-80",
-                            isSilginim ? "text-pink-800" :
+                            isSilginim ? "text-pink-900 font-bold" :
                                 user.rank <= 2 ? "text-black" :
                                     user.rank === 3 ? "text-white/80" :
                                         "text-muted-foreground"
@@ -145,7 +161,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                             <div className="font-medium flex items-center justify-end gap-1">
                                 <div className={cn(
                                     "flex items-center gap-1 px-2 py-0.5 border-2 rounded-full text-xs font-bold",
-                                    isSilginim ? "border-pink-500 bg-white/50 text-pink-900" :
+                                    isSilginim ? "border-pink-600 bg-white/60 text-pink-900 shadow-sm" :
                                         user.rank <= 2 ? "border-black bg-black/10 text-black" :
                                             user.rank === 3 ? "border-white bg-white/20 text-white" :
                                                 "border-border bg-muted text-foreground"
@@ -161,7 +177,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                                     user.rank <= 2 ? "text-black" : user.rank === 3 ? "text-white" : "text-muted-foreground"
                             )}>Puan</div>
                             <div className={cn("text-xl font-black",
-                                isSilginim ? "text-pink-950" :
+                                isSilginim ? "text-pink-950 drop-shadow-sm" :
                                     user.rank <= 2 ? "text-black" : user.rank === 3 ? "text-white" : "text-primary"
                             )}>
                                 {user.reputation}
