@@ -156,7 +156,7 @@ export default async function RootLayout({
     const { data: profile } = await supabase
       .from('profiles')
       .select('has_seen_onboarding')
-      .eq('id', user.id)
+      .eq('id', user!.id)
       .single();
 
     if (profile && !profile.has_seen_onboarding) {
