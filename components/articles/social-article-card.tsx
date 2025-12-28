@@ -160,14 +160,16 @@ export function SocialArticleCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
-                "group relative flex flex-col overflow-hidden rounded-3xl transition-all duration-300",
-                "bg-card border-2 border-border/50",
-                // Theme specific hover borders and shadows
+                "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200",
+                "bg-card",
+                "shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)]",
+                "hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]",
+                // Theme specific hover effects
                 isWriter
-                    ? "hover:border-amber-500/30 dark:hover:border-amber-500/30 hover:shadow-[0_8px_30px_-12px_rgba(245,158,11,0.2)] active:border-amber-500/50 transition-colors duration-200"
-                    : "hover:border-emerald-500/30 dark:hover:border-emerald-500/30 hover:shadow-[0_8px_30px_-12px_rgba(16,185,129,0.2)] active:border-emerald-500/50 transition-colors duration-200",
+                    ? "hover:ring-1 hover:ring-amber-500/40"
+                    : "hover:ring-1 hover:ring-emerald-500/40",
                 variant === "compact" ? "p-4" : "p-0",
-                "shadow-sm hover:-translate-y-1 active:scale-[0.98]",
+                "active:scale-[0.99]",
                 className
             )}
         >
@@ -179,7 +181,7 @@ export function SocialArticleCard({
                 <span className="sr-only">{article.title}</span>
             </Link>
 
-            <div className="px-3 py-4 sm:px-5 sm:py-4 relative z-10 pointer-events-none">
+            <div className="px-3 py-3 sm:px-5 sm:py-3 relative z-10 pointer-events-none">
                 {/* Author Row - Enable pointer events for interactive elements */}
                 <div className="flex items-center gap-2.5 mb-2 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
@@ -212,16 +214,8 @@ export function SocialArticleCard({
                     </h3>
 
                     {/* Summary */}
-                    <div className="text-[14px] text-foreground/85 leading-[1.6] font-sans mb-3 line-clamp-2">
-                        {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 150) + "..." : "Özet bulunmuyor.")}
-                    </div>
-
-                    {/* Read More Button - Forum Style */}
-                    <div className="flex justify-start mb-3">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/30 hover:bg-secondary/60 border border-border/50 hover:border-primary/40 text-xs font-medium text-muted-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm group/btn">
-                            <span className="group-hover/btn:translate-x-0.5 transition-transform duration-300">Devamını Oku</span>
-                            <ChevronDown className="w-3.5 h-3.5 -rotate-90 group-hover/btn:translate-x-0.5 transition-transform duration-300" />
-                        </div>
+                    <div className="text-[13px] sm:text-[14px] text-foreground/80 leading-[1.5] font-sans mb-2 line-clamp-2">
+                        {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
                     </div>
 
                     {/* Image */}
@@ -239,7 +233,7 @@ export function SocialArticleCard({
                 </div>
 
                 {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-3 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
+                <div className="flex items-center gap-2 pt-3 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
                     {/* Like Button */}
                     <button
                         onClick={handleLike}

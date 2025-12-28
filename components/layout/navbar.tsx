@@ -93,10 +93,10 @@ export function Navbar() {
     return (
         <>
             <nav className={cn(
-                "sticky top-0 z-50 w-full transition-all duration-300 border-b-2",
+                "sticky top-0 z-50 w-full transition-all duration-300",
                 isScrolled
-                    ? "glass-panel shadow-[0_4px_0_0_rgba(0,0,0,1)] dark:shadow-[0_4px_0_0_rgba(255,255,255,1)]"
-                    : "bg-transparent border-transparent"
+                    ? "glass-panel border-b border-[#2E2E2E]"
+                    : "bg-transparent border-b border-transparent"
             )}>
                 <div className="container flex h-12 md:h-16 items-center justify-between px-4 md:px-6">
                     <Logo />

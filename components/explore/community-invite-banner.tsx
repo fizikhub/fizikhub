@@ -1,54 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, ArrowRight } from "lucide-react";
+import { ArrowRight, PenLine } from "lucide-react";
 
 export function CommunityInviteBanner() {
     return (
-        <div className="relative mb-8 md:mb-12 group">
-            {/* Brutalist Hard Shadow Decoration */}
-            <div className="absolute top-2 left-2 w-full h-full bg-black dark:bg-white border-2 border-black dark:border-white z-0" />
-
-            <div className="relative z-10 bg-background border-2 border-black dark:border-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:-translate-x-[2px] hover:-translate-y-[2px] transition-transform duration-200">
-
-                {/* Decorative Corner Squares */}
-                <div className="absolute top-0 left-0 w-3 h-3 bg-black dark:bg-white" />
-                <div className="absolute top-0 right-0 w-3 h-3 bg-black dark:bg-white" />
-                <div className="absolute bottom-0 left-0 w-3 h-3 bg-black dark:bg-white" />
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-black dark:bg-white" />
-                <div className="absolute inset-0 bg-black/40 dark:bg-black/60 z-10" />
-
-                <div className="relative z-20 flex flex-col md:flex-row items-center justify-between gap-4 p-4 md:p-6">
-
-                    {/* Left Content */}
-                    <div className="space-y-2 max-w-2xl">
-                        <div className="inline-flex items-center gap-2 border border-black dark:border-white px-2 py-0.5 bg-amber-100/80 dark:bg-amber-900/30">
-                            <div className="w-1.5 h-1.5 bg-green-500 animate-pulse" />
-                            <span className="text-[9px] font-mono uppercase tracking-widest font-bold">
-                                KATKI_MODÜLÜ
-                            </span>
-                        </div>
-
-                        <div className="space-y-1">
-                            <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight leading-[0.9]">
-                                ARAŞTIRMALARINI <span className="bg-emerald-500 text-white px-1">PAYLAŞ</span>
-                            </h2>
-                            <p className="text-gray-300 font-mono text-[11px] md:text-xs leading-relaxed max-w-lg mt-2">
-                                {`> Sadece veriyi tüketme. Analiz et, hipotez kur ve sonuçlarını yayınla.`}
-                            </p>
-                        </div>
+        <div className="group bg-card border-2 border-border overflow-hidden hover:border-emerald-500/50 transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:translate-x-[2px] hover:translate-y-[2px]">
+            <div className="px-4 py-4 sm:px-5 sm:py-4">
+                {/* Header */}
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center">
+                        <PenLine className="w-4 h-4 text-emerald-500" />
                     </div>
-
-                    {/* Right Action */}
-                    <div className="flex-shrink-0 w-full md:w-auto">
-                        <Link href="/makale/yeni" className="block w-full">
-                            <button className="w-full md:w-auto flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-wider px-6 py-3 hover:bg-emerald-600 dark:hover:bg-emerald-500 hover:text-white transition-colors duration-200 group-hover:shadow-none text-xs md:text-sm">
-                                <span>BLOG OLUŞTUR</span>
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </Link>
-                    </div>
+                    <span className="text-[10px] uppercase tracking-wider font-black text-emerald-500 border border-emerald-500/30 px-2 py-0.5 bg-emerald-500/5">
+                        KATKI_MODÜLÜ
+                    </span>
                 </div>
+
+                {/* Content */}
+                <h3 className="font-black text-base sm:text-lg text-foreground mb-1 uppercase tracking-tight">
+                    Araştırmalarını Paylaş
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3 font-mono">
+                    &gt; Sadece veriyi tüketme. Analiz et, hipotez kur ve sonuçlarını yayınla.
+                </p>
+
+                {/* Action */}
+                <Link href="/yazar/yeni" className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background hover:bg-emerald-500 transition-colors duration-200 text-xs font-black uppercase tracking-wider group/btn">
+                    <span>Blog Oluştur</span>
+                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
+                </Link>
             </div>
         </div>
     );

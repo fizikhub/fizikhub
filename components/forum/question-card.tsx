@@ -88,22 +88,22 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
     return (
         <div
-            className="group bg-card border border-gray-300/60 dark:border-gray-700/60 rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden hover:border-blue-500/30 dark:hover:border-blue-500/30 hover:shadow-[0_8px_30px_-12px_rgba(59,130,246,0.2)] active:border-blue-500/50 hover:-translate-y-1 active:scale-[0.98]"
+            className="group bg-card rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:ring-1 hover:ring-blue-500/40 active:scale-[0.99]"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}
             <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            <div className="px-4 py-5 sm:px-6 sm:py-6 relative z-10">
+            <div className="px-4 py-4 sm:px-5 sm:py-4 relative z-10">
                 {/* Author Row */}
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-2.5 mb-2">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
                         className="flex-shrink-0 relative group/avatar"
                     >
-                        <Avatar className="w-11 h-11 sm:w-12 sm:h-12 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
+                        <Avatar className="w-9 h-9 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>

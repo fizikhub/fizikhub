@@ -47,7 +47,7 @@
   }
 
   .dark {
-    --background: 15 15 15;
+    --background: 16 16 16;
     --foreground: 255 255 255;
 
     --card: 36 37 38;
@@ -358,7 +358,8 @@
   }
 
   .dark .glass-panel {
-    @apply bg-black/40 border-white/5;
+    background-color: rgb(15, 15, 15);
+    @apply backdrop-blur-xl border-white/5;
   }
 
   /* 2. Neon Glow */
@@ -751,4 +752,3 @@ a {
   font-style: italic;
   color: rgb(var(--muted-foreground));
 }
-
