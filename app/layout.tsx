@@ -143,6 +143,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // INTENTIONAL GLOBAL ERROR FOR MAINTENANCE MODE (GALILEO)
+  if (true) {
+    throw new Error("Sistem Hatası: Galileo Modu Aktif (Global).");
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
