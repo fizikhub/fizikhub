@@ -13,6 +13,14 @@ export default async function LeaderboardPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Shy User Logic: Move @silginim to the bottom
+    const silginimIndex = leaderboard.findIndex(u => u.username === 'silginim');
+    if (silginimIndex !== -1) {
+        const silginim = leaderboard[silginimIndex];
+        leaderboard.splice(silginimIndex, 1);
+        leaderboard.push(silginim);
+    }
+
     return (
         <div className="container max-w-5xl py-12 px-4 mx-auto min-h-screen">
             <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
