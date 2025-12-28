@@ -1,7 +1,7 @@
 import { getLeaderboard } from "./actions";
 import { LeaderboardCard } from "@/components/leaderboard/leaderboard-card";
 import { createClient } from "@/lib/supabase-server";
-import { Trophy } from "lucide-react";
+import { LeaderboardHeaderIcon } from "@/components/leaderboard/leaderboard-header-icon";
 
 export const metadata = {
     title: "Liderlik Tablosu | Fizikhub",
@@ -26,9 +26,7 @@ export default async function LeaderboardPage() {
             <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
                 <div className="flex-1">
                     <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-yellow-500 text-yellow-950 p-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                            <Trophy className="h-8 w-8" />
-                        </div>
+                        <LeaderboardHeaderIcon />
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
                             Liderlik Tablosu
                         </h1>
