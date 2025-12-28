@@ -24,7 +24,7 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden text-center p-6">
+        <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden text-center p-6">
 
             {/* Background Noise/Effect */}
             <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('/noise.png')] mix-blend-overlay" />
