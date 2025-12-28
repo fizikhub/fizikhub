@@ -145,7 +145,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // MAINTENANCE MODE FLAG - SET TO FALSE TO DISABLE
-  const MAINTENANCE_MODE = true;
+  const MAINTENANCE_MODE = false;
 
   if (MAINTENANCE_MODE) {
     return (
