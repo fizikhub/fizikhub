@@ -159,7 +159,7 @@ export default async function RootLayout({
       .eq('id', user!.id)
       .single();
 
-    if (profile && !profile.has_seen_onboarding) {
+    if (profile && !profile?.has_seen_onboarding) {
       showOnboarding = true;
     }
   }
