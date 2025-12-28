@@ -136,6 +136,7 @@ import { GlobalEffects } from "@/components/effects/global-effects";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 
 import { createClient } from "@/lib/supabase-server";
+import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { FloatingActionButton } from "@/components/layout/floating-action-button";
 
 export default async function RootLayout({
@@ -187,9 +188,7 @@ export default async function RootLayout({
               </div>
 
               {/* Audio */}
-              <audio autoPlay loop>
-                <source src="/audio/error_theme.mp3" type="audio/mpeg" />
-              </audio>
+              <MaintenanceAudioPlayer />
 
               {/* 500 Background Text */}
               <div className="absolute bottom-[-100px] font-black text-[200px] text-white/5 pointer-events-none select-none">
