@@ -15,10 +15,11 @@ export default async function LeaderboardPage() {
 
     // Shy User Logic: Move @silginim to the bottom
     const silginimIndex = leaderboard.findIndex(u => u.username === 'silginim');
+    let silginimUser = null;
     if (silginimIndex !== -1) {
-        const silginim = leaderboard[silginimIndex];
+        silginimUser = leaderboard[silginimIndex];
         leaderboard.splice(silginimIndex, 1);
-        leaderboard.push(silginim);
+        leaderboard.push(silginimUser);
     }
 
     return (
@@ -26,7 +27,7 @@ export default async function LeaderboardPage() {
             <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
                 <div className="flex-1">
                     <div className="flex items-center gap-4 mb-4">
-                        <LeaderboardHeaderIcon />
+                        <LeaderboardHeaderIcon silginimUser={silginimUser} />
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
                             Liderlik Tablosu
                         </h1>
