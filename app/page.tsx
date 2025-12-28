@@ -63,6 +63,11 @@ const getCachedFeedData = unstable_cache(
 
 
 export default async function Home() {
+  // INTENTIONAL ERROR FOR MAINTENANCE MODE
+  if (true) {
+    throw new Error("Sistem Hatası: Galileo Modu Aktif.");
+  }
+
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
   console.log("---- FEED DEBUG v3 ----");
