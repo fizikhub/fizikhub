@@ -143,9 +143,63 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // INTENTIONAL GLOBAL ERROR FOR MAINTENANCE MODE (GALILEO)
-  if (true) {
-    throw new Error("Sistem Hatası: Galileo Modu Aktif (Global).");
+  // MAINTENANCE MODE FLAG - SET TO FALSE TO DISABLE
+  const MAINTENANCE_MODE = true;
+
+  if (MAINTENANCE_MODE) {
+    return (
+      <html lang="tr" suppressHydrationWarning>
+        <head>
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="canonical" href="https://fizikhub.com" />
+        </head>
+        <body className="bg-[#050505] min-h-screen">
+          <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center overflow-hidden text-center p-6">
+            {/* Background */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/80" />
+
+            {/* Content */}
+            <div className="relative z-10 max-w-2xl flex flex-col items-center gap-8">
+              {/* Galileo Image */}
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-amber-900 to-amber-600 rounded-lg blur opacity-25"></div>
+                <div className="relative rounded-lg border-2 border-amber-900/30 overflow-hidden shadow-2xl">
+                  <img
+                    src="/images/galileo-error.jpg"
+                    alt="Galileo Galilei"
+                    className="object-cover grayscale w-auto h-[400px]"
+                  />
+                </div>
+              </div>
+
+              {/* Text */}
+              <div className="space-y-4">
+                <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white drop-shadow-lg">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-600">
+                    Yüksek İhtimalle Sıçtık.
+                  </span>
+                </h1>
+
+                <div className="space-y-2 text-lg sm:text-xl text-slate-400 font-medium font-mono leading-relaxed max-w-lg mx-auto border-l-2 border-red-900/50 pl-6 text-left">
+                  <p>Bu sayfayı görüyorsan belli ki ciddi bir sorun var.</p>
+                  <p className="text-slate-500">Bu sorunu ya çözmeye çalışıyoruz ya da hiç farkında bile değiliz.</p>
+                </div>
+              </div>
+
+              {/* Audio */}
+              <audio autoPlay loop>
+                <source src="/audio/error_theme.mp3" type="audio/mpeg" />
+              </audio>
+
+              {/* 500 Background Text */}
+              <div className="absolute bottom-[-100px] font-black text-[200px] text-white/5 pointer-events-none select-none">
+                500
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    );
   }
 
   const supabase = await createClient();
@@ -205,7 +259,7 @@ export default async function RootLayout({
             toastOptions={{
               className: "font-sans border border-white/10 bg-black/80 backdrop-blur-xl text-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.3)] rounded-lg p-5",
               style: {
-                borderRadius: "8px", // Slight curve for modern feel
+                borderRadius: "8px",
               },
             }}
           />
