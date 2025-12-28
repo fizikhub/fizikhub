@@ -25,7 +25,7 @@ import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     console.log("UnifiedFeed Items:", items.length);
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 px-0 sm:px-0">
             {items.map((item, index) => (
                 <div key={`${item.type}-${item.data.id}`}>
                     <motion.div

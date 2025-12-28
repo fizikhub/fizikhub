@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquarePlus, PenTool, X } from "lucide-react";
+import { MessageSquarePlus, PenTool, X, Plus } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -130,7 +130,7 @@ export function FloatingActionButton() {
                                     transition={{ type: "spring", stiffness: 400, damping: 20 }}
                                     className="relative z-10"
                                 >
-                                    <SiteLogo className="w-6 h-6 text-primary" />
+                                    <Plus size={24} className="text-white" strokeWidth={3} />
                                 </motion.div>
                             )}
                         </AnimatePresence>

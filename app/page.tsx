@@ -5,10 +5,9 @@ import { BackgroundWrapper } from "@/components/home/background-wrapper";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
-import { HeroSection3D } from "@/components/home/hero-section-3d"; // Optional: keep as header or remove? User "social feed" implies minimal header. Let's keep a smaller version or just remove. User said "akış olmasını istiyorum". I will keep it but maybe we need a dedicated "FeedHeader". Let's use the layout similar to BlogPage header but simpler. Or just the Feed.
-// Actually, user liked the 3D hero. Let's keep it but maybe compact? Or put it above the feed.
+import { CategoryStories } from "@/components/home/category-stories";
+
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
-// Let's put the feed in a container.
 
 export const metadata: Metadata = {
   title: "Ana Sayfa",
@@ -61,7 +60,7 @@ const getCachedFeedData = unstable_cache(
   { revalidate: 60, tags: ['feed'] }
 );
 
-import { CategoryStories } from "@/components/home/category-stories";
+
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
@@ -118,10 +117,10 @@ export default async function Home() {
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
       <BackgroundWrapper />
 
-      <div className="container max-w-7xl mx-auto px-0 sm:px-4 md:px-6 relative z-10">
+      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10">
 
         {/* Story-style Categories */}
-        <div className="pt-4 pb-0">
+        <div className="pt-1 pb-0">
           <CategoryStories />
         </div>
 
@@ -133,7 +132,7 @@ export default async function Home() {
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
