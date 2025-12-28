@@ -168,8 +168,6 @@ export function SocialArticleCard({
                 isWriter
                     ? "hover:ring-1 hover:ring-amber-500/40"
                     : "hover:ring-1 hover:ring-emerald-500/40",
-                variant === "compact" ? "p-4" : "p-0",
-                "active:scale-[0.99]",
                 className
             )}
         >
@@ -181,9 +179,9 @@ export function SocialArticleCard({
                 <span className="sr-only">{article.title}</span>
             </Link>
 
-            <div className="px-3 py-3 sm:px-5 sm:py-3 relative z-10 pointer-events-none">
-                {/* Author Row - Enable pointer events for interactive elements */}
-                <div className="flex items-center gap-2.5 mb-2 pointer-events-auto w-fit">
+            <div className="relative z-10 pointer-events-none flex flex-col h-full">
+                {/* Author Row - Padded */}
+                <div className="px-4 pt-4 pb-2 flex items-center gap-2.5 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
                         <Avatar className={cn("w-9 h-9 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
                             <AvatarImage src={article.author?.avatar_url || ""} />
@@ -207,20 +205,18 @@ export function SocialArticleCard({
                     </div>
                 </div>
 
-                <div className="block group/content">
-                    {/* Title */}
-                    <h3 className={cn("font-heading font-bold text-[17px] sm:text-[18px] leading-[1.3] mb-2 text-foreground/95 transition-colors", isWriter ? "group-hover/content:text-amber-500" : "group-hover/content:text-emerald-500")}>
-                        {article.title}
-                    </h3>
-
-                    {/* Summary */}
-                    <div className="text-[13px] sm:text-[14px] text-foreground/80 leading-[1.5] font-sans mb-2 line-clamp-2">
-                        {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
+                {/* Content Area */}
+                <div className="block group/content flex-1">
+                    {/* Title - Padded & Styled Large/Yellow */}
+                    <div className="px-4 mb-2">
+                        <h3 className={cn("font-heading font-bold text-xl sm:text-[1.35rem] leading-[1.3] text-amber-400 group-hover/content:text-amber-300 transition-colors")}>
+                            {article.title}
+                        </h3>
                     </div>
 
-                    {/* Image */}
+                    {/* Image - Full Width (No Padding) */}
                     {article.image_url && (
-                        <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-gray-300/30 dark:border-gray-700/30 mb-3 group-hover/content:border-amber-500/20 transition-colors">
+                        <div className="relative aspect-video w-full overflow-hidden border-y border-border/40 mb-3">
                             <Image
                                 src={imgSrc}
                                 alt={article.title}
@@ -230,61 +226,70 @@ export function SocialArticleCard({
                             />
                         </div>
                     )}
+
+                    {/* Summary - Padded */}
+                    <div className="px-4 mb-3">
+                        <div className="text-[13px] sm:text-[14px] text-foreground/80 leading-[1.6] font-sans line-clamp-2">
+                            {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
+                        </div>
+                    </div>
                 </div>
 
-                {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center gap-2 pt-3 border-t border-dashed border-gray-300/30 dark:border-gray-700/30 pointer-events-auto">
-                    {/* Like Button */}
-                    <button
-                        onClick={handleLike}
-                        disabled={isLikeLoading}
-                        className={cn(
-                            "flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
-                            isLiked ? "text-rose-500 border-rose-500/30 bg-rose-500/10" : "hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
-                        )}
-                    >
-                        <Heart className={cn(
-                            "w-4 h-4 stroke-[1.8px]",
-                            isLiked ? "fill-current" : ""
-                        )} />
-                        <span className="text-sm font-semibold min-w-[16px] text-center">
-                            {likeCount}
-                        </span>
-                    </button>
-
-                    {/* Comments */}
-                    <Link
-                        href={`/blog/${article.slug}#comments`}
-                        className="flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent text-foreground"
-                    >
-                        <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
-                        <span className="text-sm font-semibold">{initialComments}</span>
-                    </Link>
-
-                    {/* Read Time */}
-                    <div className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
-                        <BookOpen className="w-3.5 h-3.5" />
-                        {getReadingTime(article.content)} dk
-                    </div>
-
-                    {/* Share & Bookmark Group */}
-                    <div className="ml-auto flex items-center gap-2">
+                {/* Action Bar - Padded */}
+                <div className="mt-auto px-4 pb-4 pt-1 pointer-events-auto">
+                    <div className="flex items-center gap-2 pt-3 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
+                        {/* Like Button */}
                         <button
-                            onClick={handleBookmark}
+                            onClick={handleLike}
+                            disabled={isLikeLoading}
                             className={cn(
-                                "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
-                                isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
+                                "flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                                isLiked ? "text-rose-500 border-rose-500/30 bg-rose-500/10" : "hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
                             )}
                         >
-                            <Bookmark className={cn("w-4 h-4 stroke-[1.8px]", isBookmarked && "fill-current")} />
+                            <Heart className={cn(
+                                "w-4 h-4 stroke-[1.8px]",
+                                isLiked ? "fill-current" : ""
+                            )} />
+                            <span className="text-sm font-semibold min-w-[16px] text-center">
+                                {likeCount}
+                            </span>
                         </button>
 
-                        <button
-                            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
-                            onClick={handleShare}
+                        {/* Comments */}
+                        <Link
+                            href={`/blog/${article.slug}#comments`}
+                            className="flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent text-foreground"
                         >
-                            <Share className="w-4 h-4 stroke-[1.8px]" />
-                        </button>
+                            <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
+                            <span className="text-sm font-semibold">{initialComments}</span>
+                        </Link>
+
+                        {/* Read Time */}
+                        <div className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
+                            <BookOpen className="w-3.5 h-3.5" />
+                            {getReadingTime(article.content)} dk
+                        </div>
+
+                        {/* Share & Bookmark Group */}
+                        <div className="ml-auto flex items-center gap-2">
+                            <button
+                                onClick={handleBookmark}
+                                className={cn(
+                                    "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
+                                    isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
+                                )}
+                            >
+                                <Bookmark className={cn("w-4 h-4 stroke-[1.8px]", isBookmarked && "fill-current")} />
+                            </button>
+
+                            <button
+                                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
+                                onClick={handleShare}
+                            >
+                                <Share className="w-4 h-4 stroke-[1.8px]" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

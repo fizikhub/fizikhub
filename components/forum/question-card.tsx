@@ -141,7 +141,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 </div>
 
                 {/* Title - Clean and readable */}
-                <h3 className="font-heading font-bold text-[18px] sm:text-[19px] leading-[1.4] mb-3 text-foreground/95 group-hover:text-blue-400 transition-colors">
+                <h3 className="font-heading font-bold text-lg sm:text-[1.25rem] leading-[1.3] mb-3 text-amber-400 group-hover:text-amber-300 transition-colors">
                     {question.title}
                 </h3>
 
