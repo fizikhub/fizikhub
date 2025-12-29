@@ -6,6 +6,8 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
+import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
+
 interface RetroProfileViewProps {
     profile: any;
     articles: any[];
@@ -47,10 +49,10 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
             <div className="relative z-10 container mx-auto p-2 max-w-5xl">
 
                 {/* Header Marquee */}
-                <div className="mb-4 border-4 border-ridge border-gray-400 bg-blue-800 text-white font-bold p-1 overflow-hidden whitespace-nowrap">
-                    <div className="animate-marquee inline-block text-yellow-300 tracking-widest text-xl">
-                        *** YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ. HOŞGELDİNİZ. ***  DİKKAT: YÜKSEK RADYASYON  ***  @BARANBOZKURT  ***
-                    </div>
+                <div className="mb-4 border-4 border-ridge border-gray-400 bg-blue-800 text-white font-bold p-1 overflow-hidden whitespace-nowrap text-xl tracking-widest text-yellow-300">
+                    {React.createElement('marquee', { scrollamount: "15", scrolldelay: "0", loop: "infinite" },
+                        "*** YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ. HOŞGELDİNİZ. ***  DİKKAT: YÜKSEK RADYASYON  ***  @BARANBOZKURT  ***"
+                    )}
                 </div>
 
                 {/* Top Section: Avatar & Info Table */}
@@ -95,18 +97,18 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                             </table>
                         </div>
 
-                        {/* Badges */}
+                        {/* Badges - Removed pixelated class to prevent glitches */}
                         <div className="flex flex-wrap gap-1 border border-yellow-600 p-1 bg-black/50">
                             {userBadges.map((ub: any, i: number) => (
                                 <div key={i} className="w-8 h-8 rounded-none border border-white bg-blue-900 flex items-center justify-center p-0.5" title={ub.badges.name}>
-                                    <img src={ub.badges.icon} className="w-full h-full pixelated" alt="badge" />
+                                    <CustomBadgeIcon name={ub.badges.name} className="w-full h-full text-white" />
                                 </div>
                             ))}
                         </div>
 
                         {/* GIF: Spinning Earth */}
                         <div className="flex justify-center">
-                            <img src="https://web.archive.org/web/20090830025916/http://geocities.com/Heartland/Bluffs/4157/earth.gif" className="w-16 h-16" alt="earth" />
+                            <img src="https://media.giphy.com/media/NxTsTSXo87YcM/giphy.gif" className="w-16 h-16" alt="earth" />
                         </div>
                     </div>
 
@@ -114,7 +116,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                     <div className="bg-[#000080] border-4 border-outset border-gray-400 p-4 shadow-[10px_10px_0px_rgba(0,0,0,0.8)] relative">
                         {/* GIF: Welcome banner */}
                         <div className="absolute -top-6 right-10 z-20">
-                            <img src="https://web.archive.org/web/20090829022646/http://geocities.com/Heartland/Bluffs/4157/welcome.gif" className="h-12" alt="welcome" />
+                            <img src="https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif" className="h-12" alt="welcome" />
                         </div>
 
                         <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 animate-pulse tracking-widest drop-shadow-[4px_4px_0_#000000]">
@@ -122,7 +124,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                         </h1>
 
                         <h2 className="text-white text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2 flex items-center gap-2">
-                            <img src="https://web.archive.org/web/20090829064741/http://geocities.com/Athens/Acropolis/7155/new.gif" alt="new" />
+                            <img src="https://media.giphy.com/media/SRO0ZwmImic0/giphy.gif" alt="new" className="h-6" />
                             ~ {profile.full_name} ~
                         </h2>
 
@@ -144,7 +146,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                                 MESAJ AT
                             </button>
                             {/* GIF: Mailbox */}
-                            <img src="https://web.archive.org/web/20091027062402/http://geocities.com/Heartland/Bluffs/4157/emailme.gif" className="h-10" alt="email" />
+                            <img src="https://media.giphy.com/media/3o7TKSjRrfPHjGWglq/giphy.gif" className="h-10" alt="email" />
                         </div>
                     </div>
                 </div>
@@ -153,11 +155,11 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                 {/* Content Section - Tabs Style Retro */}
                 <div className="border-t-4 border-red-600 pt-8 mt-8 relative">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4">
-                        <img src="https://web.archive.org/web/20090726105435/http://geocities.com/Area51/Cavern/9151/ufo.gif" alt="ufo" className="h-12" />
+                        <img src="https://media.giphy.com/media/Vse57EWCo2Va/giphy.gif" alt="ufo" className="h-12" />
                     </div>
 
                     <div className="flex justify-center mb-8 gap-4">
-                        <img src="https://web.archive.org/web/20090829023746/http://geocities.com/SunsetStrip/Lounge/9762/construction_lg.gif" alt="Under Construction" className="w-64" />
+                        <img src="https://media.giphy.com/media/3o6gDWzmAzrpi5DdBm/giphy.gif" alt="Under Construction" className="w-64" />
                         <img src="https://media.giphy.com/media/26brQLhV3G26G35C0/giphy.gif" className="w-24 h-24 hidden md:block" alt="pizza" />
                     </div>
 
