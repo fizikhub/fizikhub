@@ -5,6 +5,7 @@ import { ProfileHero } from "@/components/profile/profile-hero";
 import { ProfileAboutSidebar } from "@/components/profile/profile-about-sidebar";
 import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
 import { SpaceBackgroundWrapper } from "@/components/home/space-background-wrapper";
+import { HubAlien } from "@/components/game/hub-alien";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -95,7 +96,7 @@ export default async function ProfilePage() {
             <div className="container max-w-7xl mx-auto px-4 py-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                     {/* Left Sidebar */}
-                    <div className="lg:sticky lg:top-24 lg:self-start">
+                    <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
                         <ProfileAboutSidebar
                             profile={profile}
                             stats={{
@@ -108,6 +109,11 @@ export default async function ProfilePage() {
                             badges={userBadges || []}
                             createdAt={user.created_at}
                         />
+
+                        {/* 👽 Hub Alien Pet Game 👽 */}
+                        <div className="w-full">
+                            <HubAlien />
+                        </div>
                     </div>
 
                     {/* Main Content Feed */}
