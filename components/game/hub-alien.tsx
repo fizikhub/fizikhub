@@ -1,196 +1,65 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Sparkles, Pizza, Droplets, Heart, ShoppingBag, X, Star } from "lucide-react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { AlienShop } from "./alien-shop";
+import { Info, Sparkles, Zap, Heart, Droplets, Utensils, Music } from "lucide-react";
 
-// --- Pixel Art Data & Renderer ---
+// --- Configuration ---
+const STORAGE_KEY = "hub_alien_pro_v1";
+const DECAY_RATE_MS = 60000;
 
-// Palette
-const C = {
-    _: "transparent",
-    G: "#22c55e", // Main Green
-    D: "#15803d", // Dark Green (Shadow)
-    L: "#4ade80", // Light Green (Highlight)
-    B: "#000000", // Black (Eyes/Outline)
-    W: "#ffffff", // White (Eye Shine)
-    P: "#f472b6", // Pink (Cheeks/Mouth)
-    R: "#ef4444", // Red (Mouth inside)
-};
-
-// 16x16 Grids
-const FRAMES = {
-    idle1: [
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "___GLGGLG_______",
-        "__GLLLLLLG______",
-        "__GLBLLLBGG_____",
-        "__GLBLLLBGG_____",
-        "__GLLLLLLLG_____",
-        "__GLLP_P LLG____",
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D_D_D_______",
-        "____D___D_______",
-        "________________",
-    ],
-    idle2: [ // Blinking / Bobbing
-        "________________",
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "___GLGGLG_______",
-        "__GLLLLLLG______",
-        "__GLBLLLBGG_____", // Eyes open
-        "__GLLLLLLLG_____",
-        "__GLLP_P LLG____",
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D___D_______",
-        "___D_____D______", // Feet wider (squat)
-        "________________",
-    ],
-    blink: [
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "___GLGGLG_______",
-        "__GLLLLLLG______",
-        "__GLLLLLLGG_____", // Eyes closed (green line)
-        "__GLLLLLLGG_____",
-        "__GLLLLLLLG_____",
-        "__GLLP_PLLG_____",
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D_D_D_______",
-        "____D___D_______",
-        "________________",
-    ],
-    eat1: [ // Mouth open
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "___GLGGLG_______",
-        "__GLLLLLLG______",
-        "__GLBLLLBGG_____",
-        "__GLLLLLLLG_____",
-        "__GLLRRRLLG_____", // Mouth open
-        "__GLLRRRLLG_____",
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D___D_______",
-        "____D___D_______",
-        "________________",
-    ],
-    eat2: [ // Chewing
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "___GLGGLG_______",
-        "__GLLLLLLG______",
-        "__GL>LL<BGG_____", // squint? no just normal
-        "__GLBLLLBGG_____",
-        "__GLLLLLLLG_____",
-        "__GLLRRRLLG_____", // Chewing
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D_D_D_______",
-        "____D___D_______",
-        "________________",
-    ],
-    happy1: [ // Hands up
-        "________________",
-        "________________",
-        "_____GGG________",
-        "____GLLLG_______",
-        "G__GLGGLG__G____",
-        "LG_GLLLLLLG_GL___", // Hands up
-        "_LGGLBLLLBGG_L___",
-        "__GLLLLLLLG_____",
-        "__GLLRPPRLLG____", // Big smile
-        "__GLLPP PLLG____",
-        "___GLLLLLG______",
-        "____DDDDD_______",
-        "_____DDD________",
-        "____D___D_______",
-        "____D___D_______",
-        "________________",
-    ]
-};
-
-// ... Wait, mapping characters to colors manually is tedious and error prone if pasted as string array.
-// Let's use a cleaner helper.
-
-const PixelSprite = ({ frame, scale = 4 }: { frame: string[], scale?: number }) => {
-    const pixelSize = scale;
-    const size = 16 * pixelSize;
-
-    return (
-        <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges">
-            {frame.map((row, y) =>
-                row.split("").map((char, x) => {
-                    if (char === "_") return null;
-                    const color = C[char as keyof typeof C] || "transparent";
-                    return <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill={color} />;
-                })
-            )}
-        </svg>
-    );
-};
-
-
-// --- Main Component ---
+// Sprite Configuration (Assumed 4x4 based on standard prompts)
+// Rows: 0: Idle, 1: Walk/Action, 2: Eat, 3: Happy/Special
+const SPRITE_SIZE = 128; // Display size
+const SHEET_ROWS = 8;
+const SHEET_COLS = 8;
 
 interface AlienStats {
     hunger: number;
     hygiene: number;
     happiness: number;
+    energy: number;
+    balance: number; // Currency
+    items: string[]; // Inventory (equipped/owned)
     lastInteracted: number;
 }
 
-const STORAGE_KEY = "hub_alien_v3"; // Version bump
-const DECAY_RATE_MS = 60000;
-
 export function HubAlien() {
+    // --- State ---
     const [stats, setStats] = useState<AlienStats>({
         hunger: 100,
         hygiene: 100,
         happiness: 100,
+        energy: 100,
+        balance: 500, // Starting money
+        items: [],
         lastInteracted: Date.now(),
     });
 
-    const [mood, setMood] = useState<"idle" | "eating" | "cleaning" | "happy">("idle");
+    const [mood, setMood] = useState<"idle" | "walking" | "eating" | "happy" | "sleeping">("idle");
     const [showShop, setShowShop] = useState(false);
     const [frameIndex, setFrameIndex] = useState(0);
-    const [floatingEmoji, setFloatingEmoji] = useState<string | null>(null);
+    const [direction, setDirection] = useState<"left" | "right">("right");
+    const [position, setPosition] = useState(50); // Percent X
+    const [floatingText, setFloatingText] = useState<{ id: number, text: string, type: 'gain' | 'loss' | 'info' }[]>([]);
 
-    // Load/Save Stats (Same as before)
+    // --- Persistence ---
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                const now = Date.now();
-                const elapsed = now - parsed.lastInteracted;
-                const decayTicks = Math.floor(elapsed / DECAY_RATE_MS);
-                if (decayTicks > 0) {
-                    parsed.hunger = Math.max(0, parsed.hunger - (decayTicks * 2));
-                    parsed.hygiene = Math.max(0, parsed.hygiene - (decayTicks * 1.5));
-                    parsed.happiness = Math.max(0, parsed.happiness - (decayTicks * 1));
+                // Calculate elapsed time decay
+                const minutesPassed = (Date.now() - parsed.lastInteracted) / 60000;
+                if (minutesPassed > 1) {
+                    parsed.hunger = Math.max(0, parsed.hunger - (minutesPassed * 0.5));
+                    parsed.hygiene = Math.max(0, parsed.hygiene - (minutesPassed * 0.3));
+                    parsed.energy = Math.max(0, parsed.energy - (minutesPassed * 0.2));
                 }
                 setStats(parsed);
-            } catch { }
+            } catch (e) {
+                console.error("Failed to load alien save", e);
+            }
         }
     }, []);
 
@@ -198,187 +67,296 @@ export function HubAlien() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stats, lastInteracted: Date.now() }));
     }, [stats]);
 
+
+    // --- Game Loop (Decay & AI) ---
     useEffect(() => {
-        const decay = setInterval(() => {
+        const loop = setInterval(() => {
             setStats(prev => ({
                 ...prev,
-                hunger: Math.max(0, prev.hunger - 1),
-                hygiene: Math.max(0, prev.hygiene - 0.5),
-                happiness: Math.max(0, prev.happiness - 0.5)
+                hunger: Math.max(0, prev.hunger - 0.5), // Faster decay for demo
+                hygiene: Math.max(0, prev.hygiene - 0.3),
+                energy: prev.energy < 100 && mood === "sleeping" ? Math.min(100, prev.energy + 2) : Math.max(0, prev.energy - 0.1),
+                happiness: Math.max(0, prev.happiness - 0.2)
             }));
-        }, DECAY_RATE_MS);
-        return () => clearInterval(decay);
-    }, []);
 
-    // Animation Loop
+            // Random AI Movement
+            if (mood === "idle" && Math.random() > 0.8) {
+                setMood("walking");
+                setDirection(Math.random() > 0.5 ? "right" : "left");
+                setTimeout(() => setMood("idle"), 2000);
+            }
+        }, 2000);
+        return () => clearInterval(loop);
+    }, [mood]);
+
+    // --- Animation Loop ---
     useEffect(() => {
-        const interval = setInterval(() => {
-            setFrameIndex(prev => (prev + 1) % 4); // 4 beat cycle
-        }, 250);
-        return () => clearInterval(interval);
-    }, []);
+        const animLoop = setInterval(() => {
+            // Update Frame
+            setFrameIndex(prev => (prev + 1) % SHEET_COLS);
+
+            // Update Position (if walking)
+            if (mood === "walking") {
+                setPosition(prev => {
+                    const move = direction === "right" ? 2 : -2;
+                    const newPos = prev + move;
+                    if (newPos > 90) { setDirection("left"); return 90; }
+                    if (newPos < 10) { setDirection("right"); return 10; }
+                    return newPos;
+                });
+            }
+        }, 200); // 5 FPS pixel art feel
+        return () => clearInterval(animLoop);
+    }, [mood, direction]);
 
 
-    // Interaction Handlers
-    const triggerAnimation = useCallback((emoji: string) => {
-        setFloatingEmoji(emoji);
-        setTimeout(() => setFloatingEmoji(null), 1000);
-    }, []);
-
-    const handleFeed = () => {
-        if (stats.hunger >= 100) return;
-        setMood("eating");
-        triggerAnimation("🍕");
-        setStats(prev => ({ ...prev, hunger: Math.min(100, prev.hunger + 25), happiness: Math.min(100, prev.happiness + 5) }));
-        setTimeout(() => setMood("idle"), 2000);
+    // --- Interactions ---
+    const addFloatingText = (text: string, type: 'gain' | 'loss' | 'info') => {
+        const id = Date.now();
+        setFloatingText(prev => [...prev, { id, text, type }]);
+        setTimeout(() => setFloatingText(prev => prev.filter(t => t.id !== id)), 2000);
     };
 
-    const handleClean = () => {
-        if (stats.hygiene >= 100) return;
-        setMood("cleaning");
-        triggerAnimation("🫧");
-        setStats(prev => ({ ...prev, hygiene: 100, happiness: Math.min(100, prev.happiness + 10) }));
-        setTimeout(() => setMood("idle"), 2000);
-    };
-
-    const handlePet = () => {
-        setMood("happy");
-        triggerAnimation("💖");
-        setStats(prev => ({ ...prev, happiness: Math.min(100, prev.happiness + 15) }));
-        setTimeout(() => setMood("idle"), 1500);
-    };
-
-
-    // Determine Current Frame
-    const getCurrentFrame = () => {
-        // Idle Cycle: Idle1 -> Idle1 -> Idle2 (Bob) -> Idle2
-        // Blink occasionally
-
-        let frameData = FRAMES.idle1;
-
-        if (mood === "eating") {
-            frameData = frameIndex % 2 === 0 ? FRAMES.eat1 : FRAMES.eat2;
-        } else if (mood === "happy") {
-            frameData = frameIndex % 2 === 0 ? FRAMES.happy1 : FRAMES.idle1;
-        } else if (mood === "cleaning") {
-            frameData = frameIndex % 2 === 0 ? FRAMES.idle2 : FRAMES.idle1; // Just bob logic for now, cleaning is effect
-        } else {
-            // Idle logic
-            if (frameIndex === 3 && Math.random() > 0.7) return FRAMES.blink; // Random blink
-            frameData = frameIndex < 2 ? FRAMES.idle1 : FRAMES.idle2;
+    const handleFeed = (foodItem?: any) => {
+        if (stats.hunger >= 100) {
+            addFloatingText("Tokum! 🤢", "info");
+            return;
         }
-
-        return frameData;
+        setMood("eating");
+        setStats(prev => ({ ...prev, hunger: Math.min(100, prev.hunger + 30), happiness: Math.min(100, prev.happiness + 5) }));
+        addFloatingText("+30 Tokluk", "gain");
+        setTimeout(() => setMood("idle"), 2000); // Eating animation duration
     };
 
-    // Low stats overrides
-    const isSick = stats.hunger < 20 || stats.hygiene < 20;
+    const handleWash = () => {
+        setMood("happy"); // Shower uses happy anim for now
+        setStats(prev => ({ ...prev, hygiene: 100 }));
+        addFloatingText("Tertemiz! ✨", "gain");
+        setTimeout(() => setMood("idle"), 2000);
+    };
+
+    const handleSleep = () => {
+        if (mood === "sleeping") {
+            setMood("idle");
+            addFloatingText("Günaydın! ☀️", "info");
+        } else {
+            setMood("sleeping");
+            addFloatingText("İyi geceler... 💤", "info");
+        }
+    };
+
+    const handleBuy = (item: any) => {
+        if (stats.balance >= item.price) {
+            setStats(prev => ({
+                ...prev,
+                balance: prev.balance - item.price,
+                items: [...prev.items, item.id] // Simple inventory
+            }));
+
+            if (item.category === "food") {
+                handleFeed();
+            } else {
+                addFloatingText("Satın Alındı!", "gain");
+            }
+        }
+    };
+
+
+    // --- Render Logic ---
+    const getSpriteStyle = () => {
+        // Map logical mood to sprite row
+        let row = 0; // Idle
+        if (mood === "walking") row = 1;
+        if (mood === "eating") row = 2; // Assuming row 2 is eating
+        if (mood === "happy") row = 3; // Assuming row 3 is happy
+        if (mood === "sleeping") row = 0; // Idle frame but maybe darkened
+
+        // Calculate bg pos
+        // background-size: 400% 400% (since 4x4)
+        // x pos: frameIndex * (100 / (cols - 1)) ? No, standard css sprite steps
+        // Actually simplest is percentage: 0%, 33.33%, 66.66%, 100%
+
+        const xPct = (frameIndex / (SHEET_COLS - 1)) * 100;
+        const yPct = (row / (SHEET_ROWS - 1)) * 100;
+
+        return {
+            backgroundImage: `url('/assets/alien-sprites.png')`,
+            backgroundSize: `${SHEET_COLS * 100}% ${SHEET_ROWS * 100}%`,
+            backgroundPosition: `${xPct}% ${yPct}%`,
+            backgroundRepeat: "no-repeat",
+            width: `64px`,
+            height: `64px`,
+            imageRendering: "pixelated" as const,
+            transform: `scale(2.5) ${direction === "left" ? "scaleX(-1)" : ""}`,
+        };
+    };
+
+    // Determine environmental visuals
+    const isNight = mood === "sleeping";
+    const bgInfo = stats.items.find(i => i.startsWith("bg_")); // Check for equipped BG
+
+    // Default Planet: "Kepler-186f" (Purple/Red alien vibe)
+    let planetGradient = "from-indigo-900 via-purple-900 to-slate-900";
+    if (bgInfo === "bg_mars") planetGradient = "from-orange-900 via-red-900 to-stone-900";
+    if (bgInfo === "bg_ice") planetGradient = "from-cyan-900 via-blue-900 to-slate-900";
+
 
     return (
-        <div className="relative w-full font-sans select-none">
-            {/* Main Container - Retro Game Boy Style ish */}
-            <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl border-4 border-gray-700 shadow-2xl overflow-hidden ring-4 ring-black/20">
+        <div className="card-glass relative overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] select-none group">
 
-                {/* Screen Area */}
-                <div className="relative h-48 bg-[#2d1b2e] flex items-center justify-center overflow-hidden border-b-4 border-gray-700">
+            {/* --- PLANET ENVIRONMENT --- */}
+            <div className={`relative h-64 w-full transition-colors duration-1000 bg-gradient-to-b ${planetGradient}`}>
 
-                    {/* Background Pattern (Stars) */}
-                    <div className="absolute inset-0 opacity-30"
-                        style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-                    </div>
+                {/* 1. Starfield (Animated) */}
+                <div className="absolute inset-0 opacity-50"
+                    style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '50px 50px', animation: 'stars-move 100s linear infinite' }}>
+                </div>
 
-                    {/* Scanline Effect */}
-                    <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
+                {/* 2. Celestial Body (Moon/Sun) */}
+                <div className={`absolute top-4 right-8 w-16 h-16 rounded-full blur-[1px] transition-all duration-1000 ${isNight ? 'bg-yellow-100/80 shadow-[0_0_30px_rgba(255,255,200,0.5)]' : 'bg-orange-400/80 shadow-[0_0_40px_rgba(255,165,0,0.8)]'}`}></div>
+
+                {/* 3. Landscape/Ground */}
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black via-black/50 to-transparent opacity-80 z-0"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-10 bg-[#1a1226] border-t border-white/5 z-0 skew-x-12 scale-110 origin-bottom"></div>
+
+                {/* 4. Weather / Particles */}
+                {/* (Can add CSS rain/snow here later) */}
 
 
-                    {/* Status Icons Floating */}
-                    <div className="absolute top-2 right-2 flex gap-2 z-10">
-                        {stats.hunger < 30 && <span className="animate-bounce">🍔</span>}
-                        {stats.hygiene < 30 && <span className="animate-pulse">💩</span>}
-                    </div>
+                {/* --- THE ALIEN --- */}
+                <div
+                    className="absolute bottom-12 transition-all duration-500 ease-linear z-10 filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]"
+                    style={{ left: `${position}%`, transform: `translateX(-50%)` }}
+                >
+                    {/* Character Sprite */}
+                    <div style={getSpriteStyle()} />
 
-                    {/* Floating Emoji */}
-                    {floatingEmoji && (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-12 text-2xl animate-bounce z-30">
-                            {floatingEmoji}
+                    {/* Speech Bubble / Floating Text */}
+                    {floatingText.map(ft => (
+                        <div key={ft.id} className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-white/10 backdrop-blur rounded-full text-xs font-bold text-white border border-white/20 animate-fade-up">
+                            {ft.text}
                         </div>
+                    ))}
+
+                    {/* Accessories Overlay (Simple absolute positioning) */}
+                    {stats.items.includes("space_helmet") && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-4xl opacity-90 pointer-events-none">🧑‍🚀</div>
+                    )}
+                    {stats.items.includes("crown") && (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-3xl rotate-12 drop-shadow-lg">👑</div>
                     )}
 
-                    {/* The ALIEN (SVG) */}
-                    <div
-                        onClick={handlePet}
-                        className="cursor-pointer transition-transform hover:scale-110 active:scale-95 z-10 filter drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]"
-                    >
-                        <PixelSprite frame={getCurrentFrame()} scale={8} />
-                    </div>
+                    {/* Status Icons */}
+                    {mood === "sleeping" && <div className="absolute -top-8 right-0 text-xl animate-pulse">💤</div>}
+                    {stats.hunger < 30 && mood !== "sleeping" && <div className="absolute -top-8 -left-4 text-xl animate-bounce">🍔</div>}
                 </div>
 
-                {/* Control Panel */}
-                <div className="p-4 bg-gray-800">
-
-                    {/* Retro Stat Bars */}
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                        <RetroBar label="HP" value={stats.hunger} color="bg-green-500" />
-                        <RetroBar label="HYG" value={stats.hygiene} color="bg-blue-400" />
-                        <RetroBar label="FUN" value={stats.happiness} color="bg-pink-500" />
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex justify-between items-center gap-2">
-                        <RetroButton onClick={handleFeed} icon={<Pizza className="w-4 h-4" />} label="FEED" />
-                        <RetroButton onClick={handleClean} icon={<Droplets className="w-4 h-4" />} label="WASH" />
-                        <RetroButton onClick={() => setShowShop(!showShop)} icon={<ShoppingBag className="w-4 h-4" />} label="SHOP" active={showShop} />
-                    </div>
-                </div>
-
-                {/* Shop Overlay */}
-                {showShop && (
-                    <div className="absolute inset-0 bg-black/90 p-4 z-40 flex flex-col items-center justify-center text-green-400 font-mono">
-                        <div className="text-xl mb-4 blink">GM SHOP</div>
-                        <div className="text-sm text-center mb-6">OUT OF STOCK</div>
-                        <button onClick={() => setShowShop(false)} className="px-4 py-2 border border-green-500 hover:bg-green-500 hover:text-black">
-                            CLOSE
-                        </button>
-                    </div>
-                )}
             </div>
+
+
+            {/* --- HUD (Heads Up Display) --- */}
+            <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20">
+                {/* Status Bars */}
+                <div className="flex flex-col gap-1 w-32">
+                    <StatusBar value={stats.hunger} icon={<Utensils className="w-3 h-3" />} color="bg-orange-500" />
+                    <StatusBar value={stats.hygiene} icon={<Droplets className="w-3 h-3" />} color="bg-blue-500" />
+                    <StatusBar value={stats.happiness} icon={<Heart className="w-3 h-3" />} color="bg-pink-500" />
+                    <StatusBar value={stats.energy} icon={<Zap className="w-3 h-3" />} color="bg-yellow-500" />
+                </div>
+
+                {/* Balance & Settings */}
+                <div className="flex flex-col items-end gap-2">
+                    <div className="px-3 py-1 bg-black/40 backdrop-blur rounded-full border border-white/10 flex items-center gap-2 text-yellow-400 font-bold font-mono text-xs shadow-lg">
+                        <Sparkles className="w-3 h-3" />
+                        {stats.balance}
+                    </div>
+                    <button className="p-2 bg-black/20 hover:bg-black/40 rounded-full text-white/50 hover:text-white transition-colors">
+                        <Info className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+
+
+            {/* --- CONTROL PANEL --- */}
+            <div className="bg-[#120f16] p-3 border-t border-white/5 z-20 relative grid grid-cols-4 gap-2">
+                <GameButton
+                    onClick={() => handleFeed()}
+                    icon={<Utensils className="w-5 h-5" />}
+                    label="Besle"
+                    color="hover:bg-orange-500/20 hover:text-orange-400"
+                />
+                <GameButton
+                    onClick={handleWash}
+                    icon={<Droplets className="w-5 h-5" />}
+                    label="Yıka"
+                    color="hover:bg-blue-500/20 hover:text-blue-400"
+                />
+                <GameButton
+                    onClick={handleSleep}
+                    icon={mood === "sleeping" ? <Sparkles className="w-5 h-5" /> : <Music className="w-5 h-5" />}
+                    label={mood === "sleeping" ? "Uyan" : "Uyu"}
+                    color="hover:bg-indigo-500/20 hover:text-indigo-400"
+                />
+                <GameButton
+                    onClick={() => setShowShop(!showShop)}
+                    icon={<Sparkles className="w-5 h-5" />}
+                    label="Mağaza"
+                    active={showShop}
+                    color="hover:bg-purple-500/20 hover:text-purple-400"
+                />
+            </div>
+
+            {showShop && (
+                <AlienShop onClose={() => setShowShop(false)} onBuy={handleBuy} balance={stats.balance} />
+            )}
+
+
+            {/* --- CSS Globals for specific animations --- */}
+            <style jsx global>{`
+                @keyframes stars-move {
+                    from { background-position: 0 0; }
+                    to { background-position: -1000px 1000px; }
+                }
+                @keyframes fade-up {
+                    0% { opacity: 0; transform: translate(-50%, 10px); }
+                    100% { opacity: 1; transform: translate(-50%, 0); }
+                }
+                .animate-fade-up { animation: fade-up 0.3s ease-out forwards; }
+            `}</style>
         </div>
     );
 }
 
-function RetroBar({ label, value, color }: { label: string, value: number, color: string }) {
-    // Pixelated bar
-    const segments = 10;
-    const filled = Math.ceil((value / 100) * segments);
+// --- Sub Components ---
 
+function StatusBar({ value, icon, color }: { value: number, icon: React.ReactNode, color: string }) {
     return (
-        <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold text-gray-400 tracking-wider">{label}</span>
-            <div className="flex gap-[2px]">
-                {[...Array(segments)].map((_, i) => (
-                    <div
-                        key={i}
-                        className={`h-2 flex-1 rounded-[1px] ${i < filled ? color : 'bg-gray-700'}`}
-                    />
-                ))}
+        <div className="flex items-center gap-2 group/bar">
+            <div className="text-white/40">{icon}</div>
+            <div className="flex-1 h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/5">
+                <div
+                    className={`h-full ${color} transition-all duration-500 rounded-full shadow-[0_0_10px_currentColor]`}
+                    style={{ width: `${value}%` }}
+                />
             </div>
         </div>
     );
 }
 
-function RetroButton({ onClick, icon, label, active }: any) {
+function GameButton({ onClick, icon, label, color, active }: any) {
     return (
         <button
             onClick={onClick}
             className={`
-                flex-1 py-3 flex flex-col items-center justify-center gap-1
-                bg-gray-700 border-b-4 border-gray-900 rounded active:border-b-0 active:translate-y-1
-                hover:bg-gray-600 transition-colors
-                ${active ? 'bg-gray-600 border-b-0 translate-y-1' : ''}
+                flex flex-col items-center justify-center gap-1 py-3 rounded-xl
+                bg-white/5 border border-white/5 transition-all duration-200
+                active:scale-95 text-gray-400
+                ${active ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : ''}
+                ${color}
             `}
         >
-            <div className="text-gray-300">{icon}</div>
-            <span className="text-[10px] font-bold text-gray-300 tracking-widest">{label}</span>
+            {icon}
+            <span className="text-[10px] font-bold tracking-wide">{label}</span>
         </button>
-    )
+    );
 }
