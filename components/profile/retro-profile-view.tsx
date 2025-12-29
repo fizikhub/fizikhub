@@ -153,13 +153,13 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
 
                 {/* Content Section - Tabs Style Retro */}
                 <div className="border-t-4 border-red-600 pt-8 mt-8 relative">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4">
-                        <img src="https://media.giphy.com/media/Vse57EWCo2Va/giphy.gif" alt="ufo" className="h-12" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4 z-20">
+                        <img src="https://media.giphy.com/media/Vse57EWCo2Va/giphy.gif" alt="ufo" className="h-12 md:h-16" />
                     </div>
 
                     <div className="flex flex-col md:flex-row justify-center items-center mb-8 gap-4">
-                        <img src="https://media.giphy.com/media/13d2jHlCrkskks/giphy.gif" alt="Under Construction" className="w-full md:w-64 max-w-[200px]" />
-                        <img src="https://media.giphy.com/media/3o7rbTZ5dZ8vXvIqmk/giphy.gif" className="w-24 h-24 hidden md:block" alt="pizza" />
+                        <img src="https://media.giphy.com/media/3o6gDWzmAzrpi5DdBm/giphy.gif" alt="Under Construction" className="w-full md:w-64 max-w-[200px]" />
+                        <img src="https://media.giphy.com/media/26brQLhV3G26G35C0/giphy.gif" className="w-24 h-24" alt="pizza" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -168,6 +168,11 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                             <div className="absolute -top-4 left-4 bg-black px-2 text-green-500 font-bold border border-green-500 text-xl">
                                 SON YAZILAR
                             </div>
+                            {/* GIF: Arrow */}
+                            <div className="absolute -right-4 top-10">
+                                <img src="https://media.giphy.com/media/10Hv6G6k0p9KWA/giphy.gif" className="w-12" alt="arrow" />
+                            </div>
+
                             <ul className="space-y-4 mt-2">
                                 {articles.slice(0, 5).map(article => (
                                     <li key={article.id} className="border-b border-green-900 pb-2">
@@ -203,13 +208,33 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
 
                 </div>
 
+                {/* GIF ZONE - Massive Grid of chaos */}
+                <div className="mt-12 mb-12 border-4 border-dashed border-white p-4 bg-purple-900/30">
+                    <h3 className="text-center text-2xl font-bold text-white mb-4 blink-animation">*** GIF ZONE ***</h3>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center justify-items-center">
+                        <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="w-16 md:w-24" alt="dancing baby" />
+                        <img src="https://media.giphy.com/media/KxhIhXaAmjOVy/giphy.gif" className="w-16 md:w-24" alt="snoop" />
+                        <img src="https://media.giphy.com/media/3o7TKSjRrfPHjGWglq/giphy.gif" className="w-16 md:w-24" alt="mailbox" />
+                        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" className="w-16 md:w-24" alt="cat" />
+                        <img src="https://media.giphy.com/media/5wWf7H89PisM6An8UAU/giphy.gif" className="w-16 md:w-24" alt="skeleton" />
+                        <img src="https://media.giphy.com/media/l41lFw057lAJcYt0Y/giphy.gif" className="w-16 md:w-24" alt="alien" />
+                        <img src="https://media.giphy.com/media/3o7qDXO07Y7iYQadZ6/giphy.gif" className="w-16 md:w-24" alt="cd" />
+                        <img src="https://media.giphy.com/media/3o6Zxp2c5l9N5t9uBa/giphy.gif" className="w-16 md:w-24" alt="computer" />
+                        <img src="https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif" className="w-24" alt="welcome" />
+                        <img src="https://media.giphy.com/media/AhjXalOPA2rj2/giphy.gif" className="w-16 md:w-24" alt="earth" />
+                        <img src="https://media.giphy.com/media/Lopx9eUIqBZhK/giphy.gif" className="w-16 md:w-24" alt="fire" />
+                        <img src="https://media.giphy.com/media/26FPCXdkvB3PIy5lsk/giphy.gif" className="w-16 md:w-24" alt="ghost" />
+                    </div>
+                </div>
+
                 {/* Footer */}
                 <div className="mt-12 text-center text-xs text-gray-400 pb-12 font-serif">
                     <p>BEST VIEWED WITH INTERNET EXPLORER 4.0</p>
                     <p className="mt-2">COPYRIGHT 1999 @BARANBOZKURT INC.</p>
                     <div className="flex justify-center gap-2 mt-4">
-                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px]">HTML VALID</div>
-                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px]">NO FRAME</div>
+                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">HTML VALID</div>
+                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">NO FRAME</div>
+                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">MS IE 4.0</div>
                     </div>
                 </div>
 
@@ -226,6 +251,20 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
         .blink-animation {
             animation: blinker 1s linear infinite;
         }
+        /* Hide scrollbar for retro feel */
+        .scrollbar-retro::-webkit-scrollbar {
+            width: 12px;
+        }
+        .scrollbar-retro::-webkit-scrollbar-track {
+            background: #c0c0c0;
+            border: 2px solid white;
+            border-style: inset;
+        }
+        .scrollbar-retro::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border: 2px solid white;
+            border-style: outset;
+        }
         @keyframes blinker {
             50% { opacity: 0; }
         }
@@ -235,9 +274,6 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
-        }
-        .pixelated {
-            image-rendering: pixelated;
         }
       `}</style>
         </div>
