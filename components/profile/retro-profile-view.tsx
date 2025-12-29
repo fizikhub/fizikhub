@@ -48,8 +48,8 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
 
                 {/* Header Marquee */}
                 <div className="mb-4 border-4 border-ridge border-gray-400 bg-blue-800 text-white font-bold p-1 overflow-hidden whitespace-nowrap">
-                    <div className="animate-marquee inline-block">
-                        *** HOŞGELDİNİZ ***  ADMİNİN MEKANINA GİRİŞ YAPTINIZ  ***  BURASI FİZİKHUB'IN MERKEZİDİR  ***  DİKKAT: YÜKSEK RADYASYON  ***  @BARANBOZKURT  ***
+                    <div className="animate-marquee inline-block text-yellow-300 tracking-widest text-xl">
+                        *** YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ. HOŞGELDİNİZ. ***  DİKKAT: YÜKSEK RADYASYON  ***  @BARANBOZKURT  ***
                     </div>
                 </div>
 
@@ -58,7 +58,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
 
                     {/* Left Column: Avatar & Counter */}
                     <div className="flex flex-col gap-4">
-                        <div className="border-[6px] border-double border-[#ff00ff] p-1 bg-black relative inline-block self-center md:self-start">
+                        <div className="border-[6px] border-double border-[#ff00ff] p-1 bg-black relative inline-block self-center md:self-start group">
                             <div className="relative">
                                 {/* Avatar */}
                                 <img
@@ -67,17 +67,13 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                                     className="w-48 h-48 object-cover sepia-[.3] contrast-125"
                                 />
 
-                                {/* THE MUSTACHE (CSS or SVG Overlay) */}
-                                <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-24 h-8 pointer-events-none filter drop-shadow-lg">
-                                    <svg viewBox="0 0 100 40" fill="black">
-                                        <path d="M50 10 Q70 0 90 20 Q100 30 90 35 Q80 40 70 30 Q60 20 50 25 Q40 20 30 30 Q20 40 10 35 Q0 30 10 20 Q30 0 50 10 " />
-                                    </svg>
-                                </div>
-
                                 {/* Spinning "COOL" Badge */}
-                                <div className="absolute -top-4 -right-4 bg-yellow-400 text-red-600 font-bold rounded-full w-16 h-16 flex items-center justify-center animate-spin-slow border-2 border-red-600 shadow-xl">
+                                <div className="absolute -top-4 -right-4 bg-yellow-400 text-red-600 font-bold rounded-full w-16 h-16 flex items-center justify-center animate-spin-slow border-2 border-red-600 shadow-xl z-20">
                                     COOL!
                                 </div>
+
+                                {/* GIF: Flames at bottom */}
+                                <img src="https://media.giphy.com/media/Lopx9eUIqBZhK/giphy.gif" className="absolute bottom-0 left-0 w-full h-8 opacity-70 mix-blend-screen" alt="fire" />
                             </div>
                             <div className="text-center mt-2 font-bold text-[#ff00ff] blink-animation">
                                 {blink ? "ONLINE" : ""}
@@ -85,8 +81,11 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                         </div>
 
                         {/* Retro Stats Table */}
-                        <div className="border-2 border-gray-600 bg-gray-900 p-2 text-xs">
-                            <table className="w-full text-left text-green-400 font-mono">
+                        <div className="border-2 border-gray-600 bg-gray-900 p-2 text-xs relative overflow-hidden">
+                            {/* GIF: Matrix rain background effect */}
+                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'url(https://media.giphy.com/media/A06UFEx8jxEwU/giphy.gif)', backgroundSize: 'cover' }}></div>
+
+                            <table className="w-full text-left text-green-400 font-mono relative z-10">
                                 <tbody>
                                     <tr><td className="pr-2">LEVEL:</td><td className="text-white">99 (MAX)</td></tr>
                                     <tr><td className="pr-2">TAKİPÇİ:</td><td className="text-white">{stats.followersCount}</td></tr>
@@ -96,7 +95,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                             </table>
                         </div>
 
-                        {/* Badges as GIF row */}
+                        {/* Badges */}
                         <div className="flex flex-wrap gap-1 border border-yellow-600 p-1 bg-black/50">
                             {userBadges.map((ub: any, i: number) => (
                                 <div key={i} className="w-8 h-8 rounded-none border border-white bg-blue-900 flex items-center justify-center p-0.5" title={ub.badges.name}>
@@ -104,44 +103,62 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                                 </div>
                             ))}
                         </div>
+
+                        {/* GIF: Spinning Earth */}
+                        <div className="flex justify-center">
+                            <img src="https://web.archive.org/web/20090830025916/http://geocities.com/Heartland/Bluffs/4157/earth.gif" className="w-16 h-16" alt="earth" />
+                        </div>
                     </div>
 
                     {/* Right Column: Bio & Content */}
-                    <div className="bg-[#000080] border-4 border-outset border-gray-400 p-4 shadow-[10px_10px_0px_rgba(0,0,0,0.8)]">
+                    <div className="bg-[#000080] border-4 border-outset border-gray-400 p-4 shadow-[10px_10px_0px_rgba(0,0,0,0.8)] relative">
+                        {/* GIF: Welcome banner */}
+                        <div className="absolute -top-6 right-10 z-20">
+                            <img src="https://web.archive.org/web/20090829022646/http://geocities.com/Heartland/Bluffs/4157/welcome.gif" className="h-12" alt="welcome" />
+                        </div>
+
                         <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 animate-pulse tracking-widest drop-shadow-[4px_4px_0_#000000]">
                             @{profile.username.toUpperCase()}
                         </h1>
 
-                        <h2 className="text-white text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2">
+                        <h2 className="text-white text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2 flex items-center gap-2">
+                            <img src="https://web.archive.org/web/20090829064741/http://geocities.com/Athens/Acropolis/7155/new.gif" alt="new" />
                             ~ {profile.full_name} ~
                         </h2>
 
                         <div className="bg-white text-black p-4 font-serif text-lg leading-relaxed border-2 border-inset border-gray-600 h-64 overflow-y-auto scrollbar-retro relative">
                             <p>{profile.bio || "Henüz bir biyografi yok..."}</p>
-                            <p className="mt-4 font-bold text-red-600">
-                                NOT: Bu profili görüntülüyorsanız çok şanslısınız. Burası internetin en cool köşesi.
-                            </p>
-                            <div className="absolute top-2 right-2">
+
+
+                            <div className="absolute top-2 right-2 flex flex-col gap-2">
                                 <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="w-12 h-12" alt="dancing baby" />
+                                <img src="https://media.giphy.com/media/KxhIhXaAmjOVy/giphy.gif" className="w-12 h-12" alt="snoop" />
                             </div>
                         </div>
 
-                        <div className="mt-4 flex gap-4">
+                        <div className="mt-4 flex gap-4 items-center">
                             <button className="px-6 py-2 bg-gray-300 border-4 border-outset border-white text-black font-bold active:border-inset active:bg-gray-400">
                                 TAKİP ET
                             </button>
                             <button className="px-6 py-2 bg-gray-300 border-4 border-outset border-white text-black font-bold active:border-inset active:bg-gray-400">
                                 MESAJ AT
                             </button>
+                            {/* GIF: Mailbox */}
+                            <img src="https://web.archive.org/web/20091027062402/http://geocities.com/Heartland/Bluffs/4157/emailme.gif" className="h-10" alt="email" />
                         </div>
                     </div>
                 </div>
 
 
                 {/* Content Section - Tabs Style Retro */}
-                <div className="border-t-4 border-red-600 pt-8 mt-8">
-                    <div className="flex justify-center mb-8">
+                <div className="border-t-4 border-red-600 pt-8 mt-8 relative">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4">
+                        <img src="https://web.archive.org/web/20090726105435/http://geocities.com/Area51/Cavern/9151/ufo.gif" alt="ufo" className="h-12" />
+                    </div>
+
+                    <div className="flex justify-center mb-8 gap-4">
                         <img src="https://web.archive.org/web/20090829023746/http://geocities.com/SunsetStrip/Lounge/9762/construction_lg.gif" alt="Under Construction" className="w-64" />
+                        <img src="https://media.giphy.com/media/26brQLhV3G26G35C0/giphy.gif" className="w-24 h-24 hidden md:block" alt="pizza" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
