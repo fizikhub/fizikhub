@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <style>
+    .ufo { animation: hover 1.5s ease-in-out infinite; }
+    .beam { animation: pulse 0.8s ease-in-out infinite; }
+    .light1 { animation: blink 0.3s step-end infinite; }
+    .light2 { animation: blink 0.3s step-end infinite 0.1s; }
+    .light3 { animation: blink 0.3s step-end infinite 0.2s; }
+    @keyframes hover { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+    @keyframes blink { 0%, 100% { fill: #00ff00; } 50% { fill: #ffff00; } }
+  </style>
+  <g class="ufo">
+    <!-- Beam -->
+    <path class="beam" d="M35 55 L20 95 L80 95 L65 55 Z" fill="url(#beamGrad)" opacity="0.5"/>
+    <!-- Body -->
+    <ellipse cx="50" cy="50" rx="35" ry="12" fill="#888"/>
+    <ellipse cx="50" cy="48" rx="32" ry="10" fill="#aaa"/>
+    <!-- Dome -->
+    <ellipse cx="50" cy="42" rx="18" ry="15" fill="#66ff66" opacity="0.6"/>
+    <ellipse cx="50" cy="38" rx="12" ry="10" fill="#99ff99" opacity="0.4"/>
+    <!-- Alien inside -->
+    <ellipse cx="50" cy="40" rx="6" ry="8" fill="#00ff00"/>
+    <circle cx="47" cy="38" r="2" fill="#000"/>
+    <circle cx="53" cy="38" r="2" fill="#000"/>
+    <!-- Lights -->
+    <circle cx="25" cy="50" r="3" class="light1"/>
+    <circle cx="50" cy="52" r="3" class="light2"/>
+    <circle cx="75" cy="50" r="3" class="light3"/>
+  </g>
+  <defs>
+    <linearGradient id="beamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff00;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#00ff00;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+</svg>

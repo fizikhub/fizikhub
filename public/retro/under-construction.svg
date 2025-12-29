@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <style>
+    .flash { animation: blink 1s step-end infinite; }
+    .flash2 { animation: blink 1s step-end infinite 0.5s; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+  <!-- Yellow warning background -->
+  <rect width="200" height="50" fill="#ffcc00" stroke="#000" stroke-width="3"/>
+  <!-- Stripes -->
+  <path d="M0 0 L15 0 L15 50 L0 50 Z" fill="#000"/>
+  <path d="M30 0 L45 0 L45 50 L30 50 Z" fill="#000"/>
+  <path d="M155 0 L170 0 L170 50 L155 50 Z" fill="#000"/>
+  <path d="M185 0 L200 0 L200 50 L185 50 Z" fill="#000"/>
+  <!-- Construction worker icon -->
+  <circle cx="60" cy="20" r="8" fill="#ffd4a3"/>
+  <ellipse cx="60" cy="12" rx="10" ry="5" fill="#ff6600"/>
+  <rect x="52" y="28" width="16" height="15" fill="#ff6600"/>
+  <!-- Tools -->
+  <rect x="72" y="25" width="3" height="15" fill="#666"/>
+  <rect x="70" y="22" width="7" height="5" fill="#888"/>
+  <!-- Text -->
+  <text x="100" y="22" font-family="'Comic Sans MS', cursive" font-size="11" fill="#000" font-weight="bold" text-anchor="middle">YAPIM</text>
+  <text x="100" y="38" font-family="'Comic Sans MS', cursive" font-size="11" fill="#000" font-weight="bold" text-anchor="middle">AŞAMASINDA!</text>
+  <!-- Flashing lights -->
+  <circle cx="140" cy="15" r="5" fill="#ff0000" class="flash"/>
+  <circle cx="140" cy="35" r="5" fill="#ff0000" class="flash2"/>
+</svg>
