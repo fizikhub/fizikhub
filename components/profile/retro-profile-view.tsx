@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-
 import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
 
 interface RetroProfileViewProps {
@@ -21,261 +19,349 @@ interface RetroProfileViewProps {
     };
 }
 
+// Animated emoji component
+const AnimatedEmoji = ({ emoji, className = "" }: { emoji: string; className?: string }) => (
+    <span className={`inline-block animate-bounce-slow ${className}`}>{emoji}</span>
+);
+
+// Floating decoration component
+const FloatingDecor = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
+    <div
+        className="absolute animate-float pointer-events-none"
+        style={{ animationDelay: `${delay}s` }}
+    >
+        {children}
+    </div>
+);
+
 export function RetroProfileView({ profile, articles, questions, userBadges, stats }: RetroProfileViewProps) {
     const [blink, setBlink] = useState(true);
+    const [counter, setCounter] = useState(1337);
 
     useEffect(() => {
-        const interval = setInterval(() => setBlink(b => !b), 500);
-        return () => clearInterval(interval);
+        const blinkInterval = setInterval(() => setBlink(b => !b), 500);
+        const counterInterval = setInterval(() => setCounter(c => c + Math.floor(Math.random() * 10)), 2000);
+        return () => {
+            clearInterval(blinkInterval);
+            clearInterval(counterInterval);
+        };
     }, []);
 
     return (
         <div className="font-mono bg-black text-[#00ff00] min-h-screen relative overflow-x-hidden selection:bg-[#ff00ff] selection:text-white">
-            {/* 
-        This is a tribute to the 90s web aesthetic. 
-        Inline styles are used intentionally for that raw, chaotic feel where needed, 
-        but Tailwind makes it manageable. 
-      */}
 
-            {/* Background - Tiled Stars */}
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-50"
-                style={{
-                    backgroundImage: 'url("https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif")', // Classic starfield
-                    backgroundSize: '200px'
-                }}
-            />
+            {/* Animated Starfield Background - Pure CSS */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="stars-layer-1"></div>
+                <div className="stars-layer-2"></div>
+                <div className="stars-layer-3"></div>
+            </div>
 
-            {/* Main Container - Windows 95 Style Wrapper */}
-            <div className="relative z-10 container mx-auto p-2 max-w-5xl">
+            {/* Floating Emoji Decorations - Scattered */}
+            <div className="fixed inset-0 z-5 pointer-events-none overflow-hidden">
+                <FloatingDecor delay={0}><span className="text-4xl absolute top-[10%] left-[5%]">🚀</span></FloatingDecor>
+                <FloatingDecor delay={0.5}><span className="text-3xl absolute top-[20%] right-[10%]">👽</span></FloatingDecor>
+                <FloatingDecor delay={1}><span className="text-4xl absolute top-[40%] left-[2%]">🌍</span></FloatingDecor>
+                <FloatingDecor delay={1.5}><span className="text-3xl absolute top-[60%] right-[5%]">🔥</span></FloatingDecor>
+                <FloatingDecor delay={2}><span className="text-4xl absolute top-[80%] left-[8%]">💀</span></FloatingDecor>
+                <FloatingDecor delay={0.3}><span className="text-3xl absolute top-[15%] left-[80%]">⭐</span></FloatingDecor>
+                <FloatingDecor delay={0.8}><span className="text-4xl absolute top-[50%] right-[2%]">🛸</span></FloatingDecor>
+                <FloatingDecor delay={1.2}><span className="text-3xl absolute top-[70%] left-[90%]">🌙</span></FloatingDecor>
+                <FloatingDecor delay={1.8}><span className="text-4xl absolute top-[30%] left-[3%]">✨</span></FloatingDecor>
+                <FloatingDecor delay={2.2}><span className="text-3xl absolute top-[85%] right-[15%]">🎸</span></FloatingDecor>
+            </div>
+
+            {/* Main Container */}
+            <div className="relative z-10 container mx-auto p-2 md:p-4 max-w-5xl">
 
                 {/* Header Marquee */}
-                <div className="mb-4 border-4 border-ridge border-gray-400 bg-blue-800 text-white font-bold p-1 overflow-hidden whitespace-nowrap text-xl tracking-widest text-yellow-300">
-                    {React.createElement('marquee', { scrollamount: "10", scrolldelay: "0", loop: "infinite" },
-                        "*** YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ. HOŞGELDİNİZ. ***  DİKKAT: YÜKSEK RADYASYON  ***  @BARANBOZKURT  ***"
+                <div className="mb-4 border-4 border-ridge border-gray-400 bg-gradient-to-r from-blue-800 via-purple-800 to-blue-800 text-white font-bold p-2 overflow-hidden whitespace-nowrap">
+                    {React.createElement('marquee', { scrollamount: "8" },
+                        <span className="text-yellow-300 text-lg md:text-xl tracking-wider">
+                            ★★★ YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ ★★★ HOŞGELDİNİZ ★★★ DİKKAT: YÜKSEK RADYASYON ★★★ @BARANBOZKURT ★★★
+                        </span>
                     )}
                 </div>
 
-                {/* Top Section: Avatar & Info Table */}
-                <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4 mb-8">
+                {/* Visitor Counter */}
+                <div className="text-center mb-4 p-2 bg-gray-800 border-2 border-gray-600 inline-block mx-auto w-full">
+                    <span className="text-gray-400 text-xs">Bu sayfayı </span>
+                    <span className="text-green-400 font-bold text-lg animate-pulse">{counter}</span>
+                    <span className="text-gray-400 text-xs"> kişi ziyaret etti! 🔥</span>
+                </div>
 
-                    {/* Left Column: Avatar & Counter */}
-                    <div className="flex flex-col gap-4 items-center md:items-start">
-                        <div className="border-[6px] border-double border-[#ff00ff] p-1 bg-black relative inline-block group">
+                {/* Grid Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 md:gap-6">
+
+                    {/* Left Column */}
+                    <div className="flex flex-col gap-4 items-center lg:items-start">
+
+                        {/* Avatar Frame */}
+                        <div className="border-[6px] border-double border-[#ff00ff] p-2 bg-black relative group">
                             <div className="relative">
-                                {/* Avatar */}
                                 <img
                                     src={profile.avatar_url || "/default-avatar.png"}
                                     alt="Admin"
-                                    className="w-48 h-48 object-cover sepia-[.3] contrast-125"
+                                    className="w-44 h-44 md:w-52 md:h-52 object-cover sepia-[.2] contrast-110 rounded-sm"
                                 />
 
-                                {/* Spinning "COOL" Badge */}
-                                <div className="absolute -top-4 -right-4 bg-yellow-400 text-red-600 font-bold rounded-full w-16 h-16 flex items-center justify-center animate-spin-slow border-2 border-red-600 shadow-xl z-20">
+                                {/* Corner Decorations */}
+                                <div className="absolute -top-3 -left-3 text-2xl animate-spin-slow">⭐</div>
+                                <div className="absolute -top-3 -right-3 text-2xl animate-spin-slow" style={{ animationDirection: 'reverse' }}>⭐</div>
+                                <div className="absolute -bottom-3 -left-3 text-2xl animate-bounce-slow">🔥</div>
+                                <div className="absolute -bottom-3 -right-3 text-2xl animate-bounce-slow" style={{ animationDelay: '0.5s' }}>🔥</div>
+
+                                {/* COOL Badge */}
+                                <div className="absolute -top-5 -right-5 bg-yellow-400 text-red-600 font-black text-sm rounded-full w-14 h-14 flex items-center justify-center animate-spin-slow border-4 border-red-600 shadow-xl z-20">
                                     COOL!
                                 </div>
-
-                                {/* GIF: Flames at bottom */}
-                                <img src="https://media.giphy.com/media/P7JmDW7IkB7ZW/giphy.gif" className="absolute bottom-0 left-0 w-full h-8 opacity-70 mix-blend-screen" alt="fire" />
                             </div>
-                            <div className="text-center mt-2 font-bold text-[#ff00ff] blink-animation">
-                                {blink ? "ONLINE" : ""}
+
+                            {/* Online Status */}
+                            <div className="text-center mt-2 font-bold text-[#ff00ff] text-lg">
+                                {blink ? "● ONLINE" : "○ ONLINE"}
                             </div>
                         </div>
 
-                        {/* Retro Stats Table */}
-                        <div className="border-2 border-gray-600 bg-gray-900 p-2 text-xs relative overflow-hidden w-full max-w-[300px]">
-                            {/* GIF: Matrix rain background effect */}
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'url(https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif)', backgroundSize: 'cover' }}></div>
+                        {/* Stats Table */}
+                        <div className="w-full max-w-[320px] border-2 border-green-500 bg-black p-3 relative overflow-hidden">
+                            <div className="absolute inset-0 opacity-10 bg-gradient-to-b from-green-500 to-transparent"></div>
 
-                            <table className="w-full text-left text-green-400 font-mono relative z-10 text-sm">
-                                <tbody>
-                                    <tr><td className="pr-2">LEVEL:</td><td className="text-white">99 (MAX)</td></tr>
-                                    <tr><td className="pr-2">TAKİPÇİ:</td><td className="text-white">{stats.followersCount}</td></tr>
-                                    <tr><td className="pr-2">TAKİP:</td><td className="text-white">{stats.followingCount}</td></tr>
-                                    <tr><td className="pr-2">YAZILAR:</td><td className="text-white">{stats.articlesCount}</td></tr>
+                            <h3 className="text-green-400 font-bold mb-2 flex items-center gap-2">
+                                <span className="animate-pulse">▶</span> STATS.TXT
+                            </h3>
+
+                            <table className="w-full text-left font-mono text-sm relative z-10">
+                                <tbody className="text-green-300">
+                                    <tr className="border-b border-green-900">
+                                        <td className="py-1">LEVEL:</td>
+                                        <td className="py-1 text-white font-bold">99 (MAX) 🏆</td>
+                                    </tr>
+                                    <tr className="border-b border-green-900">
+                                        <td className="py-1">TAKİPÇİ:</td>
+                                        <td className="py-1 text-white font-bold">{stats.followersCount} 👥</td>
+                                    </tr>
+                                    <tr className="border-b border-green-900">
+                                        <td className="py-1">TAKİP:</td>
+                                        <td className="py-1 text-white font-bold">{stats.followingCount} 👤</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1">YAZILAR:</td>
+                                        <td className="py-1 text-white font-bold">{stats.articlesCount} 📝</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        {/* Badges - Removed pixelated class to prevent glitches */}
-                        <div className="flex flex-wrap gap-1 border border-yellow-600 p-1 bg-black/50 justify-center md:justify-start max-w-[300px]">
-                            {userBadges.map((ub: any, i: number) => (
-                                <div key={i} className="w-8 h-8 rounded-none border border-white bg-blue-900 flex items-center justify-center p-0.5" title={ub.badges.name}>
-                                    <CustomBadgeIcon name={ub.badges.name} className="w-full h-full text-white" />
-                                </div>
-                            ))}
+                        {/* Badges */}
+                        <div className="w-full max-w-[320px] border-2 border-yellow-500 bg-black p-3">
+                            <h3 className="text-yellow-400 font-bold mb-2 flex items-center gap-2">
+                                <span className="animate-bounce">🏅</span> ROZETLER
+                            </h3>
+                            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                                {userBadges.map((ub: any, i: number) => (
+                                    <div key={i} className="w-10 h-10 border-2 border-yellow-600 bg-gray-900 flex items-center justify-center p-1 hover:scale-110 transition-transform" title={ub.badges.name}>
+                                        <CustomBadgeIcon name={ub.badges.name} className="w-full h-full text-yellow-400" />
+                                    </div>
+                                ))}
+                                {userBadges.length === 0 && <span className="text-gray-500 text-sm">Henüz rozet yok</span>}
+                            </div>
                         </div>
 
-                        {/* GIF: Spinning Earth (Reliable Link) */}
-                        <div className="flex justify-center">
-                            <img src="https://media.giphy.com/media/AhjXalOPA2rj2/giphy.gif" className="w-16 h-16" alt="earth" />
-                        </div>
+                        {/* Spinning Globe (CSS) */}
+                        <div className="text-6xl animate-spin-slow" style={{ animationDuration: '4s' }}>🌍</div>
                     </div>
 
-                    {/* Right Column: Bio & Content */}
-                    <div className="bg-[#000080] border-4 border-outset border-gray-400 p-4 shadow-[10px_10px_0px_rgba(0,0,0,0.8)] relative mt-4 md:mt-0 w-full">
-                        {/* GIF: Welcome banner (Hidden on mobile to save space) */}
-                        <div className="absolute -top-6 right-2 md:right-10 z-20 hidden md:block">
-                            <img src="https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif" className="h-12" alt="welcome" />
+                    {/* Right Column: Bio */}
+                    <div className="bg-gradient-to-br from-[#000080] to-[#000050] border-4 border-outset border-gray-400 p-4 shadow-[8px_8px_0px_rgba(0,0,0,0.5)] relative">
+
+                        {/* Welcome Banner (CSS) */}
+                        <div className="absolute -top-4 right-4 bg-red-600 text-white px-3 py-1 font-bold text-sm animate-pulse border-2 border-white z-20">
+                            🎉 HOŞGELDİN! 🎉
                         </div>
 
-                        <h1 className="text-2xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 animate-pulse tracking-widest drop-shadow-[2px_2px_0_#000000] break-words">
+                        <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-yellow-400 to-green-400 animate-pulse tracking-tight md:tracking-wide break-words">
                             @{profile.username.toUpperCase()}
                         </h1>
 
-                        <h2 className="text-white text-lg md:text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2 flex flex-wrap items-center gap-2">
-                            <span className="bg-red-600 text-white text-xs px-1 animate-pulse">NEW!</span>
+                        <h2 className="text-white text-base md:text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2 flex flex-wrap items-center gap-2">
+                            <span className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs px-2 py-0.5 animate-pulse font-bold">★ NEW!</span>
                             ~ {profile.full_name} ~
+                            <span className="text-xl">👑</span>
                         </h2>
 
-                        <div className="bg-white text-black p-4 font-serif text-lg leading-relaxed border-2 border-inset border-gray-600 h-64 overflow-y-auto scrollbar-retro relative">
-                            <p>{profile.bio || "Henüz bir biyografi yok..."}</p>
+                        <div className="bg-white text-black p-4 font-serif text-base leading-relaxed border-4 border-inset border-gray-400 min-h-[200px] max-h-[300px] overflow-y-auto relative">
+                            <p>{profile.bio || "Henüz bir biyografi yok... Ama bu profil o kadar havalı ki, biyografiye bile ihtiyaç yok! 😎"}</p>
 
-
-                            <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-50 md:opacity-100 pointer-events-none">
-                                <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="w-12 h-12" alt="dancing baby" />
-                            </div>
+                            {/* Corner decoration */}
+                            <div className="absolute top-2 right-2 text-3xl opacity-30">📜</div>
                         </div>
 
-                        <div className="mt-4 flex flex-col md:flex-row gap-4 items-center">
-                            <button className="w-full md:w-auto px-6 py-2 bg-gray-300 border-4 border-outset border-white text-black font-bold active:border-inset active:bg-gray-400">
-                                TAKİP ET
+                        {/* Action Buttons */}
+                        <div className="mt-4 flex flex-col md:flex-row gap-3">
+                            <button className="flex-1 px-6 py-3 bg-gradient-to-b from-gray-200 to-gray-400 border-4 border-outset border-white text-black font-bold text-lg active:border-inset active:from-gray-400 active:to-gray-200 flex items-center justify-center gap-2">
+                                👤 TAKİP ET
                             </button>
-                            <button className="w-full md:w-auto px-6 py-2 bg-gray-300 border-4 border-outset border-white text-black font-bold active:border-inset active:bg-gray-400">
-                                MESAJ AT
+                            <button className="flex-1 px-6 py-3 bg-gradient-to-b from-gray-200 to-gray-400 border-4 border-outset border-white text-black font-bold text-lg active:border-inset active:from-gray-400 active:to-gray-200 flex items-center justify-center gap-2">
+                                ✉️ MESAJ AT
                             </button>
-                            {/* GIF: Mailbox */}
-                            <img src="https://media.giphy.com/media/3o7TKSjRrfPHjGWglq/giphy.gif" className="h-10 hidden md:block" alt="email" />
                         </div>
                     </div>
                 </div>
 
-
-                {/* Content Section - Tabs Style Retro */}
-                <div className="border-t-4 border-red-600 pt-8 mt-8 relative">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-4 z-20">
-                        <img src="https://media.giphy.com/media/Vse57EWCo2Va/giphy.gif" alt="ufo" className="h-12 md:h-16" />
-                    </div>
-
-                    <div className="flex flex-col md:flex-row justify-center items-center mb-8 gap-4">
-                        <img src="https://media.giphy.com/media/3o6gDWzmAzrpi5DdBm/giphy.gif" alt="Under Construction" className="w-full md:w-64 max-w-[200px]" />
-                        <img src="https://media.giphy.com/media/26brQLhV3G26G35C0/giphy.gif" className="w-24 h-24" alt="pizza" />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Articles Frame */}
-                        <div className="border-4 border-green-500 bg-black p-4 relative">
-                            <div className="absolute -top-4 left-4 bg-black px-2 text-green-500 font-bold border border-green-500 text-xl">
-                                SON YAZILAR
-                            </div>
-                            {/* GIF: Arrow */}
-                            <div className="absolute -right-4 top-10">
-                                <img src="https://media.giphy.com/media/10Hv6G6k0p9KWA/giphy.gif" className="w-12" alt="arrow" />
-                            </div>
-
-                            <ul className="space-y-4 mt-2">
-                                {articles.slice(0, 5).map(article => (
-                                    <li key={article.id} className="border-b border-green-900 pb-2">
-                                        <Link href={`/makale/${article.slug}`} className="hover:bg-green-900 hover:text-white block transition-colors">
-                                            <span className="text-yellow-400 mr-2">►</span>
-                                            <span className="underline decoration-dotted">{article.title}</span>
-                                            <span className="block text-xs text-gray-500 mt-1">{format(new Date(article.created_at), 'dd MMM yyyy', { locale: tr })}</span>
-                                        </Link>
-                                    </li>
-                                ))}
-                                {articles.length === 0 && <li className="text-gray-500 italic">Hiç yazı yok...</li>}
-                            </ul>
-                        </div>
-
-                        {/* Questions Frame */}
-                        <div className="border-4 border-yellow-500 bg-black p-4 relative">
-                            <div className="absolute -top-4 left-4 bg-black px-2 text-yellow-500 font-bold border border-yellow-500 text-xl">
-                                FORUM KONULARI
-                            </div>
-                            <ul className="space-y-4 mt-2">
-                                {questions.slice(0, 5).map(question => (
-                                    <li key={question.id} className="border-b border-yellow-900 pb-2">
-                                        <Link href={`/forum/${question.slug}`} className="hover:bg-yellow-900 hover:text-white block transition-colors">
-                                            <span className="text-red-400 mr-2">❓</span>
-                                            <span className="underline decoration-dotted">{question.title}</span>
-                                        </Link>
-                                    </li>
-                                ))}
-                                {questions.length === 0 && <li className="text-gray-500 italic">Hiç soru yok...</li>}
-                            </ul>
-                        </div>
-                    </div>
-
+                {/* Decorative Emoji Row */}
+                <div className="my-8 flex flex-wrap justify-center gap-3 md:gap-6 text-3xl md:text-5xl">
+                    <span className="animate-bounce" style={{ animationDelay: '0s' }}>🎸</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.1s' }}>🔥</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>💀</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.3s' }}>👽</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>🚀</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.5s' }}>🌙</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.6s' }}>⭐</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.7s' }}>🛸</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.8s' }}>💎</span>
+                    <span className="animate-bounce" style={{ animationDelay: '0.9s' }}>🎮</span>
                 </div>
 
-                {/* GIF ZONE - Massive Grid of chaos */}
-                <div className="mt-12 mb-12 border-4 border-dashed border-white p-4 bg-purple-900/30">
-                    <h3 className="text-center text-2xl font-bold text-white mb-4 blink-animation">*** GIF ZONE ***</h3>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 items-center justify-items-center">
-                        <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="w-16 md:w-24" alt="dancing baby" />
-                        <img src="https://media.giphy.com/media/KxhIhXaAmjOVy/giphy.gif" className="w-16 md:w-24" alt="snoop" />
-                        <img src="https://media.giphy.com/media/3o7TKSjRrfPHjGWglq/giphy.gif" className="w-16 md:w-24" alt="mailbox" />
-                        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" className="w-16 md:w-24" alt="cat" />
-                        <img src="https://media.giphy.com/media/5wWf7H89PisM6An8UAU/giphy.gif" className="w-16 md:w-24" alt="skeleton" />
-                        <img src="https://media.giphy.com/media/l41lFw057lAJcYt0Y/giphy.gif" className="w-16 md:w-24" alt="alien" />
-                        <img src="https://media.giphy.com/media/3o7qDXO07Y7iYQadZ6/giphy.gif" className="w-16 md:w-24" alt="cd" />
-                        <img src="https://media.giphy.com/media/3o6Zxp2c5l9N5t9uBa/giphy.gif" className="w-16 md:w-24" alt="computer" />
-                        <img src="https://media.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif" className="w-24" alt="welcome" />
-                        <img src="https://media.giphy.com/media/AhjXalOPA2rj2/giphy.gif" className="w-16 md:w-24" alt="earth" />
-                        <img src="https://media.giphy.com/media/Lopx9eUIqBZhK/giphy.gif" className="w-16 md:w-24" alt="fire" />
-                        <img src="https://media.giphy.com/media/26FPCXdkvB3PIy5lsk/giphy.gif" className="w-16 md:w-24" alt="ghost" />
+                {/* Under Construction Banner */}
+                <div className="border-4 border-dashed border-yellow-500 bg-yellow-900/30 p-4 mb-8 text-center">
+                    <div className="flex items-center justify-center gap-4 flex-wrap">
+                        <span className="text-4xl animate-pulse">🚧</span>
+                        <span className="text-yellow-300 font-bold text-xl md:text-2xl animate-pulse">UNDER CONSTRUCTION</span>
+                        <span className="text-4xl animate-pulse">🚧</span>
+                    </div>
+                    <p className="text-yellow-500 text-sm mt-2">Bu bölüm yapım aşamasında... Çok yakında daha fazla içerik!</p>
+                </div>
+
+                {/* Content Sections */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+                    {/* Articles */}
+                    <div className="border-4 border-green-500 bg-black/80 p-4 relative">
+                        <div className="absolute -top-4 left-4 bg-black px-3 py-1 text-green-400 font-bold border-2 border-green-500 flex items-center gap-2">
+                            📰 SON YAZILAR
+                        </div>
+
+                        <ul className="space-y-3 mt-4">
+                            {articles.slice(0, 5).map(article => (
+                                <li key={article.id} className="border-b border-green-900 pb-2 group">
+                                    <Link href={`/makale/${article.slug}`} className="block hover:bg-green-900/50 p-1 transition-colors">
+                                        <span className="text-yellow-400 mr-2">►</span>
+                                        <span className="text-green-300 group-hover:text-white underline decoration-dotted">{article.title}</span>
+                                        <span className="block text-xs text-gray-500 mt-1">{format(new Date(article.created_at), 'dd MMM yyyy', { locale: tr })}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            {articles.length === 0 && <li className="text-gray-500 italic">Henüz yazı yok...</li>}
+                        </ul>
+                    </div>
+
+                    {/* Questions */}
+                    <div className="border-4 border-orange-500 bg-black/80 p-4 relative">
+                        <div className="absolute -top-4 left-4 bg-black px-3 py-1 text-orange-400 font-bold border-2 border-orange-500 flex items-center gap-2">
+                            ❓ FORUM KONULARI
+                        </div>
+
+                        <ul className="space-y-3 mt-4">
+                            {questions.slice(0, 5).map(question => (
+                                <li key={question.id} className="border-b border-orange-900 pb-2 group">
+                                    <Link href={`/forum/${question.slug}`} className="block hover:bg-orange-900/50 p-1 transition-colors">
+                                        <span className="text-red-400 mr-2">▶</span>
+                                        <span className="text-orange-300 group-hover:text-white underline decoration-dotted">{question.title}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                            {questions.length === 0 && <li className="text-gray-500 italic">Henüz soru yok...</li>}
+                        </ul>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="mt-12 text-center text-xs text-gray-400 pb-12 font-serif">
-                    <p>BEST VIEWED WITH INTERNET EXPLORER 4.0</p>
-                    <p className="mt-2">COPYRIGHT 1999 @BARANBOZKURT INC.</p>
-                    <div className="flex justify-center gap-2 mt-4">
-                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">HTML VALID</div>
-                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">NO FRAME</div>
-                        <div className="w-20 h-8 bg-gray-400 flex items-center justify-center border border-white text-black text-[10px] font-bold">MS IE 4.0</div>
+                <div className="mt-8 text-center text-xs text-gray-500 pb-16 border-t-2 border-gray-800 pt-8">
+                    <div className="flex justify-center gap-2 mb-4 flex-wrap">
+                        <span className="text-2xl">🖥️</span>
+                        <span className="text-2xl">📟</span>
+                        <span className="text-2xl">📀</span>
+                        <span className="text-2xl">💾</span>
+                        <span className="text-2xl">🔊</span>
+                    </div>
+                    <p className="mb-2">BEST VIEWED WITH INTERNET EXPLORER 4.0 @ 800x600</p>
+                    <p className="text-gray-600">© 1999 @BARANBOZKURT INC. All rights reserved.</p>
+                    <div className="flex justify-center gap-3 mt-4">
+                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">HTML 3.2</div>
+                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">NO FRAMES</div>
+                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">MIDI ON</div>
                     </div>
                 </div>
 
             </div>
 
             <style jsx>{`
-        .animate-marquee {
-            animation: marquee 15s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        .blink-animation {
-            animation: blinker 1s linear infinite;
-        }
-        /* Hide scrollbar for retro feel */
-        .scrollbar-retro::-webkit-scrollbar {
-            width: 12px;
-        }
-        .scrollbar-retro::-webkit-scrollbar-track {
-            background: #c0c0c0;
-            border: 2px solid white;
-            border-style: inset;
-        }
-        .scrollbar-retro::-webkit-scrollbar-thumb {
-            background: #c0c0c0;
-            border: 2px solid white;
-            border-style: outset;
-        }
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-        .animate-spin-slow {
-            animation: spin 3s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-      `}</style>
+                /* Starfield layers */
+                .stars-layer-1, .stars-layer-2, .stars-layer-3 {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: transparent;
+                }
+                .stars-layer-1 {
+                    background-image: radial-gradient(2px 2px at 20px 30px, white, transparent),
+                                      radial-gradient(2px 2px at 40px 70px, white, transparent),
+                                      radial-gradient(1px 1px at 90px 40px, white, transparent),
+                                      radial-gradient(2px 2px at 130px 80px, white, transparent),
+                                      radial-gradient(1px 1px at 160px 120px, white, transparent);
+                    background-size: 200px 200px;
+                    animation: stars-move 100s linear infinite;
+                }
+                .stars-layer-2 {
+                    background-image: radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.8), transparent),
+                                      radial-gradient(2px 2px at 90px 40px, rgba(255,255,255,0.6), transparent),
+                                      radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent);
+                    background-size: 250px 250px;
+                    animation: stars-move 150s linear infinite;
+                }
+                .stars-layer-3 {
+                    background-image: radial-gradient(1px 1px at 25px 50px, rgba(255,200,100,0.9), transparent),
+                                      radial-gradient(1px 1px at 75px 150px, rgba(100,200,255,0.8), transparent),
+                                      radial-gradient(2px 2px at 125px 100px, rgba(255,100,200,0.7), transparent);
+                    background-size: 300px 300px;
+                    animation: stars-move 200s linear infinite reverse;
+                }
+                @keyframes stars-move {
+                    from { transform: translateY(0); }
+                    to { transform: translateY(-1000px); }
+                }
+                
+                /* Float animation */
+                @keyframes float {
+                    0%, 100% { transform: translateY(0) rotate(0deg); }
+                    25% { transform: translateY(-10px) rotate(5deg); }
+                    75% { transform: translateY(10px) rotate(-5deg); }
+                }
+                .animate-float {
+                    animation: float 4s ease-in-out infinite;
+                }
+                
+                /* Slow bounce */
+                @keyframes bounce-slow {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-5px); }
+                }
+                .animate-bounce-slow {
+                    animation: bounce-slow 1.5s ease-in-out infinite;
+                }
+                
+                /* Slow spin */
+                .animate-spin-slow {
+                    animation: spin 4s linear infinite;
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 }
