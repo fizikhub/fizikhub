@@ -19,19 +19,20 @@ interface RetroProfileViewProps {
     };
 }
 
-// Reliable Wikimedia Commons & Stable GIF URLs
+// Reliable Local Assets
 const ASSETS = {
-    STARS_BG: "https://web.archive.org/web/20091026210214/http://geocities.com/CollegePark/4544/stars.gif", // Classic Geocities stars
-    EARTH: "https://upload.wikimedia.org/wikipedia/commons/2/22/Rotating_earth_%28large%29_transparent.gif",
-    FIRE: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Fire_animated.gif",
-    CONSTRUCTION: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Under_construction_animated.gif",
-    MAIL: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_ani.gif", // Alternative mail
-    NEW: "https://upload.wikimedia.org/wikipedia/commons/f/fd/New_ani.gif",
-    SKULL: "https://web.archive.org/web/20090829023136/http://geocities.com/SunsetStrip/Towers/2962/skull_rotate.gif", // Archive.org skull
-    GHOST: "https://web.archive.org/web/20090830064505/http://geocities.com/Area51/Cavern/9253/ghost.gif",
-    ALIEN: "https://web.archive.org/web/20090829061611/http://geocities.com/Area51/Corridor/5460/alien2.gif",
-    DANCING_BABY: "https://web.archive.org/web/20090831131908/http://geocities.com/Hollywood/Hills/1683/baby.gif", // The legend
-    CD: "https://web.archive.org/web/20090808160416/http://geocities.com/Area51/Stargate/3720/cd.gif"
+    STARS_BG: "/retro/stars.svg",
+    EARTH: "/retro/earth.gif",
+    FIRE: "/retro/fire.gif",
+    CONSTRUCTION: "/retro/construction.gif",
+    MAIL: "/retro/mail.gif",
+    NEW: "/retro/new.gif",
+    ALIEN: "/retro/alien.svg",
+    BABY: "/retro/baby.svg",
+    // Fallbacks for missing specific GIFs (mapped to existing reliable ones)
+    SKULL: "/retro/alien.svg",
+    GHOST: "/retro/alien.svg",
+    CD: "/retro/earth.gif"
 };
 
 export function RetroProfileView({ profile, articles, questions, userBadges, stats }: RetroProfileViewProps) {
@@ -49,20 +50,25 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
             <div className="fixed inset-0 z-0 opacity-50 pointer-events-none"
                 style={{
                     backgroundImage: `url("${ASSETS.STARS_BG}")`,
-                    backgroundRepeat: 'repeat'
+                    backgroundRepeat: 'repeat',
+                    backgroundSize: '100px'
                 }}>
             </div>
 
-            {/* CHAOS LAYER - Desktop Overlay */}
-            <div className="absolute inset-0 z-1 pointer-events-none overflow-hidden h-full hidden md:block">
-                <img src={ASSETS.ALIEN} className="absolute top-[10%] left-[5%] w-16" alt="alien" />
-                <img src={ASSETS.DANCING_BABY} className="absolute bottom-[20%] left-[10%] w-24" alt="baby" />
+            {/* CHAOS LAYER - Absolute Positioning Everywhere (Mobile included) */}
+            <div className="absolute inset-0 z-1 pointer-events-none overflow-hidden h-full">
+                <img src={ASSETS.ALIEN} className="absolute top-[10%] left-[5%] w-16 animate-bounce" alt="alien" />
+                <img src={ASSETS.BABY} className="absolute bottom-[20%] left-[10%] w-24" alt="baby" />
                 <img src={ASSETS.FIRE} className="absolute bottom-0 w-full opacity-30 h-32 stretch-fire" alt="fire" />
                 <img src={ASSETS.MAIL} className="absolute top-[40%] right-[5%] w-16" alt="mail" />
-                <img src={ASSETS.SKULL} className="absolute bottom-[40%] left-[5%]" alt="skull" />
+                <img src={ASSETS.SKULL} className="absolute bottom-[40%] left-[5%] w-12" alt="skull" />
                 <img src={ASSETS.GHOST} className="absolute top-[20%] right-[20%] w-16 opacity-70" alt="ghost" />
                 <img src={ASSETS.EARTH} className="absolute top-[5%] left-[50%] -translate-x-1/2 w-16" alt="earth" />
                 <img src={ASSETS.CD} className="absolute bottom-[10%] right-[10%] w-16 animate-spin-slow" alt="cd" />
+
+                {/* Mobile specific randoms to ensure fullness */}
+                <img src={ASSETS.ALIEN} className="absolute top-[60%] right-[40%] w-12 md:hidden" alt="alien-m" />
+                <img src={ASSETS.BABY} className="absolute top-[30%] left-[80%] w-16 md:hidden" alt="baby-m" />
             </div>
 
             {/* Main Container */}
@@ -81,7 +87,7 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                 <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
 
                     {/* Left Column */}
-                    <div className="flex flex-col gap-6 items-center lg:items-start bg-black/80 p-4 border-4 border-double border-white">
+                    <div className="flex flex-col gap-6 items-center lg:items-start bg-black/80 p-4 border-4 border-double border-white backdrop-blur-sm">
 
                         {/* Avatar */}
                         <div className="w-full relative group text-center">
@@ -213,19 +219,6 @@ export function RetroProfileView({ profile, articles, questions, userBadges, sta
                         </div>
                     </div>
                 </div>
-
-                {/* MOBILE CHAOS ZONE */}
-                <div className="block md:hidden mt-8 border-t-2 border-dashed border-gray-600 pt-4">
-                    <h3 className="text-center text-yellow-500 font-bold mb-4 blink-animation">/// KAOS ALANI ///</h3>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <img src={ASSETS.DANCING_BABY} className="w-20 object-contain" alt="baby" />
-                        <img src={ASSETS.ALIEN} className="w-20 object-contain" alt="alien" />
-                        <img src={ASSETS.SKULL} className="w-16 object-contain" alt="skull" />
-                        <img src={ASSETS.GHOST} className="w-16 object-contain" alt="ghost" />
-                        <img src={ASSETS.CONSTRUCTION} className="w-24 border border-white" alt="construction" />
-                    </div>
-                </div>
-
 
                 {/* Footer */}
                 <div className="mt-8 text-center text-xs text-gray-500 pb-16 font-mono">

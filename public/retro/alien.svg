@@ -1,0 +1,7 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .alien { fill: #00ff00; animation: bounce 1s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+  </style>
+  <path class="alien" d="M32 10 Q10 10 10 32 Q10 54 32 54 Q54 54 54 32 Q54 10 32 10 Z M20 30 Q25 30 25 35 Q25 40 20 40 Q15 40 15 35 Q15 30 20 30 Z M44 30 Q49 30 49 35 Q49 40 44 40 Q39 40 39 35 Q39 30 44 30 Z" />
+</svg>
