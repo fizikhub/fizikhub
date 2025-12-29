@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Heart, Rocket, Monitor } from "lucide-react";
+import { Moon, Heart, Rocket } from "lucide-react";
 
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
@@ -45,20 +45,13 @@ export function ThemeSelector() {
             icon: Rocket,
             color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
             special: true
-        },
-        {
-            value: "geocities",
-            label: "GeoCities '95",
-            icon: Monitor,
-            color: "bg-gradient-to-br from-[#ff00ff] via-[#00ff00] to-[#ffff00] border-[#00ff00]",
-            special: true
         }
     ];
 
     return (
         <div className="space-y-3">
             <Label>Görünüm</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
                 {themes.map((t) => {
                     const isActive = theme === t.value;
                     const Icon = t.icon;
