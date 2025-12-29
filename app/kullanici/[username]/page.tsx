@@ -85,6 +85,30 @@ export default async function PublicProfilePage({ params }: PageProps) {
     const { isFollowing } = followStatus;
     const { followersCount, followingCount } = followStats;
 
+    // --- RETRO PROFILE CHECK ---
+    if (username.toLowerCase() === "baranbozkurt") {
+        const { RetroProfileView } = await import("@/components/profile/retro-profile-view");
+
+        // Prepare simple stats object for the retro view
+        const retroStats = {
+            followersCount: followStats.followersCount,
+            followingCount: followStats.followingCount,
+            articlesCount: articles?.length || 0,
+            questionsCount: questions?.length || 0,
+        };
+
+        return (
+            <RetroProfileView
+                profile={profile}
+                articles={articles || []}
+                questions={questions || []}
+                userBadges={userBadges || []}
+                stats={retroStats}
+            />
+        );
+    }
+    // ---------------------------
+
     return (
         <div className="min-h-screen bg-background relative overflow-hidden pb-20">
             {/* Space Background */}
