@@ -19,349 +19,223 @@ interface RetroProfileViewProps {
     };
 }
 
-// Animated emoji component
-const AnimatedEmoji = ({ emoji, className = "" }: { emoji: string; className?: string }) => (
-    <span className={`inline-block animate-bounce-slow ${className}`}>{emoji}</span>
-);
-
-// Floating decoration component
-const FloatingDecor = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
-    <div
-        className="absolute animate-float pointer-events-none"
-        style={{ animationDelay: `${delay}s` }}
-    >
-        {children}
-    </div>
-);
-
 export function RetroProfileView({ profile, articles, questions, userBadges, stats }: RetroProfileViewProps) {
     const [blink, setBlink] = useState(true);
-    const [counter, setCounter] = useState(1337);
 
     useEffect(() => {
         const blinkInterval = setInterval(() => setBlink(b => !b), 500);
-        const counterInterval = setInterval(() => setCounter(c => c + Math.floor(Math.random() * 10)), 2000);
         return () => {
             clearInterval(blinkInterval);
-            clearInterval(counterInterval);
         };
     }, []);
 
     return (
         <div className="font-mono bg-black text-[#00ff00] min-h-screen relative overflow-x-hidden selection:bg-[#ff00ff] selection:text-white">
 
-            {/* Animated Starfield Background - Pure CSS */}
-            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="stars-layer-1"></div>
-                <div className="stars-layer-2"></div>
-                <div className="stars-layer-3"></div>
+            {/* Tiled Background GIF */}
+            <div className="fixed inset-0 z-0 opacity-40 pointer-events-none"
+                style={{
+                    backgroundImage: 'url("https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif")',
+                    backgroundSize: '250px'
+                }}>
             </div>
 
-            {/* Floating Emoji Decorations - Scattered */}
-            <div className="fixed inset-0 z-5 pointer-events-none overflow-hidden">
-                <FloatingDecor delay={0}><span className="text-4xl absolute top-[10%] left-[5%]">🚀</span></FloatingDecor>
-                <FloatingDecor delay={0.5}><span className="text-3xl absolute top-[20%] right-[10%]">👽</span></FloatingDecor>
-                <FloatingDecor delay={1}><span className="text-4xl absolute top-[40%] left-[2%]">🌍</span></FloatingDecor>
-                <FloatingDecor delay={1.5}><span className="text-3xl absolute top-[60%] right-[5%]">🔥</span></FloatingDecor>
-                <FloatingDecor delay={2}><span className="text-4xl absolute top-[80%] left-[8%]">💀</span></FloatingDecor>
-                <FloatingDecor delay={0.3}><span className="text-3xl absolute top-[15%] left-[80%]">⭐</span></FloatingDecor>
-                <FloatingDecor delay={0.8}><span className="text-4xl absolute top-[50%] right-[2%]">🛸</span></FloatingDecor>
-                <FloatingDecor delay={1.2}><span className="text-3xl absolute top-[70%] left-[90%]">🌙</span></FloatingDecor>
-                <FloatingDecor delay={1.8}><span className="text-4xl absolute top-[30%] left-[3%]">✨</span></FloatingDecor>
-                <FloatingDecor delay={2.2}><span className="text-3xl absolute top-[85%] right-[15%]">🎸</span></FloatingDecor>
+            {/* CHAOS LAYER - The "Trash" - Mobile: Grid/Flow, Desktop: Absolute Chaos */}
+            <div className="absolute inset-0 z-1 pointer-events-none overflow-hidden h-full hidden md:block">
+                {/* Desktop Absolute Chaos */}
+                <img src="https://media.giphy.com/media/KxhIhXaAmjOVy/giphy.gif" className="absolute top-[5%] left-[5%] w-32" alt="snoop" />
+                <img src="https://media.giphy.com/media/uzWoRrlxnbLbe/giphy.gif" className="absolute top-[15%] right-[10%] w-40" alt="elon" />
+                <img src="https://media.giphy.com/media/Lopx9eUIqBZhK/giphy.gif" className="absolute bottom-[5%] left-[20%] w-full max-w-[500px] opacity-50" alt="fire" />
+                <img src="https://media.giphy.com/media/3o7TKSjRrfPHjGWglq/giphy.gif" className="absolute top-[40%] left-[2%] w-24" alt="mail" />
+                <img src="https://media.giphy.com/media/5wWf7H89PisM6An8UAU/giphy.gif" className="absolute top-[60%] right-[2%] w-24" alt="skull" />
+                <img src="https://media.giphy.com/media/l41lFw057lAJcYt0Y/giphy.gif" className="absolute bottom-[20%] left-[5%] w-32" alt="alien" />
+                <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="absolute top-[20%] left-[40%] w-20" alt="baby" />
+                <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" className="absolute bottom-[10%] right-[10%] w-24" alt="cat" />
+                <img src="https://media.giphy.com/media/26FPCXdkvB3PIy5lsk/giphy.gif" className="absolute top-[10%] left-[80%] w-24" alt="ghost" />
+                <img src="https://media.giphy.com/media/3o6Zxp2c5l9N5t9uBa/giphy.gif" className="absolute top-[80%] right-[40%] w-32" alt="computer" />
+                <img src="https://media.giphy.com/media/AhjXalOPA2rj2/giphy.gif" className="absolute top-[2%] left-[50%] w-20" alt="earth" />
             </div>
 
             {/* Main Container */}
             <div className="relative z-10 container mx-auto p-2 md:p-4 max-w-5xl">
 
                 {/* Header Marquee */}
-                <div className="mb-4 border-4 border-ridge border-gray-400 bg-gradient-to-r from-blue-800 via-purple-800 to-blue-800 text-white font-bold p-2 overflow-hidden whitespace-nowrap">
-                    {React.createElement('marquee', { scrollamount: "8" },
-                        <span className="text-yellow-300 text-lg md:text-xl tracking-wider">
-                            ★★★ YÜCE MÜCE ADMİNİN PROFİLİNE GİRİŞ YAPTINIZ ★★★ HOŞGELDİNİZ ★★★ DİKKAT: YÜKSEK RADYASYON ★★★ @BARANBOZKURT ★★★
+                <div className="mb-8 border-b-4 border-r-4 border-t-2 border-l-2 border-gray-400 bg-[#000080] text-white p-1 shadow-[4px_4px_0px_0px_#000]">
+                    {React.createElement('marquee', { scrollamount: "12", bgcolor: "#000080" },
+                        <span className="text-yellow-300 text-xl font-bold tracking-widest uppercase">
+                            Warning: You have entered the chaotic realm of @{profile.username} /// 1337 H4X0R /// Welcome to the Internet ///
                         </span>
                     )}
                 </div>
 
-                {/* Visitor Counter */}
-                <div className="text-center mb-4 p-2 bg-gray-800 border-2 border-gray-600 inline-block mx-auto w-full">
-                    <span className="text-gray-400 text-xs">Bu sayfayı </span>
-                    <span className="text-green-400 font-bold text-lg animate-pulse">{counter}</span>
-                    <span className="text-gray-400 text-xs"> kişi ziyaret etti! 🔥</span>
-                </div>
-
                 {/* Grid Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 md:gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[350px_1fr] gap-6">
 
                     {/* Left Column */}
-                    <div className="flex flex-col gap-4 items-center lg:items-start">
+                    <div className="flex flex-col gap-6 items-center lg:items-start bg-black/80 p-4 border-4 border-double border-white">
 
                         {/* Avatar Frame */}
-                        <div className="border-[6px] border-double border-[#ff00ff] p-2 bg-black relative group">
-                            <div className="relative">
+                        <div className="w-full relative group text-center">
+                            <div className="inline-block relative border-4 border-outset border-gray-500 p-1 bg-gray-300">
                                 <img
                                     src={profile.avatar_url || "/default-avatar.png"}
                                     alt="Admin"
-                                    className="w-44 h-44 md:w-52 md:h-52 object-cover sepia-[.2] contrast-110 rounded-sm"
+                                    className="w-48 h-48 object-cover border-2 border-inset border-gray-600"
                                 />
-
-                                {/* Corner Decorations */}
-                                <div className="absolute -top-3 -left-3 text-2xl animate-spin-slow">⭐</div>
-                                <div className="absolute -top-3 -right-3 text-2xl animate-spin-slow" style={{ animationDirection: 'reverse' }}>⭐</div>
-                                <div className="absolute -bottom-3 -left-3 text-2xl animate-bounce-slow">🔥</div>
-                                <div className="absolute -bottom-3 -right-3 text-2xl animate-bounce-slow" style={{ animationDelay: '0.5s' }}>🔥</div>
-
-                                {/* COOL Badge */}
-                                <div className="absolute -top-5 -right-5 bg-yellow-400 text-red-600 font-black text-sm rounded-full w-14 h-14 flex items-center justify-center animate-spin-slow border-4 border-red-600 shadow-xl z-20">
-                                    COOL!
+                                <div className="absolute -bottom-4 right-[-20px] z-20">
+                                    <img src="https://media.giphy.com/media/P7JmDW7IkB7ZW/giphy.gif" className="h-12" alt="mini fire" />
                                 </div>
                             </div>
 
-                            {/* Online Status */}
-                            <div className="text-center mt-2 font-bold text-[#ff00ff] text-lg">
-                                {blink ? "● ONLINE" : "○ ONLINE"}
+                            {/* Running Text Under Avatar */}
+                            <div className="mt-2 text-[#00ff00] font-bold blink-animation bg-black px-2 py-1 inline-block border border-[#00ff00]">
+                                STATUS: ONLINE
                             </div>
                         </div>
 
+                        {/* Valid HTML Badge */}
+                        <div className="w-full flex justify-center my-2">
+                            <img src="https://media.giphy.com/media/3o7qDXO07Y7iYQadZ6/giphy.gif" className="w-16 animate-spin-slow" alt="cd" />
+                        </div>
+
                         {/* Stats Table */}
-                        <div className="w-full max-w-[320px] border-2 border-green-500 bg-black p-3 relative overflow-hidden">
-                            <div className="absolute inset-0 opacity-10 bg-gradient-to-b from-green-500 to-transparent"></div>
-
-                            <h3 className="text-green-400 font-bold mb-2 flex items-center gap-2">
-                                <span className="animate-pulse">▶</span> STATS.TXT
-                            </h3>
-
-                            <table className="w-full text-left font-mono text-sm relative z-10">
-                                <tbody className="text-green-300">
-                                    <tr className="border-b border-green-900">
-                                        <td className="py-1">LEVEL:</td>
-                                        <td className="py-1 text-white font-bold">99 (MAX) 🏆</td>
+                        <div className="w-full border-2 border-t-white border-l-white border-b-gray-600 border-r-gray-600 bg-[#c0c0c0] text-black p-1 shadow-md">
+                            <div className="bg-gradient-to-r from-blue-800 to-blue-600 text-white px-2 py-0.5 font-bold text-sm mb-1 flex justify-between items-center">
+                                <span>STATS.EXE</span>
+                                <span className="text-xs">X</span>
+                            </div>
+                            <table className="w-full text-left font-mono text-sm bg-white border border-gray-500">
+                                <tbody className="text-black">
+                                    <tr className="border-b border-gray-300">
+                                        <td className="py-1 px-2 border-r border-gray-300 font-bold bg-gray-100">LVL</td>
+                                        <td className="py-1 px-2 text-red-600 font-bold">99</td>
                                     </tr>
-                                    <tr className="border-b border-green-900">
-                                        <td className="py-1">TAKİPÇİ:</td>
-                                        <td className="py-1 text-white font-bold">{stats.followersCount} 👥</td>
+                                    <tr className="border-b border-gray-300">
+                                        <td className="py-1 px-2 border-r border-gray-300 font-bold bg-gray-100">FLWR</td>
+                                        <td className="py-1 px-2">{stats.followersCount}</td>
                                     </tr>
-                                    <tr className="border-b border-green-900">
-                                        <td className="py-1">TAKİP:</td>
-                                        <td className="py-1 text-white font-bold">{stats.followingCount} 👤</td>
+                                    <tr className="border-b border-gray-300">
+                                        <td className="py-1 px-2 border-r border-gray-300 font-bold bg-gray-100">FLNG</td>
+                                        <td className="py-1 px-2">{stats.followingCount}</td>
                                     </tr>
                                     <tr>
-                                        <td className="py-1">YAZILAR:</td>
-                                        <td className="py-1 text-white font-bold">{stats.articlesCount} 📝</td>
+                                        <td className="py-1 px-2 border-r border-gray-300 font-bold bg-gray-100">POST</td>
+                                        <td className="py-1 px-2">{stats.articlesCount}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
                         {/* Badges */}
-                        <div className="w-full max-w-[320px] border-2 border-yellow-500 bg-black p-3">
-                            <h3 className="text-yellow-400 font-bold mb-2 flex items-center gap-2">
-                                <span className="animate-bounce">🏅</span> ROZETLER
-                            </h3>
-                            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                        <div className="w-full border-2 border-t-white border-l-white border-b-gray-600 border-r-gray-600 bg-[#c0c0c0] text-black p-1 shadow-md">
+                            <div className="bg-gradient-to-r from-blue-800 to-blue-600 text-white px-2 py-0.5 font-bold text-sm mb-1">
+                                BADGES.DLL
+                            </div>
+                            <div className="bg-white border border-gray-500 p-2 flex flex-wrap gap-2 min-h-[50px]">
                                 {userBadges.map((ub: any, i: number) => (
-                                    <div key={i} className="w-10 h-10 border-2 border-yellow-600 bg-gray-900 flex items-center justify-center p-1 hover:scale-110 transition-transform" title={ub.badges.name}>
-                                        <CustomBadgeIcon name={ub.badges.name} className="w-full h-full text-yellow-400" />
+                                    <div key={i} className="w-8 h-8 hover:scale-125 transition-transform cursor-help" title={ub.badges.name}>
+                                        <CustomBadgeIcon name={ub.badges.name} className="w-full h-full text-black" />
                                     </div>
                                 ))}
-                                {userBadges.length === 0 && <span className="text-gray-500 text-sm">Henüz rozet yok</span>}
                             </div>
                         </div>
 
-                        {/* Spinning Globe (CSS) */}
-                        <div className="text-6xl animate-spin-slow" style={{ animationDuration: '4s' }}>🌍</div>
                     </div>
 
                     {/* Right Column: Bio */}
-                    <div className="bg-gradient-to-br from-[#000080] to-[#000050] border-4 border-outset border-gray-400 p-4 shadow-[8px_8px_0px_rgba(0,0,0,0.5)] relative">
+                    <div className="relative">
+                        <div className="bg-[#c0c0c0] border-4 border-t-white border-l-white border-b-black border-r-black p-1 shadow-[10px_10px_0px_rgba(0,0,0,0.8)] mb-8">
+                            <div className="bg-[#000080] text-white px-2 py-1 font-bold flex justify-between items-center mb-1">
+                                <span>WINAMP - {profile.username}.mp3</span>
+                                <div className="flex gap-1">
+                                    <div className="w-3 h-3 bg-gray-400 border border-white"></div>
+                                    <div className="w-3 h-3 bg-gray-400 border border-white"></div>
+                                    <div className="w-3 h-3 bg-red-600 border border-white"></div>
+                                </div>
+                            </div>
 
-                        {/* Welcome Banner (CSS) */}
-                        <div className="absolute -top-4 right-4 bg-red-600 text-white px-3 py-1 font-bold text-sm animate-pulse border-2 border-white z-20">
-                            🎉 HOŞGELDİN! 🎉
+                            <div className="bg-black text-[#00ff00] p-4 font-mono leading-relaxed border-2 border-inset border-gray-500 min-h-[150px] relative overflow-hidden">
+                                <h1 className="text-3xl mb-2 font-bold uppercase border-b border-[#00ff00] pb-2">
+                                    @{profile.username}
+                                </h1>
+                                <p className="mb-4">{profile.full_name}</p>
+                                <p className="text-white text-sm whitespace-pre-line">{profile.bio || "Searching for intelligence..."}</p>
+
+                                {/* Tiny decorative GIFs inside Bio */}
+                                <img src="https://media.giphy.com/media/Vse57EWCo2Va/giphy.gif" className="absolute bottom-2 right-2 w-12 opacity-50" alt="ufo" />
+                            </div>
+
+                            <div className="mt-2 flex gap-1 bg-[#c0c0c0] p-1">
+                                <button className="flex-1 bg-gray-300 border-2 border-outset border-white text-black text-xs font-bold py-1 active:border-inset">PREV</button>
+                                <button className="flex-1 bg-gray-300 border-2 border-outset border-white text-black text-xs font-bold py-1 active:border-inset">PLAY</button>
+                                <button className="flex-1 bg-gray-300 border-2 border-outset border-white text-black text-xs font-bold py-1 active:border-inset">PAUSE</button>
+                                <button className="flex-1 bg-gray-300 border-2 border-outset border-white text-black text-xs font-bold py-1 active:border-inset">STOP</button>
+                                <button className="flex-1 bg-gray-300 border-2 border-outset border-white text-black text-xs font-bold py-1 active:border-inset">NEXT</button>
+                            </div>
                         </div>
 
-                        <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-yellow-400 to-green-400 animate-pulse tracking-tight md:tracking-wide break-words">
-                            @{profile.username.toUpperCase()}
-                        </h1>
-
-                        <h2 className="text-white text-base md:text-xl mt-2 mb-4 font-serif italic border-b-2 border-dotted border-white pb-2 flex flex-wrap items-center gap-2">
-                            <span className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs px-2 py-0.5 animate-pulse font-bold">★ NEW!</span>
-                            ~ {profile.full_name} ~
-                            <span className="text-xl">👑</span>
-                        </h2>
-
-                        <div className="bg-white text-black p-4 font-serif text-base leading-relaxed border-4 border-inset border-gray-400 min-h-[200px] max-h-[300px] overflow-y-auto relative">
-                            <p>{profile.bio || "Henüz bir biyografi yok... Ama bu profil o kadar havalı ki, biyografiye bile ihtiyaç yok! 😎"}</p>
-
-                            {/* Corner decoration */}
-                            <div className="absolute top-2 right-2 text-3xl opacity-30">📜</div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="mt-4 flex flex-col md:flex-row gap-3">
-                            <button className="flex-1 px-6 py-3 bg-gradient-to-b from-gray-200 to-gray-400 border-4 border-outset border-white text-black font-bold text-lg active:border-inset active:from-gray-400 active:to-gray-200 flex items-center justify-center gap-2">
-                                👤 TAKİP ET
+                        {/* Action Buttons Frame */}
+                        <div className="grid grid-cols-2 gap-4 mb-8">
+                            <button className="bg-purple-900 border-4 border-outset border-purple-400 text-white font-black py-4 text-xl hover:bg-purple-800 active:border-inset shadow-lg flex flex-col items-center gap-1">
+                                <span>➕</span>
+                                TAKİP ET
                             </button>
-                            <button className="flex-1 px-6 py-3 bg-gradient-to-b from-gray-200 to-gray-400 border-4 border-outset border-white text-black font-bold text-lg active:border-inset active:from-gray-400 active:to-gray-200 flex items-center justify-center gap-2">
-                                ✉️ MESAJ AT
+                            <button className="bg-blue-900 border-4 border-outset border-blue-400 text-white font-black py-4 text-xl hover:bg-blue-800 active:border-inset shadow-lg flex flex-col items-center gap-1">
+                                <span>📧</span>
+                                MESAJ AT
                             </button>
                         </div>
-                    </div>
-                </div>
 
-                {/* Decorative Emoji Row */}
-                <div className="my-8 flex flex-wrap justify-center gap-3 md:gap-6 text-3xl md:text-5xl">
-                    <span className="animate-bounce" style={{ animationDelay: '0s' }}>🎸</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.1s' }}>🔥</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>💀</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.3s' }}>👽</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>🚀</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.5s' }}>🌙</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.6s' }}>⭐</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.7s' }}>🛸</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.8s' }}>💎</span>
-                    <span className="animate-bounce" style={{ animationDelay: '0.9s' }}>🎮</span>
-                </div>
-
-                {/* Under Construction Banner */}
-                <div className="border-4 border-dashed border-yellow-500 bg-yellow-900/30 p-4 mb-8 text-center">
-                    <div className="flex items-center justify-center gap-4 flex-wrap">
-                        <span className="text-4xl animate-pulse">🚧</span>
-                        <span className="text-yellow-300 font-bold text-xl md:text-2xl animate-pulse">UNDER CONSTRUCTION</span>
-                        <span className="text-4xl animate-pulse">🚧</span>
-                    </div>
-                    <p className="text-yellow-500 text-sm mt-2">Bu bölüm yapım aşamasında... Çok yakında daha fazla içerik!</p>
-                </div>
-
-                {/* Content Sections */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-                    {/* Articles */}
-                    <div className="border-4 border-green-500 bg-black/80 p-4 relative">
-                        <div className="absolute -top-4 left-4 bg-black px-3 py-1 text-green-400 font-bold border-2 border-green-500 flex items-center gap-2">
-                            📰 SON YAZILAR
+                        {/* Content Sections */}
+                        <div className="bg-[#000000]/80 border-4 border-green-600 p-4 mb-6 relative">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black px-4 text-green-500 font-bold border border-green-500">
+                                LATEST_UPLOADS
+                            </div>
+                            <ul className="space-y-4 mt-2">
+                                {articles.slice(0, 3).map(article => (
+                                    <li key={article.id}>
+                                        <Link href={`/makale/${article.slug}`} className="flex items-center gap-2 hover:bg-green-900/40 p-1 transition">
+                                            <img src="https://media.giphy.com/media/10Hv6G6k0p9KWA/giphy.gif" className="w-6 h-6 rotate-180" alt="arrow" />
+                                            <span className="text-white underline">{article.title}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                                {articles.length === 0 && <li className="text-gray-500 text-center">FILE NOT FOUND (404)</li>}
+                            </ul>
                         </div>
-
-                        <ul className="space-y-3 mt-4">
-                            {articles.slice(0, 5).map(article => (
-                                <li key={article.id} className="border-b border-green-900 pb-2 group">
-                                    <Link href={`/makale/${article.slug}`} className="block hover:bg-green-900/50 p-1 transition-colors">
-                                        <span className="text-yellow-400 mr-2">►</span>
-                                        <span className="text-green-300 group-hover:text-white underline decoration-dotted">{article.title}</span>
-                                        <span className="block text-xs text-gray-500 mt-1">{format(new Date(article.created_at), 'dd MMM yyyy', { locale: tr })}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            {articles.length === 0 && <li className="text-gray-500 italic">Henüz yazı yok...</li>}
-                        </ul>
-                    </div>
-
-                    {/* Questions */}
-                    <div className="border-4 border-orange-500 bg-black/80 p-4 relative">
-                        <div className="absolute -top-4 left-4 bg-black px-3 py-1 text-orange-400 font-bold border-2 border-orange-500 flex items-center gap-2">
-                            ❓ FORUM KONULARI
-                        </div>
-
-                        <ul className="space-y-3 mt-4">
-                            {questions.slice(0, 5).map(question => (
-                                <li key={question.id} className="border-b border-orange-900 pb-2 group">
-                                    <Link href={`/forum/${question.slug}`} className="block hover:bg-orange-900/50 p-1 transition-colors">
-                                        <span className="text-red-400 mr-2">▶</span>
-                                        <span className="text-orange-300 group-hover:text-white underline decoration-dotted">{question.title}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            {questions.length === 0 && <li className="text-gray-500 italic">Henüz soru yok...</li>}
-                        </ul>
                     </div>
                 </div>
+
+                {/* MOBILE ONLY CHAOS - Because random absolute positioning sucks on mobile */}
+                <div className="block md:hidden mt-8 border-t-2 border-dashed border-gray-600 pt-4">
+                    <h3 className="text-center text-yellow-500 font-bold mb-4 blink-animation">/// CHAOS ZONE ///</h3>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        <img src="https://media.giphy.com/media/KxhIhXaAmjOVy/giphy.gif" className="w-24 object-contain" alt="snoop" />
+                        <img src="https://media.giphy.com/media/uzWoRrlxnbLbe/giphy.gif" className="w-32 object-contain" alt="elon" />
+                        <img src="https://media.giphy.com/media/5wWf7H89PisM6An8UAU/giphy.gif" className="w-20 object-contain" alt="skull" />
+                        <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" className="w-20 object-contain" alt="cat" />
+                        <img src="https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif" className="w-20 object-contain" alt="baby" />
+                        <img src="https://media.giphy.com/media/l41lFw057lAJcYt0Y/giphy.gif" className="w-24 object-contain" alt="alien" />
+                        <img src="https://media.giphy.com/media/Lopx9eUIqBZhK/giphy.gif" className="w-full h-12 object-cover opacity-70" alt="fire" />
+                    </div>
+                </div>
+
 
                 {/* Footer */}
-                <div className="mt-8 text-center text-xs text-gray-500 pb-16 border-t-2 border-gray-800 pt-8">
-                    <div className="flex justify-center gap-2 mb-4 flex-wrap">
-                        <span className="text-2xl">🖥️</span>
-                        <span className="text-2xl">📟</span>
-                        <span className="text-2xl">📀</span>
-                        <span className="text-2xl">💾</span>
-                        <span className="text-2xl">🔊</span>
-                    </div>
-                    <p className="mb-2">BEST VIEWED WITH INTERNET EXPLORER 4.0 @ 800x600</p>
-                    <p className="text-gray-600">© 1999 @BARANBOZKURT INC. All rights reserved.</p>
-                    <div className="flex justify-center gap-3 mt-4">
-                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">HTML 3.2</div>
-                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">NO FRAMES</div>
-                        <div className="px-3 py-1 bg-gray-700 border-2 border-outset border-gray-500 text-[10px] font-bold text-gray-300">MIDI ON</div>
-                    </div>
+                <div className="mt-8 text-center text-xs text-gray-500 pb-16 font-mono">
+                    <p className="mb-2">*** EOF ***</p>
+                    <img src="https://media.giphy.com/media/26FPCXdkvB3PIy5lsk/giphy.gif" className="w-8 mx-auto" alt="ghost" />
                 </div>
 
             </div>
 
             <style jsx>{`
-                /* Starfield layers */
-                .stars-layer-1, .stars-layer-2, .stars-layer-3 {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background: transparent;
-                }
-                .stars-layer-1 {
-                    background-image: radial-gradient(2px 2px at 20px 30px, white, transparent),
-                                      radial-gradient(2px 2px at 40px 70px, white, transparent),
-                                      radial-gradient(1px 1px at 90px 40px, white, transparent),
-                                      radial-gradient(2px 2px at 130px 80px, white, transparent),
-                                      radial-gradient(1px 1px at 160px 120px, white, transparent);
-                    background-size: 200px 200px;
-                    animation: stars-move 100s linear infinite;
-                }
-                .stars-layer-2 {
-                    background-image: radial-gradient(1px 1px at 50px 160px, rgba(255,255,255,0.8), transparent),
-                                      radial-gradient(2px 2px at 90px 40px, rgba(255,255,255,0.6), transparent),
-                                      radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent);
-                    background-size: 250px 250px;
-                    animation: stars-move 150s linear infinite;
-                }
-                .stars-layer-3 {
-                    background-image: radial-gradient(1px 1px at 25px 50px, rgba(255,200,100,0.9), transparent),
-                                      radial-gradient(1px 1px at 75px 150px, rgba(100,200,255,0.8), transparent),
-                                      radial-gradient(2px 2px at 125px 100px, rgba(255,100,200,0.7), transparent);
-                    background-size: 300px 300px;
-                    animation: stars-move 200s linear infinite reverse;
-                }
-                @keyframes stars-move {
-                    from { transform: translateY(0); }
-                    to { transform: translateY(-1000px); }
-                }
-                
-                /* Float animation */
-                @keyframes float {
-                    0%, 100% { transform: translateY(0) rotate(0deg); }
-                    25% { transform: translateY(-10px) rotate(5deg); }
-                    75% { transform: translateY(10px) rotate(-5deg); }
-                }
-                .animate-float {
-                    animation: float 4s ease-in-out infinite;
-                }
-                
-                /* Slow bounce */
-                @keyframes bounce-slow {
-                    0%, 100% { transform: translateY(0); }
-                    50% { transform: translateY(-5px); }
-                }
-                .animate-bounce-slow {
-                    animation: bounce-slow 1.5s ease-in-out infinite;
-                }
-                
-                /* Slow spin */
-                .animate-spin-slow {
-                    animation: spin 4s linear infinite;
-                }
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
+                .blink-animation { animation: blinker 1s linear infinite; }
+                @keyframes blinker { 50% { opacity: 0; } }
+                .animate-spin-slow { animation: spin 4s linear infinite; }
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
             `}</style>
         </div>
     );
 }
+
