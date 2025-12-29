@@ -1,7 +1,156 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Sparkles, Pizza, Droplets, Heart, ShoppingBag, X, Star } from "lucide-react";
+
+// --- Pixel Art Data & Renderer ---
+
+// Palette
+const C = {
+    _: "transparent",
+    G: "#22c55e", // Main Green
+    D: "#15803d", // Dark Green (Shadow)
+    L: "#4ade80", // Light Green (Highlight)
+    B: "#000000", // Black (Eyes/Outline)
+    W: "#ffffff", // White (Eye Shine)
+    P: "#f472b6", // Pink (Cheeks/Mouth)
+    R: "#ef4444", // Red (Mouth inside)
+};
+
+// 16x16 Grids
+const FRAMES = {
+    idle1: [
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "___GLGGLG_______",
+        "__GLLLLLLG______",
+        "__GLBLLLBGG_____",
+        "__GLBLLLBGG_____",
+        "__GLLLLLLLG_____",
+        "__GLLP_P LLG____",
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D_D_D_______",
+        "____D___D_______",
+        "________________",
+    ],
+    idle2: [ // Blinking / Bobbing
+        "________________",
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "___GLGGLG_______",
+        "__GLLLLLLG______",
+        "__GLBLLLBGG_____", // Eyes open
+        "__GLLLLLLLG_____",
+        "__GLLP_P LLG____",
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D___D_______",
+        "___D_____D______", // Feet wider (squat)
+        "________________",
+    ],
+    blink: [
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "___GLGGLG_______",
+        "__GLLLLLLG______",
+        "__GLLLLLLGG_____", // Eyes closed (green line)
+        "__GLLLLLLGG_____",
+        "__GLLLLLLLG_____",
+        "__GLLP_PLLG_____",
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D_D_D_______",
+        "____D___D_______",
+        "________________",
+    ],
+    eat1: [ // Mouth open
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "___GLGGLG_______",
+        "__GLLLLLLG______",
+        "__GLBLLLBGG_____",
+        "__GLLLLLLLG_____",
+        "__GLLRRRLLG_____", // Mouth open
+        "__GLLRRRLLG_____",
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D___D_______",
+        "____D___D_______",
+        "________________",
+    ],
+    eat2: [ // Chewing
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "___GLGGLG_______",
+        "__GLLLLLLG______",
+        "__GL>LL<BGG_____", // squint? no just normal
+        "__GLBLLLBGG_____",
+        "__GLLLLLLLG_____",
+        "__GLLRRRLLG_____", // Chewing
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D_D_D_______",
+        "____D___D_______",
+        "________________",
+    ],
+    happy1: [ // Hands up
+        "________________",
+        "________________",
+        "_____GGG________",
+        "____GLLLG_______",
+        "G__GLGGLG__G____",
+        "LG_GLLLLLLG_GL___", // Hands up
+        "_LGGLBLLLBGG_L___",
+        "__GLLLLLLLG_____",
+        "__GLLRPPRLLG____", // Big smile
+        "__GLLPP PLLG____",
+        "___GLLLLLG______",
+        "____DDDDD_______",
+        "_____DDD________",
+        "____D___D_______",
+        "____D___D_______",
+        "________________",
+    ]
+};
+
+// ... Wait, mapping characters to colors manually is tedious and error prone if pasted as string array.
+// Let's use a cleaner helper.
+
+const PixelSprite = ({ frame, scale = 4 }: { frame: string[], scale?: number }) => {
+    const pixelSize = scale;
+    const size = 16 * pixelSize;
+
+    return (
+        <svg width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges">
+            {frame.map((row, y) =>
+                row.split("").map((char, x) => {
+                    if (char === "_") return null;
+                    const color = C[char as keyof typeof C] || "transparent";
+                    return <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill={color} />;
+                })
+            )}
+        </svg>
+    );
+};
+
+
+// --- Main Component ---
 
 interface AlienStats {
     hunger: number;
@@ -10,7 +159,7 @@ interface AlienStats {
     lastInteracted: number;
 }
 
-const STORAGE_KEY = "hub_alien_v2";
+const STORAGE_KEY = "hub_alien_v3"; // Version bump
 const DECAY_RATE_MS = 60000;
 
 export function HubAlien() {
@@ -23,10 +172,10 @@ export function HubAlien() {
 
     const [mood, setMood] = useState<"idle" | "eating" | "cleaning" | "happy">("idle");
     const [showShop, setShowShop] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const [frameIndex, setFrameIndex] = useState(0);
     const [floatingEmoji, setFloatingEmoji] = useState<string | null>(null);
 
-    // Load from storage
+    // Load/Save Stats (Same as before)
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
@@ -35,25 +184,20 @@ export function HubAlien() {
                 const now = Date.now();
                 const elapsed = now - parsed.lastInteracted;
                 const decayTicks = Math.floor(elapsed / DECAY_RATE_MS);
-
                 if (decayTicks > 0) {
                     parsed.hunger = Math.max(0, parsed.hunger - (decayTicks * 2));
                     parsed.hygiene = Math.max(0, parsed.hygiene - (decayTicks * 1.5));
                     parsed.happiness = Math.max(0, parsed.happiness - (decayTicks * 1));
                 }
                 setStats(parsed);
-            } catch {
-                // ignore parse errors
-            }
+            } catch { }
         }
     }, []);
 
-    // Save to storage
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...stats, lastInteracted: Date.now() }));
     }, [stats]);
 
-    // Stat Decay
     useEffect(() => {
         const decay = setInterval(() => {
             setStats(prev => ({
@@ -66,323 +210,175 @@ export function HubAlien() {
         return () => clearInterval(decay);
     }, []);
 
-    // Determine mood based on stats
+    // Animation Loop
     useEffect(() => {
-        if (mood === "eating" || mood === "cleaning" || mood === "happy") return;
+        const interval = setInterval(() => {
+            setFrameIndex(prev => (prev + 1) % 4); // 4 beat cycle
+        }, 250);
+        return () => clearInterval(interval);
+    }, []);
 
-        if (stats.hunger < 30 || stats.hygiene < 30 || stats.happiness < 30) {
-            setMood("idle");
-        } else {
-            setMood("idle");
-        }
-    }, [stats, mood]);
 
+    // Interaction Handlers
     const triggerAnimation = useCallback((emoji: string) => {
-        setIsAnimating(true);
         setFloatingEmoji(emoji);
-        setTimeout(() => {
-            setIsAnimating(false);
-            setFloatingEmoji(null);
-        }, 1000);
+        setTimeout(() => setFloatingEmoji(null), 1000);
     }, []);
 
     const handleFeed = () => {
         if (stats.hunger >= 100) return;
         setMood("eating");
         triggerAnimation("🍕");
-        setStats(prev => ({
-            ...prev,
-            hunger: Math.min(100, prev.hunger + 25),
-            happiness: Math.min(100, prev.happiness + 5)
-        }));
-        setTimeout(() => setMood("idle"), 1500);
+        setStats(prev => ({ ...prev, hunger: Math.min(100, prev.hunger + 25), happiness: Math.min(100, prev.happiness + 5) }));
+        setTimeout(() => setMood("idle"), 2000);
     };
 
     const handleClean = () => {
         if (stats.hygiene >= 100) return;
         setMood("cleaning");
         triggerAnimation("🫧");
-        setStats(prev => ({
-            ...prev,
-            hygiene: 100,
-            happiness: Math.min(100, prev.happiness + 10)
-        }));
-        setTimeout(() => setMood("idle"), 1500);
+        setStats(prev => ({ ...prev, hygiene: 100, happiness: Math.min(100, prev.happiness + 10) }));
+        setTimeout(() => setMood("idle"), 2000);
     };
 
     const handlePet = () => {
         setMood("happy");
         triggerAnimation("💖");
-        setStats(prev => ({
-            ...prev,
-            happiness: Math.min(100, prev.happiness + 15)
-        }));
-        setTimeout(() => setMood("idle"), 1000);
+        setStats(prev => ({ ...prev, happiness: Math.min(100, prev.happiness + 15) }));
+        setTimeout(() => setMood("idle"), 1500);
     };
 
-    const getAlienExpression = () => {
-        if (mood === "eating") return "😋";
-        if (mood === "cleaning") return "🧼";
-        if (mood === "happy") return "🥰";
-        if (stats.hunger < 20) return "😵";
-        if (stats.hygiene < 20) return "🤢";
-        if (stats.happiness < 20) return "😢";
-        if (stats.hunger < 40 || stats.hygiene < 40 || stats.happiness < 40) return "😐";
-        return "😊";
+
+    // Determine Current Frame
+    const getCurrentFrame = () => {
+        // Idle Cycle: Idle1 -> Idle1 -> Idle2 (Bob) -> Idle2
+        // Blink occasionally
+
+        let frameData = FRAMES.idle1;
+
+        if (mood === "eating") {
+            frameData = frameIndex % 2 === 0 ? FRAMES.eat1 : FRAMES.eat2;
+        } else if (mood === "happy") {
+            frameData = frameIndex % 2 === 0 ? FRAMES.happy1 : FRAMES.idle1;
+        } else if (mood === "cleaning") {
+            frameData = frameIndex % 2 === 0 ? FRAMES.idle2 : FRAMES.idle1; // Just bob logic for now, cleaning is effect
+        } else {
+            // Idle logic
+            if (frameIndex === 3 && Math.random() > 0.7) return FRAMES.blink; // Random blink
+            frameData = frameIndex < 2 ? FRAMES.idle1 : FRAMES.idle2;
+        }
+
+        return frameData;
     };
 
-    const getOverallStatus = () => {
-        const avg = (stats.hunger + stats.hygiene + stats.happiness) / 3;
-        if (avg >= 80) return { text: "Mutlu!", color: "text-green-400" };
-        if (avg >= 50) return { text: "İyi", color: "text-yellow-400" };
-        if (avg >= 25) return { text: "Mutsuz", color: "text-orange-400" };
-        return { text: "Kritik!", color: "text-red-400" };
-    };
-
-    const status = getOverallStatus();
+    // Low stats overrides
+    const isSick = stats.hunger < 20 || stats.hygiene < 20;
 
     return (
-        <div className="relative w-full">
-            {/* Main Container */}
-            <div className="bg-gradient-to-br from-gray-900 via-purple-950/50 to-gray-900 rounded-2xl border border-purple-500/30 overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.15)]">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-purple-900/50 to-indigo-900/50 px-4 py-3 border-b border-purple-500/20 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xl">👽</span>
-                        <span className="font-bold text-white text-sm">Hub Alien</span>
-                    </div>
-                    <div className={`text-xs font-semibold ${status.color} flex items-center gap-1`}>
-                        <Star className="w-3 h-3" />
-                        {status.text}
-                    </div>
-                </div>
+        <div className="relative w-full font-sans select-none">
+            {/* Main Container - Retro Game Boy Style ish */}
+            <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-xl border-4 border-gray-700 shadow-2xl overflow-hidden ring-4 ring-black/20">
 
-                {/* Alien Display Area */}
-                <div
-                    className="relative h-32 sm:h-40 flex items-center justify-center cursor-pointer overflow-hidden"
-                    onClick={handlePet}
-                    style={{
-                        background: `
-                            radial-gradient(ellipse at center, rgba(168,85,247,0.15) 0%, transparent 70%),
-                            linear-gradient(180deg, rgba(15,15,35,1) 0%, rgba(25,15,45,1) 100%)
-                        `
-                    }}
-                >
-                    {/* Animated Stars */}
-                    <div className="absolute inset-0 overflow-hidden">
-                        {[...Array(15)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute w-1 h-1 bg-white/60 rounded-full animate-pulse"
-                                style={{
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    animationDelay: `${Math.random() * 2}s`,
-                                    animationDuration: `${1 + Math.random() * 2}s`
-                                }}
-                            />
-                        ))}
+                {/* Screen Area */}
+                <div className="relative h-48 bg-[#2d1b2e] flex items-center justify-center overflow-hidden border-b-4 border-gray-700">
+
+                    {/* Background Pattern (Stars) */}
+                    <div className="absolute inset-0 opacity-30"
+                        style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
                     </div>
 
-                    {/* Floating Emoji Animation */}
+                    {/* Scanline Effect */}
+                    <div className="absolute inset-0 pointer-events-none z-20 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
+
+
+                    {/* Status Icons Floating */}
+                    <div className="absolute top-2 right-2 flex gap-2 z-10">
+                        {stats.hunger < 30 && <span className="animate-bounce">🍔</span>}
+                        {stats.hygiene < 30 && <span className="animate-pulse">💩</span>}
+                    </div>
+
+                    {/* Floating Emoji */}
                     {floatingEmoji && (
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 text-3xl animate-bounce-up pointer-events-none z-20">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-12 text-2xl animate-bounce z-30">
                             {floatingEmoji}
                         </div>
                     )}
 
-                    {/* The Alien */}
+                    {/* The ALIEN (SVG) */}
                     <div
-                        className={`relative text-6xl sm:text-7xl transition-transform duration-300 transform ${isAnimating ? 'scale-110' : 'hover:scale-105'
-                            } ${mood === "happy" ? "animate-wiggle" : ""}`}
+                        onClick={handlePet}
+                        className="cursor-pointer transition-transform hover:scale-110 active:scale-95 z-10 filter drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]"
                     >
-                        {/* Alien Body */}
-                        <div className="relative">
-                            {/* Glow Effect */}
-                            <div className="absolute inset-0 blur-xl bg-purple-500/30 rounded-full scale-150" />
-
-                            {/* Expression */}
-                            <span className="relative z-10 drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]">
-                                {getAlienExpression()}
-                            </span>
-
-                            {/* Status Indicators */}
-                            {stats.hunger < 30 && (
-                                <span className="absolute -top-2 -right-4 text-lg animate-bounce">🍔</span>
-                            )}
-                            {stats.hygiene < 30 && (
-                                <span className="absolute -top-2 -left-4 text-lg animate-pulse">💩</span>
-                            )}
-                            {stats.happiness < 30 && (
-                                <span className="absolute -bottom-2 right-0 text-lg animate-pulse">💔</span>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Tap hint */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-purple-300/50 font-medium">
-                        Sevmek için tıkla
+                        <PixelSprite frame={getCurrentFrame()} scale={8} />
                     </div>
                 </div>
 
-                {/* Stats Bars */}
-                <div className="px-4 py-3 space-y-2 bg-black/20">
-                    <StatBar
-                        icon={<Pizza className="w-3.5 h-3.5" />}
-                        label="Açlık"
-                        value={stats.hunger}
-                        color="from-orange-500 to-yellow-500"
-                        bgColor="bg-orange-950/50"
-                    />
-                    <StatBar
-                        icon={<Droplets className="w-3.5 h-3.5" />}
-                        label="Hijyen"
-                        value={stats.hygiene}
-                        color="from-cyan-500 to-blue-500"
-                        bgColor="bg-cyan-950/50"
-                    />
-                    <StatBar
-                        icon={<Heart className="w-3.5 h-3.5" />}
-                        label="Mutluluk"
-                        value={stats.happiness}
-                        color="from-pink-500 to-rose-500"
-                        bgColor="bg-pink-950/50"
-                    />
+                {/* Control Panel */}
+                <div className="p-4 bg-gray-800">
+
+                    {/* Retro Stat Bars */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                        <RetroBar label="HP" value={stats.hunger} color="bg-green-500" />
+                        <RetroBar label="HYG" value={stats.hygiene} color="bg-blue-400" />
+                        <RetroBar label="FUN" value={stats.happiness} color="bg-pink-500" />
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-between items-center gap-2">
+                        <RetroButton onClick={handleFeed} icon={<Pizza className="w-4 h-4" />} label="FEED" />
+                        <RetroButton onClick={handleClean} icon={<Droplets className="w-4 h-4" />} label="WASH" />
+                        <RetroButton onClick={() => setShowShop(!showShop)} icon={<ShoppingBag className="w-4 h-4" />} label="SHOP" active={showShop} />
+                    </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="grid grid-cols-3 gap-2 p-3 bg-black/30">
-                    <ActionButton
-                        onClick={handleFeed}
-                        disabled={stats.hunger >= 100 || showShop}
-                        icon={<Pizza className="w-4 h-4" />}
-                        label="Besle"
-                        color="from-orange-600 to-amber-600"
-                        hoverColor="hover:from-orange-500 hover:to-amber-500"
-                    />
-                    <ActionButton
-                        onClick={handleClean}
-                        disabled={stats.hygiene >= 100 || showShop}
-                        icon={<Droplets className="w-4 h-4" />}
-                        label="Yıka"
-                        color="from-cyan-600 to-blue-600"
-                        hoverColor="hover:from-cyan-500 hover:to-blue-500"
-                    />
-                    <ActionButton
-                        onClick={() => setShowShop(!showShop)}
-                        icon={<ShoppingBag className="w-4 h-4" />}
-                        label="Dükkan"
-                        color={showShop ? "from-purple-500 to-indigo-500" : "from-purple-600 to-indigo-600"}
-                        hoverColor="hover:from-purple-500 hover:to-indigo-500"
-                    />
-                </div>
-
-                {/* Shop Panel */}
+                {/* Shop Overlay */}
                 {showShop && (
-                    <div className="border-t border-purple-500/20 bg-gradient-to-b from-purple-950/50 to-gray-900 p-4">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="w-4 h-4 text-yellow-400" />
-                                <span className="font-bold text-white text-sm">Alien Dükkanı</span>
-                            </div>
-                            <button
-                                onClick={() => setShowShop(false)}
-                                className="text-gray-400 hover:text-white transition-colors"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <div className="text-center py-6 text-gray-400 text-sm">
-                            <span className="text-2xl mb-2 block">🚧</span>
-                            Yakında geliyor...
-                        </div>
+                    <div className="absolute inset-0 bg-black/90 p-4 z-40 flex flex-col items-center justify-center text-green-400 font-mono">
+                        <div className="text-xl mb-4 blink">GM SHOP</div>
+                        <div className="text-sm text-center mb-6">OUT OF STOCK</div>
+                        <button onClick={() => setShowShop(false)} className="px-4 py-2 border border-green-500 hover:bg-green-500 hover:text-black">
+                            CLOSE
+                        </button>
                     </div>
                 )}
             </div>
-
-            {/* Custom Animations */}
-            <style jsx>{`
-                @keyframes wiggle {
-                    0%, 100% { transform: rotate(-3deg); }
-                    50% { transform: rotate(3deg); }
-                }
-                @keyframes bounce-up {
-                    0% { opacity: 1; transform: translate(-50%, 0); }
-                    100% { opacity: 0; transform: translate(-50%, -60px); }
-                }
-                .animate-wiggle {
-                    animation: wiggle 0.3s ease-in-out infinite;
-                }
-                .animate-bounce-up {
-                    animation: bounce-up 1s ease-out forwards;
-                }
-            `}</style>
         </div>
     );
 }
 
-// Stat Bar Component
-function StatBar({
-    icon,
-    label,
-    value,
-    color,
-    bgColor
-}: {
-    icon: React.ReactNode;
-    label: string;
-    value: number;
-    color: string;
-    bgColor: string;
-}) {
+function RetroBar({ label, value, color }: { label: string, value: number, color: string }) {
+    // Pixelated bar
+    const segments = 10;
+    const filled = Math.ceil((value / 100) * segments);
+
     return (
-        <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 w-20 text-xs text-gray-300">
-                {icon}
-                <span className="font-medium">{label}</span>
+        <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-gray-400 tracking-wider">{label}</span>
+            <div className="flex gap-[2px]">
+                {[...Array(segments)].map((_, i) => (
+                    <div
+                        key={i}
+                        className={`h-2 flex-1 rounded-[1px] ${i < filled ? color : 'bg-gray-700'}`}
+                    />
+                ))}
             </div>
-            <div className={`flex-1 h-2.5 rounded-full ${bgColor} overflow-hidden`}>
-                <div
-                    className={`h-full rounded-full bg-gradient-to-r ${color} transition-all duration-500`}
-                    style={{ width: `${value}%` }}
-                />
-            </div>
-            <span className="text-[10px] text-gray-400 w-8 text-right font-mono">{Math.round(value)}%</span>
         </div>
     );
 }
 
-// Action Button Component
-function ActionButton({
-    onClick,
-    disabled,
-    icon,
-    label,
-    color,
-    hoverColor
-}: {
-    onClick: () => void;
-    disabled?: boolean;
-    icon: React.ReactNode;
-    label: string;
-    color: string;
-    hoverColor: string;
-}) {
+function RetroButton({ onClick, icon, label, active }: any) {
     return (
         <button
             onClick={onClick}
-            disabled={disabled}
             className={`
-                flex flex-col items-center justify-center gap-1 py-2.5 sm:py-3 rounded-xl
-                bg-gradient-to-br ${color} ${hoverColor}
-                text-white font-semibold text-xs
-                transition-all duration-200
-                active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed
-                shadow-lg shadow-purple-900/30
+                flex-1 py-3 flex flex-col items-center justify-center gap-1
+                bg-gray-700 border-b-4 border-gray-900 rounded active:border-b-0 active:translate-y-1
+                hover:bg-gray-600 transition-colors
+                ${active ? 'bg-gray-600 border-b-0 translate-y-1' : ''}
             `}
         >
-            {icon}
-            <span className="hidden sm:inline">{label}</span>
+            <div className="text-gray-300">{icon}</div>
+            <span className="text-[10px] font-bold text-gray-300 tracking-widest">{label}</span>
         </button>
-    );
+    )
 }
