@@ -297,6 +297,24 @@ export function ModernLogin() {
                                 />
                             </div>
 
+                            {/* Terms & Privacy Checkbox (Only for SignUp) */}
+                            {isSignUp && (
+                                <div className="flex items-start space-x-2 mb-4 px-1">
+                                    <input
+                                        type="checkbox"
+                                        id="terms"
+                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-500/50"
+                                        required
+                                        onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
+                                        onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
+                                    />
+                                    <label htmlFor="terms" className="text-xs text-white/60 leading-tight select-none cursor-pointer">
+                                        <Link href="/kullanim-sartlari" className="text-emerald-400 hover:underline" target="_blank">Kullanım Şartları</Link>'nı ve{" "}
+                                        <Link href="/gizlilik-politikasi" className="text-emerald-400 hover:underline" target="_blank">Gizlilik Politikası</Link>'nı okudum, kabul ediyorum. Verilerimde gözünüz olmadığını anladım.
+                                    </label>
+                                </div>
+                            )}
+
                             <Button
                                 type="submit"
                                 disabled={loading}
