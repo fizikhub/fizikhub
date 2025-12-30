@@ -133,7 +133,6 @@ import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { GlobalEffects } from "@/components/effects/global-effects";
-import { RetroEffects } from "@/components/retro-effects";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 
 import { createClient } from "@/lib/supabase-server";
@@ -243,7 +242,6 @@ export default async function RootLayout({
         >
           <FramerMotionProvider>
             <GlobalEffects />
-            <RetroEffects />
             <TimeLimitProvider>
               <GlobalAdminNotification />
 

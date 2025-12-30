@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Heart, Rocket, Terminal } from "lucide-react";
+import { Moon, Heart, Rocket } from "lucide-react";
 
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
@@ -44,13 +44,6 @@ export function ThemeSelector() {
             label: "Mars",
             icon: Rocket,
             color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
-            special: true
-        },
-        {
-            value: "retro",
-            label: "Retro",
-            icon: Terminal, // Will need to import this
-            color: "bg-black border-green-500 text-green-500",
             special: true
         }
     ];
