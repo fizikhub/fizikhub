@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
+import { useTheme } from "next-themes";
 import { createClient } from "@/lib/supabase";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [supabase] = useState(() => createClient());
     const pathname = usePathname();
+    const { theme } = useTheme();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -99,7 +101,16 @@ export function Navbar() {
                     : "bg-transparent border-b border-transparent"
             )}>
                 <div className="container flex h-12 md:h-16 items-center justify-between px-4 md:px-6">
-                    <Logo />
+                    <div className="flex items-center gap-2">
+                        <Logo />
+                        {theme === 'retro' && (
+                            <img
+                                src="/img/retro/construction.gif"
+                                alt="Construction"
+                                className="h-8 w-auto hidden sm:block"
+                            />
+                        )}
+                    </div>
 
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center gap-6">

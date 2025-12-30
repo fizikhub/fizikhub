@@ -904,6 +904,63 @@ a {
   padding: 0;
 }
 
+/* Windows 98 Form Elements */
+.retro input,
+.retro textarea,
+.retro select {
+  background-color: #ffffff;
+  color: #000000;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: 1px 1px 0px 0px #000000 inset;
+  border-radius: 0 !important;
+  font-family: "Courier New", monospace;
+}
+
+.retro input:focus,
+.retro textarea:focus,
+.retro select:focus {
+  outline: none;
+  background-color: #ffffff;
+}
+
+/* Windows 98 Scrollbar */
+.retro ::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  background-color: #c0c0c0;
+}
+
+.retro ::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  /* Gray track */
+  border-left: 1px solid #ffffff;
+  /* Highlight */
+}
+
+.retro ::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0px #808080, inset 1px 1px 0px #dbdbdb;
+}
+
+.retro ::-webkit-scrollbar-button {
+  background-color: #c0c0c0;
+  width: 16px;
+  height: 16px;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0px #808080, inset 1px 1px 0px #dbdbdb;
+  display: block;
+}
+
 .ProseMirror blockquote {
   border-left: 4px solid rgb(var(--primary));
   padding-left: 1rem;
