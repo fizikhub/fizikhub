@@ -88,152 +88,111 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
     return (
         <div
-            className="group bg-card border-2 border-border/80 hover:border-border rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
+            className="group bg-card border-2 border-border rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
             onClick={handleCardClick}
         >
-            {/* Cosmic background effect */}
-            <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            {/* 1. TOP BAR: Category & Date */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm border bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
+                        {badgeLabel || "SORU"}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                        {question.category}
+                    </span>
+                </div>
+                <span className="text-xs font-medium text-muted-foreground font-mono">
+                    {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                </span>
+            </div>
 
-            <div className="px-5 py-5 relative z-10 w-full">
-                {/* Author Row - Cleaned up */}
-                <div className="flex items-center gap-2.5 mb-3">
+            {/* 3. CONTENT BODY */}
+            <div className="p-5 flex flex-col gap-3">
+                {/* Author Mini-Row (Top of content) */}
+                <div className="flex items-center gap-2 mb-1">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="flex-shrink-0 relative group/avatar"
+                        className="relative group/avatar"
                     >
-                        <Avatar className="w-9 h-9 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
+                        <Avatar className="w-6 h-6 border border-border">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
                     </button>
-                    <div className="flex flex-col min-w-0">
-                        <div className="flex items-center gap-1.5">
-                            <button
-                                onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                                className="font-medium text-foreground hover:underline text-[15px]"
-                            >
-                                {question.profiles?.full_name || question.profiles?.username || "Anonim"}
-                            </button>
-                            {question.profiles?.is_verified && (
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500 flex-shrink-0">
-                                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-                                </svg>
-                            )}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground/80">
-                            {badgeLabel && (
-                                <>
-                                    <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm bg-secondary text-secondary-foreground border border-border")}>
-                                        {badgeLabel}
-                                    </span>
-                                    <span>·</span>
-                                </>
-                            )}
-                            <span>{question.category}</span>
-                            <span>·</span>
-                            <span>
-                                {formatDistanceToNow(new Date(question.created_at), { addSuffix: false, locale: tr })}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Title - Clean & Brutalist Typography */}
-                <h3 className="font-heading font-bold text-lg sm:text-[1.3rem] leading-[1.35] mb-3 text-foreground group-hover:text-blue-500 transition-colors">
-                    {question.title}
-                </h3>
-
-                {/* Content with Gradient Fade - Optimized for reading */}
-                <div className="relative mb-4">
-                    <div className={cn(
-                        "text-[15px] sm:text-[15.5px] text-muted-foreground leading-relaxed font-sans font-normal",
-                        shouldTruncate && !isExpanded && "max-h-[120px] overflow-hidden"
-                    )}>
-                        <p className="whitespace-pre-wrap">{contentPreview}</p>
-                    </div>
-                    {/* Gradient Overlay on truncated content */}
-                    {shouldTruncate && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card via-card/80 to-transparent pointer-events-none" />
+                    <button
+                        onClick={(e) => handleProfileClick(e, question.profiles?.username)}
+                        className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+                    >
+                        {question.profiles?.full_name || question.profiles?.username || "Anonim"}
+                    </button>
+                    {question.profiles?.is_verified && (
+                        <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
                     )}
                 </div>
 
-                {shouldTruncate && !isExpanded && (
-                    <div className="flex justify-center mb-3 pt-2">
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsExpanded(true);
-                            }}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary text-xs font-semibold text-primary transition-all duration-300 backdrop-blur-sm group/btn"
-                        >
-                            <span className="group-hover/btn:translate-y-0.5 transition-transform duration-300">Devamını Oku</span>
-                            <ChevronDown className="w-4 h-4 group-hover/btn:translate-y-0.5 transition-transform duration-300" />
-                        </button>
-                    </div>
-                )}
+                {/* Title */}
+                <h3 className="font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground group-hover:text-blue-500 transition-colors">
+                    {question.title}
+                </h3>
 
-                {/* Action Bar - Clean Style */}
-                <div className="flex items-center justify-start gap-4 pt-4 border-t border-dashed border-border/50">
-                    {/* Upvote Pill - Brutalist */}
-                    <div
-                        className={cn(
-                            "flex items-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] min-h-[44px]",
-                            voteState !== 0 ? "bg-primary/20 border-primary/40" : "bg-transparent"
-                        )}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            onClick={(e) => handleVote(e, 1)}
-                            className={cn(
-                                "flex items-center gap-1.5 px-3 py-2.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-l-xl min-h-[44px]",
-                                voteState === 1 && "text-primary font-bold"
-                            )}
-                            disabled={isVoting}
-                        >
-                            <ChevronUp className={cn(
-                                "w-5 h-5 stroke-[2px]",
-                                voteState === 1 && "stroke-primary"
-                            )} />
-                            <span className="text-sm font-bold min-w-[20px] text-center">
-                                {votes}
-                            </span>
-                        </button>
-                        <div className="w-px h-full bg-gray-300/60 dark:bg-gray-700/60"></div>
-                        <button
-                            onClick={(e) => handleVote(e, -1)}
-                            className={cn(
-                                "px-3 py-2.5 hover:bg-gray-100/80 dark:hover:bg-gray-800/50 transition-colors active:bg-gray-200/80 dark:active:bg-gray-700/50 rounded-r-xl min-h-[44px]",
-                                voteState === -1 && "text-destructive font-bold"
-                            )}
-                            disabled={isVoting}
-                        >
-                            <ChevronDown className={cn(
-                                "w-5 h-5 stroke-[2px]",
-                                voteState === -1 && "stroke-destructive"
-                            )} />
-                        </button>
-                    </div>
+                {/* Content Preview */}
+                <div className="relative">
+                    <p className="text-[15px] leading-relaxed text-muted-foreground font-sans whitespace-pre-wrap line-clamp-4">
+                        {contentPreview}
+                    </p>
+                    {shouldTruncate && !isExpanded && (
+                        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-card to-transparent pointer-events-none" />
+                    )}
+                </div>
+            </div>
 
-                    {/* Comments - Brutalist */}
+            {/* 4. BOTTOM ACTION BAR */}
+            <div className="mt-auto px-4 py-3 bg-muted/5 border-t-2 border-border flex items-center justify-between pointer-events-auto">
+                {/* Left Actions - Voting */}
+                <div className="flex items-center rounded border border-border bg-background overflow-hidden" onClick={(e) => e.stopPropagation()}>
                     <button
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent min-h-[44px]"
+                        onClick={(e) => handleVote(e, 1)}
+                        className={cn(
+                            "px-2 py-1 hover:bg-muted/50 transition-colors",
+                            voteState === 1 && "text-primary bg-primary/10"
+                        )}
+                        disabled={isVoting}
                     >
-                        <MessageCircle className="w-5 h-5 stroke-[1.8px]" />
-                        <span className="text-sm font-semibold">{answerCount}</span>
+                        <ChevronUp className="w-4 h-4" />
+                    </button>
+                    <span className={cn("px-2 text-sm font-bold border-x border-border min-w-[30px] text-center", voteState !== 0 && "text-foreground")}>
+                        {votes}
+                    </span>
+                    <button
+                        onClick={(e) => handleVote(e, -1)}
+                        className={cn(
+                            "px-2 py-1 hover:bg-muted/50 transition-colors",
+                            voteState === -1 && "text-destructive bg-destructive/10"
+                        )}
+                        disabled={isVoting}
+                    >
+                        <ChevronDown className="w-4 h-4" />
+                    </button>
+                </div>
+
+                {/* Right Actions */}
+                <div className="flex items-center gap-3">
+                    <button className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">
+                        <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
+                        <span>{answerCount}</span>
                     </button>
 
-                    {/* Share - Brutalist */}
                     <button
-                        className="p-2.5 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
                             toast.success("Link kopyalandı!");
                         }}
                     >
-                        <Share className="w-4 h-4 stroke-[1.8px]" />
+                        <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
                     </button>
                 </div>
             </div>

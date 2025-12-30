@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, BookOpen, ChevronUp, ChevronDown, Share } from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, BookOpen, ChevronUp, ChevronDown, Share, BadgeCheck } from "lucide-react";
 import { Article } from "@/lib/api";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -160,142 +160,127 @@ export function SocialArticleCard({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
-                "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200",
-                "bg-card border-2 border-border/80 hover:border-border",
-                "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
-                "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
-                "hover:ring-0", // Clean brutalism removes colored rings
+                "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200",
+                "bg-card border-2 border-border", // Solid border structure
+                "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]", // Hard shadow
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]", // Tactile hover
                 className
             )}
         >
-            {/* Cosmic background effect */}
-            <div className={cn("absolute inset-0 bg-gradient-radial via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none", isWriter ? "from-amber-500/5" : "from-emerald-500/5")} />
+            {/* 1. TOP BAR: Category & Date */}
+            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 border-b-2 border-border">
+                <div className="flex items-center gap-2">
+                    <span className={cn(
+                        "text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm border",
+                        isWriter
+                            ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800"
+                            : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800"
+                    )}>
+                        {article.category || "GENEL"}
+                    </span>
+                </div>
+                <span className="text-xs font-medium text-muted-foreground font-mono">
+                    {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                </span>
+            </div>
 
-            {/* Main Navigation Link - covers entire card */}
-            <Link href={`/blog/${article.slug}`} className="absolute inset-0 z-[1]" prefetch={false}>
-                <span className="sr-only">{article.title}</span>
-            </Link>
+            {/* Main Link Wrapper */}
+            <Link href={`/blog/${article.slug}`} className="block flex-1 group/content" prefetch={false}>
 
-            <div className="relative z-10 pointer-events-none flex flex-col h-full">
-                {/* Author Row - Increased Padding */}
-                <div className="px-5 pt-5 pb-3 flex items-center gap-2.5 pointer-events-auto w-fit">
-                    <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
-                        <Avatar className={cn("w-9 h-9 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
+                {/* 2. HERO IMAGE */}
+                {article.image_url && (
+                    <div className="relative aspect-video w-full overflow-hidden border-b-2 border-border bg-muted">
+                        <Image
+                            src={imgSrc}
+                            alt={article.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover/content:scale-105"
+                            onError={() => setImgSrc("/images/placeholder-article.webp")}
+                        />
+                    </div>
+                )}
+
+                {/* 3. CONTENT BODY */}
+                <div className="p-5 flex flex-col gap-3">
+                    {/* Title */}
+                    <h3 className={cn(
+                        "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground transition-colors",
+                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-emerald-600 dark:group-hover/content:text-emerald-400"
+                    )}>
+                        {article.title}
+                    </h3>
+
+                    {/* Summary */}
+                    <p className="text-[15px] leading-relaxed text-muted-foreground font-sans line-clamp-2">
+                        {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
+                    </p>
+
+                    {/* Author Mini-Row (Inside Content) */}
+                    <div className="flex items-center gap-2 mt-1">
+                        <Avatar className="w-6 h-6 border border-border">
                             <AvatarImage src={article.author?.avatar_url || ""} />
-                            <AvatarFallback className={cn("font-bold text-xs", isWriter ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500")}>
-                                {article.author?.username?.[0]?.toUpperCase() || "F"}
+                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
+                                {article.author?.username?.[0]?.toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
+                        <span className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors">
+                            {article.author?.full_name || article.author?.username || "Fizikhub"}
+                        </span>
+                        {isWriter && (
+                            <BadgeCheck className="w-3.5 h-3.5 text-amber-500" />
+                        )}
+                    </div>
+                </div>
+            </Link>
+
+            {/* 4. BOTTOM ACTION BAR */}
+            <div className="mt-auto px-4 py-3 bg-muted/5 border-t-2 border-border flex items-center justify-between pointer-events-auto">
+                {/* Left Actions */}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleLike}
+                        disabled={isLikeLoading}
+                        className={cn(
+                            "flex items-center gap-1.5 text-sm font-bold transition-colors",
+                            isLiked ? "text-rose-500" : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <Heart className={cn("w-4 h-4 stroke-[2.5px]", isLiked && "fill-current")} />
+                        <span>{likeCount}</span>
+                    </button>
+
+                    <Link
+                        href={`/blog/${article.slug}#comments`}
+                        className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
+                        <span>{initialComments}</span>
                     </Link>
-                    <div className="flex flex-col min-w-0">
-                        <div className="flex items-center gap-1.5">
-                            <Link href={`/kullanici/${article.author?.username}`} className="font-medium text-foreground hover:underline text-sm transition-colors">
-                                {article.author?.full_name || article.author?.username || "Fizikhub"}
-                            </Link>
-                            <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm bg-secondary text-secondary-foreground border border-border")}>{finalBadgeText}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[12px] text-muted-foreground/80">
-                            <span>{article.category}</span>
-                            <span>·</span>
-                            <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Content Area */}
-                <div className="block group/content flex-1">
-                    {/* Title - Padded & Styled Large/Yellow */}
-                    {/* Title - Padded & Styled for Readability */}
-                    <div className="px-5 mb-2.5">
-                        <h3 className={cn(
-                            "font-heading font-bold text-xl sm:text-[1.35rem] leading-[1.35] transition-colors",
-                            "text-foreground", // Default to black/white
-                            isWriter
-                                ? "group-hover/content:text-amber-500"
-                                : "group-hover/content:text-emerald-500"
-                        )}>
-                            {article.title}
-                        </h3>
+                {/* Right Actions */}
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 text-xs font-bold text-muted-foreground bg-muted px-2 py-1 rounded border border-border/50">
+                        <BookOpen className="w-3 h-3" />
+                        {getReadingTime(article.content)} dk
                     </div>
 
-                    {/* Image - Full Width (No Padding) */}
-                    {article.image_url && (
-                        <div className="relative aspect-video w-full overflow-hidden border-y border-border/40 mb-3">
-                            <Image
-                                src={imgSrc}
-                                alt={article.title}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover/content:scale-[1.02]"
-                                onError={() => setImgSrc("/images/placeholder-article.webp")}
-                            />
-                        </div>
-                    )}
+                    <button
+                        onClick={handleBookmark}
+                        className={cn(
+                            "transition-colors",
+                            isBookmarked ? "text-amber-500" : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        <Bookmark className={cn("w-4.5 h-4.5 stroke-[2.5px]", isBookmarked && "fill-current")} />
+                    </button>
 
-                    {/* Summary - Padded */}
-                    {/* Summary - Spaced out & Clean Typography */}
-                    <div className="px-5 mb-4">
-                        <div className="text-[15px] text-muted-foreground leading-relaxed font-normal line-clamp-2">
-                            {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Action Bar - Increased Padding */}
-                <div className="mt-auto px-5 pb-5 pt-1 pointer-events-auto">
-                    <div className="flex items-center gap-2 pt-3 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
-                        {/* Like Button */}
-                        <button
-                            onClick={handleLike}
-                            disabled={isLikeLoading}
-                            className={cn(
-                                "flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
-                                isLiked ? "text-rose-500 border-rose-500/30 bg-rose-500/10" : "hover:bg-gray-100/50 dark:hover:bg-gray-800/50"
-                            )}
-                        >
-                            <Heart className={cn(
-                                "w-4 h-4 stroke-[1.8px]",
-                                isLiked ? "fill-current" : ""
-                            )} />
-                            <span className="text-sm font-semibold min-w-[16px] text-center">
-                                {likeCount}
-                            </span>
-                        </button>
-
-                        {/* Comments */}
-                        <Link
-                            href={`/blog/${article.slug}#comments`}
-                            className="flex h-9 items-center gap-2 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent text-foreground"
-                        >
-                            <MessageCircle className="w-4 h-4 stroke-[1.8px]" />
-                            <span className="text-sm font-semibold">{initialComments}</span>
-                        </Link>
-
-                        {/* Read Time */}
-                        <div className="flex h-9 items-center gap-1.5 px-3 rounded-xl border border-gray-300/60 dark:border-gray-700/60 text-muted-foreground text-xs font-medium">
-                            <BookOpen className="w-3.5 h-3.5" />
-                            {getReadingTime(article.content)} dk
-                        </div>
-
-                        {/* Share & Bookmark Group */}
-                        <div className="ml-auto flex items-center gap-2">
-                            <button
-                                onClick={handleBookmark}
-                                className={cn(
-                                    "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent",
-                                    isBookmarked && "text-amber-500 border-amber-500/30 bg-amber-500/10"
-                                )}
-                            >
-                                <Bookmark className={cn("w-4 h-4 stroke-[1.8px]", isBookmarked && "fill-current")} />
-                            </button>
-
-                            <button
-                                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-300/60 dark:border-gray-700/60 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-300 active:scale-95 bg-transparent"
-                                onClick={handleShare}
-                            >
-                                <Share className="w-4 h-4 stroke-[1.8px]" />
-                            </button>
-                        </div>
-                    </div>
+                    <button
+                        onClick={handleShare}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
+                    </button>
                 </div>
             </div>
         </motion.div>
