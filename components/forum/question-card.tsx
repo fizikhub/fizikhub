@@ -88,15 +88,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
     return (
         <div
-            className="group bg-card rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:ring-1 hover:ring-blue-500/40 active:scale-[0.99]"
+            className="group bg-card border-2 border-border/80 hover:border-border rounded-2xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
             onClick={handleCardClick}
         >
             {/* Cosmic background effect */}
             <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-            <div className="px-4 py-4 sm:px-5 sm:py-4 relative z-10">
-                {/* Author Row */}
-                <div className="flex items-center gap-2.5 mb-2">
+            <div className="px-5 py-5 relative z-10 w-full">
+                {/* Author Row - Cleaned up */}
+                <div className="flex items-center gap-2.5 mb-3">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
                         className="flex-shrink-0 relative group/avatar"
@@ -112,7 +112,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                         <div className="flex items-center gap-1.5">
                             <button
                                 onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                                className="font-semibold text-foreground hover:underline text-[15px]"
+                                className="font-medium text-foreground hover:underline text-[15px]"
                             >
                                 {question.profiles?.full_name || question.profiles?.username || "Anonim"}
                             </button>
@@ -122,10 +122,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                                 </svg>
                             )}
                         </div>
-                        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground/80">
                             {badgeLabel && (
                                 <>
-                                    <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", badgeClassName || "text-blue-500 bg-blue-500/10")}>
+                                    <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm bg-secondary text-secondary-foreground border border-border")}>
                                         {badgeLabel}
                                     </span>
                                     <span>·</span>
@@ -140,15 +140,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                     </div>
                 </div>
 
-                {/* Title - Clean and readable */}
-                <h3 className="font-heading font-bold text-lg sm:text-[1.25rem] leading-[1.3] mb-3 text-amber-400 group-hover:text-amber-300 transition-colors">
+                {/* Title - Clean & Brutalist Typography */}
+                <h3 className="font-heading font-bold text-lg sm:text-[1.3rem] leading-[1.35] mb-3 text-foreground group-hover:text-blue-500 transition-colors">
                     {question.title}
                 </h3>
 
                 {/* Content with Gradient Fade - Optimized for reading */}
-                <div className="relative mb-3">
+                <div className="relative mb-4">
                     <div className={cn(
-                        "text-[15.5px] text-foreground/85 leading-[1.7] font-sans",
+                        "text-[15px] sm:text-[15.5px] text-muted-foreground leading-relaxed font-sans font-normal",
                         shouldTruncate && !isExpanded && "max-h-[120px] overflow-hidden"
                     )}>
                         <p className="whitespace-pre-wrap">{contentPreview}</p>
@@ -174,8 +174,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                     </div>
                 )}
 
-                {/* Action Bar - Brutalist Space Style */}
-                <div className="flex items-center justify-start gap-4 pt-4 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
+                {/* Action Bar - Clean Style */}
+                <div className="flex items-center justify-start gap-4 pt-4 border-t border-dashed border-border/50">
                     {/* Upvote Pill - Brutalist */}
                     <div
                         className={cn(

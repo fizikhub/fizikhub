@@ -161,13 +161,10 @@ export function SocialArticleCard({
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
                 "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-200",
-                "bg-card",
-                "shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)]",
-                "hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]",
-                // Theme specific hover effects
-                isWriter
-                    ? "hover:ring-1 hover:ring-amber-500/40"
-                    : "hover:ring-1 hover:ring-emerald-500/40",
+                "bg-card border-2 border-border/80 hover:border-border",
+                "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
+                "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
+                "hover:ring-0", // Clean brutalism removes colored rings
                 className
             )}
         >
@@ -180,8 +177,8 @@ export function SocialArticleCard({
             </Link>
 
             <div className="relative z-10 pointer-events-none flex flex-col h-full">
-                {/* Author Row - Padded */}
-                <div className="px-4 pt-4 pb-2 flex items-center gap-2.5 pointer-events-auto w-fit">
+                {/* Author Row - Increased Padding */}
+                <div className="px-5 pt-5 pb-3 flex items-center gap-2.5 pointer-events-auto w-fit">
                     <Link href={`/kullanici/${article.author?.username}`} className="flex-shrink-0 relative group/avatar z-20">
                         <Avatar className={cn("w-9 h-9 ring-2 ring-transparent transition-all duration-300", isWriter ? "group-hover/avatar:ring-amber-500/20" : "group-hover/avatar:ring-emerald-500/20")}>
                             <AvatarImage src={article.author?.avatar_url || ""} />
@@ -192,12 +189,12 @@ export function SocialArticleCard({
                     </Link>
                     <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
-                            <Link href={`/kullanici/${article.author?.username}`} className={cn("font-semibold text-foreground hover:underline text-sm transition-colors", isWriter ? "hover:text-amber-500" : "hover:text-emerald-500")}>
+                            <Link href={`/kullanici/${article.author?.username}`} className="font-medium text-foreground hover:underline text-sm transition-colors">
                                 {article.author?.full_name || article.author?.username || "Fizikhub"}
                             </Link>
-                            <span className={cn("text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm", finalBadgeClass)}>{finalBadgeText}</span>
+                            <span className={cn("text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded-sm bg-secondary text-secondary-foreground border border-border")}>{finalBadgeText}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <div className="flex items-center gap-1 text-[12px] text-muted-foreground/80">
                             <span>{article.category}</span>
                             <span>·</span>
                             <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}</span>
@@ -208,8 +205,15 @@ export function SocialArticleCard({
                 {/* Content Area */}
                 <div className="block group/content flex-1">
                     {/* Title - Padded & Styled Large/Yellow */}
-                    <div className="px-4 mb-2">
-                        <h3 className={cn("font-heading font-bold text-xl sm:text-[1.35rem] leading-[1.3] text-amber-400 group-hover/content:text-amber-300 transition-colors")}>
+                    {/* Title - Padded & Styled for Readability */}
+                    <div className="px-5 mb-2.5">
+                        <h3 className={cn(
+                            "font-heading font-bold text-xl sm:text-[1.35rem] leading-[1.35] transition-colors",
+                            "text-foreground", // Default to black/white
+                            isWriter
+                                ? "group-hover/content:text-amber-500"
+                                : "group-hover/content:text-emerald-500"
+                        )}>
                             {article.title}
                         </h3>
                     </div>
@@ -228,15 +232,16 @@ export function SocialArticleCard({
                     )}
 
                     {/* Summary - Padded */}
-                    <div className="px-4 mb-3">
-                        <div className="text-[13px] sm:text-[14px] text-foreground/80 leading-[1.6] font-sans line-clamp-2">
+                    {/* Summary - Spaced out & Clean Typography */}
+                    <div className="px-5 mb-4">
+                        <div className="text-[15px] text-muted-foreground leading-relaxed font-normal line-clamp-2">
                             {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
                         </div>
                     </div>
                 </div>
 
-                {/* Action Bar - Padded */}
-                <div className="mt-auto px-4 pb-4 pt-1 pointer-events-auto">
+                {/* Action Bar - Increased Padding */}
+                <div className="mt-auto px-5 pb-5 pt-1 pointer-events-auto">
                     <div className="flex items-center gap-2 pt-3 border-t border-dashed border-gray-300/30 dark:border-gray-700/30">
                         {/* Like Button */}
                         <button
