@@ -145,6 +145,42 @@
     --ring: 220 38 38;
   }
 
+  .retro {
+    /* 90s Internet / Matrix Vibe */
+    --background: 0 0 0;
+    --foreground: 0 255 0;
+    /* Bright terminal green */
+
+    --card: 10 10 10;
+    --card-foreground: 0 255 0;
+
+    --popover: 10 10 10;
+    --popover-foreground: 0 255 0;
+
+    --primary: 0 255 0;
+    --primary-foreground: 0 0 0;
+
+    --secondary: 20 20 20;
+    --secondary-foreground: 0 255 0;
+
+    --muted: 30 30 30;
+    --muted-foreground: 0 180 0;
+
+    --accent: 255 0 255;
+    /* Hot pink/Magenta for contrast */
+    --accent-foreground: 255 255 255;
+
+    --destructive: 255 0 0;
+    --destructive-foreground: 255 255 255;
+
+    --border: 0 255 0;
+    --input: 0 40 0;
+    --ring: 0 255 0;
+
+    --radius: 0;
+    /* Brutalist squared edges */
+  }
+
   .mars {
     /* Koyu Mars yüzeyi - kızıl kahverengi */
     --background: 41 20 15;
@@ -205,6 +241,30 @@
   .mars .bg-card {
     background-color: rgba(60, 30, 20, 0.85) !important;
     backdrop-filter: blur(8px);
+  }
+
+  /* Retro Theme - Monospace and Solid Black */
+  .retro body {
+    background-color: #000000;
+    background-image: none;
+    font-family: "Courier New", Courier, monospace;
+    letter-spacing: -0.5px;
+  }
+
+  .retro * {
+    border-radius: 0 !important;
+  }
+
+  .retro .brutalist-card,
+  .retro .brutalist-button {
+    border: 1px solid #00ff00;
+    box-shadow: 4px 4px 0px 0px #004000;
+  }
+
+  .retro .brutalist-card:hover,
+  .retro .brutalist-button:hover {
+    box-shadow: 2px 2px 0px 0px #00ff00;
+    transform: translate(2px, 2px);
   }
 
   ::selection {
