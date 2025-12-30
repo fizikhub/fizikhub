@@ -345,7 +345,7 @@ export function ProfileSettingsButton({
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Kalsam da mı? 😊</AlertDialogCancel>
+                            <AlertDialogCancel>Kalsam mı? 😊</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleConfirmSignOut}
                                 className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
@@ -401,7 +401,7 @@ export function ProfileSettingsButton({
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Kalsam da mı? 😊</AlertDialogCancel>
+                        <AlertDialogCancel>Kalsam mı? 😊</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmSignOut}
                             className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"

@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
-import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
+import { ModernFeed, FeedItem } from "@/components/home/modern-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
 import { CategoryStories } from "@/components/home/category-stories";
@@ -120,26 +120,29 @@ export default async function Home() {
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10">
 
         {/* Story-style Categories */}
-        <div className="pt-1 pb-0">
+        <div className="pt-2 pb-4">
           <CategoryStories />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
+        {/* Hero Section */}
+        <div className="mb-8 px-2 sm:px-0">
+          <CompactHero />
+        </div>
 
-          {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
-            <CompactHero />
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
+          {/* Main Feed Column (Full width on mobile/tablet, 8 cols on desktop) */}
+          <div className="xl:col-span-8 min-h-screen">
+            <ModernFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
-          {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
-            <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
+          {/* Sidebar Column (Hidden on mobile/tablet, 4 cols on desktop) */}
+          <div className="hidden xl:block xl:col-span-4 space-y-6">
+            <div className="sticky top-24">
+              <FeedSidebar />
+            </div>
           </div>
 
-          {/* Sidebar Column */}
-          <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar />
-          </div>
         </div>
       </div>
     </main>
