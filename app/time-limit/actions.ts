@@ -9,7 +9,7 @@ export interface TimeLimitStatus {
     isExpired: boolean;
 }
 
-const DAILY_LIMIT_SECONDS = 600; // 10 minutes
+const DAILY_LIMIT_SECONDS = 300; // 5 minutes
 
 export async function getTimeLimitStatus(): Promise<TimeLimitStatus | null> {
     const supabase = await createClient();
