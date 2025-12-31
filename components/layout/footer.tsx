@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { RealisticBlackHole } from "@/components/ui/realistic-black-hole";
 
 export function Footer() {
     const pathname = usePathname();
@@ -90,54 +91,17 @@ export function Footer() {
                 </motion.div>
             </div>
 
-            {/* Event Horizon - The Absolute Void */}
-            {isMobile ? (
-                <div className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_40px_rgba(234,88,12,0.25)]">
-                    {/* Photon Ring */}
-                    <div className="absolute inset-[-2px] rounded-full border border-orange-500/25" />
-                </div>
-            ) : (
-                <motion.div
-                    animate={{ scale: [1, 1.02, 1] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_60px_rgba(234,88,12,0.3)]"
-                >
-                    {/* Photon Ring */}
-                    <div className="absolute inset-[-2px] rounded-full border border-orange-500/30 blur-[1px]" />
-                </motion.div>
-            )}
+
 
             <div className="relative z-20 mb-auto pt-10">
                 <DidYouKnow />
             </div>
 
             {/* Center Singularity Brand & Toggle */}
-            <div className="absolute bottom-[300px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-50">
-                <div className="relative flex items-center justify-center">
+            <div className="absolute bottom-[250px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-50 pointer-events-none">
+                <div className="relative flex items-center justify-center scale-[2.5] md:scale-[3] opacity-90 transform-gpu">
                     {/* The Singularity Core - INTERACTIVE */}
-                    <div
-                        className="relative cursor-pointer z-50 group"
-                        onClick={() => setIsSingularityActive(!isSingularityActive)}
-                    >
-                        <motion.div
-                            animate={{ scale: isSingularityActive ? [1, 1.2, 1] : 1, opacity: isSingularityActive ? [0.5, 0.8, 0.5] : 0.2 }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                            className={cn(
-                                "absolute inset-0 bg-primary/20 rounded-full group-hover:scale-110 transition-transform duration-500",
-                                isMobile ? "" : "blur-xl"
-                            )}
-                        />
-                        <div className={cn(
-                            "relative p-8 bg-black border-2 rounded-full transition-all duration-500 group-hover:border-primary group-hover:scale-105",
-                            isSingularityActive ? "border-primary shadow-[0_0_40px_rgba(234,88,12,0.4)]" : "border-white/10 hover:border-white/30",
-                        )}>
-                            {/* Solid Singularity Core */}
-                            <div className={cn(
-                                "w-16 h-16 rounded-full transition-all duration-1000",
-                                isSingularityActive ? "bg-white shadow-[0_0_30px_#fff,0_0_60px_#ea580c] scale-100" : "bg-zinc-800 scale-90"
-                            )} />
-                        </div>
-                    </div>
+                    <RealisticBlackHole />
                 </div>
             </div>
 
