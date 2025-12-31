@@ -93,20 +93,23 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
-            className="group bg-card/95 backdrop-blur-sm border border-border/60 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-blue-500/5 hover:border-border/90"
+            className="group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80"
             onClick={handleCardClick}
         >
             {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted/20 to-muted/10 border-b border-border/40">
-                <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-medium uppercase tracking-wide px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
+                <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold tracking-wide text-blue-600 dark:text-blue-400">
                         {badgeLabel || "SORU"}
                     </span>
-                    <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
+                    <span className="text-xs font-medium text-muted-foreground/60">
+                        •
+                    </span>
+                    <span className="text-xs font-medium tracking-wide text-foreground/80">
                         {question.category}
                     </span>
                 </div>
-                <span className="text-xs text-muted-foreground/70">
+                <span className="text-xs text-muted-foreground/60">
                     {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                 </span>
             </div>
@@ -154,9 +157,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             </div>
 
             {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-4 py-3 bg-gradient-to-r from-muted/5 to-transparent border-t border-border/40 flex items-center justify-between pointer-events-auto">
+            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5">
                 {/* Left Actions - Voting */}
-                <div className="flex items-center rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center rounded-md border border-border bg-background shadow-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => handleVote(e, 1)}
                         className={cn(

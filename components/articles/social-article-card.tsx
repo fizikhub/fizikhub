@@ -162,26 +162,24 @@ export function SocialArticleCard({
             whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
             className={cn(
                 "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300",
-                "bg-card/95 backdrop-blur-sm border border-border/60",
-                "shadow-lg shadow-black/5 dark:shadow-black/20",
-                "hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-primary/5",
-                "hover:border-border/90 dark:hover:border-border",
+                "bg-card border border-border",
+                "shadow-sm hover:shadow-md hover:border-border/80",
                 className
             )}
         >
             {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted/20 to-muted/10 border-b border-border/40">
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
+                <div className="flex items-center gap-3">
                     <span className={cn(
-                        "text-[10px] font-medium uppercase tracking-wide px-2 py-1 rounded-md",
+                        "text-xs font-bold tracking-wide",
                         isWriter
-                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                            ? "text-amber-600 dark:text-amber-500"
+                            : "text-emerald-600 dark:text-emerald-500"
                     )}>
                         {article.category || "GENEL"}
                     </span>
                 </div>
-                <span className="text-xs text-muted-foreground/70">
+                <span className="text-xs text-muted-foreground/60">
                     {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                 </span>
             </div>
@@ -238,7 +236,7 @@ export function SocialArticleCard({
             </Link>
 
             {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-4 py-3 bg-gradient-to-r from-muted/5 to-transparent border-t border-border/40 flex items-center justify-between pointer-events-auto">
+            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5">
                 {/* Left Actions */}
                 <div className="flex items-center gap-3">
                     <button
