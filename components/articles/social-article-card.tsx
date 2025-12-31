@@ -158,28 +158,30 @@ export function SocialArticleCard({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
+            transition={{ duration: 0.4, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+            whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
             className={cn(
-                "group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200",
-                "bg-card border-2 border-border", // Solid border structure
-                "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]", // Hard shadow
-                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]", // Tactile hover
+                "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300",
+                "bg-card/95 backdrop-blur-sm border border-border/60",
+                "shadow-lg shadow-black/5 dark:shadow-black/20",
+                "hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-primary/5",
+                "hover:border-border/90 dark:hover:border-border",
                 className
             )}
         >
             {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 border-b-2 border-border">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted/20 to-muted/10 border-b border-border/40">
                 <div className="flex items-center gap-2">
                     <span className={cn(
-                        "text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm border",
+                        "text-[10px] font-medium uppercase tracking-wide px-2 py-1 rounded-md",
                         isWriter
-                            ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800"
-                            : "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                     )}>
                         {article.category || "GENEL"}
                     </span>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground font-mono">
+                <span className="text-xs text-muted-foreground/70">
                     {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                 </span>
             </div>
@@ -189,14 +191,16 @@ export function SocialArticleCard({
 
                 {/* 2. HERO IMAGE */}
                 {article.image_url && (
-                    <div className="relative aspect-video w-full overflow-hidden border-b-2 border-border bg-muted">
+                    <div className="relative aspect-video w-full overflow-hidden border-b border-border/30 bg-muted">
                         <Image
                             src={imgSrc}
                             alt={article.title}
                             fill
-                            className="object-cover transition-transform duration-500 group-hover/content:scale-105"
+                            className="object-cover transition-transform duration-700 ease-out group-hover/content:scale-[1.03]"
                             onError={() => setImgSrc("/images/placeholder-article.webp")}
                         />
+                        {/* Subtle vignette overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
                     </div>
                 )}
 
@@ -234,7 +238,7 @@ export function SocialArticleCard({
             </Link>
 
             {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-4 py-3 bg-muted/5 border-t-2 border-border flex items-center justify-between pointer-events-auto">
+            <div className="mt-auto px-4 py-3 bg-gradient-to-r from-muted/5 to-transparent border-t border-border/40 flex items-center justify-between pointer-events-auto">
                 {/* Left Actions */}
                 <div className="flex items-center gap-3">
                     <button

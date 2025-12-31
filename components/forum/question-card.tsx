@@ -11,6 +11,7 @@ import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { motion } from "framer-motion";
 
 interface QuestionCardProps {
     question: any;
@@ -87,21 +88,25 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
 
     return (
-        <div
-            className="group bg-card border-2 border-border rounded-xl cursor-pointer transition-all duration-200 relative overflow-hidden shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
+            className="group bg-card/95 backdrop-blur-sm border border-border/60 rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-lg shadow-black/5 dark:shadow-black/20 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-blue-500/5 hover:border-border/90"
             onClick={handleCardClick}
         >
             {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 border-b-2 border-border">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-muted/20 to-muted/10 border-b border-border/40">
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm border bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800">
+                    <span className="text-[10px] font-medium uppercase tracking-wide px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
                         {badgeLabel || "SORU"}
                     </span>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">
                         {question.category}
                     </span>
                 </div>
-                <span className="text-xs font-medium text-muted-foreground font-mono">
+                <span className="text-xs text-muted-foreground/70">
                     {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                 </span>
             </div>
@@ -149,9 +154,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             </div>
 
             {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-4 py-3 bg-muted/5 border-t-2 border-border flex items-center justify-between pointer-events-auto">
+            <div className="mt-auto px-4 py-3 bg-gradient-to-r from-muted/5 to-transparent border-t border-border/40 flex items-center justify-between pointer-events-auto">
                 {/* Left Actions - Voting */}
-                <div className="flex items-center rounded border border-border bg-background overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center rounded-lg border border-border/50 bg-background/50 backdrop-blur-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => handleVote(e, 1)}
                         className={cn(
@@ -196,7 +201,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                     </button>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 });
 
