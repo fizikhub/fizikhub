@@ -98,11 +98,8 @@ export function Footer() {
             </div>
 
             {/* Center Singularity Brand & Toggle */}
-            <div className="absolute bottom-[250px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-50 pointer-events-none">
-                <div className="relative flex items-center justify-center scale-[2.5] md:scale-[3] opacity-90 transform-gpu">
-                    {/* The Singularity Core - INTERACTIVE */}
-                    <RealisticBlackHole />
-                </div>
+            <div className="absolute bottom-[180px] md:bottom-[220px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none">
+                <RealisticBlackHole />
             </div>
 
             <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">

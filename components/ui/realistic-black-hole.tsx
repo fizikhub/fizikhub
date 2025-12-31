@@ -1,102 +1,190 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState, useMemo } from "react";
 
-export function RealisticBlackHole() {
-    return (
-        <div className="relative flex items-center justify-center w-[600px] h-[600px] pointer-events-none">
-            {/* 1. GRAVITATIONAL LENSING (Outer distortion) */}
-            <div className="absolute inset-0 rounded-full bg-transparent opacity-20 blur-3xl shadow-[0_0_100px_rgba(234,88,12,0.3)] animate-pulse" />
-
-            {/* 2. ACCRETION DISK (The spinning matter) */}
-            {/* Uses a 3D transformed container to look like a disk */}
-            <div className="absolute inset-[100px] perspective-[1000px]">
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }} // Slow rotation
-                    className="relative w-full h-full flex items-center justify-center"
-                    style={{
-                        transformStyle: "preserve-3d",
-                        transform: "rotateX(75deg)", // Tilt it to make it a disk/ring
-                    }}
-                >
-                    {/* The Swirl Gradient */}
-                    <div
-                        className="absolute inset-0 rounded-full"
-                        style={{
-                            background: "conic-gradient(from 0deg, transparent 0%, rgba(234,88,12,0) 20%, rgba(234,88,12,0.8) 40%, rgba(253,224,71,1) 50%, rgba(234,88,12,0.8) 60%, rgba(234,88,12,0) 80%, transparent 100%)",
-                            filter: "blur(4px)",
-                            boxShadow: "0 0 40px rgba(234,88,12,0.4)"
-                        }}
-                    />
-                    {/* Second Layer for complexity */}
-                    <div
-                        className="absolute inset-4 rounded-full"
-                        style={{
-                            background: "conic-gradient(from 180deg, transparent 0%, rgba(234,88,12,0) 10%, rgba(180,60,0,0.8) 45%, rgba(253,224,71,0.8) 50%, rgba(180,60,0,0.8) 55%, transparent 100%)",
-                            filter: "blur(8px)",
-                            opacity: 0.7
-                        }}
-                    />
-                </motion.div>
-            </div>
-
-            {/* 3. EVENT HORIZON (The Black Sphere) */}
-            {/* Sitting vertically in the middle, blocking the view */}
-            <div className="relative w-32 h-32 bg-black rounded-full z-10 shadow-[0_0_50px_rgba(0,0,0,1)]">
-                {/* Photon Ring (The thin bright ring immediately around the shadow) */}
-                <div className="absolute inset-[-2px] rounded-full border-[1px] border-orange-200/40 blur-[1px] shadow-[0_0_15px_rgba(255,200,100,0.6)]" />
-
-                {/* Inner Darkness gradient to give roundness */}
-                <div className="absolute inset-0 rounded-full bg-radial-gradient from-black to-neutral-900" />
-            </div>
-
-            {/* 4. FRONT ACCRETION (The part of the disk 'in front' of the black hole) */}
-            {/* Visual trick: We need a part of the disk to appear IN FRONT of the sphere. 
-                But CSS 3D sorting is tricky. 
-                Instead, we use a semi-transparent overlay or a second disk segment if needed.
-                For now, the sphere (z-10) sits on top of the tilted disk.
-                To make it look like Interstellar (disk goes BEHIND and IN FRONT), 
-                we would need two half-disks. 
-                Let's stick to a simpler "top down tilted" view or just a glowing halo for now.
-             */}
-
-            {/* Simulation of the "upper" arch of the photon sphere getting bent */}
-            <div className="absolute -top-12 w-48 h-24 bg-orange-500/10 blur-2xl rounded-t-full z-0" />
-        </div>
-    );
+interface Particle {
+    id: number;
+    angle: number;
+    distance: number;
+    speed: number;
+    size: number;
+    opacity: number;
 }
 
-// Interstellar-style complex implementation component
-export function InterstellarBlackHole() {
+export function RealisticBlackHole() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Generate particles that will spiral inward
+    const particles = useMemo(() => {
+        const count = isMobile ? 30 : 60;
+        return Array.from({ length: count }, (_, i) => ({
+            id: i,
+            angle: Math.random() * 360,
+            distance: 80 + Math.random() * 120, // Start distance from center
+            speed: 8 + Math.random() * 12, // Animation duration (seconds)
+            size: 1 + Math.random() * 2,
+            opacity: 0.4 + Math.random() * 0.6,
+        }));
+    }, [isMobile]);
+
+    const containerSize = isMobile ? 280 : 400;
+    const coreSize = isMobile ? 50 : 80;
+
     return (
-        <div className="relative w-[800px] h-[800px] flex items-center justify-center overflow-hidden pointer-events-none perspective-[1000px]">
-            {/* The Disk: Tilted */}
-            <div className="absolute inset-0 flex items-center justify-center">
+        <div
+            className="relative flex items-center justify-center pointer-events-none"
+            style={{ width: containerSize, height: containerSize }}
+        >
+            {/* 1. OUTER GLOW - Gravitational lensing effect */}
+            <div
+                className="absolute rounded-full"
+                style={{
+                    width: containerSize * 0.9,
+                    height: containerSize * 0.9,
+                    background: 'radial-gradient(circle, rgba(234,88,12,0.15) 0%, rgba(234,88,12,0.05) 40%, transparent 70%)',
+                    filter: 'blur(20px)',
+                }}
+            />
+
+            {/* 2. ACCRETION DISK - The iconic ring */}
+            <div
+                className="absolute"
+                style={{
+                    width: containerSize * 0.85,
+                    height: containerSize * 0.85,
+                    transform: 'rotateX(75deg)',
+                    transformStyle: 'preserve-3d',
+                }}
+            >
+                {/* Main rotating disk */}
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="w-[600px] h-[600px]"
-                >
-                    <div className="w-full h-full rounded-full"
-                        style={{
-                            background: "radial-gradient(circle, transparent 30%, rgba(245,158,11,0.8) 35%, rgba(0,0,0,0) 70%)",
-                            filter: "blur(20px)",
-                            transform: "rotateX(70deg) scale(1.5)"
-                        }}
-                    />
-                </motion.div>
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                        background: `conic-gradient(
+                            from 0deg,
+                            transparent 0%,
+                            rgba(255,100,0,0.1) 10%,
+                            rgba(255,150,50,0.6) 25%,
+                            rgba(255,200,100,0.9) 35%,
+                            rgba(255,255,200,1) 40%,
+                            rgba(255,200,100,0.9) 45%,
+                            rgba(255,150,50,0.6) 55%,
+                            rgba(255,100,0,0.1) 70%,
+                            transparent 100%
+                        )`,
+                        boxShadow: '0 0 60px rgba(255,150,50,0.4), 0 0 120px rgba(255,100,0,0.2)',
+                    }}
+                />
+
+                {/* Inner disk cutout (to create ring shape) */}
+                <div
+                    className="absolute rounded-full bg-black"
+                    style={{
+                        top: '30%',
+                        left: '30%',
+                        width: '40%',
+                        height: '40%',
+                    }}
+                />
             </div>
 
-            <div className="absolute w-[200px] h-[200px] bg-black rounded-full shadow-[0_0_60px_rgba(245,158,11,0.6)] z-10 border border-white/10">
-                <div className="absolute inset-[-4px] rounded-full border border-orange-100/30 blur-sm" />
+            {/* 3. PHOTON SPHERE - The bright ring around the event horizon */}
+            <div
+                className="absolute rounded-full"
+                style={{
+                    width: coreSize + 20,
+                    height: coreSize + 20,
+                    border: '1px solid rgba(255,200,150,0.4)',
+                    boxShadow: '0 0 20px rgba(255,150,100,0.5), inset 0 0 10px rgba(255,150,100,0.3)',
+                }}
+            />
+
+            {/* 4. EVENT HORIZON - The 3D spherical black core */}
+            <div
+                className="absolute rounded-full z-10"
+                style={{
+                    width: coreSize,
+                    height: coreSize,
+                    background: 'radial-gradient(circle at 30% 30%, #1a1a1a 0%, #000000 50%, #000000 100%)',
+                    boxShadow: `
+                        inset 0 0 ${coreSize / 4}px rgba(0,0,0,1),
+                        0 0 ${coreSize / 2}px rgba(0,0,0,0.8),
+                        0 0 ${coreSize}px rgba(0,0,0,0.5)
+                    `,
+                }}
+            >
+                {/* Subtle highlight for 3D effect */}
+                <div
+                    className="absolute rounded-full"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        background: 'radial-gradient(circle at 25% 25%, rgba(60,60,60,0.3) 0%, transparent 50%)',
+                    }}
+                />
             </div>
 
-            {/* Warped Light Top */}
-            <div className="absolute top-[280px] w-[300px] h-[150px] bg-orange-500/20 blur-2xl rounded-t-full z-0 transform -translate-y-1/2" />
+            {/* 5. PARTICLES - Matter being sucked in */}
+            {particles.map((particle) => (
+                <motion.div
+                    key={particle.id}
+                    className="absolute rounded-full bg-orange-300"
+                    style={{
+                        width: particle.size,
+                        height: particle.size,
+                        opacity: particle.opacity,
+                        boxShadow: `0 0 ${particle.size * 2}px rgba(255,150,50,0.8)`,
+                    }}
+                    animate={{
+                        // Spiral inward
+                        x: [
+                            Math.cos(particle.angle * Math.PI / 180) * particle.distance,
+                            Math.cos((particle.angle + 180) * Math.PI / 180) * (particle.distance * 0.6),
+                            Math.cos((particle.angle + 360) * Math.PI / 180) * (particle.distance * 0.3),
+                            0
+                        ],
+                        y: [
+                            Math.sin(particle.angle * Math.PI / 180) * particle.distance,
+                            Math.sin((particle.angle + 180) * Math.PI / 180) * (particle.distance * 0.6),
+                            Math.sin((particle.angle + 360) * Math.PI / 180) * (particle.distance * 0.3),
+                            0
+                        ],
+                        opacity: [particle.opacity, particle.opacity, particle.opacity * 0.5, 0],
+                        scale: [1, 1.2, 0.8, 0],
+                    }}
+                    transition={{
+                        duration: particle.speed,
+                        repeat: Infinity,
+                        ease: "easeIn",
+                        delay: Math.random() * particle.speed,
+                    }}
+                />
+            ))}
 
-            {/* Warped Light Bottom */}
-            <div className="absolute bottom-[280px] w-[300px] h-[150px] bg-orange-500/20 blur-2xl rounded-b-full z-20 transform translate-y-1/2" />
+            {/* 6. FRONT ACCRETION ARC - Creates the "Einstein ring" effect */}
+            <div
+                className="absolute rounded-full z-20"
+                style={{
+                    width: coreSize + 30,
+                    height: coreSize + 30,
+                    borderTop: '2px solid rgba(255,200,150,0.3)',
+                    borderLeft: '1px solid rgba(255,200,150,0.2)',
+                    borderRight: '1px solid rgba(255,200,150,0.2)',
+                    borderBottom: 'none',
+                    filter: 'blur(1px)',
+                    transform: 'rotate(-20deg)',
+                }}
+            />
         </div>
     );
 }
