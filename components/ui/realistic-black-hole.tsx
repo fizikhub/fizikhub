@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
 
 export function RealisticBlackHole() {
     const [isMobile, setIsMobile] = useState(false);
@@ -14,149 +13,288 @@ export function RealisticBlackHole() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Particles system
+    // Particle system - matter spiraling into the singularity
     const particles = useMemo(() => {
-        const count = isMobile ? 35 : 70;
+        const count = isMobile ? 40 : 80;
         return Array.from({ length: count }, (_, i) => ({
             id: i,
-            // Random start position around the circle
-            angle: Math.random() * 360,
-            distance: 140 + Math.random() * 100, // Start far out
-            duration: 3 + Math.random() * 4,
-            size: 1 + Math.random() * 2,
-            brightness: 0.4 + Math.random() * 0.6,
-            delay: Math.random() * 5,
+            startAngle: Math.random() * 360,
+            startDistance: 100 + Math.random() * 150,
+            duration: 6 + Math.random() * 8,
+            size: 1 + Math.random() * 2.5,
+            delay: Math.random() * 6,
+            brightness: 0.5 + Math.random() * 0.5,
+        }));
+    }, [isMobile]);
+
+    // Background stars
+    const stars = useMemo(() => {
+        return Array.from({ length: isMobile ? 30 : 60 }, (_, i) => ({
+            id: i,
+            x: Math.random() * 100,
+            y: Math.random() * 100,
+            size: 0.5 + Math.random() * 1.5,
+            duration: 2 + Math.random() * 3,
         }));
     }, [isMobile]);
 
     const size = isMobile ? 320 : 500;
-    const coreSize = size * 0.25; // The black sphere size
+    const coreSize = isMobile ? 40 : 60;
 
     return (
         <div
-            className="relative flex items-center justify-center pointer-events-none select-none"
+            className="relative flex items-center justify-center"
             style={{ width: size, height: size }}
         >
-            {/* 1. LAYER: BACK ACCRETION DISK (Behind the sphere) */}
-            <div
-                className="absolute z-0"
+            {/* Background Stars */}
+            {stars.map((star) => (
+                <motion.div
+                    key={`star-${star.id}`}
+                    className="absolute rounded-full bg-white"
+                    style={{
+                        left: `${star.x}%`,
+                        top: `${star.y}%`,
+                        width: star.size,
+                        height: star.size,
+                    }}
+                    animate={{
+                        opacity: [0.2, 0.8, 0.2],
+                        scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                        duration: star.duration,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                />
+            ))}
+
+            {/* Gravitational Lensing - Outer Distortion Glow */}
+            <motion.div
+                className="absolute rounded-full"
+                animate={{
+                    scale: [1, 1.05, 1],
+                    opacity: [0.4, 0.6, 0.4],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 style={{
                     width: size * 0.9,
                     height: size * 0.9,
+                    background: 'radial-gradient(circle, rgba(255,120,50,0.2) 0%, rgba(255,80,20,0.1) 30%, transparent 60%)',
+                    filter: 'blur(30px)',
+                }}
+            />
+
+            {/* ACCRETION DISK - Tilted Perspective */}
+            <div
+                className="absolute"
+                style={{
+                    width: size * 0.8,
+                    height: size * 0.8,
                     transform: 'rotateX(75deg)',
                     transformStyle: 'preserve-3d',
                 }}
             >
+                {/* Outer Ring - Slower */}
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
                     className="absolute inset-0 rounded-full"
                     style={{
                         background: `conic-gradient(
                             from 0deg,
-                            transparent 0%,
-                            rgba(200,80,0,0.2) 20%,
-                            rgba(255,140,0,0.6) 40%,
-                            rgba(255,180,50,0.8) 50%, 
-                            rgba(255,140,0,0.6) 60%,
-                            rgba(200,80,0,0.2) 80%,
-                            transparent 100%
+                            rgba(80,30,0,0.3) 0%,
+                            rgba(150,60,10,0.5) 15%,
+                            rgba(220,100,30,0.7) 30%,
+                            rgba(255,150,50,0.9) 45%,
+                            rgba(255,200,100,1) 50%,
+                            rgba(255,150,50,0.9) 55%,
+                            rgba(220,100,30,0.7) 70%,
+                            rgba(150,60,10,0.5) 85%,
+                            rgba(80,30,0,0.3) 100%
                         )`,
-                        boxShadow: '0 0 60px rgba(255,100,0,0.2)',
-                        filter: 'blur(8px)',
-                        opacity: 0.5 // Back is dimmer
+                        boxShadow: '0 0 80px rgba(255,120,50,0.5)',
+                        filter: 'blur(3px)',
+                    }}
+                />
+
+                {/* Inner Ring - Faster, Brighter */}
+                <motion.div
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute rounded-full"
+                    style={{
+                        top: '15%',
+                        left: '15%',
+                        width: '70%',
+                        height: '70%',
+                        background: `conic-gradient(
+                            from 180deg,
+                            rgba(255,200,150,0.2) 0%,
+                            rgba(255,220,180,0.8) 20%,
+                            rgba(255,255,220,1) 35%,
+                            rgba(255,255,255,1) 50%,
+                            rgba(255,255,220,1) 65%,
+                            rgba(255,220,180,0.8) 80%,
+                            rgba(255,200,150,0.2) 100%
+                        )`,
+                        filter: 'blur(2px)',
+                    }}
+                />
+
+                {/* Disk Center Cutout */}
+                <div
+                    className="absolute rounded-full"
+                    style={{
+                        top: '32%',
+                        left: '32%',
+                        width: '36%',
+                        height: '36%',
+                        background: 'radial-gradient(circle, #000 60%, transparent 100%)',
                     }}
                 />
             </div>
 
-            {/* 2. LAYER: EVENT HORIZON SPHERE (The 3D Core) */}
+            {/* Doppler Beaming - Asymmetric Brightness (left side brighter) */}
+            <motion.div
+                className="absolute rounded-full"
+                animate={{ opacity: [0.3, 0.5, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                    width: size * 0.6,
+                    height: size * 0.15,
+                    left: '5%',
+                    top: '42%',
+                    background: 'linear-gradient(90deg, rgba(255,200,150,0.6) 0%, transparent 60%)',
+                    filter: 'blur(15px)',
+                    transform: 'rotate(-10deg)',
+                }}
+            />
+
+            {/* Photon Sphere - The bright ring at the edge of visibility */}
+            <motion.div
+                className="absolute rounded-full"
+                animate={{
+                    boxShadow: [
+                        '0 0 20px rgba(255,180,120,0.6), inset 0 0 15px rgba(255,150,100,0.3)',
+                        '0 0 35px rgba(255,180,120,0.8), inset 0 0 20px rgba(255,150,100,0.5)',
+                        '0 0 20px rgba(255,180,120,0.6), inset 0 0 15px rgba(255,150,100,0.3)',
+                    ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                    width: coreSize + 25,
+                    height: coreSize + 25,
+                    border: '2px solid rgba(255,200,150,0.5)',
+                }}
+            />
+
+            {/* EVENT HORIZON - The 3D Black Sphere */}
             <div
-                className="absolute z-10 rounded-full"
+                className="absolute rounded-full z-20"
                 style={{
                     width: coreSize,
                     height: coreSize,
-                    background: 'radial-gradient(circle at 35% 35%, #2a2a2a 0%, #000000 40%, #000000 100%)',
+                    background: `radial-gradient(
+                        circle at 35% 35%,
+                        #1a1a1a 0%,
+                        #0a0a0a 30%,
+                        #000000 60%,
+                        #000000 100%
+                    )`,
                     boxShadow: `
-                        0 0 50px rgba(255,120,50,0.15),
-                        inset -5px -5px 20px rgba(255,100,50,0.1), 
-                        inset 10px 10px 30px rgba(0,0,0,1)
+                        inset 5px 5px 20px rgba(40,40,40,0.3),
+                        0 0 50px rgba(0,0,0,1),
+                        0 0 100px rgba(0,0,0,0.8)
                     `,
-                }}
-            >
-                {/* Photon Ring (The thin glowing outline) */}
-                <div className="absolute inset-[-1px] rounded-full border border-orange-100/30 blur-[0.5px] opacity-80" />
-            </div>
-
-            {/* 3. LAYER: FRONT ACCRETION ARC (In front of the sphere) */}
-            {/* Visual trick: A "smile" shaped arc that sits on top to look like the front of the disk */}
-            <div
-                className="absolute z-20"
-                style={{
-                    top: '50%',
-                    width: size * 0.94,
-                    height: size * 0.35, // Flattened height
-                    borderRadius: '50%',
-                    borderBottom: '8px solid rgba(255,200,120,0.5)', // The bright front rim
-                    borderLeft: '20px solid transparent', // Fade out sides
-                    borderRight: '20px solid transparent',
-                    transform: 'translateY(-10%)', // Align with the "equator" of the tilted disk
-                    filter: 'blur(4px)',
-                    boxShadow: '0 10px 40px rgba(255,150,50,0.3)',
-                    opacity: 0.9,
                 }}
             />
 
-            {/* 4. LAYER: EINSTEIN RING (Top Arcs - Light bending) */}
-            <div
-                className="absolute z-0"
+            {/* Einstein Ring Arc - Light bent around the back */}
+            <motion.div
+                className="absolute rounded-full z-10"
+                animate={{ opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 style={{
-                    top: '28%',
-                    width: size * 0.6,
-                    height: size * 0.4,
-                    borderRadius: '50% 50% 0 0',
-                    borderTop: '4px solid rgba(255,150,50,0.15)',
+                    width: coreSize + 35,
+                    height: coreSize + 35,
+                    borderTop: '3px solid rgba(255,220,180,0.5)',
+                    borderLeft: '2px solid rgba(255,200,150,0.3)',
+                    borderRight: '2px solid rgba(255,200,150,0.3)',
+                    borderBottom: 'none',
+                    filter: 'blur(2px)',
+                    transform: 'rotate(-25deg)',
+                }}
+            />
+
+            {/* PARTICLE SYSTEM - Matter Spiraling In */}
+            {particles.map((particle) => (
+                <motion.div
+                    key={particle.id}
+                    className="absolute rounded-full z-30"
+                    style={{
+                        width: particle.size,
+                        height: particle.size,
+                        background: `radial-gradient(circle, rgba(255,200,150,${particle.brightness}) 0%, rgba(255,120,50,${particle.brightness * 0.7}) 100%)`,
+                        boxShadow: `0 0 ${particle.size * 3}px rgba(255,150,80,${particle.brightness})`,
+                    }}
+                    animate={{
+                        x: [
+                            Math.cos((particle.startAngle) * Math.PI / 180) * particle.startDistance,
+                            Math.cos((particle.startAngle + 120) * Math.PI / 180) * (particle.startDistance * 0.65),
+                            Math.cos((particle.startAngle + 240) * Math.PI / 180) * (particle.startDistance * 0.35),
+                            Math.cos((particle.startAngle + 360) * Math.PI / 180) * (particle.startDistance * 0.1),
+                            0,
+                        ],
+                        y: [
+                            Math.sin((particle.startAngle) * Math.PI / 180) * particle.startDistance,
+                            Math.sin((particle.startAngle + 120) * Math.PI / 180) * (particle.startDistance * 0.65),
+                            Math.sin((particle.startAngle + 240) * Math.PI / 180) * (particle.startDistance * 0.35),
+                            Math.sin((particle.startAngle + 360) * Math.PI / 180) * (particle.startDistance * 0.1),
+                            0,
+                        ],
+                        scale: [1, 1.3, 1, 0.6, 0],
+                        opacity: [0, particle.brightness, particle.brightness, particle.brightness * 0.5, 0],
+                    }}
+                    transition={{
+                        duration: particle.duration,
+                        repeat: Infinity,
+                        ease: [0.4, 0, 0.2, 1], // Accelerating as it gets closer
+                        delay: particle.delay,
+                        times: [0, 0.3, 0.6, 0.85, 1],
+                    }}
+                />
+            ))}
+
+            {/* Jet Streams (Optional polar outflows) */}
+            <motion.div
+                className="absolute"
+                animate={{ opacity: [0.1, 0.25, 0.1], scaleY: [1, 1.1, 1] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                    width: 4,
+                    height: size * 0.35,
+                    bottom: '60%',
+                    left: '50%',
+                    marginLeft: -2,
+                    background: 'linear-gradient(to top, rgba(255,150,100,0.4) 0%, transparent 100%)',
                     filter: 'blur(3px)',
                 }}
             />
-
-            {/* 5. PARTICLE SYSTEM (Spiraling In) */}
-            <div className="absolute inset-0 z-30 flex items-center justify-center">
-                {particles.map((p) => {
-                    // Calculate spiral path
-                    // We want them to start far and end at 0,0
-                    return (
-                        <motion.div
-                            key={p.id}
-                            className="absolute rounded-full bg-orange-100"
-                            style={{
-                                width: p.size,
-                                height: p.size,
-                                boxShadow: `0 0 ${p.size * 3}px rgba(255,200,100,0.8)`
-                            }}
-                            initial={{
-                                x: Math.cos(p.angle * Math.PI / 180) * p.distance,
-                                y: Math.sin(p.angle * Math.PI / 180) * p.distance,
-                                opacity: 0
-                            }}
-                            animate={{
-                                x: 0,
-                                y: 0,
-                                opacity: [0, p.brightness, 0],
-                                scale: [1, 0.2]
-                            }}
-                            transition={{
-                                duration: p.duration,
-                                repeat: Infinity,
-                                ease: "easeIn", // Accelerates as it falls in
-                                delay: p.delay,
-                            }}
-                        />
-                    );
-                })}
-            </div>
-
-            {/* Optional: Central Void Glow for extra punch */}
-            <div className="absolute z-0 w-full h-full bg-orange-500/5 blur-3xl rounded-full animate-pulse" />
+            <motion.div
+                className="absolute"
+                animate={{ opacity: [0.1, 0.25, 0.1], scaleY: [1, 1.1, 1] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                style={{
+                    width: 4,
+                    height: size * 0.35,
+                    top: '60%',
+                    left: '50%',
+                    marginLeft: -2,
+                    background: 'linear-gradient(to bottom, rgba(255,150,100,0.4) 0%, transparent 100%)',
+                    filter: 'blur(3px)',
+                }}
+            />
         </div>
     );
 }
