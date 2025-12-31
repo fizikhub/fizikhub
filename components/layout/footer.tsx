@@ -90,24 +90,22 @@ export function Footer() {
                 </motion.div>
             </div>
 
-            {/* Massive Black Hole Background Effect - MOBILE OPTIMIZED */}
-            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
-                 <motion.div
-                    className="relative w-full h-full"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+            {/* Event Horizon - The Absolute Void */}
+            {isMobile ? (
+                <div className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_40px_rgba(234,88,12,0.25)]">
+                    {/* Photon Ring */}
+                    <div className="absolute inset-[-2px] rounded-full border border-orange-500/25" />
+                </div>
+            ) : (
+                <motion.div
+                    animate={{ scale: [1, 1.02, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_60px_rgba(234,88,12,0.3)]"
                 >
-                    <div className="absolute inset-0 animate-pulse-slow">
-                        <img 
-                            src="/assets/footer/realistic_blackhole.png" 
-                            alt="Supermassive Black Hole" 
-                            className="w-full h-full object-contain transform scale-125 md:scale-150 opacity-90"
-                        />
-                    </div>
+                    {/* Photon Ring */}
+                    <div className="absolute inset-[-2px] rounded-full border border-orange-500/30 blur-[1px]" />
                 </motion.div>
-                 {/* Warped Spacetime Overlay */}
-                 <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/20" />
-            </div>
+            )}
 
             <div className="relative z-20 mb-auto pt-10">
                 <DidYouKnow />
