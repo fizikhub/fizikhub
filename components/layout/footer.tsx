@@ -98,7 +98,7 @@ export function Footer() {
             </div>
 
             {/* Center Singularity Brand & Toggle */}
-            <div className="absolute bottom-[180px] md:bottom-[220px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none">
+            <div className="absolute bottom-[280px] md:bottom-[350px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none">
                 <RealisticBlackHole />
             </div>
 
