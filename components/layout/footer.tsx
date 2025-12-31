@@ -91,58 +91,22 @@ export function Footer() {
             </div>
 
             {/* Massive Black Hole Background Effect - MOBILE OPTIMIZED */}
-            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
-
-                {/* Warped Spacetime Background */}
-                <div className="absolute inset-[-50px] bg-gradient-radial from-violet-900/10 via-transparent to-transparent opacity-30" />
-
-                {/* Outer Accretion Disk */}
-                {isMobile ? (
-                    <div className="absolute inset-[0px] rounded-full">
-                        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,transparent_0deg,rgba(234,88,12,0.08)_60deg,rgba(234,88,12,0.15)_120deg,transparent_180deg,rgba(234,88,12,0.08)_240deg,rgba(234,88,12,0.12)_300deg,transparent_360deg)]" />
+            <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] pointer-events-none transition-opacity duration-1000" style={{ opacity: isSingularityActive ? 1 : 0.2 }}>
+                 <motion.div
+                    className="relative w-full h-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                >
+                    <div className="absolute inset-0 animate-pulse-slow">
+                        <img 
+                            src="/assets/footer/realistic_blackhole.png" 
+                            alt="Supermassive Black Hole" 
+                            className="w-full h-full object-contain transform scale-125 md:scale-150 opacity-90"
+                        />
                     </div>
-                ) : (
-                    <motion.div
-                        className="absolute inset-[0px] rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    >
-                        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,transparent_0deg,rgba(234,88,12,0.1)_60deg,rgba(234,88,12,0.2)_120deg,transparent_180deg,rgba(234,88,12,0.1)_240deg,rgba(234,88,12,0.15)_300deg,transparent_360deg)] blur-3xl" />
-                    </motion.div>
-                )}
-
-                {/* Inner Accretion Disk */}
-                {isMobile ? (
-                    <div className="absolute inset-[100px] rounded-full">
-                        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(234,88,12,0.25)_60deg,rgba(255,255,255,0.08)_120deg,transparent_180deg,rgba(234,88,12,0.25)_240deg,rgba(255,255,255,0.08)_300deg,transparent_360deg)]" />
-                    </div>
-                ) : (
-                    <motion.div
-                        className="absolute inset-[100px] rounded-full"
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    >
-                        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(234,88,12,0.3)_60deg,rgba(255,255,255,0.1)_120deg,transparent_180deg,rgba(234,88,12,0.3)_240deg,rgba(255,255,255,0.1)_300deg,transparent_360deg)] blur-2xl" />
-                    </motion.div>
-                )}
-
-                {/* Event Horizon - The Absolute Void */}
-                {isMobile ? (
-                    <div className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_40px_rgba(234,88,12,0.25)]">
-                        {/* Photon Ring */}
-                        <div className="absolute inset-[-2px] rounded-full border border-orange-500/25" />
-                    </div>
-                ) : (
-                    <motion.div
-                        animate={{ scale: [1, 1.02, 1] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute inset-[250px] rounded-full bg-black z-30 shadow-[0_0_60px_rgba(234,88,12,0.3)]"
-                    >
-                        {/* Photon Ring */}
-                        <div className="absolute inset-[-2px] rounded-full border border-orange-500/30 blur-[1px]" />
-                    </motion.div>
-                )}
-
+                </motion.div>
+                 {/* Warped Spacetime Overlay */}
+                 <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/20" />
             </div>
 
             <div className="relative z-20 mb-auto pt-10">
