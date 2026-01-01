@@ -5,32 +5,36 @@ export const CosmicQuestionIcon = ({ className }: { className?: string }) => (
         xmlns="http://www.w3.org/2000/svg"
         className={className}
     >
-        {/* 1. The Nucleus (Dot of the Question Mark) */}
-        <circle cx="12" cy="20" r="2.5" fill="currentColor" />
-
-        {/* 2. The Orbit/Swoosh (Hook of the Question Mark) */}
-        {/* A fluid path that looks like an electron orbit but traces a '?' shape */}
+        {/* 1. The "Pen/Wand" Shaft - Stylized as a particle beam */}
         <path
-            d="M12 20C12 20 16 18 18 14C20 10 18 6 14 4C10 2 6 4 4 8C3.5 9 12 12 12 15"
+            d="M4.5 20.5L9.5 15.5"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+        />
+
+        {/* 2. The Cosmic Head/Tip */}
+        <path
+            d="M13 12L16 9"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+        />
+
+        {/* 3. The Orbiting Rings around the 'Idea' */}
+        <path
+            d="M19 5C19 5 21 8 19 11C17 14 13 14 11 12C9 10 9 6 12 4C15 2 19 5 19 5Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
         />
 
-        {/* 3. Secondary Orbit Ring (Background depth) */}
-        <ellipse
-            cx="12"
-            cy="11"
-            rx="8"
-            ry="3"
-            transform="rotate(-20 12 11)"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeOpacity="0.4"
-        />
+        {/* 4. Central Core/Singularity of the Idea */}
+        <circle cx="14.5" cy="7.5" r="1.5" fill="currentColor" />
 
-        {/* 4. Electron on the ring */}
-        <circle cx="18" cy="13" r="1.5" fill="currentColor" />
+        {/* 5. Extra Sparkle/Satellite */}
+        <circle cx="21" cy="3" r="1" fill="currentColor" opacity="0.6" />
+        <circle cx="8" cy="18" r="0.5" fill="currentColor" opacity="0.4" />
     </svg>
 );
