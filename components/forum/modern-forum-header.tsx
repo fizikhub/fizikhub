@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Sparkles, Atom, ArrowRight } from "lucide-react";
+import { Search, Atom, ArrowRight } from "lucide-react";
+import { CosmicQuestionIcon } from "@/components/icons/cosmic-question";
 import { Button } from "@/components/ui/button";
 import { CreateQuestionDialog } from "./create-question-dialog";
 import { motion } from "framer-motion";
@@ -251,7 +252,7 @@ export function ModernForumHeader() {
                                                     whileHover={{ rotate: 360, scale: 1.1 }}
                                                     transition={{ duration: 0.6 }}
                                                 >
-                                                    <Sparkles className="w-4 h-4 text-primary-foreground" />
+                                                    <CosmicQuestionIcon className="w-4 h-4 text-primary-foreground" />
                                                 </motion.div>
 
                                                 {/* Input Text with typing effect hint */}
