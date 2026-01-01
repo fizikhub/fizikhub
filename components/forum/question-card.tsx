@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ChevronUp, ChevronDown, MessageCircle, Share, BadgeCheck } from "lucide-react";
+import { ChevronUp, ChevronDown, MessageCircle, Share, BadgeCheck, ArrowRight } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -117,26 +117,27 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             {/* 3. CONTENT BODY */}
             <div className="p-5 flex flex-col gap-3">
                 {/* Author Mini-Row (Top of content) */}
-                <div className="flex items-center gap-2 mb-1">
+                {/* Author Mini-Row (Top of content) */}
+                <div className="flex items-center gap-1.5 mb-1">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
                         className="relative group/avatar"
                     >
-                        <Avatar className="w-6 h-6 border border-border">
+                        <Avatar className="w-5 h-5 border border-border transition-transform group-hover/avatar:scale-105">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
+                            <AvatarFallback className="text-[9px] bg-muted text-muted-foreground">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
                     </button>
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+                        className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
                     >
-                        {question.profiles?.full_name || question.profiles?.username || "Anonim"}
+                        @{question.profiles?.username || "anonim"}
                     </button>
                     {question.profiles?.is_verified && (
-                        <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
+                        <BadgeCheck className="w-3 h-3 text-blue-500" />
                     )}
                 </div>
 
@@ -157,9 +158,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             </div>
 
             {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5">
+            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5 gap-4">
                 {/* Left Actions - Voting */}
-                <div className="flex items-center rounded-md border border-border bg-background shadow-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center rounded-md border border-border bg-background shadow-sm overflow-hidden shrink-0" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => handleVote(e, 1)}
                         className={cn(
@@ -185,8 +186,17 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                     </button>
                 </div>
 
+                {/* Read More Button - Visible on hover/always */}
+                <button
+                    className="flex-1 text-left text-xs font-bold text-muted-foreground/60 hover:text-primary transition-colors flex items-center gap-1 group/readmore"
+                    onClick={(e) => { e.stopPropagation(); handleCardClick(); }}
+                >
+                    <span className="group-hover/readmore:underline decoration-wavy underline-offset-4">Devamını Oku</span>
+                    <ArrowRight className="w-3 h-3 group-hover/readmore:translate-x-1 transition-transform" />
+                </button>
+
                 {/* Right Actions */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 shrink-0">
                     <button className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">
                         <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
                         <span>{answerCount}</span>
