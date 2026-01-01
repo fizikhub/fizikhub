@@ -117,26 +117,26 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             {/* 3. CONTENT BODY */}
             <div className="p-5 flex flex-col gap-3">
                 {/* Author Mini-Row (Top of content) */}
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-1">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="relative group/avatar"
+                        className="relative"
                     >
-                        <Avatar className="w-6 h-6 border border-border">
+                        <Avatar className="w-5 h-5 border border-border">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
+                            <AvatarFallback className="text-[9px] bg-muted text-muted-foreground">
                                 {question.profiles?.username?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
                     </button>
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         {question.profiles?.full_name || question.profiles?.username || "Anonim"}
                     </button>
                     {question.profiles?.is_verified && (
-                        <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
+                        <BadgeCheck className="w-3 h-3 text-blue-500" />
                     )}
                 </div>
 
@@ -147,13 +147,26 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
                 {/* Content Preview */}
                 <div className="relative">
-                    <p className="text-[15px] leading-relaxed text-muted-foreground font-sans whitespace-pre-wrap line-clamp-4">
-                        {contentPreview}
+                    <p className={cn(
+                        "text-[15px] leading-relaxed text-muted-foreground font-sans whitespace-pre-wrap",
+                        !isExpanded && "line-clamp-3"
+                    )}>
+                        {isExpanded ? rawContent : contentPreview}
                     </p>
                     {shouldTruncate && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-card to-transparent pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
                     )}
                 </div>
+
+                {/* Devamını Oku Button (In-place expand) */}
+                {shouldTruncate && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
+                        className="text-xs font-bold text-primary hover:underline self-start mt-1"
+                    >
+                        {isExpanded ? "Daralt" : "Devamını Oku"}
+                    </button>
+                )}
             </div>
 
             {/* 4. BOTTOM ACTION BAR */}
