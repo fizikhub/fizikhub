@@ -19,7 +19,7 @@ interface UnifiedFeedProps {
     suggestedUsers?: any[];
 }
 
-import { DidYouKnow } from "@/components/ui/did-you-know";
+import { EncyclopediaCard } from "@/components/ui/encyclopedia-card";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
@@ -75,10 +75,10 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         </div>
                     )}
 
-                    {/* Inject Encyclopedia (DidYouKnow) after 2nd item (index 1) */}
+                    {/* Inject Encyclopedia after 2nd item (index 1) */}
                     {index === 1 && (
                         <div className="mt-6">
-                            <DidYouKnow />
+                            <EncyclopediaCard />
                         </div>
                     )}
 
