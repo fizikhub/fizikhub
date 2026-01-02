@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCw, BookOpen, Quote } from "lucide-react";
+import { RotateCw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const uselessFacts = [
@@ -13,74 +13,79 @@ const uselessFacts = [
     "Muzlar teknik olarak birer meyvedir ama çilekler değildir.",
     "Tardigradlar uzay boşluğunda bile hayatta kalabilen tek mikroskobik canlıdır.",
     "Bal güneş görmediği sürece asla bozulmaz, 3000 yıllık bal bile yenebilir.",
-    "Ahtapotların üç kalbi, dokuz beyni ve mavi kanı vardır.",
-    "İnsan DNA'sı, Güneş Sistemi'nin çapını 2 kez dolaşacak kadar uzundur.",
-    "Venüs saat yönünde dönen tek gezegendir."
+    "Ahtapotların üç kalbi, dokuz beyni ve mavi kanı vardır."
 ];
 
 export function EncyclopediaCard() {
     const [index, setIndex] = useState(0);
     const [isClient, setIsClient] = useState(false);
+    const [colorTheme, setColorTheme] = useState(0);
+
+    const colors = [
+        "bg-[#FFD02E] text-black", // Vibrant Yellow
+        "bg-[#FF5252] text-white", // Red
+        "bg-[#448AFF] text-white", // Blue
+        "bg-[#69F0AE] text-black"  // Mint
+    ];
 
     useEffect(() => {
         setIsClient(true);
         setIndex(Math.floor(Math.random() * uselessFacts.length));
+        setColorTheme(Math.floor(Math.random() * colors.length));
     }, []);
 
     const nextFact = () => {
         setIndex((prev) => (prev + 1) % uselessFacts.length);
+        setColorTheme((prev) => (prev + 1) % colors.length);
     };
 
     if (!isClient) return null;
 
     return (
-        <div className="w-full my-8 px-4 sm:px-0">
-            <div className="relative border-4 border-foreground bg-card shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 sm:p-8 overflow-hidden">
+        <div className="w-full my-4">
+            <div className={`relative rounded-xl overflow-hidden shadow-lg transition-colors duration-500 ${colors[colorTheme]} p-5`}>
+
                 {/* Header */}
-                <div className="flex items-start justify-between mb-6 border-b-2 border-foreground pb-4">
-                    <div className="flex flex-col">
-                        <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-foreground leading-none mb-1">
-                            GEREKSİZ BİLGİLER
+                <div className="flex items-center justify-between mb-3 border-b border-current/20 pb-2">
+                    <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-current/10 rounded-lg">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
+                        <h2 className="text-sm font-black uppercase tracking-wider opacity-90">
+                            Gereksiz Bilgiler
                         </h2>
-                        <span className="text-sm font-mono font-bold text-muted-foreground uppercase tracking-widest">
-                            ANSİKLOPEDİSİ CİLT: {index + 1}
-                        </span>
                     </div>
-                    <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-foreground hidden sm:block" strokeWidth={2.5} />
+                    <span className="text-[10px] font-mono font-bold opacity-60">
+                        #{100 + index}
+                    </span>
                 </div>
 
                 {/* Content */}
-                <div className="relative min-h-[120px] flex items-center justify-center py-4">
-                    <Quote className="absolute top-0 left-0 w-8 h-8 text-foreground/10 rotate-180" />
+                <div className="min-h-[80px] flex items-center justify-center py-2">
                     <AnimatePresence mode="wait">
                         <motion.p
                             key={index}
-                            initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-                            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                            exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 1.05 }}
                             transition={{ duration: 0.2 }}
-                            className="text-lg sm:text-2xl font-bold text-center leading-snug font-serif italic text-foreground px-6"
+                            className="text-lg md:text-xl font-bold text-center leading-tight font-heading"
                         >
-                            "{uselessFacts[index]}"
+                            {uselessFacts[index]}
                         </motion.p>
                     </AnimatePresence>
-                    <Quote className="absolute bottom-0 right-0 w-8 h-8 text-foreground/10" />
                 </div>
 
-                {/* Footer / Action */}
-                <div className="mt-8 flex justify-center border-t-2 border-foreground pt-6">
-                    <Button
+                {/* Footer Action - Compact */}
+                <div className="mt-4 flex justify-center">
+                    <button
                         onClick={nextFact}
-                        className="bg-foreground text-background hover:bg-foreground/90 font-mono text-sm font-bold uppercase tracking-wider rounded-none px-8 py-6 border-2 border-transparent hover:border-background transition-all active:translate-y-1 active:shadow-none"
+                        className="group flex items-center gap-2 px-4 py-2 bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20 rounded-full text-xs font-bold transition-all active:scale-95"
                     >
-                        <RotateCw className="w-4 h-4 mr-2" />
-                        BİR TANE DAHA VER
-                    </Button>
+                        <RotateCw className="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" />
+                        <span>Sıradaki Bilgi</span>
+                    </button>
                 </div>
-
-                {/* Decorative Corner */}
-                <div className="absolute top-0 right-0 w-4 h-4 bg-foreground" />
-                <div className="absolute bottom-0 left-0 w-4 h-4 bg-foreground" />
             </div>
         </div>
     );

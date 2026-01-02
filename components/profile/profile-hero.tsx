@@ -64,10 +64,10 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                 toast.success("Kapak konumu güncellendi");
                 setIsRepositioning(false);
             } else {
-                toast.error("Güncelleme başarısız");
+                toast.error("Güncelleme başarısız. Bir bokla oluyor ama hadi hayırlısı.");
             }
         } catch (error) {
-            toast.error("Bir hata oluştu");
+            toast.error("Bir hata oluştu hocam");
         } finally {
             setIsSaving(false);
         }
@@ -105,7 +105,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
         <div className="relative w-full">
             {/* Cover Image - Simple */}
             <div
-                className={`relative h-32 md:h-40 w-full overflow-hidden ${isRepositioning ? 'cursor-move select-none touch-none' : ''}`}
+                className={`relative h-48 md:h-64 w-full overflow-hidden ${isRepositioning ? 'cursor-move select-none touch-none' : ''}`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
