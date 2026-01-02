@@ -100,13 +100,13 @@ export function SocialArticleCard({
                 if (result.error === "Giriş yapmalısınız.") {
                     toast.error("Beğenmek için giriş yapmalısınız.");
                 } else {
-                    toast.error("Bir hata oluştu.");
+                    toast.error("Bir hata oluştu hocam.");
                 }
             }
         } catch (error) {
             setIsLiked(previousLiked);
             setLikeCount(previousCount);
-            toast.error("Bağlantı hatası.");
+            toast.error("Bağlantı hatası. İnternetini kontrol etsene bi zahmet");
         } finally {
             setIsLikeLoading(false);
         }
@@ -127,10 +127,10 @@ export function SocialArticleCard({
                 if (result.error === "Giriş yapmalısınız.") {
                     toast.error("Kaydetmek için giriş yapmalısınız.");
                 } else {
-                    toast.error("Bir hata oluştu.");
+                    toast.error("Bir hata oluştu hocam.");
                 }
             } else {
-                if (!previousBookmarked) toast.success("Makale kaydedildi.");
+                if (!previousBookmarked) toast.success("Makale kaydedildi hocam.");
                 else toast.info("Makale kaydedilenlerden çıkarıldı.");
             }
         } catch (error) {
