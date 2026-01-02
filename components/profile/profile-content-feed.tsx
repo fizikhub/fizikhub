@@ -27,7 +27,6 @@ export function ProfileContentFeed({
     drafts = [],
     isOwnProfile = true
 }: ProfileContentFeedProps) {
-    // Combine bookmarked items into single list with type indicator
     const savedItems = [
         ...(bookmarkedArticles || []).map((item: any) => ({
             type: 'article' as const,
@@ -47,56 +46,56 @@ export function ProfileContentFeed({
     ].filter(item => item.id).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <Tabs defaultValue="articles" className="w-full">
-                {/* Tab Navigation - Cleaner */}
-                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-xl p-1 mb-4 flex-wrap h-auto gap-1">
+                {/* Tab Navigation */}
+                <TabsList className="w-full justify-start bg-muted/50 border border-border rounded-lg p-1 mb-4 flex-wrap h-auto gap-1">
                     <TabsTrigger
                         value="articles"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm text-muted-foreground data-[state=active]:text-foreground transition-all text-xs px-3 py-1.5"
                     >
                         <FileText className="w-3.5 h-3.5 mr-1.5" />
                         Makaleler
-                        <span className="ml-1.5 opacity-60">({articles.length})</span>
+                        <span className="ml-1.5 opacity-50">({articles.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="questions"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm text-muted-foreground data-[state=active]:text-foreground transition-all text-xs px-3 py-1.5"
                     >
                         <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                         Sorular
-                        <span className="ml-1.5 opacity-60">({questions.length})</span>
+                        <span className="ml-1.5 opacity-50">({questions.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="answers"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm text-muted-foreground data-[state=active]:text-foreground transition-all text-xs px-3 py-1.5"
                     >
                         <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                         Cevaplar
-                        <span className="ml-1.5 opacity-60">({answers.length})</span>
+                        <span className="ml-1.5 opacity-50">({answers.length})</span>
                     </TabsTrigger>
 
                     {isOwnProfile && drafts.length > 0 && (
                         <TabsTrigger
                             value="drafts"
-                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                            className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm text-muted-foreground data-[state=active]:text-foreground transition-all text-xs px-3 py-1.5"
                         >
                             <FileEdit className="w-3.5 h-3.5 mr-1.5" />
                             Taslaklar
-                            <span className="ml-1.5 opacity-60">({drafts.length})</span>
+                            <span className="ml-1.5 opacity-50">({drafts.length})</span>
                         </TabsTrigger>
                     )}
 
                     {isOwnProfile && (
                         <TabsTrigger
                             value="saved"
-                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                            className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm text-muted-foreground data-[state=active]:text-foreground transition-all text-xs px-3 py-1.5"
                         >
                             <Bookmark className="w-3.5 h-3.5 mr-1.5" />
-                            Kaydedilenler
-                            <span className="ml-1.5 opacity-60">({savedItems.length})</span>
+                            Kayıtlı
+                            <span className="ml-1.5 opacity-50">({savedItems.length})</span>
                         </TabsTrigger>
                     )}
                 </TabsList>
@@ -104,36 +103,32 @@ export function ProfileContentFeed({
                 {/* Articles Tab */}
                 <TabsContent value="articles" className="mt-0">
                     {articles.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {articles.map((article) => (
                                 <ProfileArticleCard key={article.id} article={article} />
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            icon={FileText}
-                            title="Henüz makale yok"
-                            description="İlk makaleni yazarak başla!"
-                        />
+                        <EmptyState icon={FileText} title="Henüz makale yok" description="İlk makaleni yazarak başla!" />
                     )}
                 </TabsContent>
 
                 {/* Questions Tab */}
                 <TabsContent value="questions" className="mt-0">
                     {questions.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {questions.map((question) => (
                                 <Link key={question.id} href={`/forum/${question.id}`}>
-                                    <div className="group p-4 rounded-xl border border-foreground/10 hover:border-amber-500/30 bg-card hover:bg-amber-500/5 transition-all duration-200">
-                                        <h3 className="text-base font-bold text-foreground group-hover:text-amber-500 transition-colors mb-2 line-clamp-1">
+                                    <div className="group p-3 rounded-lg border border-border hover:border-foreground/20 bg-card hover:bg-muted/50 transition-colors">
+                                        <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors mb-1.5 line-clamp-1">
                                             {question.title}
                                         </h3>
-                                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                             <span>{format(new Date(question.created_at), 'dd MMM yyyy', { locale: tr })}</span>
                                             <span>•</span>
                                             <span className="flex items-center gap-1">
                                                 <MessageSquare className="w-3 h-3" />
-                                                {question.answers?.length || 0} cevap
+                                                {question.answers?.length || 0}
                                             </span>
                                         </div>
                                     </div>
@@ -141,22 +136,18 @@ export function ProfileContentFeed({
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            icon={MessageSquare}
-                            title="Henüz soru yok"
-                            description="İlk soruyu sen sor!"
-                        />
+                        <EmptyState icon={MessageSquare} title="Henüz soru yok" description="İlk soruyu sen sor!" />
                     )}
                 </TabsContent>
 
                 {/* Answers Tab */}
                 <TabsContent value="answers" className="mt-0">
                     {answers.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {answers.map((answer) => (
                                 <Link key={answer.id} href={`/forum/${answer.question_id}`}>
-                                    <div className="p-4 rounded-xl border border-foreground/10 bg-card hover:bg-foreground/5 transition-colors">
-                                        <p className="text-foreground/80 text-sm leading-relaxed mb-2 line-clamp-2">
+                                    <div className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors">
+                                        <p className="text-sm text-foreground/80 leading-relaxed mb-2 line-clamp-2">
                                             {answer.content}
                                         </p>
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -170,31 +161,28 @@ export function ProfileContentFeed({
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            icon={MessageCircle}
-                            title="Henüz cevap yok"
-                            description="Soruları cevaplamaya başla!"
-                        />
+                        <EmptyState icon={MessageCircle} title="Henüz cevap yok" description="Soruları cevaplamaya başla!" />
                     )}
                 </TabsContent>
 
+                {/* Drafts Tab */}
                 <TabsContent value="drafts" className="mt-0">
                     {drafts.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {drafts.map((draft) => (
-                                <div key={draft.id} className="group p-4 rounded-xl border-2 border-dashed border-foreground/20 bg-card hover:bg-foreground/5 transition-all flex justify-between items-center">
-                                    <div className="flex-1 min-w-0 mr-4">
+                                <div key={draft.id} className="group p-3 rounded-lg border border-dashed border-border bg-card flex justify-between items-center">
+                                    <div className="flex-1 min-w-0 mr-3">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-2 py-0.5 rounded">Taslak</span>
-                                            <span className="text-xs text-muted-foreground">{format(new Date(draft.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}</span>
+                                            <span className="text-[10px] font-medium bg-amber-500/10 text-amber-600 px-1.5 py-0.5 rounded">Taslak</span>
+                                            <span className="text-xs text-muted-foreground">{format(new Date(draft.created_at), 'dd MMM yyyy', { locale: tr })}</span>
                                         </div>
-                                        <h3 className="text-base font-bold text-foreground line-clamp-1">
-                                            {draft.title || "(Başlıksız Taslak)"}
+                                        <h3 className="text-sm font-medium text-foreground line-clamp-1">
+                                            {draft.title || "(Başlıksız)"}
                                         </h3>
                                     </div>
                                     <Link href={`/makale/duzenle/${draft.id}`}>
-                                        <Button size="sm" variant="outline" className="gap-2 font-bold border-2">
-                                            <Edit2 className="w-4 h-4" />
+                                        <Button size="sm" variant="outline" className="gap-1.5 text-xs h-7">
+                                            <Edit2 className="w-3 h-3" />
                                             Düzenle
                                         </Button>
                                     </Link>
@@ -202,52 +190,36 @@ export function ProfileContentFeed({
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            icon={FileEdit}
-                            title="Taslak yok"
-                            description="Yarım kalan işin yok, harika!"
-                        />
+                        <EmptyState icon={FileEdit} title="Taslak yok" description="Yarım kalan işin yok!" />
                     )}
                 </TabsContent>
 
-                {/* Saved Tab - Unified List (No Nested Tabs) */}
+                {/* Saved Tab */}
                 <TabsContent value="saved" className="mt-0">
                     {savedItems.length > 0 ? (
                         <div className="space-y-2">
                             {savedItems.map((item) => (
-                                <Link
-                                    key={`${item.type}-${item.id}`}
-                                    href={item.type === 'article' ? `/blog/${item.slug}` : `/forum/${item.id}`}
-                                >
-                                    <div className="group flex items-center gap-3 p-3 rounded-xl border border-foreground/10 hover:border-amber-500/30 bg-card hover:bg-amber-500/5 transition-all duration-200">
-                                        <div className={`p-2 rounded-lg ${item.type === 'article' ? 'bg-cyan-500/10 text-cyan-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                                            {item.type === 'article' ? <FileText className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+                                <Link key={`${item.type}-${item.id}`} href={item.type === 'article' ? `/blog/${item.slug}` : `/forum/${item.id}`}>
+                                    <div className="group flex items-center gap-3 p-3 rounded-lg border border-border hover:border-foreground/20 bg-card hover:bg-muted/50 transition-colors">
+                                        <div className={`p-1.5 rounded ${item.type === 'article' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                                            {item.type === 'article' ? <FileText className="w-3.5 h-3.5" /> : <MessageSquare className="w-3.5 h-3.5" />}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-semibold text-foreground group-hover:text-amber-500 transition-colors line-clamp-1">
+                                            <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                                 {item.title}
                                             </h4>
                                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                <span className="uppercase">{item.type === 'article' ? 'Makale' : 'Soru'}</span>
-                                                {item.category && (
-                                                    <>
-                                                        <span>•</span>
-                                                        <span>{item.category}</span>
-                                                    </>
-                                                )}
+                                                <span>{item.type === 'article' ? 'Makale' : 'Soru'}</span>
+                                                {item.category && <><span>•</span><span>{item.category}</span></>}
                                             </div>
                                         </div>
-                                        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                                     </div>
                                 </Link>
                             ))}
                         </div>
                     ) : (
-                        <EmptyState
-                            icon={Bookmark}
-                            title="Kaydedilen içerik yok"
-                            description="İlginç içerikleri kaydet!"
-                        />
+                        <EmptyState icon={Bookmark} title="Kayıtlı içerik yok" description="İlginç içerikleri kaydet!" />
                     )}
                 </TabsContent>
             </Tabs>
@@ -255,21 +227,12 @@ export function ProfileContentFeed({
     );
 }
 
-// Simplified Empty State Component
-function EmptyState({
-    icon: Icon,
-    title,
-    description
-}: {
-    icon: any;
-    title: string;
-    description: string;
-}) {
+function EmptyState({ icon: Icon, title, description }: { icon: any; title: string; description: string }) {
     return (
-        <div className="text-center py-10 rounded-xl border-2 border-dashed border-foreground/10 bg-foreground/[0.02]">
-            <Icon className="w-12 h-12 mx-auto mb-3 text-foreground/20" />
-            <h3 className="text-base font-bold text-foreground mb-1">{title}</h3>
-            <p className="text-sm text-muted-foreground">{description}</p>
+        <div className="text-center py-12 rounded-lg border border-dashed border-border bg-muted/20">
+            <Icon className="w-10 h-10 mx-auto mb-3 text-muted-foreground/40" />
+            <h3 className="text-sm font-medium text-foreground mb-1">{title}</h3>
+            <p className="text-xs text-muted-foreground">{description}</p>
         </div>
     );
 }
