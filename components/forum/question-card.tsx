@@ -67,13 +67,13 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 if (result.error === "Giriş yapmalısınız.") {
                     toast.error("Oy vermek için giriş yapmalısınız.");
                 } else {
-                    toast.error("Bir hata oluştu.");
+                    toast.error("Bir hata oluştu. Umarım düzelir.");
                 }
             }
         } catch (error) {
             setVoteState(previousVote);
             setVotes(previousCount);
-            toast.error("Bağlantı hatası.");
+            toast.error("Bağlantı hatas.İnternetini kontrol eder misin canım?");
         } finally {
             setIsVoting(false);
         }
@@ -211,7 +211,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
-                            toast.success("Link kopyalandı!");
+                            toast.success("Link kopyalandı! Yapıştır Sezai.");
                         }}
                     >
                         <Share className="w-4.5 h-4.5 stroke-[2.5px]" />

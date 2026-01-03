@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
@@ -49,7 +50,7 @@ export function MarkdownRenderer({
             className
         )}>
             <ReactMarkdown
-                remarkPlugins={[remarkMath]}
+                remarkPlugins={[remarkMath, remarkGfm]}
                 rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
                 components={{
                     p: ({ node, children, ...props }) => {
@@ -139,7 +140,7 @@ export function MarkdownRenderer({
                     ),
                 }}
             >
-                {content}
+                {content.replace(/\\n/g, '\n')}
             </ReactMarkdown>
         </div>
     );
