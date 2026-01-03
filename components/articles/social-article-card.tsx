@@ -125,7 +125,7 @@ export function SocialArticleCard({
             if (!result.success) {
                 setIsBookmarked(previousBookmarked);
                 if (result.error === "Giriş yapmalısınız.") {
-                    toast.error("Kaydetmek için giriş yapmalısınız.");
+                    toast.error("Kaydetmek için giriş yapmalısınız. Cidden giriş yapmadan kaydetmek mi istiyorsun?");
                 } else {
                     toast.error("Bir hata oluştu hocam.");
                 }
@@ -150,7 +150,7 @@ export function SocialArticleCard({
             }).catch(() => { });
         } else {
             navigator.clipboard.writeText(url);
-            toast.success("Link kopyalandı!");
+            toast.success("Link kopyalandı! Yapıştır Sezai.");
         }
     };
 
