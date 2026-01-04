@@ -73,7 +73,6 @@ export function CategoryStories() {
                             >
                                 <cat.icon
                                     className="w-7 h-7 transition-colors duration-300"
-                                    stroke="currentColor"
                                 />
                             </div>
 
