@@ -2,160 +2,101 @@
 
 import { motion } from "framer-motion";
 
-// Compact Premium UFO SVG
-const CompactUFO = () => (
-    <svg width="100%" height="100%" viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="ufoBody" x1="32" y1="20" x2="32" y2="35" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#E2E8F0" />
-                <stop offset="1" stopColor="#64748B" />
-            </linearGradient>
-            <linearGradient id="ufoDome" x1="32" y1="10" x2="32" y2="25" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#22D3EE" stopOpacity="0.7" />
-                <stop offset="1" stopColor="#0891B2" stopOpacity="0.4" />
-            </linearGradient>
-        </defs>
-
-        {/* Glow under UFO */}
-        <ellipse cx="32" cy="42" rx="20" ry="4" fill="#22D3EE" fillOpacity="0.3">
-            <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite" />
-        </ellipse>
-
-        {/* Dome */}
-        <path d="M20 26 C20 12, 44 12, 44 26" fill="url(#ufoDome)" stroke="#22D3EE" strokeWidth="0.5" />
-
-        {/* Body */}
-        <ellipse cx="32" cy="28" rx="28" ry="8" fill="url(#ufoBody)" stroke="#475569" strokeWidth="0.5" />
-
-        {/* Lights */}
-        <circle cx="14" cy="28" r="2" fill="#FBBF24">
-            <animate attributeName="fill" values="#FBBF24;#EF4444;#FBBF24" dur="1s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="32" cy="32" r="2" fill="#FBBF24">
-            <animate attributeName="fill" values="#EF4444;#FBBF24;#EF4444" dur="1s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="50" cy="28" r="2" fill="#FBBF24">
-            <animate attributeName="fill" values="#FBBF24;#EF4444;#FBBF24" dur="1s" begin="0.3s" repeatCount="indefinite" />
-        </circle>
-
-        {/* Alien */}
-        <circle cx="32" cy="18" r="4" fill="#4ADE80" />
-        <ellipse cx="30" cy="17" rx="1.2" ry="1.8" fill="#1e293b" />
-        <ellipse cx="34" cy="17" rx="1.2" ry="1.8" fill="#1e293b" />
-    </svg>
-);
-
 export function CompactHero() {
     return (
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-4 border-primary rounded-2xl mb-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)]">
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-orange-500/5 pointer-events-none" />
-
-            {/* Stars Background */}
+        <div className="relative overflow-hidden rounded-sm border-y-2 border-primary/50 bg-background/80 backdrop-blur-sm">
+            {/* Kinetic Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {/* Twinkling Stars */}
-                {[
-                    { top: '15%', left: '10%', size: 2 },
-                    { top: '70%', left: '25%', size: 1 },
-                    { top: '30%', left: '85%', size: 2 },
-                    { top: '80%', left: '90%', size: 1 },
-                    { top: '50%', left: '5%', size: 2 },
-                    { top: '25%', left: '45%', size: 1 },
-                    { top: '60%', left: '65%', size: 2 },
-                    { top: '40%', left: '92%', size: 1 },
-                    { top: '10%', left: '55%', size: 2 },
-                    { top: '85%', left: '15%', size: 1 },
-                    { top: '55%', left: '35%', size: 2 },
-                    { top: '20%', left: '75%', size: 1 },
-                ].map((star, i) => (
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(0,100,255,0.05)_50%,transparent_100%)]" />
+
+                {/* Velocity Lines */}
+                {[...Array(5)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute bg-white/80 rounded-full"
+                        className="absolute h-[1px] bg-primary/30"
                         style={{
-                            top: star.top,
-                            left: star.left,
-                            width: star.size,
-                            height: star.size,
+                            top: `${20 + i * 15}%`,
+                            left: 0,
+                            right: 0,
                         }}
-                        animate={{
-                            opacity: [0.3, 1, 0.3],
-                            scale: [0.8, 1.2, 0.8]
+                        initial={{ scaleX: 0, opacity: 0 }}
+                        animate={{ scaleX: 1, opacity: 1 }}
+                        transition={{
+                            duration: 0.8,
+                            delay: i * 0.1,
+                            ease: "circOut"
                         }}
-                        transition={{ duration: 3, repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }}
                     />
                 ))}
-
-                {/* Shooting Star 1 */}
-                <motion.div
-                    className="absolute top-0 left-[20%] w-[60px] h-[1px]"
-                    style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent)',
-                        rotate: '45deg',
-                        boxShadow: '0 0 8px rgba(255,255,255,0.5)'
-                    }}
-                    animate={{
-                        x: [-80, 250],
-                        y: [-80, 250],
-                        opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        repeatDelay: 4,
-                        ease: "easeOut"
-                    }}
-                />
-
-                {/* Shooting Star 2 */}
-                <motion.div
-                    className="absolute top-[15%] left-[70%] w-[50px] h-[1px]"
-                    style={{
-                        background: 'linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.8), transparent)',
-                        rotate: '135deg',
-                        boxShadow: '0 0 8px rgba(34, 211, 238, 0.5)'
-                    }}
-                    animate={{
-                        x: [80, -200],
-                        y: [-80, 200],
-                        opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        repeatDelay: 6,
-                        ease: "easeOut"
-                    }}
-                />
             </div>
 
-            <div className="relative z-10 px-4 py-3 sm:px-5 sm:py-4">
-                <div className="flex items-center justify-between gap-3">
-                    {/* Text Content */}
-                    <div className="flex-1 min-w-0">
-                        <h1 className="text-sm sm:text-lg md:text-xl font-black text-white leading-tight tracking-tight uppercase">
-                            BİLİMİ Tİ'YE ALIYORUZ
-                        </h1>
-                        <p className="text-xs sm:text-base md:text-lg font-black mt-0.5 text-cyan-400 uppercase tracking-tight">
-                            AMA CİDDİLİ ŞEKİLDE.
-                        </p>
+            <div className="relative z-10 px-6 py-8 flex items-center justify-between gap-8">
+                {/* Text Content - Kinetic Topography */}
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="overflow-hidden">
+                        <motion.h1
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="text-4xl md:text-6xl font-black text-foreground uppercase tracking-tighter leading-[0.85] italic"
+                        >
+                            Bilimi
+                        </motion.h1>
+                    </div>
+                    <div className="overflow-hidden">
+                        <motion.h1
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.1, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-primary bg-300% animate-shimmer uppercase tracking-tighter leading-[0.85] italic"
+                        >
+                            Hızlandır
+                        </motion.h1>
                     </div>
 
-                    {/* UFO Animation */}
                     <motion.div
-                        className="flex-shrink-0 w-16 h-12 sm:w-24 sm:h-16"
-                        animate={{
-                            y: [0, -4, 0],
-                            rotate: [0, 2, -2, 0],
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="mt-4 flex items-center gap-3"
                     >
-                        <CompactUFO />
+                        <div className="h-[2px] w-12 bg-destructive/80" />
+                        <p className="text-sm md:text-base font-mono text-muted-foreground uppercase tracking-widest">
+                            Evrenin Sırlarını Çöz
+                        </p>
                     </motion.div>
+                </div>
+
+                {/* Kinetic Graphic - Rotating Atom/Orbit */}
+                <div className="hidden sm:block relative w-32 h-32 md:w-40 md:h-40 flex-shrink-0">
+                    <motion.div
+                        className="absolute inset-0 border-2 border-primary/30 rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                        style={{ borderTopColor: "rgba(0,100,255,1)" }}
+                    />
+                    <motion.div
+                        className="absolute inset-4 border-2 border-destructive/30 rounded-full"
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+                        style={{ borderBottomColor: "rgba(255,0,85,1)" }}
+                    />
+                    <motion.div
+                        className="absolute inset-[30%] bg-primary/20 backdrop-blur-md rounded-full shadow-[0_0_30px_rgba(0,100,255,0.4)]"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
                 </div>
             </div>
 
-            {/* Bottom Accent Strip */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+            {/* Status Bar */}
+            <div className="absolute top-0 right-0 p-2 opacity-50">
+                <div className="flex gap-1">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className={`w-1 h-1 rounded-full ${i === 0 ? 'bg-green-500 animate-pulse' : 'bg-primary'}`} />
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

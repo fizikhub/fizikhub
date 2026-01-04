@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+// BU ARAÇ ÇAĞRISI PLANLAMA HATASI NEDENİYLE İPTAL EDİLECEK VE YENİDEN PLANLANACAK //
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
@@ -9,6 +9,7 @@ import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ArticleReader } from "@/components/blog/article-reader";
+import { EntropyMicrostates, EntropyDiffusion } from "@/components/visualizations/entropy-animations";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -175,6 +176,15 @@ export default async function ArticlePage({ params }: PageProps) {
         },
     };
 
+    // Specific injections for Entropy article
+    let injections = {};
+    if (article.slug.includes("entropi") || article.title.includes("Entropi")) {
+        injections = {
+            3: <EntropyMicrostates />,
+            8: <EntropyDiffusion />
+        };
+    }
+
     return (
         <>
             <script
@@ -199,6 +209,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     isAdmin={isAdmin}
                     userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
                     relatedArticles={relatedArticles || []}
+                    injections={injections}
                 />
             </div>
         </>
