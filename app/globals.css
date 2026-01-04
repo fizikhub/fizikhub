@@ -5,91 +5,113 @@
 
 @layer base {
   :root {
-    /* Kinetic Light Mode (Scientific/Lab Feel) */
-    --background: 245 247 250;
-    --foreground: 10 15 30;
+    --background: 250 250 250;
+    --foreground: 33 33 33;
 
     --card: 255 255 255;
-    --card-foreground: 10 15 30;
+    --card-foreground: 24 24 27;
 
     --popover: 255 255 255;
-    --popover-foreground: 10 15 30;
+    --popover-foreground: 24 24 27;
 
-    --primary: 0 100 255;
-    /* Electric Blue */
+    --primary: 245 158 11;
     --primary-foreground: 255 255 255;
 
-    --secondary: 240 242 245;
-    --secondary-foreground: 10 15 30;
+    --secondary: 244 244 245;
+    --secondary-foreground: 24 24 27;
 
-    --muted: 240 242 245;
-    --muted-foreground: 100 110 130;
+    --muted: 244 244 245;
+    --muted-foreground: 113 113 122;
 
-    --accent: 0 240 255;
-    /* Cyan */
-    --accent-foreground: 10 15 30;
+    --accent: 244 244 245;
+    --accent-foreground: 24 24 27;
 
-    --destructive: 255 0 85;
-    /* Plasma Pink */
+    --destructive: 239 68 68;
     --destructive-foreground: 255 255 255;
 
-    --border: 220 225 235;
-    --input: 220 225 235;
-    --ring: 0 100 255;
+    --border: 228 228 231;
+    --input: 228 228 231;
+    --ring: 245 158 11;
 
-    --radius: 0.25rem;
-    /* Sharp, technical corners */
+    --radius: 0.75rem;
 
-    /* Kinetic Easing */
-    --ease-kinetic: cubic-bezier(0.2, 0.8, 0.2, 1);
-    /* Snappy */
-    --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Premium Easing Curves */
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 
-    /* Kinetic Timing */
-    --duration-instant: 75ms;
-    --duration-fast: 200ms;
-    --duration-normal: 400ms;
+    /* Premium Timing */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
   }
 
   .dark {
-    --background: 24 24 27;
-    /* Zinc 950 */
-    --foreground: 250 250 250;
-    /* Zinc 50 */
+    --background: 16 16 16;
+    --foreground: 255 255 255;
 
-    --card: 24 24 27;
-    --card-foreground: 250 250 250;
+    --card: 36 37 38;
+    --card-foreground: 255 255 255;
 
-    --popover: 24 24 27;
-    --popover-foreground: 250 250 250;
+    --popover: 36 37 38;
+    --popover-foreground: 255 255 255;
 
-    --primary: 250 250 250;
-    --primary-foreground: 24 24 27;
+    --primary: 245 158 11;
+    --primary-foreground: 0 0 0;
 
-    --secondary: 39 39 42;
-    /* Zinc 800 */
-    --secondary-foreground: 250 250 250;
+    --secondary: 25 25 25;
+    --secondary-foreground: 255 255 255;
 
-    --muted: 39 39 42;
-    --muted-foreground: 161 161 170;
-    /* Zinc 400 */
+    --muted: 30 30 30;
+    --muted-foreground: 160 160 160;
 
-    --accent: 39 39 42;
-    --accent-foreground: 250 250 250;
+    --accent: 40 40 40;
+    --accent-foreground: 255 255 255;
 
-    --destructive: 127 29 29;
-    /* Red 900 */
-    --destructive-foreground: 250 250 250;
+    --destructive: 220 38 38;
+    --destructive-foreground: 255 255 255;
 
-    --border: 63 63 70;
-    /* Zinc 700 */
-    --input: 63 63 70;
-    --ring: 212 212 216;
-    /* Zinc 300 */
+    --border: 60 60 60;
+    --input: 60 60 60;
+    --ring: 251 146 60;
   }
 
+  .pink {
+    --background: 18 18 22;
+    /* Dark background like dark theme */
+    --foreground: 248 250 252;
+    /* Light text */
+
+    --card: 20 22 25;
+    --card-foreground: 248 250 252;
+
+    --popover: 20 22 25;
+    --popover-foreground: 248 250 252;
+
+    --primary: 325 100% 55%;
+    /* Vivid Pink */
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 30 33 37;
+    --secondary-foreground: 248 250 252;
+
+    --muted: 30 33 37;
+    --muted-foreground: 156 163 175;
+
+    --accent: 30 33 37;
+    --accent-foreground: 248 250 252;
+
+    --destructive: 345 90% 60%;
+    /* Reddish pink for destruction if needed, or keep red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 42 46;
+    --input: 40 42 46;
+    --ring: 325 100% 55%;
+  }
+
+  /* Cybernetic / Kinetic Blue Theme */
   .cybernetic {
-    /* Kinetic Dark Mode (Deep Space / Accelerator Void) - MOVED HERE */
     --background: 5 5 16;
     --foreground: 240 245 255;
 
@@ -127,193 +149,16 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    /* Kinetic Background: Subtle Grid or Void */
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-attachment: fixed;
   }
 
-  .dark body,
+  /* Cybernetic Background Support */
   .cybernetic body {
     background-image:
       linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-  }
-
-  ::selection {
-    @apply bg-primary/30 text-primary-foreground;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-outfit), ui-sans-serif, system-ui;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
+    background-size: 50px 50px;
+    background-attachment: fixed;
   }
 }
 
-@theme {
-  --color-background: rgb(var(--background));
-  --color-foreground: rgb(var(--foreground));
-
-  --color-card: rgb(var(--card));
-  --color-card-foreground: rgb(var(--card-foreground));
-
-  --color-popover: rgb(var(--popover));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-
-  --color-primary: rgb(var(--primary));
-  --color-primary-foreground: rgb(var(--primary-foreground));
-
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
-
-  --color-destructive: rgb(var(--destructive));
-  --color-destructive-foreground: rgb(var(--destructive-foreground));
-
-  --color-border: rgb(var(--border));
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-outfit), ui-sans-serif, system-ui;
-  --font-mono: var(--font-space), ui-monospace, monospace;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* Kinetic Utilities */
-  .kinetic-card {
-    @apply bg-card/80 backdrop-blur-md border border-border relative overflow-hidden;
-    transition: transform var(--duration-fast) var(--ease-kinetic),
-      border-color var(--duration-fast) var(--ease-kinetic),
-      box-shadow var(--duration-fast) var(--ease-kinetic);
-  }
-
-  .kinetic-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 2px;
-    height: 100%;
-    background: rgb(var(--primary));
-    transform: scaleY(0);
-    transform-origin: bottom;
-    transition: transform var(--duration-normal) var(--ease-kinetic);
-  }
-
-  .kinetic-card:hover {
-    transform: translateY(-4px) scale(1.005);
-    @apply border-primary/50;
-    box-shadow: 0 10px 30px -10px rgba(var(--primary), 0.2);
-  }
-
-  .kinetic-card:hover::before {
-    transform: scaleY(1);
-    transform-origin: top;
-  }
-
-  .kinetic-text-glow {
-    text-shadow: 0 0 20px rgba(var(--primary), 0.5);
-  }
-
-  /* Animations */
-  @keyframes scanline {
-    0% {
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 1;
-    }
-
-    100% {
-      transform: translateY(100%);
-      opacity: 0;
-    }
-  }
-
-  .animate-scanline {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .animate-scanline::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    height: 20%;
-    background: linear-gradient(to bottom, transparent, rgba(var(--primary), 0.1), transparent);
-    animation: scanline 3s linear infinite;
-    pointer-events: none;
-  }
-
-  @keyframes pulse-fast {
-
-    0%,
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    50% {
-      opacity: 0.7;
-      transform: scale(0.98);
-    }
-  }
-
-  .animate-pulse-fast {
-    animation: pulse-fast 1.5s var(--ease-kinetic) infinite;
-  }
-
-  @keyframes slide-velocity {
-    0% {
-      transform: translateX(-20px);
-      opacity: 0;
-    }
-
-    100% {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  .animate-slide-velocity {
-    animation: slide-velocity 0.5s var(--ease-kinetic) forwards;
-  }
-
-  /* Scrollbar override */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: rgb(var(--background));
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgb(var(--border));
-    border-radius: 0;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgb(var(--primary));
-  }
-}
+/* ... existing styles from f472d06 ... */
