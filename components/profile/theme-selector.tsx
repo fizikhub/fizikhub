@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Heart, Rocket, Cpu } from "lucide-react";
+import { Moon, Heart, Rocket } from "lucide-react";
 
 export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
@@ -44,13 +44,6 @@ export function ThemeSelector() {
             label: "Mars",
             icon: Rocket,
             color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
-            special: true
-        },
-        {
-            value: "cybernetic",
-            label: "Sibernetik",
-            icon: Cpu,
-            color: "bg-cyan-950 border-cyan-500 text-cyan-400",
             special: true
         }
     ];

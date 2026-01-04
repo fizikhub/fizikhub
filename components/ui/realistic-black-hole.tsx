@@ -4,11 +4,9 @@ import { motion } from "framer-motion";
 import { useEffect, useState, useMemo } from "react";
 
 export function RealisticBlackHole() {
-    const [mounted, setMounted] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
         setIsMobile(window.innerWidth < 768);
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
@@ -17,7 +15,6 @@ export function RealisticBlackHole() {
 
     // Particle system - matter spiraling into the singularity
     const particles = useMemo(() => {
-        if (!mounted) return [];
         const count = isMobile ? 40 : 80;
         return Array.from({ length: count }, (_, i) => ({
             id: i,
@@ -28,11 +25,10 @@ export function RealisticBlackHole() {
             delay: Math.random() * 6,
             brightness: 0.5 + Math.random() * 0.5,
         }));
-    }, [isMobile, mounted]);
+    }, [isMobile]);
 
     // Background stars
     const stars = useMemo(() => {
-        if (!mounted) return [];
         return Array.from({ length: isMobile ? 30 : 60 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
@@ -40,7 +36,7 @@ export function RealisticBlackHole() {
             size: 0.5 + Math.random() * 1.5,
             duration: 2 + Math.random() * 3,
         }));
-    }, [isMobile, mounted]);
+    }, [isMobile]);
 
     const size = isMobile ? 320 : 500;
     const coreSize = isMobile ? 40 : 60;

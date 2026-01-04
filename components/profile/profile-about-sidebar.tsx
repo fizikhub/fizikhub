@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Calendar, LinkIcon, Twitter, Github, Linkedin, Instagram, Award, HelpCircle } from "lucide-react";
+import { Calendar, LinkIcon, Twitter, Github, Linkedin, Instagram, FileText, MessageSquare, Users, Award, UserPlus, HelpCircle } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { BadgeDisplay } from "@/components/badge-display";
@@ -27,91 +27,88 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
     const socialLinks = profile?.social_links || {};
     const hasSocialLinks = socialLinks.twitter || socialLinks.github || socialLinks.linkedin || socialLinks.instagram;
 
-    // Level calculation
-    const getLevel = (rep: number) => {
-        if (rep >= 5000) return "Evrensel Zeka";
-        if (rep >= 1000) return "Teorisyen";
-        if (rep >= 500) return "Araştırmacı";
-        if (rep >= 100) return "Gözlemci";
-        return "Çaylak";
-    };
-
     return (
-        <aside className="space-y-4">
-            {/* Time Limit Display */}
-            <ProfileTimeLimitDisplay />
 
-            {/* HubPuan Card */}
+        <aside className="space-y-4">
+            {/* Time Limit Display for restricted users */}
+            <ProfileTimeLimitDisplay />
+            {/* HubPuan - Prominent Display with Tooltip */}
+            {/* HubPuan - Prominent Display with Popover (Mobile Friendly) */}
             <Popover>
                 <PopoverTrigger asChild>
-                    <Card className="p-4 border border-border bg-card cursor-pointer hover:bg-muted/50 transition-colors">
+                    <Card className="p-3.5 border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-muted rounded-md">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
                                     <SiteLogo className="!w-5 !h-5" />
                                 </div>
                                 <div>
-                                    <div className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                                    <div className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400 tracking-wider flex items-center gap-1">
                                         HubPuan
-                                        <HelpCircle className="w-3 h-3" />
+                                        <HelpCircle className="w-3 h-3 opacity-60" />
                                     </div>
-                                    <div className="text-2xl font-bold text-foreground">{profile?.reputation || 0}</div>
+                                    <div className="text-2xl font-black text-foreground">{profile?.reputation || 0}</div>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <div className="text-xs text-muted-foreground">Seviye</div>
-                                <div className="text-sm font-medium text-foreground">{getLevel(profile?.reputation || 0)}</div>
+                                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Seviye</div>
+                                <div className="text-base font-bold text-blue-600 dark:text-blue-400">
+                                    {profile?.reputation >= 5000 ? "Evrensel Zeka" : profile?.reputation >= 1000 ? "Teorisyen" : profile?.reputation >= 500 ? "Araştırmacı" : profile?.reputation >= 100 ? "Gözlemci" : "Çaylak"}
+                                </div>
                             </div>
                         </div>
                     </Card>
                 </PopoverTrigger>
                 <PopoverContent side="bottom" className="max-w-[280px] p-4">
                     <div className="space-y-2">
-                        <p className="font-medium text-foreground">HubPuan Nedir?</p>
+                        <p className="font-bold text-foreground">HubPuan Nedir?</p>
                         <p className="text-sm text-muted-foreground">
-                            Makale yazarak, soru sorarak, cevap vererek ve beğeni alarak puan kazanırsınız.
+                            HubPuan, topluluktaki katkılarınızı ölçen bir puanlama sistemidir. Makale yazarak, soru sorarak, cevap vererek ve beğeni alarak puan kazanırsınız.
                         </p>
-                        <Link href="/puanlar-nedir" className="text-xs text-primary hover:underline inline-flex items-center gap-1">
+                        <Link href="/puanlar-nedir" className="text-xs text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
                             Daha fazla bilgi →
                         </Link>
                     </div>
                 </PopoverContent>
             </Popover>
 
-            {/* Stats */}
-            <Card className="p-4 border border-border bg-card">
-                <div className="grid grid-cols-4 gap-2 text-center">
-                    <div>
-                        <div className="text-lg font-bold text-foreground">{stats.followersCount}</div>
-                        <div className="text-[10px] text-muted-foreground">Takipçi</div>
+            {/* Stats - Compact Single Row - Reordered: Takipçi, Takip, Makale, Soru */}
+            <Card className="p-3 border-2 border-foreground/10 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]">
+                <div className="flex items-center justify-around text-center divide-x divide-foreground/10">
+                    <div className="flex-1 px-1">
+                        <div className="text-lg font-black text-foreground">{stats.followersCount}</div>
+                        <div className="text-[9px] text-muted-foreground font-medium uppercase">Takipçi</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-foreground">{stats.followingCount}</div>
-                        <div className="text-[10px] text-muted-foreground">Takip</div>
+                    <div className="flex-1 px-1">
+                        <div className="text-lg font-black text-foreground">{stats.followingCount}</div>
+                        <div className="text-[9px] text-muted-foreground font-medium uppercase">Takip</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-foreground">{stats.articlesCount}</div>
-                        <div className="text-[10px] text-muted-foreground">Makale</div>
+                    <div className="flex-1 px-1">
+                        <div className="text-lg font-black text-foreground">{stats.articlesCount}</div>
+                        <div className="text-[9px] text-muted-foreground font-medium uppercase">Makale</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-foreground">{stats.questionsCount}</div>
-                        <div className="text-[10px] text-muted-foreground">Soru</div>
+                    <div className="flex-1 px-1">
+                        <div className="text-lg font-black text-foreground">{stats.questionsCount}</div>
+                        <div className="text-[9px] text-muted-foreground font-medium uppercase">Soru</div>
                     </div>
                 </div>
             </Card>
 
-            {/* About Card */}
-            <Card className="p-4 border border-border bg-card">
-                <h3 className="text-xs font-medium text-muted-foreground mb-3">Hakkında</h3>
+            {/* About Card - Consolidated Bio + Links + Member Since */}
+            <Card className="p-4 border-2 border-foreground/10 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]">
+                <h3 className="text-[10px] font-black uppercase text-muted-foreground mb-3 tracking-wider flex items-center gap-2">
+                    <div className="w-1 h-3 bg-foreground rounded-full" />
+                    Hakkında
+                </h3>
 
                 {/* Bio */}
                 {profile?.bio && (
-                    <p className="text-sm text-foreground/90 leading-relaxed mb-3">
+                    <p className="text-foreground/80 leading-relaxed text-xs mb-3">
                         {profile.bio}
                     </p>
                 )}
 
-                {/* Links */}
+                {/* Links Section */}
                 {(profile?.website || hasSocialLinks) && (
                     <div className="flex flex-wrap gap-2 mb-3">
                         {profile?.website && (
@@ -119,51 +116,71 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded bg-muted/50 hover:bg-muted"
+                                className="flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors bg-foreground/5 hover:bg-foreground/10 px-2 py-1 rounded-md"
                             >
                                 <LinkIcon className="w-3 h-3" />
                                 <span className="truncate max-w-[100px]">{profile.website.replace(/^https?:\/\//, '').split('/')[0]}</span>
                             </a>
                         )}
                         {socialLinks.twitter && (
-                            <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-muted/50 hover:bg-muted">
+                            <a
+                                href={`https://twitter.com/${socialLinks.twitter}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors bg-foreground/5 hover:bg-foreground/10 px-2 py-1 rounded-md"
+                            >
                                 <Twitter className="w-3 h-3" />
                             </a>
                         )}
                         {socialLinks.github && (
-                            <a href={`https://github.com/${socialLinks.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-muted/50 hover:bg-muted">
+                            <a
+                                href={`https://github.com/${socialLinks.github}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors bg-foreground/5 hover:bg-foreground/10 px-2 py-1 rounded-md"
+                            >
                                 <Github className="w-3 h-3" />
                             </a>
                         )}
                         {socialLinks.linkedin && (
-                            <a href={`https://linkedin.com/in/${socialLinks.linkedin}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-muted/50 hover:bg-muted">
+                            <a
+                                href={`https://linkedin.com/in/${socialLinks.linkedin}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors bg-foreground/5 hover:bg-foreground/10 px-2 py-1 rounded-md"
+                            >
                                 <Linkedin className="w-3 h-3" />
                             </a>
                         )}
                         {socialLinks.instagram && (
-                            <a href={`https://instagram.com/${socialLinks.instagram}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-muted/50 hover:bg-muted">
+                            <a
+                                href={`https://instagram.com/${socialLinks.instagram}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors bg-foreground/5 hover:bg-foreground/10 px-2 py-1 rounded-md"
+                            >
                                 <Instagram className="w-3 h-3" />
                             </a>
                         )}
                     </div>
                 )}
 
-                {/* Member Since */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-3 border-t border-border">
+                {/* Member Since - Inline */}
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground pt-2 border-t border-foreground/10">
                     <Calendar className="w-3 h-3" />
                     <span>{format(new Date(createdAt), 'MMMM yyyy', { locale: tr })} tarihinden beri üye</span>
                 </div>
             </Card>
 
-            {/* Badges */}
+            {/* Badges - Compact */}
             {badges && badges.length > 0 && (
-                <Card className="p-4 border border-border bg-card">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <Card className="p-3 border-2 border-foreground/10 rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-wider flex items-center gap-2">
                             <Award className="w-3 h-3" />
                             Rozetler
                         </h3>
-                        <span className="text-[10px] text-muted-foreground">{badges.length}</span>
+                        <span className="text-[9px] text-muted-foreground">{badges.length} rozet</span>
                     </div>
                     <BadgeDisplay userBadges={badges} maxDisplay={4} size="sm" />
                 </Card>

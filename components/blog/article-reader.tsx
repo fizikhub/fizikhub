@@ -27,7 +27,6 @@ interface ArticleReaderProps {
     isAdmin: boolean;
     userAvatar?: string;
     relatedArticles: any[];
-    injections?: { [paragraphIndex: number]: React.ReactNode };
 }
 
 export function ArticleReader({
@@ -40,8 +39,7 @@ export function ArticleReader({
     isLoggedIn,
     isAdmin,
     userAvatar,
-    relatedArticles,
-    injections
+    relatedArticles
 }: ArticleReaderProps) {
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('lg');
@@ -110,7 +108,6 @@ export function ArticleReader({
                                 fontSize={fontSize}
                                 fontFamily={fontFamily}
                                 isZenMode={isZenMode}
-                                injections={injections}
                             />
                         </div>
 

@@ -67,13 +67,13 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 if (result.error === "Giriş yapmalısınız.") {
                     toast.error("Oy vermek için giriş yapmalısınız.");
                 } else {
-                    toast.error("Bir hata oluştu. Umarım düzelir.");
+                    toast.error("Bir hata oluştu.");
                 }
             }
         } catch (error) {
             setVoteState(previousVote);
             setVotes(previousCount);
-            toast.error("Bağlantı hatas.İnternetini kontrol eder misin canım?");
+            toast.error("Bağlantı hatası.");
         } finally {
             setIsVoting(false);
         }
@@ -117,11 +117,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             {/* 3. CONTENT BODY */}
             <div className="p-5 flex flex-col gap-3">
                 {/* Author Mini-Row (Top of content) */}
-                {/* Author Mini-Row (Top of content) */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="relative !min-w-0 !min-h-0 !p-0 !h-auto !w-auto"
+                        className="relative"
                     >
                         <Avatar className="w-5 h-5 border border-border">
                             <AvatarImage src={question.profiles?.avatar_url || ""} />
@@ -132,7 +131,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                     </button>
                     <button
                         onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors !min-w-0 !min-h-0 !p-0 !h-auto !w-auto"
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                         {question.profiles?.full_name || question.profiles?.username || "Anonim"}
                     </button>
@@ -211,7 +210,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                         onClick={(e) => {
                             e.stopPropagation();
                             navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
-                            toast.success("Link kopyalandı! Yapıştır Sezai.");
+                            toast.success("Link kopyalandı!");
                         }}
                     >
                         <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
