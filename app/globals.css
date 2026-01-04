@@ -213,6 +213,42 @@
     --input: 80 45 30;
     --ring: 234 88 12;
   }
+
+  /* Cybernetic / Kinetic Blue Theme */
+  .cybernetic {
+    /* Deep Space Black/Blue */
+    --background: 5 5 16;
+    --foreground: 240 245 255;
+
+    /* Glassy Panels */
+    --card: 10 12 25;
+    --card-foreground: 240 245 255;
+
+    --popover: 10 12 25;
+    --popover-foreground: 240 245 255;
+
+    /* Neon Cyan */
+    --primary: 0 240 255;
+    --primary-foreground: 5 5 16;
+
+    /* Dark Blue-Grey */
+    --secondary: 20 25 45;
+    --secondary-foreground: 240 245 255;
+
+    --muted: 15 20 35;
+    --muted-foreground: 120 130 160;
+
+    /* Plasma Pink Accent */
+    --accent: 255 0 85;
+    --accent-foreground: 255 255 255;
+
+    --destructive: 255 50 50;
+    --destructive-foreground: 255 255 255;
+
+    --border: 30 40 60;
+    --input: 30 40 60;
+    --ring: 0 240 255;
+  }
 }
 
 @layer base {
@@ -223,6 +259,15 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* Cybernetic Background Support */
+  .cybernetic body {
+    background-image:
+      linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
     background-attachment: fixed;
   }
 
