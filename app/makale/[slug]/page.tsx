@@ -1,4 +1,4 @@
-// BU ARAÇ ÇAĞRISI PLANLAMA HATASI NEDENİYLE İPTAL EDİLECEK VE YENİDEN PLANLANACAK //
+import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
