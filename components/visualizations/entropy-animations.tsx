@@ -24,7 +24,7 @@ export function EntropyMicrostates() {
   });
 
   return (
-    <div className="my-8 rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-sm">
+    <div className="my-8 rounded-xl border border-blue-500/30 bg-blue-950/20 p-6 backdrop-blur-sm shadow-[0_0_15px_rgba(59,130,246,0.1)]">
       <h3 className="mb-4 text-xl font-bold text-primary">Entropi ve Olasılık</h3>
       <p className="mb-6 text-sm text-muted-foreground">
         Sol taraftaki düzenli yapıyı bozmak kolaydır, ancak rastgele dağılmış bir yapının
@@ -34,7 +34,7 @@ export function EntropyMicrostates() {
       <div className="relative mx-auto h-[240px] w-[240px] rounded-lg border border-white/20 bg-black/60 shadow-inner">
         {Array.from({ length: particleCount }).map((_, i) => {
           const target = isOrdered ? getOrderedPos(i) : getRandomPos();
-          
+
           return (
             <motion.div
               key={i}
@@ -43,12 +43,12 @@ export function EntropyMicrostates() {
                 x: isOrdered ? getOrderedPos(i).x : Math.random() * 200 + 10,
                 y: isOrdered ? getOrderedPos(i).y : Math.random() * 200 + 10,
               }}
-              transition={{ 
-                duration: 1.5, 
-                type: "spring", 
+              transition={{
+                duration: 1.5,
+                type: "spring",
                 bounce: 0.2,
                 // Rastgelelik hissini artırmak için her parçacık için farklı gecikme
-                delay: isOrdered ? i * 0.01 : Math.random() * 0.3 
+                delay: isOrdered ? i * 0.01 : Math.random() * 0.3
               }}
               className="absolute h-3 w-3 rounded-full shadow-sm"
               style={{
@@ -61,18 +61,18 @@ export function EntropyMicrostates() {
       </div>
 
       <div className="mt-6 flex justify-center gap-4">
-        <Button 
-          variant="outline" 
-          onClick={() => setIsOrdered(false)} 
+        <Button
+          variant="outline"
+          onClick={() => setIsOrdered(false)}
           disabled={!isOrdered}
           className="gap-2 border-red-500/20 hover:bg-red-500/10 hover:text-red-400"
         >
           <Play className="h-4 w-4" />
           Entropiyi Artır
         </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => setIsOrdered(true)} 
+        <Button
+          variant="outline"
+          onClick={() => setIsOrdered(true)}
           disabled={isOrdered}
           className="gap-2 border-blue-500/20 hover:bg-blue-500/10 hover:text-blue-400"
         >
@@ -80,11 +80,11 @@ export function EntropyMicrostates() {
           Düzeni Geri Getir
         </Button>
       </div>
-      
+
       {!isOrdered && (
-        <motion.p 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           className="mt-4 text-center text-xs text-muted-foreground italic"
         >
           Not: Gerçek evrende "Düzeni Geri Getir" butonu yoktur.
@@ -97,15 +97,15 @@ export function EntropyMicrostates() {
 // --- Animasyon 2: Gaz Yayılımı (Diffusion) ---
 export function EntropyDiffusion() {
   const [barrierRemoved, setBarrierRemoved] = useState(false);
-  
+
   // Parçacıklar
   const particles = Array.from({ length: 40 });
 
   return (
-    <div className="my-8 rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-sm">
+    <div className="my-8 rounded-xl border border-purple-500/30 bg-purple-950/20 p-6 backdrop-blur-sm shadow-[0_0_15px_rgba(168,85,247,0.1)]">
       <h3 className="mb-4 text-xl font-bold text-secondary">Gazların Yayılması</h3>
       <p className="mb-6 text-sm text-muted-foreground">
-        Engel kalktığında, gaz molekülleri tüm hacme yayılır. Bu süreç geri döndürülemez; 
+        Engel kalktığında, gaz molekülleri tüm hacme yayılır. Bu süreç geri döndürülemez;
         gaz kendiliğinden tekrar köşeye toplanmaz.
       </p>
 
@@ -124,7 +124,7 @@ export function EntropyDiffusion() {
       </div>
 
       <div className="mt-6 flex justify-center">
-        <Button 
+        <Button
           onClick={() => setBarrierRemoved(!barrierRemoved)}
           variant={barrierRemoved ? "secondary" : "default"}
           className="w-40"
@@ -138,9 +138,9 @@ export function EntropyDiffusion() {
 
 function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: boolean }) {
   // Rastgele başlangıç pozisyonu (Sadece sol taraf)
-  const [pos, setPos] = useState({ 
+  const [pos, setPos] = useState({
     x: Math.random() * 45, // %0-45 (Sol taraf) 
-    y: Math.random() * 90 + 5 
+    y: Math.random() * 90 + 5
   });
 
   useEffect(() => {
@@ -156,9 +156,9 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
       }, 100 + Math.random() * 200);
     } else {
       // Engel var: Sadece sol tarafa resetle
-      setPos({ 
-        x: Math.random() * 45, 
-        y: Math.random() * 90 + 5 
+      setPos({
+        x: Math.random() * 45,
+        y: Math.random() * 90 + 5
       });
     }
 
@@ -167,12 +167,12 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
 
   return (
     <motion.div
-      animate={{ 
-        left: `${pos.x}%`, 
+      animate={{
+        left: `${pos.x}%`,
         top: `${pos.y}%`,
       }}
-      transition={{ 
-        duration: barrierRemoved ? 0.5 : 0, 
+      transition={{
+        duration: barrierRemoved ? 0.5 : 0,
         ease: "linear"
       }}
       className="absolute h-2 w-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]"

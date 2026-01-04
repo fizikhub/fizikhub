@@ -50,7 +50,7 @@ export function CompactHero() {
                             transition={{ duration: 0.5, delay: 0.1, ease: [0.2, 0.8, 0.2, 1] }}
                             className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-400 to-primary bg-300% animate-shimmer uppercase tracking-tighter leading-[0.85] italic"
                         >
-                            Hızlandır
+                            Ti'ye Alıyoruz
                         </motion.h1>
                     </div>
 
@@ -62,7 +62,7 @@ export function CompactHero() {
                     >
                         <div className="h-[2px] w-12 bg-destructive/80" />
                         <p className="text-sm md:text-base font-mono text-muted-foreground uppercase tracking-widest">
-                            Evrenin Sırlarını Çöz
+                            Ama Ciddili Şekilde
                         </p>
                     </motion.div>
                 </div>

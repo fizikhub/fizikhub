@@ -135,7 +135,7 @@ export function MarkdownRenderer({
     if (hasInjections) {
         // Split by double newline to separate paragraphs
         // This is a simple heuristic and might need refinement for complex markdown
-        const paragraphs = content.split(/\n\s*\n/);
+        const paragraphs = content.split(/\r?\n\s*\r?\n/);
 
         return (
             <div className={cn(

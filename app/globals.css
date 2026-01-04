@@ -15,7 +15,8 @@
     --popover: 255 255 255;
     --popover-foreground: 10 15 30;
 
-    --primary: 0 100 255; /* Electric Blue */
+    --primary: 0 100 255;
+    /* Electric Blue */
     --primary-foreground: 255 255 255;
 
     --secondary: 240 242 245;
@@ -24,20 +25,24 @@
     --muted: 240 242 245;
     --muted-foreground: 100 110 130;
 
-    --accent: 0 240 255; /* Cyan */
+    --accent: 0 240 255;
+    /* Cyan */
     --accent-foreground: 10 15 30;
 
-    --destructive: 255 0 85; /* Plasma Pink */
+    --destructive: 255 0 85;
+    /* Plasma Pink */
     --destructive-foreground: 255 255 255;
 
     --border: 220 225 235;
     --input: 220 225 235;
     --ring: 0 100 255;
 
-    --radius: 0.25rem; /* Sharp, technical corners */
+    --radius: 0.25rem;
+    /* Sharp, technical corners */
 
     /* Kinetic Easing */
-    --ease-kinetic: cubic-bezier(0.2, 0.8, 0.2, 1); /* Snappy */
+    --ease-kinetic: cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Snappy */
     --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     /* Kinetic Timing */
@@ -47,17 +52,54 @@
   }
 
   .dark {
-    /* Kinetic Dark Mode (Deep Space / Accelerator Void) */
-    --background: 5 5 16; /* Deepest Navy/Black */
+    --background: 24 24 27;
+    /* Zinc 950 */
+    --foreground: 250 250 250;
+    /* Zinc 50 */
+
+    --card: 24 24 27;
+    --card-foreground: 250 250 250;
+
+    --popover: 24 24 27;
+    --popover-foreground: 250 250 250;
+
+    --primary: 250 250 250;
+    --primary-foreground: 24 24 27;
+
+    --secondary: 39 39 42;
+    /* Zinc 800 */
+    --secondary-foreground: 250 250 250;
+
+    --muted: 39 39 42;
+    --muted-foreground: 161 161 170;
+    /* Zinc 400 */
+
+    --accent: 39 39 42;
+    --accent-foreground: 250 250 250;
+
+    --destructive: 127 29 29;
+    /* Red 900 */
+    --destructive-foreground: 250 250 250;
+
+    --border: 63 63 70;
+    /* Zinc 700 */
+    --input: 63 63 70;
+    --ring: 212 212 216;
+    /* Zinc 300 */
+  }
+
+  .cybernetic {
+    /* Kinetic Dark Mode (Deep Space / Accelerator Void) - MOVED HERE */
+    --background: 5 5 16;
     --foreground: 240 245 255;
 
-    --card: 10 12 25; /* Dark Module */
+    --card: 10 12 25;
     --card-foreground: 240 245 255;
 
     --popover: 10 12 25;
     --popover-foreground: 240 245 255;
 
-    --primary: 0 240 255; /* Cherenkov Blue */
+    --primary: 0 240 255;
     --primary-foreground: 5 5 16;
 
     --secondary: 20 25 45;
@@ -66,7 +108,7 @@
     --muted: 15 20 35;
     --muted-foreground: 120 130 160;
 
-    --accent: 255 0 85; /* Plasma Pink */
+    --accent: 255 0 85;
     --accent-foreground: 255 255 255;
 
     --destructive: 255 50 50;
@@ -86,24 +128,30 @@
   body {
     @apply bg-background text-foreground antialiased;
     /* Kinetic Background: Subtle Grid or Void */
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     background-attachment: fixed;
   }
 
-  .dark body {
-    background-image: 
-        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  .dark body,
+  .cybernetic body {
+    background-image:
+      linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
   }
 
   ::selection {
     @apply bg-primary/30 text-primary-foreground;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-outfit), ui-sans-serif, system-ui;
     text-transform: uppercase;
     letter-spacing: -0.02em;
@@ -153,8 +201,8 @@
   .kinetic-card {
     @apply bg-card/80 backdrop-blur-md border border-border relative overflow-hidden;
     transition: transform var(--duration-fast) var(--ease-kinetic),
-                border-color var(--duration-fast) var(--ease-kinetic),
-                box-shadow var(--duration-fast) var(--ease-kinetic);
+      border-color var(--duration-fast) var(--ease-kinetic),
+      box-shadow var(--duration-fast) var(--ease-kinetic);
   }
 
   .kinetic-card::before {
@@ -187,16 +235,26 @@
 
   /* Animations */
   @keyframes scanline {
-    0% { transform: translateY(-100%); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateY(100%); opacity: 0; }
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
   }
 
   .animate-scanline {
     position: relative;
     overflow: hidden;
   }
-  
+
   .animate-scanline::after {
     content: "";
     position: absolute;
@@ -208,8 +266,17 @@
   }
 
   @keyframes pulse-fast {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(0.98); }
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
   }
 
   .animate-pulse-fast {
@@ -217,8 +284,15 @@
   }
 
   @keyframes slide-velocity {
-    0% { transform: translateX(-20px); opacity: 0; }
-    100% { transform: translateX(0); opacity: 1; }
+    0% {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   .animate-slide-velocity {
@@ -229,13 +303,16 @@
   ::-webkit-scrollbar {
     width: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: rgb(var(--background));
   }
+
   ::-webkit-scrollbar-thumb {
     background: rgb(var(--border));
     border-radius: 0;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgb(var(--primary));
   }
