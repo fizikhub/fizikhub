@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { ModernForumHeader } from "@/components/forum/modern-forum-header";
+import { Suspense } from "react";
 import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
@@ -119,7 +120,9 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             />
             <div className="bg-background pb-20">
                 <div className="container py-2 sm:py-4 md:py-8 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
-                    <ModernForumHeader />
+                    <Suspense fallback={<div className="h-48 rounded-lg bg-card/50 animate-pulse border-2 border-border mb-2" />}>
+                        <ModernForumHeader />
+                    </Suspense>
 
                     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
                         {/* Desktop Sidebar */}
