@@ -188,11 +188,18 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent pointer-events-none" />
 
                 {/* Grid overlay */}
-                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                <div className={cn("absolute inset-0 pointer-events-none", isCybernetic ? "opacity-30" : "opacity-5")}>
                     <div className="w-full h-full" style={{
-                        backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent)',
-                        backgroundSize: '50px 50px'
+                        backgroundImage: isCybernetic
+                            ? 'linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px)'
+                            : 'linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, .05) 25%, rgba(255, 255, 255, .05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, .05) 75%, rgba(255, 255, 255, .05) 76%, transparent 77%, transparent)',
+                        backgroundSize: isCybernetic ? '40px 40px' : '50px 50px'
                     }} />
+                    {isCybernetic && (
+                        <div className="absolute top-4 left-4 text-xs font-mono text-cyan-400/60 uppercase tracking-widest border border-cyan-500/30 px-2 py-1 bg-black/40 backdrop-blur-sm">
+                            SYS.USER_PROFILE_V8.2 // {profile?.username?.toUpperCase()}
+                        </div>
+                    )}
                 </div>
 
                 {/* Reposition Controls Overlay */}

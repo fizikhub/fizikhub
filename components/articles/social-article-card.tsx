@@ -172,6 +172,12 @@ export function SocialArticleCard({
                 className
             )}
         >
+            {/* HUD DECORATION: Random Data Numbers (Only visible in Cybernetic) */}
+            {isCybernetic && (
+                <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-500/50 pointer-events-none z-20 select-none">
+                    NO.{index + 4209}-{Math.floor(Math.random() * 99)}
+                </div>
+            )}
             {/* 1. TOP BAR: Category & Date */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
                 <div className="flex items-center gap-3">
