@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Settings, Shield, Award, Activity, Cpu } from "lucide-react";
+import { Settings, Shield, Award, Activity, Cpu, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 interface CyberProfileHeroProps {
@@ -124,4 +124,4 @@ export function CyberProfileHero({ profile, isOwnProfile, onEdit }: CyberProfile
         </div>
     );
 }
-import { MessageSquare } from "lucide-react";
+
