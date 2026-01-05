@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ArrowUp, MessageSquare, Clock, Hash } from "lucide-react";
+import { ArrowUp, ArrowDown, MessageSquare, Clock, Hash } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 
@@ -11,7 +11,7 @@ interface CyberQuestionCardProps {
     userVote: number;
     votes: number;
     answerCount: number;
-    onVote: (type: 1 | 0 | -1) => void;
+    onVote: (type: 1 | -1) => void;
     onClick: () => void;
     currentUserId?: string;
 }
@@ -35,15 +35,28 @@ export function CyberQuestionCard({
             <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(0,240,255,0.05)_50%,transparent_100%)] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none z-0" />
 
             <div className="flex items-center p-3 gap-4 relative z-10">
-                {/* 1. STATUS INDICATOR */}
-                <div className="flex flex-col items-center justify-center w-12 border-r border-cyan-900/50 pr-4">
+                {/* 1. STATUS INDICATOR & VOTING */}
+                <div className="flex flex-col items-center justify-center w-12 border-r border-cyan-900/50 pr-4 gap-1">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onVote(1); }}
+                        className={cn("p-0.5 hover:bg-cyan-500/20 rounded", userVote === 1 ? "text-cyan-400" : "text-cyan-800")}
+                    >
+                        <ArrowUp className="w-4 h-4" />
+                    </button>
+
                     <div className={cn(
-                        "font-mono text-lg font-bold",
+                        "font-mono text-lg font-bold leading-none my-1",
                         votes > 0 ? "text-cyan-400" : "text-cyan-800"
                     )}>
                         {votes}
                     </div>
-                    <div className="text-[8px] font-mono text-cyan-600 uppercase">RATING</div>
+
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onVote(-1); }}
+                        className={cn("p-0.5 hover:bg-red-500/20 rounded", userVote === -1 ? "text-red-400" : "text-cyan-800")}
+                    >
+                        <ArrowDown className="w-4 h-4" />
+                    </button>
                 </div>
 
                 {/* 2. MAIN DATA */}
