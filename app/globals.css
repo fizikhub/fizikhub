@@ -271,6 +271,163 @@
     background-attachment: fixed;
   }
 
+  /* ============================================
+     KINETIC CYBERNETIC THEME UTILITIES
+     Only active when .cybernetic class is on html
+     ============================================ */
+
+  /* Cyber Card - Glassmorphism with neon border */
+  .cybernetic .cyber-card {
+    background: rgba(10, 12, 25, 0.8) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    box-shadow:
+      0 0 20px rgba(0, 240, 255, 0.1),
+      0 4px 30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .cybernetic .cyber-card:hover {
+    border-color: rgba(0, 240, 255, 0.6) !important;
+    box-shadow:
+      0 0 30px rgba(0, 240, 255, 0.2),
+      0 8px 40px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-4px);
+  }
+
+  /* Cyber Glow - Pulsing neon effect */
+  .cybernetic .cyber-glow {
+    position: relative;
+  }
+
+  .cybernetic .cyber-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(8px);
+    animation: cyber-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes cyber-pulse {
+
+    0%,
+    100% {
+      opacity: 0.3;
+      filter: blur(8px);
+    }
+
+    50% {
+      opacity: 0.6;
+      filter: blur(12px);
+    }
+  }
+
+  /* Cyber Text - Gradient text effect */
+  .cybernetic .cyber-text {
+    background: linear-gradient(135deg, #00F0FF 0%, #FF0055 50%, #8B5CF6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Cyber Grid - Background pattern overlay */
+  .cybernetic .cyber-grid {
+    position: relative;
+  }
+
+  .cybernetic .cyber-grid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Cyber Badge - Neon badge style */
+  .cybernetic .cyber-badge {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 85, 0.2));
+    border: 1px solid rgba(0, 240, 255, 0.5);
+    color: #00F0FF;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+  }
+
+  /* Cyber Button - Animated neon button */
+  .cybernetic .cyber-button {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    color: #00F0FF;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .cybernetic .cyber-button:hover {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
+    border-color: #00F0FF;
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Cyber Avatar Ring */
+  .cybernetic .cyber-avatar-ring {
+    position: relative;
+  }
+
+  .cybernetic .cyber-avatar-ring::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    background: conic-gradient(from 0deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
+    border-radius: inherit;
+    z-index: -1;
+    animation: cyber-rotate 4s linear infinite;
+  }
+
+  @keyframes cyber-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Cyber Scanline - Retro CRT effect */
+  .cybernetic .cyber-scanline::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+        rgba(0, 0, 0, 0.1) 0px,
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 2px);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Cyber Hover Lift */
+  .cybernetic .cyber-lift {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .cybernetic .cyber-lift:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow:
+      0 20px 40px rgba(0, 240, 255, 0.15),
+      0 0 40px rgba(0, 240, 255, 0.1);
+  }
+
   /* Mars Theme - Semi-transparent backgrounds to show Mars image */
   .mars body {
     background: rgba(41, 20, 15, 0.85);

@@ -14,6 +14,8 @@ import { ProfileMessagesButton } from "@/components/profile/profile-messages-but
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { FollowButton } from "@/components/profile/follow-button";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface ProfileHeroProps {
     profile: any;
@@ -33,6 +35,8 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     const initialOffset = useRef<number>(50);
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
 
     // Update local state if profile changes (e.g. initial load)
     useEffect(() => {
@@ -250,7 +254,10 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             <div className="absolute -inset-1 bg-foreground/10 rounded-lg" />
 
                             {/* Avatar container with sharp corners */}
-                            <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-lg border-4 border-background bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden">
+                            <div className={cn(
+                                "relative w-28 h-28 md:w-32 md:h-32 rounded-lg border-4 border-background bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden",
+                                isCybernetic && "cyber-avatar-ring"
+                            )}>
                                 <Avatar className="w-full h-full rounded-none">
                                     <AvatarImage src={profile?.avatar_url || ""} className="object-cover" />
                                     <AvatarFallback className="text-3xl bg-gradient-to-br from-gray-600 to-gray-800 text-white font-bold rounded-none">
@@ -275,7 +282,10 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
                         >
-                            <h1 className="text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tight">
+                            <h1 className={cn(
+                                "text-2xl md:text-3xl font-black text-foreground mb-1 tracking-tight",
+                                isCybernetic && "cyber-text"
+                            )}>
                                 {profile?.full_name || "Anonim Kullanıcı"}
                             </h1>
                             <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap">

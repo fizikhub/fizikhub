@@ -9,6 +9,7 @@ import { Article } from "@/lib/api";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { toast } from "sonner";
@@ -50,6 +51,8 @@ export function SocialArticleCard({
 }: SocialArticleCardProps) {
     // Color theming based on variant
     const isWriter = variant === "writer";
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
 
     // Default values if not provided
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
@@ -164,6 +167,8 @@ export function SocialArticleCard({
                 "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300",
                 "bg-card border border-border",
                 "shadow-sm hover:shadow-md hover:border-border/80",
+                // Cybernetic theme overrides
+                isCybernetic && "cyber-card cyber-lift",
                 className
             )}
         >
@@ -207,7 +212,9 @@ export function SocialArticleCard({
                     {/* Title */}
                     <h3 className={cn(
                         "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground transition-colors",
-                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-emerald-600 dark:group-hover/content:text-emerald-400"
+                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-emerald-600 dark:group-hover/content:text-emerald-400",
+                        // Cybernetic theme: gradient text on hover
+                        isCybernetic && "group-hover/content:cyber-text"
                     )}>
                         {article.title}
                     </h3>

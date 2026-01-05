@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 
 interface QuestionCardProps {
     question: any;
@@ -22,6 +23,8 @@ interface QuestionCardProps {
 
 export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, badgeClassName }: QuestionCardProps) => {
     const router = useRouter();
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
@@ -93,7 +96,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
-            className="group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80"
+            className={cn(
+                "group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80",
+                // Cybernetic theme overrides
+                isCybernetic && "cyber-card cyber-lift"
+            )}
             onClick={handleCardClick}
         >
             {/* 1. TOP BAR: Category & Date */}
@@ -141,7 +148,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 </div>
 
                 {/* Title */}
-                <h3 className="font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground group-hover:text-blue-500 transition-colors">
+                <h3 className={cn(
+                    "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground group-hover:text-blue-500 transition-colors",
+                    isCybernetic && "group-hover:cyber-text"
+                )}>
                     {question.title}
                 </h3>
 
