@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, BookOpen, ChevronUp, ChevronDown, Share, BadgeCheck } from "lucide-react";
 import { Article } from "@/lib/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -53,7 +53,13 @@ export function SocialArticleCard({
     // Color theming based on variant
     const isWriter = variant === "writer";
     const { theme } = useTheme();
-    const isCybernetic = theme === 'cybernetic';
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isCybernetic = mounted && theme === 'cybernetic';
 
     // Default values if not provided
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";

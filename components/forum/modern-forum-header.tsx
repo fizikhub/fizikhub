@@ -15,7 +15,13 @@ import { useTheme } from "next-themes";
 
 export function ModernForumHeader() {
     const { theme } = useTheme();
-    const isCybernetic = theme === 'cybernetic';
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isCybernetic = mounted && theme === 'cybernetic';
     const router = useRouter();
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");

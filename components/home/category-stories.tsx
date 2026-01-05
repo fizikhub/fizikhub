@@ -15,10 +15,17 @@ import {
 } from "@/components/icons/category-icons";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 export function CategoryStories() {
     const { theme } = useTheme();
-    const isCybernetic = theme === 'cybernetic';
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isCybernetic = mounted && theme === 'cybernetic';
 
     const categories = [
         { name: "Kuantum", icon: QuantumIcon, href: "/blog?kategori=Kuantum", accent: "#94A3B8" },

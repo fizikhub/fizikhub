@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,9 +8,10 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { ChevronUp, ChevronDown, MessageCircle, Share, BadgeCheck } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
+import Link from "next/link";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { CyberQuestionCard } from "@/components/themes/cybernetic/cyber-question-card";
@@ -25,7 +26,13 @@ interface QuestionCardProps {
 export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, badgeClassName }: QuestionCardProps) => {
     const router = useRouter();
     const { theme } = useTheme();
-    const isCybernetic = theme === 'cybernetic';
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isCybernetic = mounted && theme === 'cybernetic';
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);

@@ -1,14 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, PenSquare, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
@@ -37,7 +37,13 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     const searchParams = useSearchParams();
     const router = useRouter();
     const { theme } = useTheme();
-    const isCybernetic = theme === 'cybernetic';
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isCybernetic = mounted && theme === 'cybernetic';
 
     // Update local state if profile changes (e.g. initial load)
     useEffect(() => {
