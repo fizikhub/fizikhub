@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CyberArticleCard } from "@/components/themes/cybernetic/cyber-article-card";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { toast } from "sonner";
 import { useHaptic } from "@/hooks/use-haptic";
@@ -157,6 +158,27 @@ export function SocialArticleCard({
         }
     };
 
+    // ----------------------------------------------------------------------
+    // RENDER: CYBERNETIC THEME (Hard Fork)
+    // ----------------------------------------------------------------------
+    if (isCybernetic) {
+        return (
+            <CyberArticleCard
+                article={article}
+                isLiked={isLiked}
+                isBookmarked={isBookmarked}
+                likeCount={likeCount}
+                onLike={handleLike}
+                onBookmark={handleBookmark}
+                onShare={handleShare}
+                badgeLabel={finalBadgeText}
+            />
+        );
+    }
+
+    // ----------------------------------------------------------------------
+    // RENDER: STANDARD THEME
+    // ----------------------------------------------------------------------
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

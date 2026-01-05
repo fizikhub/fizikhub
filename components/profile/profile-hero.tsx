@@ -16,6 +16,7 @@ import { FollowButton } from "@/components/profile/follow-button";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { CyberProfileHero } from "@/components/themes/cybernetic/cyber-profile-hero";
 
 interface ProfileHeroProps {
     profile: any;
@@ -118,6 +119,26 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
         dragStartY.current = null;
     };
 
+    const handleEditProfile = () => {
+        router.push("/ayarlar");
+    };
+
+    // ----------------------------------------------------------------------
+    // RENDER: CYBERNETIC THEME (Hard Fork)
+    // ----------------------------------------------------------------------
+    if (isCybernetic) {
+        return (
+            <CyberProfileHero
+                profile={profile}
+                isOwnProfile={isOwnProfile}
+                onEdit={handleEditProfile}
+            />
+        );
+    }
+
+    // ----------------------------------------------------------------------
+    // RENDER: STANDARD THEME
+    // ----------------------------------------------------------------------
     // Generate gradient if no cover image
     const gradients = [
         "from-slate-600 via-gray-700 to-zinc-800",

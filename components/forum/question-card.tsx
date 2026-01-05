@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+import { CyberQuestionCard } from "@/components/themes/cybernetic/cyber-question-card";
 
 interface QuestionCardProps {
     question: any;
@@ -90,6 +91,25 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
 
+    // ----------------------------------------------------------------------
+    // RENDER: CYBERNETIC THEME (Hard Fork)
+    // ----------------------------------------------------------------------
+    if (isCybernetic) {
+        return (
+            <CyberQuestionCard
+                question={question}
+                userVote={voteState}
+                votes={votes}
+                answerCount={question.answers?.[0]?.count || 0}
+                onVote={(type) => handleVote({ preventDefault: () => { }, stopPropagation: () => { } } as any, type)}
+                onClick={handleCardClick}
+            />
+        );
+    }
+
+    // ----------------------------------------------------------------------
+    // RENDER: STANDARD THEME
+    // ----------------------------------------------------------------------
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
