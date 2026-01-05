@@ -11,7 +11,11 @@ import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
+import { useTheme } from "next-themes";
+
 export function ModernForumHeader() {
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
     const router = useRouter();
     const searchParams = useSearchParams();
     const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
@@ -106,7 +110,10 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-4 mb-4">
             {/* Forum Header - Premium Enhanced */}
-            <div className="relative border-2 border-border bg-card p-3 md:p-5 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className={cn(
+                "relative border-2 border-border bg-card p-3 md:p-5 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
+                isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none"
+            )}>
 
                 {/* Dynamic Space Background */}
                 <HeaderSpaceBackground />
@@ -230,7 +237,10 @@ export function ModernForumHeader() {
                                 <CreateQuestionDialog
                                     trigger={
                                         <div className="w-full group/input cursor-pointer">
-                                            <div className="relative border-2 border-border bg-background p-3 md:p-4 flex items-center gap-3 transition-all duration-300 hover:border-primary hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50 hover:scale-[1.01] hover:-translate-y-0.5">
+                                            <div className={cn(
+                                                "relative border-2 border-border bg-background p-3 md:p-4 flex items-center gap-3 transition-all duration-300 hover:border-primary hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50 hover:scale-[1.01] hover:-translate-y-0.5",
+                                                isCybernetic && "cyber-card border-cyan-500/30 shadow-none hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.1)] hover:transform-none hover:translate-y-0 !rounded-none"
+                                            )}>
                                                 {/* Enhanced focus ring */}
                                                 <div className="absolute -inset-1 bg-primary/20 rounded-sm opacity-0 group-hover/input:opacity-100 blur-md transition-opacity duration-300" />
 
@@ -306,7 +316,10 @@ export function ModernForumHeader() {
             </div>
 
             {/* Categories & Actions Bar - Compact */}
-            <div className="flex flex-col md:flex-row gap-2 items-center justify-between sticky top-[60px] z-30 py-2 bg-background/95 backdrop-blur-sm border-b-2 border-border">
+            <div className={cn(
+                "flex flex-col md:flex-row gap-2 items-center justify-between sticky top-[60px] z-30 py-2 bg-background/95 backdrop-blur-sm border-b-2 border-border",
+                isCybernetic && "!border-b border-cyan-500/20 !bg-black/80"
+            )}>
                 {/* Categories - Horizontal Scroll */}
                 <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-1">
                     <div className="flex gap-2 min-w-max px-1">
@@ -316,11 +329,16 @@ export function ModernForumHeader() {
                                 onClick={() => handleCategoryChange(category)}
                                 className={cn(
                                     "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200",
+                                    isCybernetic && "cyber-button border-cyan-500/30 !rounded-none",
                                     currentCategory === category
-                                        ? "bg-primary text-primary-foreground border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                        : "bg-background border-border hover:border-black dark:hover:border-white hover:-translate-y-0.5"
-                                )}
-                            >
+                                        ? isCybernetic
+                                            ? "bg-cyan-500/10 text-cyan-400 border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+                                            : "bg-primary text-primary-foreground border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                        : isCybernetic
+                                            ? "bg-transparent hover:bg-cyan-500/5 hover:text-cyan-400"
+                                            : "bg-background border-border hover:border-black dark:hover:border-white hover:-translate-y-0.5"
+                                )}>
+
                                 {category}
                             </button>
                         ))}
@@ -329,22 +347,39 @@ export function ModernForumHeader() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                    <div className="flex border-2 border-border bg-background">
+                    <div className={cn(
+                        "flex border-2 border-border bg-background",
+                        isCybernetic && "border-cyan-500/20 bg-transparent"
+                    )}>
                         <button
                             onClick={() => handleSortChange("newest")}
                             className={cn(
                                 "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
-                                currentSort === "newest" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
+                                isCybernetic && "font-mono tracking-wider",
+                                currentSort === "newest"
+                                    ? isCybernetic
+                                        ? "bg-cyan-500/20 text-cyan-400"
+                                        : "bg-black text-white dark:bg-white dark:text-black"
+                                    : isCybernetic
+                                        ? "text-cyan-600/70 hover:text-cyan-400 hover:bg-cyan-500/5"
+                                        : "hover:bg-muted"
                             )}
                         >
                             YENİ
                         </button>
-                        <div className="w-0.5 bg-border" />
+                        <div className={cn("w-0.5 bg-border", isCybernetic && "bg-cyan-500/20")} />
                         <button
                             onClick={() => handleSortChange("popular")}
                             className={cn(
                                 "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
-                                currentSort === "popular" ? "bg-black text-white dark:bg-white dark:text-black" : "hover:bg-muted"
+                                isCybernetic && "font-mono tracking-wider",
+                                currentSort === "popular"
+                                    ? isCybernetic
+                                        ? "bg-cyan-500/20 text-cyan-400"
+                                        : "bg-black text-white dark:bg-white dark:text-black"
+                                    : isCybernetic
+                                        ? "text-cyan-600/70 hover:text-cyan-400 hover:bg-cyan-500/5"
+                                        : "hover:bg-muted"
                             )}
                         >
                             POPÜLER

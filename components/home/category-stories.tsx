@@ -13,8 +13,13 @@ import {
     PhysicsIcon,
     ExploreIcon
 } from "@/components/icons/category-icons";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 export function CategoryStories() {
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
+
     const categories = [
         { name: "Kuantum", icon: QuantumIcon, href: "/blog?kategori=Kuantum", accent: "#94A3B8" },
         { name: "Astrofizik", icon: AstroIcon, href: "/blog?kategori=Astrofizik", accent: "#94A3B8" },
@@ -54,9 +59,12 @@ export function CategoryStories() {
                         >
                             {/* Main Card */}
                             <div
-                                className="relative w-24 sm:w-28 bg-card/90 backdrop-blur-sm border-2 border-border hover:border-foreground/20 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md"
+                                className={cn(
+                                    "relative w-24 sm:w-28 bg-card/90 backdrop-blur-sm border-2 border-border hover:border-foreground/20 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
+                                    isCybernetic && "cyber-card border border-cyan-500/20 bg-black/40 shadow-none !rounded-none"
+                                )}
                                 style={{
-                                    boxShadow: `3px 3px 0px 0px ${cat.accent}40`
+                                    boxShadow: isCybernetic ? 'none' : `3px 3px 0px 0px ${cat.accent}40`
                                 }}
                             >
                                 {/* Top Accent Line */}
@@ -82,7 +90,10 @@ export function CategoryStories() {
 
                                     {/* Label */}
                                     <span
-                                        className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-center leading-tight text-muted-foreground group-hover:text-foreground transition-colors"
+                                        className={cn(
+                                            "text-[10px] sm:text-xs font-black uppercase tracking-wider text-center leading-tight text-muted-foreground group-hover:text-foreground transition-colors",
+                                            isCybernetic && "cyber-text text-[9px]"
+                                        )}
                                     >
                                         {cat.name}
                                     </span>
@@ -92,7 +103,9 @@ export function CategoryStories() {
                                 <div
                                     className="absolute bottom-0 right-0 w-4 h-4"
                                     style={{
-                                        background: `linear-gradient(135deg, transparent 50%, ${cat.accent} 50%)`
+                                        background: isCybernetic
+                                            ? `linear-gradient(135deg, transparent 50%, rgba(0, 240, 255, 0.4) 50%)`
+                                            : `linear-gradient(135deg, transparent 50%, ${cat.accent} 50%)`
                                     }}
                                 />
                             </div>
