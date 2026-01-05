@@ -136,6 +136,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
         return (
             <CyberProfileHero
                 profile={profile}
+                user={user}
                 isOwnProfile={isOwnProfile}
                 onEdit={handleEditProfile}
             />

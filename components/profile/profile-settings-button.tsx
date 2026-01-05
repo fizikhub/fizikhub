@@ -53,6 +53,7 @@ interface ProfileSettingsButtonProps {
     currentUsername: string;
     userEmail?: string | null;
     usernameChangeCount?: number;
+    children?: React.ReactNode;
 }
 
 export function ProfileSettingsButton({
@@ -64,7 +65,8 @@ export function ProfileSettingsButton({
     currentSocialLinks,
     currentUsername,
     userEmail,
-    usernameChangeCount = 0
+    usernameChangeCount = 0,
+    children
 }: ProfileSettingsButtonProps) {
     const [open, setOpen] = useState(false);
     const [showSignOutDialog, setShowSignOutDialog] = useState(false);
@@ -309,14 +311,16 @@ export function ProfileSettingsButton({
             <>
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 rounded-full font-bold h-10 px-4 bg-background/60 backdrop-blur-md border-border/50 hover:bg-background/80 transition-all shadow-sm"
-                        >
-                            <Settings className="w-4 h-4" />
-                            <span>Ayarlar</span>
-                        </Button>
+                        {children || (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2 rounded-full font-bold h-10 px-4 bg-background/60 backdrop-blur-md border-border/50 hover:bg-background/80 transition-all shadow-sm"
+                            >
+                                <Settings className="w-4 h-4" />
+                                <span>Ayarlar</span>
+                            </Button>
+                        )}
                     </SheetTrigger>
                     <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
                         <SheetHeader>
@@ -364,15 +368,17 @@ export function ProfileSettingsButton({
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-2 rounded-full font-bold h-10 px-4 bg-background/60 backdrop-blur-md border-border/50 hover:bg-background/80 transition-all shadow-sm"
-                    >
-                        <Settings className="w-4 h-4" />
-                        <span className="hidden sm:inline">Ayarlar</span>
-                        <span className="sm:hidden">Ayarlar</span>
-                    </Button>
+                    {children || (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 rounded-full font-bold h-10 px-4 bg-background/60 backdrop-blur-md border-border/50 hover:bg-background/80 transition-all shadow-sm"
+                        >
+                            <Settings className="w-4 h-4" />
+                            <span className="hidden sm:inline">Ayarlar</span>
+                            <span className="sm:hidden">Ayarlar</span>
+                        </Button>
+                    )}
                 </DialogTrigger>
                 <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                     <DialogHeader>

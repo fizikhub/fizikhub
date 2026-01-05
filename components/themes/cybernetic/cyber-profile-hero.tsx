@@ -4,16 +4,17 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Settings, Shield, Award, Activity, Cpu, MessageSquare, Zap, Terminal } from "lucide-react";
-import Link from "next/link";
+import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { useState, useEffect } from "react";
 
 interface CyberProfileHeroProps {
     profile: any;
+    user?: any; // Add user prop
     isOwnProfile: boolean;
     onEdit?: () => void;
 }
 
-export function CyberProfileHero({ profile, isOwnProfile, onEdit }: CyberProfileHeroProps) {
+export function CyberProfileHero({ profile, user, isOwnProfile, onEdit }: CyberProfileHeroProps) {
     const [matrixChars, setMatrixChars] = useState<string[]>([]);
     const [bootSequence, setBootSequence] = useState(0);
 
@@ -33,6 +34,9 @@ export function CyberProfileHero({ profile, isOwnProfile, onEdit }: CyberProfile
 
     return (
         <div className="w-full mb-8 relative overflow-hidden">
+            {/* ... (rest of the component until the button) */}
+// ... (skipping unchanged parts for brevity in tool call, will use multi_replace instead to be safe and accurate with context)
+
             {/* MATRIX BACKGROUND */}
             <div className="absolute inset-0 bg-black border-x border-cyan-900/30 h-[450px]">
                 {/* Animated grid */}
@@ -153,13 +157,24 @@ export function CyberProfileHero({ profile, isOwnProfile, onEdit }: CyberProfile
                             </div>
 
                             {isOwnProfile && (
-                                <Link
-                                    href="/ayarlar"
-                                    className="flex items-center justify-center gap-2 w-full py-2 border-2 border-cyan-500/50 text-cyan-400 font-mono text-xs hover:bg-cyan-500/20 hover:border-cyan-400 transition-all uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_25px_rgba(0,240,255,0.4)]"
+                                <ProfileSettingsButton
+                                    currentUsername={profile?.username || null}
+                                    currentFullName={profile?.full_name || null}
+                                    currentBio={profile?.bio || null}
+                                    currentAvatarUrl={profile?.avatar_url || null}
+                                    currentCoverUrl={profile?.cover_url || null}
+                                    currentWebsite={profile?.website || null}
+                                    currentSocialLinks={profile?.social_links || null}
+                                    userEmail={user?.email || null}
+                                    usernameChangeCount={profile?.username_changes_count || 0}
                                 >
-                                    <Settings className="w-3 h-3" />
-                                    CONFIG
-                                </Link>
+                                    <button
+                                        className="flex items-center justify-center gap-2 w-full py-2 border-2 border-cyan-500/50 text-cyan-400 font-mono text-xs hover:bg-cyan-500/20 hover:border-cyan-400 transition-all uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.2)] hover:shadow-[0_0_25px_rgba(0,240,255,0.4)]"
+                                    >
+                                        <Settings className="w-3 h-3" />
+                                        CONFIG
+                                    </button>
+                                </ProfileSettingsButton>
                             )}
                         </div>
                     </div>
