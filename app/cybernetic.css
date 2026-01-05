@@ -1,0 +1,393 @@
+/* ============================================
+   CYBERNETIC THEME - GLOBAL STYLES
+   ============================================ */
+
+/* Base Cyber Variables */
+:root[data-theme="cybernetic"] {
+  --cyber-primary: #00f0ff;
+  --cyber-secondary: #0a0e27;
+  --cyber-accent: #ff006e;
+  --cyber-glow: rgba(0, 240, 255, 0.6);
+  --cyber-bg: #000000;
+  --cyber-text: #00f0ff;
+}
+
+/* ============================================
+   CORE CYBER COMPONENTS
+   ============================================ */
+
+/* Cyber Card Base */
+.cyber-card {
+  @apply bg-black/90 border border-cyan-500/30;
+  @apply relative overflow-hidden;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 240, 255, 0.03) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cyber-card:hover {
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Cyber Text Effects */
+.cyber-text {
+  @apply font-mono text-cyan-300;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
+  letter-spacing: 0.05em;
+}
+
+.cyber-text-glow {
+  @apply text-cyan-400;
+  animation: cyber-glow 2s ease-in-out infinite;
+}
+
+@keyframes cyber-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(0, 240, 255, 0.5),
+                 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.8),
+                 0 0 20px rgba(0, 240, 255, 0.5),
+                 0 0 30px rgba(0, 240, 255, 0.3);
+  }
+}
+
+/* Cyber Glow Effects */
+.cyber-glow {
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4),
+              inset 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+.cyber-glow-strong {
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.6),
+              0 0 50px rgba(0, 240, 255, 0.3),
+              inset 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+/* Scanline Effect */
+.cyber-scanline {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 240, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: cyber-scan 3s linear infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes cyber-scan {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Grid Background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.cyber-grid-dense {
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* Cyber Button */
+.cyber-button {
+  @apply font-mono text-xs uppercase tracking-wider;
+  @apply bg-transparent border-2 border-cyan-500/50;
+  @apply text-cyan-400 px-4 py-2;
+  @apply transition-all duration-300;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.2),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.cyber-button:hover {
+  @apply border-cyan-400 bg-cyan-500/10;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+.cyber-button:hover::before {
+  transform: translateX(100%);
+}
+
+/* Cyber Input */
+.cyber-input {
+  @apply bg-black/60 border-2 border-cyan-500/30;
+  @apply text-cyan-300 font-mono;
+  @apply px-4 py-2;
+  @apply focus:border-cyan-400 focus:outline-none;
+  @apply transition-all duration-300;
+}
+
+.cyber-input:focus {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.cyber-input::placeholder {
+  @apply text-cyan-700/50;
+}
+
+/* Cyber Badge */
+.cyber-badge {
+  @apply inline-flex items-center gap-1.5;
+  @apply px-2 py-1 font-mono text-[10px];
+  @apply bg-cyan-900/20 border border-cyan-500/30;
+  @apply text-cyan-300 uppercase tracking-wider;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Corner Decorations */
+.cyber-corners::before,
+.cyber-corners::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--cyber-primary);
+}
+
+.cyber-corners::before {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+
+.cyber-corners::after {
+  top: 0;
+  right: 0;
+  border-left: none;
+  border-bottom: none;
+}
+
+/* Cyber Lift Effect */
+.cyber-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cyber-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+}
+
+/* Terminal Window */
+.cyber-terminal {
+  @apply bg-black/90 border-2 border-cyan-500/40;
+  @apply font-mono text-cyan-300;
+  position: relative;
+}
+
+.cyber-terminal-header {
+  @apply bg-cyan-950/50 border-b-2 border-cyan-500/30;
+  @apply px-3 py-2 flex items-center justify-between;
+}
+
+.cyber-terminal-dots {
+  @apply flex gap-1;
+}
+
+.cyber-terminal-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+/* Pulse Animation */
+.cyber-pulse {
+  animation: cyber-pulse 2s ease-in-out infinite;
+}
+
+@keyframes cyber-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.8);
+  }
+}
+
+/* Glitch Effect */
+.cyber-glitch {
+  position: relative;
+  animation: cyber-glitch 3s infinite;
+}
+
+@keyframes cyber-glitch {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 2px);
+  }
+  94% {
+    transform: translate(2px, -2px);
+  }
+  96% {
+    transform: translate(-2px, -2px);
+  }
+  98% {
+    transform: translate(2px, 2px);
+  }
+}
+
+/* Data Flow Animation */
+.cyber-data-flow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-data-flow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 240, 255, 0.3),
+    transparent
+  );
+  animation: cyber-flow 2s linear infinite;
+}
+
+@keyframes cyber-flow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Holographic Effect */
+.cyber-hologram {
+  position: relative;
+}
+
+.cyber-hologram::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 240, 255, 0.3) 0%,
+    transparent 50%,
+    rgba(147, 51, 234, 0.3) 100%
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Avatar Ring Effect */
+.cyber-avatar-ring {
+  position: relative;
+}
+
+.cyber-avatar-ring::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--cyber-primary);
+  border-radius: inherit;
+  animation: cyber-rotate 10s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes cyber-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .cyber-text {
+    font-size: 0.9em;
+  }
+  
+  .cyber-card {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.08);
+  }
+  
+  .cyber-glow-strong {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .cyber-scanline::after,
+  .cyber-pulse,
+  .cyber-glitch,
+  .cyber-data-flow::before,
+  .cyber-avatar-ring::before {
+    animation: none;
+  }
+  
+  .cyber-text-glow {
+    animation: none;
+  }
+}

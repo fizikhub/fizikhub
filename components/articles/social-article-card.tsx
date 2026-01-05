@@ -165,22 +165,22 @@ export function SocialArticleCard({
     };
 
     // ----------------------------------------------------------------------
-    // RENDER: CYBERNETIC THEME (Temporarily Disabled)
+    // RENDER: CYBERNETIC THEME
     // ----------------------------------------------------------------------
-    // if (isCybernetic) {
-    //     return (
-    //         <CyberArticleCard 
-    //             article={article}
-    //             isLiked={isLiked}
-    //             isBookmarked={isBookmarked}
-    //             likeCount={likeCount}
-    //             onLike={handleLike}
-    //             onBookmark={handleBookmark}
-    //             onShare={handleShare}
-    //             badgeLabel={finalBadgeText}
-    //         />
-    //     );
-    // }
+    if (isCybernetic) {
+        return (
+            <CyberArticleCard
+                article={article}
+                isLiked={isLiked}
+                isBookmarked={isBookmarked}
+                likeCount={likeCount}
+                onLike={handleLike}
+                onBookmark={handleBookmark}
+                onShare={handleShare}
+                badgeLabel={finalBadgeText}
+            />
+        );
+    }
 
     // ----------------------------------------------------------------------
     // RENDER: STANDARD THEME

@@ -130,17 +130,17 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     };
 
     // ----------------------------------------------------------------------
-    // RENDER: CYBERNETIC THEME (Temporarily Disabled)
+    // RENDER: CYBERNETIC THEME
     // ----------------------------------------------------------------------
-    // if (isCybernetic) {
-    //     return (
-    //         <CyberProfileHero 
-    //             profile={profile}
-    //             isOwnProfile={isOwnProfile}
-    //             onEdit={handleEditProfile}
-    //         />
-    //     );
-    // }
+    if (isCybernetic) {
+        return (
+            <CyberProfileHero
+                profile={profile}
+                isOwnProfile={isOwnProfile}
+                onEdit={handleEditProfile}
+            />
+        );
+    }
 
     // ----------------------------------------------------------------------
     // RENDER: STANDARD THEME
