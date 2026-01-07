@@ -48,6 +48,9 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
         if (!status?.isTimeLimited || status.isExpired) return;
 
         const interval = setInterval(async () => {
+            // Don't count down if tab is not active
+            if (document.hidden) return;
+
             setRemainingSeconds(prev => {
                 const newRemaining = Math.max(0, prev - 1);
                 return newRemaining;
