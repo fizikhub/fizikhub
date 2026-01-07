@@ -7,9 +7,19 @@ export interface TimeLimitStatus {
     dailyTimeUsedSeconds: number;
     remainingSeconds: number;
     isExpired: boolean;
+    limit: number;
 }
 
-const DAILY_LIMIT_SECONDS = 300; // 5 minutes
+const DEFAULT_DAILY_LIMIT_SECONDS = 300; // 5 minutes
+const EXTENDED_DAILY_LIMIT_SECONDS = 900; // 15 minutes
+const EXTENDED_LIMIT_USERS = ['sulfiriikasit', 'silginim'];
+
+function getLimitForUser(username: string | null | undefined): number {
+    if (username && EXTENDED_LIMIT_USERS.includes(username)) {
+        return EXTENDED_DAILY_LIMIT_SECONDS;
+    }
+    return DEFAULT_DAILY_LIMIT_SECONDS;
+}
 
 export async function getTimeLimitStatus(): Promise<TimeLimitStatus | null> {
     const supabase = await createClient();
@@ -19,7 +29,7 @@ export async function getTimeLimitStatus(): Promise<TimeLimitStatus | null> {
 
     const { data: profile, error } = await supabase
         .from('profiles')
-        .select('is_time_limited, daily_time_used_seconds, time_limit_reset_date')
+        .select('username, is_time_limited, daily_time_used_seconds, time_limit_reset_date')
         .eq('id', user.id)
         .single();
 
@@ -30,10 +40,13 @@ export async function getTimeLimitStatus(): Promise<TimeLimitStatus | null> {
         return {
             isTimeLimited: false,
             dailyTimeUsedSeconds: 0,
-            remainingSeconds: DAILY_LIMIT_SECONDS,
-            isExpired: false
+            remainingSeconds: getLimitForUser(profile.username),
+            isExpired: false,
+            limit: getLimitForUser(profile.username)
         };
     }
+
+    const limit = getLimitForUser(profile.username);
 
     // Check if we need to reset (new day)
     const today = new Date().toISOString().split('T')[0];
@@ -51,13 +64,14 @@ export async function getTimeLimitStatus(): Promise<TimeLimitStatus | null> {
         timeUsed = 0;
     }
 
-    const remaining = Math.max(0, DAILY_LIMIT_SECONDS - timeUsed);
+    const remaining = Math.max(0, limit - timeUsed);
 
     return {
         isTimeLimited: true,
         dailyTimeUsedSeconds: timeUsed,
         remainingSeconds: remaining,
-        isExpired: remaining <= 0
+        isExpired: remaining <= 0,
+        limit
     };
 }
 
@@ -69,12 +83,14 @@ export async function updateTimeUsed(additionalSeconds: number): Promise<{ succe
 
     const { data: profile } = await supabase
         .from('profiles')
-        .select('is_time_limited, daily_time_used_seconds, time_limit_reset_date')
+        .select('username, is_time_limited, daily_time_used_seconds, time_limit_reset_date')
         .eq('id', user.id)
         .single();
 
+    const limit = getLimitForUser(profile?.username);
+
     if (!profile || !profile.is_time_limited) {
-        return { success: true, remaining: DAILY_LIMIT_SECONDS };
+        return { success: true, remaining: limit };
     }
 
     // Check if we need to reset (new day)
@@ -97,11 +113,11 @@ export async function updateTimeUsed(additionalSeconds: number): Promise<{ succe
 
     if (error) {
         console.error('Failed to update time used:', error);
-        return { success: false, remaining: Math.max(0, DAILY_LIMIT_SECONDS - currentTime) };
+        return { success: false, remaining: Math.max(0, limit - currentTime) };
     }
 
     return {
         success: true,
-        remaining: Math.max(0, DAILY_LIMIT_SECONDS - newTimeUsed)
+        remaining: Math.max(0, limit - newTimeUsed)
     };
 }
