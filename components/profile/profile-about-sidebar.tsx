@@ -103,7 +103,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
             <Card className={cn(
                 "p-3 border-2 rounded-xl transition-all",
                 !isCute && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
-                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem] bg-white/80",
+                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem]",
                 isDarkPink && "border-pink-800 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] rounded-[1.2rem] bg-card"
             )}>
                 <div className="flex items-center justify-around text-center divide-x divide-foreground/10">

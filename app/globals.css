@@ -40,535 +40,532 @@
 
 @layer base {
   :root {
-    --background: 250 250 250;
-    --foreground: 33 33 33;
+    /* Default Dark Mode (Standard) */
+    --background: 10 10 10;
+    --foreground: 250 250 250;
 
-    --card: 255 255 255;
-    --card-foreground: 24 24 27;
+    --card: 20 20 20;
+    --card-foreground: 250 250 250;
 
-    --popover: 255 255 255;
-    --popover-foreground: 24 24 27;
+    --popover: 20 20 20;
+    --popover-foreground: 250 250 250;
 
-    --primary: 245 158 11;
-    --primary-foreground: 255 255 255;
-
-    --secondary: 244 244 245;
-    --secondary-foreground: 24 24 27;
-
-    --muted: 244 244 245;
-    --muted-foreground: 113 113 122;
-
-    --accent: 244 244 245;
-    --accent-foreground: 24 24 27;
-
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-
-    --border: 228 228 231;
-    --input: 228 228 231;
-    --ring: 245 158 11;
-
-    --radius: 0.75rem;
-
-    /* Premium Easing Curves */
-    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-
-    /* Premium Timing */
-    --duration-fast: 150ms;
-    --duration-normal: 300ms;
-    --duration-slow: 500ms;
-  }
-
-  .dark {
-    --background: 16 16 16;
-    --foreground: 255 255 255;
-
-    --card: 36 37 38;
-    --card-foreground: 255 255 255;
-
-    --popover: 36 37 38;
-    --popover-foreground: 255 255 255;
-
-    --primary: 245 158 11;
+    --primary: 255 255 255;
     --primary-foreground: 0 0 0;
 
-    --secondary: 25 25 25;
-    --secondary-foreground: 255 255 255;
+    --secondary: 40 40 40;
+    --secondary-foreground: 250 250 250;
 
-    --muted: 30 30 30;
+    --muted: 40 40 40;
     --muted-foreground: 160 160 160;
 
-    --accent: 40 40 40;
-    --accent-foreground: 255 255 255;
+    --accent: 60 60 60;
+    --accent-foreground: 250 250 250;
 
-    --destructive: 220 38 38;
+    --destructive: 255 0 0;
     --destructive-foreground: 255 255 255;
 
-    --border: 60 60 60;
-    --input: 60 60 60;
-    --ring: 251 146 60;
-  }
+    --border: 40 40 40;
+    --input: 40 40 40;
+    --ring: 255 255 255;
 
-  .pink {
-    --background: 255 240 245;
-    /* Lavender Blush - very light pinkish white for background */
-    --foreground: 70 20 50;
-    /* Dark purple/pink for text */
-
-    --card: 255 255 255;
-    /* White cards */
-    --card-foreground: 70 20 50;
-
-    --popover: 255 255 255;
-    --popover-foreground: 70 20 50;
-
-    --primary: 255 20 147;
-    /* Hot Pink #FF1493 */
-    --primary-foreground: 255 255 255;
-
-    --secondary: 255 228 225;
-    /* Misty Rose */
-    --secondary-foreground: 255 20 147;
-
-    --muted: 255 240 245;
-    --muted-foreground: 180 100 120;
-
-    --accent: 255 192 203;
-    /* Pink */
-    --accent-foreground: 70 20 50;
-
-    --destructive: 255 105 180;
-    /* Hot Pinkish Red */
-    --destructive-foreground: 255 255 255;
-
-    --border: 255 182 193;
-    /* Light Pink */
-    --input: 255 182 193;
-    --ring: 255 20 147;
-
-    /* Cute specifics */
-    --radius: 1.5rem;
-    /* Extra rounded */
-  }
-
-  /* Dark Pink (Karanlık Pembe) */
-  .dark-pink {
-    --background: 20 10 15;
-    /* Very Dark Pink/Black */
-    --foreground: 255 240 245;
-    /* Lavender Blush text */
-
-    --card: 30 15 20;
-    /* Darker Pinkish Card */
-    --card-foreground: 255 240 245;
-
-    --popover: 30 15 20;
-    --popover-foreground: 255 240 245;
-
-    --primary: 255 20 147;
-    /* Hot Pink #FF1493 */
-    --primary-foreground: 255 255 255;
-
-    --secondary: 40 20 30;
-    --secondary-foreground: 255 20 147;
-
-    --muted: 40 20 30;
-    --muted-foreground: 200 150 170;
-
-    --accent: 50 25 35;
-    --accent-foreground: 255 192 203;
-
-    --destructive: 255 105 180;
-    --destructive-foreground: 255 255 255;
-
-    --border: 70 30 50;
-    --input: 70 30 50;
-    --ring: 255 20 147;
-
-    /* Cute specifics inherited */
-    --radius: 1.5rem;
-  }
-
-  /* Cute Cat Decoration Helpers */
-  .pink .cute-cat-ear-left {
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 15px solid #FF1493;
-    transform: rotate(-15deg);
-    z-index: 10;
-  }
-
-  .pink .cute-cat-ear-right {
-    position: absolute;
-    top: -10px;
-    right: 20px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 15px solid #FF1493;
-    transform: rotate(15deg);
-    z-index: 10;
-  }
-
-  .pink .cute-border {
-    border: 3px solid #ffdeeb;
-    box-shadow: 0 4px 0 #ff69b4;
-  }
-
-  .christmas {
-    /* Koyu kış gecesi - lacivert tonları */
-    --background: 15 23 42;
-    --foreground: 248 250 252;
-
-    /* Kartlar biraz daha açık lacivert */
-    --card: 30 41 59;
-    --card-foreground: 248 250 252;
-
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
-
-    /* Noel kırmızısı */
-    --primary: 220 38 38;
-    --primary-foreground: 255 255 255;
-
-    /* Koyu yeşil */
-    --secondary: 20 83 45;
-    --secondary-foreground: 255 255 255;
-
-    --muted: 51 65 85;
-    --muted-foreground: 148 163 184;
-
-    /* Altın sarısı accent */
-    --accent: 234 179 8;
-    --accent-foreground: 15 23 42;
-
-    --destructive: 185 28 28;
-    --destructive-foreground: 255 255 255;
-
-    --border: 51 65 85;
-    --input: 51 65 85;
-    --ring: 220 38 38;
-  }
-
-  .mars {
-    /* Koyu Mars yüzeyi - kızıl kahverengi */
-    --background: 41 20 15;
-    --foreground: 245 225 210;
-
-    /* Kartlar biraz daha açık pas rengi */
-    --card: 60 30 20;
-    --card-foreground: 245 225 210;
-
-    --popover: 60 30 20;
-    --popover-foreground: 245 225 210;
-
-    /* Mars turuncusu */
-    --primary: 234 88 12;
-    --primary-foreground: 255 255 255;
-
-    /* Koyu kaya rengi */
-    --secondary: 80 45 30;
-    --secondary-foreground: 245 225 210;
-
-    --muted: 70 40 28;
-    --muted-foreground: 180 150 130;
-
-    /* Pas kırmızısı accent */
-    --accent: 194 65 12;
-    --accent-foreground: 255 255 255;
-
-    --destructive: 185 28 28;
-    --destructive-foreground: 255 255 255;
-
-    --border: 90 55 40;
-    --input: 80 45 30;
-    --ring: 234 88 12;
-  }
-
-  /* Cybernetic / Kinetic Blue Theme */
-  .cybernetic {
-    /* Deep Space Black/Blue */
-    --background: 5 5 16;
-    --foreground: 240 245 255;
-
-    /* Glassy Panels */
-    --card: 10 12 25;
-    --card-foreground: 240 245 255;
-
-    --popover: 10 12 25;
-    --popover-foreground: 240 245 255;
-
-    /* Neon Cyan */
-    --primary: 0 240 255;
-    --primary-foreground: 5 5 16;
-
-    /* Dark Blue-Grey */
-    --secondary: 20 25 45;
-    --secondary-foreground: 240 245 255;
-
-    --muted: 15 20 35;
-    --muted-foreground: 120 130 160;
-
-    /* Plasma Pink Accent */
-    --accent: 255 0 85;
-    --accent-foreground: 255 255 255;
-
-    --destructive: 255 50 50;
-    --destructive-foreground: 255 255 255;
-
-    --border: 30 40 60;
-    --input: 30 40 60;
-    --ring: 0 240 255;
+    --radius: 0.5rem;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
+.blood {
+  /* Scientific Neo-Brutalist (Blood Red Mode) */
+  --background: 60 0 0;
+  /* #3c0000 - Visible Dark Red */
+  --foreground: 255 220 220;
+  /* Flashy Pale */
 
-  body {
-    @apply bg-background text-foreground antialiased;
-    background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
-    background-attachment: fixed;
-  }
+  --card: 40 0 0;
+  /* #280000 */
+  --card-foreground: 255 255 255;
 
-  /* Cybernetic Background Support */
-  .cybernetic body {
-    background-image:
-      linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-attachment: fixed;
-  }
+  --popover: 40 0 0;
+  --popover-foreground: 255 255 255;
 
-  /* ============================================
+  --primary: 255 0 0;
+  /* Neon Red */
+  --primary-foreground: 0 0 0;
+
+  --secondary: 80 10 10;
+  --secondary-foreground: 255 255 255;
+
+  --muted: 70 20 20;
+  --muted-foreground: 255 150 150;
+
+  --accent: 220 0 0;
+  --accent-foreground: 255 255 255;
+
+  --destructive: 255 0 0;
+  --destructive-foreground: 255 255 255;
+
+  --border: 200 20 20;
+  /* Bright Red Borders - No more white! */
+  --input: 100 0 0;
+  --ring: 255 0 0;
+
+  --radius: 0px;
+}
+
+.dark {
+  --background: 10 10 10;
+  --foreground: 250 250 250;
+
+  --card: 20 20 20;
+  --card-foreground: 250 250 250;
+
+  --popover: 20 20 20;
+  --popover-foreground: 250 250 250;
+
+  --primary: 255 255 255;
+  --primary-foreground: 0 0 0;
+
+  --secondary: 40 40 40;
+  --secondary-foreground: 250 250 250;
+
+  --muted: 40 40 40;
+  --muted-foreground: 160 160 160;
+
+  --accent: 60 60 60;
+  --accent-foreground: 250 250 250;
+
+  --destructive: 127 29 29;
+  --destructive-foreground: 250 250 250;
+
+  --border: 40 40 40;
+  --input: 40 40 40;
+  --ring: 255 255 255;
+
+  --radius: 0.5rem;
+}
+
+.pink {
+  --background: 255 240 245;
+  /* Lavender Blush - very light pinkish white for background */
+  --foreground: 70 20 50;
+  /* Dark purple/pink for text */
+
+  --card: 255 255 255;
+  /* White cards */
+  --card-foreground: 70 20 50;
+
+  --popover: 255 255 255;
+  --popover-foreground: 70 20 50;
+
+  --primary: 255 20 147;
+  /* Hot Pink #FF1493 */
+  --primary-foreground: 255 255 255;
+
+  --secondary: 255 228 225;
+  /* Misty Rose */
+  --secondary-foreground: 255 20 147;
+
+  --muted: 255 240 245;
+  --muted-foreground: 180 100 120;
+
+  --accent: 255 192 203;
+  /* Pink */
+  --accent-foreground: 70 20 50;
+
+  --destructive: 255 105 180;
+  /* Hot Pinkish Red */
+  --destructive-foreground: 255 255 255;
+
+  --border: 255 182 193;
+  /* Light Pink */
+  --input: 255 182 193;
+  --ring: 255 20 147;
+
+  /* Cute specifics */
+  --radius: 1.5rem;
+  /* Extra rounded */
+}
+
+/* Dark Pink (Karanlık Pembe) */
+.dark-pink {
+  --background: 20 10 15;
+  /* Very Dark Pink/Black */
+  --foreground: 255 240 245;
+  /* Lavender Blush text */
+
+  --card: 30 15 20;
+  /* Darker Pinkish Card */
+  --card-foreground: 255 240 245;
+
+  --popover: 30 15 20;
+  --popover-foreground: 255 240 245;
+
+  --primary: 255 20 147;
+  /* Hot Pink #FF1493 */
+  --primary-foreground: 255 255 255;
+
+  --secondary: 40 20 30;
+  --secondary-foreground: 255 20 147;
+
+  --muted: 40 20 30;
+  --muted-foreground: 200 150 170;
+
+  --accent: 50 25 35;
+  --accent-foreground: 255 192 203;
+
+  --destructive: 255 105 180;
+  --destructive-foreground: 255 255 255;
+
+  --border: 70 30 50;
+  --input: 70 30 50;
+  --ring: 255 20 147;
+
+  /* Cute specifics inherited */
+  --radius: 1.5rem;
+}
+
+/* Cute Cat Decoration Helpers */
+.pink .cute-cat-ear-left {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 15px solid #FF1493;
+  transform: rotate(-15deg);
+  z-index: 10;
+}
+
+.pink .cute-cat-ear-right {
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 15px solid #FF1493;
+  transform: rotate(15deg);
+  z-index: 10;
+}
+
+.pink .cute-border {
+  border: 3px solid #ffdeeb;
+  box-shadow: 0 4px 0 #ff69b4;
+}
+
+.christmas {
+  /* Koyu kış gecesi - lacivert tonları */
+  --background: 15 23 42;
+  --foreground: 248 250 252;
+
+  /* Kartlar biraz daha açık lacivert */
+  --card: 30 41 59;
+  --card-foreground: 248 250 252;
+
+  --popover: 30 41 59;
+  --popover-foreground: 248 250 252;
+
+  /* Noel kırmızısı */
+  --primary: 220 38 38;
+  --primary-foreground: 255 255 255;
+
+  /* Koyu yeşil */
+  --secondary: 20 83 45;
+  --secondary-foreground: 255 255 255;
+
+  --muted: 51 65 85;
+  --muted-foreground: 148 163 184;
+
+  /* Altın sarısı accent */
+  --accent: 234 179 8;
+  --accent-foreground: 15 23 42;
+
+  --destructive: 185 28 28;
+  --destructive-foreground: 255 255 255;
+
+  --border: 51 65 85;
+  --input: 51 65 85;
+  --ring: 220 38 38;
+}
+
+.mars {
+  /* Koyu Mars yüzeyi - kızıl kahverengi */
+  --background: 41 20 15;
+  --foreground: 245 225 210;
+
+  /* Kartlar biraz daha açık pas rengi */
+  --card: 60 30 20;
+  --card-foreground: 245 225 210;
+
+  --popover: 60 30 20;
+  --popover-foreground: 245 225 210;
+
+  /* Mars turuncusu */
+  --primary: 234 88 12;
+  --primary-foreground: 255 255 255;
+
+  /* Koyu kaya rengi */
+  --secondary: 80 45 30;
+  --secondary-foreground: 245 225 210;
+
+  --muted: 70 40 28;
+  --muted-foreground: 180 150 130;
+
+  /* Pas kırmızısı accent */
+  --accent: 194 65 12;
+  --accent-foreground: 255 255 255;
+
+  --destructive: 185 28 28;
+  --destructive-foreground: 255 255 255;
+
+  --border: 90 55 40;
+  --input: 80 45 30;
+  --ring: 234 88 12;
+}
+
+/* Cybernetic / Kinetic Blue Theme */
+.cybernetic {
+  /* Deep Space Black/Blue */
+  --background: 5 5 16;
+  --foreground: 240 245 255;
+
+  /* Glassy Panels */
+  --card: 10 12 25;
+  --card-foreground: 240 245 255;
+
+  --popover: 10 12 25;
+  --popover-foreground: 240 245 255;
+
+  /* Neon Cyan */
+  --primary: 0 240 255;
+  --primary-foreground: 5 5 16;
+
+  /* Dark Blue-Grey */
+  --secondary: 20 25 45;
+  --secondary-foreground: 240 245 255;
+
+  --muted: 15 20 35;
+  --muted-foreground: 120 130 160;
+
+  /* Plasma Pink Accent */
+  --accent: 255 0 85;
+  --accent-foreground: 255 255 255;
+
+  --destructive: 255 50 50;
+  --destructive-foreground: 255 255 255;
+
+  --border: 30 40 60;
+  --input: 30 40 60;
+  --ring: 0 240 255;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Cybernetic Background Support */
+.cybernetic body {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-attachment: fixed;
+}
+
+/* ============================================
      KINETIC CYBERNETIC THEME UTILITIES
      Only active when .cybernetic class is on html
      ============================================ */
 
-  /* Cyber Card - Glassmorphism with neon border */
-  .cybernetic .cyber-card {
-    background: rgba(10, 12, 25, 0.8) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 240, 255, 0.3) !important;
-    box-shadow:
-      0 0 20px rgba(0, 240, 255, 0.1),
-      0 4px 30px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+/* Cyber Card - Glassmorphism with neon border */
+.cybernetic .cyber-card {
+  background: rgba(10, 12, 25, 0.8) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.1),
+    0 4px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  .cybernetic .cyber-card:hover {
-    border-color: rgba(0, 240, 255, 0.6) !important;
-    box-shadow:
-      0 0 30px rgba(0, 240, 255, 0.2),
-      0 8px 40px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transform: translateY(-4px);
-  }
+.cybernetic .cyber-card:hover {
+  border-color: rgba(0, 240, 255, 0.6) !important;
+  box-shadow:
+    0 0 30px rgba(0, 240, 255, 0.2),
+    0 8px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-4px);
+}
 
-  /* Cyber Glow - Pulsing neon effect */
-  .cybernetic .cyber-glow {
-    position: relative;
-  }
+/* Cyber Glow - Pulsing neon effect */
+.cybernetic .cyber-glow {
+  position: relative;
+}
 
-  .cybernetic .cyber-glow::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    background: linear-gradient(45deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0.5;
+.cybernetic .cyber-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.5;
+  filter: blur(8px);
+  animation: cyber-pulse 3s ease-in-out infinite;
+}
+
+@keyframes cyber-pulse {
+
+  0%,
+  100% {
+    opacity: 0.3;
     filter: blur(8px);
-    animation: cyber-pulse 3s ease-in-out infinite;
   }
 
-  @keyframes cyber-pulse {
-
-    0%,
-    100% {
-      opacity: 0.3;
-      filter: blur(8px);
-    }
-
-    50% {
-      opacity: 0.6;
-      filter: blur(12px);
-    }
-  }
-
-  /* Cyber Text - Gradient text effect */
-  .cybernetic .cyber-text {
-    background: linear-gradient(135deg, #00F0FF 0%, #FF0055 50%, #8B5CF6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Cyber Grid - Background pattern overlay */
-  .cybernetic .cyber-grid {
-    position: relative;
-  }
-
-  .cybernetic .cyber-grid::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Cyber Badge - Neon badge style */
-  .cybernetic .cyber-badge {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 85, 0.2));
-    border: 1px solid rgba(0, 240, 255, 0.5);
-    color: #00F0FF;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-  }
-
-  /* Cyber Button - Animated neon button */
-  .cybernetic .cyber-button {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(139, 92, 246, 0.1));
-    border: 1px solid rgba(0, 240, 255, 0.4);
-    color: #00F0FF;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-    transition: all 0.3s ease;
-  }
-
-  .cybernetic .cyber-button:hover {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
-    border-color: #00F0FF;
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
-    transform: translateY(-2px);
-  }
-
-  /* Cyber Avatar Ring */
-  .cybernetic .cyber-avatar-ring {
-    position: relative;
-  }
-
-  .cybernetic .cyber-avatar-ring::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    background: conic-gradient(from 0deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
-    border-radius: inherit;
-    z-index: -1;
-    animation: cyber-rotate 4s linear infinite;
-  }
-
-  @keyframes cyber-rotate {
-    from {
-      transform: rotate(0deg);
-    }
-
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* Cyber Scanline - Retro CRT effect */
-  .cybernetic .cyber-scanline::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(0deg,
-        rgba(0, 0, 0, 0.1) 0px,
-        rgba(0, 0, 0, 0.1) 1px,
-        transparent 1px,
-        transparent 2px);
-    pointer-events: none;
-    z-index: 10;
-  }
-
-  /* Cyber Hover Lift */
-  .cybernetic .cyber-lift {
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .cybernetic .cyber-lift:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow:
-      0 20px 40px rgba(0, 240, 255, 0.15),
-      0 0 40px rgba(0, 240, 255, 0.1);
-  }
-
-  /* Mars Theme - Semi-transparent backgrounds to show Mars image */
-  .mars body {
-    background: rgba(41, 20, 15, 0.85);
-    background-image: none;
-  }
-
-  .mars .bg-background {
-    background-color: transparent !important;
-  }
-
-  .mars .bg-card {
-    background-color: rgba(60, 30, 20, 0.85) !important;
-    backdrop-filter: blur(8px);
-  }
-
-  ::selection {
-    @apply bg-primary/20 text-primary;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-outfit), ui-sans-serif, system-ui;
+  50% {
+    opacity: 0.6;
+    filter: blur(12px);
   }
 }
 
-@theme {
-  --color-background: rgb(var(--background));
-  --color-foreground: rgb(var(--foreground));
-
-  --color-card: rgb(var(--card));
-  --color-card-foreground: rgb(var(--card-foreground));
-
-  --color-popover: rgb(var(--popover));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-
-  --color-primary: rgb(var(--primary));
-  --color-primary-foreground: rgb(var(--primary-foreground));
-
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
-
-  --color-destructive: rgb(var(--destructive));
-  --color-destructive-foreground: rgb(var(--destructive-foreground));
-
-  --color-border: rgb(var(--border));
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-heading: var(--font-outfit), ui-sans-serif, system-ui;
-  --font-mono: var(--font-space), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+/* Cyber Text - Gradient text effect */
+.cybernetic .cyber-text {
+  background: linear-gradient(135deg, #00F0FF 0%, #FF0055 50%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+
+/* Cyber Grid - Background pattern overlay */
+.cybernetic .cyber-grid {
+  position: relative;
+}
+
+.cybernetic .cyber-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cyber Badge - Neon badge style */
+.cybernetic .cyber-badge {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 85, 0.2));
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  color: #00F0FF;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+/* Cyber Button - Animated neon button */
+.cybernetic .cyber-button {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #00F0FF;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.cybernetic .cyber-button:hover {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
+  border-color: #00F0FF;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Cyber Avatar Ring */
+.cybernetic .cyber-avatar-ring {
+  position: relative;
+}
+
+.cybernetic .cyber-avatar-ring::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: conic-gradient(from 0deg, #00F0FF, #FF0055, #8B5CF6, #00F0FF);
+  border-radius: inherit;
+  z-index: -1;
+  animation: cyber-rotate 4s linear infinite;
+}
+
+@keyframes cyber-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Cyber Scanline - Retro CRT effect */
+.cybernetic .cyber-scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 2px);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Cyber Hover Lift */
+.cybernetic .cyber-lift {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cybernetic .cyber-lift:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow:
+    0 20px 40px rgba(0, 240, 255, 0.15),
+    0 0 40px rgba(0, 240, 255, 0.1);
+}
+
+/* Mars Theme - Semi-transparent backgrounds to show Mars image */
+.mars body {
+  background: rgba(41, 20, 15, 0.85);
+  background-image: none;
+}
+
+.mars .bg-background {
+  background-color: transparent !important;
+}
+
+.mars .bg-card {
+  background-color: rgba(60, 30, 20, 0.85) !important;
+  backdrop-filter: blur(8px);
+}
+
+::selection {
+  @apply bg-primary/20 text-primary;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-outfit), ui-sans-serif, system-ui;
+}
+
+
 
 /* Custom Utilities */
 @layer utilities {

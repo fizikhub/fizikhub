@@ -63,6 +63,7 @@ export function SocialArticleCard({
     const isPink = mounted && theme === 'pink';
     const isDarkPink = mounted && theme === 'dark-pink';
     const isCute = isPink || isDarkPink; // Both share the "cute" shape and ears
+    const isBlood = mounted && theme === 'blood';
 
     // Default values if not provided
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
@@ -202,7 +203,9 @@ export function SocialArticleCard({
                 isCybernetic && "cyber-card cyber-lift",
                 // Pink / Dark Pink theme overrides
                 isCute && "cute-border rounded-[1.5rem]",
-                isPink && "bg-white",
+                // Blood theme overrides
+                isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]",
+                // No more bg-white override for pink - use bg-card always
                 className
             )}
         >

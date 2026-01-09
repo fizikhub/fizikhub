@@ -7,10 +7,12 @@ import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
 import { WriterApplicationCard } from "@/components/home/writer-application-card";
 import { motion } from "framer-motion";
+import { DidYouKnow } from "@/components/ui/did-you-know";
+import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 
 export interface FeedItem {
     type: 'article' | 'blog' | 'question';
-    data: any; // Using any for flexibility, will cast in component
+    data: any;
     sortDate: string;
 }
 
@@ -19,99 +21,94 @@ interface UnifiedFeedProps {
     suggestedUsers?: any[];
 }
 
-import { DidYouKnow } from "@/components/ui/did-you-know";
-import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
-
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
-    console.log("UnifiedFeed Items:", items.length);
     return (
-        <div className="space-y-4 px-0 sm:px-0">
-            {items.map((item, index) => (
-                <div key={`${item.type}-${item.data.id}`}>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "100px" }}
-                        transition={{ duration: 0.3, delay: index < 3 ? index * 0.05 : 0 }}
-                    >
-                        {item.type === 'article' && (
-                            <SocialArticleCard
-                                article={item.data}
-                                index={index}
-                                initialLikes={item.data.likes_count || 0}
-                                initialComments={item.data.comments_count || 0}
-                                initialIsLiked={item.data.is_liked}
-                                initialIsBookmarked={item.data.is_bookmarked}
-                                badgeLabel="MAKALE"
-                                badgeClassName="text-amber-500 bg-amber-500/10"
-                            />
+        <div className="grid grid-cols-1 gap-4 px-0">
+            {/* Note: User requested Grid layout, but the feed is logically vertical. 
+            The 'Scientific Neo-Brutalism' prompt asked for an organized hierarchy. 
+            I'll interpret this as a stark list with thick dividers first, to maintain readability on mobile.
+            Grid columns on desktop might clutter the feed. Sticking to stark vertical list with heavy borders. */}
+
+            <div className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_#000000]">
+                {items.map((item, index) => (
+                    <div key={`${item.type}-${item.data.id}`} className="group relative border-b-2 border-primary last:border-b-0">
+
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.2 }}
+                            className="p-4 sm:p-6 hover:bg-secondary/20 transition-colors"
+                        >
+                            {/* Raw Index Number */}
+                            <div className="absolute top-2 right-2 font-mono text-[10px] text-muted-foreground opacity-30 group-hover:opacity-100">
+                                #{String(index + 1).padStart(3, '0')}
+                            </div>
+
+                            {item.type === 'article' && (
+                                <SocialArticleCard
+                                    article={item.data}
+                                    index={index}
+                                    initialLikes={item.data.likes_count || 0}
+                                    initialComments={item.data.comments_count || 0}
+                                    initialIsLiked={item.data.is_liked}
+                                    initialIsBookmarked={item.data.is_bookmarked}
+                                    badgeLabel="MAKALE"
+                                    badgeClassName="bg-black text-white px-2 py-0.5 rounded-none font-mono text-xs"
+                                />
+                            )}
+
+                            {item.type === 'blog' && (
+                                <SocialArticleCard
+                                    article={item.data}
+                                    index={index}
+                                    initialLikes={item.data.likes_count || 0}
+                                    initialComments={item.data.comments_count || 0}
+                                    initialIsLiked={item.data.is_liked}
+                                    initialIsBookmarked={item.data.is_bookmarked}
+                                    badgeLabel="BLOG"
+                                    badgeClassName="bg-white border border-black text-black px-2 py-0.5 rounded-none font-mono text-xs"
+                                />
+                            )}
+
+                            {item.type === 'question' && (
+                                <QuestionCard
+                                    question={item.data}
+                                    badgeLabel="SORU"
+                                    badgeClassName="bg-gray-200 text-black px-2 py-0.5 rounded-none font-mono text-xs"
+                                />
+                            )}
+                        </motion.div>
+
+                        {/* Injected Content - Styled as Breaks */}
+                        {index === 2 && (
+                            <div className="border-t-2 border-primary bg-accent p-6 text-center">
+                                <h3 className="text-xl font-black uppercase mb-2">Aramıza Katıl</h3>
+                                <CommunityInviteBanner />
+                            </div>
                         )}
 
-                        {item.type === 'blog' && (
-                            <SocialArticleCard
-                                article={item.data}
-                                index={index}
-                                initialLikes={item.data.likes_count || 0}
-                                initialComments={item.data.comments_count || 0}
-                                initialIsLiked={item.data.is_liked}
-                                initialIsBookmarked={item.data.is_bookmarked}
-                                badgeLabel="BLOG"
-                                badgeClassName="text-emerald-500 bg-emerald-500/10"
-                            />
+                        {index === 5 && (
+                            <div className="border-t-2 border-primary p-0">
+                                <ForumTeaserCard />
+                            </div>
                         )}
 
-                        {item.type === 'question' && (
-                            <QuestionCard
-                                question={item.data}
-                                badgeLabel="SORU"
-                                badgeClassName="text-blue-500 bg-blue-500/10"
-                            />
+                        {index === 8 && (
+                            <div className="border-t-2 border-primary bg-primary text-primary-foreground p-6">
+                                <h3 className="font-mono text-xs uppercase mb-4">Haftanın Sorusu :: Hipotez Testi</h3>
+                                <QuestionOfTheWeek />
+                            </div>
                         )}
-                    </motion.div>
+                    </div>
+                ))}
+            </div>
 
-                    {/* Inject Banner after the first item (index 0) */}
-                    {index === 0 && (
-                        <div className="mt-6">
-                            <CommunityInviteBanner />
-                        </div>
-                    )}
-
-                    {/* Inject Encyclopedia (DidYouKnow) after 2nd item (index 1) */}
-                    {index === 1 && (
-                        <div className="mt-6">
-                            <DidYouKnow />
-                        </div>
-                    )}
-
-                    {/* Inject Follow Suggestions after the 4th item (index 3) */}
-                    {index === 3 && (
-                        <div className="mt-6 border-y border-border/40 py-2 bg-secondary/5 -mx-4 px-4 sm:mx-0 sm:px-0 sm:rounded-2xl sm:border sm:bg-card/30">
-                            <SuggestedUsersCard users={suggestedUsers} />
-                        </div>
-                    )}
-
-                    {/* Inject Forum Teaser after the 6th item (index 5) */}
-                    {index === 5 && (
-                        <div className="mt-6">
-                            <ForumTeaserCard />
-                        </div>
-                    )}
-
-                    {/* Inject Forum Hypothesis Widget after 8th item (index 7) */}
-                    {index === 7 && (
-                        <div className="mt-6">
-                            <QuestionOfTheWeek />
-                        </div>
-                    )}
-
-                    {/* Inject Writer Application Card after the 11th item (index 10) */}
-                    {index === 10 && (
-                        <div className="mt-6">
-                            <WriterApplicationCard />
-                        </div>
-                    )}
-                </div>
-            ))}
+            {/* Suggested Users Footer */}
+            <div className="mt-8 border-2 border-dashed border-primary p-4">
+                <h3 className="font-mono text-xs uppercase mb-4 text-center">Önerilen Araştırmacılar</h3>
+                <SuggestedUsersCard users={suggestedUsers} />
+            </div>
         </div>
     );
 }

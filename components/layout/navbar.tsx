@@ -151,7 +151,7 @@ export function Navbar() {
 
                         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-none border-2 border-transparent hover:border-black dark:hover:border-white">
+                                <Button variant="ghost" size="icon" className="rounded-none border-2 border-transparent hover:border-black dark:hover:border-white" suppressHydrationWarning>
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>

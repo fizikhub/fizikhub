@@ -26,6 +26,7 @@ export function CategoryStories() {
     }, []);
 
     const isCybernetic = mounted && theme === 'cybernetic';
+    const isBlood = mounted && theme === 'blood';
 
     const categories = [
         { name: "Kuantum", icon: QuantumIcon, href: "/blog?kategori=Kuantum", accent: "#94A3B8" },
@@ -67,11 +68,12 @@ export function CategoryStories() {
                             {/* Main Card */}
                             <div
                                 className={cn(
-                                    "relative w-24 sm:w-28 bg-card/90 backdrop-blur-sm border-2 border-border hover:border-foreground/20 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
+                                    "relative w-24 sm:w-28 backdrop-blur-sm border-2 border-border hover:border-foreground/20 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
+                                    isBlood ? "bg-[rgb(40,0,0)] border-[rgb(100,20,20)]" : "bg-card/90",
                                     isCybernetic && "cyber-card border border-cyan-500/20 bg-black/40 shadow-none !rounded-none"
                                 )}
                                 style={{
-                                    boxShadow: isCybernetic ? 'none' : `3px 3px 0px 0px ${cat.accent}40`
+                                    boxShadow: isCybernetic ? 'none' : `3px 3px 0px 0px rgba(200,20,20,0.4)`
                                 }}
                             >
                                 {/* Top Accent Line */}
@@ -120,6 +122,6 @@ export function CategoryStories() {
                     </Link>
                 ))}
             </div>
-        </div>
+        </div >
     );
 }

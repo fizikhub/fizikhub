@@ -132,8 +132,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 "group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80",
                 // Cybernetic theme overrides
                 isCybernetic && "cyber-card cyber-lift",
-                // Pink theme overrides
-                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-white/80",
+                // Pink theme overrides - removed bg-white/80
+                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)]",
                 // Dark Pink overrides
                 isDarkPink && "rounded-[1.5rem] border-pink-900/50 hover:border-pink-500 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-card"
             )}

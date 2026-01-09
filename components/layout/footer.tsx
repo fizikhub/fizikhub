@@ -8,7 +8,12 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { RealisticBlackHole } from "@/components/ui/realistic-black-hole";
+import dynamic from "next/dynamic";
+
+const RealisticBlackHole = dynamic(() => import("@/components/ui/realistic-black-hole").then(mod => mod.RealisticBlackHole), {
+    ssr: false,
+    loading: () => <div className="w-[500px] h-[500px]" />
+});
 
 export function Footer() {
     const pathname = usePathname();

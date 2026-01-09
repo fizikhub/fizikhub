@@ -34,6 +34,12 @@ export function ThemeSelector() {
             color: "bg-zinc-950 border-zinc-800"
         },
         {
+            value: "blood",
+            label: "Kan Kırmızısı",
+            icon: Heart,
+            color: "bg-red-900 border-red-800"
+        },
+        {
             value: "pink",
             label: "Pembe",
             icon: Heart,
