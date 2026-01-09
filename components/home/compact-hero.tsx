@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 // ==========================================
 // 1. CLASSIC HERO (Jan 1st Version)
@@ -340,7 +341,7 @@ export function CompactHero() {
         return <ModernHero />;
     }
 
-    if (theme === 'pink') {
+    if (theme === 'pink' || theme === 'dark-pink') {
         return <CuteHero />;
     }
 

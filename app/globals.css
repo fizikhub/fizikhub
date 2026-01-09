@@ -112,36 +112,83 @@
   }
 
   .pink {
-    --background: 255 240 245; /* Lavender Blush - very light pinkish white for background */
-    --foreground: 70 20 50; /* Dark purple/pink for text */
+    --background: 255 240 245;
+    /* Lavender Blush - very light pinkish white for background */
+    --foreground: 70 20 50;
+    /* Dark purple/pink for text */
 
-    --card: 255 255 255; /* White cards */
+    --card: 255 255 255;
+    /* White cards */
     --card-foreground: 70 20 50;
 
     --popover: 255 255 255;
     --popover-foreground: 70 20 50;
 
-    --primary: 255 20 147; /* Hot Pink #FF1493 */
+    --primary: 255 20 147;
+    /* Hot Pink #FF1493 */
     --primary-foreground: 255 255 255;
 
-    --secondary: 255 228 225; /* Misty Rose */
+    --secondary: 255 228 225;
+    /* Misty Rose */
     --secondary-foreground: 255 20 147;
 
     --muted: 255 240 245;
     --muted-foreground: 180 100 120;
 
-    --accent: 255 192 203; /* Pink */
+    --accent: 255 192 203;
+    /* Pink */
     --accent-foreground: 70 20 50;
 
-    --destructive: 255 105 180; /* Hot Pinkish Red */
+    --destructive: 255 105 180;
+    /* Hot Pinkish Red */
     --destructive-foreground: 255 255 255;
 
-    --border: 255 182 193; /* Light Pink */
+    --border: 255 182 193;
+    /* Light Pink */
     --input: 255 182 193;
     --ring: 255 20 147;
 
     /* Cute specifics */
-    --radius: 1.5rem; /* Extra rounded */
+    --radius: 1.5rem;
+    /* Extra rounded */
+  }
+
+  /* Dark Pink (Karanlık Pembe) */
+  .dark-pink {
+    --background: 20 10 15;
+    /* Very Dark Pink/Black */
+    --foreground: 255 240 245;
+    /* Lavender Blush text */
+
+    --card: 30 15 20;
+    /* Darker Pinkish Card */
+    --card-foreground: 255 240 245;
+
+    --popover: 30 15 20;
+    --popover-foreground: 255 240 245;
+
+    --primary: 255 20 147;
+    /* Hot Pink #FF1493 */
+    --primary-foreground: 255 255 255;
+
+    --secondary: 40 20 30;
+    --secondary-foreground: 255 20 147;
+
+    --muted: 40 20 30;
+    --muted-foreground: 200 150 170;
+
+    --accent: 50 25 35;
+    --accent-foreground: 255 192 203;
+
+    --destructive: 255 105 180;
+    --destructive-foreground: 255 255 255;
+
+    --border: 70 30 50;
+    --input: 70 30 50;
+    --ring: 255 20 147;
+
+    /* Cute specifics inherited */
+    --radius: 1.5rem;
   }
 
   /* Cute Cat Decoration Helpers */
@@ -170,10 +217,10 @@
     transform: rotate(15deg);
     z-index: 10;
   }
-  
+
   .pink .cute-border {
-     border: 3px solid #ffdeeb;
-     box-shadow: 0 4px 0 #ff69b4;
+    border: 3px solid #ffdeeb;
+    box-shadow: 0 4px 0 #ff69b4;
   }
 
   .christmas {

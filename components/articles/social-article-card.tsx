@@ -61,6 +61,8 @@ export function SocialArticleCard({
 
     const isCybernetic = mounted && theme === 'cybernetic';
     const isPink = mounted && theme === 'pink';
+    const isDarkPink = mounted && theme === 'dark-pink';
+    const isCute = isPink || isDarkPink; // Both share the "cute" shape and ears
 
     // Default values if not provided
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
@@ -198,13 +200,14 @@ export function SocialArticleCard({
                 "shadow-sm hover:shadow-md hover:border-border/80",
                 // Cybernetic theme overrides
                 isCybernetic && "cyber-card cyber-lift",
-                // Pink theme overrides
-                isPink && "cute-border rounded-[1.5rem]",
+                // Pink / Dark Pink theme overrides
+                isCute && "cute-border rounded-[1.5rem]",
+                isPink && "bg-white",
                 className
             )}
         >
             {/* CUTE DECORATION: Cat Ears (Only visible in Pink) */}
-            {isPink && (
+            {isCute && (
                 <>
                     <div className="cute-cat-ear-left group-hover:block transition-all" />
                     <div className="cute-cat-ear-right group-hover:block transition-all" />

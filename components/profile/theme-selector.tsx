@@ -40,6 +40,12 @@ export function ThemeSelector() {
             color: "bg-pink-500 border-pink-600"
         },
         {
+            value: "dark-pink",
+            label: "K. Pembe",
+            icon: Heart,
+            color: "bg-gradient-to-br from-zinc-900 via-pink-900 to-pink-700 border-pink-500"
+        },
+        {
             value: "mars",
             label: "Mars",
             icon: Rocket,
@@ -81,7 +87,7 @@ export function ThemeSelector() {
                             )}>
                                 <Icon className={cn(
                                     "w-5 h-5",
-                                    t.value === "pink" || t.special ? "text-white" : "text-foreground"
+                                    t.value === "pink" || t.value === "dark-pink" || t.special ? "text-white" : "text-foreground"
                                 )} />
                             </div>
                             <span className="text-xs font-medium">{t.label}</span>

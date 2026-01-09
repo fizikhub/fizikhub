@@ -30,9 +30,10 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
     const hasSocialLinks = socialLinks.twitter || socialLinks.github || socialLinks.linkedin || socialLinks.instagram;
 
     const { theme } = useTheme();
-    // No need for mounted check here if just CSS, but for safety in Next.js usually good. 
     // Simplified since this component is client-side "use client"
     const isPink = theme === 'pink';
+    const isDarkPink = theme === 'dark-pink';
+    const isCute = isPink || isDarkPink;
 
     return (
 
@@ -45,23 +46,25 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                 <PopoverTrigger asChild>
                     <Card className={cn(
                         "p-3.5 border bg-blue-50/50 dark:bg-blue-900/10 rounded-xl cursor-pointer transition-all group hover:scale-[1.02]",
-                        !isPink && "border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700",
-                        isPink && "border-pink-300 bg-pink-50/80 hover:border-pink-400 hover:shadow-[0_4px_10px_rgba(255,20,147,0.2)] rounded-[1.5rem]"
+                        !isCute && "border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700",
+                        isPink && "border-pink-300 bg-pink-50/80 hover:border-pink-400 hover:shadow-[0_4px_10px_rgba(255,20,147,0.2)] rounded-[1.5rem]",
+                        isDarkPink && "border-pink-700 bg-pink-950/30 hover:border-pink-500 hover:shadow-[0_4px_10px_rgba(255,20,147,0.2)] rounded-[1.5rem]"
                     )}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                                 <div className={cn(
                                     "p-1.5 rounded-lg",
-                                    !isPink && "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
-                                    isPink && "bg-white text-pink-500 shadow-sm"
+                                    !isCute && "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400",
+                                    isPink && "bg-white text-pink-500 shadow-sm",
+                                    isDarkPink && "bg-pink-900/50 text-pink-300 shadow-sm"
                                 )}>
                                     <SiteLogo className="!w-5 !h-5" />
                                 </div>
                                 <div>
                                     <div className={cn(
                                         "text-[10px] font-bold uppercase tracking-wider flex items-center gap-1",
-                                        !isPink && "text-blue-600 dark:text-blue-400",
-                                        isPink && "text-pink-500"
+                                        !isCute && "text-blue-600 dark:text-blue-400",
+                                        isCute && "text-pink-500"
                                     )}>
                                         HubPuan
                                         <HelpCircle className="w-3 h-3 opacity-60" />
@@ -73,8 +76,9 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Seviye</div>
                                 <div className={cn(
                                     "text-base font-bold",
-                                    !isPink && "text-blue-600 dark:text-blue-400",
-                                    isPink && "text-pink-600"
+                                    !isCute && "text-blue-600 dark:text-blue-400",
+                                    isPink && "text-pink-600",
+                                    isDarkPink && "text-pink-400"
                                 )}>
                                     {profile?.reputation >= 5000 ? "Evrensel Zeka" : profile?.reputation >= 1000 ? "Teorisyen" : profile?.reputation >= 500 ? "Araştırmacı" : profile?.reputation >= 100 ? "Gözlemci" : "Çaylak"}
                                 </div>
@@ -98,24 +102,25 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
             {/* Stats - Compact Single Row - Reordered: Takipçi, Takip, Makale, Soru */}
             <Card className={cn(
                 "p-3 border-2 rounded-xl transition-all",
-                !isPink && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
-                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem] bg-white/80"
+                !isCute && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
+                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem] bg-white/80",
+                isDarkPink && "border-pink-800 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] rounded-[1.2rem] bg-card"
             )}>
                 <div className="flex items-center justify-around text-center divide-x divide-foreground/10">
                     <div className="flex-1 px-1">
-                        <div className={cn("text-lg font-black text-foreground", isPink && "text-pink-600")}>{stats.followersCount}</div>
+                        <div className={cn("text-lg font-black text-foreground", isCute && "text-pink-600")}>{stats.followersCount}</div>
                         <div className="text-[9px] text-muted-foreground font-medium uppercase">Takipçi</div>
                     </div>
                     <div className="flex-1 px-1">
-                        <div className={cn("text-lg font-black text-foreground", isPink && "text-pink-600")}>{stats.followingCount}</div>
+                        <div className={cn("text-lg font-black text-foreground", isCute && "text-pink-600")}>{stats.followingCount}</div>
                         <div className="text-[9px] text-muted-foreground font-medium uppercase">Takip</div>
                     </div>
                     <div className="flex-1 px-1">
-                        <div className={cn("text-lg font-black text-foreground", isPink && "text-pink-600")}>{stats.articlesCount}</div>
+                        <div className={cn("text-lg font-black text-foreground", isCute && "text-pink-600")}>{stats.articlesCount}</div>
                         <div className="text-[9px] text-muted-foreground font-medium uppercase">Makale</div>
                     </div>
                     <div className="flex-1 px-1">
-                        <div className={cn("text-lg font-black text-foreground", isPink && "text-pink-600")}>{stats.questionsCount}</div>
+                        <div className={cn("text-lg font-black text-foreground", isCute && "text-pink-600")}>{stats.questionsCount}</div>
                         <div className="text-[9px] text-muted-foreground font-medium uppercase">Soru</div>
                     </div>
                 </div>
@@ -124,15 +129,16 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
             {/* About Card - Consolidated Bio + Links + Member Since */}
             <Card className={cn(
                 "p-4 border-2 rounded-xl transition-all",
-                !isPink && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
-                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.5rem]"
+                !isCute && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
+                isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.5rem]",
+                isDarkPink && "border-pink-800 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] rounded-[1.5rem]"
             )}>
                 <h3 className={cn(
                     "text-[10px] font-black uppercase mb-3 tracking-wider flex items-center gap-2",
-                    !isPink && "text-muted-foreground",
-                    isPink && "text-pink-500"
+                    !isCute && "text-muted-foreground",
+                    isCute && "text-pink-500"
                 )}>
-                    <div className={cn("w-1 h-3 rounded-full", isPink ? "bg-pink-500" : "bg-foreground")} />
+                    <div className={cn("w-1 h-3 rounded-full", isCute ? "bg-pink-500" : "bg-foreground")} />
                     Hakkında
                 </h3>
 
@@ -153,7 +159,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 rel="noopener noreferrer"
                                 className={cn(
                                     "flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md",
-                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : "bg-foreground/5 hover:bg-foreground/10"
+                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : (isDarkPink ? "bg-pink-900/50 hover:bg-pink-900/70 text-pink-300" : "bg-foreground/5 hover:bg-foreground/10")
                                 )}
                             >
                                 <LinkIcon className="w-3 h-3" />
@@ -167,7 +173,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 rel="noopener noreferrer"
                                 className={cn(
                                     "flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md",
-                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : "bg-foreground/5 hover:bg-foreground/10"
+                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : (isDarkPink ? "bg-pink-900/50 hover:bg-pink-900/70 text-pink-300" : "bg-foreground/5 hover:bg-foreground/10")
                                 )}
                             >
                                 <Twitter className="w-3 h-3" />
@@ -180,7 +186,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 rel="noopener noreferrer"
                                 className={cn(
                                     "flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md",
-                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : "bg-foreground/5 hover:bg-foreground/10"
+                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : (isDarkPink ? "bg-pink-900/50 hover:bg-pink-900/70 text-pink-300" : "bg-foreground/5 hover:bg-foreground/10")
                                 )}
                             >
                                 <Github className="w-3 h-3" />
@@ -193,7 +199,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 rel="noopener noreferrer"
                                 className={cn(
                                     "flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md",
-                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : "bg-foreground/5 hover:bg-foreground/10"
+                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : (isDarkPink ? "bg-pink-900/50 hover:bg-pink-900/70 text-pink-300" : "bg-foreground/5 hover:bg-foreground/10")
                                 )}
                             >
                                 <Linkedin className="w-3 h-3" />
@@ -206,7 +212,7 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
                                 rel="noopener noreferrer"
                                 className={cn(
                                     "flex items-center gap-1.5 text-[10px] text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md",
-                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : "bg-foreground/5 hover:bg-foreground/10"
+                                    isPink ? "bg-pink-100 hover:bg-pink-200 text-pink-700" : (isDarkPink ? "bg-pink-900/50 hover:bg-pink-900/70 text-pink-300" : "bg-foreground/5 hover:bg-foreground/10")
                                 )}
                             >
                                 <Instagram className="w-3 h-3" />
@@ -226,14 +232,15 @@ export function ProfileAboutSidebar({ profile, stats, badges, createdAt }: Profi
             {badges && badges.length > 0 && (
                 <Card className={cn(
                     "p-3 border-2 rounded-xl transition-all",
-                    !isPink && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
-                    isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem]"
+                    !isCute && "border-foreground/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.08)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)]",
+                    isPink && "border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,0.5)] rounded-[1.2rem]",
+                    isDarkPink && "border-pink-800 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] rounded-[1.2rem] bg-card"
                 )}>
                     <div className="flex items-center justify-between mb-2">
                         <h3 className={cn(
                             "text-[10px] font-black uppercase tracking-wider flex items-center gap-2",
-                            !isPink && "text-muted-foreground",
-                            isPink && "text-pink-500"
+                            !isCute && "text-muted-foreground",
+                            isCute && "text-pink-500"
                         )}>
                             <Award className="w-3 h-3" />
                             Rozetler

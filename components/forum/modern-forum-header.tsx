@@ -23,6 +23,8 @@ export function ModernForumHeader() {
 
     const isCybernetic = mounted && theme === 'cybernetic';
     const isPink = mounted && theme === 'pink';
+    const isDarkPink = mounted && theme === 'dark-pink';
+    const isCute = isPink || isDarkPink;
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -121,14 +123,15 @@ export function ModernForumHeader() {
             <div className={cn(
                 "relative border-2 border-border bg-card p-3 md:p-5 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
                 isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none",
-                isPink && "rounded-[1.5rem] border-[#FF1493] shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)] bg-pink-50/50"
+                isPink && "rounded-[1.5rem] border-[#FF1493] shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)] bg-pink-50/50",
+                isDarkPink && "rounded-[1.5rem] border-[#FF1493] shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)] bg-card"
             )}>
 
                 {/* Dynamic Space Background */}
-                {!isPink && <HeaderSpaceBackground />}
+                {!isCute && <HeaderSpaceBackground />}
 
                 {/* Cute Background Pattern */}
-                {isPink && (
+                {isCute && (
                     <div className="absolute inset-0 opacity-10 pointer-events-none"
                         style={{
                             backgroundImage: 'radial-gradient(#FF1493 2px, transparent 2px)',

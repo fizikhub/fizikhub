@@ -34,6 +34,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
 
     const isCybernetic = mounted && theme === 'cybernetic';
     const isPink = mounted && theme === 'pink';
+    const isDarkPink = mounted && theme === 'dark-pink';
+    const isCute = isPink || isDarkPink;
 
     // State
     const [voteState, setVoteState] = useState(userVote);
@@ -131,12 +133,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 // Cybernetic theme overrides
                 isCybernetic && "cyber-card cyber-lift",
                 // Pink theme overrides
-                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-white/80"
+                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-white/80",
+                // Dark Pink overrides
+                isDarkPink && "rounded-[1.5rem] border-pink-900/50 hover:border-pink-500 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-card"
             )}
             onClick={handleCardClick}
         >
             {/* CUTE DECORATION: Cat Ears (Only visible in Pink on Hover) */}
-            {isPink && (
+            {isCute && (
                 <>
                     <div className="absolute top-0 right-10 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] -rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
                     <div className="absolute top-0 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
