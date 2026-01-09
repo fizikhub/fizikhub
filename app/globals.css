@@ -112,37 +112,68 @@
   }
 
   .pink {
-    --background: 18 18 22;
-    /* Dark background like dark theme */
-    --foreground: 248 250 252;
-    /* Light text */
+    --background: 255 240 245; /* Lavender Blush - very light pinkish white for background */
+    --foreground: 70 20 50; /* Dark purple/pink for text */
 
-    --card: 20 22 25;
-    --card-foreground: 248 250 252;
+    --card: 255 255 255; /* White cards */
+    --card-foreground: 70 20 50;
 
-    --popover: 20 22 25;
-    --popover-foreground: 248 250 252;
+    --popover: 255 255 255;
+    --popover-foreground: 70 20 50;
 
-    --primary: 325 100% 55%;
-    /* Vivid Pink */
-    --primary-foreground: 0 0% 0%;
+    --primary: 255 20 147; /* Hot Pink #FF1493 */
+    --primary-foreground: 255 255 255;
 
-    --secondary: 30 33 37;
-    --secondary-foreground: 248 250 252;
+    --secondary: 255 228 225; /* Misty Rose */
+    --secondary-foreground: 255 20 147;
 
-    --muted: 30 33 37;
-    --muted-foreground: 156 163 175;
+    --muted: 255 240 245;
+    --muted-foreground: 180 100 120;
 
-    --accent: 30 33 37;
-    --accent-foreground: 248 250 252;
+    --accent: 255 192 203; /* Pink */
+    --accent-foreground: 70 20 50;
 
-    --destructive: 220 38 38;
+    --destructive: 255 105 180; /* Hot Pinkish Red */
     --destructive-foreground: 255 255 255;
 
-    --border: 38 42 47;
-    --input: 38 42 47;
-    --ring: 325 100% 55%;
-    /* Vivid Pink */
+    --border: 255 182 193; /* Light Pink */
+    --input: 255 182 193;
+    --ring: 255 20 147;
+
+    /* Cute specifics */
+    --radius: 1.5rem; /* Extra rounded */
+  }
+
+  /* Cute Cat Decoration Helpers */
+  .pink .cute-cat-ear-left {
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #FF1493;
+    transform: rotate(-15deg);
+    z-index: 10;
+  }
+
+  .pink .cute-cat-ear-right {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #FF1493;
+    transform: rotate(15deg);
+    z-index: 10;
+  }
+  
+  .pink .cute-border {
+     border: 3px solid #ffdeeb;
+     box-shadow: 0 4px 0 #ff69b4;
   }
 
   .christmas {

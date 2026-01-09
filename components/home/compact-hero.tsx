@@ -184,6 +184,54 @@ function ModernHero() {
 // 3. MAIN COMPONENT (Switcher)
 // ==========================================
 
+// ==========================================
+// 4. CUTE HERO (For Pink Theme)
+// ==========================================
+
+const CuteCat = () => (
+    <svg width="100%" height="100%" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 40 L20 20 L40 30" fill="#FF1493" stroke="#FF69B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M70 40 L80 20 L60 30" fill="#FF1493" stroke="#FF69B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <ellipse cx="50" cy="50" rx="30" ry="25" fill="#FFF0F5" stroke="#FF1493" strokeWidth="3"/>
+        <circle cx="40" cy="45" r="3" fill="#000"/>
+        <circle cx="60" cy="45" r="3" fill="#000"/>
+        <path d="M45 55 Q50 60 55 55" stroke="#000" strokeWidth="2" strokeLinecap="round"/>
+        <line x1="25" y1="50" x2="10" y2="45" stroke="#FF1493" strokeWidth="2"/>
+        <line x1="25" y1="55" x2="10" y2="60" stroke="#FF1493" strokeWidth="2"/>
+        <line x1="75" y1="50" x2="90" y2="45" stroke="#FF1493" strokeWidth="2"/>
+        <line x1="75" y1="55" x2="90" y2="60" stroke="#FF1493" strokeWidth="2"/>
+    </svg>
+);
+
+function CuteHero() {
+    return (
+        <div className="relative overflow-hidden bg-gradient-to-r from-pink-100 via-pink-50 to-pink-100 border-4 border-pink-400 rounded-3xl mb-4 shadow-[0_8px_0_0_rgba(255,20,147,0.3)]">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
+            
+            <div className="relative z-10 px-6 py-5 flex items-center justify-between gap-4">
+                <div className="flex-1">
+                     <h1 className="text-xl sm:text-3xl font-black text-pink-600 leading-tight tracking-tight uppercase drop-shadow-sm">
+                        BİLİM ÇOK TATLI!
+                    </h1>
+                    <p className="text-sm sm:text-lg font-bold mt-1 text-pink-400 uppercase tracking-wide">
+                        VE BİRAZ DA MIAUV.
+                    </p>
+                </div>
+                 <motion.div
+                    className="flex-shrink-0 w-24 h-20 sm:w-32 sm:h-24"
+                    animate={{ y: [0, -5, 0], rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+                    <CuteCat />
+                </motion.div>
+            </div>
+             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-pink-300 rounded-full opacity-20 blur-xl"></div>
+             <div className="absolute -top-4 -left-4 w-32 h-32 bg-pink-300 rounded-full opacity-20 blur-xl"></div>
+        </div>
+    );
+}
+
+
 export function CompactHero() {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -200,6 +248,10 @@ export function CompactHero() {
     // Switch based on theme
     if (theme === 'cybernetic') {
         return <ModernHero />;
+    }
+
+    if (theme === 'pink') {
+        return <CuteHero />;
     }
 
     return <ClassicHero />;

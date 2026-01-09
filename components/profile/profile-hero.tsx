@@ -44,6 +44,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
     }, []);
 
     const isCybernetic = mounted && theme === 'cybernetic';
+    const isPink = mounted && theme === 'pink';
 
     // Update local state if profile changes (e.g. initial load)
     useEffect(() => {
@@ -182,12 +183,7 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                 }}
                 onTouchEnd={handleMouseUp}
             >
-                import Image from "next/image";
-
-                // ... (other imports)
-
-                // Inside ProfileHero component return statement
-                // ...
+                {/* Image or Gradient */}
                 {profile?.cover_url ? (
                     <div className="absolute inset-0">
                         <Image
@@ -209,7 +205,10 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                         />
                     </div>
                 ) : (
-                    <div className={`absolute inset-0 bg-gradient-to-br ${coverGradient}`} />
+                    <div className={cn(
+                        "absolute inset-0 bg-gradient-to-br",
+                        isPink ? "from-pink-300 via-purple-300 to-indigo-300" : coverGradient
+                    )} />
                 )}
 
                 {/* Overlay Gradient */}
@@ -291,11 +290,18 @@ export function ProfileHero({ profile, user, isOwnProfile, isFollowing, targetUs
                             {/* Avatar container with sharp corners */}
                             <div className={cn(
                                 "relative w-28 h-28 md:w-32 md:h-32 rounded-lg border-4 border-background bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden",
-                                isCybernetic && "cyber-avatar-ring"
+                                isCybernetic && "cyber-avatar-ring",
+                                isPink && "rounded-full border-[#FF1493] border-[3px]"
                             )}>
-                                <Avatar className="w-full h-full rounded-none">
+                                <Avatar className={cn(
+                                    "w-full h-full rounded-none",
+                                    isPink && "rounded-full"
+                                )}>
                                     <AvatarImage src={profile?.avatar_url || ""} className="object-cover" />
-                                    <AvatarFallback className="text-3xl bg-gradient-to-br from-gray-600 to-gray-800 text-white font-bold rounded-none">
+                                    <AvatarFallback className={cn(
+                                        "text-3xl bg-gradient-to-br from-gray-600 to-gray-800 text-white font-bold rounded-none",
+                                        isPink && "rounded-full from-pink-400 to-pink-600"
+                                    )}>
                                         {profile?.full_name?.charAt(0) || profile?.username?.charAt(0)?.toUpperCase() || "U"}
                                     </AvatarFallback>
                                 </Avatar>

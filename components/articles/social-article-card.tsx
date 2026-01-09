@@ -60,6 +60,7 @@ export function SocialArticleCard({
     }, []);
 
     const isCybernetic = mounted && theme === 'cybernetic';
+    const isPink = mounted && theme === 'pink';
 
     // Default values if not provided
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
@@ -183,7 +184,7 @@ export function SocialArticleCard({
     }
 
     // ----------------------------------------------------------------------
-    // RENDER: STANDARD THEME
+    // RENDER: STANDARD THEME (+ Pink Variants)
     // ----------------------------------------------------------------------
     return (
         <motion.div
@@ -197,9 +198,19 @@ export function SocialArticleCard({
                 "shadow-sm hover:shadow-md hover:border-border/80",
                 // Cybernetic theme overrides
                 isCybernetic && "cyber-card cyber-lift",
+                // Pink theme overrides
+                isPink && "cute-border rounded-[1.5rem]",
                 className
             )}
         >
+            {/* CUTE DECORATION: Cat Ears (Only visible in Pink) */}
+            {isPink && (
+                <>
+                    <div className="cute-cat-ear-left group-hover:block transition-all" />
+                    <div className="cute-cat-ear-right group-hover:block transition-all" />
+                </>
+            )}
+
             {/* HUD DECORATION: Random Data Numbers (Only visible in Cybernetic) */}
             {isCybernetic && (
                 <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-500/50 pointer-events-none z-20 select-none">
