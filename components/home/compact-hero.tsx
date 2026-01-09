@@ -189,44 +189,134 @@ function ModernHero() {
 // ==========================================
 
 const CuteCat = () => (
-    <svg width="100%" height="100%" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M30 40 L20 20 L40 30" fill="#FF1493" stroke="#FF69B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M70 40 L80 20 L60 30" fill="#FF1493" stroke="#FF69B4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <ellipse cx="50" cy="50" rx="30" ry="25" fill="#FFF0F5" stroke="#FF1493" strokeWidth="3"/>
-        <circle cx="40" cy="45" r="3" fill="#000"/>
-        <circle cx="60" cy="45" r="3" fill="#000"/>
-        <path d="M45 55 Q50 60 55 55" stroke="#000" strokeWidth="2" strokeLinecap="round"/>
-        <line x1="25" y1="50" x2="10" y2="45" stroke="#FF1493" strokeWidth="2"/>
-        <line x1="25" y1="55" x2="10" y2="60" stroke="#FF1493" strokeWidth="2"/>
-        <line x1="75" y1="50" x2="90" y2="45" stroke="#FF1493" strokeWidth="2"/>
-        <line x1="75" y1="55" x2="90" y2="60" stroke="#FF1493" strokeWidth="2"/>
+    <svg width="100%" height="100%" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="fluff" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+        </defs>
+
+        {/* Tail Animation */}
+        <g>
+            <path d="M140 140 C160 140, 180 100, 160 80" stroke="#FF69B4" strokeWidth="12" strokeLinecap="round" fill="none">
+                <animate attributeName="d"
+                    values="M140 140 C160 140, 180 100, 160 80; M140 140 C170 150, 190 120, 170 100; M140 140 C160 140, 180 100, 160 80"
+                    dur="3s" repeatCount="indefinite" />
+            </path>
+        </g>
+
+        {/* Body */}
+        <ellipse cx="100" cy="140" rx="60" ry="50" fill="#FFF0F5" stroke="#FF1493" strokeWidth="4" />
+
+        {/* Head Group */}
+        <g>
+            <animateTransform attributeName="transform" type="translate" values="0 0; 0 2; 0 0" dur="2s" repeatCount="indefinite" />
+
+            {/* Ears */}
+            <path d="M60 70 L40 30 L80 50" fill="#FFC0CB" stroke="#FF1493" strokeWidth="4" strokeLinejoin="round" />
+            <path d="M140 70 L160 30 L120 50" fill="#FFC0CB" stroke="#FF1493" strokeWidth="4" strokeLinejoin="round" />
+
+            {/* Head Shape */}
+            <ellipse cx="100" cy="90" rx="55" ry="45" fill="#FFF0F5" stroke="#FF1493" strokeWidth="4" />
+
+            {/* Eyes */}
+            <g>
+                <ellipse cx="80" cy="85" rx="8" ry="10" fill="#000">
+                    <animate attributeName="ry" values="10; 1; 10" dur="4s" repeatCount="indefinite" />
+                </ellipse>
+                <circle cx="82" cy="82" r="3" fill="#FFF" />
+
+                <ellipse cx="120" cy="85" rx="8" ry="10" fill="#000">
+                    <animate attributeName="ry" values="10; 1; 10" dur="4s" repeatCount="indefinite" />
+                </ellipse>
+                <circle cx="122" cy="82" r="3" fill="#FFF" />
+            </g>
+
+            {/* Nose & Mouth */}
+            <path d="M95 105 L105 105 L100 112 Z" fill="#FF69B4" />
+            <path d="M100 112 Q90 122 85 115" stroke="#FF1493" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <path d="M100 112 Q110 122 115 115" stroke="#FF1493" strokeWidth="3" fill="none" strokeLinecap="round" />
+
+            {/* Whiskers */}
+            <g opacity="0.6">
+                <line x1="60" y1="100" x2="30" y2="95" stroke="#FF1493" strokeWidth="2" />
+                <line x1="60" y1="105" x2="30" y2="105" stroke="#FF1493" strokeWidth="2" />
+                <line x1="60" y1="110" x2="30" y2="115" stroke="#FF1493" strokeWidth="2" />
+
+                <line x1="140" y1="100" x2="170" y2="95" stroke="#FF1493" strokeWidth="2" />
+                <line x1="140" y1="105" x2="170" y2="105" stroke="#FF1493" strokeWidth="2" />
+                <line x1="140" y1="110" x2="170" y2="115" stroke="#FF1493" strokeWidth="2" />
+            </g>
+
+            {/* Cheeks */}
+            <circle cx="70" cy="100" r="6" fill="#FFB6C1" opacity="0.6" />
+            <circle cx="130" cy="100" r="6" fill="#FFB6C1" opacity="0.6" />
+        </g>
+
+        {/* Paws */}
+        <ellipse cx="80" cy="180" rx="15" ry="10" fill="#FFF" stroke="#FF1493" strokeWidth="3" />
+        <ellipse cx="120" cy="180" rx="15" ry="10" fill="#FFF" stroke="#FF1493" strokeWidth="3" />
     </svg>
 );
 
 function CuteHero() {
     return (
-        <div className="relative overflow-hidden bg-gradient-to-r from-pink-100 via-pink-50 to-pink-100 border-4 border-pink-400 rounded-3xl mb-4 shadow-[0_8px_0_0_rgba(255,20,147,0.3)]">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
-            
-            <div className="relative z-10 px-6 py-5 flex items-center justify-between gap-4">
+        <div className="relative overflow-hidden bg-gradient-to-r from-pink-100 via-[#fff0f5] to-pink-100 border-4 border-[#FF1493] rounded-[2rem] mb-4 shadow-[8px_8px_0px_0px_rgba(255,20,147,0.4)] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_rgba(255,105,180,0.6)] transition-all duration-300">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none"
+                style={{
+                    backgroundImage: 'radial-gradient(#FF1493 2px, transparent 2px)',
+                    backgroundSize: '20px 20px'
+                }} />
+
+            {/* Floating Hearts Animation */}
+            {[...Array(6)].map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute text-[#FF1493] opacity-20"
+                    initial={{ y: 150, x: Math.random() * 100 + "%", scale: 0.5, opacity: 0 }}
+                    animate={{
+                        y: -50,
+                        rotate: [0, 20, -20, 0],
+                        opacity: [0, 0.4, 0]
+                    }}
+                    transition={{
+                        duration: 4 + Math.random() * 3,
+                        repeat: Infinity,
+                        delay: Math.random() * 5,
+                        ease: "easeOut"
+                    }}
+                    style={{ fontSize: 20 + Math.random() * 30 }}
+                >
+                    ♥
+                </motion.div>
+            ))}
+
+            <div className="relative z-10 px-6 py-6 flex items-center justify-between gap-4">
                 <div className="flex-1">
-                     <h1 className="text-xl sm:text-3xl font-black text-pink-600 leading-tight tracking-tight uppercase drop-shadow-sm">
-                        BİLİM ÇOK TATLI!
-                    </h1>
-                    <p className="text-sm sm:text-lg font-bold mt-1 text-pink-400 uppercase tracking-wide">
-                        VE BİRAZ DA MIAUV.
-                    </p>
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <h1 className="text-2xl sm:text-4xl font-black text-[#FF1493] leading-none tracking-tight uppercase drop-shadow-sm font-comic">
+                            BİLİM ÇOK TATLI!
+                        </h1>
+                        <p className="text-sm sm:text-lg font-bold mt-2 text-pink-500 uppercase tracking-wide flex items-center gap-2">
+                            <span className="bg-pink-200 px-2 py-0.5 rounded-full text-pink-700">✿</span>
+                            VE BİRAZ DA MIAUV.
+                        </p>
+                    </motion.div>
                 </div>
-                 <motion.div
-                    className="flex-shrink-0 w-24 h-20 sm:w-32 sm:h-24"
-                    animate={{ y: [0, -5, 0], rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                <motion.div
+                    className="flex-shrink-0 w-28 h-28 sm:w-40 sm:h-40 -my-4"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
                 >
                     <CuteCat />
                 </motion.div>
             </div>
-             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-pink-300 rounded-full opacity-20 blur-xl"></div>
-             <div className="absolute -top-4 -left-4 w-32 h-32 bg-pink-300 rounded-full opacity-20 blur-xl"></div>
         </div>
     );
 }

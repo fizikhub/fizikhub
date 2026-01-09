@@ -33,6 +33,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     }, []);
 
     const isCybernetic = mounted && theme === 'cybernetic';
+    const isPink = mounted && theme === 'pink';
+
+    // State
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
@@ -115,7 +118,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     }
 
     // ----------------------------------------------------------------------
-    // RENDER: STANDARD THEME
+    // RENDER: STANDARD THEME (+ PINK VARIANT)
     // ----------------------------------------------------------------------
     return (
         <motion.div
@@ -126,10 +129,19 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
             className={cn(
                 "group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80",
                 // Cybernetic theme overrides
-                isCybernetic && "cyber-card cyber-lift"
+                isCybernetic && "cyber-card cyber-lift",
+                // Pink theme overrides
+                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-white/80"
             )}
             onClick={handleCardClick}
         >
+            {/* CUTE DECORATION: Cat Ears (Only visible in Pink on Hover) */}
+            {isPink && (
+                <>
+                    <div className="absolute top-0 right-10 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] -rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
+                    <div className="absolute top-0 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
+                </>
+            )}
             {/* 1. TOP BAR: Category & Date */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
                 <div className="flex items-center gap-3">
