@@ -12,9 +12,13 @@ export interface TimeLimitStatus {
 
 const DEFAULT_DAILY_LIMIT_SECONDS = 300; // 5 minutes
 const EXTENDED_DAILY_LIMIT_SECONDS = 900; // 15 minutes
-const EXTENDED_LIMIT_USERS = ['sulfiriikasit', 'silginim'];
+const EXTENDED_LIMIT_USERS = ['sulfiriikasit'];
+const SILGINIM_LIMIT_SECONDS = 360; // 6 minutes
 
 function getLimitForUser(username: string | null | undefined): number {
+    if (username === 'silginim') {
+        return SILGINIM_LIMIT_SECONDS;
+    }
     if (username && EXTENDED_LIMIT_USERS.includes(username)) {
         return EXTENDED_DAILY_LIMIT_SECONDS;
     }
