@@ -267,9 +267,7 @@ export function ProfileHero({
                         <div className="flex items-center gap-2 mb-2 md:mb-4 self-start md:self-end mt-2 md:mt-0">
                             {isOwnProfile ? (
                                 <>
-                                    <div className="hidden md:block">
-                                        <ProfileMessagesButton />
-                                    </div>
+                                    <ProfileMessagesButton />
                                     <ProfileSettingsButton
                                         currentUsername={profile?.username || null}
                                         currentFullName={profile?.full_name || null}
