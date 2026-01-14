@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { ProfileHero } from "@/components/profile/profile-hero";
-import { ProfileAboutSidebar } from "@/components/profile/profile-about-sidebar";
+
 import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
 import { SpaceBackgroundWrapper } from "@/components/home/space-background-wrapper";
 import { HubAlien } from "@/components/game/hub-alien";
@@ -78,6 +78,15 @@ export default async function ProfilePage() {
             .order('created_at', { ascending: false })
     ]);
 
+    // Construct stats object
+    const stats = {
+        followersCount: followStats.followersCount,
+        followingCount: followStats.followingCount,
+        articlesCount: articles?.length || 0,
+        questionsCount: questions?.length || 0,
+        answersCount: answers?.length || 0,
+    };
+
     return (
         <div className="min-h-screen bg-background relative overflow-hidden pb-20">
             {/* Space Background - Lazy Loaded */}
@@ -89,43 +98,30 @@ export default async function ProfilePage() {
                     profile={profile}
                     user={user}
                     isOwnProfile={true}
+                    stats={stats}
+                    badges={userBadges || []}
+                    createdAt={user.created_at}
                 />
             </div>
 
             {/* Main Content */}
-            <div className="container max-w-7xl mx-auto px-4 py-6 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-                    {/* Left Sidebar */}
-                    <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-                        <ProfileAboutSidebar
-                            profile={profile}
-                            stats={{
-                                articlesCount: articles?.length || 0,
-                                questionsCount: questions?.length || 0,
-                                answersCount: answers?.length || 0,
-                                followersCount: followStats.followersCount,
-                                followingCount: followStats.followingCount
-                            }}
-                            badges={userBadges || []}
-                            createdAt={user.created_at}
-                        />
-
-                        {/* 👽 Hub Alien Pet Game 👽 */}
-                        <div className="w-full">
-                            <HubAlien />
-                        </div>
+            <div className="container max-w-5xl mx-auto px-4 py-6 relative z-10 space-y-8">
+                {/* 👽 Hub Alien Pet Game 👽 - Compact Display */}
+                <div className="w-full flex justify-center">
+                    <div className="w-full max-w-sm">
+                        <HubAlien />
                     </div>
-
-                    {/* Main Content Feed */}
-                    <ProfileContentFeed
-                        articles={articles || []}
-                        questions={questions || []}
-                        answers={answers || []}
-                        bookmarkedArticles={bookmarkedArticles || []}
-                        bookmarkedQuestions={bookmarkedQuestions || []}
-                        drafts={drafts || []}
-                    />
                 </div>
+
+                {/* Main Content Feed */}
+                <ProfileContentFeed
+                    articles={articles || []}
+                    questions={questions || []}
+                    answers={answers || []}
+                    bookmarkedArticles={bookmarkedArticles || []}
+                    bookmarkedQuestions={bookmarkedQuestions || []}
+                    drafts={drafts || []}
+                />
             </div>
         </div>
     );

@@ -50,53 +50,53 @@ export function ProfileContentFeed({
         <div className="space-y-6">
             <Tabs defaultValue="articles" className="w-full">
                 {/* Tab Navigation - Cleaner */}
-                <TabsList className="w-full justify-start bg-card border-2 border-foreground/10 rounded-xl p-1 mb-4 flex-wrap h-auto gap-1">
+                <TabsList className="w-full justify-start h-auto p-0 bg-transparent gap-6 border-b border-foreground/10 mb-6 rounded-none">
                     <TabsTrigger
                         value="articles"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-none bg-transparent p-0 pb-3 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground transition-all font-bold text-sm"
                     >
-                        <FileText className="w-3.5 h-3.5 mr-1.5" />
+                        <FileText className="w-4 h-4 mr-2" />
                         Makaleler
-                        <span className="ml-1.5 opacity-60">({articles.length})</span>
+                        <span className="ml-1.5 text-xs opacity-60 font-normal">({articles.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="questions"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-none bg-transparent p-0 pb-3 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground transition-all font-bold text-sm"
                     >
-                        <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+                        <MessageSquare className="w-4 h-4 mr-2" />
                         Sorular
-                        <span className="ml-1.5 opacity-60">({questions.length})</span>
+                        <span className="ml-1.5 text-xs opacity-60 font-normal">({questions.length})</span>
                     </TabsTrigger>
 
                     <TabsTrigger
                         value="answers"
-                        className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                        className="rounded-none bg-transparent p-0 pb-3 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground transition-all font-bold text-sm"
                     >
-                        <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
+                        <MessageCircle className="w-4 h-4 mr-2" />
                         Cevaplar
-                        <span className="ml-1.5 opacity-60">({answers.length})</span>
+                        <span className="ml-1.5 text-xs opacity-60 font-normal">({answers.length})</span>
                     </TabsTrigger>
 
                     {isOwnProfile && drafts.length > 0 && (
                         <TabsTrigger
                             value="drafts"
-                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                            className="rounded-none bg-transparent p-0 pb-3 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground transition-all font-bold text-sm"
                         >
-                            <FileEdit className="w-3.5 h-3.5 mr-1.5" />
+                            <FileEdit className="w-4 h-4 mr-2" />
                             Taslaklar
-                            <span className="ml-1.5 opacity-60">({drafts.length})</span>
+                            <span className="ml-1.5 text-xs opacity-60 font-normal">({drafts.length})</span>
                         </TabsTrigger>
                     )}
 
                     {isOwnProfile && (
                         <TabsTrigger
                             value="saved"
-                            className="rounded-lg data-[state=active]:bg-foreground data-[state=active]:text-background text-muted-foreground transition-all font-bold text-xs px-4 py-2"
+                            className="rounded-none bg-transparent p-0 pb-3 border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-foreground data-[state=active]:text-foreground transition-all font-bold text-sm"
                         >
-                            <Bookmark className="w-3.5 h-3.5 mr-1.5" />
+                            <Bookmark className="w-4 h-4 mr-2" />
                             Kaydedilenler
-                            <span className="ml-1.5 opacity-60">({savedItems.length})</span>
+                            <span className="ml-1.5 text-xs opacity-60 font-normal">({savedItems.length})</span>
                         </TabsTrigger>
                     )}
                 </TabsList>
