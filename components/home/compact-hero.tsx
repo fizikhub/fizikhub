@@ -43,7 +43,7 @@ const ClassicUFO = () => (
 
 function ClassicHero() {
     return (
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-4 border-primary rounded-2xl mb-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.15)]">
+        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl mb-4 shadow-lg">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-orange-500/5 pointer-events-none" />
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[
@@ -61,13 +61,13 @@ function ClassicHero() {
                     />
                 ))}
             </div>
-            <div className="relative z-10 px-4 py-3 sm:px-5 sm:py-4">
+            <div className="relative z-10 px-5 py-4 sm:px-6 sm:py-5">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                        <h1 className="text-sm sm:text-lg md:text-xl font-black text-white leading-tight tracking-tight uppercase">
+                        <h1 className="text-base sm:text-xl md:text-2xl font-black text-white leading-tight tracking-tight uppercase">
                             BİLİMİ Tİ'YE ALIYORUZ
                         </h1>
-                        <p className="text-xs sm:text-base md:text-lg font-black mt-0.5 text-cyan-400 uppercase tracking-tight">
+                        <p className="text-sm sm:text-base md:text-lg font-bold mt-1 text-cyan-400/90 uppercase tracking-tight">
                             AMA CİDDİLİ ŞEKİLDE.
                         </p>
                     </div>
@@ -80,7 +80,7 @@ function ClassicHero() {
                     </motion.div>
                 </div>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         </div>
     );
 }

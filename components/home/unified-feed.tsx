@@ -23,90 +23,84 @@ interface UnifiedFeedProps {
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
-        <div className="grid grid-cols-1 gap-4 px-0">
-            {/* Note: User requested Grid layout, but the feed is logically vertical. 
-            The 'Scientific Neo-Brutalism' prompt asked for an organized hierarchy. 
-            I'll interpret this as a stark list with thick dividers first, to maintain readability on mobile.
-            Grid columns on desktop might clutter the feed. Sticking to stark vertical list with heavy borders. */}
-
-            <div className="border-4 border-primary bg-background shadow-[8px_8px_0px_0px_#000000]">
+        <div className="flex flex-col gap-6">
+            {/* Feed Container - Clean cards with subtle shadows */}
+            <div className="flex flex-col gap-6">
                 {items.map((item, index) => (
-                    <div key={`${item.type}-${item.data.id}`} className="group relative border-b-2 border-primary last:border-b-0">
+                    <motion.div
+                        key={`${item.type}-${item.data.id}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
+                        className="group"
+                    >
+                        {item.type === 'article' && (
+                            <SocialArticleCard
+                                article={item.data}
+                                index={index}
+                                initialLikes={item.data.likes_count || 0}
+                                initialComments={item.data.comments_count || 0}
+                                initialIsLiked={item.data.is_liked}
+                                initialIsBookmarked={item.data.is_bookmarked}
+                                badgeLabel="MAKALE"
+                                badgeClassName="bg-primary/10 text-primary px-2 py-0.5 rounded-md font-semibold text-xs"
+                            />
+                        )}
 
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.2 }}
-                            className="p-4 sm:p-6 hover:bg-secondary/20 transition-colors"
-                        >
-                            {/* Raw Index Number */}
-                            <div className="absolute top-2 right-2 font-mono text-[10px] text-muted-foreground opacity-30 group-hover:opacity-100">
-                                #{String(index + 1).padStart(3, '0')}
-                            </div>
+                        {item.type === 'blog' && (
+                            <SocialArticleCard
+                                article={item.data}
+                                index={index}
+                                initialLikes={item.data.likes_count || 0}
+                                initialComments={item.data.comments_count || 0}
+                                initialIsLiked={item.data.is_liked}
+                                initialIsBookmarked={item.data.is_bookmarked}
+                                badgeLabel="BLOG"
+                                badgeClassName="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
+                            />
+                        )}
 
-                            {item.type === 'article' && (
-                                <SocialArticleCard
-                                    article={item.data}
-                                    index={index}
-                                    initialLikes={item.data.likes_count || 0}
-                                    initialComments={item.data.comments_count || 0}
-                                    initialIsLiked={item.data.is_liked}
-                                    initialIsBookmarked={item.data.is_bookmarked}
-                                    badgeLabel="MAKALE"
-                                    badgeClassName="bg-black text-white px-2 py-0.5 rounded-none font-mono text-xs"
-                                />
-                            )}
-
-                            {item.type === 'blog' && (
-                                <SocialArticleCard
-                                    article={item.data}
-                                    index={index}
-                                    initialLikes={item.data.likes_count || 0}
-                                    initialComments={item.data.comments_count || 0}
-                                    initialIsLiked={item.data.is_liked}
-                                    initialIsBookmarked={item.data.is_bookmarked}
-                                    badgeLabel="BLOG"
-                                    badgeClassName="bg-white border border-black text-black px-2 py-0.5 rounded-none font-mono text-xs"
-                                />
-                            )}
-
-                            {item.type === 'question' && (
+                        {item.type === 'question' && (
+                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-all">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-gray-200 text-black px-2 py-0.5 rounded-none font-mono text-xs"
+                                    badgeClassName="bg-muted text-muted-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
                                 />
-                            )}
-                        </motion.div>
+                            </div>
+                        )}
 
-                        {/* Injected Content - Styled as Breaks */}
+                        {/* Injected Content - Soft styling */}
                         {index === 2 && (
-                            <div className="border-t-2 border-primary bg-accent p-6 text-center">
-                                <h3 className="text-xl font-black uppercase mb-2">Aramıza Katıl</h3>
+                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 border border-primary/10">
                                 <CommunityInviteBanner />
                             </div>
                         )}
 
                         {index === 5 && (
-                            <div className="border-t-2 border-primary p-0">
+                            <div className="mt-6 rounded-2xl overflow-hidden">
                                 <ForumTeaserCard />
                             </div>
                         )}
 
                         {index === 8 && (
-                            <div className="border-t-2 border-primary bg-primary text-primary-foreground p-6">
-                                <h3 className="font-mono text-xs uppercase mb-4">Haftanın Sorusu :: Hipotez Testi</h3>
+                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
+                                <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
+                                    Haftanın Sorusu
+                                </h3>
                                 <QuestionOfTheWeek />
                             </div>
                         )}
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 
-            {/* Suggested Users Footer */}
-            <div className="mt-8 border-2 border-dashed border-primary p-4">
-                <h3 className="font-mono text-xs uppercase mb-4 text-center">Önerilen Araştırmacılar</h3>
+            {/* Suggested Users Footer - Rounded and soft */}
+            <div className="mt-8 rounded-2xl bg-muted/30 border border-border/50 p-6">
+                <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 text-center">
+                    Önerilen Araştırmacılar
+                </h3>
                 <SuggestedUsersCard users={suggestedUsers} />
             </div>
         </div>

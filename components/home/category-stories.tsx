@@ -68,13 +68,10 @@ export function CategoryStories() {
                             {/* Main Card */}
                             <div
                                 className={cn(
-                                    "relative w-24 sm:w-28 backdrop-blur-sm border-2 border-border hover:border-foreground/20 transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
-                                    isBlood ? "bg-[rgb(40,0,0)] border-[rgb(100,20,20)]" : "bg-card/90",
+                                    "relative w-24 sm:w-28 backdrop-blur-sm rounded-xl border border-border/50 hover:border-border transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
+                                    isBlood ? "bg-[rgb(40,0,0)] border-[rgb(100,20,20)]" : "bg-card/80",
                                     isCybernetic && "cyber-card border border-cyan-500/20 bg-black/40 shadow-none !rounded-none"
                                 )}
-                                style={{
-                                    boxShadow: isCybernetic ? 'none' : `3px 3px 0px 0px rgba(200,20,20,0.4)`
-                                }}
                             >
                                 {/* Top Accent Line */}
                                 <div
