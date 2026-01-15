@@ -5,7 +5,7 @@ import { ProfileHero } from "@/components/profile/profile-hero";
 
 import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
 import { SpaceBackgroundWrapper } from "@/components/home/space-background-wrapper";
-import { HubAlien } from "@/components/game/hub-alien";
+
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -106,12 +106,7 @@ export default async function ProfilePage() {
 
             {/* Main Content */}
             <div className="container max-w-5xl mx-auto px-4 py-6 relative z-10 space-y-8">
-                {/* 👽 Hub Alien Pet Game 👽 - Compact Display */}
-                <div className="w-full flex justify-center">
-                    <div className="w-full max-w-sm">
-                        <HubAlien />
-                    </div>
-                </div>
+                {/* Main Content Feed */}
 
                 {/* Main Content Feed */}
                 <ProfileContentFeed
