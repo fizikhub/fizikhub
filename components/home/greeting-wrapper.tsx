@@ -12,15 +12,20 @@ export async function GreetingWrapper() {
         let userData = null;
 
         if (user) {
-            const { data: profile } = await supabase
+            console.log("GreetingWrapper: User found:", user.id);
+            const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('username, full_name')
                 .eq('id', user.id)
                 .single();
 
+            if (error) console.error("GreetingWrapper: Profile fetch error:", error);
             userData = profile;
+        } else {
+            console.log("GreetingWrapper: No user session found.");
         }
 
+        console.log("GreetingWrapper: Passing user data to client:", userData);
         return <DailyGreeting user={userData} />;
     } catch (error) {
         console.error("GreetingWrapper Error:", error);

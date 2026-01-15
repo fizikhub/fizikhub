@@ -19,7 +19,13 @@ export function DailyGreeting({ user }: DailyGreetingProps) {
 
     useEffect(() => {
         setMounted(true);
-        if (!user) return; // Only greet logged-in users? Or generic greeting for guests? Let's assume logged in per request "kullanıcının adı ile hoşgeldin desin"
+        console.log("DailyGreeting: Mounted, user prop:", user);
+
+        // Removed early return for user check to allow debugging/guest view
+        // if (!user) {
+        //     console.log("DailyGreeting: No user, aborting.");
+        //     return;
+        // }
 
         const today = new Date().toLocaleDateString('tr-TR');
         const lastGreeting = localStorage.getItem('fizikhub_last_greeting');
@@ -32,7 +38,7 @@ export function DailyGreeting({ user }: DailyGreetingProps) {
 
         // Determine Time Logic
         const hour = new Date().getHours();
-        const userName = user.full_name?.split(' ')[0] || user.username || "Kaşif"; // First name or username
+        const userName = user?.full_name?.split(' ')[0] || user?.username || "Gezgin"; // Fallback to Gezgin
 
         let greetingData = { title: "", body: "", icon: Sun };
 
@@ -72,6 +78,7 @@ export function DailyGreeting({ user }: DailyGreetingProps) {
 
         // Show after a small delay
         const timer = setTimeout(() => {
+            console.log("DailyGreeting: Setting visible to TRUE");
             setIsVisible(true);
             localStorage.setItem('fizikhub_last_greeting', today);
         }, 1500);
@@ -99,7 +106,7 @@ export function DailyGreeting({ user }: DailyGreetingProps) {
                     animate={{ y: 0, opacity: 1, scale: 1 }}
                     exit={{ y: 20, opacity: 0, scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-auto sm:max-w-md z-50 pointer-events-none"
+                    className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-auto sm:max-w-md z-[100] pointer-events-none"
                 >
                     <div className="pointer-events-auto bg-foreground/95 text-background backdrop-blur-md px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 relative overflow-hidden border border-white/10 ring-1 ring-black/5">
 
