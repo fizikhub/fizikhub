@@ -44,9 +44,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             <GlobalAdminNotification />
             {showOnboarding && <OnboardingTour />}
             <Navbar />
-            <main className="flex-1">
-                {children}
-            </main>
+            {children}
             <Footer />
             <BottomNav />
             <DailyGreeting />
