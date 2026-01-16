@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Atom } from "lucide-react";
+import { X, Atom, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 // Daha doğal, samimi ve "içerden" espriler
@@ -111,7 +111,7 @@ export function DailyGreeting() {
                     animate={{ y: 0, opacity: 1, rotate: 0 }}
                     exit={{ y: 150, opacity: 0, rotate: 6 }}
                     transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[380px] px-4"
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[340px] px-4"
                 >
                     {/* Main Card - Monochrome Brutalist */}
                     <div className="relative group/card cursor-default">
@@ -121,51 +121,47 @@ export function DailyGreeting() {
                         {/* Main Content Layer */}
                         <div className="relative bg-zinc-950 text-zinc-50 border-2 border-white rounded-xl p-0 overflow-hidden transition-transform duration-200 group-hover/card:-translate-y-1 group-hover/card:-translate-x-1">
 
-                            {/* Stars Background Effect */}
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-                                backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-                                backgroundSize: '24px 24px'
-                            }}></div>
-
-                            {/* Header Strip */}
-                            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-white/20 bg-zinc-900/80 backdrop-blur-sm relative z-10">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-zinc-400">
-                                        SİSTEM MESAJI
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => setIsVisible(false)}
-                                    className="p-1 hover:bg-white hover:text-black rounded-md transition-colors"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
+                            {/* Scattered Stars Background */}
+                            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+                                <Star className="absolute top-2 left-6 w-3 h-3 text-white animate-pulse" style={{ animationDuration: '3s' }} />
+                                <Star className="absolute top-8 right-12 w-2 h-2 text-white animate-pulse" style={{ animationDuration: '4s' }} />
+                                <Star className="absolute bottom-6 left-10 w-2 h-2 text-white animate-pulse" style={{ animationDuration: '2.5s' }} />
+                                <Star className="absolute bottom-10 right-4 w-4 h-4 text-white animate-pulse" style={{ animationDuration: '5s' }} />
+                                <Star className="absolute top-1/2 left-1/2 w-1.5 h-1.5 text-white" />
                             </div>
 
+                            {/* Close Button - Floated */}
+                            <button
+                                onClick={() => setIsVisible(false)}
+                                className="absolute top-2 right-2 p-1.5 text-zinc-400 hover:bg-white hover:text-black rounded-md transition-colors z-20"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+
                             {/* Body */}
-                            <div className="p-5 flex gap-4 relative z-10">
-                                <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 bg-zinc-900 text-white rounded-lg border-2 border-white/20 flex items-center justify-center shadow-inner group-hover/card:border-white transition-colors">
-                                        <Atom className="w-6 h-6 animate-[spin_10s_linear_infinite]" />
+                            <div className="p-4 pt-5 flex gap-3 relative z-10 items-start">
+                                <div className="flex-shrink-0 pt-0.5">
+                                    <div className="w-10 h-10 bg-zinc-900 text-white rounded-lg border-2 border-white/20 flex items-center justify-center shadow-inner group-hover/card:border-white transition-colors">
+                                        <Atom className="w-5 h-5 animate-[spin_10s_linear_infinite]" />
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <h4 className="text-lg font-black tracking-tight leading-none text-white">
-                                        {greeting}, <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{userName}</span>.
+                                <div className="flex flex-col gap-0.5 pr-4">
+                                    <h4 className="text-base font-black tracking-tight leading-4 text-white">
+                                        {greeting}, <br />
+                                        <span className="text-lg bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{userName}</span>.
                                     </h4>
-                                    <p className="text-sm font-medium text-zinc-400 leading-snug mt-1">
+                                    <p className="text-xs font-medium text-zinc-400 leading-snug mt-1.5">
                                         {message}
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Progress Bar Animation (Auto-close visualization) */}
+                            {/* Progress Bar Animation */}
                             <motion.div
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
                                 transition={{ duration: 15, ease: "linear" }}
-                                className="h-1 bg-white/20 relative z-10"
+                                className="h-0.5 bg-white/20 relative z-10"
                             />
                         </div>
                     </div>
