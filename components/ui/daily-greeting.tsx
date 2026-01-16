@@ -11,51 +11,51 @@ const TIME_BASED_MESSAGES = [
     // Sabah (06:00 - 11:00)
     {
         min: 6, max: 11, messages: [
-            "Kahve henüz kan dolaşımına karışmadıysa ani hareketlerden kaçın.",
-            "Güneş doğdu, fotosentez yapamıyoruz ama kahve var, o da olur.",
-            "Uyanmak zor, yatak yerçekimiyle işbirliği yapıyor sanki.",
-            "Sabahın köründe burada ne işin var? Azim mi, uykusuzluk mu?",
-            "Bugün atomu parçalamayacaksan bile en azından yatağını topla."
+            "Fotonlar yola çıktı, senin de uyanma vaktin geldi şampiyon.",
+            "Sabahın bu saatinde buradaysan, evrenin sırlarını çözmeye kararlısın demektir.",
+            "Kahveni kap gel, termodinamik yasalarını alt üst edecek enerjin var bugün.",
+            "Güneş nötronlarını saçmaya başladı, biz de bilgi saçalım mı?",
+            "Bugün harika bir keşif yapacakmışsın gibi bir his var içimde."
         ]
     },
     // Öğle (11:00 - 15:00)
     {
         min: 11, max: 15, messages: [
-            "Evren o kadar büyük ki, senin dertler yanında kuantum altı parçacık kalır.",
-            "Odaklanman lazım ama o telefonun çekim gücü kara delikten hallice, biliyorum.",
-            "Mola verip boşluğa bakmak da çalışmaya dahil mi? Bence dahil.",
-            "Beynin nöron ateşlemesi yavaşladıysa bir çikolata ateşle.",
-            "Bugün dünyayı kurtarmasan da olur, kendini kurtar yeter."
+            "Zaman göreceli olabilir ama öğle arası kesinlikle şart.",
+            "Güneş tepede, gölge boyun en kısa halinde. Bilginin gölgesi ise hiç olmadığı kadar büyük.",
+            "Beynindeki sinapslar ateşleniyorken kısa bir mola ver, dopamin depola.",
+            "Schrödinger'in kedisi bile kutudan çıktı, sen hala çalışıyor musun? Harikasın.",
+            "Evren genişlemeye devam ediyor, senin vizyonun da öyle."
         ]
     },
     // İkindi (15:00 - 19:00)
     {
         min: 15, max: 19, messages: [
-            "Günün yorgunluğunu atmak için buradasın, hoş geldin.",
-            "Einstein bile bazen sadece pencereden bakardı, biraz nefes al.",
-            "Kaos teorisine yenilme, günü düzenli bitir.",
-            "Enerji korunumu yasası gereği şu an dinlenmen lazım, ben demiyorum fizik diyor.",
-            "Kafandaki sekmeleri kapatma vakti yaklaşıyor."
+            "İkinci kahve zamanı geldiyse, entropiye karşı küçük bir zafer kazanalıım.",
+            "Günün son düzlüğü... Işık hızına yaklaşamasan da tempon harika.",
+            "Yorgunluk sadece beynindeki bir illüzyon... Şaka şaka, dinlenmeyi unutma.",
+            "Bugün uzay-zaman dokusunda güzel bir iz bıraktın bence.",
+            "Kaos teorisi bugün sana merhametli davrandı mı?"
         ]
     },
     // Akşam/Gece (19:00 - 23:00)
     {
         min: 19, max: 23, messages: [
-            "Dışarısı karanlık, içerisi aydınlık... yani umarım ekran parlaklığın kısıktır.",
-            "Yıldızlar çıktı, senin çalışma masası hala dağınık mı?",
-            "Bu saatte ders çalışıyorsan, ya çok zekisin ya da işi son güne bıraktın.",
-            "Karanlık madde kadar gizemli takılma, gel iki çift laf edelim (şaka şaka).",
-            "Güneş nöbeti diğer yıldızlara devretti."
+            "Güneş nöbeti diğer yıldızlara devretti, sahne senin.",
+            "Günün muhasebesini yapma vakti... Bugün ne öğrendin, ne keşfettin?",
+            "Karanlık çökünce yıldızlar daha parlak görünür. Senin fikirlerin gibi.",
+            "Hala buradaysan, merak duygun yerçekiminden daha güçlü demektir.",
+            "Melatonin salgılanmadan önce son bir teoriyi çürütebiliriz bence."
         ]
     },
     // Gece Yarısı (23:00 - 06:00)
     {
         min: 23, max: 6, messages: [
-            "Bu saatte ayaktaysan ya çok büyük bir keşif peşindesin ya da yarın sınav var.",
-            "Baykuşlar ve fizikçiler için mesai saati başladı.",
-            "Uyku, zayıflar içindir... dermişim, git yat aslında.",
-            "Gece sessizliği, tam odaklanmalık... ya da dizi izlemelik.",
-            "Beynin şu an alfa dalgası yayıyor olması lazımdı ama buradasın."
+            "Galileo da geceleri gökyüzünü izlerdi, yalnız değilsin.",
+            "Evren uyurken sırlar fısıldar... Duyabiliyor musun?",
+            "Bu saatte ayaktaysan ya aşıksın ya da fizikçi... Ya da ikisi birden.",
+            "Yıldız tozuyuz sonuçta, belki de ait olduğun yer gecedir.",
+            "Rüyalar bazen gerçeklikten daha öğreticidir. İyi uykular dahi çocuk."
         ]
     }
 ];

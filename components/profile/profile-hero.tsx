@@ -257,10 +257,10 @@ export function ProfileHero({
                                         </Avatar>
                                     </div>
 
-                                    {/* Verified Badge */}
+                                    {/* Verified Badge - Tighter Fit */}
                                     {profile?.is_verified && (
-                                        <div className="absolute bottom-1 right-1 bg-blue-500 text-white rounded-full p-0.5 border-[3px] border-background shadow-sm" title="Doğrulanmış Hesap">
-                                            <BadgeCheck className="w-4 h-4" />
+                                        <div className="absolute bottom-0 right-0 translate-x-[15%] translate-y-[15%] bg-blue-500 text-white rounded-full p-1 border-[4px] border-background shadow-lg z-20" title="Doğrulanmış Hesap">
+                                            <BadgeCheck className="w-5 h-5" />
                                         </div>
                                     )}
                                 </div>
