@@ -163,41 +163,6 @@ export function DailyGreeting() {
                                     animate={{ opacity: [0.3, 0.8, 0.3], scale: [1, 1.2, 1] }}
                                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                                 />
-
-                                {/* Realistic Shooting Star - Fast and sharp */}
-                                <motion.div
-                                    className="absolute h-[1px] bg-gradient-to-r from-transparent via-white to-transparent"
-                                    style={{ width: '80px', top: '20%', left: '0%' }}
-                                    animate={{
-                                        x: [250, -100], // Moves left across
-                                        y: [-50, 100],  // Moves down
-                                        opacity: [0, 1, 1, 0]
-                                    }}
-                                    transition={{
-                                        duration: 0.8,
-                                        repeat: Infinity,
-                                        repeatDelay: 6,
-                                        ease: "circIn" // Sharp start
-                                    }}
-                                />
-
-                                {/* Another Shooting Star - Different angle */}
-                                <motion.div
-                                    className="absolute h-[1px] bg-gradient-to-r from-transparent via-cyan-200 to-transparent"
-                                    style={{ width: '60px', top: '10%', right: '-10%' }}
-                                    animate={{
-                                        x: [0, -200],
-                                        y: [0, 150],
-                                        opacity: [0, 1, 0]
-                                    }}
-                                    transition={{
-                                        duration: 1.2,
-                                        repeat: Infinity,
-                                        repeatDelay: 9,
-                                        delay: 3,
-                                        ease: "easeInOut"
-                                    }}
-                                />
                             </div>
 
                             {/* Close Button - Floated */}

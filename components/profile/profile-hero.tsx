@@ -235,64 +235,70 @@ export function ProfileHero({
             <div className={`container max-w-5xl mx-auto px-4 ${isRepositioning ? 'pointer-events-none opacity-50' : ''}`}>
                 <div className="flex flex-col relative">
 
-                    {/* Top Row: Avatar + Actions */}
-                    <div className="flex flex-col md:flex-row md:items-end justify-between -mt-[3.5rem] md:-mt-[4rem] mb-3 gap-3">
-                        {/* Avatar */}
-                        <div className="relative group/avatar">
-                            <div className={cn(
-                                "relative w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full border-[4px] border-background bg-background shadow-sm overflow-hidden",
-                                isCute && "border-[#FF1493] border-[3px]"
-                            )}>
-                                <Avatar className="w-full h-full rounded-full">
-                                    <AvatarImage src={profile?.avatar_url || ""} className="object-cover" />
-                                    <AvatarFallback className={cn(
-                                        "text-3xl md:text-4xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 font-bold",
-                                        isPink && "from-pink-100 to-pink-200 text-pink-500",
-                                        isDarkPink && "from-pink-950 to-pink-900 text-pink-300"
+                    {/* Top Row: Avatar + Actions (Refactored) */}
+                    <div className="flex flex-col mb-3 -mt-[3.5rem] md:-mt-[4rem] px-1">
+                        <div className="flex items-end justify-between w-full">
+                            {/* Avatar Column */}
+                            <div className="flex flex-col gap-3">
+                                <div className="relative group/avatar">
+                                    <div className={cn(
+                                        "relative w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full border-[4px] border-background bg-background shadow-sm overflow-hidden",
+                                        isCute && "border-[#FF1493] border-[3px]"
                                     )}>
-                                        {profile?.full_name?.charAt(0) || profile?.username?.charAt(0)?.toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                </Avatar>
+                                        <Avatar className="w-full h-full rounded-full">
+                                            <AvatarImage src={profile?.avatar_url || ""} className="object-cover" />
+                                            <AvatarFallback className={cn(
+                                                "text-3xl md:text-4xl bg-gradient-to-br from-gray-100 to-gray-200 text-gray-500 font-bold",
+                                                isPink && "from-pink-100 to-pink-200 text-pink-500",
+                                                isDarkPink && "from-pink-950 to-pink-900 text-pink-300"
+                                            )}>
+                                                {profile?.full_name?.charAt(0) || profile?.username?.charAt(0)?.toUpperCase() || "U"}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </div>
+
+                                    {/* Verified Badge */}
+                                    {profile?.is_verified && (
+                                        <div className="absolute bottom-1 right-1 bg-blue-500 text-white rounded-full p-0.5 border-[3px] border-background shadow-sm" title="Doğrulanmış Hesap">
+                                            <BadgeCheck className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Action Buttons - Moved Below Avatar */}
+                                <div className="flex items-center gap-2">
+                                    {isOwnProfile ? (
+                                        <>
+                                            <ProfileMessagesButton />
+                                            <ProfileSettingsButton
+                                                currentUsername={profile?.username || null}
+                                                currentFullName={profile?.full_name || null}
+                                                currentBio={profile?.bio || null}
+                                                currentAvatarUrl={profile?.avatar_url || null}
+                                                currentCoverUrl={profile?.cover_url || null}
+                                                currentWebsite={profile?.website || null}
+                                                currentSocialLinks={profile?.social_links || null}
+                                                userEmail={user?.email || null}
+                                                usernameChangeCount={profile?.username_changes_count || 0}
+                                            />
+                                        </>
+                                    ) : (
+                                        user && targetUserId && (
+                                            <>
+                                                <StartChatButton otherUserId={targetUserId} />
+                                                <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
+                                            </>
+                                        )
+                                    )}
+                                </div>
                             </div>
 
-                            {/* Verified Badge */}
-                            {profile?.is_verified && (
-                                <div className="absolute bottom-1 right-1 bg-blue-500 text-white rounded-full p-0.5 border-[3px] border-background shadow-sm" title="Doğrulanmış Hesap">
-                                    <BadgeCheck className="w-4 h-4" />
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Action Buttons (Desktop & Mobile) */}
-                        <div className="flex items-center gap-2 mb-1 self-end">
-                            {isOwnProfile ? (
-                                <>
-                                    <ProfileMessagesButton />
-                                    <ProfileSettingsButton
-                                        currentUsername={profile?.username || null}
-                                        currentFullName={profile?.full_name || null}
-                                        currentBio={profile?.bio || null}
-                                        currentAvatarUrl={profile?.avatar_url || null}
-                                        currentCoverUrl={profile?.cover_url || null}
-                                        currentWebsite={profile?.website || null}
-                                        currentSocialLinks={profile?.social_links || null}
-                                        userEmail={user?.email || null}
-                                        usernameChangeCount={profile?.username_changes_count || 0}
-                                    />
-                                </>
-                            ) : (
-                                user && targetUserId && (
-                                    <>
-                                        <StartChatButton otherUserId={targetUserId} />
-                                        <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
-                                    </>
-                                )
-                            )}
+                            {/* Empty right side or other actions if needed later */}
                         </div>
                     </div>
 
                     {/* Profile Text Info */}
-                    <div className="space-y-3 px-1">
+                    <div className="space-y-3 px-1 mt-1">
                         {/* Name and Bio Block */}
                         <div>
                             <div className="flex items-center gap-2 flex-wrap mb-0.5">
