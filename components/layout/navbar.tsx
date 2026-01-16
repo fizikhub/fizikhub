@@ -93,11 +93,19 @@ export function Navbar() {
     return (
         <>
             <nav className={cn(
-                "sticky top-0 z-50 w-full transition-all duration-300",
+                "sticky top-0 z-50 w-full transition-all duration-500 ease-in-out",
                 isScrolled
-                    ? "glass-panel border-b border-[#2E2E2E]"
+                    ? "bg-background/60 dark:bg-black/40 backdrop-blur-2xl border-b border-primary/20 shadow-[0_8px_30px_rgb(0,0,0,0.12)] supports-[backdrop-filter]:bg-background/30"
                     : "bg-transparent border-b border-transparent"
             )}>
+                {/* Liquid Glass Shine Effect - Only visible when scrolled */}
+                <div className={cn(
+                    "absolute inset-0 pointer-events-none transition-opacity duration-500",
+                    isScrolled ? "opacity-100" : "opacity-0"
+                )}>
+                    <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+                    <div className="absolute inset-x-0 -bottom-4 h-4 bg-gradient-to-b from-primary/5 to-transparent blur-sm" />
+                </div>
                 <div className="container flex h-12 md:h-16 items-center justify-between px-4 md:px-6">
                     <Logo />
 
