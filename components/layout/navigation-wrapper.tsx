@@ -28,6 +28,11 @@ const SlimeEffects = dynamic(
     { ssr: false }
 );
 
+const FloatingActionButton = dynamic(
+    () => import("@/components/layout/floating-action-button").then(mod => mod.FloatingActionButton),
+    { ssr: false }
+);
+
 export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
     const pathname = usePathname();
     // Hide navigation on onboarding and auth pages (login, verify) for a cleaner focus
