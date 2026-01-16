@@ -7,7 +7,27 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 
 
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
-import { DailyGreeting } from "@/components/ui/daily-greeting";
+import dynamic from "next/dynamic";
+
+const DailyGreeting = dynamic(
+    () => import("@/components/ui/daily-greeting").then(mod => mod.DailyGreeting),
+    { ssr: false }
+);
+
+const GlobalAdminNotification = dynamic(
+    () => import("@/components/global-admin-notification").then(mod => mod.GlobalAdminNotification),
+    { ssr: false }
+);
+
+const GlobalEffects = dynamic(
+    () => import("@/components/effects/global-effects").then(mod => mod.GlobalEffects),
+    { ssr: false }
+);
+
+const FloatingActionButton = dynamic(
+    () => import("@/components/layout/floating-action-button").then(mod => mod.FloatingActionButton),
+    { ssr: false }
+);
 
 export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
     const pathname = usePathname();
@@ -20,6 +40,8 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
 
     return (
         <>
+            <GlobalEffects />
+            <GlobalAdminNotification />
             {showOnboarding && <OnboardingTour />}
             <Navbar />
             <main className="flex-1">
@@ -28,6 +50,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             <Footer />
             <BottomNav />
             <DailyGreeting />
+            <FloatingActionButton />
         </>
     );
 }

@@ -128,16 +128,15 @@ const jsonLd = {
 };
 
 import { Toaster } from "sonner";
-import { GlobalAdminNotification } from "@/components/global-admin-notification";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
-import { GlobalEffects } from "@/components/effects/global-effects";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
-
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
-import { FloatingActionButton } from "@/components/layout/floating-action-button";
+
+// Dynamic Imports Removed (Moved to NavigationWrapper)
+// import dynamic from 'next/dynamic';
 
 export default async function RootLayout({
   children,
@@ -241,17 +240,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <FramerMotionProvider>
-            <GlobalEffects />
             <TimeLimitProvider>
-              <GlobalAdminNotification />
-
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
-
-              {/* Floating Action Button */}
-              <FloatingActionButton />
-
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster

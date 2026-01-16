@@ -37,6 +37,10 @@ const nextConfig: NextConfig = {
     },
   },
 
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
   // Security & Caching Headers
   async headers() {
     return [
