@@ -150,18 +150,18 @@ export function Navbar() {
                         <AuthButton />
                     </div>
 
-                    {/* Mobile Actions - Soft Neo-Brutalism */}
-                    <div className="lg:hidden flex items-center gap-2">
+                    {/* Mobile Actions - Clean & Minimal */}
+                    <div className="lg:hidden flex items-center gap-1.5">
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 rounded-xl border-2 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95"
+                            className="w-10 h-10 hover:bg-transparent text-foreground/80 hover:text-primary transition-colors hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] active:scale-95"
                         >
-                            <Search className="h-5 w-5" />
+                            <Search className="h-5 w-5" strokeWidth={2.5} />
                         </Button>
 
-                        <div className="bg-white/5 rounded-xl border-2 border-white/5 w-10 h-10 flex items-center justify-center overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-95">
+                        <div className="w-10 h-10 flex items-center justify-center text-foreground/80 hover:text-primary transition-colors hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] active:scale-95 cursor-pointer">
                             <NotificationBell />
                         </div>
 
@@ -170,16 +170,16 @@ export function Navbar() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-10 h-10 rounded-xl border-2 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 ml-0"
+                                    className="w-10 h-10 hover:bg-transparent text-foreground/80 hover:text-primary transition-colors hover:drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] active:scale-95 ml-0"
                                     suppressHydrationWarning
                                 >
-                                    <Menu className="h-6 w-6" />
+                                    <Menu className="h-6 w-6" strokeWidth={2.5} />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[280px] sm:w-[350px] border-l-2 border-black dark:border-white p-0 bg-background">
-                                <SheetHeader className="relative p-6 border-b-2 border-black dark:border-white overflow-hidden bg-black min-h-[140px] flex items-center justify-center">
+                            <SheetContent side="right" className="w-[280px] sm:w-[350px] border-l border-white/10 p-0 bg-background/95 backdrop-blur-3xl shadow-2xl">
+                                <SheetHeader className="relative p-6 border-b border-white/10 overflow-hidden bg-black/40 min-h-[140px] flex items-center justify-center">
                                     {/* Space Background Layer 1 (Base) */}
-                                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/80 via-black to-black" />
+                                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/40 via-transparent to-transparent" />
 
                                     {/* Stars Layer 1 (Small & Dense) */}
                                     <div className="absolute inset-0 opacity-40">
@@ -209,7 +209,7 @@ export function Navbar() {
 
                                     <div className="relative z-10 w-full flex justify-center items-center">
                                         <span className="text-4xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_1px_20px_rgba(255,255,255,0.4)]">
-                                            FIZIKHUB
+                                            FİZİKHUB
                                         </span>
                                     </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>

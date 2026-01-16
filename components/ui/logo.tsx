@@ -13,10 +13,10 @@ export function Logo() {
                 </div>
             </div>
 
-            <div className="relative flex flex-col leading-none">
+            <div className="relative flex flex-col leading-none animate-[float_4s_ease-in-out_infinite]">
                 {/* Main Text with Gradient and Drop Shadow */}
                 <span className="text-2xl sm:text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-foreground via-foreground to-primary/50 drop-shadow-sm group-hover:to-primary transition-all duration-300">
-                    FIZIKHUB
+                    FİZİKHUB
                 </span>
 
                 {/* Subtle underline decoration */}

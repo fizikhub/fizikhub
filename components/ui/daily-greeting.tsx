@@ -6,50 +6,66 @@ import { X, Atom } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 // Daha doğal, samimi ve "içerden" espriler
-const TIME_BASED_MESSAGES = {
-    morning: [ // 06:00 - 12:00
-        "Kahve henüz kan dolaşımına karışmadıysa ani hareketlerden kaçın.",
-        "Güneş doğdu, fotosentez yapamıyoruz ama kahve var, o da olur.",
-        "Uyanmak zor, yatak yerçekimiyle işbirliği yapıyor sanki.",
-        "Sabahın köründe burada ne işin var? Azim mi, uykusuzluk mu?",
-        "Bugün atomu parçalamayacaksan bile en azından yatağını topla."
-    ],
-    day: [ // 12:00 - 20:00
-        "Evren o kadar büyük ki, senin dertler yanında kuantum altı parçacık kalır.",
-        "Odaklanman lazım ama o telefonun çekim gücü kara delikten hallice, biliyorum.",
-        "Mola verip boşluğa bakmak da çalışmaya dahil mi? Bence dahil.",
-        "Beynin nöron ateşlemesi yavaşladıysa bir çikolata ateşle.",
-        "Bugün dünyayı kurtarmasan da olur, kendini kurtar yeter."
-    ],
-    evening: [ // 20:00 - 24:00
-        "Günün yorgunluğunu atmak için buradasın, hoş geldin.",
-        "Dışarısı karanlık, içerisi aydınlık... yani umarım ekran parlaklığın kısıktır.",
-        "Yıldızlar çıktı, senin çalışma masası hala dağınık mı?",
-        "Bu saatte ders çalışıyorsan, ya çok zekisin ya da işi son güne bıraktın.",
-        "Karanlık madde kadar gizemli takılma, gel iki çift laf edelim (şaka şaka)."
-    ],
-    night: [ // 00:00 - 02:00
-        "Bu saatte ayaktaysan ya çok büyük bir keşif peşindesin ya da yarın sınav var.",
-        "Baykuşlar ve fizikçiler için mesai saati başladı.",
-        "Uyku, zayıflar içindir... dermişim, git yat aslında.",
-        "Gece sessizliği, tam odaklanmalık... ya da dizi izlemelik.",
-        "Beynin şu an alfa dalgası yayıyor olması lazımdı ama buradasın."
-    ],
-    late: [ // 02:00 - 06:00
-        "Ciddi soruyorum, vampir misin? Yat uyu artık.",
-        "Beynin şuan %1 kapasiteyle çalışıyor, zorlama bence.",
-        "Bu saatte burada kimse yok, bi sen bi ben. Git uyu hadi.",
-        "Rüyanda fizik çözmek istemiyorsan yatağa gitme vakti.",
-        "Gözlerin kapanıyor... yerçekimine direnme, yastığa teslim ol."
-    ]
-};
+// Daha doğal, samimi ve "içerden" espriler
+const TIME_BASED_MESSAGES = [
+    // Sabah (06:00 - 11:00)
+    {
+        min: 6, max: 11, messages: [
+            "Kahve henüz kan dolaşımına karışmadıysa ani hareketlerden kaçın.",
+            "Güneş doğdu, fotosentez yapamıyoruz ama kahve var, o da olur.",
+            "Uyanmak zor, yatak yerçekimiyle işbirliği yapıyor sanki.",
+            "Sabahın köründe burada ne işin var? Azim mi, uykusuzluk mu?",
+            "Bugün atomu parçalamayacaksan bile en azından yatağını topla."
+        ]
+    },
+    // Öğle (11:00 - 15:00)
+    {
+        min: 11, max: 15, messages: [
+            "Evren o kadar büyük ki, senin dertler yanında kuantum altı parçacık kalır.",
+            "Odaklanman lazım ama o telefonun çekim gücü kara delikten hallice, biliyorum.",
+            "Mola verip boşluğa bakmak da çalışmaya dahil mi? Bence dahil.",
+            "Beynin nöron ateşlemesi yavaşladıysa bir çikolata ateşle.",
+            "Bugün dünyayı kurtarmasan da olur, kendini kurtar yeter."
+        ]
+    },
+    // İkindi (15:00 - 19:00)
+    {
+        min: 15, max: 19, messages: [
+            "Günün yorgunluğunu atmak için buradasın, hoş geldin.",
+            "Einstein bile bazen sadece pencereden bakardı, biraz nefes al.",
+            "Kaos teorisine yenilme, günü düzenli bitir.",
+            "Enerji korunumu yasası gereği şu an dinlenmen lazım, ben demiyorum fizik diyor.",
+            "Kafandaki sekmeleri kapatma vakti yaklaşıyor."
+        ]
+    },
+    // Akşam/Gece (19:00 - 23:00)
+    {
+        min: 19, max: 23, messages: [
+            "Dışarısı karanlık, içerisi aydınlık... yani umarım ekran parlaklığın kısıktır.",
+            "Yıldızlar çıktı, senin çalışma masası hala dağınık mı?",
+            "Bu saatte ders çalışıyorsan, ya çok zekisin ya da işi son güne bıraktın.",
+            "Karanlık madde kadar gizemli takılma, gel iki çift laf edelim (şaka şaka).",
+            "Güneş nöbeti diğer yıldızlara devretti."
+        ]
+    },
+    // Gece Yarısı (23:00 - 06:00)
+    {
+        min: 23, max: 6, messages: [
+            "Bu saatte ayaktaysan ya çok büyük bir keşif peşindesin ya da yarın sınav var.",
+            "Baykuşlar ve fizikçiler için mesai saati başladı.",
+            "Uyku, zayıflar içindir... dermişim, git yat aslında.",
+            "Gece sessizliği, tam odaklanmalık... ya da dizi izlemelik.",
+            "Beynin şu an alfa dalgası yayıyor olması lazımdı ama buradasın."
+        ]
+    }
+];
 
 function getGreetingData(hour: number) {
-    if (hour >= 6 && hour < 12) return { greeting: "Günaydın", time: 'morning' as keyof typeof TIME_BASED_MESSAGES };
-    if (hour >= 12 && hour < 20) return { greeting: "İyi Günler", time: 'day' as keyof typeof TIME_BASED_MESSAGES };
-    if (hour >= 20 && hour < 24) return { greeting: "İyi Akşamlar", time: 'evening' as keyof typeof TIME_BASED_MESSAGES };
-    if (hour >= 0 && hour < 2) return { greeting: "İyi Geceler", time: 'night' as keyof typeof TIME_BASED_MESSAGES };
-    return { greeting: "Uyuman Lazım", time: 'late' as keyof typeof TIME_BASED_MESSAGES };
+    if (hour >= 6 && hour < 12) return { greeting: "Günaydın" };
+    if (hour >= 12 && hour < 18) return { greeting: "Tünaydın" }; // Adjusted to fit new ranges better
+    if (hour >= 18 && hour < 22) return { greeting: "İyi Akşamlar" };
+    if (hour >= 22 || hour < 2) return { greeting: "İyi Geceler" };
+    return { greeting: "Uyuman Lazım" };
 }
 
 export function DailyGreeting() {
@@ -63,12 +79,25 @@ export function DailyGreeting() {
     useEffect(() => {
         setMounted(true);
         const hour = new Date().getHours();
-        const { greeting: greetingText, time } = getGreetingData(hour);
+        const { greeting: greetingText } = getGreetingData(hour);
         setGreeting(greetingText);
 
-        // Pick random message for that time
-        const msgs = TIME_BASED_MESSAGES[time];
-        setMessage(msgs[Math.floor(Math.random() * msgs.length)]);
+        // Pick random message for that time based on the new structure
+        const timeSlot = TIME_BASED_MESSAGES.find(slot => {
+            if (slot.min <= slot.max) {
+                return hour >= slot.min && hour < slot.max;
+            } else { // Handles overnight slots like 23:00 - 06:00
+                return hour >= slot.min || hour < slot.max;
+            }
+        });
+
+        if (timeSlot) {
+            const msgs = timeSlot.messages;
+            setMessage(msgs[Math.floor(Math.random() * msgs.length)]);
+        } else {
+            setMessage("Evrenin derinliklerinden bir mesaj: Merhaba!"); // Fallback message
+        }
+
 
         const checkAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
