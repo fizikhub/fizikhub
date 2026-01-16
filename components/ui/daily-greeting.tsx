@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, User } from "lucide-react";
+import { X, Atom } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 // Daha doğal, samimi ve "içerden" espriler
@@ -88,8 +88,8 @@ export function DailyGreeting() {
                     setIsVisible(true);
                 }, 1000);
 
-                // Auto hide after 8 seconds
-                const hideTimer = setTimeout(() => setIsVisible(false), 9000);
+                // Auto hide after 15 seconds
+                const hideTimer = setTimeout(() => setIsVisible(false), 16000);
 
                 return () => {
                     clearTimeout(timer);
@@ -121,10 +121,16 @@ export function DailyGreeting() {
                         {/* Main Content Layer */}
                         <div className="relative bg-zinc-950 text-zinc-50 border-2 border-white rounded-xl p-0 overflow-hidden transition-transform duration-200 group-hover/card:-translate-y-1 group-hover/card:-translate-x-1">
 
+                            {/* Stars Background Effect */}
+                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+                                backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+                                backgroundSize: '24px 24px'
+                            }}></div>
+
                             {/* Header Strip */}
-                            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-white/20 bg-zinc-900/50">
+                            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-white/20 bg-zinc-900/80 backdrop-blur-sm relative z-10">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                                     <span className="text-xs font-mono font-bold uppercase tracking-widest text-zinc-400">
                                         SİSTEM MESAJI
                                     </span>
@@ -138,15 +144,15 @@ export function DailyGreeting() {
                             </div>
 
                             {/* Body */}
-                            <div className="p-5 flex gap-4">
+                            <div className="p-5 flex gap-4 relative z-10">
                                 <div className="flex-shrink-0">
-                                    <div className="w-12 h-12 bg-white text-black rounded-lg border-2 border-zinc-200 flex items-center justify-center shadow-sm">
-                                        <Sparkles className="w-6 h-6 animate-[spin_4s_linear_infinite]" />
+                                    <div className="w-12 h-12 bg-zinc-900 text-white rounded-lg border-2 border-white/20 flex items-center justify-center shadow-inner group-hover/card:border-white transition-colors">
+                                        <Atom className="w-6 h-6 animate-[spin_10s_linear_infinite]" />
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <h4 className="text-lg font-black tracking-tight leading-none">
-                                        {greeting}, {userName}.
+                                    <h4 className="text-lg font-black tracking-tight leading-none text-white">
+                                        {greeting}, <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{userName}</span>.
                                     </h4>
                                     <p className="text-sm font-medium text-zinc-400 leading-snug mt-1">
                                         {message}
@@ -158,8 +164,8 @@ export function DailyGreeting() {
                             <motion.div
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
-                                transition={{ duration: 9, ease: "linear" }}
-                                className="h-1 bg-white/20"
+                                transition={{ duration: 15, ease: "linear" }}
+                                className="h-1 bg-white/20 relative z-10"
                             />
                         </div>
                     </div>
