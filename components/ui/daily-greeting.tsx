@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Atom, Star } from "lucide-react";
+import { X, Atom } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 
 // Daha doğal, samimi ve "içerden" espriler
@@ -121,13 +121,54 @@ export function DailyGreeting() {
                         {/* Main Content Layer */}
                         <div className="relative bg-zinc-950 text-zinc-50 border-2 border-white rounded-xl p-0 overflow-hidden transition-transform duration-200 group-hover/card:-translate-y-1 group-hover/card:-translate-x-1">
 
-                            {/* Scattered Stars Background */}
-                            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-                                <Star className="absolute top-2 left-6 w-3 h-3 text-white animate-pulse" style={{ animationDuration: '3s' }} />
-                                <Star className="absolute top-8 right-12 w-2 h-2 text-white animate-pulse" style={{ animationDuration: '4s' }} />
-                                <Star className="absolute bottom-6 left-10 w-2 h-2 text-white animate-pulse" style={{ animationDuration: '2.5s' }} />
-                                <Star className="absolute bottom-10 right-4 w-4 h-4 text-white animate-pulse" style={{ animationDuration: '5s' }} />
-                                <Star className="absolute top-1/2 left-1/2 w-1.5 h-1.5 text-white" />
+                            {/* Realistic Space Background */}
+                            <div className="absolute inset-0 bg-black">
+                                {/* Small Stars */}
+                                <div className="absolute h-[1px] w-[1px] bg-white rounded-full top-4 left-10 shadow-[0_0_2px_#fff]" />
+                                <div className="absolute h-[2px] w-[2px] bg-white rounded-full top-12 right-20 shadow-[0_0_3px_#fff] animate-pulse" />
+                                <div className="absolute h-[1px] w-[1px] bg-white rounded-full bottom-8 left-1/4 shadow-[0_0_1px_#fff]" />
+                                <div className="absolute h-[1.5px] w-[1.5px] bg-white rounded-full bottom-1/3 right-8 shadow-[0_0_2px_#fff] opacity-70" />
+                                <div className="absolute h-[1px] w-[1px] bg-white rounded-full top-1/2 left-1/2 shadow-[0_0_2px_#fff] opacity-50" />
+                                <div className="absolute h-[2px] w-[2px] bg-blue-100 rounded-full top-6 right-6 shadow-[0_0_4px_#bfdbfe] animate-pulse" />
+
+                                {/* CSS Dot Pattern for Depth */}
+                                <div className="absolute inset-0 opacity-30"
+                                    style={{ backgroundImage: 'radial-gradient(1px 1px at center, white, transparent)', backgroundSize: '40px 40px' }}>
+                                </div>
+
+                                {/* Shooting Star Animation */}
+                                <motion.div
+                                    className="absolute top-0 right-0 h-[2px] w-[50px] bg-gradient-to-r from-transparent to-white opacity-0"
+                                    animate={{
+                                        x: [-50, -300],
+                                        y: [0, 300],
+                                        opacity: [0, 1, 0],
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        repeatDelay: 5,
+                                        ease: "easeInOut"
+                                    }}
+                                    style={{ rotate: '45deg' }}
+                                />
+
+                                <motion.div
+                                    className="absolute top-1/3 right-[-50px] h-[1px] w-[30px] bg-gradient-to-r from-transparent to-blue-200 opacity-0"
+                                    animate={{
+                                        x: [-20, -200],
+                                        y: [0, 150],
+                                        opacity: [0, 0.8, 0],
+                                    }}
+                                    transition={{
+                                        duration: 3,
+                                        repeat: Infinity,
+                                        repeatDelay: 2,
+                                        delay: 1,
+                                        ease: "easeInOut"
+                                    }}
+                                    style={{ rotate: '30deg' }}
+                                />
                             </div>
 
                             {/* Close Button - Floated */}
@@ -141,16 +182,16 @@ export function DailyGreeting() {
                             {/* Body */}
                             <div className="p-4 pt-5 flex gap-3 relative z-10 items-start">
                                 <div className="flex-shrink-0 pt-0.5">
-                                    <div className="w-10 h-10 bg-zinc-900 text-white rounded-lg border-2 border-white/20 flex items-center justify-center shadow-inner group-hover/card:border-white transition-colors">
+                                    <div className="w-10 h-10 bg-zinc-900/80 backdrop-blur-sm text-white rounded-lg border border-white/30 flex items-center justify-center shadow-lg group-hover/card:border-white transition-colors">
                                         <Atom className="w-5 h-5 animate-[spin_10s_linear_infinite]" />
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-0.5 pr-4">
-                                    <h4 className="text-base font-black tracking-tight leading-4 text-white">
+                                    <h4 className="text-base font-black tracking-tight leading-4 text-white drop-shadow-md">
                                         {greeting}, <br />
-                                        <span className="text-lg bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{userName}</span>.
+                                        <span className="text-lg bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent filter drop-shadow-sm font-extrabold">{userName}</span>.
                                     </h4>
-                                    <p className="text-xs font-medium text-zinc-400 leading-snug mt-1.5">
+                                    <p className="text-xs font-medium text-zinc-300 leading-snug mt-1.5 drop-shadow-md">
                                         {message}
                                     </p>
                                 </div>
@@ -161,7 +202,7 @@ export function DailyGreeting() {
                                 initial={{ width: "100%" }}
                                 animate={{ width: "0%" }}
                                 transition={{ duration: 15, ease: "linear" }}
-                                className="h-0.5 bg-white/20 relative z-10"
+                                className="h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 relative z-10 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
                             />
                         </div>
                     </div>
