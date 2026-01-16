@@ -38,11 +38,11 @@ interface ProfileHeroProps {
     createdAt?: string;
 }
 
-export function ProfileHero({ 
-    profile, 
-    user, 
-    isOwnProfile, 
-    isFollowing, 
+export function ProfileHero({
+    profile,
+    user,
+    isOwnProfile,
+    isFollowing,
     targetUserId,
     stats = { articlesCount: 0, questionsCount: 0, answersCount: 0, followersCount: 0, followingCount: 0 },
     badges = [],
@@ -214,9 +214,9 @@ export function ProfileHero({
                         </div>
                     </div>
                 )}
-                
-                 {/* Reposition Trigger Button (Top Right) */}
-                 {isOwnProfile && profile?.cover_url && !isRepositioning && (
+
+                {/* Reposition Trigger Button (Top Right) */}
+                {isOwnProfile && profile?.cover_url && !isRepositioning && (
                     <div className="absolute top-4 right-4 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <Button
                             variant="secondary"
@@ -234,12 +234,12 @@ export function ProfileHero({
             {/* Profile Info Container */}
             <div className={`container max-w-5xl mx-auto px-4 ${isRepositioning ? 'pointer-events-none opacity-50' : ''}`}>
                 <div className="flex flex-col relative">
-                    
+
                     {/* Top Row: Avatar + Actions */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between -mt-[4.5rem] md:-mt-[5rem] mb-4 gap-4">
                         {/* Avatar */}
                         <div className="relative group/avatar">
-                             <div className={cn(
+                            <div className={cn(
                                 "relative w-[130px] h-[130px] md:w-[160px] md:h-[160px] rounded-full border-[6px] border-background bg-background shadow-sm overflow-hidden",
                                 isCute && "border-[#FF1493] border-[4px]"
                             )}>
@@ -254,7 +254,7 @@ export function ProfileHero({
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
-                            
+
                             {/* Verified Badge */}
                             {profile?.is_verified && (
                                 <div className="absolute bottom-1 right-1 bg-blue-500 text-white rounded-full p-1 border-[3px] border-background shadow-sm" title="Doğrulanmış Hesap">
@@ -316,68 +316,69 @@ export function ProfileHero({
                         )}
 
                         {/* Metadata Row (Date, Links) */}
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                        {/* Metadata Row (Date) */}
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mb-4">
                             {createdAt && (
-                                <div className="flex items-center gap-1.5 text-muted-foreground/80">
-                                    <Calendar className="w-4 h-4" />
+                                <div className="flex items-center gap-1.5 text-muted-foreground/80 font-medium bg-foreground/5 px-3 py-1 rounded-full">
+                                    <Calendar className="w-3.5 h-3.5" />
                                     <span>{format(new Date(createdAt), 'MMMM yyyy', { locale: tr })} tarihinde katıldı</span>
                                 </div>
                             )}
-                            
+                        </div>
+
+                        {/* Social Icons & Web */}
+                        <div className="flex flex-wrap items-center gap-3 pb-4">
                             {profile?.website && (
-                                <a 
-                                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
-                                    target="_blank" 
+                                <a
+                                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                    target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-blue-600 hover:underline hover:text-blue-700 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground/5 hover:bg-foreground/10 text-xs font-bold text-foreground transition-all active:scale-95 border border-foreground/5"
                                 >
-                                    <LinkIcon className="w-4 h-4" />
+                                    <LinkIcon className="w-3.5 h-3.5" />
                                     <span>{profile.website.replace(/^https?:\/\//, '').split('/')[0]}</span>
                                 </a>
                             )}
 
-                            {/* Social Icons Mini Row */}
-                            <div className="flex items-center gap-4 ml-1">
-                                {socialLinks.twitter && (
-                                    <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#1DA1F2] transition-colors">
-                                        <Twitter className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {socialLinks.github && (
-                                    <a href={`https://github.com/${socialLinks.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                                        <Github className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {socialLinks.instagram && (
-                                    <a href={`https://instagram.com/${socialLinks.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#E1306C] transition-colors">
-                                        <Instagram className="w-5 h-5" />
-                                    </a>
-                                )}
-                                {socialLinks.linkedin && (
-                                    <a href={`https://linkedin.com/in/${socialLinks.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0077b5] transition-colors">
-                                        <Linkedin className="w-5 h-5" />
-                                    </a>
-                                )}
-                            </div>
+                            {socialLinks.twitter && (
+                                <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-foreground/5 hover:bg-[#1DA1F2] hover:text-white text-muted-foreground transition-all active:scale-95 hover:shadow-lg hover:shadow-blue-500/20">
+                                    <Twitter className="w-4 h-4" />
+                                </a>
+                            )}
+                            {socialLinks.github && (
+                                <a href={`https://github.com/${socialLinks.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-foreground/5 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black text-muted-foreground transition-all active:scale-95 hover:shadow-lg">
+                                    <Github className="w-4 h-4" />
+                                </a>
+                            )}
+                            {socialLinks.instagram && (
+                                <a href={`https://instagram.com/${socialLinks.instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-foreground/5 hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-red-500 hover:to-purple-500 hover:text-white text-muted-foreground transition-all active:scale-95 hover:shadow-lg hover:shadow-pink-500/20">
+                                    <Instagram className="w-4 h-4" />
+                                </a>
+                            )}
+                            {socialLinks.linkedin && (
+                                <a href={`https://linkedin.com/in/${socialLinks.linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-foreground/5 hover:bg-[#0077b5] hover:text-white text-muted-foreground transition-all active:scale-95 hover:shadow-lg hover:shadow-blue-600/20">
+                                    <Linkedin className="w-4 h-4" />
+                                </a>
+                            )}
                         </div>
 
                         {/* Stats Row */}
-                        <div className="flex gap-6 text-sm border-t border-b border-foreground/5 py-3 md:border-0 md:py-1">
-                            <div className="flex gap-1 items-baseline hover:underline cursor-pointer">
-                                <span className="font-bold text-foreground">{stats.followingCount}</span>
-                                <span className="text-muted-foreground">Takip edilen</span>
+                        <div className="flex flex-wrap gap-6 md:gap-10 py-5 border-t border-foreground/10 md:border-0 md:pt-2">
+                            <div className="flex flex-col items-center md:items-start group cursor-pointer hover:opacity-80 transition-opacity">
+                                <span className="text-xl md:text-2xl font-black text-foreground leading-none tracking-tight">{stats.followingCount}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-70">Takip</span>
                             </div>
-                            <div className="flex gap-1 items-baseline hover:underline cursor-pointer">
-                                <span className="font-bold text-foreground">{stats.followersCount}</span>
-                                <span className="text-muted-foreground">Takipçi</span>
+                            <div className="flex flex-col items-center md:items-start group cursor-pointer hover:opacity-80 transition-opacity">
+                                <span className="text-xl md:text-2xl font-black text-foreground leading-none tracking-tight">{stats.followersCount}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-70">Takipçi</span>
                             </div>
-                            <div className="flex gap-1 items-baseline cursor-help" title="Topluluk Puanı">
-                                <span className="font-bold text-foreground">{profile?.reputation || 0}</span>
-                                <span className="text-muted-foreground">HubPuan</span>
+                            <div className="flex flex-col items-center md:items-start group cursor-help hover:opacity-80 transition-opacity" title="Topluluk Puanı">
+                                <span className="text-xl md:text-2xl font-black text-amber-500 leading-none tracking-tight glow-text-amber">{profile?.reputation || 0}</span>
+                                <span className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1.5 opacity-70">HubPuan</span>
                             </div>
                         </div>
 
-                        {/* Badges - Only if exist */}
+                        {/* Badges */}
                         {badges && badges.length > 0 && (
                             <div className="pt-2 pb-1">
                                 <BadgeDisplay userBadges={badges} size="sm" maxDisplay={10} />

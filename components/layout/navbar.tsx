@@ -200,8 +200,8 @@ export function Navbar() {
                                     </div>
 
                                     <div className="relative z-10 w-full flex justify-center items-center">
-                                        <span className="text-3xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_1px_20px_rgba(255,255,255,0.4)]">
-                                            Fizikhub
+                                        <span className="text-4xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_1px_20px_rgba(255,255,255,0.4)]">
+                                            FIZIKHUB
                                         </span>
                                     </div>
                                     <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>

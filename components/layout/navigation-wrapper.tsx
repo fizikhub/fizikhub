@@ -5,7 +5,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
+
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
+import { DailyGreeting } from "@/components/ui/daily-greeting";
 
 export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
     const pathname = usePathname();
@@ -25,6 +27,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             </main>
             <Footer />
             <BottomNav />
+            <DailyGreeting />
         </>
     );
 }
