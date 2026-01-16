@@ -366,6 +366,41 @@
     --input: 30 40 60;
     --ring: 0 240 255;
   }
+
+  /* Slime Theme (Sümük) */
+  .slime {
+    --background: 15 25 15;
+    /* Dark Mucus */
+    --foreground: 220 255 220;
+
+    --card: 20 35 20;
+    --card-foreground: 220 255 220;
+
+    --popover: 20 35 20;
+    --popover-foreground: 220 255 220;
+
+    --primary: 120 255 50;
+    /* Toxic Green */
+    --primary-foreground: 0 50 0;
+
+    --secondary: 30 50 30;
+    --secondary-foreground: 120 255 50;
+
+    --muted: 25 40 25;
+    --muted-foreground: 100 180 100;
+
+    --accent: 40 70 40;
+    --accent-foreground: 120 255 50;
+
+    --destructive: 180 250 50;
+    --destructive-foreground: 0 0 0;
+
+    --border: 50 100 50;
+    --input: 40 80 40;
+    --ring: 120 255 50;
+
+    --radius: 1.25rem;
+  }
 }
 
 @layer base {

@@ -21,11 +21,10 @@ const GlobalAdminNotification = dynamic(
 
 const GlobalEffects = dynamic(
     () => import("@/components/effects/global-effects").then(mod => mod.GlobalEffects),
-    { ssr: false }
 );
 
-const FloatingActionButton = dynamic(
-    () => import("@/components/layout/floating-action-button").then(mod => mod.FloatingActionButton),
+const SlimeEffects = dynamic(
+    () => import("@/components/effects/slime-effects").then(mod => mod.SlimeEffects),
     { ssr: false }
 );
 
@@ -41,6 +40,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
     return (
         <>
             <GlobalEffects />
+            <SlimeEffects />
             <GlobalAdminNotification />
             {showOnboarding && <OnboardingTour />}
             <Navbar />

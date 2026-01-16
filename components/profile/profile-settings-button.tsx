@@ -169,7 +169,7 @@ export function ProfileSettingsButton({
 
             {/* Theme Selector */}
             <div className="space-y-2 pb-2 border-b">
-                <ThemeSelector />
+                <ThemeSelector username={currentUsername} />
             </div>
 
             {/* Username */}

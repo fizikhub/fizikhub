@@ -4,9 +4,13 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Heart, Rocket, Cpu } from "lucide-react";
+import { Moon, Heart, Rocket, Cpu, Biohazard } from "lucide-react";
 
-export function ThemeSelector() {
+interface ThemeSelectorProps {
+    username?: string;
+}
+
+export function ThemeSelector({ username }: ThemeSelectorProps) {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
@@ -24,6 +28,7 @@ export function ThemeSelector() {
         icon: any;
         color: string;
         special?: boolean;
+        restricted?: boolean;
     }
 
     const themes: ThemeOption[] = [
@@ -64,14 +69,28 @@ export function ThemeSelector() {
             icon: Cpu,
             color: "bg-cyan-950 border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]",
             special: true
+        },
+        {
+            value: "slime",
+            label: "Sümük",
+            icon: Biohazard,
+            color: "bg-[#78FF32] border-[#0A3000] text-black shadow-[0_0_10px_#78FF32]",
+            special: true,
+            restricted: true
         }
     ];
+
+    const allowedUsers = ["sulfiriikasit", "baranbozkurt"];
+    // Allow if explicitly allowed OR if currently selected (to prevent locking out)
+    const canSeeSlime = username && allowedUsers.includes(username);
+
+    const visibleThemes = themes.filter(t => !t.restricted || canSeeSlime || theme === t.value);
 
     return (
         <div className="space-y-3">
             <Label>Görünüm</Label>
             <div className="grid grid-cols-3 gap-2">
-                {themes.map((t) => {
+                {visibleThemes.map((t) => {
                     const isActive = theme === t.value;
                     const Icon = t.icon;
 
@@ -93,7 +112,8 @@ export function ThemeSelector() {
                             )}>
                                 <Icon className={cn(
                                     "w-5 h-5",
-                                    t.value === "pink" || t.value === "dark-pink" || t.special ? "text-white" : "text-foreground"
+                                    (t.value === "pink" || t.value === "dark-pink" || t.special) && t.value !== "slime" ? "text-white" : "text-foreground",
+                                    t.value === "slime" && "text-black animate-pulse"
                                 )} />
                             </div>
                             <span className="text-xs font-medium">{t.label}</span>
