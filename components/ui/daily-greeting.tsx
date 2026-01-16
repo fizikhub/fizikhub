@@ -107,37 +107,60 @@ export function DailyGreeting() {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-sm px-4"
+                    initial={{ y: 150, opacity: 0, rotate: 6 }}
+                    animate={{ y: 0, opacity: 1, rotate: 0 }}
+                    exit={{ y: 150, opacity: 0, rotate: 6 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-[380px] px-4"
                 >
-                    <div className="relative bg-[#09090b] text-white border border-white/10 rounded-2xl p-5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl ring-1 ring-white/5 flex items-start gap-4">
+                    {/* Main Card - Monochrome Brutalist */}
+                    <div className="relative group/card cursor-default">
+                        {/* Background Shadow Layer (Static) */}
+                        <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 bg-white rounded-xl border-2 border-zinc-900" />
 
-                        {/* Icon/Avatar Placeholder */}
-                        <div className="flex-shrink-0 mt-1">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-white/5">
-                                <Sparkles className="w-5 h-5 text-indigo-400" />
-                            </div>
-                        </div>
+                        {/* Main Content Layer */}
+                        <div className="relative bg-zinc-950 text-zinc-50 border-2 border-white rounded-xl p-0 overflow-hidden transition-transform duration-200 group-hover/card:-translate-y-1 group-hover/card:-translate-x-1">
 
-                        {/* Content */}
-                        <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                                <h4 className="text-base font-bold text-white tracking-tight">
-                                    {greeting}, <span className="text-indigo-400">{userName}</span>
-                                </h4>
+                            {/* Header Strip */}
+                            <div className="flex items-center justify-between px-4 py-2 border-b-2 border-white/20 bg-zinc-900/50">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                    <span className="text-xs font-mono font-bold uppercase tracking-widest text-zinc-400">
+                                        SİSTEM MESAJI
+                                    </span>
+                                </div>
                                 <button
                                     onClick={() => setIsVisible(false)}
-                                    className="text-zinc-500 hover:text-white transition-colors"
+                                    className="p-1 hover:bg-white hover:text-black rounded-md transition-colors"
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
-                            <p className="text-sm text-zinc-400 leading-relaxed">
-                                {message}
-                            </p>
+
+                            {/* Body */}
+                            <div className="p-5 flex gap-4">
+                                <div className="flex-shrink-0">
+                                    <div className="w-12 h-12 bg-white text-black rounded-lg border-2 border-zinc-200 flex items-center justify-center shadow-sm">
+                                        <Sparkles className="w-6 h-6 animate-[spin_4s_linear_infinite]" />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <h4 className="text-lg font-black tracking-tight leading-none">
+                                        {greeting}, {userName}.
+                                    </h4>
+                                    <p className="text-sm font-medium text-zinc-400 leading-snug mt-1">
+                                        {message}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Progress Bar Animation (Auto-close visualization) */}
+                            <motion.div
+                                initial={{ width: "100%" }}
+                                animate={{ width: "0%" }}
+                                transition={{ duration: 9, ease: "linear" }}
+                                className="h-1 bg-white/20"
+                            />
                         </div>
                     </div>
                 </motion.div>
