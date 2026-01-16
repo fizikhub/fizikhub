@@ -40,7 +40,7 @@
 
 @layer base {
   :root {
-    --background: 16 16 16;
+    --background: 21 21 21;
     --foreground: 255 255 255;
 
     --card: 36 37 38;
@@ -82,7 +82,7 @@
   }
 
   .dark {
-    --background: 16 16 16;
+    --background: 21 21 21;
     --foreground: 255 255 255;
 
     --card: 36 37 38;
@@ -111,155 +111,155 @@
     --ring: 251 146 60;
   }
 
-.blood {
-  /* Scientific Neo-Brutalist (Blood Red Mode) */
-  --background: 60 0 0;
-  /* #3c0000 - Visible Dark Red */
-  --foreground: 255 220 220;
-  /* Flashy Pale */
+  .blood {
+    /* Scientific Neo-Brutalist (Blood Red Mode) */
+    --background: 60 0 0;
+    /* #3c0000 - Visible Dark Red */
+    --foreground: 255 220 220;
+    /* Flashy Pale */
 
-  --card: 40 0 0;
-  /* #280000 */
-  --card-foreground: 255 255 255;
+    --card: 40 0 0;
+    /* #280000 */
+    --card-foreground: 255 255 255;
 
-  --popover: 40 0 0;
-  --popover-foreground: 255 255 255;
+    --popover: 40 0 0;
+    --popover-foreground: 255 255 255;
 
-  --primary: 255 0 0;
-  /* Neon Red */
-  --primary-foreground: 0 0 0;
+    --primary: 255 0 0;
+    /* Neon Red */
+    --primary-foreground: 0 0 0;
 
-  --secondary: 80 10 10;
-  --secondary-foreground: 255 255 255;
+    --secondary: 80 10 10;
+    --secondary-foreground: 255 255 255;
 
-  --muted: 70 20 20;
-  --muted-foreground: 255 150 150;
+    --muted: 70 20 20;
+    --muted-foreground: 255 150 150;
 
-  --accent: 220 0 0;
-  --accent-foreground: 255 255 255;
+    --accent: 220 0 0;
+    --accent-foreground: 255 255 255;
 
-  --destructive: 255 0 0;
-  --destructive-foreground: 255 255 255;
+    --destructive: 255 0 0;
+    --destructive-foreground: 255 255 255;
 
-  --border: 200 20 20;
-  /* Bright Red Borders - No more white! */
-  --input: 100 0 0;
-  --ring: 255 0 0;
+    --border: 200 20 20;
+    /* Bright Red Borders - No more white! */
+    --input: 100 0 0;
+    --ring: 255 0 0;
 
-  --radius: 0px;
-}
+    --radius: 0px;
+  }
 
-.pink {
-  --background: 255 240 245;
-  /* Lavender Blush - very light pinkish white for background */
-  --foreground: 70 20 50;
-  /* Dark purple/pink for text */
+  .pink {
+    --background: 255 240 245;
+    /* Lavender Blush - very light pinkish white for background */
+    --foreground: 70 20 50;
+    /* Dark purple/pink for text */
 
-  --card: 255 255 255;
-  /* White cards */
-  --card-foreground: 70 20 50;
+    --card: 255 255 255;
+    /* White cards */
+    --card-foreground: 70 20 50;
 
-  --popover: 255 255 255;
-  --popover-foreground: 70 20 50;
+    --popover: 255 255 255;
+    --popover-foreground: 70 20 50;
 
-  --primary: 255 20 147;
-  /* Hot Pink #FF1493 */
-  --primary-foreground: 255 255 255;
+    --primary: 255 20 147;
+    /* Hot Pink #FF1493 */
+    --primary-foreground: 255 255 255;
 
-  --secondary: 255 228 225;
-  /* Misty Rose */
-  --secondary-foreground: 255 20 147;
+    --secondary: 255 228 225;
+    /* Misty Rose */
+    --secondary-foreground: 255 20 147;
 
-  --muted: 255 240 245;
-  --muted-foreground: 180 100 120;
+    --muted: 255 240 245;
+    --muted-foreground: 180 100 120;
 
-  --accent: 255 192 203;
-  /* Pink */
-  --accent-foreground: 70 20 50;
+    --accent: 255 192 203;
+    /* Pink */
+    --accent-foreground: 70 20 50;
 
-  --destructive: 255 105 180;
-  /* Hot Pinkish Red */
-  --destructive-foreground: 255 255 255;
+    --destructive: 255 105 180;
+    /* Hot Pinkish Red */
+    --destructive-foreground: 255 255 255;
 
-  --border: 255 182 193;
-  /* Light Pink */
-  --input: 255 182 193;
-  --ring: 255 20 147;
+    --border: 255 182 193;
+    /* Light Pink */
+    --input: 255 182 193;
+    --ring: 255 20 147;
 
-  /* Cute specifics */
-  --radius: 1.5rem;
-  /* Extra rounded */
-}
+    /* Cute specifics */
+    --radius: 1.5rem;
+    /* Extra rounded */
+  }
 
-/* Dark Pink (Karanlık Pembe) */
-.dark-pink {
-  --background: 20 10 15;
-  /* Very Dark Pink/Black */
-  --foreground: 255 240 245;
-  /* Lavender Blush text */
+  /* Dark Pink (Karanlık Pembe) */
+  .dark-pink {
+    --background: 20 10 15;
+    /* Very Dark Pink/Black */
+    --foreground: 255 240 245;
+    /* Lavender Blush text */
 
-  --card: 30 15 20;
-  /* Darker Pinkish Card */
-  --card-foreground: 255 240 245;
+    --card: 30 15 20;
+    /* Darker Pinkish Card */
+    --card-foreground: 255 240 245;
 
-  --popover: 30 15 20;
-  --popover-foreground: 255 240 245;
+    --popover: 30 15 20;
+    --popover-foreground: 255 240 245;
 
-  --primary: 255 20 147;
-  /* Hot Pink #FF1493 */
-  --primary-foreground: 255 255 255;
+    --primary: 255 20 147;
+    /* Hot Pink #FF1493 */
+    --primary-foreground: 255 255 255;
 
-  --secondary: 40 20 30;
-  --secondary-foreground: 255 20 147;
+    --secondary: 40 20 30;
+    --secondary-foreground: 255 20 147;
 
-  --muted: 40 20 30;
-  --muted-foreground: 200 150 170;
+    --muted: 40 20 30;
+    --muted-foreground: 200 150 170;
 
-  --accent: 50 25 35;
-  --accent-foreground: 255 192 203;
+    --accent: 50 25 35;
+    --accent-foreground: 255 192 203;
 
-  --destructive: 255 105 180;
-  --destructive-foreground: 255 255 255;
+    --destructive: 255 105 180;
+    --destructive-foreground: 255 255 255;
 
-  --border: 70 30 50;
-  --input: 70 30 50;
-  --ring: 255 20 147;
+    --border: 70 30 50;
+    --input: 70 30 50;
+    --ring: 255 20 147;
 
-  /* Cute specifics inherited */
-  --radius: 1.5rem;
-}
+    /* Cute specifics inherited */
+    --radius: 1.5rem;
+  }
 
-/* Cute Cat Decoration Helpers */
-.pink .cute-cat-ear-left {
-  position: absolute;
-  top: -10px;
-  left: 20px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 15px solid #FF1493;
-  transform: rotate(-15deg);
-  z-index: 10;
-}
+  /* Cute Cat Decoration Helpers */
+  .pink .cute-cat-ear-left {
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #FF1493;
+    transform: rotate(-15deg);
+    z-index: 10;
+  }
 
-.pink .cute-cat-ear-right {
-  position: absolute;
-  top: -10px;
-  right: 20px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 15px solid #FF1493;
-  transform: rotate(15deg);
-  z-index: 10;
-}
+  .pink .cute-cat-ear-right {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #FF1493;
+    transform: rotate(15deg);
+    z-index: 10;
+  }
 
-.pink .cute-border {
-  border: 3px solid #ffdeeb;
-  box-shadow: 0 4px 0 #ff69b4;
-}
+  .pink .cute-border {
+    border: 3px solid #ffdeeb;
+    box-shadow: 0 4px 0 #ff69b4;
+  }
 
   .christmas {
     /* Koyu kış gecesi - lacivert tonları */
@@ -371,6 +371,11 @@
 @layer base {
   * {
     @apply border-border;
+  }
+
+
+  html {
+    background-color: rgb(21, 21, 21);
   }
 
   body {

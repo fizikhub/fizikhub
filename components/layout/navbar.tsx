@@ -142,16 +142,29 @@ export function Navbar() {
                         <AuthButton />
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Actions - Soft Neo-Brutalism */}
                     <div className="lg:hidden flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="rounded-none">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsSearchOpen(true)}
+                            className="w-10 h-10 rounded-xl border-2 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95"
+                        >
                             <Search className="h-5 w-5" />
                         </Button>
-                        <NotificationBell />
+
+                        <div className="bg-white/5 rounded-xl border-2 border-white/5 w-10 h-10 flex items-center justify-center overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all active:scale-95">
+                            <NotificationBell />
+                        </div>
 
                         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-none border-2 border-transparent hover:border-black dark:hover:border-white" suppressHydrationWarning>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="w-10 h-10 rounded-xl border-2 border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 ml-0"
+                                    suppressHydrationWarning
+                                >
                                     <Menu className="h-6 w-6" />
                                 </Button>
                             </SheetTrigger>

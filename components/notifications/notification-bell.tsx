@@ -192,7 +192,8 @@ export function NotificationBell() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="relative rounded-full h-10 w-10 hover:bg-primary/10 transition-all duration-300 group overflow-hidden"
+                        className="relative rounded-xl h-10 w-10 hover:bg-primary/10 transition-all duration-300 group overflow-hidden"
+                        suppressHydrationWarning
                     >
                         {/* Glow effect behind the bell */}
                         <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300" />
