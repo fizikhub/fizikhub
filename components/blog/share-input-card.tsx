@@ -81,7 +81,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                         className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-muted-foreground hover:text-rose-500 transition-colors py-2 px-1 sm:px-3 rounded-lg hover:bg-rose-500/10 cursor-pointer"
                     >
                         <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">Makale</span>
+                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">Blog</span>
                     </motion.div>
                 </Link>
 

@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint } from "lucide-react";
+import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint, Lightbulb, Link as LinkIcon, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Orbitron } from "next/font/google";
+import { Orbitron } from "next/font/google"; // Keeping Orbitron for headers if needed, or switch to site font
 
 const orbitron = Orbitron({ subsets: ["latin"] });
 
@@ -161,110 +161,136 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
 
-            {/* Guide Dialog */}
+            {/* Neo-Brutalist Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background/95 backdrop-blur-3xl border-2 border-foreground/10 p-0 sm:rounded-3xl shadow-2xl">
-                    <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 p-8 sm:p-12 text-white relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                        <div className="relative z-10 flex flex-col items-center text-center">
-                            <Sparkles className="w-16 h-16 mb-4 opacity-90 animate-pulse text-yellow-300" />
-                            <DialogTitle className={`${orbitron.className} text-3xl sm:text-5xl font-black tracking-tight mb-2 uppercase drop-shadow-md`}>
-                                Blog Yazarlığı 101
-                            </DialogTitle>
-                            <DialogDescription className="text-emerald-50 text-base sm:text-lg font-medium max-w-xl mx-auto opacity-90">
-                                "Sadece yazıp geçme, bir başyapıt yarat!" rehberine hoş geldin. İşte Fizikhub&apos;da etkileyici bir blog yazmanın sırları.
-                            </DialogDescription>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background p-0 border-4 border-foreground shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.2)] sm:rounded-none">
+
+                    {/* Explicit Close Button */}
+                    <button
+                        onClick={() => setShowGuide(false)}
+                        className="absolute right-4 top-4 z-50 p-2 bg-background border-2 border-foreground hover:bg-red-500 hover:text-white transition-colors"
+                        title="Kapat"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+
+                    {/* Brutalist Header */}
+                    <div className="bg-foreground text-background p-8 sm:p-10 border-b-4 border-background relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mb-4 leading-none glitch-text">
+                                Blog <br /> Yazarlığı <br /> 101
+                            </h2>
+                            <p className="text-lg sm:text-xl font-bold font-mono opacity-80 max-w-xl">
+                                // SİSTEM MESAJI: Sadece yazıp geçme. Bir başyapıt yarat.
+                            </p>
                         </div>
+                        {/* Decorative Background Pattern */}
+                        <div className="absolute right-0 top-0 h-full w-1/3 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#000_10px,#000_20px)] dark:bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#fff_10px,#fff_20px)]"></div>
                     </div>
 
-                    <div className="p-6 sm:p-10 space-y-10">
+                    <div className="p-6 sm:p-10 space-y-12">
                         {/* Editor Usage Section */}
-                        <section className="space-y-4">
-                            <div className="flex items-center gap-3 pb-2 border-b border-border">
-                                <Fingerprint className="w-6 h-6 text-emerald-500" />
-                                <h3 className="text-xl font-black uppercase tracking-tight">Editörü Efektif Kullanma</h3>
+                        <section className="space-y-6">
+                            <div className="flex items-center gap-4 border-b-4 border-foreground pb-2">
+                                <div className="bg-foreground text-background px-3 py-1 font-black text-xl">01</div>
+                                <h3 className="text-2xl font-black uppercase tracking-tight">ARAÇ KUTUSU</h3>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2"><ImageImageIcon className="w-4 h-4 text-primary" /> Görsel Dünyası</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Kuru yazı okunmaz! Satır aralarına serpiştirmek için <b>Görsel</b> butonunu, kapak fotoğrafı için alttaki barı kullan.
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
+                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
+                                        <ImageImageIcon className="w-5 h-5" /> Görsel Ekle
+                                    </h4>
+                                    <p className="text-sm font-medium text-muted-foreground font-mono">
+                                        Metnini görsellerle destekle. Uzun yazılar sıkıcıdır, araya resim serpiştir.
                                     </p>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2"><Hash className="w-4 h-4 text-primary" /> Kategorilendirme</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Yazını doğru rafa koy. Alttaki kategorilerden en uygununu seç ki okuyucular seni eliyle koymuş gibi bulsun.
+                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
+                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
+                                        <Hash className="w-5 h-5" /> Etiketle
+                                    </h4>
+                                    <p className="text-sm font-medium text-muted-foreground font-mono">
+                                        Doğru kategoriyi seç. Okuyucuların seni bulmasını kolaylaştır.
                                     </p>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2"><AlignLeft className="w-4 h-4 text-primary" /> Özetin Gücü</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Vitrin önemlidir. Kısa özet alanına (alttaki buton) çekici bir giriş cümlesi yazarak tıklanma oranını artırabilirsin.
+                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
+                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
+                                        <AlignLeft className="w-5 h-5" /> Özetle
+                                    </h4>
+                                    <p className="text-sm font-medium text-muted-foreground font-mono">
+                                        Çarpıcı bir giriş cümlesi yaz. Vitrinin güzel olsun.
                                     </p>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-muted/40 border border-border/50 hover:bg-muted/60 transition-colors">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2"><BookOpen className="w-4 h-4 text-primary" /> Taslak Modu</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        İlham perisi kaçtı mı? "Taslak" butonuna basıp kaydet, sonra profilinden devam et. Acele etme, mükemmeli hedefle.
+                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
+                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
+                                        <BookOpen className="w-5 h-5" /> Kaydet
+                                    </h4>
+                                    <p className="text-sm font-medium text-muted-foreground font-mono">
+                                        Taslak olarak kaydet, sonra devam et. Mükemmellik aceleye gelmez.
                                     </p>
                                 </div>
                             </div>
                         </section>
 
                         {/* Scientific Blog Tips */}
-                        <section className="space-y-4">
-                            <div className="flex items-center gap-3 pb-2 border-b border-border">
-                                <Sparkles className="w-6 h-6 text-purple-500" />
-                                <h3 className="text-xl font-black uppercase tracking-tight">Bilimsel Yazarlık Tüyoları</h3>
+                        <section className="space-y-6">
+                            <div className="flex items-center gap-4 border-b-4 border-foreground pb-2">
+                                <div className="bg-emerald-500 text-black px-3 py-1 font-black text-xl">02</div>
+                                <h3 className="text-2xl font-black uppercase tracking-tight">İÇERİK STRATEJİSİ</h3>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="p-5 rounded-2xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20">
-                                    <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center mb-3">
-                                        <span className="text-xl">🔍</span>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-blue-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
+                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
+                                        <LinkIcon className="w-8 h-8 mb-4 text-blue-500" />
+                                        <h4 className="font-black text-xl mb-2">KANITLA</h4>
+                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
+                                            Kaynak göster. Link ver. Bilim dedikoduyla değil, veriyle yapılır.
+                                        </p>
                                     </div>
-                                    <h4 className="font-black text-blue-700 dark:text-blue-300 mb-1">Kaynak Göster</h4>
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Okurlar kanıt sever. İddialarını makalelere veya güvenilir kaynaklara dayandır. Link vermekten çekinme.
-                                    </p>
                                 </div>
-                                <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20">
-                                    <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center mb-3">
-                                        <span className="text-xl">🎓</span>
+
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-purple-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
+                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
+                                        <Lightbulb className="w-8 h-8 mb-4 text-purple-500" />
+                                        <h4 className="font-black text-xl mb-2">BASİTLEŞTİR</h4>
+                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
+                                            "Bir şeyi basitçe anlatamıyorsan, anlamamışsındır." - Einstein
+                                        </p>
                                     </div>
-                                    <h4 className="font-black text-purple-700 dark:text-purple-300 mb-1">Sadeleştir</h4>
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Einstein der ki: "Basitçe anlatamıyorsan, yeterince anlamamışsındır." Terimleri açıkla, herkesi kucakla.
-                                    </p>
                                 </div>
-                                <div className="p-5 rounded-2xl bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/20">
-                                    <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center mb-3">
-                                        <span className="text-xl">⚖️</span>
+
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-orange-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
+                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
+                                        <AlertTriangle className="w-8 h-8 mb-4 text-orange-500" />
+                                        <h4 className="font-black text-xl mb-2">OBJEKTİF OL</h4>
+                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
+                                            Duygularını değil, gerçekleri yaz. Yorumunu kat ama veriyi bükme.
+                                        </p>
                                     </div>
-                                    <h4 className="font-black text-orange-700 dark:text-orange-300 mb-1">Objektif Ol</h4>
-                                    <p className="text-xs font-medium text-muted-foreground">
-                                        Bilim duygularla değil, verilerle yapılır. Kişisel yorumunu kat ama gerçekleri bükme.
-                                    </p>
                                 </div>
                             </div>
                         </section>
 
                         {/* Footer Action */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t border-border/50">
-                            <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-muted/50 hover:bg-muted transition-colors cursor-pointer group" onClick={() => setDontShowAgain(!dontShowAgain)}>
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t-4 border-foreground/10">
+                            <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-foreground/30 hover:border-foreground transition-colors cursor-pointer group w-full sm:w-auto justify-center" onClick={() => setDontShowAgain(!dontShowAgain)}>
                                 <div className={cn(
-                                    "w-5 h-5 rounded-md border-2 border-muted-foreground group-hover:border-primary flex items-center justify-center transition-colors",
-                                    dontShowAgain && "bg-primary border-primary text-primary-foreground"
+                                    "w-6 h-6 border-2 border-foreground flex items-center justify-center transition-all",
+                                    dontShowAgain ? "bg-foreground" : "bg-transparent"
                                 )}>
-                                    {dontShowAgain && <Sparkles className="w-3 h-3" />}
+                                    {dontShowAgain && <X className="w-4 h-4 text-background" />}
                                 </div>
-                                <label className="text-sm font-bold text-muted-foreground cursor-pointer select-none">
-                                    Bu rehberi ezberledim, bir daha gösterme
+                                <label className="text-sm font-black uppercase text-foreground cursor-pointer select-none">
+                                    Bu ekranı bir daha gösterme
                                 </label>
                             </div>
 
-                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-black px-10 h-12 text-lg rounded-full bg-foreground text-background hover:scale-105 active:scale-95 transition-all shadow-xl">
-                                Anlaşıldı, Başlıyoruz! 🚀
+                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-black px-8 h-14 text-xl border-2 border-foreground bg-foreground text-background hover:bg-emerald-500 hover:text-black hover:border-black transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                ANLAŞILDI, BAŞLAT
                             </Button>
                         </div>
                     </div>
@@ -276,11 +302,11 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-background/80 backdrop-blur border shadow-lg hover:scale-110 transition-transform w-8 h-8 opacity-50 hover:opacity-100"
+                    className="rounded-full bg-background border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none transition-all w-10 h-10"
                     onClick={() => setShowGuide(true)}
                     title="Rehberi Göster"
                 >
-                    <HelpCircle className="w-4 h-4" />
+                    <HelpCircle className="w-5 h-5" />
                 </Button>
             </div>
 
