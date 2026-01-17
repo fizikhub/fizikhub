@@ -12,9 +12,9 @@ interface CustomBadgeIconProps {
 export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
     const normalizedName = name.toLowerCase();
 
-    // Helper for wrapping generated images
+    // Helper for wrapping generated images - Enforce Circle Shape
     const GeneratedBadge = ({ src, alt, rotate = 0 }: { src: string, alt: string, rotate?: number }) => (
-        <div className={cn("relative w-full h-full flex items-center justify-center", className)}>
+        <div className={cn("relative w-full h-full flex items-center justify-center rounded-full overflow-hidden shadow-sm", className)}>
             <motion.div
                 className="relative w-full h-full"
                 whileHover={{ scale: 1.1, rotate: rotate + 5 }}
@@ -24,7 +24,7 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
                     src={src}
                     alt={alt}
                     fill
-                    className="object-contain drop-shadow-md"
+                    className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
             </motion.div>
@@ -33,7 +33,7 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
 
     // Sticker Container (SVG Fallback)
     const Sticker = ({ children, color, rotate = 0 }: { children: React.ReactNode, color: string, rotate?: number }) => (
-        <div className={cn("relative w-full h-full flex items-center justify-center p-1", className)}>
+        <div className={cn("relative w-full h-full flex items-center justify-center p-1 rounded-full", className)}>
             <motion.div
                 className="relative w-full h-full"
                 whileHover={{ scale: 1.1, rotate: rotate + 5 }}
@@ -77,14 +77,24 @@ export function CustomBadgeIcon({ name, className }: CustomBadgeIconProps) {
         return <GeneratedBadge src="/badges/bilge.png" alt="Bilge Badge" rotate={3} />;
     }
 
-    // Meraklı Kuyruklu Yıldız (Comet)
-    if (normalizedName.includes("meraklı") || normalizedName.includes("kuyruklu")) {
-        return <GeneratedBadge src="/badges/merakli-kuyruklu-yildiz.png" alt="Meraklı Kuyruklu Yıldız Badge" rotate={-4} />;
+    // Kuyruklu Yıldız (Comet) - Specific Check
+    if (normalizedName.includes("kuyruklu")) {
+        return <GeneratedBadge src="/badges/merakli-kuyruklu-yildiz.png" alt="Kuyruklu Yıldız Badge" rotate={-4} />;
+    }
+
+    // Meraklı (Curious) - Specific Check (Separate from Comet)
+    if (normalizedName.includes("meraklı")) {
+        return <GeneratedBadge src="/badges/merakli.png" alt="Meraklı Badge" rotate={4} />;
     }
 
     // İlk Adım (First Step)
-    if (normalizedName.includes("ilk adım") || normalizedName.includes("çaylak")) {
+    if (normalizedName.includes("ilk adım") || normalizedName.includes("ilk adim") || normalizedName.includes("çaylak")) {
         return <GeneratedBadge src="/badges/ilk-adim.png" alt="İlk Adım Badge" rotate={2} />;
+    }
+
+    // Yardım Sever (Helpful)
+    if (normalizedName.includes("yardım") || normalizedName.includes("destek") || normalizedName.includes("katkı")) {
+        return <GeneratedBadge src="/badges/yardimsever.png" alt="Yardım Sever Badge" rotate={-2} />;
     }
 
     // Late Night / Owl (Moon) (Fallback for older badges or if image logic skipped)

@@ -40,7 +40,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
     // Group badges by category
     const badgesByCategory = userBadges.reduce((acc, userBadge) => {
         const rawCat = userBadge.badges.category || "General";
-        // Category Translation Map
+        // Category Translation Map (Review and Expand)
         const catMap: Record<string, string> = {
             "Special": "Özel",
             "Milestone": "Kilometre Taşı",
@@ -88,7 +88,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                     index === 3 && "z-10 rotate-[5deg]",
                                 )}
                             >
-                                <CustomBadgeIcon name={userBadge.badges.name} className="w-full h-full relative z-10" />
+                                <CustomBadgeIcon name={userBadge.badges.name} className="w-full h-full relative z-10 rounded-full" />
                             </div>
                         ))}
                     </div>
@@ -137,6 +137,14 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                 )}
                             </div>
                         </div>
+
+                        {/* Close Button X */}
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="p-2 rounded-lg hover:bg-red-500 hover:text-white transition-colors border-2 border-transparent hover:border-black"
+                        >
+                            <X className="w-6 h-6 md:w-8 md:h-8 stroke-[3px]" />
+                        </button>
                     </div>
                 </DialogHeader>
 
@@ -172,7 +180,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                         whileHover={{ scale: 1.1, rotate: 2 }}
                                         transition={{ type: "spring", bounce: 0.5 }}
                                     >
-                                        <CustomBadgeIcon name={selectedBadge.badges.name} className="w-full h-full drop-shadow-[8px_8px_0px_rgba(0,0,0,0.2)]" />
+                                        <CustomBadgeIcon name={selectedBadge.badges.name} className="w-full h-full drop-shadow-[8px_8px_0px_rgba(0,0,0,0.2)] rounded-full" />
                                     </motion.div>
                                 </div>
 
@@ -182,7 +190,13 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                         <div>
                                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white border-2 border-black rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider mb-3 md:mb-4 shadow-[3px_3px_0px_#94a3b8]">
                                                 <Star className="w-3 h-3 md:w-4 md:h-4 fill-current stroke-none" />
-                                                {selectedBadge.badges.category || "Genel"}
+                                                {/* Ensure category is translated here if needed */}
+                                                {(function () {
+                                                    const raw = selectedBadge.badges.category || "General";
+                                                    const map: Record<string, string> = { "Special": "Özel", "Milestone": "Kilometre Taşı", "Engagement": "Etkileşim", "Contribution": "Katkı", "General": "Genel" };
+                                                    const cat = map[raw] || raw;
+                                                    return cat;
+                                                })()}
                                             </div>
                                             <h2 className="text-3xl md:text-5xl font-black uppercase leading-[0.9] text-black mb-2 tracking-tighter break-words">
                                                 {selectedBadge.badges.name}
@@ -206,12 +220,11 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                                 </div>
                                                 <h3 className="text-xs md:text-sm font-black text-yellow-600 uppercase mb-2 tracking-widest relative z-10">NASIL KAZANILIR?</h3>
                                                 <p className="text-base md:text-lg font-bold text-black relative z-10">
-                                                    {/* Simulated criteria */}
-                                                    {selectedBadge.badges.name.includes("Einstein") ? "Bilim kategorisinde paylaşımlarınla topluluğu aydınlat ve yüksek etkileşim al." :
-                                                        selectedBadge.badges.name.includes("Newton") ? "Yerçekimi kanunlarına meydan okuyan sorular sorarak fizik tartışmalarını alevlendir." :
-                                                            selectedBadge.badges.name.includes("Tesla") ? "Elektrik ve enerji konularında yenilikçi fikirler paylaş, tabuları yık." :
-                                                                selectedBadge.badges.name.includes("Yazar") ? "Kapsamlı ve özgün makaleler yayınlayarak bilgi havuzuna katkıda bulun." :
-                                                                    selectedBadge.badges.name.includes("Kaşif") ? "FizikHub'ın derinliklerini keşfederek gizli özellikleri bul." :
+                                                    {selectedBadge.badges.name.toLowerCase().includes("einstein") ? "Bilim kategorisinde paylaşımlarınla topluluğu aydınlat ve yüksek etkileşim al." :
+                                                        selectedBadge.badges.name.toLowerCase().includes("newton") ? "Yerçekimi kanunlarına meydan okuyan sorular sorarak fizik tartışmalarını alevlendir." :
+                                                            selectedBadge.badges.name.toLowerCase().includes("tesla") ? "Elektrik ve enerji konularında yenilikçi fikirler paylaş, tabuları yık." :
+                                                                selectedBadge.badges.name.toLowerCase().includes("yazar") ? "Kapsamlı ve özgün makaleler yayınlayarak bilgi havuzuna katkıda bulun." :
+                                                                    selectedBadge.badges.name.toLowerCase().includes("kaşif") ? "FizikHub'ın derinliklerini keşfederek gizli özellikleri bul." :
                                                                         "FizikHub topluluğuna aktif katılım göstererek, içerik üreterek veya diğer üyelerle etkileşime geçerek bu rozeti kazanabilirsin."}
                                                 </p>
                                             </div>
@@ -255,7 +268,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                                         </div>
 
                                                         <div className="relative w-16 h-16 md:w-24 md:h-24 drop-shadow-md z-10 filter group-hover:drop-shadow-none transition-all">
-                                                            <CustomBadgeIcon name={badge.badges.name} className="w-full h-full" />
+                                                            <CustomBadgeIcon name={badge.badges.name} className="w-full h-full relative z-10" />
                                                         </div>
 
                                                         <div className="text-center w-full z-10 pt-2 border-t-2 border-black/5 w-full">
