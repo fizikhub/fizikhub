@@ -42,6 +42,19 @@ export default async function DiscoverPage({
 
     const { data: articles } = await dbQuery;
 
+    // Fetch current user for the share card
+    const { data: { user } } = await supabase.auth.getUser();
+    let userProfile = null;
+
+    if (user) {
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("username, full_name, avatar_url")
+            .eq("id", user.id)
+            .single();
+        userProfile = profile;
+    }
+
     const categories = [
         "Kuantum Fiziği",
         "Astrofizik",
@@ -59,6 +72,7 @@ export default async function DiscoverPage({
             categories={categories}
             currentQuery={query}
             currentCategory={category}
+            user={userProfile}
         />
     );
 }
