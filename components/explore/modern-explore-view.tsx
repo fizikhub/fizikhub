@@ -39,43 +39,43 @@ interface ModernExploreViewProps {
 function SpaceBackground() {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-            {/* Stars - Restored & More Visible */}
-            {[...Array(12)].map((_, i) => (
+            {/* Stars - Increased Count for finer texture */}
+            {[...Array(40)].map((_, i) => (
                 <motion.div
                     key={i}
-                    className="absolute bg-foreground/40 rounded-full"
+                    className="absolute bg-foreground/30 rounded-full"
                     style={{
-                        width: Math.random() * 2 + 1 + "px",
-                        height: Math.random() * 2 + 1 + "px",
-                        top: Math.random() * 80 + "%",
+                        width: Math.random() * 2 + 0.5 + "px",
+                        height: Math.random() * 2 + 0.5 + "px",
+                        top: Math.random() * 100 + "%",
                         left: Math.random() * 100 + "%",
                     }}
-                    animate={{ opacity: [0.2, 0.8, 0.2], scale: [1, 1.2, 1] }}
+                    animate={{ opacity: [0.1, 0.5, 0.1], scale: [1, 1.2, 1] }}
                     transition={{
-                        duration: Math.random() * 3 + 2,
+                        duration: Math.random() * 4 + 3,
                         repeat: Infinity,
                         ease: "easeInOut",
-                        delay: Math.random() * 2
+                        delay: Math.random() * 5
                     }}
                 />
             ))}
 
-            {/* Simplified Iconic UFO */}
+            {/* Simplified Iconic UFO - Positioned Closer to Header */}
             <motion.div
-                className="absolute top-[3%] left-[5%] sm:left-[12%] opacity-20 dark:opacity-30"
+                className="absolute top-[12%] left-[15%] sm:left-[25%] opacity-15 dark:opacity-25"
                 animate={{
-                    y: [0, -10, 0],
-                    x: [0, 5, 0],
+                    y: [0, -8, 0],
+                    x: [0, 4, 0],
                     rotate: [0, 2, -2, 0]
                 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             >
-                <svg width="60" height="40" viewBox="0 0 60 40" fill="currentColor">
+                <svg width="50" height="30" viewBox="0 0 60 40" fill="currentColor">
                     {/* Simple Dome */}
                     <path d="M20 20 C20 10, 40 10, 40 20" fill="none" stroke="currentColor" strokeWidth="2" />
                     {/* Simple Disc Body */}
                     <ellipse cx="30" cy="20" rx="25" ry="6" stroke="currentColor" strokeWidth="2" fill="none" />
-                    {/* 3 Simple Lights */}
+                    {/* Lights */}
                     <circle cx="15" cy="20" r="1.5" />
                     <circle cx="30" cy="23" r="1.5" />
                     <circle cx="45" cy="20" r="1.5" />

@@ -13,7 +13,7 @@ import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Orbitron } from "next/font/google"; // Keeping Orbitron for headers if needed, or switch to site font
+import { Orbitron } from "next/font/google";
 
 const orbitron = Orbitron({ subsets: ["latin"] });
 
@@ -50,7 +50,6 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     const [uploadingImage, setUploadingImage] = useState(false);
 
     // Guide State
-    // Show guide if user hasn't seen it yet
     const [showGuide, setShowGuide] = useState(!hasSeenGuide);
     const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -111,7 +110,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
         if (dontShowAgain) {
             const supabase = createClient();
             await supabase.from("profiles").update({ has_seen_article_guide: true }).eq("id", userId);
-            toast.success("Anlaşıldı, rehberi bir daha göstermeyeceğiz! 🫡");
+            toast.success("Anlaşıldı! 🚀");
         }
     };
 
@@ -143,7 +142,6 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
 
             if (!result.success) throw new Error(result.error || "Blog oluşturulamadı");
 
-            // Update profile if first article (non-blocking)
             if (isFirstArticle) {
                 const supabase = createClient();
                 await supabase.from("profiles").update({ has_written_article: true }).eq("id", userId);
@@ -161,136 +159,114 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
 
-            {/* Neo-Brutalist Guide Dialog */}
+            {/* Mature Pastel Neo-Brutalist Guide Dialog */}
             <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background p-0 border-4 border-foreground shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.2)] sm:rounded-none">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background p-0 border-2 border-foreground/80 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] sm:rounded-xl">
 
                     {/* Explicit Close Button */}
                     <button
                         onClick={() => setShowGuide(false)}
-                        className="absolute right-4 top-4 z-50 p-2 bg-background border-2 border-foreground hover:bg-red-500 hover:text-white transition-colors"
+                        className="absolute right-4 top-4 z-50 p-2 bg-red-100 dark:bg-red-900/30 border border-foreground/50 hover:bg-red-500 hover:text-white transition-all rounded-md"
                         title="Kapat"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5" />
                     </button>
 
-                    {/* Brutalist Header */}
-                    <div className="bg-foreground text-background p-8 sm:p-10 border-b-4 border-background relative overflow-hidden">
-                        <div className="relative z-10">
-                            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tighter mb-4 leading-none glitch-text">
-                                Blog <br /> Yazarlığı <br /> 101
-                            </h2>
-                            <p className="text-lg sm:text-xl font-bold font-mono opacity-80 max-w-xl">
-                                // SİSTEM MESAJI: Sadece yazıp geçme. Bir başyapıt yarat.
-                            </p>
-                        </div>
-                        {/* Decorative Background Pattern */}
-                        <div className="absolute right-0 top-0 h-full w-1/3 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#000_10px,#000_20px)] dark:bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#fff_10px,#fff_20px)]"></div>
+                    {/* Header */}
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-8 border-b-2 border-foreground/20">
+                        <DialogTitle className="text-3xl sm:text-4xl font-black tracking-tight text-foreground flex items-center gap-3">
+                            <span className="text-4xl">⚓</span>
+                            Blog Yazarlığı 101
+                        </DialogTitle>
+                        <DialogDescription className="text-muted-foreground font-medium text-lg mt-2 max-w-xl">
+                            Sadece yazıp geçme, bir başyapıt yarat! İşte Fizikhub&apos;da etkileyici bir blog yazmanın incelikleri.
+                        </DialogDescription>
                     </div>
 
-                    <div className="p-6 sm:p-10 space-y-12">
-                        {/* Editor Usage Section */}
-                        <section className="space-y-6">
-                            <div className="flex items-center gap-4 border-b-4 border-foreground pb-2">
-                                <div className="bg-foreground text-background px-3 py-1 font-black text-xl">01</div>
-                                <h3 className="text-2xl font-black uppercase tracking-tight">ARAÇ KUTUSU</h3>
-                            </div>
+                    <div className="p-8 space-y-10">
+                        {/* Essential Tools Grid - Sincere Content Restored */}
+                        <section className="space-y-4">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground border-b border-border pb-2">
+                                Editörün Gücü
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
-                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
-                                        <ImageImageIcon className="w-5 h-5" /> Görsel Ekle
+                                <div className="group p-5 bg-indigo-50/50 dark:bg-indigo-950/20 border border-border rounded-lg hover:border-foreground transition-all">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-indigo-700 dark:text-indigo-300">
+                                        <ImageImageIcon className="w-5 h-5" /> Görsel Dünyası
                                     </h4>
-                                    <p className="text-sm font-medium text-muted-foreground font-mono">
-                                        Metnini görsellerle destekle. Uzun yazılar sıkıcıdır, araya resim serpiştir.
+                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
+                                        Kuru yazı okunmaz! Satır aralarına serpiştirmek için <b>Görsel</b> butonunu, kapak fotoğrafı için alttaki barı kullan.
                                     </p>
                                 </div>
-                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
-                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
-                                        <Hash className="w-5 h-5" /> Etiketle
+
+                                <div className="group p-5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-border rounded-lg hover:border-foreground transition-all">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-emerald-700 dark:text-emerald-300">
+                                        <Hash className="w-5 h-5" /> Kategorilendirme
                                     </h4>
-                                    <p className="text-sm font-medium text-muted-foreground font-mono">
-                                        Doğru kategoriyi seç. Okuyucuların seni bulmasını kolaylaştır.
+                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
+                                        Yazını doğru rafa koy. Alttaki kategorilerden en uygununu seç ki okuyucular seni eliyle koymuş gibi bulsun.
                                     </p>
                                 </div>
-                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
-                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
-                                        <AlignLeft className="w-5 h-5" /> Özetle
+
+                                <div className="group p-5 bg-amber-50/50 dark:bg-amber-950/20 border border-border rounded-lg hover:border-foreground transition-all">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-amber-700 dark:text-amber-300">
+                                        <AlignLeft className="w-5 h-5" /> Özetin Gücü
                                     </h4>
-                                    <p className="text-sm font-medium text-muted-foreground font-mono">
-                                        Çarpıcı bir giriş cümlesi yaz. Vitrinin güzel olsun.
+                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
+                                        Vitrin önemlidir. Kısa özet alanına (alttaki buton) çekici bir giriş cümlesi yazarak tıklanma oranını artırabilirsin.
                                     </p>
                                 </div>
-                                <div className="p-5 border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-muted/20">
-                                    <h4 className="font-black text-lg mb-2 uppercase flex items-center gap-2">
-                                        <BookOpen className="w-5 h-5" /> Kaydet
+
+                                <div className="group p-5 bg-slate-100/50 dark:bg-slate-800/30 border border-border rounded-lg hover:border-foreground transition-all">
+                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-slate-700 dark:text-slate-300">
+                                        <BookOpen className="w-5 h-5" /> Taslak Modu
                                     </h4>
-                                    <p className="text-sm font-medium text-muted-foreground font-mono">
-                                        Taslak olarak kaydet, sonra devam et. Mükemmellik aceleye gelmez.
+                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
+                                        İlham perisi kaçtı mı? "Taslak" butonuna basıp kaydet, sonra profilinden devam et. Acele etme, mükemmeli hedefle.
                                     </p>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        {/* Tips Section */}
+                        <section className="space-y-4">
+                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground border-b border-border pb-2">
+                                Bilimsel Yaklaşım
+                            </h3>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex-1 p-4 border border-l-4 border-l-blue-500 bg-background shadow-sm rounded-r-lg">
+                                    <h4 className="font-bold text-sm mb-1">Kaynak Göster</h4>
+                                    <p className="text-xs text-muted-foreground">İddialarını kanıtla.</p>
+                                </div>
+                                <div className="flex-1 p-4 border border-l-4 border-l-purple-500 bg-background shadow-sm rounded-r-lg">
+                                    <h4 className="font-bold text-sm mb-1">Sadeleştir</h4>
+                                    <p className="text-xs text-muted-foreground">Herkesin anlayacağı dilden yaz.</p>
+                                </div>
+                                <div className="flex-1 p-4 border border-l-4 border-l-orange-500 bg-background shadow-sm rounded-r-lg">
+                                    <h4 className="font-bold text-sm mb-1">Objektif Ol</h4>
+                                    <p className="text-xs text-muted-foreground">Verilere sadık kal.</p>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Scientific Blog Tips */}
-                        <section className="space-y-6">
-                            <div className="flex items-center gap-4 border-b-4 border-foreground pb-2">
-                                <div className="bg-emerald-500 text-black px-3 py-1 font-black text-xl">02</div>
-                                <h3 className="text-2xl font-black uppercase tracking-tight">İÇERİK STRATEJİSİ</h3>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-blue-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
-                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
-                                        <LinkIcon className="w-8 h-8 mb-4 text-blue-500" />
-                                        <h4 className="font-black text-xl mb-2">KANITLA</h4>
-                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
-                                            Kaynak göster. Link ver. Bilim dedikoduyla değil, veriyle yapılır.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-purple-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
-                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
-                                        <Lightbulb className="w-8 h-8 mb-4 text-purple-500" />
-                                        <h4 className="font-black text-xl mb-2">BASİTLEŞTİR</h4>
-                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
-                                            "Bir şeyi basitçe anlatamıyorsan, anlamamışsındır." - Einstein
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-orange-500 translate-x-2 translate-y-2 border-2 border-foreground"></div>
-                                    <div className="relative p-6 bg-background border-2 border-foreground h-full flex flex-col">
-                                        <AlertTriangle className="w-8 h-8 mb-4 text-orange-500" />
-                                        <h4 className="font-black text-xl mb-2">OBJEKTİF OL</h4>
-                                        <p className="text-xs font-bold text-muted-foreground uppercase leading-relaxed">
-                                            Duygularını değil, gerçekleri yaz. Yorumunu kat ama veriyi bükme.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Footer Action */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-6 border-t-4 border-foreground/10">
-                            <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-foreground/30 hover:border-foreground transition-colors cursor-pointer group w-full sm:w-auto justify-center" onClick={() => setDontShowAgain(!dontShowAgain)}>
+                        {/* Footer */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
+                            <div className="flex items-center gap-3 cursor-pointer group select-none" onClick={() => setDontShowAgain(!dontShowAgain)}>
                                 <div className={cn(
-                                    "w-6 h-6 border-2 border-foreground flex items-center justify-center transition-all",
-                                    dontShowAgain ? "bg-foreground" : "bg-transparent"
+                                    "w-5 h-5 rounded border-2 border-muted-foreground flex items-center justify-center transition-all",
+                                    dontShowAgain && "bg-foreground border-foreground"
                                 )}>
-                                    {dontShowAgain && <X className="w-4 h-4 text-background" />}
+                                    {dontShowAgain && <Sparkles className="w-3 h-3 text-background" />}
                                 </div>
-                                <label className="text-sm font-black uppercase text-foreground cursor-pointer select-none">
-                                    Bu ekranı bir daha gösterme
+                                <label className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors cursor-pointer">
+                                    Bu rehberi bir daha gösterme
                                 </label>
                             </div>
 
-                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-black px-8 h-14 text-xl border-2 border-foreground bg-foreground text-background hover:bg-emerald-500 hover:text-black hover:border-black transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                ANLAŞILDI, BAŞLAT
+                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-bold px-8 h-12 text-lg rounded-lg border-2 border-foreground/10 bg-foreground text-background hover:bg-emerald-600 hover:text-white shadow-lg transition-all hover:-translate-y-1">
+                                Başlıyoruz 🚀
                             </Button>
                         </div>
                     </div>
@@ -302,7 +278,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-background border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none transition-all w-10 h-10"
+                    className="rounded-full bg-background border border-border shadow-lg hover:scale-110 transition-transform w-10 h-10 text-muted-foreground"
                     onClick={() => setShowGuide(true)}
                     title="Rehberi Göster"
                 >
