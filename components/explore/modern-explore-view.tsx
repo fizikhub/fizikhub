@@ -60,25 +60,60 @@ function SpaceBackground() {
                 />
             ))}
 
-            {/* Enhanced Minimal UFO */}
+            {/* Premium UFO Floating */}
             <motion.div
-                className="absolute top-[5%] left-[5%] sm:left-[15%] opacity-15 dark:opacity-25"
+                className="absolute top-[2%] left-[2%] sm:left-[10%] opacity-20 dark:opacity-30"
                 animate={{
-                    y: [0, -20, 0],
-                    x: [0, 15, 0],
-                    rotate: [0, 8, -8, 0]
+                    y: [0, -15, 0],
+                    x: [0, 8, 0],
+                    rotate: [0, 3, -3, 0]
                 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
             >
-                <svg width="80" height="50" viewBox="0 0 80 50" fill="currentColor">
-                    {/* Dome */}
-                    <path d="M25 25 C25 10, 55 10, 55 25" fill="none" stroke="currentColor" strokeWidth="2" />
-                    {/* Body */}
-                    <ellipse cx="40" cy="25" rx="35" ry="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                <svg width="100" height="60" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Glow Filter */}
+                    <defs>
+                        <filter id="ufoGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="2" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    {/* Beam (Subtle) */}
+                    <path d="M50 45 L30 80 L70 80 Z" fill="url(#beamGrad)" opacity="0.1" />
+                    <defs>
+                        <linearGradient id="beamGrad" x1="50" y1="45" x2="50" y2="80" gradientUnits="userSpaceOnUse">
+                            <stop stopColor="currentColor" stopOpacity="0.5" />
+                            <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+                        </linearGradient>
+                    </defs>
+
+                    {/* Glass Dome */}
+                    <path d="M35 25 C35 12, 65 12, 65 25" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="1.5" />
+
+                    {/* Alien Pilot (Tiny silhouette) */}
+                    <circle cx="50" cy="22" r="3" fill="currentColor" fillOpacity="0.5" />
+
+                    {/* Main Body Ring */}
+                    <ellipse cx="50" cy="25" rx="40" ry="12" fill="currentColor" fillOpacity="0.05" stroke="currentColor" strokeWidth="2" />
+                    <path d="M15 25 Q50 38 85 25" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" fill="none" />
+
                     {/* Lights */}
-                    <circle cx="20" cy="25" r="2" />
-                    <circle cx="40" cy="29" r="2" />
-                    <circle cx="60" cy="25" r="2" />
+                    <circle cx="20" cy="25" r="2" fill="currentColor" filter="url(#ufoGlow)">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="35" cy="30" r="2" fill="currentColor" filter="url(#ufoGlow)">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.5s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="50" cy="32" r="2.5" fill="currentColor" filter="url(#ufoGlow)">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="1s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="65" cy="30" r="2" fill="currentColor" filter="url(#ufoGlow)">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="1.5s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="80" cy="25" r="2" fill="currentColor" filter="url(#ufoGlow)">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="2s" repeatCount="indefinite" />
+                    </circle>
                 </svg>
             </motion.div>
         </div>
@@ -112,11 +147,11 @@ export function ModernExploreView({
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
             <SpaceBackground />
 
-            {/* Reduced Top Padding for visibility above scrolling */}
-            <div className="container max-w-2xl mx-auto px-4 py-6 md:py-10">
+            {/* Further Reduced Top Padding - Moved Up */}
+            <div className="container max-w-2xl mx-auto px-4 py-2 sm:py-6">
 
                 {/* Header Section */}
-                <div className="mb-6 sm:mb-8 text-center relative z-10">
+                <div className="mb-5 sm:mb-8 text-center relative z-10">
                     {/* "Topluluk" Badge Removed as requested */}
 
                     <motion.h1
