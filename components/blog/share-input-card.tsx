@@ -101,36 +101,27 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                transition={{ duration: 0.2 }}
-                                className="absolute top-full left-0 right-0 mt-2 bg-background border-2 border-border rounded-xl shadow-xl z-50 overflow-hidden"
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="absolute top-full right-0 mt-3 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,1)] z-[100] overflow-hidden"
                             >
-                                <div className="p-2 space-y-1">
-                                    <button
-                                        onClick={() => handleNavigation("/makale/yeni")}
-                                        className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group text-left"
-                                    >
-                                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
-                                            <PenTool className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-sm text-foreground">Blog Yazısı</h4>
-                                            <p className="text-xs text-muted-foreground">Düşüncelerini özgürce paylaş.</p>
-                                        </div>
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </button>
+                                <div className="p-2">
+                                    <div className="px-3 py-2 border-b border-white/5 mb-1">
+                                        <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Ne Paylaşmak İstersin?</span>
+                                    </div>
 
                                     <button
                                         onClick={() => handleNavigation("/kitap-inceleme/yeni")}
-                                        className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group text-left"
+                                        className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-all group text-left relative overflow-hidden"
                                     >
-                                        <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                                        <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                        <div className="relative w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                                             <Book className="w-5 h-5" />
                                         </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-bold text-sm text-foreground">Kitap İncelemesi</h4>
-                                            <p className="text-xs text-muted-foreground">Okuduğun kitabı puanla ve anlat.</p>
+                                        <div className="relative flex-1">
+                                            <h4 className="font-bold text-sm text-foreground group-hover:text-emerald-400 transition-colors">Kitap İncelemesi</h4>
+                                            <p className="text-[10px] text-muted-foreground leading-tight">Okuduğun kitabı puanla ve tüm detaylarıyla incele.</p>
                                         </div>
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </button>
                                 </div>
                             </motion.div>

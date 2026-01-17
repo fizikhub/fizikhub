@@ -132,58 +132,77 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                 </div>
             </div>
 
-            {/* Book Details */}
+            {/* Book Details - Mobile Optimized */}
             <div className="grid gap-6">
-                <div className="space-y-4 p-6 bg-card border-2 border-border rounded-xl shadow-sm">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <User className="w-4 h-4 text-muted-foreground" />
-                        Kitap Bilgileri
-                    </h3>
+                <div className="space-y-6 p-4 sm:p-6 bg-card border-2 border-border rounded-xl shadow-sm">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
+                        <User className="w-4 h-4 text-emerald-500" />
+                        <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground">
+                            Kitap Detayları
+                        </h3>
+                    </div>
 
-                    <div className="grid gap-4">
-                        <div>
+                    <div className="grid gap-6">
+                        {/* Title Input */}
+                        <div className="space-y-2">
                             <Textarea
                                 ref={titleRef}
                                 value={bookTitle}
                                 onChange={(e) => setBookTitle(e.target.value)}
                                 placeholder="Kitabın Adı..."
-                                className="text-2xl font-bold bg-transparent border-b-2 border-border rounded-none px-0 focus-visible:ring-0 focus-visible:border-foreground min-h-[50px] resize-none"
+                                className="text-3xl sm:text-4xl font-black bg-transparent border-none px-0 focus-visible:ring-0 focus-visible:outline-none placeholder:text-muted-foreground/30 min-h-[50px] resize-none leading-tight"
                                 rows={1}
                             />
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <div className="flex-1">
-                                <Input
-                                    value={bookAuthor}
-                                    onChange={(e) => setBookAuthor(e.target.value)}
-                                    placeholder="Yazarın Adı"
-                                    className="bg-muted/30 border-border font-medium"
-                                />
+                        {/* Author & Rating - Stacks on Mobile */}
+                        <div className="flex flex-col sm:flex-row gap-6">
+                            <div className="flex-1 space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Yazar</label>
+                                <div className="relative group">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
+                                    <Input
+                                        value={bookAuthor}
+                                        onChange={(e) => setBookAuthor(e.target.value)}
+                                        placeholder="Yazarın Adı"
+                                        className="pl-9 h-12 bg-muted/30 border-border focus:bg-background transition-all font-medium text-lg"
+                                    />
+                                </div>
                             </div>
 
-                            {/* Rating */}
-                            <div className="flex items-center gap-1 bg-muted/30 px-3 py-2 rounded-md border border-border">
-                                <span className="text-sm font-bold text-muted-foreground mr-2">Puan:</span>
-                                {[...Array(10)].map((_, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={() => setRating(i + 1)}
-                                        className={cn(
-                                            "w-2 h-6 rounded-full transition-all",
-                                            i < rating ? "bg-emerald-500" : "bg-muted-foreground/20 hover:bg-emerald-500/50"
-                                        )}
-                                        title={`${i + 1}/10`}
-                                    />
-                                ))}
-                                <span className="ml-2 font-black text-emerald-600 dark:text-emerald-400 min-w-[20px] text-center">{rating}</span>
+                            {/* Star Rating System */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Puanın</label>
+                                <div className="h-12 flex items-center gap-1 bg-muted/30 px-2 rounded-md border border-border hover:border-emerald-500/50 transition-colors">
+                                    {[...Array(10)].map((_, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => setRating(i + 1)}
+                                            onMouseEnter={() => setRating(i + 1)} // Simplified hover for desktop
+                                            className={cn(
+                                                "p-1 hover:scale-110 transition-transform focus:outline-none group",
+                                            )}
+                                            title={`${i + 1}/10`}
+                                        >
+                                            <Star
+                                                className={cn(
+                                                    "w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300",
+                                                    i < rating
+                                                        ? "fill-emerald-500 text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                                        : "text-muted-foreground/20"
+                                                )}
+                                            />
+                                        </button>
+                                    ))}
+                                    <div className="ml-2 w-8 text-center font-black text-lg text-emerald-500">{rating}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Content Editor */}
-                <div className="min-h-[400px]">
+                <div className="min-h-[400px] border-2 border-border/50 rounded-xl overflow-hidden bg-card/50">
                     <ArticleEditor
                         content={content}
                         onChange={setContent}
@@ -191,18 +210,21 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                     />
                 </div>
 
-                {/* Cover Image Upload (Similar to NewArticleForm but simplified) */}
+                {/* Cover Image Upload Preview */}
                 {coverUrl && (
-                    <div className="relative group rounded-xl overflow-hidden border-2 border-muted">
-                        <img src={coverUrl} alt="Cover" className="w-full max-h-[300px] object-cover" />
-                        <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => setCoverUrl("")}
-                        >
-                            <Trash2 className="w-5 h-5" />
-                        </Button>
+                    <div className="relative group rounded-xl overflow-hidden border-2 border-muted max-w-sm mx-auto sm:mx-0 shadow-xl rotate-1 hover:rotate-0 transition-all duration-300">
+                        <img src={coverUrl} alt="Cover" className="w-full h-auto object-cover" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => setCoverUrl("")}
+                                className="gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Kaldır
+                            </Button>
+                        </div>
                     </div>
                 )}
             </div>
