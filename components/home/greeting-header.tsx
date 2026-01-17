@@ -31,49 +31,52 @@ export function GreetingHeader() {
         else if (hour >= 18 && hour < 22) setGreeting("İyi Akşamlar");
         else setGreeting("İyi Geceler");
 
-        // Select random fact based on day of year to keep it consistent for the day, or just random
-        // Let's do random for delight
         setFact(SCIENTIFIC_FACTS[Math.floor(Math.random() * SCIENTIFIC_FACTS.length)]);
     }, []);
 
     if (!mounted) return null;
 
     return (
-        <div className="w-full pt-6 pb-2 px-2 sm:px-0">
+        <div className="w-full pt-6 pb-2 px-4 sm:px-0">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="flex flex-col gap-2"
+                className="flex flex-col gap-4"
             >
                 {/* Greeting Line */}
-                <div className="flex items-center gap-2">
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-                        {greeting}, <span className="text-muted-foreground">Kaşif.</span>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-foreground drop-shadow-sm">
+                        {greeting}, <span className="text-muted-foreground bg-black/5 dark:bg-white/10 px-2 rounded-lg">Kaşif.</span>
                     </h1>
                     <motion.div
                         animate={{ rotate: [0, 10, -10, 0] }}
                         transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
                     >
-                        <Sparkles className="w-6 h-6 text-amber-400 fill-amber-400/20" />
+                        <Sparkles className="w-8 h-8 text-amber-500 fill-amber-400" strokeWidth={2.5} />
                     </motion.div>
                 </div>
 
-                {/* Daily Dose Card - Paper Strip Style */}
+                {/* Daily Dose Card - Neo Brutalist Style */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="relative mt-2"
+                    className="relative mt-2 group"
                 >
-                    <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-full bg-primary/30 rounded-full" />
-                    <div className="pl-3 py-1">
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5">
-                            Günün Dozu
-                        </p>
-                        <p className="text-sm sm:text-base font-medium text-foreground/90 leading-tight italic">
-                            "{fact}"
-                        </p>
+                    <div className="absolute inset-0 bg-black dark:bg-white rounded-xl translate-x-[4px] translate-y-[4px] transition-transform group-hover:translate-x-[6px] group-hover:translate-y-[6px]" />
+                    <div className="relative bg-amber-50 dark:bg-zinc-900 border-2 border-black dark:border-white rounded-xl p-4 sm:p-5">
+                        <div className="flex flex-col gap-2">
+                             <div className="flex items-center gap-2">
+                                <span className="bg-black text-white dark:bg-white dark:text-black text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-sm">
+                                    Günün Dozu
+                                </span>
+                                <div className="h-0.5 flex-1 bg-black/10 dark:bg-white/10" />
+                            </div>
+                            <p className="text-lg sm:text-lg font-bold text-foreground leading-snug font-serif italic">
+                                "{fact}"
+                            </p>
+                        </div>
                     </div>
                 </motion.div>
             </motion.div>

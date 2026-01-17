@@ -5,7 +5,7 @@ import { useRef, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, PenSquare, ArrowUpDown, Calendar, LinkIcon, Twitter, Github, Linkedin, Instagram, MapPin, Globe } from "lucide-react";
+import { BadgeCheck, PenSquare, ArrowUpDown, Calendar, LinkIcon, Twitter, Github, Linkedin, Instagram, MapPin, Globe, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -377,9 +377,25 @@ export function ProfileHero({
                                     <div className="text-lg font-black text-foreground leading-none">{stats.followingCount}</div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 opacity-80">Takip</div>
                                 </div>
-                                <div className="px-4 md:px-6 text-center sm:text-left cursor-help" title="Topluluk Puanı">
-                                    <div className="text-lg font-black text-amber-500 leading-none glow-text-amber">{profile?.reputation || 0}</div>
-                                    <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 opacity-80">HubPuan</div>
+                                <div className="px-4 md:px-6 text-center sm:text-left cursor-pointer relative group/hub" title="">
+                                    <Link href="/puanlar-nedir">
+                                        <div className="flex flex-col items-center sm:items-start group-hover/hub:scale-105 transition-transform">
+                                            <div className="text-lg font-black text-amber-500 leading-none glow-text-amber flex items-center gap-1">
+                                                {profile?.reputation || 0}
+                                                <HelpCircle className="w-3 h-3 text-muted-foreground/50 opacity-0 group-hover/hub:opacity-100 transition-opacity" />
+                                            </div>
+                                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 opacity-80 group-hover/hub:text-amber-500/80 transition-colors">HubPuan</div>
+                                        </div>
+                                    </Link>
+
+                                    {/* Hover/Focus Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 opacity-0 invisible group-hover/hub:opacity-100 group-hover/hub:visible transition-all z-50 pointer-events-none">
+                                        <div className="bg-black text-white p-3 rounded-xl shadow-xl border border-white/10 text-center relative">
+                                            <p className="text-xs font-bold mb-1">Hub Puanı Nedir?</p>
+                                            <p className="text-[10px] text-gray-300 leading-tight">Topluluk katkılarını gösteren özel itibar puanıdır.</p>
+                                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black rotate-45 border-r border-b border-white/10"></div>
+                                        </div>
+                                    </div>
                                 </div>
                                 {createdAt && (
                                     <div className="pl-4 md:pl-6 text-center sm:text-left hidden xs:block">
