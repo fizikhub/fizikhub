@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Telescope } from "lucide-react";
+import { Telescope, ArrowRight, Hash } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
-import { CommunityInviteBanner } from "@/components/explore/community-invite-banner";
 import { ShareInputCard } from "@/components/blog/share-input-card";
+import { motion } from "framer-motion";
 
 interface Article {
     id: number;
@@ -43,9 +43,8 @@ export function ModernExploreView({
     currentCategory,
     user
 }: ModernExploreViewProps) {
-    const [searchQuery, setSearchQuery] = useState(currentQuery || "");
 
-    // Transform articles to match SocialArticleCard's expected format
+    // Transform articles
     const transformedArticles = initialArticles.map(article => ({
         ...article,
         image_url: article.cover_url || article.image_url,
@@ -59,81 +58,101 @@ export function ModernExploreView({
     }));
 
     return (
-        <div className="min-h-screen bg-transparent pb-20 md:pb-0 font-sans">
-            <div className="container max-w-2xl mx-auto px-2 sm:px-4 py-8 md:py-12">
+        <div className="min-h-screen bg-transparent pb-20 md:pb-0 font-sans overflow-hidden">
 
-                {/* Header Section - Modern Editorial, No "Shouting" */}
-                <div className="mb-8 flex flex-col items-center text-center space-y-3">
-                    <Link href="/blog">
-                        <Badge variant="secondary" className="px-3 py-1 font-medium text-[10px] tracking-widest uppercase bg-muted/50 text-muted-foreground hover:bg-muted transition-colors rounded-full">
-                            Topluluk Blogu
-                        </Badge>
-                    </Link>
-                    <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-                        Fikirlerini Özgür Bırak
+            {/* Radical Header Section */}
+            <div className="relative pt-12 pb-24 md:pt-20 md:pb-32 container max-w-5xl mx-auto px-4">
+                {/* Asymetrical Background Elements */}
+                <div className="absolute top-10 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -z-10 animate-pulse" />
+                <div className="absolute bottom-0 left-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl -z-10" />
+
+                <div className="relative z-10">
+                    <motion.div
+                        initial={{ x: -50, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className="inline-block"
+                    >
+                        <div className="bg-black dark:bg-white text-white dark:text-black font-mono text-sm font-bold px-3 py-1 mb-4 inline-flex items-center gap-2 transform -rotate-2">
+                            <Hash className="w-4 h-4" />
+                            FIZIKHUB_COMMUNITY
+                        </div>
+                    </motion.div>
+
+                    <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] text-foreground mb-6">
+                        YAZ.<br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-cyan-500 inline-block transform hover:skew-x-12 transition-transform cursor-default">
+                            PAYLAŞ.
+                        </span><br />
+                        <span className="relative inline-block">
+                            KEŞFET
+                            <svg className="absolute -bottom-2 w-full h-3 text-yellow-400" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                            </svg>
+                        </span>
                     </h1>
-                    <p className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto leading-relaxed">
-                        Bilim, teknoloji ve mizah üzerine düşüncelerini paylaş, toplululuğa katkıda bulun.
+
+                    <p className="max-w-xl text-lg md:text-xl font-medium text-zinc-600 dark:text-zinc-400 border-l-4 border-emerald-500 pl-6 py-2">
+                        Burası sadece bir blog değil. Burası beyninin halka açık bir oyun alanı.
                     </p>
                 </div>
+            </div>
 
-                {/* Share Input Card */}
+            <div className="container max-w-4xl mx-auto px-2 relative z-20 -mt-16">
                 <ShareInputCard user={user} />
+            </div>
 
-                {/* Categories Area - Clean & Minimal */}
-                <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/40 py-3 mb-6 -mx-2 px-2 sm:-mx-4 sm:px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
-                    <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-2 md:flex-wrap md:justify-center px-1">
-                        <Link href="/blog" className="shrink-0">
-                            <Badge
-                                variant={!currentCategory ? "default" : "outline"}
-                                className={cn(
-                                    "h-8 px-4 rounded-full text-xs font-medium border transition-all cursor-pointer",
-                                    !currentCategory
-                                        ? "bg-foreground text-background hover:bg-foreground/90 border-transparent shadow-sm"
-                                        : "bg-transparent text-muted-foreground border-border hover:border-foreground/20 hover:text-foreground hover:bg-muted/30"
-                                )}
-                            >
-                                Tümü
-                            </Badge>
+            {/* Sticky "Ticker" Category Bar */}
+            <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-md border-y-2 border-black dark:border-white py-0 overflow-hidden">
+                <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide py-3 md:justify-center">
+                    <Link href="/blog" className="shrink-0 px-2">
+                        <div className={cn(
+                            "px-6 py-2 border-2 border-black dark:border-white font-bold uppercase tracking-wider text-sm transition-all hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
+                            !currentCategory ? "bg-black text-white dark:bg-white dark:text-black" : "bg-transparent text-foreground"
+                        )}>
+                            TÜMÜ
+                        </div>
+                    </Link>
+                    {categories.map((cat) => (
+                        <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className="shrink-0 px-2">
+                            <div className={cn(
+                                "px-6 py-2 border-2 border-black dark:border-white font-bold uppercase tracking-wider text-sm transition-all hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
+                                currentCategory === cat ? "bg-black text-white dark:bg-white dark:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]" : "bg-transparent text-foreground"
+                            )}>
+                                {cat}
+                            </div>
                         </Link>
-                        {categories.map((cat) => (
-                            <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className="shrink-0">
-                                <Badge
-                                    variant={currentCategory === cat ? "default" : "outline"}
-                                    className={cn(
-                                        "h-8 px-4 rounded-full text-xs font-medium border transition-all cursor-pointer",
-                                        currentCategory === cat
-                                            ? "bg-foreground text-background hover:bg-foreground/90 border-transparent shadow-sm"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-foreground/20 hover:text-foreground hover:bg-muted/30"
-                                    )}
-                                >
-                                    {cat}
-                                </Badge>
-                            </Link>
-                        ))}
-                    </div>
+                    ))}
                 </div>
+            </div>
 
-                {/* Articles Feed */}
-                <div className="space-y-6">
+            {/* Masonry-ish Look Grid for Articles */}
+            <div className="container max-w-4xl mx-auto px-4 py-12">
+                <div className="flex flex-col gap-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-12 text-center rounded-2xl border border-dashed border-border/50 bg-muted/10">
-                            <Telescope className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                            <p className="text-muted-foreground font-medium text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs text-primary hover:underline mt-1 block font-medium">
-                                İlk makaleyi sen yaz!
+                        <div className="py-20 text-center border-4 border-black dark:border-white border-dashed bg-zinc-100 dark:bg-zinc-900">
+                            <Telescope className="w-16 h-16 mx-auto mb-4 text-zinc-400 animate-spin-slow" />
+                            <p className="text-xl font-black uppercase text-zinc-500">Sinyal Yok...</p>
+                            <Link href="/makale/yeni" className="mt-4 inline-flex items-center gap-2 bg-emerald-500 text-black px-6 py-3 font-bold border-2 border-black hover:shadow-[4px_4px_0px_0px_#000] transition-all">
+                                İLKİ BAŞLAT <ArrowRight className="w-5 h-5" />
                             </Link>
                         </div>
                     ) : (
                         transformedArticles.map((article, idx) => (
-                            <SocialArticleCard
-                                key={article.id}
-                                article={article as any}
-                                index={idx}
-                                variant="community"
-                                initialLikes={0}
-                                initialComments={0}
-                            />
+                            <div key={article.id} className={cn(
+                                "transform transition-all duration-300",
+                                idx % 2 === 0 ? "md:translate-x-4" : "md:-translate-x-4"
+                            )}>
+                                <div className="relative group">
+                                    <div className="absolute top-2 left-2 w-full h-full bg-black dark:bg-white rounded-xl -z-10 transition-transform group-hover:translate-x-2 group-hover:translate-y-2 lg:group-hover:translate-x-4 lg:group-hover:translate-y-4" />
+                                    <SocialArticleCard
+                                        article={article as any}
+                                        index={idx}
+                                        variant="community"
+                                        initialLikes={0}
+                                        initialComments={0}
+                                    />
+                                </div>
+                            </div>
                         ))
                     )}
                 </div>
