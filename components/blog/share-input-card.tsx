@@ -30,13 +30,13 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                 "group relative flex flex-col overflow-hidden rounded-xl sm:rounded-2xl transition-all duration-300",
                 "bg-card border-2 border-border",
                 "shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)]",
-                "w-full max-w-2xl mx-auto mb-8 sm:mb-12"
+                "w-full max-w-2xl mx-auto mb-6 sm:mb-10"
             )}
         >
             {/* Top Bar - Compact on Mobile */}
             <div className="flex items-center justify-between px-4 sm:px-5 py-2 sm:py-3 border-b-2 border-border/50 bg-muted/30">
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    {/* Green dot removed as requested */}
                     <span className="text-[10px] sm:text-xs font-black tracking-widest text-foreground/80 uppercase">
                         YENİ PAYLAŞIM
                     </span>

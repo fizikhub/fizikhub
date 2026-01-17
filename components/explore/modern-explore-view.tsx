@@ -60,19 +60,25 @@ function SpaceBackground() {
                 />
             ))}
 
-            {/* Minimal UFO Floating */}
+            {/* Enhanced Minimal UFO */}
             <motion.div
-                className="absolute top-[10%] left-[10%] sm:left-[20%] opacity-10 dark:opacity-20"
+                className="absolute top-[5%] left-[5%] sm:left-[15%] opacity-15 dark:opacity-25"
                 animate={{
-                    y: [0, -15, 0],
-                    x: [0, 10, 0],
-                    rotate: [0, 5, -5, 0]
+                    y: [0, -20, 0],
+                    x: [0, 15, 0],
+                    rotate: [0, 8, -8, 0]
                 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
             >
-                <svg width="60" height="40" viewBox="0 0 60 40" fill="currentColor">
-                    <ellipse cx="30" cy="20" rx="28" ry="8" />
-                    <path d="M15 20 C15 5, 45 5, 45 20" fill="none" stroke="currentColor" strokeWidth="2" />
+                <svg width="80" height="50" viewBox="0 0 80 50" fill="currentColor">
+                    {/* Dome */}
+                    <path d="M25 25 C25 10, 55 10, 55 25" fill="none" stroke="currentColor" strokeWidth="2" />
+                    {/* Body */}
+                    <ellipse cx="40" cy="25" rx="35" ry="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                    {/* Lights */}
+                    <circle cx="20" cy="25" r="2" />
+                    <circle cx="40" cy="29" r="2" />
+                    <circle cx="60" cy="25" r="2" />
                 </svg>
             </motion.div>
         </div>
@@ -106,24 +112,16 @@ export function ModernExploreView({
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
             <SpaceBackground />
 
-            <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12">
+            {/* Reduced Top Padding for visibility above scrolling */}
+            <div className="container max-w-2xl mx-auto px-4 py-6 md:py-10">
 
                 {/* Header Section */}
-                <div className="mb-12 text-center relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="flex justify-center mb-6"
-                    >
-                        <Badge variant="outline" className="border-2 border-foreground/20 px-3 py-1 text-[10px] tracking-[0.2em] font-black uppercase bg-background/50 backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]">
-                            Topluluk
-                        </Badge>
-                    </motion.div>
+                <div className="mb-6 sm:mb-8 text-center relative z-10">
+                    {/* "Topluluk" Badge Removed as requested */}
 
                     <motion.h1
                         style={{ y: headerTitleY }}
-                        className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-6 uppercase leading-[0.9] drop-shadow-sm font-heading"
+                        className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-4 uppercase leading-tight drop-shadow-sm font-heading py-2"
                     >
                         <span className="block text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70">
                             Fikirlerini
@@ -138,17 +136,17 @@ export function ModernExploreView({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-muted-foreground font-medium text-xs sm:text-sm md:text-base max-w-lg mx-auto leading-relaxed border-l-2 border-emerald-500/30 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
+                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-2 border-emerald-500/30 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
                     >
                         Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
                     </motion.p>
                 </div>
 
-                {/* Share Card */}
+                {/* Share Card - Reduced bottom margin */}
                 <ShareInputCard user={user} />
 
                 {/* Categories */}
-                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-8 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-10 md:mx-0">
+                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
                     <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1">
                         <Link href="/blog" className="shrink-0">
                             <motion.div whileTap={{ scale: 0.95 }}>
