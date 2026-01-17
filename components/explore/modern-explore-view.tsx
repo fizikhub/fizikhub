@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
 import { ShareInputCard } from "@/components/blog/share-input-card";
+import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface Article {
@@ -212,13 +213,17 @@ export function ModernExploreView({
                                     ease: "easeOut"
                                 }}
                             >
-                                <SocialArticleCard
-                                    article={article as any}
-                                    index={idx}
-                                    variant="community"
-                                    initialLikes={0}
-                                    initialComments={0}
-                                />
+                                {article.category === "Kitap İncelemesi" ? (
+                                    <BookReviewCard article={article as any} index={idx} />
+                                ) : (
+                                    <SocialArticleCard
+                                        article={article as any}
+                                        index={idx}
+                                        variant="community"
+                                        initialLikes={0}
+                                        initialComments={0}
+                                    />
+                                )}
                             </motion.div>
                         ))
                     )}

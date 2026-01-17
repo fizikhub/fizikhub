@@ -14,11 +14,29 @@ interface ArticleHeroProps {
 }
 
 export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
+    // Parse Metadata
+    let metadata: any = {};
+    if (article.content) {
+        try {
+            const match = article.content.match(/^<!--meta\s+(.*?)\s+-->/);
+            if (match && match[1]) {
+                metadata = JSON.parse(match[1]);
+            }
+        } catch (e) {
+            console.error("Failed to parse book review metadata", e);
+        }
+    }
+
+    const isBookReview = metadata.type === "book-review";
+    const bookTitle = metadata.bookTitle || article.title;
+    const bookAuthor = metadata.bookAuthor || "";
+    const rating = metadata.rating || 0;
+
     return (
         <div className="w-full">
             {/* Back Button */}
             <div className="container max-w-4xl mx-auto px-4 pt-4">
-                <Link href="/kesfet">
+                <Link href="/blog">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -30,88 +48,176 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                 </Link>
             </div>
 
-            {/* Cover Image - Full Width, Proper Display */}
-            {(article.cover_url || (article as any).image_url) && (
-                <div className="w-full mt-4">
-                    <div className="container max-w-4xl mx-auto px-4">
-                        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-800">
-                            <Image
-                                src={article.cover_url || (article as any).image_url}
-                                alt={article.title}
-                                fill
-                                className="object-cover"
-                                priority
-                                sizes="(max-width: 768px) 100vw, 896px"
-                            />
+            {isBookReview ? (
+                <div className="container max-w-4xl mx-auto px-4 mt-8 mb-12">
+                    <div className="flex flex-col md:flex-row gap-8 items-start">
+                        {/* Book Cover */}
+                        <div className="w-full md:w-1/3 shrink-0">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-2xl border-4 border-white dark:border-zinc-800 rotate-2 hover:rotate-0 transition-transform duration-500">
+                                {article.cover_url ? (
+                                    <Image
+                                        src={article.cover_url}
+                                        alt={bookTitle}
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-emerald-900 flex items-center justify-center p-4 text-center">
+                                        <span className="text-xl font-bold text-emerald-100">{bookTitle}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex-1 space-y-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-black uppercase tracking-widest mb-2">
+                                Kitap İncelemesi
+                            </div>
+
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-heading leading-tight text-foreground">
+                                {bookTitle}
+                            </h1>
+
+                            <div className="flex items-center gap-2 text-xl font-medium text-muted-foreground">
+                                <span>Yazar:</span>
+                                <span className="text-foreground font-bold">{bookAuthor}</span>
+                            </div>
+
+                            <div className="flex items-center gap-1 bg-muted/40 inline-flex px-4 py-2 rounded-lg border border-border">
+                                <span className="text-sm font-bold text-muted-foreground mr-2">Puan:</span>
+                                {[...Array(10)].map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className={`w-1.5 h-6 rounded-full ${i < rating ? "bg-emerald-500" : "bg-muted-foreground/20"
+                                            }`}
+                                    />
+                                ))}
+                                <span className="ml-3 font-black text-2xl text-emerald-600 dark:text-emerald-400">{rating}</span>
+                                <span className="text-xs text-muted-foreground font-bold self-end mb-1">/10</span>
+                            </div>
+
+                            {/* Meta Info */}
+                            <div className="pt-6 mt-6 border-t border-border flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                                <Link
+                                    href={`/kullanici/${article.author?.username || 'anonim'}`}
+                                    className="flex items-center gap-2 hover:text-foreground transition-colors"
+                                >
+                                    <div className="relative w-6 h-6 rounded-full overflow-hidden bg-muted">
+                                        {article.author?.avatar_url ? (
+                                            <Image
+                                                src={article.author.avatar_url}
+                                                alt={article.author?.full_name || ""}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <User className="w-4 h-4 m-1" />
+                                        )}
+                                    </div>
+                                    <span className="font-bold">{article.author?.full_name || "Anonim"}</span>
+                                </Link>
+                                <span>•</span>
+                                <div className="flex items-center gap-1">
+                                    <Calendar className="w-3.5 h-3.5" />
+                                    <span>{format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}</span>
+                                </div>
+                                <span>•</span>
+                                <div className="flex items-center gap-1">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    <span>{readingTime}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            )}
-
-            {/* Article Header */}
-            <div className="container max-w-4xl mx-auto px-4 mt-8">
-                {/* Category */}
-                <div className="mb-4">
-                    <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
-                        {article.category || "Genel"}
-                    </span>
-                </div>
-
-                {/* Title */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-6">
-                    {article.title}
-                </h1>
-
-                {/* Excerpt */}
-                {article.excerpt && (
-                    <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
-                        {article.excerpt}
-                    </p>
-                )}
-
-                {/* Author & Meta */}
-                <div className="flex flex-wrap items-center gap-4 pb-6 border-b border-border">
-                    {/* Author */}
-                    <Link
-                        href={`/kullanici/${article.author?.username || 'anonim'}`}
-                        className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-                    >
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                            {article.author?.avatar_url ? (
-                                <Image
-                                    src={article.author.avatar_url}
-                                    alt={article.author?.full_name || "Yazar"}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <User className="w-5 h-5 text-muted-foreground" />
-                            )}
+            ) : (
+                <>
+                    {/* Cover Image - Full Width, Proper Display */}
+                    {(article.cover_url || (article as any).image_url) && (
+                        <div className="w-full mt-4">
+                            <div className="container max-w-4xl mx-auto px-4">
+                                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-800 shadow-lg">
+                                    <Image
+                                        src={article.cover_url || (article as any).image_url}
+                                        alt={article.title}
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                        sizes="(max-width: 768px) 100vw, 896px"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <span className="font-medium text-foreground text-sm">
-                                {article.author?.full_name || article.author?.username || "Anonim"}
+                    )}
+
+                    {/* Article Header */}
+                    <div className="container max-w-4xl mx-auto px-4 mt-8">
+                        {/* Category */}
+                        <div className="mb-4">
+                            <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
+                                {article.category || "Genel"}
                             </span>
                         </div>
-                    </Link>
 
-                    <span className="text-muted-foreground">•</span>
+                        {/* Title */}
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight mb-6">
+                            {article.title}
+                        </h1>
 
-                    {/* Date */}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
+                        {/* Excerpt */}
+                        {article.excerpt && (
+                            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
+                                {article.excerpt}
+                            </p>
+                        )}
+
+                        {/* Author & Meta */}
+                        <div className="flex flex-wrap items-center gap-4 pb-6 border-b border-border">
+                            {/* Author */}
+                            <Link
+                                href={`/kullanici/${article.author?.username || 'anonim'}`}
+                                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                            >
+                                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                                    {article.author?.avatar_url ? (
+                                        <Image
+                                            src={article.author.avatar_url}
+                                            alt={article.author?.full_name || "Yazar"}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <User className="w-5 h-5 text-muted-foreground" />
+                                    )}
+                                </div>
+                                <div>
+                                    <span className="font-medium text-foreground text-sm">
+                                        {article.author?.full_name || article.author?.username || "Anonim"}
+                                    </span>
+                                </div>
+                            </Link>
+
+                            <span className="text-muted-foreground">•</span>
+
+                            {/* Date */}
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Calendar className="w-4 h-4" />
+                                <span>{format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}</span>
+                            </div>
+
+                            <span className="text-muted-foreground">•</span>
+
+                            {/* Reading Time */}
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="w-4 h-4" />
+                                <span>{readingTime}</span>
+                            </div>
+                        </div>
                     </div>
-
-                    <span className="text-muted-foreground">•</span>
-
-                    {/* Reading Time */}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="w-4 h-4" />
-                        <span>{readingTime}</span>
-                    </div>
-                </div>
-            </div>
+                </>
+            )}
         </div>
     );
 }
