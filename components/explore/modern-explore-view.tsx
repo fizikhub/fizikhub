@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Telescope, Sparkles, Rocket } from "lucide-react";
+import { Telescope, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SocialArticleCard } from "@/components/articles/social-article-card";
 import { ShareInputCard } from "@/components/blog/share-input-card";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Article {
     id: number;
@@ -56,135 +56,68 @@ export function ModernExploreView({
         } : null
     }));
 
-    // Parallax effect for header
-    const { scrollY } = useScroll();
-    const headerY = useTransform(scrollY, [0, 200], [0, -30]);
-    const headerOpacity = useTransform(scrollY, [0, 150], [1, 0.8]);
-
     return (
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden">
             <div className="container max-w-2xl mx-auto px-4 py-8 md:py-12">
 
-                {/* Animated Header with Parallax */}
-                <motion.div
-                    style={{ y: headerY, opacity: headerOpacity }}
-                    className="mb-12 text-center relative"
-                >
-                    {/* Floating Decorations */}
+                {/* Animated Header */}
+                <div className="mb-10 text-center">
                     <motion.div
-                        className="absolute -top-4 left-1/4 text-yellow-500/30"
-                        animate={{
-                            y: [0, -10, 0],
-                            rotate: [0, 10, 0]
-                        }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                        <Sparkles className="w-6 h-6" />
-                    </motion.div>
-                    <motion.div
-                        className="absolute -top-2 right-1/4 text-emerald-500/30"
-                        animate={{
-                            y: [0, -15, 0],
-                            rotate: [0, -15, 0]
-                        }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    >
-                        <Rocket className="w-5 h-5" />
-                    </motion.div>
-
-                    {/* Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
+                        initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ type: "spring", bounce: 0.6, delay: 0.1 }}
-                        className="inline-block mb-4"
+                        transition={{ type: "spring", bounce: 0.5 }}
+                        className="inline-block mb-2"
                     >
-                        <Badge variant="outline" className="border-2 border-emerald-500/30 px-4 py-1.5 text-[10px] tracking-[0.25em] font-black uppercase bg-emerald-500/5 text-emerald-600 dark:text-emerald-400">
-                            <motion.span
-                                animate={{ opacity: [1, 0.5, 1] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            >
-                                ●
-                            </motion.span>
-                            <span className="ml-2">Topluluk Blogu</span>
+                        <Badge variant="outline" className="border-2 border-foreground/20 px-3 py-1 text-[10px] tracking-[0.2em] font-black uppercase bg-background shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-none">
+                            Topluluk
                         </Badge>
                     </motion.div>
 
-                    {/* Title with Word Animation */}
-                    <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tight text-foreground mb-4 overflow-hidden">
-                        {["Fikirlerini", "Özgür", "Bırak"].map((word, idx) => (
-                            <motion.span
-                                key={word}
-                                initial={{ y: 50, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{
-                                    delay: 0.2 + idx * 0.15,
-                                    duration: 0.5,
-                                    ease: [0.16, 1, 0.3, 1]
-                                }}
-                                className="inline-block mr-3"
-                            >
-                                {word}
-                            </motion.span>
-                        ))}
+                    <h1 className="text-4xl md:text-5xl font-heading font-black tracking-tight text-foreground mb-3 relative inline-block">
+                        <span className="relative z-10">Fikirlerini Özgür Bırak</span>
+                        <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
+                            className="absolute -bottom-1 left-0 h-3 bg-yellow-400/30 -z-10 -rotate-1"
+                        />
                     </h1>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
-                        className="text-muted-foreground font-medium text-sm md:text-base max-w-md mx-auto"
-                    >
+                    <p className="text-muted-foreground font-medium text-sm md:text-base max-w-md mx-auto">
                         Bilim, teknoloji ve mizah üzerine düşüncelerini paylaş.
-                    </motion.p>
-                </motion.div>
+                    </p>
+                </div>
 
                 {/* Share Card */}
                 <ShareInputCard user={user} />
 
-                {/* Categories with Scale Animation */}
-                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border/30 py-4 mb-8 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-10 md:mx-0">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.8 }}
-                        className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1"
-                    >
+                {/* Categories */}
+                <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b-2 border-border/50 py-3 mb-8 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-10 md:mx-0">
+                    <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1">
                         <Link href="/blog" className="shrink-0">
-                            <motion.div
-                                whileHover={{ scale: 1.08 }}
-                                whileTap={{ scale: 0.92 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                            >
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Badge
                                     variant={!currentCategory ? "default" : "outline"}
                                     className={cn(
                                         "h-9 px-5 rounded-full text-xs font-bold border-2 transition-all cursor-pointer",
                                         !currentCategory
-                                            ? "bg-foreground text-background border-foreground shadow-lg"
-                                            : "bg-transparent text-muted-foreground border-border/50 hover:border-foreground/30 hover:text-foreground"
+                                            ? "bg-emerald-500 text-white border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px]"
+                                            : "bg-transparent text-muted-foreground border-border hover:border-foreground/50 hover:text-foreground hover:bg-muted/30"
                                     )}
                                 >
                                     TÜMÜ
                                 </Badge>
                             </motion.div>
                         </Link>
-                        {categories.map((cat, idx) => (
+                        {categories.map((cat) => (
                             <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className="shrink-0">
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.9 + idx * 0.05 }}
-                                    whileHover={{ scale: 1.08 }}
-                                    whileTap={{ scale: 0.92 }}
-                                >
+                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                     <Badge
                                         variant={currentCategory === cat ? "default" : "outline"}
                                         className={cn(
                                             "h-9 px-5 rounded-full text-xs font-bold border-2 transition-all cursor-pointer",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-lg"
-                                                : "bg-transparent text-muted-foreground border-border/50 hover:border-foreground/30 hover:text-foreground"
+                                                ? "bg-emerald-500 text-white border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px]"
+                                                : "bg-transparent text-muted-foreground border-border hover:border-foreground/50 hover:text-foreground hover:bg-muted/30"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -192,27 +125,21 @@ export function ModernExploreView({
                                 </motion.div>
                             </Link>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
 
-                {/* Feed with Staggered Reveal */}
+                {/* Feed */}
                 <div className="space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ type: "spring" }}
-                            className="py-16 text-center rounded-2xl border-2 border-dashed border-border bg-card/30"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="py-16 text-center rounded-2xl border-2 border-dashed border-border bg-card/50"
                         >
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            >
-                                <Telescope className="w-14 h-14 text-muted-foreground/30 mx-auto mb-4" />
-                            </motion.div>
-                            <p className="text-muted-foreground font-bold text-lg">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="mt-3 inline-flex items-center gap-2 text-emerald-500 hover:text-emerald-400 font-black uppercase tracking-wide text-sm group">
-                                <Sparkles className="w-4 h-4 group-hover:animate-spin" />
+                            <Telescope className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4 animate-bounce" />
+                            <p className="text-muted-foreground font-bold">Henüz makale yok...</p>
+                            <Link href="/makale/yeni" className="text-sm text-emerald-500 hover:text-emerald-400 mt-2 inline-flex items-center gap-1 font-black uppercase tracking-wide">
+                                <Sparkles className="w-3 h-3" />
                                 İlk makaleyi sen yaz!
                             </Link>
                         </motion.div>
@@ -220,14 +147,10 @@ export function ModernExploreView({
                         transformedArticles.map((article, idx) => (
                             <motion.div
                                 key={article.id}
-                                initial={{ opacity: 0, y: 40 }}
+                                initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-100px" }}
-                                transition={{
-                                    delay: idx * 0.08,
-                                    duration: 0.5,
-                                    ease: [0.16, 1, 0.3, 1]
-                                }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: idx * 0.1, duration: 0.4 }}
                             >
                                 <SocialArticleCard
                                     article={article as any}
