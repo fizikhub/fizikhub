@@ -77,7 +77,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     </div>
 
                     {/* Input Trigger */}
-                    <div className="flex-1 p-2 sm:p-3 relative">
+                    <div className="flex-1 p-2 sm:p-3 relative min-w-0">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className={cn(
@@ -89,7 +89,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)]"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors truncate mr-2 min-w-0 flex-1">
+                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors truncate mr-2 min-w-0 flex-1 block">
                                 {isOpen ? "Kapat" : `Ne paylaşmak istersin, ${firstName}?`}
                             </span>
                             <Plus className={cn(
@@ -115,49 +115,49 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                         </div>
 
                                         {/* Kitap İncelemesi */}
-                                        <button
-                                            onClick={() => handleNavigation("/kitap-inceleme/yeni")}
+                                        <Link
+                                            href="/kitap-inceleme/yeni"
                                             className="w-full flex items-center gap-4 p-4 hover:bg-muted/10 transition-all group text-left relative border-b-2 border-border/50"
                                         >
                                             <div className="relative w-10 h-10 bg-red-100 dark:bg-red-900/20 flex items-center justify-center text-red-600 border-2 border-red-600 shadow-[2px_2px_0px_0px_rgba(220,38,38,1)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_rgba(220,38,38,1)] transition-all rounded-lg">
                                                 <Book className="w-5 h-5" />
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-red-600 transition-colors">Kitap İncelemesi</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold">Puanla ve İncele</p>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-red-600 transition-colors truncate">Kitap İncelemesi</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold truncate">Puanla ve İncele</p>
                                             </div>
-                                            <Plus className="w-4 h-4 text-red-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                        </button>
+                                            <Plus className="w-4 h-4 text-red-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
+                                        </Link>
 
                                         {/* Soru Sor */}
-                                        <button
-                                            onClick={() => handleNavigation("/forum")}
+                                        <Link
+                                            href="/forum"
                                             className="w-full flex items-center gap-4 p-4 hover:bg-muted/10 transition-all group text-left relative border-b-2 border-border/50"
                                         >
                                             <div className="relative w-10 h-10 bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 border-2 border-blue-600 shadow-[2px_2px_0px_0px_rgba(37,99,235,1)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_rgba(37,99,235,1)] transition-all rounded-lg">
                                                 <MessageCircleQuestion className="w-5 h-5" />
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-blue-600 transition-colors">Soru Sor</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold">Topluluğa Danış</p>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-blue-600 transition-colors truncate">Soru Sor</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold truncate">Topluluğa Danış</p>
                                             </div>
-                                            <Plus className="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                        </button>
+                                            <Plus className="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
+                                        </Link>
 
                                         {/* Deney Paylaş */}
-                                        <button
-                                            onClick={() => handleNavigation("/makale/yeni?type=experiment")}
+                                        <Link
+                                            href="/makale/yeni?type=experiment"
                                             className="w-full flex items-center gap-4 p-4 hover:bg-muted/10 transition-all group text-left relative last:border-none"
                                         >
                                             <div className="relative w-10 h-10 bg-green-100 dark:bg-green-900/20 flex items-center justify-center text-green-600 border-2 border-green-600 shadow-[2px_2px_0px_0px_rgba(22,163,74,1)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_rgba(22,163,74,1)] transition-all rounded-lg">
                                                 <FlaskConical className="w-5 h-5" />
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-green-600 transition-colors">Deney Paylaş</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold">Bilimsel Çalışman</p>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-green-600 transition-colors truncate">Deney Paylaş</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold truncate">Bilimsel Çalışman</p>
                                             </div>
-                                            <Plus className="w-4 h-4 text-green-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                        </button>
+                                            <Plus className="w-4 h-4 text-green-600 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all flex-shrink-0" />
+                                        </Link>
                                     </div>
                                 </motion.div>
                             )}
