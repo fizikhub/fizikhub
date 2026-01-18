@@ -1,14 +1,11 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ChevronUp, ChevronDown, MessageCircle, Share, BadgeCheck } from "lucide-react";
+import { ChevronUp, ChevronDown, MessageSquare, Share2, BadgeCheck, Eye } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
-import Link from "next/link";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
@@ -23,7 +20,7 @@ interface QuestionCardProps {
     badgeClassName?: string;
 }
 
-export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, badgeClassName }: QuestionCardProps) => {
+export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: QuestionCardProps) => {
     const router = useRouter();
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -41,7 +38,6 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleCardClick = () => {
         router.push(`/forum/${question.id}`);
@@ -96,12 +92,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     };
 
     const rawContent = question.content?.replace(/[#*`]/g, '') || "";
-    const shouldTruncate = rawContent.length > 300;
-    const contentPreview = shouldTruncate && !isExpanded
-        ? rawContent.slice(0, 300)
-        : rawContent;
+    // Keep preview short and punchy for the card
+    const contentPreview = rawContent.length > 180 ? rawContent.slice(0, 180) + "..." : rawContent;
 
+    // Calculate display values
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
+    const timeAgo = formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr });
 
     // ----------------------------------------------------------------------
     // RENDER: CYBERNETIC THEME
@@ -112,7 +108,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
                 question={question}
                 userVote={voteState}
                 votes={votes}
-                answerCount={question.answers?.[0]?.count || 0}
+                answerCount={answerCount}
                 onVote={(type) => handleVote({ preventDefault: () => { }, stopPropagation: () => { } } as any, type)}
                 onClick={handleCardClick}
             />
@@ -120,154 +116,145 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel, ba
     }
 
     // ----------------------------------------------------------------------
-    // RENDER: STANDARD THEME (+ PINK VARIANT)
+    // RENDER: PREMIUM NEOBRUTALIST (DEFAULT)
     // ----------------------------------------------------------------------
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
+            whileHover={{
+                y: -2,
+                transition: { duration: 0.2 }
+            }}
             className={cn(
-                "group bg-card border border-border rounded-2xl cursor-pointer transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md hover:border-border/80",
-                // Cybernetic theme overrides
-                isCybernetic && "cyber-card cyber-lift",
-                // Pink theme overrides - removed bg-white/80
-                isPink && "rounded-[1.5rem] border-pink-200 hover:border-pink-300 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)]",
-                // Dark Pink overrides
-                isDarkPink && "rounded-[1.5rem] border-pink-900/50 hover:border-pink-500 hover:shadow-[4px_4px_0px_0px_rgba(255,20,147,0.2)] bg-card"
+                "group relative bg-card border border-border/60 rounded-xl overflow-hidden transition-all duration-300",
+                "hover:border-primary/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)]",
+                // Pink theme overrides
+                isPink && "border-pink-200 hover:border-pink-300 hover:shadowness-pink",
+                isDarkPink && "border-pink-900/50 hover:border-pink-500",
+                "flex flex-row"
             )}
             onClick={handleCardClick}
         >
-            {/* CUTE DECORATION: Cat Ears (Only visible in Pink on Hover) */}
-            {isCute && (
-                <>
-                    <div className="absolute top-0 right-10 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] -rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
-                    <div className="absolute top-0 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[12px] border-b-[#FF1493] rotate-12 translate-y-full opacity-0 group-hover:-translate-y-1 group-hover:opacity-100 transition-all duration-300 pointer-events-none" />
-                </>
-            )}
-            {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
-                <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold tracking-wide text-blue-600 dark:text-blue-400">
-                        {badgeLabel || "SORU"}
-                    </span>
-                    <span className="text-xs font-medium text-muted-foreground/60">
-                        •
-                    </span>
-                    <span className="text-xs font-medium tracking-wide text-foreground/80">
-                        {question.category}
-                    </span>
-                </div>
-                <span className="text-xs text-muted-foreground/60">
-                    {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
-                </span>
-            </div>
-
-            {/* 3. CONTENT BODY */}
-            <div className="p-5 flex flex-col gap-3">
-                {/* Author Mini-Row (Top of content) */}
-                <div className="flex items-center gap-1">
-                    <button
-                        onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="relative"
-                    >
-                        <Avatar className="w-5 h-5 border border-border">
-                            <AvatarImage src={question.profiles?.avatar_url || ""} />
-                            <AvatarFallback className="text-[9px] bg-muted text-muted-foreground">
-                                {question.profiles?.username?.[0]?.toUpperCase() || "?"}
-                            </AvatarFallback>
-                        </Avatar>
-                    </button>
-                    <button
-                        onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        {question.profiles?.full_name || question.profiles?.username || "Anonim"}
-                    </button>
-                    {question.profiles?.is_verified && (
-                        <BadgeCheck className="w-3 h-3 text-blue-500" />
+            {/* LEFT COLUMN: VOTING */}
+            <div className={cn(
+                "hidden sm:flex flex-col items-center p-3 gap-1 bg-muted/30 border-r border-border/40 min-w-[60px]",
+                isCute && "bg-pink-500/5 border-pink-500/10"
+            )}>
+                <button
+                    onClick={(e) => handleVote(e, 1)}
+                    className={cn(
+                        "p-1.5 rounded-lg hover:bg-background transition-colors text-muted-foreground hover:text-primary",
+                        voteState === 1 && "text-green-500 bg-green-500/10"
                     )}
-                </div>
+                >
+                    <ChevronUp className="w-6 h-6 stroke-[3px]" />
+                </button>
 
-                {/* Title */}
-                <h3 className={cn(
-                    "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground group-hover:text-blue-500 transition-colors",
-                    isCybernetic && "group-hover:cyber-text"
+                <span className={cn(
+                    "font-black text-lg",
+                    voteState > 0 ? "text-green-500" : voteState < 0 ? "text-red-500" : "text-foreground"
                 )}>
-                    {question.title}
-                </h3>
+                    {votes}
+                </span>
 
-                {/* Content Preview */}
-                <div className="relative">
-                    <p className={cn(
-                        "text-[15px] leading-relaxed text-muted-foreground font-sans whitespace-pre-wrap",
-                        !isExpanded && "line-clamp-3"
-                    )}>
-                        {isExpanded ? rawContent : contentPreview}
-                    </p>
-                    {shouldTruncate && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-card to-transparent pointer-events-none" />
+                <button
+                    onClick={(e) => handleVote(e, -1)}
+                    className={cn(
+                        "p-1.5 rounded-lg hover:bg-background transition-colors text-muted-foreground hover:text-red-500",
+                        voteState === -1 && "text-red-500 bg-red-500/10"
                     )}
-                </div>
-
-                {/* Devamını Oku Button (In-place expand) */}
-                {shouldTruncate && (
-                    <button
-                        onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-                        className="text-xs font-bold text-primary hover:underline self-start mt-1"
-                    >
-                        {isExpanded ? "Daralt" : "Devamını Oku"}
-                    </button>
-                )}
+                >
+                    <ChevronDown className="w-6 h-6 stroke-[3px]" />
+                </button>
             </div>
 
-            {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5">
-                {/* Left Actions - Voting */}
-                <div className="flex items-center rounded-md border border-border bg-background shadow-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                    <button
-                        onClick={(e) => handleVote(e, 1)}
-                        className={cn(
-                            "px-2 py-1 hover:bg-muted/50 transition-colors",
-                            voteState === 1 && "text-primary bg-primary/10"
-                        )}
-                        disabled={isVoting}
-                    >
-                        <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <span className={cn("px-2 text-sm font-bold border-x border-border min-w-[30px] text-center", voteState !== 0 && "text-foreground")}>
-                        {votes}
-                    </span>
-                    <button
-                        onClick={(e) => handleVote(e, -1)}
-                        className={cn(
-                            "px-2 py-1 hover:bg-muted/50 transition-colors",
-                            voteState === -1 && "text-destructive bg-destructive/10"
-                        )}
-                        disabled={isVoting}
-                    >
-                        <ChevronDown className="w-4 h-4" />
-                    </button>
+            {/* RIGHT COLUMN: CONTENT */}
+            <div className="flex-1 p-4 sm:p-5 flex flex-col gap-3">
+                {/* Header: Author & Meta */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div
+                            className="flex items-center gap-2 group/author cursor-pointer"
+                            onClick={(e) => handleProfileClick(e, question.profiles?.username)}
+                        >
+                            <Avatar className="w-6 h-6 border bg-muted">
+                                <AvatarImage src={question.profiles?.avatar_url || ""} />
+                                <AvatarFallback className="text-[10px]">
+                                    {question.profiles?.username?.[0]?.toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm font-bold text-muted-foreground group-hover/author:text-foreground transition-colors">
+                                @{question.profiles?.username}
+                            </span>
+                            {question.profiles?.is_verified && (
+                                <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
+                            )}
+                        </div>
+                        <span className="text-muted-foreground/40 text-xs">•</span>
+                        <span className="text-xs font-medium text-muted-foreground/60">{timeAgo}</span>
+                    </div>
+
+                    {/* Category Pill */}
+                    <div className={cn(
+                        "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border",
+                        "bg-primary/5 text-primary border-primary/20",
+                        isCute && "bg-pink-500/10 text-pink-500 border-pink-500/20"
+                    )}>
+                        {question.category}
+                    </div>
                 </div>
 
-                {/* Right Actions */}
-                <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">
-                        <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
-                        <span>{answerCount}</span>
-                    </button>
+                {/* Main Content */}
+                <div className="space-y-1.5">
+                    <h3 className={cn(
+                        "text-lg sm:text-xl font-heading font-black leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2",
+                        isCute && "group-hover:text-pink-500"
+                    )}>
+                        {question.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 font-sans opacity-90">
+                        {contentPreview}
+                    </p>
+                </div>
 
-                    <button
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
-                            toast.success("Link kopyalandı!");
-                        }}
-                    >
-                        <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
-                    </button>
+                {/* Footer Actions */}
+                <div className="mt-auto pt-2 flex items-center justify-between">
+                    {/* Mobile Vote (Visible only on mobile) */}
+                    <div className="flex sm:hidden items-center gap-2 bg-muted/40 rounded-md px-2 py-1" onClick={e => e.stopPropagation()}>
+                        <button
+                            onClick={(e) => handleVote(e, 1)}
+                            className={cn(voteState === 1 && "text-green-500")}
+                        >
+                            <ChevronUp className="w-4 h-4" />
+                        </button>
+                        <span className={cn("text-xs font-bold", voteState !== 0 && "text-foreground")}>{votes}</span>
+                        <button
+                            onClick={(e) => handleVote(e, -1)}
+                            className={cn(voteState === -1 && "text-red-500")}
+                        >
+                            <ChevronDown className="w-4 h-4" />
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-4 ml-auto sm:ml-0">
+                        <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+                            <MessageSquare className="w-4 h-4" />
+                            <span className="text-xs font-bold">{answerCount} <span className="hidden sm:inline font-medium opacity-70">cevap</span></span>
+                        </div>
+
+                        <button
+                            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
+                                toast.success("Link kopyalandı!");
+                            }}
+                        >
+                            <Share2 className="w-4 h-4" />
+                            <span className="hidden sm:inline text-xs font-medium">Paylaş</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </motion.div>

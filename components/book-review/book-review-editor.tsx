@@ -70,9 +70,9 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             setUploadingImage(true);
             const url = await uploadToSupabase(file);
             setCoverUrl(url);
-            toast.success("Kapak resmi yüklendi!");
+            toast.success("Kapak resmi yüklendi hocam.");
         } catch (error: any) {
-            toast.error(error.message || "Görsel yüklenirken hata oluştu.");
+            toast.error(error.message || "Görsel yüklenirken hata oluştu. Aptal site.");
         } finally {
             setUploadingImage(false);
             if (coverInputRef.current) coverInputRef.current.value = "";

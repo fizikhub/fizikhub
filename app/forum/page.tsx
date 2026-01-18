@@ -1,3 +1,4 @@
+
 import { createClient } from "@/lib/supabase-server";
 import { ModernForumHeader } from "@/components/forum/modern-forum-header";
 import { Suspense } from "react";
@@ -5,6 +6,7 @@ import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
+import { Ghost } from "lucide-react";
 
 // Revalidate every 2 minutes for active active forum
 export const revalidate = 120;
@@ -118,33 +120,30 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <div className="bg-background pb-20">
-                <div className="container py-2 sm:py-4 md:py-8 px-2 sm:px-4 md:px-6 max-w-7xl mx-auto">
-                    <Suspense fallback={<div className="h-48 rounded-lg bg-card/50 animate-pulse border-2 border-border mb-2" />}>
+            <div className="bg-background min-h-screen pb-20">
+                <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1400px] mx-auto">
+                    <Suspense fallback={<div className="h-[300px] rounded-3xl bg-muted/20 animate-pulse mb-8" />}>
                         <ModernForumHeader />
                     </Suspense>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 sm:gap-6 lg:gap-8">
-                        {/* Desktop Sidebar */}
-                        <div className="hidden md:block sticky top-24 h-fit space-y-6">
-                            <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
-                            <ForumSidebar />
-                        </div>
-
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-12">
                         {/* Main Content */}
-                        <div className="space-y-3 sm:space-y-4 md:space-y-6 min-w-0">
+                        <div className="space-y-6 min-w-0 order-2 lg:order-1">
                             {!questions || questions.length === 0 ? (
-                                <div className="text-center py-12 sm:py-20 border-2 border-dashed border-white/10 rounded-xl sm:rounded-2xl bg-white/5 backdrop-blur-sm">
-                                    <div className="max-w-md mx-auto px-4">
-                                        <p className="text-muted-foreground text-base sm:text-lg mb-2">
-                                            {searchQuery
-                                                ? `"${searchQuery}" için sonuç bulunamadı.`
-                                                : "Henüz hiç soru sorulmamış."}
-                                        </p>
-                                        <p className="text-xs sm:text-sm text-muted-foreground">
-                                            {!searchQuery && "İlk soran sen ol!"}
-                                        </p>
+                                <div className="flex flex-col items-center justify-center py-24 px-4 text-center border border-dashed border-border rounded-3xl bg-muted/5">
+                                    <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                                        <Ghost className="w-8 h-8 text-muted-foreground" />
                                     </div>
+                                    <h3 className="text-xl font-bold text-foreground mb-2">
+                                        {searchQuery
+                                            ? `"${searchQuery}" için sonuç bulunamadı`
+                                            : "Henüz soru sorulmamış"}
+                                    </h3>
+                                    <p className="text-muted-foreground text-sm max-w-sm">
+                                        {searchQuery
+                                            ? "Farklı anahtar kelimelerle aramayı deneyebilirsin."
+                                            : "Bu kategori sessiz görünüyor. İlk soruyu sen sorarak tartışmayı başlatabilirsin!"}
+                                    </p>
                                 </div>
                             ) : (
                                 <QuestionList
@@ -154,11 +153,17 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 />
                             )}
                         </div>
-                    </div>
 
-                    {/* Mobile Question of the Week - Shows AFTER questions */}
-                    <div className="md:hidden mt-8">
-                        <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
+                        {/* Desktop Sidebar */}
+                        <div className="hidden lg:block space-y-8 order-2 sticky top-[100px] h-fit">
+                            <ForumSidebar />
+                            {weeklyQuestion && <QuestionOfTheWeek questionId={weeklyQuestion.id} />}
+                        </div>
+
+                        {/* Mobile Question of the Week (Bottom) */}
+                        <div className="lg:hidden mt-8 order-3">
+                            <QuestionOfTheWeek questionId={weeklyQuestion?.id} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -3,14 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Atom, ArrowRight } from "lucide-react";
-import { CosmicQuestionIcon } from "@/components/icons/cosmic-question";
-import { Button } from "@/components/ui/button";
+import { Search, Sparkles, ArrowRight, PenLine, ChevronDown } from "lucide-react";
 import { CreateQuestionDialog } from "./create-question-dialog";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-
 import { useTheme } from "next-themes";
 
 export function ModernForumHeader() {
@@ -118,294 +115,172 @@ export function ModernForumHeader() {
     };
 
     return (
-        <div className="flex flex-col gap-4 mb-4">
-            {/* Forum Header - Premium Enhanced */}
+        <div className="flex flex-col gap-6 mb-8">
+            {/* HER HERO SECTION */}
             <div className={cn(
-                "relative border-2 border-border bg-card p-3 md:p-5 mb-2 overflow-hidden shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
-                isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none",
-                isPink && "rounded-[1.5rem] border-[#FF1493] shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)] bg-pink-50/50",
-                isDarkPink && "rounded-[1.5rem] border-[#FF1493] shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)] bg-card"
+                "relative rounded-3xl overflow-hidden min-h-[220px] flex items-center justify-center p-6 sm:p-10",
+                "bg-gradient-to-br from-neutral-900 to-black border border-white/5",
+                isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none min-h-[200px] from-black to-slate-950",
+                isPink && "bg-pink-50 border-pink-200",
+                isDarkPink && "bg-zinc-950 border-pink-900/30"
             )}>
 
-                {/* Dynamic Space Background */}
-                {!isCute && <HeaderSpaceBackground />}
+                {/* Background Decor */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    {!isCute && !isCybernetic && (
+                        <>
+                            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(120,119,198,0.1),transparent_50%)]" />
+                            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[100px] rounded-full translate-y-1/2 translate-x-1/2" />
+                        </>
+                    )}
+                    {isCybernetic && <HeaderSpaceBackground />}
+                    {isCute && (
+                        <div className="absolute inset-0 opacity-10 pointer-events-none"
+                            style={{
+                                backgroundImage: 'radial-gradient(#FF1493 2px, transparent 2px)',
+                                backgroundSize: '24px 24px'
+                            }} />
+                    )}
+                </div>
 
-                {/* Cute Background Pattern */}
-                {isCute && (
-                    <div className="absolute inset-0 opacity-10 pointer-events-none"
-                        style={{
-                            backgroundImage: 'radial-gradient(#FF1493 2px, transparent 2px)',
-                            backgroundSize: '20px 20px'
-                        }} />
-                )}
+                <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center gap-6">
 
-                {/* Animated gradient overlay */}
-                <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none"
-                    animate={{
-                        opacity: [0.3, 0.5, 0.3],
-                    }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                />
-
-                {/* Shimmer Effect */}
-                <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent pointer-events-none"
-                    animate={{
-                        x: ['-100%', '200%'],
-                    }}
-                    transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "linear",
-                        repeatDelay: 2,
-                    }}
-                />
-
-
-                <div className="max-w-4xl mx-auto relative z-10 w-full">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
-                        {/* Enhanced Icon with Multiple Effects - Smaller on mobile */}
-                        <motion.div
-                            className="hidden md:block relative"
-                            initial={{ scale: 0, rotate: -180 }}
-                            animate={{ scale: 1, rotate: 0 }}
-                            transition={{ type: "spring", duration: 0.8 }}
+                    {/* Title */}
+                    <div className="space-y-2">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(
+                                "text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-white",
+                                isPink && "text-pink-950",
+                                isCybernetic && "cyber-text text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600"
+                            )}
                         >
-                            {/* Orbiting ring */}
-                            <motion.div
-                                className="absolute inset-0 border-2 border-primary/20 rounded-full"
-                                animate={{
-                                    rotate: 360,
-                                    scale: [1, 1.2, 1],
-                                }}
-                                transition={{
-                                    rotate: { duration: 8, repeat: Infinity, ease: "linear" },
-                                    scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-                                }}
-                            />
-
-                            <div className="relative w-12 h-12 bg-primary border-2 border-black dark:border-white flex items-center justify-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]">
-                                {/* Pulsing glow */}
-                                <motion.div
-                                    className="absolute inset-0 bg-primary/30 blur-lg"
-                                    animate={{
-                                        scale: [1, 1.5, 1],
-                                        opacity: [0.5, 1, 0.5],
-                                    }}
-                                    transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeInOut"
-                                    }}
-                                />
-                                <Atom className="w-6 h-6 text-primary-foreground relative z-10" />
-                            </div>
-                        </motion.div>
-
-                        <div className="flex-1 space-y-3 w-full text-center md:text-left">
-                            {/* Enhanced Title with Multiple Effects */}
-                            <motion.div
-                                className="space-y-1 md:space-y-2"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.6 }}
-                            >
-                                <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tight relative">
-                                    <span className="relative inline-block">
-                                        Aklında Ne Var?
-                                        {/* Animated underline */}
-                                        <motion.div
-                                            className="absolute -bottom-1 left-0 h-1 bg-primary"
-                                            initial={{ width: 0 }}
-                                            animate={{ width: "100%" }}
-                                            transition={{ delay: 0.3, duration: 0.8 }}
-                                        />
-                                        {/* Glow effect on text */}
-                                        <motion.div
-                                            className="absolute inset-0 bg-primary/20 blur-xl"
-                                            animate={{
-                                                opacity: [0, 0.3, 0],
-                                            }}
-                                            transition={{
-                                                duration: 3,
-                                                repeat: Infinity,
-                                                ease: "easeInOut",
-                                            }}
-                                        />
-                                    </span>
-                                </h1>
-                                <motion.p
-                                    className="text-sm md:text-base text-muted-foreground font-medium"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.4, duration: 0.6 }}
-                                >
-                                    Bilim topluluğu sorularını bekliyor.
-                                </motion.p>
-                            </motion.div>
-
-                            {/* Premium Enhanced Input */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5, duration: 0.6 }}
-                            >
-                                <CreateQuestionDialog
-                                    trigger={
-                                        <div className="w-full group/input cursor-pointer">
-                                            <div className={cn(
-                                                "relative border-2 border-border bg-background p-3 md:p-4 flex items-center gap-3 transition-all duration-300 hover:border-primary hover:shadow-[4px_4px_0px_0px] hover:shadow-primary/50 hover:scale-[1.01] hover:-translate-y-0.5",
-                                                isCybernetic && "cyber-card border-cyan-500/30 shadow-none hover:shadow-[inset_0_0_20px_rgba(0,240,255,0.1)] hover:transform-none hover:translate-y-0 !rounded-none"
-                                            )}>
-                                                {/* Enhanced focus ring */}
-                                                <div className="absolute -inset-1 bg-primary/20 rounded-sm opacity-0 group-hover/input:opacity-100 blur-md transition-opacity duration-300" />
-
-                                                {/* Multiple shine effects */}
-                                                <motion.div
-                                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover/input:opacity-100"
-                                                    animate={{
-                                                        x: ['-100%', '200%'],
-                                                    }}
-                                                    transition={{
-                                                        duration: 1,
-                                                        ease: "linear",
-                                                    }}
-                                                />
-
-                                                {/* Icon with advanced animation */}
-                                                <motion.div
-                                                    className="p-2 bg-primary border-2 border-black dark:border-white relative z-10"
-                                                    whileHover={{ rotate: 360, scale: 1.1 }}
-                                                    transition={{ duration: 0.6 }}
-                                                >
-                                                    <CosmicQuestionIcon className="w-4 h-4 text-primary-foreground" />
-                                                </motion.div>
-
-                                                {/* Input Text with typing effect hint */}
-                                                <div className="flex-1 flex items-center relative z-10">
-                                                    <span className="text-muted-foreground font-semibold text-sm md:text-base group-hover/input:text-foreground transition-colors">
-                                                        Sorunu sor...
-                                                    </span>
-                                                    <motion.span
-                                                        className="ml-1 inline-block w-0.5 h-4 bg-primary"
-                                                        animate={{
-                                                            opacity: [0, 1, 0],
-                                                        }}
-                                                        transition={{
-                                                            duration: 1.5,
-                                                            repeat: Infinity,
-                                                            ease: "easeInOut",
-                                                        }}
-                                                    />
-                                                </div>
-
-                                                {/* Premium CTA Button */}
-                                                <motion.div
-                                                    className="block relative z-10"
-                                                    whileHover={{ x: 5, scale: 1.05 }}
-                                                >
-                                                    <div className="relative px-4 py-2 bg-primary text-black font-bold uppercase text-sm border-2 border-black dark:border-white transition-all flex items-center gap-2 overflow-hidden">
-                                                        {/* Button shimmer */}
-                                                        <motion.div
-                                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                                                            animate={{
-                                                                x: ['-100%', '200%'],
-                                                            }}
-                                                            transition={{
-                                                                duration: 2,
-                                                                repeat: Infinity,
-                                                                repeatDelay: 1,
-                                                            }}
-                                                        />
-                                                        <span className="relative z-10">Yaz</span>
-                                                        <ArrowRight className="w-3 h-3 group-hover/input:translate-x-1 transition-transform relative z-10" />
-                                                    </div>
-                                                </motion.div>
-                                            </div>
-                                        </div>
-                                    }
-                                />
-                            </motion.div>
-                        </div>
+                            Aklında Ne Var?
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className={cn(
+                                "text-muted-foreground font-medium text-lg",
+                                isPink && "text-pink-900/60"
+                            )}
+                        >
+                            Bilim topluluğu sorularını bekliyor.
+                        </motion.p>
                     </div>
+
+                    {/* Interactive Search/Ask Bar */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="w-full relative group"
+                    >
+                        <CreateQuestionDialog
+                            trigger={
+                                <div className={cn(
+                                    "w-full cursor-pointer overflow-hidden relative",
+                                    "bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20",
+                                    "rounded-2xl transition-all duration-300 shadow-2xl shadow-black/20",
+                                    "flex items-center p-2 pr-4 pl-4 h-14 sm:h-16 gap-4 group-hover:scale-[1.01]",
+                                    isPink && "bg-white border-pink-200 shadow-xl shadow-pink-500/5 hover:border-pink-300",
+                                    isCybernetic && "bg-black/80 border-cyan-500/30 !rounded-none hover:shadow-[0_0_20px_rgba(0,255,255,0.15)]"
+                                )}>
+
+                                    {/* Icon */}
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                        "bg-primary text-primary-foreground shadow-lg shadow-primary/20",
+                                        isPink && "bg-pink-500 text-white shadow-pink-500/30",
+                                        isCybernetic && "bg-cyan-950 text-cyan-400 border border-cyan-500/50 rounded-none shadow-none"
+                                    )}>
+                                        <PenLine className="w-5 h-5 stroke-[2.5px]" />
+                                    </div>
+
+                                    {/* Placeholder Text */}
+                                    <div className="flex-1 text-left flex flex-col justify-center">
+                                        <span className={cn(
+                                            "text-sm sm:text-base font-semibold text-white/90 group-hover:text-white transition-colors",
+                                            isPink && "text-gray-700 group-hover:text-gray-900"
+                                        )}>
+                                            Yeni bir tartışma başlat...
+                                        </span>
+                                    </div>
+
+                                    {/* Action Hint */}
+                                    <div className={cn(
+                                        "hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider",
+                                        "bg-white/10 text-white/70 group-hover:bg-white/20 group-hover:text-white transition-all",
+                                        isPink && "bg-pink-50 text-pink-600 group-hover:bg-pink-100",
+                                        isCybernetic && "bg-cyan-950/50 text-cyan-400 border border-cyan-500/30 rounded-none"
+                                    )}>
+                                        <span>Sor</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </div>
+
+                                </div>
+                            }
+                        />
+                    </motion.div>
                 </div>
             </div>
 
-            {/* Categories & Actions Bar - Compact */}
-            <div className={cn(
-                "flex flex-col md:flex-row gap-2 items-center justify-between sticky top-[60px] z-30 py-2 bg-background/95 backdrop-blur-sm border-b-2 border-border",
-                isCybernetic && "!border-b border-cyan-500/20 !bg-black/80"
-            )}>
-                {/* Categories - Horizontal Scroll */}
-                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-1">
+            {/* FILTERS BAR */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between sticky top-[60px] z-30 py-3 bg-background/80 backdrop-blur-md border-b border-white/5 data-[pinned=true]:border-b-white/10 transition-all">
+                {/* Categories */}
+                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide">
                     <div className="flex gap-2 min-w-max px-1">
-                        {categories.map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => handleCategoryChange(category)}
-                                className={cn(
-                                    "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200",
-                                    isCybernetic && "cyber-button border-cyan-500/30 !rounded-none",
-                                    currentCategory === category
-                                        ? isCybernetic
-                                            ? "bg-cyan-500/10 text-cyan-400 border-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                                            : "bg-primary text-primary-foreground border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                        : isCybernetic
-                                            ? "bg-transparent hover:bg-cyan-500/5 hover:text-cyan-400"
-                                            : "bg-background border-border hover:border-black dark:hover:border-white hover:-translate-y-0.5"
-                                )}>
-
-                                {category}
-                            </button>
-                        ))}
+                        {categories.map((category) => {
+                            const isActive = currentCategory === category;
+                            return (
+                                <button
+                                    key={category}
+                                    onClick={() => handleCategoryChange(category)}
+                                    className={cn(
+                                        "px-4 py-2 text-xs sm:text-sm font-bold rounded-full transition-all duration-300",
+                                        isActive
+                                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                                            : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                                        isPink && isActive && "bg-pink-500 shadow-pink-500/30",
+                                        isCybernetic && "rounded-none border border-transparent",
+                                        isCybernetic && isActive && "bg-cyan-950/50 text-cyan-400 border-cyan-500/50 shadow-[0_0_10px_rgba(0,255,255,0.2)]"
+                                    )}
+                                >
+                                    {category}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                    <div className={cn(
-                        "flex border-2 border-border bg-background",
-                        isCybernetic && "border-cyan-500/20 bg-transparent"
-                    )}>
-                        <button
-                            onClick={() => handleSortChange("newest")}
-                            className={cn(
-                                "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
-                                isCybernetic && "font-mono tracking-wider",
-                                currentSort === "newest"
-                                    ? isCybernetic
-                                        ? "bg-cyan-500/20 text-cyan-400"
-                                        : "bg-black text-white dark:bg-white dark:text-black"
-                                    : isCybernetic
-                                        ? "text-cyan-600/70 hover:text-cyan-400 hover:bg-cyan-500/5"
-                                        : "hover:bg-muted"
-                            )}
-                        >
-                            YENİ
-                        </button>
-                        <div className={cn("w-0.5 bg-border", isCybernetic && "bg-cyan-500/20")} />
-                        <button
-                            onClick={() => handleSortChange("popular")}
-                            className={cn(
-                                "px-3 py-1.5 text-xs font-bold uppercase transition-colors",
-                                isCybernetic && "font-mono tracking-wider",
-                                currentSort === "popular"
-                                    ? isCybernetic
-                                        ? "bg-cyan-500/20 text-cyan-400"
-                                        : "bg-black text-white dark:bg-white dark:text-black"
-                                    : isCybernetic
-                                        ? "text-cyan-600/70 hover:text-cyan-400 hover:bg-cyan-500/5"
-                                        : "hover:bg-muted"
-                            )}
-                        >
-                            POPÜLER
-                        </button>
-                    </div>
+                {/* Sort */}
+                <div className="flex items-center gap-1 bg-muted/30 p-1 rounded-lg border border-white/5 w-full md:w-auto justify-between md:justify-start">
+                    <button
+                        onClick={() => handleSortChange("newest")}
+                        className={cn(
+                            "flex-1 md:flex-none px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                            currentSort === 'newest'
+                                ? "bg-background shadow-sm text-foreground"
+                                : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5",
+                            isCybernetic && "rounded-none"
+                        )}
+                    >
+                        En Yeniler
+                    </button>
+                    <button
+                        onClick={() => handleSortChange("popular")}
+                        className={cn(
+                            "flex-1 md:flex-none px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                            currentSort === 'popular'
+                                ? "bg-background shadow-sm text-foreground"
+                                : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5",
+                            isCybernetic && "rounded-none"
+                        )}
+                    >
+                        Popüler
+                    </button>
                 </div>
             </div>
         </div>
