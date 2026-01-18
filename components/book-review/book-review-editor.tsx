@@ -4,12 +4,14 @@ import { useState, useRef, useEffect } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, Trash2, Send, Star, User, BookOpen } from "lucide-react";
+import { Loader2, Image as ImageIcon, Trash2, Send, Star, User, BookOpen, Bookmark, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
 import { createArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 interface BookReviewEditorProps {
     userId: string;
@@ -20,7 +22,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
     const [bookTitle, setBookTitle] = useState("");
     const [bookAuthor, setBookAuthor] = useState("");
     const [rating, setRating] = useState(5);
-    const [coverUrl, setCoverUrl] = useState("");
+    const [coverUrl, setCoverUrl] = useState<string | null>(null);
     const [content, setContent] = useState("");
 
     // UI States
@@ -103,7 +105,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             formData.append("content", finalContent);
             formData.append("excerpt", `Bu incelemede ${bookAuthor} tarafından yazılan ${bookTitle} kitabını değerlendirdim. Puanım: ${rating}/10`);
             formData.append("category", "Kitap İncelemesi");
-            formData.append("cover_url", coverUrl);
+            if (coverUrl) formData.append("cover_url", coverUrl);
             formData.append("status", targetStatus === "published" ? "pending" : "draft"); // Use pending for admin approval if needed, or published directly
 
             const result = await createArticle(formData);
