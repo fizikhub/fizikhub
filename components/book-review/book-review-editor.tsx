@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { BookReviewGuide } from "@/components/book-review/book-review-guide";
 
 interface BookReviewEditorProps {
     userId: string;
@@ -121,17 +122,33 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
         }
     };
 
+    const [showGuide, setShowGuide] = useState(false);
+
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+            <BookReviewGuide open={showGuide} onOpenChange={setShowGuide} />
+
             {/* Header */}
-            <div className="flex items-center gap-4 border-b-4 border-foreground pb-6">
-                <div className="w-14 h-14 bg-red-600 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                    <BookOpen className="w-7 h-7" />
+            <div className="flex items-center justify-between border-b-4 border-foreground pb-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-red-600 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <BookOpen className="w-7 h-7" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Kitap İncelemesi</h1>
+                        <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Analiz Et. Puanla. Paylaş.</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Kitap İncelemesi</h1>
-                    <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Analiz Et. Puanla. Paylaş.</p>
-                </div>
+
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setShowGuide(true)}
+                    className="rounded-full border-2 border-foreground hover:bg-muted"
+                    title="İpuçları"
+                >
+                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">

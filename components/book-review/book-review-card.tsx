@@ -60,7 +60,6 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
             )}>
                 {/* Visual Bookmark Element */}
                 <div className="absolute top-0 right-8 w-8 h-12 bg-rose-600 shadow-md z-20 flex flex-col items-center justify-end pb-1 clip-path-ribbon transition-transform duration-300 group-hover:-translate-y-1">
-                    <Star className="w-4 h-4 text-white fill-white" />
                 </div>
                 <style jsx>{`
                     .clip-path-ribbon {
