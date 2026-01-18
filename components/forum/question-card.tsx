@@ -250,21 +250,21 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 {/* Footer Status Bar - UPSCALED */}
                 <div className="mt-auto py-3 px-4 sm:px-7 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
 
-                    {/* MOBILE VOTES (Minimal & Elegant) */}
+                    {/* MOBILE VOTES (Compact Pill Style) */}
                     <div className="flex sm:hidden items-center" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1">
+                        <div className="flex items-center bg-background border border-border rounded-lg shadow-sm">
                             <button
                                 onClick={(e) => handleVote(e, 1)}
                                 disabled={isVoting}
                                 className={cn(
-                                    "p-1.5 rounded-md hover:bg-background transition-all active:scale-95",
-                                    voteState === 1 ? "text-primary bg-background shadow-sm" : "text-muted-foreground"
+                                    "p-1 px-2 hover:bg-muted transition-colors border-r border-border active:scale-95",
+                                    voteState === 1 && "bg-primary/10 text-primary"
                                 )}
                             >
                                 <ChevronUp className="w-4 h-4 stroke-[3px]" />
                             </button>
                             <span className={cn(
-                                "text-sm font-bold px-2 min-w-[24px] text-center",
+                                "text-sm font-black px-2 min-w-[32px] text-center",
                                 votes > 0 ? "text-primary" : "text-muted-foreground",
                                 votes < 0 && "text-red-500"
                             )}>
@@ -274,8 +274,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                 onClick={(e) => handleVote(e, -1)}
                                 disabled={isVoting}
                                 className={cn(
-                                    "p-1.5 rounded-md hover:bg-background transition-all active:scale-95",
-                                    voteState === -1 ? "text-red-500 bg-background shadow-sm" : "text-muted-foreground"
+                                    "p-1 px-2 hover:bg-muted transition-colors border-l border-border active:scale-95",
+                                    voteState === -1 && "bg-red-500/10 text-red-500"
                                 )}
                             >
                                 <ChevronDown className="w-4 h-4 stroke-[3px]" />

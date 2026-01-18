@@ -182,11 +182,11 @@ export function ModernForumHeader() {
                             trigger={
                                 <div className={cn(
                                     "w-full cursor-pointer overflow-hidden relative",
-                                    "bg-background border border-border",
+                                    "bg-background border-2 border-border",
                                     "rounded-xl transition-all duration-200",
-                                    "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.15)]",
-                                    "hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.25)]",
-                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[1px_1px_0px_0px_rgba(255,255,255,1)]",
+                                    "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]",
+                                    "hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]",
+                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.8)]",
                                     "flex items-center p-2 pr-3 pl-2 sm:pr-4 sm:pl-4 h-12 sm:h-20 gap-3 sm:gap-4 group-hover:bg-accent/5",
                                     isPink && "border-pink-500 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)]",
                                     isCybernetic && "bg-black/90 border-cyan-500/50 !rounded-none shadow-none hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] hover:border-cyan-400"
@@ -194,7 +194,7 @@ export function ModernForumHeader() {
 
                                     {/* Icon */}
                                     <div className={cn(
-                                        "w-8 h-8 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shrink-0 border border-foreground",
+                                        "w-8 h-8 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shrink-0 border-2 border-foreground",
                                         "bg-primary text-primary-foreground",
                                         isPink && "bg-pink-500 text-white border-pink-700",
                                         isCybernetic && "bg-cyan-950 text-cyan-400 border-cyan-500 rounded-none"
