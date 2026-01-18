@@ -112,7 +112,7 @@ export function ModernExploreView({
 
                     {/* Improved UFO - Floating on the right side of the share area */}
                     <motion.div
-                        className="absolute right-[-10px] -top-5 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
+                        className="absolute right-0 -top-5 sm:-right-12 sm:-top-16 z-60 pointer-events-none"
                         initial={{ x: 100, opacity: 0 }}
                         animate={{
                             x: 0,

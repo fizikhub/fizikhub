@@ -136,31 +136,31 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
         >
-            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE - Extra Compact */}
+            {/* Left Column: Voting (Desktop) - MINIMALIST */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center justify-center p-2 w-14 shrink-0 border-r-2 border-border",
+                "hidden sm:flex flex-col items-center justify-center p-1 w-12 shrink-0 border-r-2 border-border",
                 "bg-muted/5",
                 isCybernetic && "border-cyan-500/20 bg-black/40",
                 isPink && "bg-pink-50/50 border-pink-100"
             )}>
-                <div className="flex flex-col items-center gap-1 bg-background border-2 border-border rounded-full py-2 px-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                <div className="flex flex-col items-center gap-0.5">
                     <button
                         onClick={(e) => handleVote(e, 1)}
                         disabled={isVoting}
                         className={cn(
-                            "p-2 rounded-full transition-all hover:bg-muted active:scale-95",
+                            "p-1 rounded-lg transition-all hover:bg-muted active:scale-95",
                             voteState === 1
-                                ? "text-primary bg-primary/10"
+                                ? "text-primary"
                                 : "text-muted-foreground hover:text-foreground",
                             isCybernetic && "rounded-none hover:bg-cyan-950/30 hover:text-cyan-400",
                             isPink && "hover:text-pink-600"
                         )}
                     >
-                        <ChevronUp className="w-4 h-4 stroke-[4px]" />
+                        <ChevronUp className="w-5 h-5 stroke-[3px]" />
                     </button>
 
                     <span className={cn(
-                        "font-black text-base w-full text-center py-0.5",
+                        "font-black text-sm w-full text-center",
                         votes > 0 ? "text-primary" : "text-muted-foreground",
                         votes < 0 && "text-red-500",
                         isPink && votes > 0 && "text-pink-600",
@@ -173,14 +173,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         onClick={(e) => handleVote(e, -1)}
                         disabled={isVoting}
                         className={cn(
-                            "p-2 rounded-full transition-all hover:bg-muted active:scale-95",
+                            "p-1 rounded-lg transition-all hover:bg-muted active:scale-95",
                             voteState === -1
-                                ? "text-red-500 bg-red-500/10"
+                                ? "text-red-500"
                                 : "text-muted-foreground hover:text-foreground",
                             isCybernetic && "rounded-none hover:bg-red-950/30 hover:text-red-400"
                         )}
                     >
-                        <ChevronDown className="w-4 h-4 stroke-[4px]" />
+                        <ChevronDown className="w-5 h-5 stroke-[3px]" />
                     </button>
                 </div>
             </div>

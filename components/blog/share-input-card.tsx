@@ -60,7 +60,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
                     <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
                 </div>
-                <div className="text-[10px] font-black tracking-widest text-foreground/50">Paylaş</div>
+                <div className="text-[10px] font-black text-foreground/50">Paylaş</div>
                 <div className="w-6" />
             </div>
 
@@ -89,7 +89,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(245,158,11,0.2)]"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 min-w-0 flex-1 block">
+                            <span className="text-muted-foreground font-bold text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 min-w-0 flex-1 block normal-case">
                                 {isOpen ? "Kapat" : <span className="flex items-center gap-1"><span>Ne paylaşmak istersin,</span> <span className="text-foreground">{firstName}?</span></span>}
                             </span>
                             <Plus className={cn(
@@ -167,24 +167,24 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="px-4 py-2 bg-muted/20 border-t-2 border-foreground flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground overflow-x-auto rounded-b-2xl">
+            <div className="px-4 py-2 bg-muted/20 border-t-2 border-foreground flex items-center gap-4 text-[10px] font-bold text-muted-foreground overflow-x-auto rounded-b-2xl">
                 <Link href="/makale/yeni" className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group shrink-0">
                     <PenTool className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Blog</span>
+                    <span className="text-[10px] sm:text-xs font-black text-muted-foreground group-hover:text-foreground transition-colors">Blog</span>
                 </Link>
 
                 <div className="w-0.5 h-6 bg-foreground/20 mx-1 shrink-0" />
 
                 <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group shrink-0">
                     <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Ekle</span>
+                    <span className="text-[10px] sm:text-xs font-black text-muted-foreground group-hover:text-foreground transition-colors">Ekle</span>
                 </button>
 
                 <div className="w-0.5 h-6 bg-foreground/20 mx-1 shrink-0" />
 
                 <Link href="/forum" className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer group shrink-0">
                     <HelpCircle className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Soru</span>
+                    <span className="text-[10px] sm:text-xs font-black text-muted-foreground group-hover:text-foreground transition-colors">Soru</span>
                 </Link>
             </div>
         </motion.div>
