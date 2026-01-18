@@ -188,35 +188,41 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             {/* Right Column: Content */}
             <div className="flex-1 flex flex-col">
 
-                {/* Mobile Header: Author + Votes */}
-                <div className="flex sm:hidden items-center justify-between p-3 border-b-2 border-border/50 bg-muted/5">
+                {/* Mobile Header: Author + Date */}
+                <div className="flex sm:hidden items-center justify-between p-3 pb-0">
                     <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
-                        <Avatar className="w-6 h-6 border-2 border-foreground group-hover/author:border-primary transition-colors">
+                        <Avatar className="w-8 h-8 border-2 border-foreground group-hover/author:border-primary transition-colors">
                             <AvatarImage src={question.profiles?.avatar_url || undefined} />
                             <AvatarFallback className="bg-primary text-primary-foreground font-bold text-[10px]">
                                 {question.profiles?.username?.[0]?.toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm font-bold text-muted-foreground group-hover/author:text-foreground transition-colors">
-                            @{question.profiles?.username}
-                        </span>
+                        <div className="flex flex-col leading-none">
+                            <span className="text-sm font-bold text-foreground group-hover/author:text-primary transition-colors">
+                                @{question.profiles?.username}
+                            </span>
+                            <span className="text-[10px] font-bold text-muted-foreground/60">
+                                {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                            </span>
+                        </div>
                     </Link>
-                    <div className={cn(
-                        "flex items-center gap-2 px-2 py-0.5 rounded-md border-2 border-border bg-background font-bold text-sm",
-                        voteState !== 0 && "border-primary text-primary"
+                    <span className={cn(
+                        "px-2 py-0.5 text-[10px] font-bold font-mono uppercase tracking-wider border-2 rounded",
+                        "bg-background text-foreground border-border",
+                        isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
+                        isPink && "bg-pink-50 text-pink-700 border-pink-200"
                     )}>
-                        <button onClick={(e) => handleVote(e, 1)}><ChevronUp className="w-3.5 h-3.5" /></button>
-                        <span>{votes}</span>
-                        <button onClick={(e) => handleVote(e, -1)}><ChevronDown className="w-3.5 h-3.5" /></button>
-                    </div>
+                        {question.category}
+                    </span>
                 </div>
 
                 {/* Main Content Info */}
-                <div className="p-4 sm:p-5 flex flex-col gap-3 flex-1">
-                    <div className="flex items-center gap-3">
+                <div className="p-3 sm:p-5 flex flex-col gap-2 flex-1">
+                    {/* Desktop Meta Row */}
+                    <div className="hidden sm:flex items-center gap-3">
                         <span className={cn(
                             "px-2 py-1 text-[10px] font-bold font-mono uppercase tracking-wider border-2 rounded",
-                            "bg-background text-foreground border-muted-foreground/20",
+                            "bg-background text-foreground border-border",
                             isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
                             isPink && "bg-pink-50 text-pink-700 border-pink-200"
                         )}>
@@ -242,7 +248,43 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* Footer Status Bar */}
-                <div className="mt-auto py-2 px-4 sm:px-5 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
+                <div className="mt-auto py-2 px-3 sm:px-5 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
+
+                    {/* MOBILE VOTES (Left Side of Footer) */}
+                    <div className="flex sm:hidden items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            onClick={(e) => handleVote(e, 1)}
+                            disabled={isVoting}
+                            className={cn(
+                                "p-1 rounded-md border-2 border-transparent transition-all",
+                                voteState === 1
+                                    ? "bg-primary/10 text-primary border-primary shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+                                    : "bg-background border-border text-muted-foreground hover:border-foreground"
+                            )}
+                        >
+                            <ChevronUp className="w-4 h-4 stroke-[3px]" />
+                        </button>
+                        <span className={cn(
+                            "text-sm font-black w-6 text-center",
+                            votes > 0 ? "text-primary" : "text-muted-foreground",
+                            votes < 0 && "text-red-500"
+                        )}>
+                            {votes}
+                        </span>
+                        <button
+                            onClick={(e) => handleVote(e, -1)}
+                            disabled={isVoting}
+                            className={cn(
+                                "p-1 rounded-md border-2 border-transparent transition-all",
+                                voteState === -1
+                                    ? "bg-red-500/10 text-red-500 border-red-500 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+                                    : "bg-background border-border text-muted-foreground hover:border-foreground"
+                            )}
+                        >
+                            <ChevronDown className="w-4 h-4 stroke-[3px]" />
+                        </button>
+                    </div>
+
                     {/* Desktop Author */}
                     <Link
                         href={`/kullanici/${question.profiles?.username}`}
@@ -272,7 +314,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             "flex items-center gap-1.5 transition-colors hover:text-foreground",
                         )}>
                             <MessageCircle className="w-4 h-4" />
-                            <span>{question.answers?.[0]?.count || 0} Cevap</span>
+                            <span>{question.answers?.[0]?.count || 0} <span className="hidden sm:inline">Cevap</span></span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <Eye className="w-4 h-4" />
