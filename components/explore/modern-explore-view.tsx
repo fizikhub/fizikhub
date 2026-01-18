@@ -105,7 +105,7 @@ export function ModernExploreView({
                         </span>
                         <span className="relative inline-flex items-center gap-2 sm:gap-4">
                             <span className="relative z-10">Özgür Bırak</span>
-                            <span className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-indigo-500/20 -z-0 -rotate-1 rounded-sm"></span>
+                            <span className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-red-600/20 -z-0 -rotate-1 rounded-sm"></span>
 
                             {/* UFO Icon - Positioned Relative to Text */}
                             <motion.div
@@ -119,9 +119,9 @@ export function ModernExploreView({
                                 <svg width="40" height="24" viewBox="0 0 60 40" fill="currentColor" className="sm:w-[50px] sm:h-[30px]">
                                     <path d="M20 20 C20 10, 40 10, 40 20" fill="none" stroke="currentColor" strokeWidth="3" />
                                     <ellipse cx="30" cy="20" rx="25" ry="6" stroke="currentColor" strokeWidth="3" fill="none" />
-                                    <circle cx="15" cy="20" r="2" fill="currentColor" className="text-indigo-500 animate-pulse" />
-                                    <circle cx="30" cy="23" r="2" fill="currentColor" className="text-indigo-500 animate-pulse delay-75" />
-                                    <circle cx="45" cy="20" r="2" fill="currentColor" className="text-indigo-500 animate-pulse delay-150" />
+                                    <circle cx="15" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse" />
+                                    <circle cx="30" cy="23" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-75" />
+                                    <circle cx="45" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-150" />
                                 </svg>
                             </motion.div>
                         </span>
@@ -131,7 +131,7 @@ export function ModernExploreView({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-4 border-indigo-500 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
+                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-4 border-red-600 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
                     >
                         Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
                     </motion.p>
@@ -141,17 +141,17 @@ export function ModernExploreView({
                 <ShareInputCard user={user} />
 
                 {/* Categories */}
-                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border/40 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
+                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
                     <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1">
                         <Link href="/blog" className="shrink-0">
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Badge
                                     variant={!currentCategory ? "default" : "outline"}
                                     className={cn(
-                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold border transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                         !currentCategory
-                                            ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/20"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600"
+                                            ? "bg-red-600 text-white border-red-600 shadow-[4px_4px_0px_0px_rgba(220,38,38,0.4)]"
+                                            : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
                                     )}
                                 >
                                     TÜMÜ
@@ -169,10 +169,10 @@ export function ModernExploreView({
                                     <Badge
                                         variant={currentCategory === cat ? "default" : "outline"}
                                         className={cn(
-                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold border transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-md"
-                                                : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-500/5"
+                                                ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
+                                                : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -186,10 +186,10 @@ export function ModernExploreView({
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-3xl border border-dashed border-indigo-500/30 bg-indigo-500/5">
-                            <Telescope className="w-12 h-12 text-indigo-500/40 mx-auto mb-4" />
-                            <p className="text-muted-foreground font-medium text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-indigo-500 hover:text-indigo-400 hover:underline mt-2 inline-block font-bold uppercase tracking-wide">
+                        <div className="py-16 text-center rounded-none border-2 border-dashed border-red-600/30 bg-red-600/5">
+                            <Telescope className="w-12 h-12 text-red-600/40 mx-auto mb-4" />
+                            <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
+                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-red-600 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
                                 <Sparkles className="w-3 h-3 inline mr-1" />
                                 İlk başlatıcı sen ol!
                             </Link>

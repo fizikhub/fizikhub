@@ -69,7 +69,7 @@ export function SocialArticleCard({
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
     const finalBadgeText = badgeLabel || defaultBadgeText;
 
-    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-indigo-500 bg-indigo-500/10";
+    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-red-600 bg-red-600/10";
     const finalBadgeClass = badgeClassName || defaultBadgeClass;
 
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
