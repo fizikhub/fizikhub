@@ -189,160 +189,146 @@ export function SocialArticleCard({
     // ----------------------------------------------------------------------
     // RENDER: STANDARD THEME (+ Pink Variants)
     // ----------------------------------------------------------------------
+    // ----------------------------------------------------------------------
+    // RENDER: STANDARD THEME (Soft Neo-Brutalist Redesign)
+    // ----------------------------------------------------------------------
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-            whileHover={{ y: -4, transition: { duration: 0.25, ease: "easeOut" } }}
-            className={cn(
-                "group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300",
-                "bg-card border border-border",
-                "shadow-sm hover:shadow-md hover:border-border/80",
-                // Cybernetic theme overrides
-                isCybernetic && "cyber-card cyber-lift",
-                // Pink / Dark Pink theme overrides
-                isCute && "cute-border rounded-[1.5rem]",
-                // Blood theme overrides
-                isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]",
-                // No more bg-white override for pink - use bg-card always
-                className
-            )}
+            className={cn("h-full", className)}
         >
-            {/* CUTE DECORATION: Cat Ears (Only visible in Pink) */}
-            {isCute && (
-                <>
-                    <div className="cute-cat-ear-left group-hover:block transition-all" />
-                    <div className="cute-cat-ear-right group-hover:block transition-all" />
-                </>
-            )}
+            <Link href={`/blog/${article.slug}`} className="block h-full group font-sans">
+                <article className={cn(
+                    "relative flex flex-col h-full overflow-hidden rounded-2xl transition-all duration-300",
+                    "bg-card border-2 border-border", // Thicker border
+                    "hover:border-rose-500/50 dark:hover:border-rose-500/50", // Colored border on hover
+                    "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1", // Lift & Deep Shadow
+                    // Theme Overrides
+                    isCute && "rounded-[1.5rem] cute-border",
+                    isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]"
+                )}>
+                    {/* CUTE DECORATION: Cat Ears (Only visible in Pink) */}
+                    {isCute && (
+                        <>
+                            <div className="cute-cat-ear-left group-hover:block transition-all" />
+                            <div className="cute-cat-ear-right group-hover:block transition-all" />
+                        </>
+                    )}
 
-            {/* HUD DECORATION: Random Data Numbers (Only visible in Cybernetic) */}
-            {isCybernetic && (
-                <div className="absolute top-2 right-2 text-[9px] font-mono text-cyan-500/50 pointer-events-none z-20 select-none">
-                    NO.{index + 4209}-{Math.floor(Math.random() * 99)}
-                </div>
-            )}
-            {/* 1. TOP BAR: Category & Date */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border/50 bg-muted/20">
-                <div className="flex items-center gap-3">
-                    <span className={cn(
-                        "text-xs font-bold tracking-wide",
-                        isWriter
-                            ? "text-amber-600 dark:text-amber-500"
-                            : "text-red-600 dark:text-red-500"
-                    )}>
-                        {article.category || "GENEL"}
-                    </span>
-                </div>
-                <span className="text-xs text-muted-foreground/60">
-                    {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                </span>
-            </div>
-
-            {/* Main Link Wrapper */}
-            <Link href={`/blog/${article.slug}`} className="block flex-1 group/content" prefetch={false}>
-
-                {/* 2. HERO IMAGE */}
-                {article.image_url && (
-                    <div className="relative aspect-video w-full overflow-hidden border-b border-border/30 bg-muted">
-                        <Image
-                            src={imgSrc}
-                            alt={article.title}
-                            fill
-                            className="object-cover transition-transform duration-700 ease-out group-hover/content:scale-[1.03]"
-                            onError={() => setImgSrc("/images/placeholder-article.webp")}
-                        />
-                        {/* Subtle vignette overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60" />
+                    {/* 1. HEADER: Category & Metadata */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-muted/30">
+                        <div className="flex items-center gap-2">
+                            <span className={cn(
+                                "px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest",
+                                isWriter
+                                    ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
+                                    : "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400"
+                            )}>
+                                {article.category || "GENEL"}
+                            </span>
+                            {isWriter && (
+                                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 dark:text-amber-500">
+                                    <BadgeCheck className="w-3 h-3" />
+                                    <span>YAZAR</span>
+                                </div>
+                            )}
+                        </div>
+                        <time className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                            {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                        </time>
                     </div>
-                )}
 
-                {/* 3. CONTENT BODY */}
-                <div className="p-5 flex flex-col gap-3">
-                    {/* Title */}
-                    <h3 className={cn(
-                        "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground transition-colors",
-                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-red-600 dark:group-hover/content:text-red-400",
-                        // Cybernetic theme: gradient text on hover
-                        isCybernetic && "group-hover/content:cyber-text"
-                    )}>
-                        {article.title}
-                    </h3>
+                    {/* 2. IMAGE SECTION (Clean) */}
+                    {article.image_url && (
+                        <div className="relative aspect-video w-full overflow-hidden border-b border-border/50 bg-muted">
+                            <Image
+                                src={imgSrc}
+                                alt={article.title}
+                                fill
+                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                onError={() => setImgSrc("/images/placeholder-article.webp")}
+                            />
+                            {/* Texture Overlay */}
+                            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:8px_8px] pointer-events-none" />
+                        </div>
+                    )}
 
-                    {/* Summary */}
-                    <p className="text-[15px] leading-relaxed text-muted-foreground font-sans line-clamp-2">
-                        {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
-                    </p>
+                    {/* 3. CONTENT BODY */}
+                    <div className="flex-1 p-5 flex flex-col gap-3 bg-gradient-to-b from-card to-muted/10">
+                        <h3 className={cn(
+                            "text-xl sm:text-2xl font-bold font-heading leading-tight text-foreground transition-colors",
+                            "group-hover:text-rose-600 dark:group-hover:text-rose-500"
+                        )}>
+                            {article.title}
+                        </h3>
 
-                    {/* Author Mini-Row (Inside Content) */}
-                    <div className="flex items-center gap-2 mt-1">
-                        <Avatar className="w-6 h-6 border border-border">
-                            <AvatarImage src={article.author?.avatar_url || ""} />
-                            <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
-                                {article.author?.username?.[0]?.toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors">
-                            {article.author?.full_name || article.author?.username || "Fizikhub"}
-                        </span>
-                        {isWriter && (
-                            <BadgeCheck className="w-3.5 h-3.5 text-amber-500" />
-                        )}
+                        <p className="text-sm text-muted-foreground line-clamp-3 font-medium leading-relaxed">
+                            {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 120) + "..." : "Özet bulunmuyor.")}
+                        </p>
+
+                        {/* Author Info */}
+                        <div className="mt-auto pt-4 flex items-center gap-2">
+                            <Avatar className="w-6 h-6 border-2 border-background ring-1 ring-border">
+                                <AvatarImage src={article.author?.avatar_url || ""} />
+                                <AvatarFallback className="text-[9px] font-bold bg-muted text-muted-foreground">
+                                    {article.author?.username?.[0]?.toUpperCase()}
+                                </AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground transition-colors">
+                                {article.author?.full_name || article.author?.username || "Fizikhub"}
+                            </span>
+                        </div>
                     </div>
-                </div>
+
+                    {/* 4. FOOTER ACTIONS */}
+                    <div className="px-4 py-3 border-t border-border/50 flex items-center justify-between bg-muted/5 group/actions">
+                        {/* Reading Time */}
+                        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-muted-foreground/60">
+                            <BookOpen className="w-3 h-3" />
+                            <span>{getReadingTime(article.content)} dk</span>
+                        </div>
+
+                        {/* Action Buttons (Stop Propagation to prevent Link navigation) */}
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={handleLike}
+                                className={cn(
+                                    "p-2 rounded-full hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors relative group/btn",
+                                    isLiked ? "text-rose-500" : "text-muted-foreground hover:text-rose-600"
+                                )}
+                            >
+                                <Heart className={cn("w-4 h-4 stroke-[2.5px]", isLiked && "fill-current")} />
+                                <span className="absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap bg-background border px-1 rounded shadow-sm">
+                                    {likeCount}
+                                </span>
+                            </button>
+
+                            <Link href={`/blog/${article.slug}#comments`} className="p-2 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 text-muted-foreground hover:text-blue-600 transition-colors">
+                                <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
+                            </Link>
+
+                            <button
+                                onClick={handleBookmark}
+                                className={cn(
+                                    "p-2 rounded-full hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors",
+                                    isBookmarked ? "text-amber-500" : "text-muted-foreground hover:text-amber-600"
+                                )}
+                            >
+                                <Bookmark className={cn("w-4 h-4 stroke-[2.5px]", isBookmarked && "fill-current")} />
+                            </button>
+
+                            <button
+                                onClick={handleShare}
+                                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Share className="w-4 h-4 stroke-[2.5px]" />
+                            </button>
+                        </div>
+                    </div>
+                </article>
             </Link>
-
-            {/* 4. BOTTOM ACTION BAR */}
-            <div className="mt-auto px-5 py-3 border-t border-border/50 flex items-center justify-between pointer-events-auto bg-muted/5">
-                {/* Left Actions */}
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={handleLike}
-                        disabled={isLikeLoading}
-                        className={cn(
-                            "flex items-center gap-1.5 text-sm font-bold transition-colors",
-                            isLiked ? "text-rose-500" : "text-muted-foreground hover:text-foreground"
-                        )}
-                    >
-                        <Heart className={cn("w-4 h-4 stroke-[2.5px]", isLiked && "fill-current")} />
-                        <span>{likeCount}</span>
-                    </button>
-
-                    <Link
-                        href={`/blog/${article.slug}#comments`}
-                        className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <MessageCircle className="w-4 h-4 stroke-[2.5px]" />
-                        <span>{initialComments}</span>
-                    </Link>
-                </div>
-
-                {/* Right Actions */}
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 text-xs font-bold text-muted-foreground bg-muted px-2 py-1 rounded border border-border/50">
-                        <BookOpen className="w-3 h-3" />
-                        {getReadingTime(article.content)} dk
-                    </div>
-
-                    <button
-                        onClick={handleBookmark}
-                        className={cn(
-                            "transition-colors",
-                            isBookmarked ? "text-amber-500" : "text-muted-foreground hover:text-foreground"
-                        )}
-                    >
-                        <Bookmark className={cn("w-4.5 h-4.5 stroke-[2.5px]", isBookmarked && "fill-current")} />
-                    </button>
-
-                    <button
-                        onClick={handleShare}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                        <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
-                    </button>
-                </div>
-            </div>
         </motion.div>
     );
 }
