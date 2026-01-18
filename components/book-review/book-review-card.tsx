@@ -53,7 +53,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     return (
         <Link href={`/makale/${article.slug}`} className="block group font-sans">
             <article className={cn(
-                "relative flex flex-col md:flex-row overflow-hidden rounded-2xl transition-all duration-300",
+                "relative flex flex-row overflow-hidden rounded-2xl transition-all duration-300",
                 "bg-card border-2 border-slate-200 dark:border-slate-800",
                 "hover:border-rose-500/50 dark:hover:border-rose-500/50",
                 "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1"
@@ -69,12 +69,12 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                 `}</style>
 
                 {/* Book Cover Section - Enhanced */}
-                <div className="relative w-full md:w-56 h-64 md:h-auto shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-6 overflow-hidden md:border-r border-border/50">
+                <div className="relative w-32 sm:w-40 md:w-56 h-auto shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-3 md:p-6 overflow-hidden border-r border-border/50">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
 
                     {/* Spine/Cover with 3D effect */}
-                    <div className="relative shadow-2xl rounded-[2px] overflow-hidden w-32 md:w-36 aspect-[2/3] transition-all duration-500 will-change-transform group-hover:scale-105 group-hover:-rotate-2 group-hover:shadow-rose-900/20 [perspective:1000px]">
+                    <div className="relative shadow-2xl rounded-[2px] overflow-hidden w-20 sm:w-24 md:w-36 aspect-[2/3] transition-all duration-500 will-change-transform group-hover:scale-105 group-hover:-rotate-2 group-hover:shadow-rose-900/20 [perspective:1000px]">
                         {article.cover_url ? (
                             <img
                                 src={article.cover_url}
@@ -95,7 +95,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                 </div>
 
                 {/* Content Section */}
-                <div className="flex-1 p-6 md:p-7 flex flex-col justify-between relative bg-gradient-to-br from-card to-rose-50/50 dark:to-rose-950/10">
+                <div className="flex-1 p-4 md:p-7 flex flex-col justify-between relative bg-gradient-to-br from-card to-rose-50/50 dark:to-rose-950/10">
                     <div>
                         {/* Header */}
                         <div className="flex items-start justify-between mb-4">
@@ -117,7 +117,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                                     </div>
                                 </div>
 
-                                <h3 className="text-2xl md:text-3xl font-bold font-heading leading-tight text-foreground group-hover:text-rose-600 transition-colors pt-2">
+                                <h3 className="text-lg sm:text-2xl md:text-3xl font-bold font-heading leading-tight text-foreground group-hover:text-rose-600 transition-colors pt-1 md:pt-2 line-clamp-2 md:line-clamp-none">
                                     {bookTitle}
                                 </h3>
 
@@ -129,14 +129,14 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                         </div>
 
                         {/* Excerpt */}
-                        <p className="text-muted-foreground line-clamp-3 leading-relaxed text-sm md:text-base mb-6 font-medium">
+                        <p className="text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed text-xs sm:text-sm md:text-base mb-2 md:mb-6 font-medium">
                             {displayExcerpt}
                         </p>
                     </div>
 
                     {/* Footer - Elegant */}
-                    <div className="flex items-center justify-between pt-5 border-t border-dashed border-border/60">
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between pt-3 md:pt-5 border-t border-dashed border-border/60">
+                        <div className="flex items-center gap-2 md:gap-3">
                             <Avatar className="w-8 h-8 border-2 border-background ring-1 ring-border">
                                 <AvatarImage src={article.author?.avatar_url || ""} />
                                 <AvatarFallback className="text-[10px] bg-rose-50 text-rose-600 font-bold">

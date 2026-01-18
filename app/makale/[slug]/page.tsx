@@ -9,6 +9,7 @@ import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ArticleReader } from "@/components/blog/article-reader";
+import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -184,22 +185,37 @@ export default async function ArticlePage({ params }: PageProps) {
             <ReadingProgress />
 
             <div className="min-h-screen bg-background pb-20">
-                {/* Immersive Hero */}
-                <ArticleHero article={article} readingTime={formattedReadingTime} />
+                {article.category === 'Kitap İncelemesi' ? (
+                    <BookReviewDetail
+                        article={article}
+                        readingTime={formattedReadingTime}
+                        likeCount={likeCount || 0}
+                        initialLiked={!!userLike}
+                        initialBookmarked={!!userBookmark}
+                        comments={comments || []}
+                        isLoggedIn={!!user}
+                        userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                    />
+                ) : (
+                    <>
+                        {/* Immersive Hero */}
+                        <ArticleHero article={article} readingTime={formattedReadingTime} />
 
-                {/* State-managed Article Reader */}
-                <ArticleReader
-                    article={article}
-                    readingTime={formattedReadingTime}
-                    likeCount={likeCount || 0}
-                    initialLiked={!!userLike}
-                    initialBookmarked={!!userBookmark}
-                    comments={comments || []}
-                    isLoggedIn={!!user}
-                    isAdmin={isAdmin}
-                    userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                    relatedArticles={relatedArticles || []}
-                />
+                        {/* State-managed Article Reader */}
+                        <ArticleReader
+                            article={article}
+                            readingTime={formattedReadingTime}
+                            likeCount={likeCount || 0}
+                            initialLiked={!!userLike}
+                            initialBookmarked={!!userBookmark}
+                            comments={comments || []}
+                            isLoggedIn={!!user}
+                            isAdmin={isAdmin}
+                            userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                            relatedArticles={relatedArticles || []}
+                        />
+                    </>
+                )}
             </div>
         </>
     );
