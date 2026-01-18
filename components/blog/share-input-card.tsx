@@ -89,7 +89,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)]"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors truncate mr-2">
+                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors truncate mr-2 min-w-0 flex-1">
                                 {isOpen ? "Kapat" : `Ne paylaşmak istersin, ${firstName}?`}
                             </span>
                             <Plus className={cn(

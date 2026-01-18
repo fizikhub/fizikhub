@@ -1,17 +1,25 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { NewArticleForm } from "@/components/article/new-article-form";
+import { ExperimentEditor } from "@/components/experiment/experiment-editor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default async function NewArticlePage() {
+interface NewArticlePageProps {
+    searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function NewArticlePage({ searchParams }: NewArticlePageProps) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
         redirect("/login");
     }
+
+    const type = searchParams.type;
+    const isExperiment = type === 'experiment';
 
     // Check if user has written an article before and seen guide
     const { data: profile } = await supabase
@@ -36,7 +44,9 @@ export default async function NewArticlePage() {
                                     <span className="hidden sm:inline">Vazgeç</span>
                                 </Button>
                             </Link>
-                            <h1 className="text-xl md:text-2xl font-black tracking-tight">Blog Oluştur</h1>
+                            <h1 className="text-xl md:text-2xl font-black tracking-tight">
+                                {isExperiment ? 'Deney Paylaş' : 'Blog Oluştur'}
+                            </h1>
                         </div>
                     </div>
                 </div>
@@ -44,11 +54,15 @@ export default async function NewArticlePage() {
 
             {/* Main Content */}
             <div className="container max-w-5xl mx-auto px-4 py-8">
-                <NewArticleForm
-                    userId={user.id}
-                    isFirstArticle={isFirstArticle}
-                    hasSeenGuide={hasSeenGuide}
-                />
+                {isExperiment ? (
+                    <ExperimentEditor userId={user.id} />
+                ) : (
+                    <NewArticleForm
+                        userId={user.id}
+                        isFirstArticle={isFirstArticle}
+                        hasSeenGuide={hasSeenGuide}
+                    />
+                )}
             </div>
         </div>
     );
