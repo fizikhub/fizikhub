@@ -67,7 +67,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             <div className="p-1">
                 <div className="flex gap-0">
                     {/* Avatar Area */}
-                    <div className="p-3 pr-2 hidden sm:block">
+                    <div className="p-3 pr-2 block">
                         <Avatar className="w-10 h-10 sm:w-11 sm:h-11 border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-xl">
                             <AvatarImage src={avatarUrl} />
                             <AvatarFallback className="bg-red-600 text-white font-black rounded-xl">
@@ -89,11 +89,11 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)]"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors">
-                                {isOpen ? "Kapat" : "Ne paylaşmak istersin?"}
+                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-red-600 transition-colors truncate mr-2">
+                                {isOpen ? "Kapat" : `Ne paylaşmak istersin, ${firstName}?`}
                             </span>
                             <Plus className={cn(
-                                "w-5 h-5 text-red-600 transition-transform duration-300",
+                                "w-5 h-5 text-red-600 transition-transform duration-300 flex-shrink-0",
                                 isOpen ? "rotate-45" : "group-hover/input:rotate-90"
                             )} />
                         </button>
