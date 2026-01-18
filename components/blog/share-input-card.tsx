@@ -48,54 +48,48 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             transition={{ duration: 0.5, ease: "backOut" }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
             className={cn(
-                "group relative flex flex-col overflow-visible rounded-none transition-all duration-300",
-                "bg-card border-2 border-foreground",
-                "shadow-[6px_6px_0px_0px_rgba(79,70,229,1)] dark:shadow-[6px_6px_0px_0px_rgba(79,70,229,1)]", // Hard indigo shadow
+                "group relative flex flex-col overflow-visible rounded-2xl transition-all duration-300",
+                "bg-card border border-border/50",
+                "shadow-lg shadow-indigo-500/5 hover:shadow-xl hover:shadow-indigo-500/10",
                 "w-full max-w-2xl mx-auto mb-6 sm:mb-10 z-[50]"
             )}
         >
-            {/* Top Bar (Browser-like) */}
-            <div className="h-8 border-b-2 border-foreground bg-muted flex items-center px-3 justify-between select-none">
-                <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-foreground/50">Paylaş</div>
-                <div className="w-6" />
-            </div>
-
             <div className="p-1">
-                <div className="flex gap-0">
+                <div className="flex gap-2 p-2">
                     {/* Avatar Area */}
-                    <div className="p-3 pr-2 hidden sm:block">
-                        <Avatar className="w-10 h-10 sm:w-11 sm:h-11 border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                    <div className="hidden sm:block">
+                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-background shadow-sm">
                             <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-indigo-600 text-white font-black rounded-none">
+                            <AvatarFallback className="bg-indigo-600 text-white font-bold">
                                 {displayName?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
                     </div>
 
                     {/* Input Trigger */}
-                    <div className="flex-1 p-2 sm:p-3 relative">
+                    <div className="flex-1 relative">
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             className={cn(
-                                "w-full h-12 text-left px-4 flex items-center justify-between transition-all duration-200 group/input relative",
-                                "bg-background hover:bg-muted/10",
-                                "border-2 border-muted-foreground/30 hover:border-indigo-500",
-                                "rounded-none",
-                                isOpen && "border-indigo-500 shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.1)]",
-                                !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(79,70,229,0.2)]"
+                                "w-full h-10 sm:h-12 text-left px-4 flex items-center justify-between transition-all duration-200 group/input relative",
+                                "bg-muted/30 hover:bg-muted/50",
+                                "border border-transparent hover:border-indigo-500/30",
+                                "rounded-xl",
+                                isOpen && "bg-muted/50"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-indigo-500 transition-colors">
+                            <span className="text-muted-foreground font-medium text-sm sm:text-base group-hover/input:text-indigo-500 transition-colors">
                                 {isOpen ? "Kapat" : "Ne paylaşmak istersin?"}
                             </span>
-                            <Plus className={cn(
-                                "w-5 h-5 text-indigo-500 transition-transform duration-300",
-                                isOpen ? "rotate-45" : "group-hover/input:rotate-90"
-                            )} />
+                            <div className={cn(
+                                "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
+                                isOpen ? "bg-indigo-100 dark:bg-indigo-900/30 rotate-45" : "bg-transparent group-hover/input:bg-indigo-100 dark:group-hover/input:bg-indigo-900/30"
+                            )}>
+                                <Plus className={cn(
+                                    "w-4 h-4 transition-colors",
+                                    isOpen ? "text-indigo-600" : "text-muted-foreground group-hover/input:text-indigo-600"
+                                )} />
+                            </div>
                         </button>
 
                         {/* Dropdown Menu */}
@@ -103,29 +97,28 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                             {isOpen && (
                                 <motion.div
                                     ref={dropdownRef}
-                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-2 w-full sm:w-72 bg-card border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-[100] overflow-hidden rounded-none"
+                                    className="absolute top-full right-0 mt-2 w-full sm:w-72 bg-card/95 backdrop-blur-xl border border-white/10 shadow-2xl shadow-indigo-500/10 z-[100] overflow-hidden rounded-2xl"
                                 >
-                                    <div className="p-0">
-                                        <div className="px-4 py-3 border-b-2 border-foreground bg-indigo-600 text-white">
-                                            <span className="text-[10px] font-black tracking-widest uppercase">Seçenekler</span>
+                                    <div className="p-2">
+                                        <div className="px-3 py-2 border-b border-white/5 mb-1">
+                                            <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase opacity-70">Seçenekler</span>
                                         </div>
 
                                         <button
                                             onClick={() => handleNavigation("/kitap-inceleme/yeni")}
-                                            className="w-full flex items-center gap-4 p-4 hover:bg-muted/10 transition-all group text-left relative border-b-2 border-border/50 last:border-none"
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-indigo-500/10 transition-all group text-left rounded-xl"
                                         >
-                                            <div className="relative w-10 h-10 bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 border-2 border-indigo-600 shadow-[2px_2px_0px_0px_rgba(79,70,229,1)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_0px_rgba(79,70,229,1)] transition-all">
-                                                <Book className="w-5 h-5" />
+                                            <div className="relative w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-all">
+                                                <Book className="w-4 h-4" />
                                             </div>
                                             <div className="flex-1">
-                                                <h4 className="font-black text-sm uppercase tracking-wide text-foreground group-hover:text-indigo-600 transition-colors">Kitap İncelemesi</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 font-bold">Puanla ve İncele</p>
+                                                <h4 className="font-bold text-sm text-foreground group-hover:text-indigo-500 transition-colors">Kitap İncelemesi</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Puanla ve İncele</p>
                                             </div>
-                                            <Plus className="w-4 h-4 text-indigo-500 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -136,19 +129,19 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="px-4 py-2 bg-muted/20 border-t-2 border-foreground flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground overflow-x-auto">
+            <div className="px-5 py-3 border-t border-border/50 flex items-center gap-6 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70 overflow-x-auto">
                 <div className="flex items-center gap-2 hover:text-indigo-500 transition-colors cursor-pointer group">
-                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-none group-hover:scale-150 transition-transform" />
+                    <div className="w-2 h-2 bg-indigo-500 rounded-full dark:shadow-[0_0_10px_rgba(99,102,241,0.5)] group-hover:scale-125 transition-transform" />
                     <span>Blog</span>
                 </div>
-                <div className="w-0.5 h-3 bg-foreground/20" />
+                <div className="w-1 h-1 rounded-full bg-foreground/10" />
                 <div className="flex items-center gap-2 hover:text-indigo-500 transition-colors cursor-pointer group">
-                    <Book className="w-3 h-3 group-hover:text-indigo-500" />
+                    <Book className="w-3.5 h-3.5 group-hover:text-indigo-500 group-hover:-translate-y-0.5 transition-all" />
                     <span>Medya</span>
                 </div>
-                <div className="w-0.5 h-3 bg-foreground/20" />
+                <div className="w-1 h-1 rounded-full bg-foreground/10" />
                 <div className="flex items-center gap-2 hover:text-indigo-500 transition-colors cursor-pointer group">
-                    <HelpCircle className="w-3 h-3 group-hover:text-indigo-500" />
+                    <HelpCircle className="w-3.5 h-3.5 group-hover:text-indigo-500 group-hover:rotate-12 transition-all" />
                     <span>Soru</span>
                 </div>
             </div>

@@ -141,17 +141,17 @@ export function ModernExploreView({
                 <ShareInputCard user={user} />
 
                 {/* Categories */}
-                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
+                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b border-border/40 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
                     <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1">
                         <Link href="/blog" className="shrink-0">
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <Badge
                                     variant={!currentCategory ? "default" : "outline"}
                                     className={cn(
-                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold border transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                         !currentCategory
-                                            ? "bg-indigo-600 text-white border-indigo-600 shadow-[4px_4px_0px_0px_rgba(79,70,229,0.4)]"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600 hover:shadow-[3px_3px_0px_0px_rgba(79,70,229,0.2)]"
+                                            ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/20"
+                                            : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600"
                                     )}
                                 >
                                     TÜMÜ
@@ -169,10 +169,10 @@ export function ModernExploreView({
                                     <Badge
                                         variant={currentCategory === cat ? "default" : "outline"}
                                         className={cn(
-                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold border transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
-                                                : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600 hover:shadow-[3px_3px_0px_0px_rgba(79,70,229,0.2)]"
+                                                ? "bg-foreground text-background border-foreground shadow-md"
+                                                : "bg-transparent text-muted-foreground border-border hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-500/5"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -186,10 +186,10 @@ export function ModernExploreView({
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-none border-2 border-dashed border-indigo-600/30 bg-indigo-600/5">
-                            <Telescope className="w-12 h-12 text-indigo-600/40 mx-auto mb-4" />
-                            <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-indigo-600 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
+                        <div className="py-16 text-center rounded-3xl border border-dashed border-indigo-500/30 bg-indigo-500/5">
+                            <Telescope className="w-12 h-12 text-indigo-500/40 mx-auto mb-4" />
+                            <p className="text-muted-foreground font-medium text-sm">Henüz makale yok...</p>
+                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-indigo-500 hover:text-indigo-400 hover:underline mt-2 inline-block font-bold uppercase tracking-wide">
                                 <Sparkles className="w-3 h-3 inline mr-1" />
                                 İlk başlatıcı sen ol!
                             </Link>
