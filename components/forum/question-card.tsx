@@ -136,9 +136,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
         >
-            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE - Compact Width */}
+            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE - Extra Compact */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center justify-center p-3 w-16 shrink-0 border-r-2 border-border",
+                "hidden sm:flex flex-col items-center justify-center p-2 w-14 shrink-0 border-r-2 border-border",
                 "bg-muted/5",
                 isCybernetic && "border-cyan-500/20 bg-black/40",
                 isPink && "bg-pink-50/50 border-pink-100"
@@ -216,8 +216,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </span>
                 </div>
 
-                {/* Main Content Info - UPSCALED & SPACIOUS */}
-                <div className="p-5 sm:p-8 flex flex-col gap-5 flex-1 min-h-[160px] justify-start">
+                {/* Main Content Info - UPSCALED & SPACIOUS - Taller */}
+                <div className="p-5 sm:p-8 flex flex-col gap-6 flex-1 min-h-[200px] justify-start">
                     {/* Desktop Meta Row */}
                     <div className="hidden sm:flex items-center gap-3">
                         <span className={cn(
@@ -241,7 +241,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         )}>
                             {question.title}
                         </h3>
-                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-4 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
+                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-5 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
                             {stripHtml(question.content)}
                         </p>
                     </Link>
