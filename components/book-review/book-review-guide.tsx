@@ -66,7 +66,7 @@ export function BookReviewGuide({ open, onOpenChange }: BookReviewGuideProps) {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 sm:p-10 min-h-[400px] flex flex-col justify-between relative overflow-hidden">
+                <div className="p-5 sm:p-10 min-h-[350px] sm:min-h-[400px] flex flex-col justify-between relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-64 h-64 bg-rose-100 dark:bg-rose-900/20 rounded-full blur-[80px] -z-10 -translate-x-1/2 -translate-y-1/2" />
 
                     <AnimatePresence mode="wait">
@@ -76,33 +76,36 @@ export function BookReviewGuide({ open, onOpenChange }: BookReviewGuideProps) {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3 }}
-                            className="flex-1 flex flex-col items-center text-center space-y-6"
+                            className="flex-1 flex flex-col items-center text-center space-y-4 sm:space-y-6"
                         >
                             <div className={cn(
-                                "w-24 h-24 rounded-full flex items-center justify-center border-2 border-dashed transition-colors mb-4 transform",
+                                "w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center border-2 border-dashed transition-colors mb-2 sm:mb-4 transform",
                                 steps[step].color
                             )}>
-                                {steps[step].icon}
+                                {/* Resize icon on mobile */}
+                                <div className="scale-75 sm:scale-100 transform">
+                                    {steps[step].icon}
+                                </div>
                             </div>
 
-                            <h2 className="text-3xl font-black font-heading text-foreground tracking-tight">
+                            <h2 className="text-2xl sm:text-3xl font-black font-heading text-foreground tracking-tight">
                                 {steps[step].title}
                             </h2>
 
-                            <p className="text-lg font-medium text-muted-foreground/90 leading-relaxed max-w-md">
+                            <p className="text-sm sm:text-lg font-medium text-muted-foreground/90 leading-relaxed max-w-md">
                                 {steps[step].content}
                             </p>
                         </motion.div>
                     </AnimatePresence>
 
                     {/* Progress Dots */}
-                    <div className="flex justify-center gap-2 my-8">
+                    <div className="flex justify-center gap-2 my-6 sm:my-8">
                         {steps.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setStep(i)}
                                 className={cn(
-                                    "w-3 h-3 rounded-full border border-foreground/20 transition-all duration-300",
+                                    "w-2 h-2 sm:w-3 sm:h-3 rounded-full border border-foreground/20 transition-all duration-300",
                                     i === step ? "bg-rose-600 scale-125 shadow-lg shadow-rose-600/30" : "bg-muted hover:bg-rose-300"
                                 )}
                             />
@@ -110,12 +113,12 @@ export function BookReviewGuide({ open, onOpenChange }: BookReviewGuideProps) {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-dashed border-foreground/20">
+                    <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-dashed border-foreground/20 w-full">
                         {step > 0 && (
                             <Button
                                 variant="outline"
                                 onClick={() => setStep(step - 1)}
-                                className="border-2 border-foreground/10 font-bold hover:bg-muted"
+                                className="w-full sm:w-auto border-2 border-foreground/10 font-bold hover:bg-muted"
                             >
                                 Geri
                             </Button>
@@ -129,7 +132,7 @@ export function BookReviewGuide({ open, onOpenChange }: BookReviewGuideProps) {
                                     onOpenChange(false);
                                 }
                             }}
-                            className="bg-rose-600 text-white hover:bg-rose-700 font-black uppercase tracking-wide border-2 border-rose-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                            className="w-full sm:w-auto bg-rose-600 text-white hover:bg-rose-700 font-black uppercase tracking-wide border-2 border-rose-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                         >
                             {step < steps.length - 1 ? "Devam" : "Anladım, Yazarım!"}
                         </Button>

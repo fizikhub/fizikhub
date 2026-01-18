@@ -16,12 +16,17 @@ export function EntropyMicrostates() {
     y: Math.floor(i / 5) * 40 + 20,
   });
 
-  // Rastgele pozisyonlar (Düzensiz)
-  // Her render'da değişmemesi için state'te tutmuyoruz ama Framer Motion key değişimiyle halledecek
-  const getRandomPos = () => ({
-    x: Math.random() * 200 + 10,
-    y: Math.random() * 200 + 10,
-  });
+  // Rastgele pozisyonlar (Düzensiz) - Client-side only to prevent hydration mismatch
+  const [randomPositions, setRandomPositions] = useState<{ x: number, y: number }[]>([]);
+
+  useEffect(() => {
+    setRandomPositions(Array.from({ length: particleCount }).map(() => ({
+      x: Math.random() * 200 + 10,
+      y: Math.random() * 200 + 10,
+    })));
+  }, []);
+
+  const getRandomPos = (i: number) => randomPositions[i] || { x: 0, y: 0 };
 
   return (
     <div className="my-8 rounded-xl border border-blue-500/30 bg-blue-950/20 p-6 backdrop-blur-sm shadow-[0_0_15px_rgba(59,130,246,0.1)]">
@@ -33,22 +38,21 @@ export function EntropyMicrostates() {
 
       <div className="relative mx-auto h-[240px] w-[240px] rounded-lg border border-white/20 bg-black/60 shadow-inner">
         {Array.from({ length: particleCount }).map((_, i) => {
-          const target = isOrdered ? getOrderedPos(i) : getRandomPos();
+          const target = isOrdered ? getOrderedPos(i) : getRandomPos(i);
 
           return (
             <motion.div
               key={i}
               initial={getOrderedPos(i)}
               animate={{
-                x: isOrdered ? getOrderedPos(i).x : Math.random() * 200 + 10,
-                y: isOrdered ? getOrderedPos(i).y : Math.random() * 200 + 10,
+                x: isOrdered ? getOrderedPos(i).x : getRandomPos(i).x,
+                y: isOrdered ? getOrderedPos(i).y : getRandomPos(i).y,
               }}
               transition={{
                 duration: 1.5,
                 type: "spring",
                 bounce: 0.2,
-                // Rastgelelik hissini artırmak için her parçacık için farklı gecikme
-                delay: isOrdered ? i * 0.01 : Math.random() * 0.3
+                delay: isOrdered ? i * 0.01 : (i % 5) * 0.05 // Deterministic delay to avoid hydration mismatch
               }}
               className="absolute h-3 w-3 rounded-full shadow-sm"
               style={{
@@ -138,10 +142,18 @@ export function EntropyDiffusion() {
 
 function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: boolean }) {
   // Rastgele başlangıç pozisyonu (Sadece sol taraf)
-  const [pos, setPos] = useState({
-    x: Math.random() * 45, // %0-45 (Sol taraf) 
-    y: Math.random() * 90 + 5
-  });
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setPos({
+      x: Math.random() * 45, // %0-45 (Sol taraf) 
+      y: Math.random() * 90 + 5
+    });
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;

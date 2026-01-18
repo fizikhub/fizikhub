@@ -11,8 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
     Loader2,
-    Upload,
-    ImagePlus
+    Upload
 } from "lucide-react";
 import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
@@ -46,9 +45,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const [isInlineUploading, setIsInlineUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const inlineImageInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
 
@@ -86,56 +83,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         }
     };
 
-    const handleInlineImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        // Compression options - high quality settings
-        const options = {
-            maxSizeMB: 2,
-            maxWidthOrHeight: 1920,
-            useWebWorker: true,
-            fileType: "image/webp" as const,
-            initialQuality: 0.9 // Higher quality to preserve details
-        };
-
-        setIsInlineUploading(true);
-        try {
-            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
-            const compressedFile = await imageCompression(file, options);
-            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
-
-            const result = await uploadArticleImage(compressedFile);
-            if (result.success && result.url) {
-                const textarea = textareaRef.current;
-                if (textarea) {
-                    const start = textarea.selectionStart;
-                    const end = textarea.selectionEnd;
-                    const text = textarea.value;
-                    const markdownImage = `\n![Görsel Açıklaması](${result.url})\n`;
-
-                    const newText = text.substring(0, start) + markdownImage + text.substring(end);
-                    textarea.value = newText;
-
-                    // Re-focus and update cursor
-                    textarea.focus();
-                    const newCursorPos = start + markdownImage.length;
-                    textarea.setSelectionRange(newCursorPos, newCursorPos);
-                }
-                toast.success("Görsel sıkıştırılarak eklendi");
-            } else {
-                toast.error(result.error || "Yükleme başarısız");
-            }
-        } catch (error) {
-            console.error("Compression/Upload error:", error);
-            toast.error("Görsel işlenirken bir hata oluştu");
-        } finally {
-            setIsInlineUploading(false);
-            if (inlineImageInputRef.current) {
-                inlineImageInputRef.current.value = "";
-            }
-        }
-    };
 
     const [content, setContent] = useState(article?.content || "");
 
@@ -241,6 +189,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                             alt="Kapak önizleme"
                             fill
                             className="object-cover"
+                            sizes="(max-width: 896px) 100vw, 896px"
                         />
                     </div>
                 )}

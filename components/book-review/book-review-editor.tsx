@@ -168,7 +168,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                                 <Textarea
                                     ref={titleRef}
                                     placeholder="KİTABIN ADI..."
-                                    className="min-h-[80px] font-bold text-xl uppercase tracking-tight resize-none bg-background border-2 border-border focus:border-red-600 focus:ring-0 rounded-xl transition-all placeholder:text-muted-foreground/30 shadow-sm"
+                                    className="min-h-[60px] sm:min-h-[80px] font-bold text-2xl sm:text-xl uppercase tracking-tight resize-none bg-background border-2 border-border focus:border-red-600 focus:ring-0 rounded-xl transition-all placeholder:text-muted-foreground/30 shadow-sm"
                                     value={bookTitle}
                                     onChange={(e) => setBookTitle(e.target.value)}
                                 />
@@ -199,7 +199,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                                     onClick={() => setRating(i + 1)}
                                     onMouseEnter={() => setRating(i + 1)}
                                     className={cn(
-                                        "p-0.5 sm:p-1 hover:scale-125 transition-transform focus:outline-none group relative",
+                                        "p-1.5 sm:p-1 hover:scale-125 transition-transform focus:outline-none group relative",
                                     )}
                                     title={`${i + 1}/10`}
                                     type="button"
@@ -234,6 +234,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                                     alt="Book Cover"
                                     fill
                                     className="object-cover border-4 border-white dark:border-zinc-800 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] rounded-xl"
+                                    sizes="(max-width: 768px) 100vw, 300px"
                                 />
                                 <button
                                     onClick={() => setCoverUrl(null)}

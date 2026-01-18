@@ -235,6 +235,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
                                     alt="Experiment Cover"
                                     fill
                                     className="object-cover border-4 border-white dark:border-zinc-800 shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] rounded-xl"
+                                    sizes="(max-width: 768px) 100vw, 300px"
                                 />
                                 <button
                                     onClick={() => setCoverUrl(null)}
@@ -264,7 +265,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
                         <Textarea
                             ref={titleRef}
                             placeholder="DENEYİN ADI..."
-                            className="min-h-[80px] font-bold text-4xl uppercase tracking-tight resize-none bg-background border-none focus:ring-0 rounded-none p-0 placeholder:text-muted-foreground/30 shadow-none leading-tight"
+                            className="min-h-[60px] sm:min-h-[80px] font-bold text-2xl sm:text-4xl uppercase tracking-tight resize-none bg-background border-none focus:ring-0 rounded-none p-0 placeholder:text-muted-foreground/30 shadow-none leading-tight"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
