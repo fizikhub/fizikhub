@@ -69,7 +69,7 @@ export function SocialArticleCard({
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
     const finalBadgeText = badgeLabel || defaultBadgeText;
 
-    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-red-500 bg-red-500/10";
+    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-primary bg-primary/10";
     const finalBadgeClass = badgeClassName || defaultBadgeClass;
 
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
@@ -224,7 +224,7 @@ export function SocialArticleCard({
                                 "px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest",
                                 isWriter
                                     ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
-                                    : "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400"
+                                    : "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary"
                             )}>
                                 {article.category || "GENEL"}
                             </span>
@@ -259,7 +259,7 @@ export function SocialArticleCard({
                     <div className="flex-1 p-5 flex flex-col gap-3 bg-gradient-to-b from-card to-muted/10">
                         <h3 className={cn(
                             "text-xl sm:text-2xl font-bold font-heading leading-tight text-foreground transition-colors",
-                            "group-hover:text-rose-600 dark:group-hover:text-rose-500"
+                            "group-hover:text-primary dark:group-hover:text-primary"
                         )}>
                             {article.title}
                         </h3>
