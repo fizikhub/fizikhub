@@ -182,7 +182,7 @@ export function ModernForumHeader() {
                             trigger={
                                 <div className={cn(
                                     "w-full cursor-pointer overflow-hidden relative",
-                                    "bg-background border-2 border-border",
+                                    "bg-background border border-border",
                                     "rounded-xl transition-all duration-200",
                                     "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.15)]",
                                     "hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.25)]",
@@ -194,7 +194,7 @@ export function ModernForumHeader() {
 
                                     {/* Icon */}
                                     <div className={cn(
-                                        "w-8 h-8 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shrink-0 border-2 border-foreground",
+                                        "w-8 h-8 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center shrink-0 border border-foreground",
                                         "bg-primary text-primary-foreground",
                                         isPink && "bg-pink-500 text-white border-pink-700",
                                         isCybernetic && "bg-cyan-950 text-cyan-400 border-cyan-500 rounded-none"

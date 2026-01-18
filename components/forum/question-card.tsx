@@ -250,21 +250,21 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 {/* Footer Status Bar - UPSCALED */}
                 <div className="mt-auto py-3 px-4 sm:px-7 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
 
-                    {/* MOBILE VOTES (Pill Style) */}
+                    {/* MOBILE VOTES (Minimal & Elegant) */}
                     <div className="flex sm:hidden items-center" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center bg-background border-2 border-border rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1">
                             <button
                                 onClick={(e) => handleVote(e, 1)}
                                 disabled={isVoting}
                                 className={cn(
-                                    "p-1.5 px-2 hover:bg-muted transition-colors border-r-2 border-border",
-                                    voteState === 1 && "bg-primary/10 text-primary"
+                                    "p-1.5 rounded-md hover:bg-background transition-all active:scale-95",
+                                    voteState === 1 ? "text-primary bg-background shadow-sm" : "text-muted-foreground"
                                 )}
                             >
-                                <ChevronUp className="w-5 h-5 stroke-[4px]" />
+                                <ChevronUp className="w-4 h-4 stroke-[3px]" />
                             </button>
                             <span className={cn(
-                                "text-base font-black px-3 min-w-[40px] text-center",
+                                "text-sm font-bold px-2 min-w-[24px] text-center",
                                 votes > 0 ? "text-primary" : "text-muted-foreground",
                                 votes < 0 && "text-red-500"
                             )}>
@@ -274,11 +274,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                 onClick={(e) => handleVote(e, -1)}
                                 disabled={isVoting}
                                 className={cn(
-                                    "p-1.5 px-2 hover:bg-muted transition-colors border-l-2 border-border",
-                                    voteState === -1 && "bg-red-500/10 text-red-500"
+                                    "p-1.5 rounded-md hover:bg-background transition-all active:scale-95",
+                                    voteState === -1 ? "text-red-500 bg-background shadow-sm" : "text-muted-foreground"
                                 )}
                             >
-                                <ChevronDown className="w-5 h-5 stroke-[4px]" />
+                                <ChevronDown className="w-4 h-4 stroke-[3px]" />
                             </button>
                         </div>
                     </div>
