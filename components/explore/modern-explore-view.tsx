@@ -168,8 +168,8 @@ export function ModernExploreView({
                                     className={cn(
                                         "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
                                         !currentCategory
-                                            ? "bg-red-600 text-white border-red-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                            : "bg-background border-border text-muted-foreground hover:border-red-600 hover:text-red-600 hover:-translate-y-0.5"
+                                            ? "bg-primary text-primary-foreground border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                            : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
                                     )}
                                 >
                                     TÜMÜ
@@ -189,7 +189,7 @@ export function ModernExploreView({
                                             "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
                                             currentCategory === cat
                                                 ? "bg-foreground text-background border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                                : "bg-background border-border text-muted-foreground hover:border-red-600 hover:text-red-600 hover:-translate-y-0.5"
+                                                : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -203,10 +203,10 @@ export function ModernExploreView({
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-2xl border-2 border-dashed border-red-600/30 bg-red-600/5">
-                            <Telescope className="w-12 h-12 text-red-600/40 mx-auto mb-4" />
+                        <div className="py-16 text-center rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5">
+                            <Telescope className="w-12 h-12 text-primary/40 mx-auto mb-4" />
                             <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-red-600 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
+                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-primary hover:underline mt-2 inline-block font-black uppercase tracking-wide">
                                 <Sparkles className="w-3 h-3 inline mr-1" />
                                 İlk başlatıcı sen ol!
                             </Link>
