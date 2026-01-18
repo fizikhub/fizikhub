@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase-client";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { BlogEditor101 } from "@/components/article/blog-editor-101";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Orbitron } from "next/font/google";
 
@@ -105,13 +106,10 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     };
 
     // Guide Handler
-    const handleCloseGuide = async () => {
-        setShowGuide(false);
-        if (dontShowAgain) {
-            const supabase = createClient();
-            await supabase.from("profiles").update({ has_seen_article_guide: true }).eq("id", userId);
-            toast.success("Anlaşıldı! 🚀");
-        }
+    const handleDontShowAgain = async (uid: string) => {
+        const supabase = createClient();
+        await supabase.from("profiles").update({ has_seen_article_guide: true }).eq("id", uid);
+        toast.success("Anlaşıldı! 🚀");
     };
 
     // Submit Handler
@@ -159,170 +157,69 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500">
 
-            {/* Mature Pastel Neo-Brutalist Guide Dialog */}
-            <Dialog open={showGuide} onOpenChange={setShowGuide}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background p-0 border-2 border-foreground/80 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] sm:rounded-xl">
-
-                    {/* Explicit Close Button */}
-                    <button
-                        onClick={() => setShowGuide(false)}
-                        className="absolute right-4 top-4 z-50 p-2 bg-red-100 dark:bg-red-900/30 border border-foreground/50 hover:bg-red-500 hover:text-white transition-all rounded-md"
-                        title="Kapat"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
-
-                    {/* Header */}
-                    <div className="bg-slate-50 dark:bg-slate-900/50 p-8 border-b-2 border-foreground/20">
-                        <DialogTitle className="text-3xl sm:text-4xl font-black tracking-tight text-foreground flex items-center gap-3">
-                            <span className="text-4xl">⚓</span>
-                            Blog Yazarlığı 101
-                        </DialogTitle>
-                        <DialogDescription className="text-muted-foreground font-medium text-lg mt-2 max-w-xl">
-                            Sadece yazıp geçme, bir başyapıt yarat! İşte Fizikhub&apos;da etkileyici bir blog yazmanın incelikleri.
-                        </DialogDescription>
-                    </div>
-
-                    <div className="p-8 space-y-10">
-                        {/* Essential Tools Grid - Sincere Content Restored */}
-                        <section className="space-y-4">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground border-b border-border pb-2">
-                                Editörün Gücü
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                                <div className="group p-5 bg-indigo-50/50 dark:bg-indigo-950/20 border border-border rounded-lg hover:border-foreground transition-all">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-indigo-700 dark:text-indigo-300">
-                                        <ImageImageIcon className="w-5 h-5" /> Görsel Dünyası
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
-                                        Kuru yazı okunmaz! Satır aralarına serpiştirmek için <b>Görsel</b> butonunu, kapak fotoğrafı için alttaki barı kullan.
-                                    </p>
-                                </div>
-
-                                <div className="group p-5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-border rounded-lg hover:border-foreground transition-all">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-emerald-700 dark:text-emerald-300">
-                                        <Hash className="w-5 h-5" /> Kategorilendirme
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
-                                        Yazını doğru rafa koy. Alttaki kategorilerden en uygununu seç ki okuyucular seni eliyle koymuş gibi bulsun.
-                                    </p>
-                                </div>
-
-                                <div className="group p-5 bg-amber-50/50 dark:bg-amber-950/20 border border-border rounded-lg hover:border-foreground transition-all">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-amber-700 dark:text-amber-300">
-                                        <AlignLeft className="w-5 h-5" /> Özetin Gücü
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
-                                        Vitrin önemlidir. Kısa özet alanına (alttaki buton) çekici bir giriş cümlesi yazarak tıklanma oranını artırabilirsin.
-                                    </p>
-                                </div>
-
-                                <div className="group p-5 bg-slate-100/50 dark:bg-slate-800/30 border border-border rounded-lg hover:border-foreground transition-all">
-                                    <h4 className="font-bold flex items-center gap-2 mb-2 text-slate-700 dark:text-slate-300">
-                                        <BookOpen className="w-5 h-5" /> Taslak Modu
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground/90 leading-relaxed">
-                                        İlham perisi kaçtı mı? "Taslak" butonuna basıp kaydet, sonra profilinden devam et. Acele etme, mükemmeli hedefle.
-                                    </p>
-                                </div>
-
-                            </div>
-                        </section>
-
-                        {/* Tips Section */}
-                        <section className="space-y-4">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground border-b border-border pb-2">
-                                Bilimsel Yaklaşım
-                            </h3>
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1 p-4 border border-l-4 border-l-blue-500 bg-background shadow-sm rounded-r-lg">
-                                    <h4 className="font-bold text-sm mb-1">Kaynak Göster</h4>
-                                    <p className="text-xs text-muted-foreground">İddialarını kanıtla.</p>
-                                </div>
-                                <div className="flex-1 p-4 border border-l-4 border-l-purple-500 bg-background shadow-sm rounded-r-lg">
-                                    <h4 className="font-bold text-sm mb-1">Sadeleştir</h4>
-                                    <p className="text-xs text-muted-foreground">Herkesin anlayacağı dilden yaz.</p>
-                                </div>
-                                <div className="flex-1 p-4 border border-l-4 border-l-orange-500 bg-background shadow-sm rounded-r-lg">
-                                    <h4 className="font-bold text-sm mb-1">Objektif Ol</h4>
-                                    <p className="text-xs text-muted-foreground">Verilere sadık kal.</p>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Footer */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
-                            <div className="flex items-center gap-3 cursor-pointer group select-none" onClick={() => setDontShowAgain(!dontShowAgain)}>
-                                <div className={cn(
-                                    "w-5 h-5 rounded border-2 border-muted-foreground flex items-center justify-center transition-all",
-                                    dontShowAgain && "bg-foreground border-foreground"
-                                )}>
-                                    {dontShowAgain && <Sparkles className="w-3 h-3 text-background" />}
-                                </div>
-                                <label className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors cursor-pointer">
-                                    Bu rehberi bir daha gösterme
-                                </label>
-                            </div>
-
-                            <Button onClick={handleCloseGuide} className="w-full sm:w-auto font-bold px-8 h-12 text-lg rounded-lg border-2 border-foreground/10 bg-foreground text-background hover:bg-emerald-600 hover:text-white shadow-lg transition-all hover:-translate-y-1">
-                                Başlıyoruz 🚀
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {/* New Blog Editor 101 Modal */}
+            <BlogEditor101
+                open={showGuide}
+                onOpenChange={setShowGuide}
+                userId={userId}
+                onDontShowAgain={handleDontShowAgain}
+            />
 
             {/* Guide Trigger (Small) */}
             <div className="fixed bottom-4 left-4 z-50">
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="rounded-full bg-background border border-border shadow-lg hover:scale-110 transition-transform w-10 h-10 text-muted-foreground"
+                    className="rounded-full bg-background border border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:scale-110 transition-transform w-10 h-10 text-muted-foreground"
                     onClick={() => setShowGuide(true)}
-                    title="Rehberi Göster"
+                    title="İpuçları"
                 >
                     <HelpCircle className="w-5 h-5" />
                 </Button>
             </div>
 
-            {/* Main Editor Area */}
-            <div className="relative min-h-[60vh] flex flex-col gap-6">
+            {/* Main Editor Area - Focused & Clean */}
+            <div className="relative min-h-[60vh] flex flex-col gap-8">
 
-                {/* Title Input */}
-                <Textarea
-                    ref={titleRef}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Blog Başlığı..."
-                    className="w-full resize-none overflow-hidden bg-transparent border-none text-4xl md:text-5xl font-black placeholder:text-muted-foreground/40 focus-visible:ring-0 p-0 leading-tight min-h-[60px]"
-                    maxLength={150}
-                    rows={1}
-                />
+                {/* Cover Image Preview - Top */}
+                {coverUrl && (
+                    <div className="relative group rounded-2xl overflow-hidden shadow-2xl transition-all hover:shadow-xl w-full aspect-[21/9] md:aspect-[3/1]">
+                        <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                        <Button
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity rounded-full shadow-lg"
+                            onClick={() => setCoverUrl("")}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </div>
+                )}
+
+                {/* Title Input - Big & Bold */}
+                <div className="relative">
+                    <Textarea
+                        ref={titleRef}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Çarpıcı Bir Başlık Yaz..."
+                        className="w-full resize-none overflow-hidden bg-transparent border-none text-4xl md:text-5xl lg:text-6xl font-black font-heading placeholder:text-muted-foreground/30 focus-visible:ring-0 p-0 leading-[1.1] min-h-[80px]"
+                        maxLength={150}
+                        rows={1}
+                    />
+                    <div className="h-1 w-20 bg-emerald-500 rounded-full mt-4" />
+                </div>
 
                 {/* Content Editor */}
-                <div className="flex-1 text-lg leading-relaxed text-foreground/90">
+                <div className="flex-1 text-lg leading-relaxed text-foreground/90 font-serif">
                     <ArticleEditor
                         content={content}
                         onChange={setContent}
                         onUploadImage={uploadToSupabase}
+                        className="prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[300px]"
                     />
                 </div>
-
-                {/* Cover Image Preview */}
-                {coverUrl && (
-                    <div className="relative group rounded-xl overflow-hidden border-2 border-muted">
-                        <img src={coverUrl} alt="Cover" className="w-full max-h-[400px] object-cover" />
-                        <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => setCoverUrl("")}
-                        >
-                            <Trash2 className="w-5 h-5" />
-                        </Button>
-                    </div>
-                )}
             </div>
 
             {/* Bottom Toolbar - Twitter Style */}

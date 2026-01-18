@@ -168,7 +168,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
 
             {/* Bottom Actions Bar */}
             <div className="px-4 py-2 bg-muted/20 border-t-2 border-foreground flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground overflow-x-auto rounded-b-2xl">
-                <Link href="/blog" className="flex items-center gap-2 hover:text-red-600 transition-colors cursor-pointer group shrink-0">
+                <Link href="/makale/yeni" className="flex items-center gap-2 hover:text-red-600 transition-colors cursor-pointer group shrink-0">
                     <PenTool className="w-4 h-4 text-muted-foreground group-hover:text-red-600 transition-colors" />
                     <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Blog</span>
                 </Link>
