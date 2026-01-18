@@ -86,6 +86,8 @@ export default async function Home() {
     let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
     if (a.category === 'Deney') {
       type = 'experiment';
+    } else if (a.category === 'Kitap İncelemesi') {
+      type = 'book-review';
     }
 
     // We need to fetch/attach loop counts for likes? For MVP just pass 0 or mock? 

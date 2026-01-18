@@ -11,8 +11,10 @@ import { DidYouKnow } from "@/components/ui/did-you-know";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 
+import { BookReviewCard } from "@/components/book-review/book-review-card";
+
 export interface FeedItem {
-    type: 'article' | 'blog' | 'question' | 'experiment';
+    type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review';
     data: any;
     sortDate: string;
 }
@@ -64,6 +66,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
 
                         {item.type === 'experiment' && (
                             <ExperimentCard
+                                article={item.data}
+                                index={index}
+                            />
+                        )}
+
+                        {item.type === 'book-review' && (
+                            <BookReviewCard
                                 article={item.data}
                                 index={index}
                             />
