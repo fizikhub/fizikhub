@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ChevronUp, ChevronDown, MessageSquare, Share2, BadgeCheck, Eye } from "lucide-react";
+import { ChevronUp, ChevronDown, MessageSquare, Share2, BadgeCheck, Eye, MessageCircle } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,9 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { CyberQuestionCard } from "@/components/themes/cybernetic/cyber-question-card";
+import Link from "next/link";
+
+const stripHtml = (html: string) => html.replace(/<[^>]*>?/g, '');
 
 interface QuestionCardProps {
     question: any;
@@ -122,138 +125,162 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            whileHover={{
-                y: -2,
-                transition: { duration: 0.2 }
-            }}
+            whileHover={{ y: -4, x: -2 }}
+            transition={{ duration: 0.2 }}
             className={cn(
-                "group relative bg-card border border-border/60 rounded-xl overflow-hidden transition-all duration-300",
-                "hover:border-primary/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)]",
-                // Pink theme overrides
-                isPink && "border-pink-200 hover:border-pink-300 hover:shadowness-pink",
-                isDarkPink && "border-pink-900/50 hover:border-pink-500",
-                "flex flex-row"
+                "group relative flex flex-col sm:flex-row gap-0 sm:gap-6",
+                "bg-card rounded-xl overflow-hidden",
+                "border-2 border-border transition-all duration-200",
+                "hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
+                isCybernetic && "cyber-card border-l-2 border-cyan-500/30 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] !rounded-none bg-black/40",
+                isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
-            onClick={handleCardClick}
         >
-            {/* LEFT COLUMN: VOTING */}
+            {/* Left Column: Voting (Desktop) */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center p-3 gap-1 bg-muted/30 border-r border-border/40 min-w-[60px]",
-                isCute && "bg-pink-500/5 border-pink-500/10"
+                "hidden sm:flex flex-col items-center justify-start p-4 w-16 shrink-0 border-r-2 border-border bg-muted/20",
+                isCybernetic && "border-cyan-500/20 bg-black/40",
+                isPink && "bg-pink-50/50 border-pink-100"
             )}>
                 <button
                     onClick={(e) => handleVote(e, 1)}
+                    disabled={isVoting}
                     className={cn(
-                        "p-1.5 rounded-lg hover:bg-background transition-colors text-muted-foreground hover:text-primary",
-                        voteState === 1 && "text-green-500 bg-green-500/10"
+                        "p-1.5 rounded-lg transition-all border-2 border-transparent",
+                        voteState === 1
+                            ? "text-primary border-primary bg-primary/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                            : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+                        isCybernetic && "rounded-none hover:shadow-none hover:bg-cyan-950/30 hover:text-cyan-400",
+                        isPink && "hover:text-pink-600 hover:border-pink-300"
                     )}
                 >
                     <ChevronUp className="w-6 h-6 stroke-[3px]" />
                 </button>
 
                 <span className={cn(
-                    "font-black text-lg",
-                    voteState > 0 ? "text-green-500" : voteState < 0 ? "text-red-500" : "text-foreground"
+                    "font-black text-lg my-2",
+                    votes > 0 ? "text-primary" : "text-muted-foreground",
+                    votes < 0 && "text-red-500",
+                    isPink && votes > 0 && "text-pink-600",
+                    isCybernetic && votes > 0 && "text-cyan-400"
                 )}>
                     {votes}
                 </span>
 
                 <button
                     onClick={(e) => handleVote(e, -1)}
+                    disabled={isVoting}
                     className={cn(
-                        "p-1.5 rounded-lg hover:bg-background transition-colors text-muted-foreground hover:text-red-500",
-                        voteState === -1 && "text-red-500 bg-red-500/10"
+                        "p-1.5 rounded-lg transition-all border-2 border-transparent",
+                        voteState === -1
+                            ? "text-red-500 border-red-500 bg-red-500/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                            : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+                        isCybernetic && "rounded-none hover:shadow-none hover:bg-red-950/30 hover:text-red-400"
                     )}
                 >
                     <ChevronDown className="w-6 h-6 stroke-[3px]" />
                 </button>
             </div>
 
-            {/* RIGHT COLUMN: CONTENT */}
-            <div className="flex-1 p-4 sm:p-5 flex flex-col gap-3">
-                {/* Header: Author & Meta */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div
-                            className="flex items-center gap-2 group/author cursor-pointer"
-                            onClick={(e) => handleProfileClick(e, question.profiles?.username)}
-                        >
-                            <Avatar className="w-6 h-6 border bg-muted">
-                                <AvatarImage src={question.profiles?.avatar_url || ""} />
-                                <AvatarFallback className="text-[10px]">
+            {/* Right Column: Content */}
+            <div className="flex-1 p-3 sm:p-5 flex flex-col gap-3">
+
+                {/* Mobile Header: Author + Votes */}
+                <div className="flex sm:hidden items-center justify-between mb-1">
+                    <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
+                        <div className="relative">
+                            <Avatar className="w-8 h-8 border-2 border-foreground group-hover/author:border-primary transition-colors">
+                                <AvatarImage src={question.profiles?.avatar_url || undefined} />
+                                <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                                     {question.profiles?.username?.[0]?.toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm font-bold text-muted-foreground group-hover/author:text-foreground transition-colors">
-                                @{question.profiles?.username}
-                            </span>
-                            {question.profiles?.is_verified && (
-                                <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />
-                            )}
                         </div>
-                        <span className="text-muted-foreground/40 text-xs">•</span>
-                        <span className="text-xs font-medium text-muted-foreground/60">{timeAgo}</span>
-                    </div>
-
-                    {/* Category Pill */}
+                        <span className="text-sm font-bold text-muted-foreground group-hover/author:text-foreground transition-colors">
+                            @{question.profiles?.username}
+                        </span>
+                    </Link>
                     <div className={cn(
-                        "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border",
-                        "bg-primary/5 text-primary border-primary/20",
-                        isCute && "bg-pink-500/10 text-pink-500 border-pink-500/20"
+                        "flex items-center gap-2 px-3 py-1 rounded-lg border-2 border-border bg-muted/20 font-bold text-sm",
+                        voteState !== 0 && "border-primary text-primary"
                     )}>
-                        {question.category}
+                        <button onClick={(e) => handleVote(e, 1)}><ChevronUp className="w-4 h-4 text-muted-foreground hover:text-foreground" /></button>
+                        <span>{votes}</span>
+                        <button onClick={(e) => handleVote(e, -1)}><ChevronDown className="w-4 h-4 text-muted-foreground hover:text-foreground" /></button>
                     </div>
                 </div>
 
-                {/* Main Content */}
-                <div className="space-y-1.5">
-                    <h3 className={cn(
-                        "text-lg sm:text-xl font-heading font-black leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2",
-                        isCute && "group-hover:text-pink-500"
-                    )}>
-                        {question.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 font-sans opacity-90">
-                        {contentPreview}
-                    </p>
-                </div>
-
-                {/* Footer Actions */}
-                <div className="mt-auto pt-2 flex items-center justify-between">
-                    {/* Mobile Vote (Visible only on mobile) */}
-                    <div className="flex sm:hidden items-center gap-2 bg-muted/40 rounded-md px-2 py-1" onClick={e => e.stopPropagation()}>
-                        <button
-                            onClick={(e) => handleVote(e, 1)}
-                            className={cn(voteState === 1 && "text-green-500")}
-                        >
-                            <ChevronUp className="w-4 h-4" />
-                        </button>
-                        <span className={cn("text-xs font-bold", voteState !== 0 && "text-foreground")}>{votes}</span>
-                        <button
-                            onClick={(e) => handleVote(e, -1)}
-                            className={cn(voteState === -1 && "text-red-500")}
-                        >
-                            <ChevronDown className="w-4 h-4" />
-                        </button>
+                {/* Main Content Info */}
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3 text-xs sm:text-sm">
+                        <span className={cn(
+                            "px-3 py-1 rounded-md font-bold uppercase tracking-wider text-[10px] sm:text-xs",
+                            "bg-primary/20 text-primary border-2 border-primary/20",
+                            isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
+                            isPink && "bg-pink-100 text-pink-700 border-pink-200"
+                        )}>
+                            {question.category}
+                        </span>
+                        <span className="text-muted-foreground font-mono flex items-center gap-1">
+                            {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-4 ml-auto sm:ml-0">
-                        <div className="flex items-center gap-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
-                            <MessageSquare className="w-4 h-4" />
-                            <span className="text-xs font-bold">{answerCount} <span className="hidden sm:inline font-medium opacity-70">cevap</span></span>
+                    <Link href={`/forum/${question.id}`} className="group/title block">
+                        <h3 className={cn(
+                            "text-lg sm:text-xl font-black text-foreground mb-2 leading-tight group-hover/title:text-primary transition-colors line-clamp-2",
+                            isPink && "group-hover/title:text-pink-600",
+                            isCybernetic && "group-hover/title:text-cyan-400"
+                        )}>
+                            {question.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-2 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity">
+                            {stripHtml(question.content)}
+                        </p>
+                    </Link>
+                </div>
+
+                {/* Footer: User + Comments */}
+                <div className="mt-auto pt-4 flex items-center justify-between border-t-2 border-border/50">
+                    {/* Desktop Author */}
+                    <Link
+                        href={`/kullanici/${question.profiles?.username}`}
+                        className="hidden sm:flex items-center gap-3 group/author"
+                    >
+                        <Avatar className={cn(
+                            "w-8 h-8 border-2 border-transparent group-hover/author:border-foreground transition-all",
+                            question.profiles?.is_verified && "border-blue-500"
+                        )}>
+                            <AvatarImage src={question.profiles?.avatar_url || undefined} />
+                            <AvatarFallback className="font-bold bg-muted text-muted-foreground">
+                                {question.profiles?.username?.[0]?.toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col leading-none">
+                            <div className="flex items-center gap-1">
+                                <span className="font-bold text-sm text-muted-foreground group-hover/author:text-foreground transition-colors">
+                                    @{question.profiles?.username}
+                                </span>
+                                {question.profiles?.is_verified && (
+                                    <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500/10" />
+                                )}
+                            </div>
                         </div>
+                    </Link>
 
-                        <button
-                            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(`https://fizikhub.com/forum/${question.id}`);
-                                toast.success("Link kopyalandı!");
-                            }}
-                        >
-                            <Share2 className="w-4 h-4" />
-                            <span className="hidden sm:inline text-xs font-medium">Paylaş</span>
-                        </button>
+                    {/* Meta Stats */}
+                    <div className="flex items-center gap-4 text-sm font-bold text-muted-foreground ml-auto">
+                        <div className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors border-2 border-transparent hover:border-border",
+                            isCybernetic && "rounded-none"
+                        )}>
+                            <MessageCircle className="w-4 h-4" />
+                            <span>{question.answers?.[0]?.count || 0} Cevap</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5">
+                            <Eye className="w-4 h-4" />
+                            <span>{question.views || 0}</span>
+                        </div>
                     </div>
                 </div>
             </div>
