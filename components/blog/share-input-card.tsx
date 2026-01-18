@@ -60,7 +60,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
                     <div className="w-2.5 h-2.5 rounded-full bg-foreground border border-foreground/20" />
                 </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-foreground/50">Paylaş</div>
+                <div className="text-[10px] font-black tracking-widest text-foreground/50">Paylaş</div>
                 <div className="w-6" />
             </div>
 
@@ -89,8 +89,8 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 !isOpen && "group-hover/input:shadow-[4px_4px_0px_0px_rgba(245,158,11,0.2)]"
                             )}
                         >
-                            <span className="text-muted-foreground font-bold uppercase tracking-tight group-hover/input:text-primary transition-colors truncate mr-2 min-w-0 flex-1 block">
-                                {isOpen ? "Kapat" : `Ne paylaşmak istersin, ${firstName}?`}
+                            <span className="text-muted-foreground font-bold text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 min-w-0 flex-1 block">
+                                {isOpen ? "Kapat" : <span className="flex items-center gap-1"><span>Ne paylaşmak istersin,</span> <span className="text-foreground">{firstName}?</span></span>}
                             </span>
                             <Plus className={cn(
                                 "w-5 h-5 text-primary transition-transform duration-300 flex-shrink-0",

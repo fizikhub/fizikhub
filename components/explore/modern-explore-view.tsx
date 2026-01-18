@@ -39,7 +39,7 @@ interface ModernExploreViewProps {
 // Simple internal component for background animations
 function SpaceBackground() {
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
             {/* Stars - Increased Count for finer texture */}
             {[...Array(120)].map((_, i) => (
                 <motion.div
@@ -112,7 +112,7 @@ export function ModernExploreView({
 
                     {/* Improved UFO - Floating on the right side of the share area */}
                     <motion.div
-                        className="absolute right-0 -top-8 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
+                        className="absolute right-[-10px] -top-5 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
                         initial={{ x: 100, opacity: 0 }}
                         animate={{
                             x: 0,
