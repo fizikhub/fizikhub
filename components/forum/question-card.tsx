@@ -136,9 +136,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
         >
-            {/* Left Column: Voting (Desktop) */}
+            {/* Left Column: Voting (Desktop) - WIDENED */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center justify-start p-4 w-16 shrink-0 border-r-2 border-border",
+                "hidden sm:flex flex-col items-center justify-start p-4 w-20 shrink-0 border-r-2 border-border",
                 "bg-muted/10",
                 // Diagonal Stripe Pattern
                 "bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.02)_25%,rgba(0,0,0,0.02)_50%,transparent_50%,transparent_75%,rgba(0,0,0,0.02)_75%,rgba(0,0,0,0.02)_100%)] bg-[length:10px_10px] dark:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_25%,rgba(255,255,255,0.02)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.02)_75%,rgba(255,255,255,0.02)_100%)]",
@@ -149,7 +149,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     onClick={(e) => handleVote(e, 1)}
                     disabled={isVoting}
                     className={cn(
-                        "p-1.5 rounded-lg transition-all border-2 border-transparent",
+                        "p-2 rounded-lg transition-all border-2 border-transparent",
                         voteState === 1
                             ? "text-primary border-primary bg-primary/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                             : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
@@ -157,11 +157,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         isPink && "hover:text-pink-600 hover:border-pink-300"
                     )}
                 >
-                    <ChevronUp className="w-5 h-5 stroke-[3px]" />
+                    <ChevronUp className="w-6 h-6 stroke-[3px]" />
                 </button>
 
                 <span className={cn(
-                    "font-black text-lg my-2",
+                    "font-black text-xl my-3",
                     votes > 0 ? "text-primary" : "text-muted-foreground",
                     votes < 0 && "text-red-500",
                     isPink && votes > 0 && "text-pink-600",
@@ -174,14 +174,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     onClick={(e) => handleVote(e, -1)}
                     disabled={isVoting}
                     className={cn(
-                        "p-1.5 rounded-lg transition-all border-2 border-transparent",
+                        "p-2 rounded-lg transition-all border-2 border-transparent",
                         voteState === -1
                             ? "text-red-500 border-red-500 bg-red-500/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                             : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
                         isCybernetic && "rounded-none hover:shadow-none hover:bg-red-950/30 hover:text-red-400"
                     )}
                 >
-                    <ChevronDown className="w-5 h-5 stroke-[3px]" />
+                    <ChevronDown className="w-6 h-6 stroke-[3px]" />
                 </button>
             </div>
 
@@ -189,25 +189,25 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             <div className="flex-1 flex flex-col">
 
                 {/* Mobile Header: Author + Date */}
-                <div className="flex sm:hidden items-center justify-between p-3 pb-0">
-                    <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
-                        <Avatar className="w-8 h-8 border-2 border-foreground group-hover/author:border-primary transition-colors">
+                <div className="flex sm:hidden items-center justify-between p-4 pb-0">
+                    <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-3 group/author">
+                        <Avatar className="w-10 h-10 border-2 border-foreground group-hover/author:border-primary transition-colors">
                             <AvatarImage src={question.profiles?.avatar_url || undefined} />
-                            <AvatarFallback className="bg-primary text-primary-foreground font-bold text-[10px]">
+                            <AvatarFallback className="bg-primary text-primary-foreground font-bold text-xs">
                                 {question.profiles?.username?.[0]?.toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="flex flex-col leading-none">
-                            <span className="text-sm font-bold text-foreground group-hover/author:text-primary transition-colors">
+                        <div className="flex flex-col leading-none gap-1">
+                            <span className="text-base font-bold text-foreground group-hover/author:text-primary transition-colors">
                                 @{question.profiles?.username}
                             </span>
-                            <span className="text-[10px] font-bold text-muted-foreground/60">
+                            <span className="text-xs font-bold text-muted-foreground/60">
                                 {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                             </span>
                         </div>
                     </Link>
                     <span className={cn(
-                        "px-2 py-0.5 text-[10px] font-bold font-mono uppercase tracking-wider border-2 rounded",
+                        "px-3 py-1 text-[10px] font-bold font-mono uppercase tracking-wider border-2 rounded",
                         "bg-background text-foreground border-border",
                         isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
                         isPink && "bg-pink-50 text-pink-700 border-pink-200"
@@ -216,56 +216,56 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </span>
                 </div>
 
-                {/* Main Content Info */}
-                <div className="p-3 sm:p-5 flex flex-col gap-2 flex-1">
+                {/* Main Content Info - UPSCALED */}
+                <div className="p-5 sm:p-7 flex flex-col gap-4 flex-1">
                     {/* Desktop Meta Row */}
                     <div className="hidden sm:flex items-center gap-3">
                         <span className={cn(
-                            "px-2 py-1 text-[10px] font-bold font-mono uppercase tracking-wider border-2 rounded",
+                            "px-3 py-1 text-xs font-bold font-mono uppercase tracking-wider border-2 rounded",
                             "bg-background text-foreground border-border",
                             isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
                             isPink && "bg-pink-50 text-pink-700 border-pink-200"
                         )}>
                             {question.category}
                         </span>
-                        <span className="text-muted-foreground text-xs font-bold flex items-center gap-1 opacity-60">
+                        <span className="text-muted-foreground text-sm font-bold flex items-center gap-1 opacity-60">
                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                         </span>
                     </div>
 
-                    <Link href={`/forum/${question.id}`} className="group/title block">
+                    <Link href={`/forum/${question.id}`} className="group/title block space-y-3">
                         <h3 className={cn(
-                            "text-lg sm:text-xl font-black text-foreground mb-2 leading-tight tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
+                            "text-xl sm:text-2xl font-black text-foreground leading-snug tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
                             isPink && "group-hover/title:text-pink-600",
                             isCybernetic && "group-hover/title:text-cyan-400"
                         )}>
                             {question.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs sm:text-sm line-clamp-2 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
+                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-3 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
                             {stripHtml(question.content)}
                         </p>
                     </Link>
                 </div>
 
-                {/* Footer Status Bar */}
-                <div className="mt-auto py-2 px-3 sm:px-5 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
+                {/* Footer Status Bar - UPSCALED */}
+                <div className="mt-auto py-3 px-4 sm:px-7 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
 
                     {/* MOBILE VOTES (Left Side of Footer) */}
-                    <div className="flex sm:hidden items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex sm:hidden items-center gap-3" onClick={(e) => e.stopPropagation()}>
                         <button
                             onClick={(e) => handleVote(e, 1)}
                             disabled={isVoting}
                             className={cn(
-                                "p-1 rounded-md border-2 border-transparent transition-all",
+                                "p-1.5 rounded-lg border-2 border-transparent transition-all",
                                 voteState === 1
                                     ? "bg-primary/10 text-primary border-primary shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
                                     : "bg-background border-border text-muted-foreground hover:border-foreground"
                             )}
                         >
-                            <ChevronUp className="w-4 h-4 stroke-[3px]" />
+                            <ChevronUp className="w-5 h-5 stroke-[3px]" />
                         </button>
                         <span className={cn(
-                            "text-sm font-black w-6 text-center",
+                            "text-base font-black w-6 text-center",
                             votes > 0 ? "text-primary" : "text-muted-foreground",
                             votes < 0 && "text-red-500"
                         )}>
@@ -275,49 +275,49 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             onClick={(e) => handleVote(e, -1)}
                             disabled={isVoting}
                             className={cn(
-                                "p-1 rounded-md border-2 border-transparent transition-all",
+                                "p-1.5 rounded-lg border-2 border-transparent transition-all",
                                 voteState === -1
                                     ? "bg-red-500/10 text-red-500 border-red-500 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
                                     : "bg-background border-border text-muted-foreground hover:border-foreground"
                             )}
                         >
-                            <ChevronDown className="w-4 h-4 stroke-[3px]" />
+                            <ChevronDown className="w-5 h-5 stroke-[3px]" />
                         </button>
                     </div>
 
                     {/* Desktop Author */}
                     <Link
                         href={`/kullanici/${question.profiles?.username}`}
-                        className="hidden sm:flex items-center gap-2 group/author bg-background border-2 border-transparent hover:border-border rounded-full pr-3 pl-1 py-1 transition-all"
+                        className="hidden sm:flex items-center gap-3 group/author bg-background border-2 border-transparent hover:border-border rounded-full pr-4 pl-1 py-1 transition-all"
                     >
                         <Avatar className={cn(
-                            "w-6 h-6 border bg-muted"
+                            "w-8 h-8 border bg-muted"
                         )}>
                             <AvatarImage src={question.profiles?.avatar_url || undefined} />
-                            <AvatarFallback className="font-bold text-[10px]">
+                            <AvatarFallback className="font-bold text-xs">
                                 {question.profiles?.username?.[0]?.toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        <div className="flex items-center gap-1">
-                            <span className="font-bold text-xs text-muted-foreground group-hover/author:text-foreground transition-colors">
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-sm text-muted-foreground group-hover/author:text-foreground transition-colors">
                                 @{question.profiles?.username}
                             </span>
                             {question.profiles?.is_verified && (
-                                <BadgeCheck className="w-3 h-3 text-blue-500 fill-blue-500/10" />
+                                <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500/10" />
                             )}
                         </div>
                     </Link>
 
                     {/* Meta Stats */}
-                    <div className="flex items-center gap-4 text-xs font-bold text-muted-foreground ml-auto">
+                    <div className="flex items-center gap-6 text-sm font-bold text-muted-foreground ml-auto">
                         <div className={cn(
-                            "flex items-center gap-1.5 transition-colors hover:text-foreground",
+                            "flex items-center gap-2 transition-colors hover:text-foreground",
                         )}>
-                            <MessageCircle className="w-4 h-4" />
+                            <MessageCircle className="w-5 h-5" />
                             <span>{question.answers?.[0]?.count || 0} <span className="hidden sm:inline">Cevap</span></span>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                            <Eye className="w-4 h-4" />
+                        <div className="flex items-center gap-2">
+                            <Eye className="w-5 h-5" />
                             <span>{question.views || 0}</span>
                         </div>
                     </div>
