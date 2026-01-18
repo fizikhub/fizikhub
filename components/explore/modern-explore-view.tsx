@@ -41,7 +41,7 @@ function SpaceBackground() {
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
             {/* Stars - Increased Count for finer texture */}
-            {[...Array(40)].map((_, i) => (
+            {[...Array(120)].map((_, i) => (
                 <motion.div
                     key={i}
                     className="absolute bg-foreground/30 rounded-full"
@@ -51,7 +51,7 @@ function SpaceBackground() {
                         top: Math.random() * 100 + "%",
                         left: Math.random() * 100 + "%",
                     }}
-                    animate={{ opacity: [0.1, 0.5, 0.1], scale: [1, 1.2, 1] }}
+                    animate={{ opacity: [0.1, 0.8, 0.1], scale: [1, 1.5, 1] }}
                     transition={{
                         duration: Math.random() * 4 + 3,
                         repeat: Infinity,
@@ -109,19 +109,30 @@ export function ModernExploreView({
 
                             {/* UFO Icon - Positioned Relative to Text */}
                             <motion.div
-                                className="opacity-80 text-foreground"
+                                className="opacity-90 text-foreground"
                                 animate={{
-                                    y: [0, -5, 0],
-                                    rotate: [0, 5, -5, 0]
+                                    y: [0, -6, 0],
+                                    rotate: [0, 3, -3, 0]
                                 }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                             >
-                                <svg width="40" height="24" viewBox="0 0 60 40" fill="currentColor" className="sm:w-[50px] sm:h-[30px]">
-                                    <path d="M20 20 C20 10, 40 10, 40 20" fill="none" stroke="currentColor" strokeWidth="3" />
-                                    <ellipse cx="30" cy="20" rx="25" ry="6" stroke="currentColor" strokeWidth="3" fill="none" />
-                                    <circle cx="15" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse" />
-                                    <circle cx="30" cy="23" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-75" />
-                                    <circle cx="45" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-150" />
+                                <svg width="50" height="30" viewBox="0 0 60 40" fill="currentColor" className="sm:w-[60px] sm:h-[36px]">
+                                    {/* Dome */}
+                                    <path d="M22 18 C22 8, 38 8, 38 18" fill="none" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M25 18 C25 12, 35 12, 35 18" fill="currentColor" className="text-red-500/20" />
+
+                                    {/* Body */}
+                                    <ellipse cx="30" cy="20" rx="28" ry="8" stroke="currentColor" strokeWidth="2" fill="none" />
+                                    <path d="M10 20 Q 30 25 50 20" fill="none" stroke="currentColor" strokeWidth="1" className="opacity-50" />
+
+                                    {/* Lights */}
+                                    <circle cx="12" cy="20" r="1.5" fill="currentColor" className="text-red-500 animate-pulse" />
+                                    <circle cx="30" cy="24" r="1.5" fill="currentColor" className="text-red-500 animate-pulse delay-75" />
+                                    <circle cx="48" cy="20" r="1.5" fill="currentColor" className="text-red-500 animate-pulse delay-150" />
+
+                                    {/* Landing Gear / Details */}
+                                    <line x1="20" y1="26" x2="16" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                    <line x1="40" y1="26" x2="44" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                                 </svg>
                             </motion.div>
                         </span>
@@ -148,10 +159,10 @@ export function ModernExploreView({
                                 <Badge
                                     variant={!currentCategory ? "default" : "outline"}
                                     className={cn(
-                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                         !currentCategory
-                                            ? "bg-red-600 text-white border-red-600 shadow-[4px_4px_0px_0px_rgba(220,38,38,0.4)]"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
+                                            ? "bg-red-600 text-white border-red-600 shadow-md shadow-red-600/20"
+                                            : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-sm"
                                     )}
                                 >
                                     TÜMÜ
@@ -169,10 +180,10 @@ export function ModernExploreView({
                                     <Badge
                                         variant={currentCategory === cat ? "default" : "outline"}
                                         className={cn(
-                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
-                                                : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
+                                                ? "bg-foreground text-background border-foreground shadow-md"
+                                                : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:bg-red-600/5"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -186,7 +197,7 @@ export function ModernExploreView({
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-none border-2 border-dashed border-red-600/30 bg-red-600/5">
+                        <div className="py-16 text-center rounded-2xl border-2 border-dashed border-red-600/30 bg-red-600/5">
                             <Telescope className="w-12 h-12 text-red-600/40 mx-auto mb-4" />
                             <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
                             <Link href="/makale/yeni" className="text-xs sm:text-sm text-red-600 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
