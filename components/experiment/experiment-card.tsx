@@ -22,7 +22,7 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
         <Link href={href} className="block group">
             <article
                 className={cn(
-                    "relative flex flex-col sm:flex-row overflow-hidden rounded-2xl transition-all duration-300",
+                    "relative flex flex-row overflow-hidden rounded-2xl transition-all duration-300",
                     "bg-card border-2 border-slate-200 dark:border-slate-800",
                     "hover:border-green-500/50 dark:hover:border-green-500/50",
                     "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1"
@@ -32,7 +32,7 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                 <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#22c55e_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
                 {/* Left/Top: Image Section - Compact on Mobile */}
-                <div className="relative w-full sm:w-48 h-32 sm:h-auto shrink-0 bg-muted flex items-center justify-center overflow-hidden border-b sm:border-b-0 sm:border-r border-border/50">
+                <div className="relative w-32 sm:w-48 h-auto shrink-0 bg-muted flex items-center justify-center overflow-hidden border-r border-border/50">
                     <Image
                         src={article.cover_url || article.image_url || "/images/placeholder-experiment.webp"}
                         alt={article.title}
@@ -48,8 +48,20 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                     </div>
                 </div>
 
+                {/* Scientific Decorations - Animated */}
+                <div className="absolute right-2 bottom-20 opacity-10 pointer-events-none hidden sm:block">
+                    <motion.div animate={{ rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+                        <FlaskConical className="w-12 h-12 text-green-600" />
+                    </motion.div>
+                </div>
+                <div className="absolute right-[-10px] top-[-10px] opacity-5 pointer-events-none">
+                    <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
+                        <Atom className="w-24 h-24 text-green-600" />
+                    </motion.div>
+                </div>
+
                 {/* Right/Bottom: Content Section */}
-                <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between relative bg-gradient-to-br from-card to-green-50/50 dark:to-green-950/10">
+                <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between relative bg-gradient-to-br from-card to-green-50/50 dark:to-green-950/10 z-10">
                     <div>
                         {/* Header Info */}
                         <div className="flex items-center justify-between mb-2">
@@ -70,18 +82,18 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-base sm:text-lg font-bold font-heading leading-tight text-foreground group-hover:text-green-600 transition-colors mb-2 line-clamp-2">
+                        <h3 className="text-sm sm:text-lg font-bold font-heading leading-tight text-foreground group-hover:text-green-600 transition-colors mb-2 line-clamp-2">
                             {article.title}
                         </h3>
 
-                        {/* Excerpt - Hidden on very small screens if needed, otherwise clamped */}
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium mb-3">
+                        {/* Excerpt */}
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium mb-3">
                             {article.excerpt || article.summary}
                         </p>
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="flex items-center justify-between mt-auto pt-3 border-t border-dashed border-border/50">
+                    <div className="flex items-center justify-between mt-auto pt-2 sm:pt-3 border-t border-dashed border-border/50">
                         <div className="flex items-center gap-3 text-xs font-bold text-muted-foreground/70">
                             <div className="flex items-center gap-1 group-hover:text-green-600 transition-colors">
                                 <Beaker className="w-3.5 h-3.5" />
