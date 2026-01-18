@@ -135,13 +135,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
         }
     };
 
-    const [showGuide, setShowGuide] = useState(false);
-
-    useEffect(() => {
-        // Auto-show guide on mount
-        const timer = setTimeout(() => setShowGuide(true), 1000);
-        return () => clearTimeout(timer);
-    }, []);
+    const [showGuide, setShowGuide] = useState(true);
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">

@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Telescope, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -162,20 +161,19 @@ export function ModernExploreView({
 
                 {/* Categories */}
                 <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
-                    <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-3 md:flex-wrap md:justify-center px-1">
+                    <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-2 md:flex-wrap md:justify-center px-1">
                         <Link href="/blog" className="shrink-0">
                             <motion.div whileTap={{ scale: 0.95 }}>
-                                <Badge
-                                    variant={!currentCategory ? "default" : "outline"}
+                                <div
                                     className={cn(
-                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                        "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
                                         !currentCategory
-                                            ? "bg-red-600 text-white border-red-600 shadow-md shadow-red-600/20"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-sm"
+                                            ? "bg-red-600 text-white border-red-800 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                            : "bg-background border-border text-muted-foreground hover:border-red-600 hover:text-red-600 hover:-translate-y-0.5"
                                     )}
                                 >
                                     TÜMÜ
-                                </Badge>
+                                </div>
                             </motion.div>
                         </Link>
                         {categories.map((cat, idx) => (
@@ -186,17 +184,16 @@ export function ModernExploreView({
                                     transition={{ delay: 0.5 + idx * 0.05 }}
                                     whileTap={{ scale: 0.95 }}
                                 >
-                                    <Badge
-                                        variant={currentCategory === cat ? "default" : "outline"}
+                                    <div
                                         className={cn(
-                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-full text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
+                                            "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-md"
-                                                : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:bg-red-600/5"
+                                                ? "bg-foreground text-background border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                                : "bg-background border-border text-muted-foreground hover:border-red-600 hover:text-red-600 hover:-translate-y-0.5"
                                         )}
                                     >
                                         {cat.toUpperCase()}
-                                    </Badge>
+                                    </div>
                                 </motion.div>
                             </Link>
                         ))}
