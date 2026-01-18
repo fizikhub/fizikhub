@@ -9,9 +9,10 @@ import { WriterApplicationCard } from "@/components/home/writer-application-card
 import { motion } from "framer-motion";
 import { DidYouKnow } from "@/components/ui/did-you-know";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
+import { ExperimentCard } from "@/components/experiment/experiment-card";
 
 export interface FeedItem {
-    type: 'article' | 'blog' | 'question';
+    type: 'article' | 'blog' | 'question' | 'experiment';
     data: any;
     sortDate: string;
 }
@@ -58,6 +59,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                                 initialIsBookmarked={item.data.is_bookmarked}
                                 badgeLabel="BLOG"
                                 badgeClassName="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
+                            />
+                        )}
+
+                        {item.type === 'experiment' && (
+                            <ExperimentCard
+                                article={item.data}
+                                index={index}
                             />
                         )}
 

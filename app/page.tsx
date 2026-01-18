@@ -81,7 +81,12 @@ export default async function Home() {
     // User said "blogların ve makalelerin kartları makale sayfası ve blog sayfasındaki ... ile aynı olsun".
     // Makale page uses SocialArticleCard. Blog page uses SocialArticleCard. They are visually same/similar.
     // Let's distinguish by `author.is_writer`.
-    const type = a.author?.is_writer ? 'article' : 'blog';
+
+    // Check if it's an experiment
+    let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
+    if (a.category === 'Deney') {
+      type = 'experiment';
+    }
 
     // We need to fetch/attach loop counts for likes? For MVP just pass 0 or mock? 
     // The previous implementation fetched them. For performance in "Feed", ideally we join or fetch.

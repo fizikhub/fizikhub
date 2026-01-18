@@ -16,6 +16,7 @@ interface ExperimentCardProps {
 
 export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
     const timeAgo = formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr });
+    const href = `/deney/${article.slug}`;
 
     return (
         <motion.div
@@ -63,9 +64,9 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
             <div className="flex flex-col md:flex-row h-full relative z-10 bg-gradient-to-br from-card to-green-500/5">
                 {/* Image Section - Test Tube Shape Mask on Desktop? No, stick to clean geometry for consistency */}
                 <div className="relative w-full md:w-1/3 aspect-video md:aspect-auto border-b-2 md:border-b-0 md:border-r-2 border-green-600/20 overflow-hidden">
-                    <Link href={`/makale/${article.slug}`}>
+                    <Link href={href}>
                         <Image
-                            src={article.image_url || "/images/placeholder-experiment.webp"}
+                            src={article.cover_url || article.image_url || "/images/placeholder-experiment.webp"}
                             alt={article.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -109,14 +110,14 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                             </div>
                         </div>
 
-                        <Link href={`/makale/${article.slug}`}>
+                        <Link href={href}>
                             <h3 className="text-xl font-black uppercase tracking-tight text-foreground mb-3 group-hover:text-green-600 transition-colors line-clamp-2 leading-tight">
                                 {article.title}
                             </h3>
                         </Link>
 
                         <p className="text-sm text-muted-foreground line-clamp-2 mb-4 font-medium leading-relaxed">
-                            {article.summary}
+                            {article.excerpt || article.summary}
                         </p>
                     </div>
 
@@ -129,7 +130,7 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                             </div>
                         </div>
 
-                        <Link href={`/makale/${article.slug}`}>
+                        <Link href={href}>
                             <button className="text-[10px] font-black uppercase tracking-wider bg-green-600 text-white px-4 py-2 rounded-lg shadow-[2px_2px_0px_0px_rgba(20,83,45,0.4)] hover:bg-green-700 hover:shadow-[1px_1px_0px_0px_rgba(20,83,45,0.4)] hover:translate-y-[1px] transition-all flex items-center gap-2 group/btn">
                                 İncele <FlaskConical className="w-3 h-3 group-hover/btn:rotate-12 transition-transform" />
                             </button>
