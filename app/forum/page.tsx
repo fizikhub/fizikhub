@@ -121,12 +121,12 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <div className="bg-background min-h-screen pb-20">
-                <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1400px] mx-auto">
+                <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
                     <Suspense fallback={<div className="h-[300px] rounded-3xl bg-muted/20 animate-pulse mb-8" />}>
                         <ModernForumHeader />
                     </Suspense>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 lg:gap-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 lg:gap-10">
                         {/* Main Content */}
                         <div className="space-y-6 min-w-0 order-2 lg:order-1">
                             {!questions || questions.length === 0 ? (
