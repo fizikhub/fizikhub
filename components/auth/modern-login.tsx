@@ -92,7 +92,7 @@ export function ModernLogin() {
                     .from('profiles')
                     .select('username')
                     .eq('username', username)
-                    .single();
+                    .maybeSingle();
 
                 if (existingUser) {
                     throw new Error("Bu kullanıcı adı zaten alınmış.");

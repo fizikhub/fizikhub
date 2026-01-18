@@ -51,7 +51,7 @@ export default function OnboardingPage() {
                     .from('profiles')
                     .select('onboarding_completed')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
 
                 if (profile?.onboarding_completed) {
                     router.push('/profil');

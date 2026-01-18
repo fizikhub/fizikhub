@@ -69,7 +69,7 @@ export function SocialArticleCard({
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
     const finalBadgeText = badgeLabel || defaultBadgeText;
 
-    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-red-500 bg-red-500/10";
+    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-indigo-500 bg-indigo-500/10";
     const finalBadgeClass = badgeClassName || defaultBadgeClass;
 
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
@@ -203,8 +203,8 @@ export function SocialArticleCard({
                 isCybernetic && "cyber-card cyber-lift",
                 // Pink / Dark Pink theme overrides
                 isCute && "cute-border rounded-[1.5rem]",
-                // Blood theme overrides
-                isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]",
+                // Blood theme overrides (Now Indigo/Blood hybrid or just Indigo if we rename the theme key later, but for now keeping the key 'isBlood' but applying Indigo styles as requested for the 'blog' aspect)
+                isBlood && "bg-[rgba(10,10,30,0.6)] border-indigo-900/50 hover:border-indigo-500 hover:shadow-[0_0_15px_rgba(79,70,229,0.3)]",
                 // No more bg-white override for pink - use bg-card always
                 className
             )}
@@ -230,7 +230,7 @@ export function SocialArticleCard({
                         "text-xs font-bold tracking-wide",
                         isWriter
                             ? "text-amber-600 dark:text-amber-500"
-                            : "text-red-600 dark:text-red-500"
+                            : "text-indigo-600 dark:text-indigo-500"
                     )}>
                         {article.category || "GENEL"}
                     </span>
@@ -263,7 +263,7 @@ export function SocialArticleCard({
                     {/* Title */}
                     <h3 className={cn(
                         "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground transition-colors",
-                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-red-600 dark:group-hover/content:text-red-400",
+                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-indigo-600 dark:group-hover/content:text-indigo-400",
                         // Cybernetic theme: gradient text on hover
                         isCybernetic && "group-hover/content:cyber-text"
                     )}>

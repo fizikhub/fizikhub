@@ -85,7 +85,7 @@ export async function completeOnboarding(formData: { username: string; fullName:
         .select('id')
         .eq('username', username)
         .neq('id', user.id) // Exclude self if updating
-        .single();
+        .maybeSingle();
 
     if (existingUser) {
         return { success: false, error: "Bu kullanıcı adı zaten alınmış." };
