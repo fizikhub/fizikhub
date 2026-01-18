@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, Send, Book, X, ChevronRight } from "lucide-react";
+import { PenTool, Plus, HelpCircle, Book } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
@@ -48,32 +48,32 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             transition={{ duration: 0.5, ease: "backOut" }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
             className={cn(
-                "group relative flex flex-col overflow-visible rounded-xl sm:rounded-2xl transition-all duration-300", // overflow-visible for dropdown
-                "bg-card border-2 border-border",
-                "shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)]",
-                "w-full max-w-2xl mx-auto mb-6 sm:mb-10 z-20"
+                "group relative flex flex-col overflow-visible rounded-none transition-all duration-300",
+                "bg-card border-2 border-foreground",
+                "shadow-[6px_6px_0px_0px_rgba(220,38,38,1)] hover:shadow-[8px_8px_0px_0px_rgba(220,38,38,1)]",
+                "w-full max-w-2xl mx-auto mb-6 sm:mb-10 z-50"
             )}
         >
             {/* Top Bar - Compact on Mobile */}
-            <div className="flex items-center justify-between px-4 sm:px-5 py-2 sm:py-3 border-b-2 border-border/50 bg-muted/30 rounded-t-xl sm:rounded-t-2xl">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-2 sm:py-3 border-b-2 border-foreground bg-muted/30 rounded-t-none">
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-foreground/80 uppercase">
+                    <span className="text-[10px] sm:text-xs font-black tracking-widest text-foreground uppercase">
                         YENİ PAYLAŞIM
                     </span>
                 </div>
-                <div className="flex gap-1 opacity-50">
-                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-foreground/40" />
-                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-foreground/40" />
-                    <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-foreground/40" />
+                <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 bg-foreground" />
+                    <div className="w-1.5 h-1.5 bg-foreground" />
+                    <div className="w-1.5 h-1.5 bg-foreground" />
                 </div>
             </div>
 
             {/* Content Body */}
-            <div className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4 relative">
+            <div className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4 relative bg-card">
                 <motion.div whileHover={{ scale: 1.05, rotate: 3 }} className="shrink-0">
-                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-border shadow-sm">
+                    <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-none">
                         <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
-                        <AvatarFallback className="text-[10px] sm:text-xs bg-muted text-muted-foreground font-black border-2 border-transparent">
+                        <AvatarFallback className="text-[10px] sm:text-xs bg-red-600 text-white font-black border-2 border-transparent rounded-none">
                             {displayName.substring(0, 2).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
@@ -83,13 +83,13 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     <motion.div
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setIsOpen(!isOpen)}
-                        className="w-full bg-muted/40 hover:bg-muted/60 transition-colors rounded-lg sm:rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer flex items-center justify-between border-2 border-transparent hover:border-emerald-500/30 group-hover/input:shadow-inner"
+                        className="w-full bg-background hover:bg-muted/10 transition-colors rounded-none px-3 sm:px-4 py-3 sm:py-4 cursor-pointer flex items-center justify-between border-2 border-muted-foreground/30 hover:border-red-600 group-hover/input:shadow-[4px_4px_0px_0px_rgba(220,38,38,0.2)]"
                     >
-                        <span className="text-muted-foreground/70 text-xs sm:text-sm font-bold truncate flex items-center gap-2">
+                        <span className="text-muted-foreground font-bold text-xs sm:text-sm truncate flex items-center gap-2 uppercase tracking-tight">
                             Aklında ne var, {firstName}?
                         </span>
                         <div className="flex items-center gap-2">
-                            <Plus className={cn("w-4 h-4 text-muted-foreground transition-transform duration-300", isOpen && "rotate-45")} />
+                            <Plus className={cn("w-5 h-5 text-red-600 transition-transform duration-300", isOpen && "rotate-45")} />
                         </div>
                     </motion.div>
 
@@ -102,25 +102,26 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
-                                className="absolute top-full right-0 mt-3 w-64 bg-[#1a1a1a] border border-[#333] rounded-xl shadow-[0_20px_50px_-12px_rgba(0,0,0,1)] z-[100] overflow-hidden"
+                                className="absolute top-full right-0 mt-2 w-full sm:w-72 bg-card border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-[100] overflow-hidden rounded-none"
                             >
-                                <div className="p-2">
-                                    <div className="px-3 py-2 border-b border-white/5 mb-1">
-                                        <span className="text-[10px] font-black tracking-widest text-muted-foreground uppercase">Ne Paylaşmak İstersin?</span>
+                                <div className="p-0">
+                                    <div className="px-4 py-3 border-b-2 border-foreground bg-red-600 text-white">
+                                        <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase">Ne Paylaşmak İstersin?</span>
                                     </div>
 
                                     <button
                                         onClick={() => handleNavigation("/kitap-inceleme/yeni")}
-                                        className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-all group text-left relative overflow-hidden"
+                                        className="w-full flex items-center gap-4 p-4 hover:bg-muted/10 transition-all group text-left relative overflow-hidden border-b-2 border-border/50 last:border-none"
                                     >
-                                        <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                        <div className="relative w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                        <div className="relative w-10 h-10 bg-red-100 dark:bg-red-900/20 text-red-600 border-2 border-red-600 group-hover:scale-110 transition-transform shadow-[2px_2px_0px_0px_rgba(220,38,38,1)] flex items-center justify-center">
                                             <Book className="w-5 h-5" />
                                         </div>
                                         <div className="relative flex-1">
-                                            <h4 className="font-bold text-sm text-foreground group-hover:text-emerald-400 transition-colors">Kitap İncelemesi</h4>
-                                            <p className="text-[10px] text-muted-foreground leading-tight">Okuduğun kitabı puanla ve tüm detaylarıyla incele.</p>
+                                            <h4 className="font-black text-sm text-foreground uppercase tracking-wide group-hover:text-red-600 transition-colors">Kitap İncelemesi</h4>
+                                            <p className="text-[10px] text-muted-foreground leading-tight font-medium mt-0.5">Okuduğun kitabı puanla ve incele.</p>
+                                        </div>
+                                        <div className="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all text-red-600">
+                                            <Plus className="w-5 h-5" />
                                         </div>
                                     </button>
                                 </div>
@@ -131,42 +132,30 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             </div>
 
             {/* Action Bar */}
-            <div className="px-2 sm:px-5 py-2 sm:py-3 border-t-2 border-border/50 flex items-center justify-around bg-muted/10 rounded-b-xl sm:rounded-b-2xl">
-                <button onClick={() => handleNavigation("/makale/yeni")} className="flex-1">
-                    <motion.div
-                        whileHover={{ y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-muted-foreground hover:text-rose-500 transition-colors py-2 px-1 sm:px-3 rounded-lg hover:bg-rose-500/10 cursor-pointer"
-                    >
-                        <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">Blog</span>
-                    </motion.div>
+            <div className="px-2 sm:px-5 py-2 sm:py-3 border-t-2 border-foreground flex items-center justify-around bg-muted/20 rounded-b-none">
+                <button onClick={() => handleNavigation("/makale/yeni")} className="flex-1 group">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 cursor-pointer">
+                        <PenTool className="w-4 h-4 text-muted-foreground group-hover:text-red-600 transition-colors" />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Blog</span>
+                    </div>
                 </button>
 
-                <div className="w-px h-6 bg-border/20 mx-1" />
+                <div className="w-0.5 h-6 bg-foreground/20 mx-1" />
 
-                <button onClick={() => setIsOpen(!isOpen)} className="flex-1">
-                    <motion.div
-                        whileHover={{ y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-muted-foreground hover:text-blue-500 transition-colors py-2 px-1 sm:px-3 rounded-lg hover:bg-blue-500/10 cursor-pointer"
-                    >
-                        <Plus className="w-4 h-4 sm:w-4 sm:h-4" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">Ekle</span>
-                    </motion.div>
+                <button onClick={() => setIsOpen(!isOpen)} className="flex-1 group">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 cursor-pointer">
+                        <Plus className="w-4 h-4 text-muted-foreground group-hover:text-red-600 transition-colors" />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Ekle</span>
+                    </div>
                 </button>
 
-                <div className="w-px h-6 bg-border/20 mx-1" />
+                <div className="w-0.5 h-6 bg-foreground/20 mx-1" />
 
-                <Link href="/forum" className="flex-1">
-                    <motion.div
-                        whileHover={{ y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-muted-foreground hover:text-emerald-500 transition-colors py-2 px-1 sm:px-3 rounded-lg hover:bg-emerald-500/10 cursor-pointer"
-                    >
-                        <HelpCircle className="w-4 h-4 sm:w-4 sm:h-4" />
-                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wide">Soru</span>
-                    </motion.div>
+                <Link href="/forum" className="flex-1 group">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 cursor-pointer">
+                        <HelpCircle className="w-4 h-4 text-muted-foreground group-hover:text-red-600 transition-colors" />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wide text-muted-foreground group-hover:text-foreground transition-colors">Soru</span>
+                    </div>
                 </Link>
             </div>
         </motion.div>

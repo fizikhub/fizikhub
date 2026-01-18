@@ -69,7 +69,7 @@ export function SocialArticleCard({
     const defaultBadgeText = isWriter ? "Yazar" : "Topluluk";
     const finalBadgeText = badgeLabel || defaultBadgeText;
 
-    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-emerald-500 bg-emerald-500/10";
+    const defaultBadgeClass = isWriter ? "text-amber-500 bg-amber-500/10" : "text-red-500 bg-red-500/10";
     const finalBadgeClass = badgeClassName || defaultBadgeClass;
 
     const [imgSrc, setImgSrc] = useState(article.image_url || "/images/placeholder-article.webp");
@@ -230,7 +230,7 @@ export function SocialArticleCard({
                         "text-xs font-bold tracking-wide",
                         isWriter
                             ? "text-amber-600 dark:text-amber-500"
-                            : "text-emerald-600 dark:text-emerald-500"
+                            : "text-red-600 dark:text-red-500"
                     )}>
                         {article.category || "GENEL"}
                     </span>
@@ -263,7 +263,7 @@ export function SocialArticleCard({
                     {/* Title */}
                     <h3 className={cn(
                         "font-heading font-extrabold text-xl sm:text-2xl leading-[1.2] text-foreground transition-colors",
-                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-emerald-600 dark:group-hover/content:text-emerald-400",
+                        isWriter ? "group-hover/content:text-amber-600 dark:group-hover/content:text-amber-400" : "group-hover/content:text-red-600 dark:group-hover/content:text-red-400",
                         // Cybernetic theme: gradient text on hover
                         isCybernetic && "group-hover/content:cyber-text"
                     )}>

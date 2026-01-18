@@ -60,28 +60,6 @@ function SpaceBackground() {
                     }}
                 />
             ))}
-
-            {/* Simplified Iconic UFO - Positioned Closer to Header */}
-            <motion.div
-                className="absolute top-[12%] left-[15%] sm:left-[25%] opacity-15 dark:opacity-25"
-                animate={{
-                    y: [0, -8, 0],
-                    x: [0, 4, 0],
-                    rotate: [0, 2, -2, 0]
-                }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <svg width="50" height="30" viewBox="0 0 60 40" fill="currentColor">
-                    {/* Simple Dome */}
-                    <path d="M20 20 C20 10, 40 10, 40 20" fill="none" stroke="currentColor" strokeWidth="2" />
-                    {/* Simple Disc Body */}
-                    <ellipse cx="30" cy="20" rx="25" ry="6" stroke="currentColor" strokeWidth="2" fill="none" />
-                    {/* Lights */}
-                    <circle cx="15" cy="20" r="1.5" />
-                    <circle cx="30" cy="23" r="1.5" />
-                    <circle cx="45" cy="20" r="1.5" />
-                </svg>
-            </motion.div>
         </div>
     );
 }
@@ -117,9 +95,7 @@ export function ModernExploreView({
             <div className="container max-w-2xl mx-auto px-4 py-2 sm:py-6">
 
                 {/* Header Section */}
-                <div className="mb-5 sm:mb-8 text-center relative z-10">
-                    {/* "Topluluk" Badge Removed as requested */}
-
+                <div className="mb-5 sm:mb-8 text-center relative z-10 select-none">
                     <motion.h1
                         style={{ y: headerTitleY }}
                         className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-4 uppercase leading-tight drop-shadow-sm font-heading py-2"
@@ -127,9 +103,27 @@ export function ModernExploreView({
                         <span className="block text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70">
                             Fikirlerini
                         </span>
-                        <span className="relative inline-block">
+                        <span className="relative inline-flex items-center gap-2 sm:gap-4">
                             <span className="relative z-10">Özgür Bırak</span>
-                            <span className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-emerald-500/20 -z-0 -rotate-1 rounded-sm"></span>
+                            <span className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-red-600/20 -z-0 -rotate-1 rounded-sm"></span>
+
+                            {/* UFO Icon - Positioned Relative to Text */}
+                            <motion.div
+                                className="opacity-80 text-foreground"
+                                animate={{
+                                    y: [0, -5, 0],
+                                    rotate: [0, 5, -5, 0]
+                                }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <svg width="40" height="24" viewBox="0 0 60 40" fill="currentColor" className="sm:w-[50px] sm:h-[30px]">
+                                    <path d="M20 20 C20 10, 40 10, 40 20" fill="none" stroke="currentColor" strokeWidth="3" />
+                                    <ellipse cx="30" cy="20" rx="25" ry="6" stroke="currentColor" strokeWidth="3" fill="none" />
+                                    <circle cx="15" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse" />
+                                    <circle cx="30" cy="23" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-75" />
+                                    <circle cx="45" cy="20" r="2" fill="currentColor" className="text-red-500 animate-pulse delay-150" />
+                                </svg>
+                            </motion.div>
                         </span>
                     </motion.h1>
 
@@ -137,7 +131,7 @@ export function ModernExploreView({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
-                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-2 border-emerald-500/30 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
+                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-4 border-red-600 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
                     >
                         Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
                     </motion.p>
@@ -154,10 +148,10 @@ export function ModernExploreView({
                                 <Badge
                                     variant={!currentCategory ? "default" : "outline"}
                                     className={cn(
-                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all cursor-pointer whitespace-nowrap",
+                                        "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                         !currentCategory
-                                            ? "bg-foreground text-background border-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)]"
-                                            : "bg-transparent text-muted-foreground border-border hover:border-foreground/50 hover:text-foreground"
+                                            ? "bg-red-600 text-white border-red-600 shadow-[4px_4px_0px_0px_rgba(220,38,38,0.4)]"
+                                            : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
                                     )}
                                 >
                                     TÜMÜ
@@ -175,10 +169,10 @@ export function ModernExploreView({
                                     <Badge
                                         variant={currentCategory === cat ? "default" : "outline"}
                                         className={cn(
-                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-lg sm:rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all cursor-pointer whitespace-nowrap",
+                                            "h-8 px-4 sm:h-9 sm:px-5 rounded-none text-[10px] sm:text-xs font-black border-2 transition-all cursor-pointer whitespace-nowrap uppercase tracking-wider",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)]"
-                                                : "bg-transparent text-muted-foreground border-border hover:border-foreground/50 hover:text-foreground"
+                                                ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
+                                                : "bg-transparent text-muted-foreground border-border hover:border-red-600 hover:text-red-600 hover:shadow-[3px_3px_0px_0px_rgba(220,38,38,0.2)]"
                                         )}
                                     >
                                         {cat.toUpperCase()}
@@ -192,10 +186,10 @@ export function ModernExploreView({
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-2xl border-2 border-dashed border-border bg-card/30">
-                            <Telescope className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
+                        <div className="py-16 text-center rounded-none border-2 border-dashed border-red-600/30 bg-red-600/5">
+                            <Telescope className="w-12 h-12 text-red-600/40 mx-auto mb-4" />
                             <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-emerald-500 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
+                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-red-600 hover:underline mt-2 inline-block font-black uppercase tracking-wide">
                                 <Sparkles className="w-3 h-3 inline mr-1" />
                                 İlk başlatıcı sen ol!
                             </Link>

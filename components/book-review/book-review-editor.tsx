@@ -122,22 +122,22 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
             {/* Header */}
-            <div className="flex items-center gap-4 border-b-2 border-border/50 pb-6">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
-                    <BookOpen className="w-6 h-6" />
+            <div className="flex items-center gap-4 border-b-4 border-foreground pb-6">
+                <div className="w-14 h-14 bg-red-600 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <BookOpen className="w-7 h-7" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-black uppercase tracking-tight">Kitap İncelemesi</h1>
-                    <p className="text-muted-foreground font-medium text-sm">Okuduğun kitabı toplulukla paylaş.</p>
+                    <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Kitap İncelemesi</h1>
+                    <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Analiz Et. Puanla. Paylaş.</p>
                 </div>
             </div>
 
             {/* Book Details - Mobile Optimized */}
             <div className="grid gap-6">
-                <div className="space-y-6 p-4 sm:p-6 bg-card border-2 border-border rounded-xl shadow-sm">
-                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
-                        <User className="w-4 h-4 text-emerald-500" />
-                        <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground">
+                <div className="space-y-6 p-6 bg-card border-2 border-foreground shadow-[8px_8px_0px_0px_rgba(220,38,38,1)] rounded-none">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b-2 border-border/50">
+                        <User className="w-4 h-4 text-red-600" />
+                        <h3 className="font-black text-sm uppercase tracking-widest text-foreground">
                             Kitap Detayları
                         </h3>
                     </div>
@@ -149,8 +149,8 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                                 ref={titleRef}
                                 value={bookTitle}
                                 onChange={(e) => setBookTitle(e.target.value)}
-                                placeholder="Kitabın Adı..."
-                                className="text-3xl sm:text-4xl font-black bg-transparent border-none px-0 focus-visible:ring-0 focus-visible:outline-none placeholder:text-muted-foreground/30 min-h-[50px] resize-none leading-tight"
+                                placeholder="KİTABIN ADI..."
+                                className="text-3xl sm:text-4xl font-black bg-transparent border-none px-0 focus-visible:ring-0 focus-visible:outline-none placeholder:text-muted-foreground/30 min-h-[50px] resize-none leading-tight uppercase tracking-tight"
                                 rows={1}
                             />
                         </div>
@@ -158,43 +158,43 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                         {/* Author & Rating - Stacks on Mobile */}
                         <div className="flex flex-col sm:flex-row gap-6">
                             <div className="flex-1 space-y-2">
-                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Yazar</label>
+                                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest ml-1">Yazar</label>
                                 <div className="relative group">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-red-600 transition-colors" />
                                     <Input
                                         value={bookAuthor}
                                         onChange={(e) => setBookAuthor(e.target.value)}
-                                        placeholder="Yazarın Adı"
-                                        className="pl-9 h-12 bg-muted/30 border-border focus:bg-background transition-all font-medium text-lg"
+                                        placeholder="YAZARIN ADI"
+                                        className="pl-9 h-12 bg-muted/20 border-2 border-border focus:border-red-600 focus:ring-0 rounded-none transition-all font-bold text-lg uppercase placeholder:normal-case"
                                     />
                                 </div>
                             </div>
 
                             {/* Star Rating System */}
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Puanın</label>
-                                <div className="h-12 flex items-center gap-1 bg-muted/30 px-2 rounded-md border border-border hover:border-emerald-500/50 transition-colors">
+                                <label className="text-xs font-black text-muted-foreground uppercase tracking-widest ml-1">Puanın</label>
+                                <div className="h-12 flex items-center gap-1 bg-muted/20 px-2 border-2 border-border hover:border-red-600/50 transition-colors">
                                     {[...Array(10)].map((_, i) => (
                                         <button
                                             key={i}
                                             onClick={() => setRating(i + 1)}
                                             onMouseEnter={() => setRating(i + 1)} // Simplified hover for desktop
                                             className={cn(
-                                                "p-1 hover:scale-110 transition-transform focus:outline-none group",
+                                                "p-1 hover:scale-125 transition-transform focus:outline-none group",
                                             )}
                                             title={`${i + 1}/10`}
                                         >
                                             <Star
                                                 className={cn(
-                                                    "w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300",
+                                                    "w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200 stroke-[2.5px]",
                                                     i < rating
-                                                        ? "fill-emerald-500 text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                                                        : "text-muted-foreground/20"
+                                                        ? "fill-red-600 text-red-600 drop-shadow-[0_2px_4px_rgba(220,38,38,0.4)]"
+                                                        : "text-muted-foreground/30 fill-transparent"
                                                 )}
                                             />
                                         </button>
                                     ))}
-                                    <div className="ml-2 w-8 text-center font-black text-lg text-emerald-500">{rating}</div>
+                                    <div className="ml-3 w-10 text-center font-black text-xl text-red-600 border-l-2 border-border/50 pl-3 leading-none">{rating}</div>
                                 </div>
                             </div>
                         </div>
@@ -202,7 +202,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                 </div>
 
                 {/* Content Editor */}
-                <div className="min-h-[400px] border-2 border-border/50 rounded-xl overflow-hidden bg-card/50">
+                <div className="min-h-[500px] border-2 border-foreground rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] bg-card overflow-hidden">
                     <ArticleEditor
                         content={content}
                         onChange={setContent}
@@ -212,17 +212,17 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
 
                 {/* Cover Image Upload Preview */}
                 {coverUrl && (
-                    <div className="relative group rounded-xl overflow-hidden border-2 border-muted max-w-sm mx-auto sm:mx-0 shadow-xl rotate-1 hover:rotate-0 transition-all duration-300">
+                    <div className="relative group border-4 border-white dark:border-zinc-800 shadow-2xl max-w-sm mx-auto sm:mx-0 rotate-1 hover:rotate-0 transition-all duration-300">
                         <img src={coverUrl} alt="Cover" className="w-full h-auto object-cover" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
                             <Button
                                 variant="destructive"
                                 size="sm"
                                 onClick={() => setCoverUrl("")}
-                                className="gap-2"
+                                className="gap-2 rounded-none font-bold"
                             >
                                 <Trash2 className="w-4 h-4" />
-                                Kaldır
+                                Görleli Kaldır
                             </Button>
                         </div>
                     </div>
@@ -230,7 +230,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             </div>
 
             {/* Bottom Toolbar */}
-            <div className="sticky bottom-0 z-20 py-4 bg-background/80 backdrop-blur-xl border-t border-foreground/10 flex items-center justify-between gap-4">
+            <div className="sticky bottom-0 z-40 py-4 px-4 -mx-4 bg-background/90 backdrop-blur-xl border-t-2 border-foreground/10 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                     <input
                         type="file"
@@ -242,7 +242,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className={cn("text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10 gap-2", coverUrl && "bg-emerald-500/10")}
+                        className={cn("text-red-500 hover:text-red-600 hover:bg-red-500/10 gap-2 font-bold uppercase tracking-wide", coverUrl && "bg-red-500/10")}
                         onClick={() => coverInputRef.current?.click()}
                         disabled={uploadingImage}
                     >
@@ -253,9 +253,9 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
 
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => handleSubmit("draft")}
-                        className="text-muted-foreground hover:text-foreground font-semibold"
+                        className="text-muted-foreground hover:text-foreground font-black uppercase border-2 hover:bg-muted"
                         disabled={isSubmitting}
                     >
                         Taslak
@@ -264,7 +264,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                     <Button
                         onClick={() => handleSubmit("published")}
                         disabled={isSubmitting || !bookTitle || !content || !bookAuthor}
-                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6"
+                        className="rounded-none bg-red-600 hover:bg-red-700 text-white font-black uppercase px-6 border-2 border-red-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                     >
                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
                         Yayınla
