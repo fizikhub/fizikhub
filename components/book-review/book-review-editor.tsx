@@ -124,6 +124,12 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
 
     const [showGuide, setShowGuide] = useState(false);
 
+    useEffect(() => {
+        // Auto-show guide on mount
+        const timer = setTimeout(() => setShowGuide(true), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
             <BookReviewGuide open={showGuide} onOpenChange={setShowGuide} />

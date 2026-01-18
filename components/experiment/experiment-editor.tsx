@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { ExperimentGuide } from "@/components/experiment/experiment-guide";
+import { Star } from "lucide-react";
 
 interface ExperimentEditorProps {
     userId: string;
@@ -133,17 +135,39 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
         }
     };
 
+    const [showGuide, setShowGuide] = useState(false);
+
+    useEffect(() => {
+        // Auto-show guide on mount
+        const timer = setTimeout(() => setShowGuide(true), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+            <ExperimentGuide open={showGuide} onOpenChange={setShowGuide} />
+
             {/* Header */}
-            <div className="flex items-center gap-4 border-b-4 border-foreground pb-6">
-                <div className="w-14 h-14 bg-green-600 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
-                    <FlaskConical className="w-7 h-7" />
+            <div className="flex items-center justify-between border-b-4 border-foreground pb-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-green-600 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(22,163,74,1)]">
+                        <FlaskConical className="w-7 h-7" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Deney Paylaş</h1>
+                        <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Hipotez. Gözlem. Sonuç.</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Deney Paylaş</h1>
-                    <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Hipotez. Gözlem. Sonuç.</p>
-                </div>
+
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setShowGuide(true)}
+                    className="rounded-full border-2 border-foreground hover:bg-muted"
+                    title="İpuçları"
+                >
+                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
