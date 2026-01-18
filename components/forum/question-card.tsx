@@ -136,53 +136,53 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
         >
-            {/* Left Column: Voting (Desktop) - WIDENED */}
+            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center justify-start p-4 w-20 shrink-0 border-r-2 border-border",
-                "bg-muted/10",
-                // Diagonal Stripe Pattern
-                "bg-[linear-gradient(45deg,transparent_25%,rgba(0,0,0,0.02)_25%,rgba(0,0,0,0.02)_50%,transparent_50%,transparent_75%,rgba(0,0,0,0.02)_75%,rgba(0,0,0,0.02)_100%)] bg-[length:10px_10px] dark:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_25%,rgba(255,255,255,0.02)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.02)_75%,rgba(255,255,255,0.02)_100%)]",
-                isCybernetic && "border-cyan-500/20 bg-black/40 bg-none",
+                "hidden sm:flex flex-col items-center justify-center p-4 w-20 shrink-0 border-r-2 border-border",
+                "bg-muted/5",
+                isCybernetic && "border-cyan-500/20 bg-black/40",
                 isPink && "bg-pink-50/50 border-pink-100"
             )}>
-                <button
-                    onClick={(e) => handleVote(e, 1)}
-                    disabled={isVoting}
-                    className={cn(
-                        "p-2 rounded-lg transition-all border-2 border-transparent",
-                        voteState === 1
-                            ? "text-primary border-primary bg-primary/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-                            : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
-                        isCybernetic && "rounded-none hover:shadow-none hover:bg-cyan-950/30 hover:text-cyan-400",
-                        isPink && "hover:text-pink-600 hover:border-pink-300"
-                    )}
-                >
-                    <ChevronUp className="w-6 h-6 stroke-[3px]" />
-                </button>
+                <div className="flex flex-col items-center gap-1 bg-background border-2 border-border rounded-full py-2 px-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                    <button
+                        onClick={(e) => handleVote(e, 1)}
+                        disabled={isVoting}
+                        className={cn(
+                            "p-2 rounded-full transition-all hover:bg-muted active:scale-95",
+                            voteState === 1
+                                ? "text-primary bg-primary/10"
+                                : "text-muted-foreground hover:text-foreground",
+                            isCybernetic && "rounded-none hover:bg-cyan-950/30 hover:text-cyan-400",
+                            isPink && "hover:text-pink-600"
+                        )}
+                    >
+                        <ChevronUp className="w-5 h-5 stroke-[4px]" />
+                    </button>
 
-                <span className={cn(
-                    "font-black text-xl my-3",
-                    votes > 0 ? "text-primary" : "text-muted-foreground",
-                    votes < 0 && "text-red-500",
-                    isPink && votes > 0 && "text-pink-600",
-                    isCybernetic && votes > 0 && "text-cyan-400"
-                )}>
-                    {votes}
-                </span>
+                    <span className={cn(
+                        "font-black text-lg w-full text-center py-1",
+                        votes > 0 ? "text-primary" : "text-muted-foreground",
+                        votes < 0 && "text-red-500",
+                        isPink && votes > 0 && "text-pink-600",
+                        isCybernetic && votes > 0 && "text-cyan-400"
+                    )}>
+                        {votes}
+                    </span>
 
-                <button
-                    onClick={(e) => handleVote(e, -1)}
-                    disabled={isVoting}
-                    className={cn(
-                        "p-2 rounded-lg transition-all border-2 border-transparent",
-                        voteState === -1
-                            ? "text-red-500 border-red-500 bg-red-500/10 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-                            : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
-                        isCybernetic && "rounded-none hover:shadow-none hover:bg-red-950/30 hover:text-red-400"
-                    )}
-                >
-                    <ChevronDown className="w-6 h-6 stroke-[3px]" />
-                </button>
+                    <button
+                        onClick={(e) => handleVote(e, -1)}
+                        disabled={isVoting}
+                        className={cn(
+                            "p-2 rounded-full transition-all hover:bg-muted active:scale-95",
+                            voteState === -1
+                                ? "text-red-500 bg-red-500/10"
+                                : "text-muted-foreground hover:text-foreground",
+                            isCybernetic && "rounded-none hover:bg-red-950/30 hover:text-red-400"
+                        )}
+                    >
+                        <ChevronDown className="w-5 h-5 stroke-[4px]" />
+                    </button>
+                </div>
             </div>
 
             {/* Right Column: Content */}
@@ -250,39 +250,37 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 {/* Footer Status Bar - UPSCALED */}
                 <div className="mt-auto py-3 px-4 sm:px-7 flex items-center justify-between border-t-2 border-border/50 bg-muted/5">
 
-                    {/* MOBILE VOTES (Left Side of Footer) */}
-                    <div className="flex sm:hidden items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            onClick={(e) => handleVote(e, 1)}
-                            disabled={isVoting}
-                            className={cn(
-                                "p-1.5 rounded-lg border-2 border-transparent transition-all",
-                                voteState === 1
-                                    ? "bg-primary/10 text-primary border-primary shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
-                                    : "bg-background border-border text-muted-foreground hover:border-foreground"
-                            )}
-                        >
-                            <ChevronUp className="w-5 h-5 stroke-[3px]" />
-                        </button>
-                        <span className={cn(
-                            "text-base font-black w-6 text-center",
-                            votes > 0 ? "text-primary" : "text-muted-foreground",
-                            votes < 0 && "text-red-500"
-                        )}>
-                            {votes}
-                        </span>
-                        <button
-                            onClick={(e) => handleVote(e, -1)}
-                            disabled={isVoting}
-                            className={cn(
-                                "p-1.5 rounded-lg border-2 border-transparent transition-all",
-                                voteState === -1
-                                    ? "bg-red-500/10 text-red-500 border-red-500 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
-                                    : "bg-background border-border text-muted-foreground hover:border-foreground"
-                            )}
-                        >
-                            <ChevronDown className="w-5 h-5 stroke-[3px]" />
-                        </button>
+                    {/* MOBILE VOTES (Pill Style) */}
+                    <div className="flex sm:hidden items-center" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center bg-background border-2 border-border rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                            <button
+                                onClick={(e) => handleVote(e, 1)}
+                                disabled={isVoting}
+                                className={cn(
+                                    "p-1.5 px-2 hover:bg-muted transition-colors border-r-2 border-border",
+                                    voteState === 1 && "bg-primary/10 text-primary"
+                                )}
+                            >
+                                <ChevronUp className="w-5 h-5 stroke-[4px]" />
+                            </button>
+                            <span className={cn(
+                                "text-base font-black px-3 min-w-[40px] text-center",
+                                votes > 0 ? "text-primary" : "text-muted-foreground",
+                                votes < 0 && "text-red-500"
+                            )}>
+                                {votes}
+                            </span>
+                            <button
+                                onClick={(e) => handleVote(e, -1)}
+                                disabled={isVoting}
+                                className={cn(
+                                    "p-1.5 px-2 hover:bg-muted transition-colors border-l-2 border-border",
+                                    voteState === -1 && "bg-red-500/10 text-red-500"
+                                )}
+                            >
+                                <ChevronDown className="w-5 h-5 stroke-[4px]" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Desktop Author */}
