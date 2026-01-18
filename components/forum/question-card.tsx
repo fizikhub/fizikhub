@@ -136,9 +136,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
         >
-            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE */}
+            {/* Left Column: Voting (Desktop) - CLEAN CAPSULE STYLE - Compact Width */}
             <div className={cn(
-                "hidden sm:flex flex-col items-center justify-center p-4 w-20 shrink-0 border-r-2 border-border",
+                "hidden sm:flex flex-col items-center justify-center p-3 w-16 shrink-0 border-r-2 border-border",
                 "bg-muted/5",
                 isCybernetic && "border-cyan-500/20 bg-black/40",
                 isPink && "bg-pink-50/50 border-pink-100"
@@ -156,11 +156,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             isPink && "hover:text-pink-600"
                         )}
                     >
-                        <ChevronUp className="w-5 h-5 stroke-[4px]" />
+                        <ChevronUp className="w-4 h-4 stroke-[4px]" />
                     </button>
 
                     <span className={cn(
-                        "font-black text-lg w-full text-center py-1",
+                        "font-black text-base w-full text-center py-0.5",
                         votes > 0 ? "text-primary" : "text-muted-foreground",
                         votes < 0 && "text-red-500",
                         isPink && votes > 0 && "text-pink-600",
@@ -180,7 +180,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             isCybernetic && "rounded-none hover:bg-red-950/30 hover:text-red-400"
                         )}
                     >
-                        <ChevronDown className="w-5 h-5 stroke-[4px]" />
+                        <ChevronDown className="w-4 h-4 stroke-[4px]" />
                     </button>
                 </div>
             </div>
@@ -216,8 +216,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </span>
                 </div>
 
-                {/* Main Content Info - UPSCALED */}
-                <div className="p-5 sm:p-7 flex flex-col gap-4 flex-1">
+                {/* Main Content Info - UPSCALED & SPACIOUS */}
+                <div className="p-5 sm:p-8 flex flex-col gap-5 flex-1 min-h-[160px] justify-start">
                     {/* Desktop Meta Row */}
                     <div className="hidden sm:flex items-center gap-3">
                         <span className={cn(
@@ -241,7 +241,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         )}>
                             {question.title}
                         </h3>
-                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-3 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
+                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-4 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
                             {stripHtml(question.content)}
                         </p>
                     </Link>
