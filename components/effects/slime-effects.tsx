@@ -26,6 +26,8 @@ export function SlimeEffects() {
     return (
         <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
             {/* Top Ooze */}
+            {/* Top Ooze Removed as per request */}
+            {/*
             <div className="absolute top-0 left-0 w-full h-16 bg-[#78FF32] opacity-90"
                 style={{
                     maskImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 1200 120\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0v46.29c47.79 22.2 103.59 32.17 158 28 70.36-5.37 136.33-33.31 206.8-37.5 73.84-4.36 147.54 16.88 218.2 35.26 69.27 18 138.3 24.88 209.4 13.08 63.61-10.59 127.23-33.25 194.6-28.71 78.41 5.3 148.88 47.93 213 28.71V0H0z\' fill=\'%23000\'/%3E%3C/svg%3E")',
@@ -34,8 +36,10 @@ export function SlimeEffects() {
                     WebkitMaskSize: 'cover'
                 }}
             />
+            */}
 
-            {/* Dripping Snot Particles */}
+            {/* Dripping Snot Particles Removed as per request */}
+            {/*
             {drips.map((drip) => (
                 <motion.div
                     key={drip.id}
@@ -55,9 +59,9 @@ export function SlimeEffects() {
                         ease: "linear"
                     }}
                 >
-                    {/* Sticky trail? Maybe too heavy. Leaving simple for now. */}
                 </motion.div>
             ))}
+            */}
 
             {/* Random Splats on Screen */}
             <motion.div

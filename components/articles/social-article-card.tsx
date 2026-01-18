@@ -203,7 +203,7 @@ export function SocialArticleCard({
                 <article className={cn(
                     "relative flex flex-col h-full overflow-hidden rounded-2xl transition-all duration-300",
                     "bg-card border-2 border-border", // Thicker border
-                    "hover:border-rose-500/50 dark:hover:border-rose-500/50", // Colored border on hover
+                    "hover:border-slate-400 dark:hover:border-slate-600", // Neutral border on hover
                     "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1", // Lift & Deep Shadow
                     // Theme Overrides
                     isCute && "rounded-[1.5rem] cute-border",
