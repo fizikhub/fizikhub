@@ -95,62 +95,70 @@ export function ModernExploreView({
             {/* Further Reduced Top Padding - Moved Up */}
             <div className="container max-w-2xl mx-auto px-4 py-2 sm:py-6">
 
-                {/* Header Section */}
-                <div className="mb-5 sm:mb-8 text-center relative z-10 select-none">
-                    <motion.h1
-                        style={{ y: headerTitleY }}
-                        className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-4 uppercase leading-tight drop-shadow-sm font-heading py-2"
-                    >
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70">
-                            Fikirlerini
-                        </span>
-                        <span className="relative inline-flex items-center gap-2 sm:gap-4">
-                            <span className="relative z-10">Özgür Bırak</span>
-                            <span className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-red-600/20 -z-0 -rotate-1 rounded-sm"></span>
-
-                            {/* UFO Icon - Positioned Relative to Text */}
-                            <motion.div
-                                className="opacity-90 text-foreground"
-                                animate={{
-                                    y: [0, -6, 0],
-                                    rotate: [0, 3, -3, 0]
-                                }}
-                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                            >
-                                <svg width="50" height="30" viewBox="0 0 60 40" fill="currentColor" className="sm:w-[60px] sm:h-[36px]">
-                                    {/* Dome */}
-                                    <path d="M22 18 C22 8, 38 8, 38 18" fill="none" stroke="currentColor" strokeWidth="2" />
-                                    <path d="M25 18 C25 12, 35 12, 35 18" fill="currentColor" className="text-red-500/20" />
-
-                                    {/* Body */}
-                                    <ellipse cx="30" cy="20" rx="28" ry="8" stroke="currentColor" strokeWidth="2" fill="none" />
-                                    <path d="M10 20 Q 30 25 50 20" fill="none" stroke="currentColor" strokeWidth="1" className="opacity-50" />
-
-                                    {/* Lights */}
-                                    <circle cx="12" cy="20" r="1.5" fill="currentColor" className="text-red-500 animate-pulse" />
-                                    <circle cx="30" cy="24" r="1.5" fill="currentColor" className="text-red-500 animate-pulse delay-75" />
-                                    <circle cx="48" cy="20" r="1.5" fill="currentColor" className="text-red-500 animate-pulse delay-150" />
-
-                                    {/* Landing Gear / Details */}
-                                    <line x1="20" y1="26" x2="16" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                    <line x1="40" y1="26" x2="44" y2="30" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                            </motion.div>
-                        </span>
-                    </motion.h1>
-
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                        className="text-muted-foreground font-medium text-sm sm:text-base md:text-lg max-w-lg mx-auto leading-relaxed border-l-4 border-red-600 pl-4 py-1 text-left sm:text-center sm:border-none sm:pl-0 sm:py-0"
-                    >
-                        Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
-                    </motion.p>
-                </div>
-
                 {/* Share Card - Reduced bottom margin */}
-                <ShareInputCard user={user} />
+                <div className="relative">
+                    <ShareInputCard user={user} />
+
+                    {/* Description Text - Repositioned */}
+                    <div className="mt-4 flex items-center justify-between px-2">
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-muted-foreground font-medium text-xs sm:text-sm max-w-lg leading-relaxed italic"
+                        >
+                            Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
+                        </motion.p>
+                    </div>
+
+                    {/* Improved UFO - Floating on the right side of the share area */}
+                    <motion.div
+                        className="absolute -right-4 -top-16 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
+                        initial={{ x: 100, opacity: 0 }}
+                        animate={{
+                            x: 0,
+                            opacity: 1,
+                            y: [0, -10, 0]
+                        }}
+                        transition={{
+                            y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                            default: { duration: 1 }
+                        }}
+                    >
+                        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-24 h-16 sm:w-32 sm:h-20 drop-shadow-xl">
+                            {/* Glow */}
+                            <ellipse cx="60" cy="40" rx="35" ry="10" fill="#22c55e" fillOpacity="0.2" className="animate-pulse" />
+
+                            {/* Beam (Optional/Subtle) */}
+                            <path d="M60 50 L40 80 H80 L60 50" fill="url(#beam-gradient)" opacity="0.3" />
+                            <defs>
+                                <linearGradient id="beam-gradient" x1="60" y1="50" x2="60" y2="80" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#22c55e" stopOpacity="0.5" />
+                                    <stop offset="1" stopColor="#22c55e" stopOpacity="0" />
+                                </linearGradient>
+                            </defs>
+
+                            {/* Dome */}
+                            <path d="M45 32 C45 20, 75 20, 75 32" fill="#e0f2fe" fillOpacity="0.8" stroke="#38bdf8" strokeWidth="1" />
+
+                            {/* Alien Head (Tiny detail) */}
+                            <circle cx="60" cy="28" r="4" fill="#22c55e" />
+                            <circle cx="58.5" cy="27" r="1" fill="black" fillOpacity="0.5" />
+                            <circle cx="61.5" cy="27" r="1" fill="black" fillOpacity="0.5" />
+
+                            {/* Body Ring */}
+                            <ellipse cx="60" cy="40" rx="45" ry="12" fill="#1e293b" stroke="#475569" strokeWidth="2" />
+                            <ellipse cx="60" cy="37" rx="45" ry="12" fill="#334155" />
+
+                            {/* Lights */}
+                            <circle cx="25" cy="40" r="2" fill="#ef4444" className="animate-pulse" />
+                            <circle cx="42" cy="46" r="2" fill="#eab308" className="animate-pulse delay-75" />
+                            <circle cx="60" cy="48" r="2" fill="#22c55e" className="animate-pulse delay-150" />
+                            <circle cx="78" cy="46" r="2" fill="#3b82f6" className="animate-pulse delay-300" />
+                            <circle cx="95" cy="40" r="2" fill="#a855f7" className="animate-pulse delay-500" />
+                        </svg>
+                    </motion.div>
+                </div>
 
                 {/* Categories */}
                 <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
