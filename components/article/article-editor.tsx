@@ -12,6 +12,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { Markdown } from 'tiptap-markdown';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
@@ -67,9 +68,11 @@ interface ArticleEditorProps {
     content: string;
     onChange: (content: string) => void;
     onUploadImage: (file: File) => Promise<string>;
+    className?: string;
+    placeholder?: string;
 }
 
-export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEditorProps) {
+export function ArticleEditor({ content, onChange, onUploadImage, className, placeholder }: ArticleEditorProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState('');
@@ -93,7 +96,7 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
             }),
             MathExtension,
             Placeholder.configure({
-                placeholder: 'Bilimsel hikayeni anlatmaya başla...',
+                placeholder: placeholder || 'Bilimsel hikayeni anlatmaya başla...',
             }),
             Link.configure({
                 openOnClick: false,
@@ -204,7 +207,7 @@ export function ArticleEditor({ content, onChange, onUploadImage }: ArticleEdito
     );
 
     return (
-        <div className="border-2 border-dashed border-muted-foreground/20 rounded-xl bg-card shadow-sm overflow-hidden relative">
+        <div className={cn("border-2 border-dashed border-muted-foreground/20 rounded-xl bg-card shadow-sm overflow-hidden relative", className)}>
             {/* Main Toolbar */}
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
                 {/* Text Formatting */}
