@@ -112,7 +112,7 @@ export function ModernExploreView({
 
                     {/* Improved UFO - Floating on the right side of the share area */}
                     <motion.div
-                        className="absolute right-0 -top-16 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
+                        className="absolute right-0 -top-8 sm:-right-12 sm:-top-16 z-20 pointer-events-none"
                         initial={{ x: 100, opacity: 0 }}
                         animate={{
                             x: 0,
@@ -124,7 +124,7 @@ export function ModernExploreView({
                             default: { duration: 1 }
                         }}
                     >
-                        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-24 h-16 sm:w-32 sm:h-20 drop-shadow-xl">
+                        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-20 h-14 sm:w-32 sm:h-20 drop-shadow-xl">
                             {/* Glow */}
                             <ellipse cx="60" cy="40" rx="35" ry="10" fill="#22c55e" fillOpacity="0.2" className="animate-pulse" />
 
