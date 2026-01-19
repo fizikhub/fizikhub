@@ -202,11 +202,11 @@ export function SocialArticleCard({
             <Link href={`/blog/${article.slug}`} className="block h-full group font-sans">
                 <article className={cn(
                     "relative flex flex-col h-full overflow-hidden rounded-[2rem] transition-all duration-300",
-                    "bg-card border-3 border-foreground/10",
+                    "bg-card border border-border/40", // Subtle border, no thick white border
                     "focus-within:border-foreground/20",
-                    // PERSISTENT NEO-BRUTALIST SHADOW
-                    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]", // Dark/Light contrast shadow
-                    "translate-x-[0px] translate-y-[0px] hover:-translate-y-1 hover:translate-x-1", // Lift on hover
+                    // PERSISTENT NEO-BRUTALIST SHADOW (Darkened for dark mode, not white)
+                    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(30,30,30,1)]",
+                    "translate-x-[0px] translate-y-[0px] hover:-translate-y-1 hover:translate-x-1",
                     // Colored border on hover
                     "hover:border-primary/50 dark:hover:border-primary/50",
                     // Theme Overrides
@@ -221,17 +221,18 @@ export function SocialArticleCard({
                         </>
                     )}
 
-                    {/* 1. HEADER: Category & Date */}
-                    <div className="flex items-center justify-between px-5 pt-4 pb-2">
+                    {/* 1. HEADER: Category & Date (Compact Padding) */}
+                    <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:pt-4 sm:pb-2">
                         <span className={cn(
-                            "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest border", // Slightly rectangular (rounded-md)
+                            // Clean, non-neon look
                             isWriter
-                                ? "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20"
-                                : "bg-primary/5 text-primary border-primary/10"
+                                ? "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50"
+                                : "bg-muted text-muted-foreground border-border/50"
                         )}>
                             {article.category || "GENEL"}
                         </span>
-                        <time className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 bg-muted/30 px-2 py-1 rounded-md">
+                        <time className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                             {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                         </time>
                     </div>
@@ -251,16 +252,16 @@ export function SocialArticleCard({
                         </div>
                     )}
 
-                    {/* 3. CONTENT BODY */}
-                    <div className="flex-1 px-5 py-4 flex flex-col gap-3">
+                    {/* 3. CONTENT BODY (Compact Padding, Reduced Line Clamp) */}
+                    <div className="flex-1 px-4 py-3 sm:px-5 sm:py-4 flex flex-col gap-2 sm:gap-3">
                         <h3 className={cn(
-                            "text-xl sm:text-2xl font-bold font-heading leading-tight text-foreground/90 transition-colors",
+                            "text-lg sm:text-2xl font-bold font-heading leading-tight text-foreground/90 transition-colors",
                             "group-hover:text-primary dark:group-hover:text-primary"
                         )}>
                             {article.title}
                         </h3>
 
-                        <p className="text-sm text-muted-foreground/80 line-clamp-4 font-medium leading-relaxed">
+                        <p className="text-xs sm:text-sm text-muted-foreground/80 line-clamp-2 sm:line-clamp-4 font-medium leading-relaxed">
                             {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 180) + "..." : "Özet bulunmuyor.")}
                         </p>
 
@@ -296,38 +297,38 @@ export function SocialArticleCard({
                             <span>{getReadingTime(article.content)} dk</span>
                         </div>
 
-                        {/* Action Buttons (Evenly spaced) */}
-                        <div className="flex items-center gap-5">
+                        {/* Action Buttons (Strict Equal Spacing using fixed width containers + justify-between) */}
+                        <div className="flex items-center gap-1 sm:gap-2">
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "flex items-center gap-1.5 transition-colors group/btn",
+                                    "w-8 h-8 flex items-center justify-center rounded-full transition-colors group/btn hover:bg-muted/50",
                                     isLiked ? "text-rose-500" : "text-muted-foreground/70 hover:text-rose-500"
                                 )}
                             >
-                                <Heart className={cn("w-4.5 h-4.5 stroke-[2.5px]", isLiked && "fill-current")} />
-                                <span className={cn("text-xs font-bold", isLiked && "text-rose-600 dark:text-rose-400")}>{likeCount}</span>
+                                <Heart className={cn("w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.5px]", isLiked && "fill-current")} />
+                                <span className={cn("ml-1 text-[10px] font-bold", isLiked && "text-rose-600 dark:text-rose-400")}>{likeCount}</span>
                             </button>
 
-                            <Link href={`/blog/${article.slug}#comments`} className="flex items-center gap-1.5 text-muted-foreground/70 hover:text-blue-500 transition-colors">
-                                <MessageCircle className="w-4.5 h-4.5 stroke-[2.5px]" />
+                            <Link href={`/blog/${article.slug}#comments`} className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/70 hover:text-blue-500 hover:bg-muted/50 transition-colors">
+                                <MessageCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.5px]" />
                             </Link>
 
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "flex items-center gap-1.5 transition-colors",
+                                    "w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-muted/50",
                                     isBookmarked ? "text-amber-500" : "text-muted-foreground/70 hover:text-amber-500"
                                 )}
                             >
-                                <Bookmark className={cn("w-4.5 h-4.5 stroke-[2.5px]", isBookmarked && "fill-current")} />
+                                <Bookmark className={cn("w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.5px]", isBookmarked && "fill-current")} />
                             </button>
 
                             <button
                                 onClick={handleShare}
-                                className="flex items-center gap-1.5 text-muted-foreground/70 hover:text-foreground transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground/70 hover:text-foreground hover:bg-muted/50 transition-colors"
                             >
-                                <Share className="w-4.5 h-4.5 stroke-[2.5px]" />
+                                <Share className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.5px]" />
                             </button>
                         </div>
                     </div>
