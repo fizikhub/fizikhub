@@ -7,6 +7,7 @@ import { SocialArticleCard } from "@/components/articles/social-article-card";
 import { ShareInputCard } from "@/components/blog/share-input-card";
 import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
+import { SearchInput } from "@/components/blog/search-input";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface Article {
@@ -157,6 +158,11 @@ export function ModernExploreView({
                             <circle cx="95" cy="40" r="2" fill="#a855f7" className="animate-pulse delay-500" />
                         </svg>
                     </motion.div>
+                </div>
+
+                {/* Search Input */}
+                <div className="mb-6 px-1 max-w-lg mx-auto">
+                    <SearchInput />
                 </div>
 
                 {/* Categories */}

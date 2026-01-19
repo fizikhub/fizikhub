@@ -19,12 +19,12 @@ export function SearchInput() {
     }, 500);
 
     return (
-        <div className="relative w-full lg:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+        <div className="relative w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/60 peer-focus:text-amber-500 transition-colors" />
             <input
                 type="text"
                 placeholder="Makale, konu veya yazar ara..."
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-white/30 focus:border-amber-500/50 focus:bg-white/[0.07] focus:outline-none transition-all duration-300"
+                className="peer w-full pl-12 pr-4 py-3.5 bg-background border-2 border-border rounded-2xl text-foreground placeholder:text-muted-foreground/50 focus:border-amber-500 focus:shadow-[0_0_0_4px_rgba(245,158,11,0.1)] focus:outline-none transition-all duration-300"
                 onChange={(e) => handleSearch(e.target.value)}
                 defaultValue={searchParams.get("search")?.toString()}
             />

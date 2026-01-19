@@ -201,7 +201,7 @@ export function SocialArticleCard({
         >
             <Link href={`/blog/${article.slug}`} className="block h-full group font-sans">
                 <article className={cn(
-                    "relative flex flex-col h-full overflow-hidden rounded-2xl transition-all duration-300",
+                    "relative flex flex-col h-full overflow-hidden rounded-[2rem] transition-all duration-300",
                     "bg-card border-2 border-border", // Thicker border
                     "hover:border-slate-400 dark:hover:border-slate-600", // Neutral border on hover
                     "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1", // Lift & Deep Shadow
