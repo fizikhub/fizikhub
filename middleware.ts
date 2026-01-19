@@ -31,15 +31,8 @@ function isRateLimited(ip: string, maxRequests: number): boolean {
     return false;
 }
 
-// Clean up old entries every 5 minutes
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, record] of rateLimitMap.entries()) {
-        if (now - record.timestamp > RATE_LIMIT_WINDOW * 2) {
-            rateLimitMap.delete(ip);
-        }
-    }
-}, 5 * 60 * 1000);
+// Note: Cleanup happens naturally via time-based expiry check in isRateLimited()
+// setInterval is not supported in Edge Runtime
 
 export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;

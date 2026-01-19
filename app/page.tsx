@@ -66,11 +66,7 @@ const getCachedFeedData = unstable_cache(
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
-  console.log("---- FEED DEBUG v3 ----");
-  console.log("Articles count:", articles?.length);
-  console.log("Questions count:", questions?.length);
-  console.log("Suggested Users count:", suggestedUsers?.length);
-  console.log("------------------------");
+
 
   // Process and Merge Data
   const feedItems: FeedItem[] = [];

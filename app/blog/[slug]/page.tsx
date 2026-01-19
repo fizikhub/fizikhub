@@ -51,18 +51,16 @@ export const revalidate = 600;
 export default async function BlogPage({ params }: PageProps) {
     const { slug } = await params;
 
-    // Debug Logging
-    console.log(`[BlogPage] Attempting to fetch article with slug: "${slug}"`);
+
 
     const supabase = await createClient();
     const article = await getArticleBySlug(supabase, slug);
 
     if (!article) {
-        console.error(`[BlogPage] Article not found for slug: "${slug}"`);
         notFound();
     }
 
-    console.log(`[BlogPage] Article found: ${article.id} - ${article.title}`);
+
 
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();

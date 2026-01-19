@@ -161,7 +161,7 @@ export function SocialArticleCard({
                 title: article.title,
                 text: article.summary || article.title,
                 url: url
-            }).catch(() => { });
+            }).catch(() => { /* share cancelled or not supported - ignorable */ });
         } else {
             navigator.clipboard.writeText(url);
             toast.success("Link kopyalandı!");
