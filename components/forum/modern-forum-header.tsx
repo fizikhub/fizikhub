@@ -119,16 +119,16 @@ export function ModernForumHeader() {
             {/* NEOBRUTALIST HERO SECTION - REFINED PREMIUM */}
             <div className={cn(
                 "relative rounded-3xl overflow-hidden min-h-[200px] sm:min-h-[260px] flex items-center justify-center p-6 sm:p-10 transition-all",
-                "bg-gradient-to-br from-card/80 via-card/50 to-muted/30 backdrop-blur-xl border border-white/20 dark:border-white/10",
-                "shadow-2xl dark:shadow-none", // Softer shadow
+                "bg-[#09090b] border border-white/10", // Darker background to match screenshot
+                "shadow-2xl dark:shadow-none",
                 isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none min-h-[160px] bg-black",
                 isPink && "bg-pink-50/80 border-pink-200/50"
             )}>
 
-                {/* Background Decor - SPACE RESTORED (Subtle) */}
+                {/* Background Decor - SPACE RESTORED (High Visibility) */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                     {!isCute && !isCybernetic && (
-                        <div className="opacity-60 dark:opacity-40 grayscale-[20%]">
+                        <div className="opacity-80 grayscale-0"> {/* Increased opacity, removed grayscale for vivid stars */}
                             <HeaderSpaceBackground />
                         </div>
                     )}
@@ -182,19 +182,19 @@ export function ModernForumHeader() {
                             trigger={
                                 <div className={cn(
                                     "w-full cursor-pointer overflow-hidden relative",
-                                    "bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10",
+                                    "bg-[#151515] border border-white/10", // Darker input background
                                     "rounded-2xl transition-all duration-300 ease-out",
-                                    "shadow-sm hover:shadow-lg hover:bg-background/90",
+                                    "shadow-sm hover:shadow-lg hover:border-primary/50", // Hover visual
                                     "flex items-center p-2 pr-3 pl-2 sm:pr-2 sm:pl-2 h-14 sm:h-16 gap-3",
-                                    isPink && "border-pink-200 shadow-pink-100",
+                                    isPink && "border-pink-200 shadow-pink-100 bg-white/80",
                                     isCybernetic && "bg-black/90 border-cyan-500/50 !rounded-none shadow-none hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] hover:border-cyan-400"
                                 )}>
 
                                     {/* Icon */}
                                     <div className={cn(
                                         "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0",
-                                        "bg-primary/10 text-primary",
-                                        isPink && "bg-pink-100 text-pink-600",
+                                        "text-primary border border-primary/20 bg-primary/5", // Outline style like screenshot
+                                        isPink && "bg-pink-100 text-pink-600 border-none",
                                         isCybernetic && "bg-cyan-950 text-cyan-400 border border-cyan-500 rounded-none"
                                     )}>
                                         <Search className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -245,8 +245,8 @@ export function ModernForumHeader() {
                                     className={cn(
                                         "px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-bold uppercase tracking-wide border-2 transition-all duration-200 rounded-lg",
                                         isActive
-                                            ? "bg-primary text-primary-foreground border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px]"
-                                            : "bg-background text-muted-foreground border-border hover:border-foreground hover:text-foreground",
+                                            ? "bg-primary text-black border-primary shadow-[0px_0px_10px_rgba(245,158,11,0.4)] font-black" // Neon glow effect
+                                            : "bg-transparent text-muted-foreground border-white/10 hover:border-primary/50 hover:text-primary",
                                         isPink && isActive && "bg-pink-500 border-pink-800 shadow-[2px_2px_0px_0px_rgba(255,20,147,0.5)]",
                                         isCybernetic && "rounded-none",
                                         isCybernetic && isActive && "bg-cyan-950/50 text-cyan-400 border-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.2)]"
@@ -260,27 +260,27 @@ export function ModernForumHeader() {
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-0 border-2 border-foreground rounded-lg overflow-hidden bg-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] w-full md:w-auto">
+                <div className="flex items-center gap-0 border-2 border-white/10 rounded-2xl overflow-hidden bg-black/50 w-full md:w-auto">
                     <button
                         onClick={() => handleSortChange("newest")}
                         className={cn(
-                            "flex-1 md:flex-none px-4 py-2 text-[10px] sm:text-xs font-black uppercase transition-all hover:bg-muted",
+                            "flex-1 md:flex-none px-6 py-2.5 text-[10px] sm:text-xs font-bold uppercase transition-all",
                             currentSort === 'newest'
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card text-muted-foreground",
+                                ? "bg-primary text-black"
+                                : "hover:text-primary text-muted-foreground",
                             isCybernetic && "rounded-none"
                         )}
                     >
                         En Yeniler
                     </button>
-                    <div className="w-0.5 self-stretch bg-foreground" />
+
                     <button
                         onClick={() => handleSortChange("popular")}
                         className={cn(
-                            "flex-1 md:flex-none px-4 py-2 text-[10px] sm:text-xs font-black uppercase transition-all hover:bg-muted",
+                            "flex-1 md:flex-none px-6 py-2.5 text-[10px] sm:text-xs font-bold uppercase transition-all",
                             currentSort === 'popular'
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card text-muted-foreground",
+                                ? "bg-primary text-black"
+                                : "hover:text-primary text-muted-foreground",
                             isCybernetic && "rounded-none"
                         )}
                     >
