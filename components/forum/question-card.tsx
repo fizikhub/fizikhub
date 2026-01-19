@@ -94,9 +94,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
         }
     };
 
+    const [isExpanded, setIsExpanded] = useState(false);
     const rawContent = question.content?.replace(/[#*`]/g, '') || "";
-    // Keep preview short and punchy for the card
-    const contentPreview = rawContent.length > 180 ? rawContent.slice(0, 180) + "..." : rawContent;
+    const isLongContent = rawContent.length > 300;
 
     // Calculate display values
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
@@ -123,15 +123,17 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     // ----------------------------------------------------------------------
     return (
         <motion.div
+            layout
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4, x: -2 }}
+            whileHover={{ y: isExpanded ? 0 : -4, x: isExpanded ? 0 : -2 }}
             transition={{ duration: 0.2 }}
             className={cn(
                 "group relative flex flex-col sm:flex-row gap-0",
-                "bg-card rounded-xl overflow-hidden",
+                "bg-card rounded-2xl overflow-hidden",
                 "border-2 border-border transition-all duration-200",
                 "hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
+                isExpanded && "hover:shadow-none hover:translate-y-0 hover:translate-x-0 border-primary/50 shadow-lg",
                 isCybernetic && "cyber-card border-l-2 border-cyan-500/30 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] !rounded-none bg-black/40",
                 isPink && "hover:border-pink-300 hover:shadow-[8px_8px_0px_0px_rgba(255,105,180,0.4)]"
             )}
@@ -233,7 +235,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         </span>
                     </div>
 
-                    <Link href={`/forum/${question.id}`} className="group/title block space-y-3">
+                    <div className="group/title block space-y-3 cursor-pointer" onClick={(e) => {
+                        // If not clicking read more, go to detail
+                        if (!(e.target as HTMLElement).closest('button')) {
+                            handleCardClick();
+                        }
+                    }}>
                         <h3 className={cn(
                             "text-xl sm:text-2xl font-bold font-heading text-foreground leading-tight tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
                             isPink && "group-hover/title:text-pink-600",
@@ -241,10 +248,40 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         )}>
                             {question.title}
                         </h3>
-                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-3 leading-relaxed opacity-90 group-hover/title:opacity-100 transition-opacity font-medium">
-                            {stripHtml(question.content)}
-                        </p>
-                    </Link>
+                        <motion.div layout>
+                            <p className={cn(
+                                "text-muted-foreground text-sm sm:text-base leading-relaxed opacity-90 group-hover/title:opacity-100 transition-opacity font-medium",
+                                !isExpanded && "line-clamp-6"
+                            )}>
+                                {stripHtml(question.content)}
+                            </p>
+                        </motion.div>
+
+                        {isLongContent && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(!isExpanded);
+                                }}
+                                className={cn(
+                                    "inline-flex items-center gap-1 text-sm font-bold mt-2 hover:underline transition-all",
+                                    "text-primary",
+                                    isPink && "text-pink-600",
+                                    isCybernetic && "text-cyan-400"
+                                )}
+                            >
+                                {isExpanded ? (
+                                    <>
+                                        Küçült <ChevronUp className="w-4 h-4" />
+                                    </>
+                                ) : (
+                                    <>
+                                        Devamını Oku <ChevronDown className="w-4 h-4" />
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Footer Status Bar - UPSCALED */}
