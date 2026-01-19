@@ -166,9 +166,9 @@ export function ModernExploreView({
                             <motion.div whileTap={{ scale: 0.95 }}>
                                 <div
                                     className={cn(
-                                        "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
+                                        "px-4 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full",
                                         !currentCategory
-                                            ? "bg-primary text-primary-foreground border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                            ? "bg-primary text-primary-foreground border-primary shadow-[1px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
                                             : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
                                     )}
                                 >
@@ -186,9 +186,9 @@ export function ModernExploreView({
                                 >
                                     <div
                                         className={cn(
-                                            "px-3 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap",
+                                            "px-4 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full",
                                             currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
+                                                ? "bg-foreground text-background border-foreground shadow-[1px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
                                                 : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
                                         )}
                                     >
