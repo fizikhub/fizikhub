@@ -56,6 +56,8 @@ export default async function DiscoverPage({
     }
 
     const categories = [
+        "Kitap İncelemesi",
+        "Deney",
         "Kuantum Fiziği",
         "Astrofizik",
         "Modern Fizik",
