@@ -230,8 +230,60 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
     return (
         <div className="space-y-0">
+            {/* New Answer Form - MOVED TO TOP */}
+            {user ? (
+                <div id="answer-form" className="mb-8 pt-2 sm:px-0">
+                    <div className="flex gap-4">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border hidden sm:block">
+                            <AvatarImage src={user.user_metadata?.avatar_url || ""} className="object-cover" />
+                            <AvatarFallback className="bg-muted text-muted-foreground font-bold">
+                                {user.user_metadata?.username?.[0]?.toUpperCase() || "S"}
+                            </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1">
+                            {/* Simplified Header */}
+                            <h3 className="text-lg font-black mb-3 flex items-center gap-2">
+                                <span className="text-foreground">Senin</span> Görüşün Ne?
+                            </h3>
+
+                            <form onSubmit={handleSubmit} className="space-y-3">
+                                <div className="min-h-[120px] border border-border/60 rounded-xl overflow-hidden focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all bg-card/50 shadow-sm">
+                                    <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
+                                        <MarkdownEditor
+                                            value={newAnswer}
+                                            onChange={setNewAnswer}
+                                            placeholder="Tartışmaya katıl..."
+                                        />
+                                    </Suspense>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button
+                                        type="submit"
+                                        disabled={isSubmitting || !newAnswer.trim()}
+                                        className="px-6 rounded-full font-bold h-9 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                    >
+                                        {isSubmitting ? "Gönderiliyor..." : "Yanıtla"}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div className="mb-8 p-6 rounded-2xl bg-muted/30 text-center border border-dashed border-border/60">
+                    <div className="max-w-xs mx-auto space-y-3">
+                        <h3 className="text-lg font-bold">Tartışmaya Katıl</h3>
+                        <p className="text-sm text-muted-foreground font-medium">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
+                        <Button className="w-full font-bold rounded-full h-9" asChild>
+                            <a href="/login">Giriş Yap / Kayıt Ol</a>
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             {/* Answer List */}
-            <div className="relative">
+            <div className="relative space-y-4">
                 {answers.length === 0 ? (
                     <div className="py-12 text-center border-y border-border/40 bg-muted/5">
                         <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -246,23 +298,23 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             key={answer.id}
                             id={`answer-${answer.id}`}
                             className={cn(
-                                "group relative transition-all duration-300 border-b border-border/40 hover:bg-muted/5",
-                                answer.is_accepted && "bg-green-500/5 hover:bg-green-500/10"
+                                "group relative transition-all duration-300 border-b border-border/40 hover:bg-muted/5 last:border-0",
+                                answer.is_accepted && "bg-green-500/5 hover:bg-green-500/10 rounded-xl border-none mb-4"
                             )}
                         >
                             {/* Thread Line - Connecting to next item if needed, currently just visual marker */}
                             {/* <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-border/40 group-hover:bg-border/60 transition-colors" /> */}
 
-                            <div className="flex gap-2 sm:gap-4 p-3 sm:p-6">
+                            <div className="flex gap-2 sm:gap-4 py-4 sm:py-6 px-1 sm:px-3">
                                 {/* Left: Avatar column */}
                                 <div className="flex flex-col items-center gap-2 shrink-0">
                                     <Link href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                         <Avatar className={cn(
-                                            "h-8 w-8 sm:h-12 sm:w-12 border-2 border-transparent transition-all",
+                                            "h-8 w-8 sm:h-10 sm:w-10 border border-border/50 transition-all",
                                             answer.is_accepted ? "border-green-500 ring-2 ring-green-500/20" : "group-hover:border-border"
                                         )}>
                                             <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-secondary text-secondary-foreground font-black text-sm">
+                                            <AvatarFallback className="bg-secondary text-secondary-foreground font-black text-xs">
                                                 {answer.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
@@ -283,12 +335,12 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                     <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                                 )}
                                             </Link>
-                                            <span className="text-muted-foreground text-sm font-medium">·</span>
-                                            <span className="text-sm text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
+                                            <span className="text-muted-foreground text-xs font-medium">·</span>
+                                            <span className="text-xs text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
                                                 {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
                                             </span>
                                             {answer.is_accepted && (
-                                                <span className="flex items-center gap-1 text-green-600 bg-green-500/10 px-2 py-0.5 rounded text-xs font-bold uppercase ml-2">
+                                                <span className="flex items-center gap-1 text-green-600 bg-green-500/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">
                                                     <CheckCircle2 className="h-3 w-3" />
                                                     Çözüm
                                                 </span>
@@ -296,19 +348,19 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         </div>
 
                                         {/* Actions Menu */}
-                                        <div className="flex items-center">
+                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                                             {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleToggleAccept(answer.id)}
                                                     className={cn(
-                                                        "h-8 w-8 rounded-full hover:bg-green-500/10 transition-colors mr-1",
-                                                        answer.is_accepted ? "text-green-600" : "text-muted-foreground hover:text-green-600"
+                                                        "h-7 w-7 rounded-full hover:bg-green-500/10 transition-colors mr-1",
+                                                        answer.is_accepted ? "text-green-600 opacity-100" : "text-muted-foreground hover:text-green-600"
                                                     )}
                                                     title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
                                                 >
-                                                    <CheckCircle2 className="h-5 w-5" />
+                                                    <CheckCircle2 className="h-4 w-4" />
                                                 </Button>
                                             )}
 
@@ -324,8 +376,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 resourceId={answer.id}
                                                 resourceType="answer"
                                                 trigger={
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/50 hover:text-destructive rounded-full">
-                                                        <Flag className="h-4 w-4" />
+                                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 hover:text-destructive rounded-full">
+                                                        <Flag className="h-3 w-3" />
                                                     </Button>
                                                 }
                                             />
@@ -333,12 +385,12 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                     </div>
 
                                     {/* Content */}
-                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-2 sm:mb-3 text-foreground/90 font-medium">
+                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-2 sm:mb-3 text-foreground/90 font-medium leading-relaxed">
                                         <MarkdownRenderer content={answer.content} />
                                     </div>
 
-                                    {/* Action Bar (Twitter Style) */}
-                                    <div className="flex items-center justify-between max-w-md mt-1.5 sm:mt-3">
+                                    {/* Action Bar (Simple) */}
+                                    <div className="flex items-center justify-between max-w-md mt-2">
                                         {/* Like Group */}
                                         <div className="flex items-center group/like">
                                             <AnswerLikeButton
@@ -354,10 +406,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="flex items-center gap-1.5 px-2 hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors rounded-full h-8"
+                                                className="flex items-center gap-1.5 px-2 hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors rounded-full h-7"
                                                 onClick={() => toggleComments(answer.id)}
                                             >
-                                                <MessageSquare className="h-4 w-4" />
+                                                <MessageSquare className="h-3.5 w-3.5" />
                                                 <span className="text-xs font-bold">
                                                     {answer.comments && answer.comments.length > 0
                                                         ? answer.comments.length
@@ -367,8 +419,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         </div>
 
                                         {/* Share / More placeholder */}
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/50 hover:text-primary rounded-full hover:bg-primary/10">
-                                            <ArrowBigUp className="h-5 w-5" />
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 hover:text-primary rounded-full hover:bg-primary/10">
+                                            <ArrowBigUp className="h-4 w-4" />
                                         </Button>
                                     </div>
 
@@ -412,57 +464,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                     ))
                 )}
             </div>
-
-            {/* New Answer Form */}
-            {user ? (
-                <div id="answer-form" className="mt-8 border-t-2 border-border/40 pt-8 sm:px-4">
-                    {/* Simplified "Tweet your reply" style editor */}
-                    <div className="flex gap-4">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border hidden sm:block">
-                            <AvatarImage src={user.user_metadata?.avatar_url || ""} className="object-cover" />
-                            <AvatarFallback className="bg-muted text-muted-foreground font-bold">
-                                {user.user_metadata?.username?.[0]?.toUpperCase() || "S"}
-                            </AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1">
-                            <h3 className="text-lg font-black mb-4 flex items-center gap-2">
-                                <span className="text-primary">Senin</span> Görüşün Ne?
-                            </h3>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="min-h-[150px] border-2 border-border rounded-xl overflow-hidden focus-within:border-primary/50 transition-all bg-card/50">
-                                    <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
-                                        <MarkdownEditor
-                                            value={newAnswer}
-                                            onChange={setNewAnswer}
-                                            placeholder="Tartışmaya katıl..."
-                                        />
-                                    </Suspense>
-                                </div>
-                                <div className="flex justify-end">
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting || !newAnswer.trim()}
-                                        className="px-6 rounded-full font-bold h-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] border-2 border-black dark:border-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all bg-primary text-primary-foreground"
-                                    >
-                                        {isSubmitting ? "Gönderiliyor..." : "Yanıtla"}
-                                    </Button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="p-8 rounded-2xl bg-muted/10 text-center border-2 border-dashed border-border mt-8">
-                    <div className="max-w-xs mx-auto space-y-4">
-                        <h3 className="text-xl font-bold">Tartışmaya Katıl</h3>
-                        <p className="text-sm text-muted-foreground font-medium">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
-                        <Button className="w-full font-bold rounded-full" asChild>
-                            <a href="/login">Giriş Yap / Kayıt Ol</a>
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

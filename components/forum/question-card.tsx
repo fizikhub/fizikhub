@@ -235,13 +235,13 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
 
                     <Link href={`/forum/${question.id}`} className="group/title block space-y-3">
                         <h3 className={cn(
-                            "text-xl sm:text-2xl font-black text-foreground leading-snug tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
+                            "text-xl sm:text-2xl font-bold font-heading text-foreground leading-tight tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
                             isPink && "group-hover/title:text-pink-600",
                             isCybernetic && "group-hover/title:text-cyan-400"
                         )}>
                             {question.title}
                         </h3>
-                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-5 leading-relaxed opacity-80 group-hover/title:opacity-100 transition-opacity font-medium">
+                        <p className="text-muted-foreground text-sm sm:text-base line-clamp-3 leading-relaxed opacity-90 group-hover/title:opacity-100 transition-opacity font-medium">
                             {stripHtml(question.content)}
                         </p>
                     </Link>

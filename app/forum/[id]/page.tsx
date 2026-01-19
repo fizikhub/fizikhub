@@ -265,16 +265,16 @@ export default async function QuestionPage({ params }: PageProps) {
                             </Button>
                         </div>
 
-                        {/* QUESTION CARD - Twitter Style / Neo-Brutalist */}
-                        <div className="bg-card border-y sm:border-2 border-border sm:rounded-xl overflow-hidden shadow-none sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:sm:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all">
+                        {/* QUESTION CARD - Refined & Fresh */}
+                        <div className="bg-card/80 backdrop-blur-sm border sm:border rounded-xl overflow-hidden shadow-sm transition-all">
 
                             {/* 1. Header: Author & Context */}
-                            <div className="p-3 sm:p-6 pb-1 sm:pb-4 flex justify-between items-start gap-2 sm:gap-3">
-                                <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
+                                <div className="flex items-center gap-3">
                                     <Link href={`/kullanici/${question.profiles?.username}`} className="block group">
-                                        <Avatar className="h-8 w-8 sm:h-12 sm:w-12 border-2 border-border group-hover:border-primary transition-colors">
+                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border group-hover:border-primary transition-colors">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-primary/10 text-primary font-black text-sm sm:text-base">
+                                            <AvatarFallback className="bg-primary/5 text-primary font-bold text-sm sm:text-base">
                                                 {question.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
@@ -282,14 +282,14 @@ export default async function QuestionPage({ params }: PageProps) {
                                     <div className="flex flex-col leading-tight">
                                         <Link
                                             href={`/kullanici/${question.profiles?.username}`}
-                                            className="font-bold text-sm sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
+                                            className="font-bold text-base sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
                                             {question.profiles?.is_verified && (
                                                 <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
                                         </Link>
-                                        <span className="text-xs sm:text-sm text-muted-foreground font-mono font-medium">
+                                        <span className="text-xs text-muted-foreground font-medium">
                                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                                         </span>
                                     </div>
@@ -302,9 +302,9 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 2. Content Body */}
-                            <div className="px-3 sm:px-6 py-1 sm:py-2">
+                            <div className="px-4 sm:px-6 py-2">
                                 {/* Title */}
-                                <h1 className="text-lg sm:text-2xl md:text-3xl font-black mb-2 sm:mb-4 leading-tight text-foreground tracking-tight text-balance">
+                                <h1 className="text-xl sm:text-3xl font-bold font-heading mb-3 sm:mb-5 leading-tight text-foreground tracking-tight text-balance">
                                     {question.title}
                                 </h1>
 
@@ -315,7 +315,7 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Edit Timestamp */}
                                 {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
-                                    <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground/70 italic font-mono">
+                                    <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground/70 italic">
                                         <Edit2 className="h-3 w-3" />
                                         Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })}
                                     </div>
@@ -323,19 +323,19 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Tags & Badges */}
                                 <div className="mt-6 flex flex-wrap gap-2">
-                                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors h-7 px-3 rounded-md text-xs font-bold uppercase tracking-wider">
+                                    <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 hover:bg-primary/10 transition-colors h-7 px-3 rounded-lg text-xs font-bold">
                                         {question.category || "Genel"}
                                     </Badge>
 
                                     {isSolved && (
-                                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-7 px-3 rounded-md text-xs font-bold uppercase">
+                                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-7 px-3 rounded-lg text-xs font-bold">
                                             <CheckCircle2 className="h-3 w-3" />
                                             Çözüldü
                                         </Badge>
                                     )}
 
                                     {question.tags?.map((tag: string) => (
-                                        <Badge key={tag} variant="outline" className="h-7 border-border hover:bg-muted font-mono text-xs">
+                                        <Badge key={tag} variant="outline" className="h-7 border-border hover:bg-muted font-normal text-xs text-muted-foreground rounded-lg">
                                             #{tag}
                                         </Badge>
                                     ))}
@@ -343,30 +343,30 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 3. Stats Divider */}
-                            <div className="px-3 sm:px-6 py-2 sm:py-4 flex items-center gap-4 border-b border-border/50 text-xs sm:text-sm font-bold text-muted-foreground mt-1 sm:mt-2">
-                                <div className="flex items-center gap-1">
-                                    <span className="text-foreground">{question.views?.toLocaleString('tr-TR') || 0}</span>
-                                    <span className="font-medium text-muted-foreground/70">Görüntülenme</span>
+                            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-6 border-b border-border/30 text-xs sm:text-sm font-medium text-muted-foreground mt-2">
+                                <div className="flex items-center gap-1.5">
+                                    <strong className="text-foreground">{question.views?.toLocaleString('tr-TR') || 0}</strong>
+                                    <span className="opacity-70">Görüntülenme</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="text-foreground">{answers?.length || 0}</span>
-                                    <span className="font-medium text-muted-foreground/70">Cevap</span>
+                                <div className="flex items-center gap-1.5">
+                                    <strong className="text-foreground">{answers?.length || 0}</strong>
+                                    <span className="opacity-70">Cevap</span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="text-foreground">{question.votes || 0}</span>
-                                    <span className="font-medium text-muted-foreground/70">Oy</span>
+                                <div className="flex items-center gap-1.5">
+                                    <strong className="text-foreground">{question.votes || 0}</strong>
+                                    <span className="opacity-70">Oy</span>
                                 </div>
                             </div>
 
-                            {/* 4. Action Bar (Twitter Style) */}
-                            <div className="flex items-center justify-between px-2 sm:px-6 py-1.5 sm:py-3 bg-muted/5">
+                            {/* 4. Action Bar (Clean & Minimal) */}
+                            <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 bg-muted/5">
                                 {/* Left Actions (Vote, Comment, Share) */}
                                 <div className="flex items-center gap-1 sm:gap-2">
                                     <VoteButton
                                         questionId={question.id}
                                         initialVotes={question.votes || 0}
                                         initialHasVoted={hasVoted}
-                                        startExpanded={true} // Add this prop to VoteButton if needed, or style it there
+                                        startExpanded={true}
                                     />
 
                                     <ReplyButton />
@@ -384,7 +384,6 @@ export default async function QuestionPage({ params }: PageProps) {
                                         itemId={question.id}
                                         initialBookmarked={!!userBookmark}
                                     />
-                                    {/* Share Button Placeholder if needed */}
                                 </div>
                             </div>
                         </div>
