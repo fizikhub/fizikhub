@@ -100,7 +100,7 @@ export function ModernExploreView({
                     <ShareInputCard user={user} />
 
                     {/* Description Text - Repositioned */}
-                    <div className="mt-4 flex items-center justify-between px-2">
+                    <div className="mt-2 flex items-center justify-between px-2">
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

@@ -54,15 +54,9 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                 "w-full max-w-2xl mx-auto mb-6 sm:mb-10 z-[50]"
             )}
         >
-            {/* Top Bar (Browser-like with rounded top) */}
-            <div className="h-10 border-b border-border/50 bg-muted/30 flex items-center px-4 justify-between select-none rounded-t-[2rem]">
-                <div className="flex gap-1.5 opacity-70">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
-                </div>
-                <div className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Paylaş</div>
-                <div className="w-6" />
+            {/* Top Bar (Simplified - No Traffic Lights) */}
+            <div className="h-8 border-b border-border/40 bg-muted/20 flex items-center px-6 justify-center select-none rounded-t-[2rem]">
+                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Paylaş</div>
             </div>
 
             <div className="p-3">
@@ -83,7 +77,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                             onClick={() => setIsOpen(!isOpen)}
                             className={cn(
                                 "w-full h-12 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                "bg-muted/30 hover:bg-muted/50",
+                                "bg-muted/20 hover:bg-muted/40", // Lighter background
                                 "border border-transparent hover:border-primary/20",
                                 "rounded-2xl",
                                 isOpen && "ring-2 ring-primary/20 bg-primary/5",
@@ -97,6 +91,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                         <span className="truncate">Ne paylaşmak istersin,</span>
                                         <span className="text-foreground font-semibold truncate hidden sm:inline">{firstName}?</span>
                                         <span className="text-foreground font-semibold truncate sm:hidden">{firstName}?</span>
+                                        <span className="text-primary animate-pulse font-light ml-0.5">|</span>
                                     </span>
                                 )}
                             </span>
@@ -122,16 +117,16 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                     <div className="p-1.5 space-y-1">
                                         <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground/50 ml-1">Seçenekler</div>
 
-                                        {/* Kitap İncelemesi */}
+                                        {/* Kitap İncelemesi - ROSE COLOR */}
                                         <Link
                                             href="/kitap-inceleme/yeni"
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-amber-500/10 transition-all group rounded-xl"
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-rose-500/10 transition-all group rounded-xl"
                                         >
-                                            <div className="relative w-9 h-9 bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center text-amber-600 rounded-lg group-hover:scale-105 transition-transform">
+                                            <div className="relative w-9 h-9 bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-600 rounded-lg group-hover:scale-105 transition-transform">
                                                 <Book className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-amber-600 transition-colors truncate">Kitap İncelemesi</h4>
+                                                <h4 className="font-bold text-sm text-foreground group-hover:text-rose-600 transition-colors truncate">Kitap İncelemesi</h4>
                                                 <p className="text-[10px] text-muted-foreground leading-tight truncate">Puanla ve İncele</p>
                                             </div>
                                         </Link>
@@ -171,30 +166,34 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                 </div>
             </div>
 
-            {/* Bottom Actions Bar */}
-            <div className="px-5 py-3 border-t border-border/30 bg-muted/20 flex items-center gap-3 text-[10px] font-bold text-muted-foreground overflow-x-auto rounded-b-[2rem] scrollbar-hide">
-                <Link href="/makale/yeni" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
-                    <PenTool className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Blog</span>
-                </Link>
+            {/* Bottom Actions Bar - CENTERED BUTTONS */}
+            <div className="px-5 py-3 border-t border-border/30 bg-muted/20 flex items-center justify-center gap-3 text-[10px] font-bold text-muted-foreground overflow-x-auto rounded-b-[2rem] scrollbar-hide relative group/bar">
 
-                <div className="w-1 h-1 rounded-full bg-border shrink-0" />
+                {/* Centered Group */}
+                <div className="flex items-center gap-3">
+                    <Link href="/makale/yeni" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                        <PenTool className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Blog</span>
+                    </Link>
 
-                <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
-                    <Plus className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Ekle</span>
-                </button>
+                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
 
-                <div className="w-1 h-1 rounded-full bg-border shrink-0" />
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                        <Plus className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Ekle</span>
+                    </button>
 
-                <Link href="/forum" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
-                    <HelpCircle className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">Soru</span>
-                </Link>
+                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
 
-                <div className="flex-1" />
-                <div className="text-[9px] text-muted-foreground/30 font-mono hidden sm:block">
-                    v2.1
+                    <Link href="/forum" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Soru</span>
+                    </Link>
+                </div>
+
+                {/* Version Absolute Right */}
+                <div className="absolute right-5 text-[9px] text-muted-foreground/30 font-mono hidden sm:block">
+                    v2.2
                 </div>
             </div>
         </motion.div>
