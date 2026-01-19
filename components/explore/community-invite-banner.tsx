@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function CommunityInviteBanner() {
     return (
-        <div className="group relative overflow-hidden rounded-xl border-2 border-black bg-[#dcfce7] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all duration-200">
+        <div className="group relative overflow-hidden rounded-xl border-2 border-black bg-[#86efac] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all duration-200">
 
             <div className="p-4 flex items-center gap-4">
 
