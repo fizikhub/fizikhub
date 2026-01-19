@@ -249,7 +249,7 @@ export default async function QuestionPage({ params }: PageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
+            <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">
 
                     {/* Main Content Column */}
@@ -269,10 +269,10 @@ export default async function QuestionPage({ params }: PageProps) {
                         <div className="bg-card border-y sm:border-2 border-border sm:rounded-xl overflow-hidden shadow-none sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:sm:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all">
 
                             {/* 1. Header: Author & Context */}
-                            <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
-                                <div className="flex items-center gap-3">
+                            <div className="p-3 sm:p-6 pb-1 sm:pb-4 flex justify-between items-start gap-2 sm:gap-3">
+                                <div className="flex items-center gap-2 sm:gap-3">
                                     <Link href={`/kullanici/${question.profiles?.username}`} className="block group">
-                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-border group-hover:border-primary transition-colors">
+                                        <Avatar className="h-8 w-8 sm:h-12 sm:w-12 border-2 border-border group-hover:border-primary transition-colors">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
                                             <AvatarFallback className="bg-primary/10 text-primary font-black text-sm sm:text-base">
                                                 {question.profiles?.username?.[0]?.toUpperCase()}
@@ -282,7 +282,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                     <div className="flex flex-col leading-tight">
                                         <Link
                                             href={`/kullanici/${question.profiles?.username}`}
-                                            className="font-bold text-base sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
+                                            className="font-bold text-sm sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
                                             {question.profiles?.is_verified && (
@@ -302,9 +302,9 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 2. Content Body */}
-                            <div className="px-4 sm:px-6 py-2">
+                            <div className="px-3 sm:px-6 py-1 sm:py-2">
                                 {/* Title */}
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-black mb-4 leading-tight text-foreground tracking-tight text-balance">
+                                <h1 className="text-lg sm:text-2xl md:text-3xl font-black mb-2 sm:mb-4 leading-tight text-foreground tracking-tight text-balance">
                                     {question.title}
                                 </h1>
 
@@ -343,7 +343,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 3. Stats Divider */}
-                            <div className="px-4 sm:px-6 py-4 flex items-center gap-4 border-b border-border/50 text-sm font-bold text-muted-foreground mt-2">
+                            <div className="px-3 sm:px-6 py-2 sm:py-4 flex items-center gap-4 border-b border-border/50 text-xs sm:text-sm font-bold text-muted-foreground mt-1 sm:mt-2">
                                 <div className="flex items-center gap-1">
                                     <span className="text-foreground">{question.views?.toLocaleString('tr-TR') || 0}</span>
                                     <span className="font-medium text-muted-foreground/70">Görüntülenme</span>
@@ -359,7 +359,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 4. Action Bar (Twitter Style) */}
-                            <div className="flex items-center justify-between px-2 sm:px-6 py-2 sm:py-3 bg-muted/5">
+                            <div className="flex items-center justify-between px-2 sm:px-6 py-1.5 sm:py-3 bg-muted/5">
                                 {/* Left Actions (Vote, Comment, Share) */}
                                 <div className="flex items-center gap-1 sm:gap-2">
                                     <VoteButton
@@ -390,7 +390,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* Answers Section */}
-                        <div className="mt-6 sm:mt-10 max-w-full">
+                        <div className="mt-4 sm:mt-10 max-w-full">
                             <div className="flex items-center justify-between px-1 mb-4">
                                 <h3 className="text-xl font-bold flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5 text-primary" />

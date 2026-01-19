@@ -253,12 +253,12 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             {/* Thread Line - Connecting to next item if needed, currently just visual marker */}
                             {/* <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-border/40 group-hover:bg-border/60 transition-colors" /> */}
 
-                            <div className="flex gap-3 sm:gap-4 p-4 sm:p-6">
+                            <div className="flex gap-2 sm:gap-4 p-3 sm:p-6">
                                 {/* Left: Avatar column */}
                                 <div className="flex flex-col items-center gap-2 shrink-0">
                                     <Link href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                         <Avatar className={cn(
-                                            "h-10 w-10 sm:h-12 sm:w-12 border-2 border-transparent transition-all",
+                                            "h-8 w-8 sm:h-12 sm:w-12 border-2 border-transparent transition-all",
                                             answer.is_accepted ? "border-green-500 ring-2 ring-green-500/20" : "group-hover:border-border"
                                         )}>
                                             <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
@@ -276,7 +276,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         <div className="flex items-center flex-wrap gap-x-2">
                                             <Link
                                                 href={`/kullanici/${answer.profiles?.username}`}
-                                                className="font-bold text-base hover:text-primary transition-colors flex items-center gap-1"
+                                                className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
                                             >
                                                 @{answer.profiles?.username || "Anonim"}
                                                 {answer.profiles?.is_verified && (
@@ -333,12 +333,12 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                     </div>
 
                                     {/* Content */}
-                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-3 text-foreground/90 font-medium">
+                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-2 sm:mb-3 text-foreground/90 font-medium">
                                         <MarkdownRenderer content={answer.content} />
                                     </div>
 
                                     {/* Action Bar (Twitter Style) */}
-                                    <div className="flex items-center justify-between max-w-md mt-3">
+                                    <div className="flex items-center justify-between max-w-md mt-1.5 sm:mt-3">
                                         {/* Like Group */}
                                         <div className="flex items-center group/like">
                                             <AnswerLikeButton
