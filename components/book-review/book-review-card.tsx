@@ -53,7 +53,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     return (
         <Link href={`/makale/${article.slug}`} className="block group font-sans">
             <article className={cn(
-                "relative flex flex-row overflow-hidden rounded-2xl transition-all duration-300",
+                "relative flex flex-col sm:flex-row overflow-hidden rounded-2xl transition-all duration-300",
                 "bg-card border-2 border-slate-200 dark:border-slate-800",
                 "hover:border-rose-500/50 dark:hover:border-rose-500/50",
                 "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1"
@@ -68,7 +68,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                 `}</style>
 
                 {/* Book Cover Section - Enhanced */}
-                <div className="relative w-32 sm:w-40 md:w-56 h-auto shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-3 md:p-6 overflow-hidden border-r border-border/50">
+                <div className="relative w-full sm:w-40 md:w-56 h-48 sm:h-auto shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-3 md:p-6 overflow-hidden border-b sm:border-b-0 sm:border-r border-border/50">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
 

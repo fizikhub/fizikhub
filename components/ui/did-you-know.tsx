@@ -38,41 +38,50 @@ export function DidYouKnow() {
 
     return (
         <div className="w-full max-w-md mx-auto my-8 px-4">
-            <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-background to-primary/5 p-6 shadow-xl">
-                <div className="flex items-center gap-2 mb-4 text-primary font-bold">
-                    <Lightbulb className="h-5 w-5 text-yellow-500 animate-pulse" />
-                    <span>Biliyor muydun?</span>
-                </div>
+            <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-amber-500/10 p-1 shadow-2xl group">
+                {/* Animated Border Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[200%] animate-shimmer" />
 
-                <div className="h-32 flex items-center justify-center relative">
-                    <AnimatePresence mode="wait">
-                        <motion.p
-                            key={index}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="text-lg text-center font-medium leading-relaxed"
+                <div className="relative bg-zinc-900/90 backdrop-blur-xl rounded-xl p-5 md:p-6 overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 rounded-lg bg-amber-500/10">
+                                <Lightbulb className="h-4 w-4 text-amber-400" />
+                            </div>
+                            <span className="font-bold text-sm tracking-wide bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+                                BUNU BİLİYOR MUYDUN?
+                            </span>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={nextFact}
+                            className="h-8 w-8 rounded-full hover:bg-white/5 hover:rotate-180 transition-all duration-500"
                         >
-                            &quot;{facts[index]}&quot;
-                        </motion.p>
-                    </AnimatePresence>
-                </div>
+                            <RefreshCw className="h-3.5 w-3.5 text-zinc-400" />
+                        </Button>
+                    </div>
 
-                <div className="mt-4 flex justify-center">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={nextFact}
-                        className="text-muted-foreground hover:text-primary gap-2"
-                    >
-                        <RefreshCw className="h-4 w-4" /> Başka Ver
-                    </Button>
-                </div>
+                    <div className="min-h-[100px] flex items-center justify-center relative py-2">
+                        <AnimatePresence mode="wait">
+                            <motion.p
+                                key={index}
+                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="text-lg md:text-xl text-center font-medium leading-relaxed text-zinc-200"
+                            >
+                                &quot;{facts[index]}&quot;
+                            </motion.p>
+                        </AnimatePresence>
+                    </div>
 
-                {/* Decorative background elements */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary/10 rounded-full blur-3xl" />
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 rounded-full blur-[50px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-500/10 rounded-full blur-[40px] pointer-events-none" />
+                </div>
             </Card>
         </div>
     );
