@@ -202,13 +202,13 @@ export function SocialArticleCard({
             <Link href={`/blog/${article.slug}`} className="block h-full group font-sans">
                 <article className={cn(
                     "relative flex flex-col h-full overflow-hidden rounded-[2rem] transition-all duration-300",
-                    "bg-card border-3 border-foreground/10", // Initial subtle border
+                    "bg-card border-3 border-foreground/10",
                     "focus-within:border-foreground/20",
-                    // Hover State: Neo-Brutalist 3D Effect (Colored based on theme/default)
-                    "hover:-translate-y-1 hover:translate-x-1",
-                    // Dark/Colored border on hover instead of white
+                    // PERSISTENT NEO-BRUTALIST SHADOW
+                    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]", // Dark/Light contrast shadow
+                    "translate-x-[0px] translate-y-[0px] hover:-translate-y-1 hover:translate-x-1", // Lift on hover
+                    // Colored border on hover
                     "hover:border-primary/50 dark:hover:border-primary/50",
-                    "hover:shadow-[-4px_4px_0px_0px_rgba(var(--primary),0.2)]", // 3D Shadow
                     // Theme Overrides
                     isCute && "rounded-[1.5rem] cute-border",
                     isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]"
@@ -236,10 +236,10 @@ export function SocialArticleCard({
                         </time>
                     </div>
 
-                    {/* 2. IMAGE SECTION */}
+                    {/* 2. IMAGE SECTION - EDGE TO EDGE */}
                     {article.image_url && (
-                        <div className="px-4">
-                            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50">
+                        <div className="w-full mt-2 border-y-2 border-foreground/5">
+                            <div className="relative aspect-[16/9] w-full overflow-hidden">
                                 <Image
                                     src={imgSrc}
                                     alt={article.title}
@@ -297,7 +297,7 @@ export function SocialArticleCard({
                         </div>
 
                         {/* Action Buttons (Evenly spaced) */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-5">
                             <button
                                 onClick={handleLike}
                                 className={cn(

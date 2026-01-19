@@ -923,7 +923,7 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(var(--secondary));
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -938,7 +938,7 @@ a {
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(var(--muted-foreground)) rgb(var(--secondary));
+  scrollbar-color: rgb(var(--muted-foreground)) transparent;
 }
 
 /* Animations - Premium Polish */
