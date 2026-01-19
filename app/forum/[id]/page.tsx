@@ -19,7 +19,7 @@ import { BookmarkButton } from "@/components/bookmark-button";
 import { ReportButton } from "@/components/report-button";
 import { Flag } from "lucide-react";
 import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
-import { ScrollFixer } from "@/components/ui/scroll-fixer";
+// import { ScrollFixer } from "@/components/ui/scroll-fixer";
 import { StickyActionBar } from "@/components/forum/sticky-action-bar";
 import { RelatedQuestions } from "@/components/forum/related-questions";
 
@@ -241,7 +241,7 @@ export default async function QuestionPage({ params }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
-            <ScrollFixer />
+            {/* ScrollFixer removed to prevent hydration issues */}
             <BackgroundWrapper />
             <script
                 type="application/ld+json"
