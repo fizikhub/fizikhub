@@ -22,6 +22,7 @@ import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
 // import { ScrollFixer } from "@/components/ui/scroll-fixer";
 import { StickyActionBar } from "@/components/forum/sticky-action-bar";
 import { RelatedQuestions } from "@/components/forum/related-questions";
+import { ReplyButton } from "@/components/forum/reply-button";
 
 import { Metadata } from "next";
 
@@ -368,12 +369,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                         startExpanded={true} // Add this prop to VoteButton if needed, or style it there
                                     />
 
-                                    <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 rounded-full h-10 px-4 transition-all" onClick={() => {
-                                        document.getElementById('answer-form')?.scrollIntoView({ behavior: 'smooth' });
-                                    }}>
-                                        <MessageSquare className="h-5 w-5 stroke-[2.5px]" />
-                                        <span className="font-bold hidden sm:inline">Cevapla</span>
-                                    </Button>
+                                    <ReplyButton />
 
                                     <ReportButton
                                         contentType="question"
