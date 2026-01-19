@@ -55,7 +55,12 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             )}
         >
             {/* Top Bar (Simplified - No Traffic Lights) */}
-            <div className="h-8 border-b border-border/40 bg-muted/20 flex items-center px-6 justify-center select-none rounded-t-[2rem]">
+            <div className="relative h-8 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
+                <div className="absolute left-5 flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] shadow-sm" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] shadow-sm" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F] shadow-sm" />
+                </div>
                 <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Paylaş</div>
             </div>
 
