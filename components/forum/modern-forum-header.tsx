@@ -147,37 +147,25 @@ export function ModernForumHeader() {
 
                     {/* Title & Subtitle */}
                     <div className="space-y-2">
-                        <motion.h1
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn(
-                                "text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-foreground drop-shadow-sm",
-                                isPink && "text-pink-600",
-                                isCybernetic && "cyber-text text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600"
-                            )}
+                        <h1 className={cn(
+                            "text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white drop-shadow-md", // Force white text for high contrast
+                            isPink && "text-pink-600",
+                            isCybernetic && "cyber-text text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600"
+                        )}
                         >
                             Aklında Ne Var?
-                        </motion.h1>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className={cn(
-                                "text-muted-foreground font-medium text-sm sm:text-lg tracking-wide max-w-lg mx-auto",
-                                isPink && "text-pink-900/60"
-                            )}
+                        </h1>
+                        <p className={cn(
+                            "text-gray-300 font-medium text-sm sm:text-lg tracking-wide max-w-lg mx-auto", // Lighter gray for better visibility
+                            isPink && "text-pink-900/60"
+                        )}
                         >
                             Binlerce fizik meraklısıyla tartış, öğren ve keşfet.
-                        </motion.p>
+                        </p>
                     </div>
 
-                    {/* Interactive Search/Ask Bar - PREMIUM CLEAN */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="w-full relative group"
-                    >
+                    {/* Interactive Search/Ask Bar - PREMIUM CLEAN - NO INITIAL DELAY */}
+                    <div className="w-full relative group">
                         <CreateQuestionDialog
                             trigger={
                                 <div className={cn(
@@ -227,7 +215,7 @@ export function ModernForumHeader() {
                                 </div>
                             }
                         />
-                    </motion.div>
+                    </div>
                 </div>
             </div>
 
@@ -245,8 +233,8 @@ export function ModernForumHeader() {
                                     className={cn(
                                         "px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-bold uppercase tracking-wide border-2 transition-all duration-200 rounded-lg",
                                         isActive
-                                            ? "bg-primary text-black border-primary shadow-[0px_0px_10px_rgba(245,158,11,0.4)] font-black" // Neon glow effect
-                                            : "bg-transparent text-muted-foreground border-white/10 hover:border-primary/50 hover:text-primary",
+                                            ? "bg-[#FF9500] text-black border-[#FF9500] shadow-[0px_0px_15px_rgba(255,149,0,0.5)] font-black scale-105" // Brighter, cleaner orange #FF9500
+                                            : "bg-transparent text-gray-400 border-white/5 hover:border-[#FF9500]/50 hover:text-[#FF9500]",
                                         isPink && isActive && "bg-pink-500 border-pink-800 shadow-[2px_2px_0px_0px_rgba(255,20,147,0.5)]",
                                         isCybernetic && "rounded-none",
                                         isCybernetic && isActive && "bg-cyan-950/50 text-cyan-400 border-cyan-500 shadow-[0_0_10px_rgba(0,255,255,0.2)]"
