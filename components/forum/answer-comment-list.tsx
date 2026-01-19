@@ -68,78 +68,83 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
     if (comments.length === 0) return null;
 
     return (
-        <div className="space-y-3 mt-4">
+        <div className="space-y-0 relative">
+            {/* Vertical line connecting comments - purely visual for the group */}
+            <div className="absolute left-[30px] top-0 bottom-4 w-0.5 bg-border/40 -z-10 hidden sm:block" />
+
             {comments.map((comment) => (
-                <div key={comment.id} className="group bg-secondary/30 rounded-lg p-3 border-2 border-border/40 hover:border-primary/30 transition-all">
-                    <div className="flex items-start gap-2.5">
-                        <Link href={`/kullanici/${comment.profiles?.username}`}>
-                            <Avatar className="h-7 w-7 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                <div key={comment.id} className="group relative pl-0 sm:pl-0 py-3 first:pt-0">
+                    <div className="flex items-start gap-3">
+                        <Link href={`/kullanici/${comment.profiles?.username}`} className="relative z-10 shrink-0">
+                            <Avatar className="h-8 w-8 ring-2 ring-background group-hover:ring-primary/20 transition-all">
                                 <AvatarImage src={comment.profiles?.avatar_url || ""} />
-                                <AvatarFallback className="text-[10px] font-bold bg-primary/10 text-primary">
+                                <AvatarFallback className="text-[10px] font-bold bg-muted text-muted-foreground">
                                     {comment.profiles?.username?.[0]?.toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                         </Link>
 
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5 mb-1">
+                        <div className="flex-1 min-w-0 pt-1">
+                            {/* Comment Header */}
+                            <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                                 <Link
                                     href={`/kullanici/${comment.profiles?.username}`}
-                                    className="font-heading font-bold text-xs hover:text-primary transition-colors"
+                                    className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
                                 >
                                     @{comment.profiles?.username || "Anonim"}
+                                    {comment.profiles?.is_verified && (
+                                        <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
+                                    )}
                                 </Link>
-                                {comment.profiles?.is_verified && (
-                                    <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
-                                )}
-                                <span className="text-[10px] text-muted-foreground">
-                                    • {formatDistanceToNow(new Date(comment.created_at), { locale: tr })}
+                                <span className="text-muted-foreground text-xs font-medium">·</span>
+                                <span className="text-xs text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
+                                    {formatDistanceToNow(new Date(comment.created_at), { locale: tr })}
                                 </span>
                             </div>
-                            <p className="text-xs text-foreground/90 leading-relaxed mb-2">
+
+                            {/* Content */}
+                            <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap break-words font-medium">
                                 {comment.content}
                             </p>
 
-                            {/* Like button */}
-                            <CommentLikeButton
-                                commentId={comment.id}
-                                initialLikeCount={comment.likeCount || 0}
-                                initialIsLiked={comment.isLiked || false}
-                                isLoggedIn={!!currentUserId}
-                            />
-                        </div>
+                            {/* Actions Footer */}
+                            <div className="flex items-center gap-4 mt-2">
+                                <CommentLikeButton
+                                    commentId={comment.id}
+                                    initialLikeCount={comment.likeCount || 0}
+                                    initialIsLiked={comment.isLiked || false}
+                                    isLoggedIn={!!currentUserId}
+                                />
 
-                        {(currentUserId === comment.author_id || isAdmin) && (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive border-2 border-transparent hover:border-destructive/40 rounded-lg active:scale-95"
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Yorumu silmek istiyor musunuz?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Bu işlem geri alınamaz.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>İptal</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() => handleDelete(comment.id)}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            disabled={isDeleting === comment.id}
-                                        >
-                                            {isDeleting === comment.id ? "Siliniyor..." : "Sil"}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        )}
+                                {(currentUserId === comment.author_id || isAdmin) && (
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <button className="text-xs text-muted-foreground hover:text-destructive font-medium transition-colors">
+                                                Sil
+                                            </button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Yorumu silmek istiyor musunuz?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Bu işlem geri alınamaz.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>İptal</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => handleDelete(comment.id)}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                    disabled={isDeleting === comment.id}
+                                                >
+                                                    {isDeleting === comment.id ? "Siliniyor..." : "Sil"}
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             ))}

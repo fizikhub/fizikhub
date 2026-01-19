@@ -12,9 +12,10 @@ interface VoteButtonProps {
     initialVotes: number;
     initialHasVoted?: boolean;
     className?: string;
+    startExpanded?: boolean;
 }
 
-export function VoteButton({ questionId, initialVotes, initialHasVoted = false, className }: VoteButtonProps) {
+export function VoteButton({ questionId, initialVotes, initialHasVoted = false, className, startExpanded = false }: VoteButtonProps) {
     const [votes, setVotes] = useState(initialVotes);
     const [isVoting, setIsVoting] = useState(false);
     const [hasVoted, setHasVoted] = useState(initialHasVoted);

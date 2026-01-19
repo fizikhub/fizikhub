@@ -240,150 +240,167 @@ export default async function QuestionPage({ params }: PageProps) {
     };
 
     return (
-        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden">
+        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
             <ScrollFixer />
             <BackgroundWrapper />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <div className="container py-4 sm:py-6 md:py-10 px-4 md:px-6 max-w-6xl mx-auto relative z-10">
-                {/* Back Button */}
-                <div className="mb-4 sm:mb-6">
-                    <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 sm:ml-0 font-semibold uppercase text-xs tracking-wider" asChild>
-                        <Link href="/forum">
-                            <ArrowLeft className="h-4 w-4" />
-                            <span className="hidden sm:inline">FORUMA DÖN</span>
-                            <span className="sm:hidden">GERİ</span>
-                        </Link>
-                    </Button>
-                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 sm:gap-6 lg:gap-8">
-                    {/* Main Content */}
-                    <div className="space-y-6">
-                        {/* Question Card */}
-                        <div className="bg-card border border-gray-300/60 dark:border-gray-700/60 overflow-hidden rounded-2xl shadow-sm">
-                            <div className="p-6 sm:p-8">
-                                {/* Author Header */}
-                                <div className="flex items-center gap-3 mb-5">
-                                    <Link href={`/kullanici/${question.profiles?.username}`}>
-                                        <Avatar className="h-12 w-12 ring-2 ring-border hover:ring-primary/30 transition-all">
+            <div className="container max-w-7xl mx-auto py-4 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">
+
+                    {/* Main Content Column */}
+                    <main className="min-w-0 w-full">
+                        {/* Back Button & Header */}
+                        <div className="flex items-center gap-4 mb-4 px-4 sm:px-0">
+                            <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 font-bold uppercase text-xs tracking-wider text-muted-foreground hover:text-foreground" asChild>
+                                <Link href="/forum">
+                                    <ArrowLeft className="h-4 w-4 stroke-[3px]" />
+                                    <span className="hidden sm:inline">Foruma Dön</span>
+                                    <span className="sm:hidden">Geri</span>
+                                </Link>
+                            </Button>
+                        </div>
+
+                        {/* QUESTION CARD - Twitter Style / Neo-Brutalist */}
+                        <div className="bg-card border-y sm:border-2 border-border sm:rounded-xl overflow-hidden shadow-none sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:sm:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all">
+
+                            {/* 1. Header: Author & Context */}
+                            <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
+                                <div className="flex items-center gap-3">
+                                    <Link href={`/kullanici/${question.profiles?.username}`} className="block group">
+                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-border group-hover:border-primary transition-colors">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="text-lg bg-primary/10 text-primary font-bold">
+                                            <AvatarFallback className="bg-primary/10 text-primary font-black text-sm sm:text-base">
                                                 {question.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Link>
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-1.5 mb-0.5">
-                                            <Link
-                                                href={`/kullanici/${question.profiles?.username}`}
-                                                className="font-semibold text-base hover:text-primary transition-colors"
-                                            >
-                                                @{question.profiles?.username || "Anonim"}
-                                            </Link>
+                                    <div className="flex flex-col leading-tight">
+                                        <Link
+                                            href={`/kullanici/${question.profiles?.username}`}
+                                            className="font-bold text-base sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
+                                        >
+                                            @{question.profiles?.username || "Anonim"}
                                             {question.profiles?.is_verified && (
                                                 <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">
+                                        </Link>
+                                        <span className="text-xs sm:text-sm text-muted-foreground font-mono font-medium">
                                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
-                                        </p>
-                                    </div>
-
-                                    {/* Status Badges */}
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {isSolved && (
-                                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-6 text-xs">
-                                                <CheckCircle2 className="h-3 w-3" />
-                                                Çözüldü
-                                            </Badge>
-                                        )}
-                                        <Badge variant="secondary" className="bg-secondary/50 h-6 text-xs">
-                                            {question.category || "Genel"}
-                                        </Badge>
+                                        </span>
                                     </div>
                                 </div>
 
+                                {/* Top Actions (Menu) */}
+                                {(isAdmin || user?.id === question.author_id) && (
+                                    <EditQuestionDialog questionId={question.id} initialContent={question.content} />
+                                )}
+                            </div>
+
+                            {/* 2. Content Body */}
+                            <div className="px-4 sm:px-6 py-2">
                                 {/* Title */}
-                                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-5 leading-tight">
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-black mb-4 leading-tight text-foreground tracking-tight text-balance">
                                     {question.title}
                                 </h1>
 
-                                {/* Content */}
-                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-6">
+                                {/* Markdown Content */}
+                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-relaxed text-foreground/90 font-medium">
                                     <MarkdownRenderer content={question.content} />
-                                    {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
-                                        <div className="mt-4 text-xs text-muted-foreground italic flex items-center gap-1">
-                                            <Edit2 className="h-3 w-3" />
-                                            (Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })})
-                                        </div>
-                                    )}
                                 </div>
 
-                                {/* Tags */}
-                                {question.tags && question.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {question.tags.map((tag: string) => (
-                                            <Badge key={tag} variant="outline" className="text-sm px-3 py-1 border-muted-foreground/20 hover:bg-muted/50 transition-colors">
-                                                #{tag}
-                                            </Badge>
-                                        ))}
+                                {/* Edit Timestamp */}
+                                {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
+                                    <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground/70 italic font-mono">
+                                        <Edit2 className="h-3 w-3" />
+                                        Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })}
                                     </div>
                                 )}
 
-                                {/* Actions Bar */}
-                                <div className="flex items-center justify-between gap-4 pt-5 border-t border-border/50">
-                                    <div className="flex items-center gap-3 flex-wrap">
-                                        <VoteButton
-                                            questionId={question.id}
-                                            initialVotes={question.votes || 0}
-                                            initialHasVoted={hasVoted}
-                                        />
+                                {/* Tags & Badges */}
+                                <div className="mt-6 flex flex-wrap gap-2">
+                                    <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors h-7 px-3 rounded-md text-xs font-bold uppercase tracking-wider">
+                                        {question.category || "Genel"}
+                                    </Badge>
 
-                                        <div className="flex items-center gap-2 text-muted-foreground px-3 py-1.5 rounded-full bg-muted/30 text-sm">
-                                            <MessageSquare className="h-4 w-4" />
-                                            <span className="font-medium">{answers?.length || 0}</span>
-                                            <span className="hidden sm:inline">Cevap</span>
-                                        </div>
+                                    {isSolved && (
+                                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-7 px-3 rounded-md text-xs font-bold uppercase">
+                                            <CheckCircle2 className="h-3 w-3" />
+                                            Çözüldü
+                                        </Badge>
+                                    )}
 
-                                        <BookmarkButton
-                                            type="question"
-                                            itemId={question.id}
-                                            initialBookmarked={!!userBookmark}
-                                        />
+                                    {question.tags?.map((tag: string) => (
+                                        <Badge key={tag} variant="outline" className="h-7 border-border hover:bg-muted font-mono text-xs">
+                                            #{tag}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
 
-                                        <ReportButton
-                                            contentType="question"
-                                            contentId={question.id}
-                                        />
+                            {/* 3. Stats Divider */}
+                            <div className="px-4 sm:px-6 py-4 flex items-center gap-4 border-b border-border/50 text-sm font-bold text-muted-foreground mt-2">
+                                <div className="flex items-center gap-1">
+                                    <span className="text-foreground">{question.views?.toLocaleString('tr-TR') || 0}</span>
+                                    <span className="font-medium text-muted-foreground/70">Görüntülenme</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-foreground">{answers?.length || 0}</span>
+                                    <span className="font-medium text-muted-foreground/70">Cevap</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-foreground">{question.votes || 0}</span>
+                                    <span className="font-medium text-muted-foreground/70">Oy</span>
+                                </div>
+                            </div>
 
-                                        {(isAdmin || user?.id === question.author_id) && (
-                                            <EditQuestionDialog questionId={question.id} initialContent={question.content} />
-                                        )}
-                                    </div>
+                            {/* 4. Action Bar (Twitter Style) */}
+                            <div className="flex items-center justify-between px-2 sm:px-6 py-2 sm:py-3 bg-muted/5">
+                                {/* Left Actions (Vote, Comment, Share) */}
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                    <VoteButton
+                                        questionId={question.id}
+                                        initialVotes={question.votes || 0}
+                                        initialHasVoted={hasVoted}
+                                        startExpanded={true} // Add this prop to VoteButton if needed, or style it there
+                                    />
 
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <Eye className="h-4 w-4" />
-                                        <span>{(question.views || 0).toLocaleString('tr-TR')}</span>
-                                        <span className="hidden sm:inline">görüntülenme</span>
-                                    </div>
+                                    <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10 rounded-full h-10 px-4 transition-all" onClick={() => {
+                                        document.getElementById('answer-form')?.scrollIntoView({ behavior: 'smooth' });
+                                    }}>
+                                        <MessageSquare className="h-5 w-5 stroke-[2.5px]" />
+                                        <span className="font-bold hidden sm:inline">Cevapla</span>
+                                    </Button>
+
+                                    <ReportButton
+                                        contentType="question"
+                                        contentId={question.id}
+                                    />
+                                </div>
+
+                                {/* Right Actions (Bookmark) */}
+                                <div className="flex items-center">
+                                    <BookmarkButton
+                                        type="question"
+                                        itemId={question.id}
+                                        initialBookmarked={!!userBookmark}
+                                    />
+                                    {/* Share Button Placeholder if needed */}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Answer Button - Scroll to form */}
-                        <div className="mt-6">
-                            <ScrollToAnswerButton />
-                        </div>
-
                         {/* Answers Section */}
-                        <div className="space-y-4 mt-8">
-                            <div className="flex items-center justify-between px-1">
-                                <h2 className="text-xl sm:text-2xl font-bold">
-                                    {answers?.length || 0} Cevap
-                                </h2>
+                        <div className="mt-6 sm:mt-10 max-w-full">
+                            <div className="flex items-center justify-between px-1 mb-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5 text-primary" />
+                                    Cevaplar
+                                    <span className="text-muted-foreground text-base font-medium ml-1 bg-muted px-2 py-0.5 rounded-full">{answers?.length || 0}</span>
+                                </h3>
                             </div>
 
                             <AnswerList
@@ -395,62 +412,45 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* Related Questions */}
-                        <RelatedQuestions
-                            currentQuestionId={question.id}
-                            category={question.category || "Genel"}
-                        />
-                    </div>
+                        <div className="mt-12 pt-8 border-t-2 border-border/40">
+                            <h4 className="font-black text-lg mb-4 opacity-80 uppercase tracking-widest pl-1">Benzer Tartışmalar</h4>
+                            <RelatedQuestions
+                                currentQuestionId={question.id}
+                                category={question.category || "Genel"}
+                            />
+                        </div>
+                    </main>
 
                     {/* Stats Sidebar (Desktop) */}
-                    <aside className="hidden lg:block space-y-4">
-                        {/* Stats Card */}
-                        <div className="border border-gray-300/60 dark:border-gray-700/60 bg-card rounded-2xl sticky top-24 shadow-sm">
-                            <div className="p-4 border-b border-gray-300/40 dark:border-gray-700/40">
-                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    İstatistikler
-                                </h3>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-primary/10">
-                                        <Eye className="h-4 w-4 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xl font-bold">{(question.views || 0).toLocaleString('tr-TR')}</p>
-                                        <p className="text-xs text-muted-foreground">Görüntülenme</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-purple-500/10">
-                                        <MessageSquare className="h-4 w-4 text-purple-500" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xl font-bold">{answers?.length || 0}</p>
-                                        <p className="text-xs text-muted-foreground">Cevap</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-orange-500/10">
-                                        <Flame className="h-4 w-4 text-orange-500" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xl font-bold">{question.votes || 0}</p>
-                                        <p className="text-xs text-muted-foreground">Oy</p>
-                                    </div>
+                    <aside className="hidden lg:block space-y-6 w-full sticky top-24 pt-10">
+                        {/* Sidebar content simplified/designed */}
+                        <div className="brutalist-card p-6 rounded-xl bg-card">
+                            <h3 className="font-black text-lg mb-4 flex items-center gap-2">
+                                <Flame className="h-5 w-5 text-orange-500 fill-orange-500" />
+                                Trendler
+                            </h3>
+                            <div className="space-y-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Fizik dünyasında haftanın en çok konuşulan konularına göz at.
+                                </p>
+                                <div className="space-y-2">
+                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
+                                        <Link href="/forum?sort=popular">Popüler Sorular</Link>
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
+                                        <Link href="/forum?category=Kuantum">#Kuantum</Link>
+                                    </Button>
+                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
+                                        <Link href="/forum?category=Astrofizik">#Astrofizik</Link>
+                                    </Button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Admin/Author Actions */}
                         {(isAdmin || user?.id === question.author_id) && (
-                            <div className="border border-destructive/40 bg-card rounded-2xl shadow-sm">
-                                <div className="p-4 border-b border-destructive/30">
-                                    <h3 className="text-xs font-semibold text-destructive uppercase tracking-wider">İşlemler</h3>
-                                </div>
-                                <div className="p-4 space-y-2">
-                                    <EditQuestionDialog questionId={question.id} initialContent={question.content} />
+                            <div className="border-2 border-destructive/20 bg-destructive/5 rounded-xl p-6">
+                                <h3 className="text-sm font-black text-destructive uppercase tracking-wider mb-4">Yönetici Paneli</h3>
+                                <div className="space-y-3">
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
                                 </div>
                             </div>
@@ -458,12 +458,13 @@ export default async function QuestionPage({ params }: PageProps) {
                     </aside>
                 </div>
             </div>
+
             <ViewTracker questionId={question.id} />
             <StickyActionBar
                 questionId={question.id}
                 votes={question.votes || 0}
                 hasVoted={hasVoted}
             />
-        </div >
+        </div>
     );
 }

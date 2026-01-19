@@ -229,177 +229,184 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-0">
             {/* Answer List */}
-            <div className="space-y-6">
+            <div className="relative">
                 {answers.length === 0 ? (
-                    <div className="py-12 text-center border rounded-xl bg-muted/10 border-dashed border-muted-foreground/20">
+                    <div className="py-12 text-center border-y border-border/40 bg-muted/5">
                         <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
                             <MessageSquare className="h-6 w-6 text-muted-foreground" />
                         </div>
-                        <h3 className="text-lg font-medium mb-1">Henüz cevap yok</h3>
-                        <p className="text-muted-foreground text-sm">Bu soruya ilk cevabı sen ver!</p>
+                        <h3 className="text-lg font-bold mb-1">Henüz cevap yok</h3>
+                        <p className="text-muted-foreground text-sm font-medium">Bu soruya ilk cevabı sen ver!</p>
                     </div>
                 ) : (
-                    answers.map((answer) => (
+                    answers.map((answer, index) => (
                         <div
                             key={answer.id}
                             id={`answer-${answer.id}`}
                             className={cn(
-                                "group bg-card border-2 border-border/60 rounded-xl overflow-hidden relative transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_25px_-10px_rgba(var(--primary),0.25)]",
-                                answer.is_accepted && "border-green-500 bg-green-500/5 hover:border-green-500"
+                                "group relative transition-all duration-300 border-b border-border/40 hover:bg-muted/5",
+                                answer.is_accepted && "bg-green-500/5 hover:bg-green-500/10"
                             )}
                         >
-                            {/* Cosmic background effect */}
-                            <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                            {/* Thread Line - Connecting to next item if needed, currently just visual marker */}
+                            {/* <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-border/40 group-hover:bg-border/60 transition-colors" /> */}
 
-                            {/* Accepted Badge */}
-                            {answer.is_accepted && (
-                                <div className="bg-green-500 text-white text-sm font-bold px-6 py-2.5 flex items-center gap-2 border-b-2 border-green-600/30">
-                                    <CheckCircle2 className="h-4 w-4" />
-                                    Kabul Edilen Cevap
+                            <div className="flex gap-3 sm:gap-4 p-4 sm:p-6">
+                                {/* Left: Avatar column */}
+                                <div className="flex flex-col items-center gap-2 shrink-0">
+                                    <Link href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
+                                        <Avatar className={cn(
+                                            "h-10 w-10 sm:h-12 sm:w-12 border-2 border-transparent transition-all",
+                                            answer.is_accepted ? "border-green-500 ring-2 ring-green-500/20" : "group-hover:border-border"
+                                        )}>
+                                            <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
+                                            <AvatarFallback className="bg-secondary text-secondary-foreground font-black text-sm">
+                                                {answer.profiles?.username?.[0]?.toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Link>
                                 </div>
-                            )}
 
-                            <div className="p-5 sm:p-6 relative z-10">
-                                {/* Author Info */}
-                                <div className="flex items-center justify-between mb-5">
-                                    <div className="flex items-center gap-3">
-                                        <Link href={`/kullanici/${answer.profiles?.username}`} className="group/avatar relative">
-                                            <Avatar className="h-11 w-11 ring-2 ring-transparent group-hover/avatar:ring-primary/20 transition-all duration-300">
-                                                <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                                <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                                                    {answer.profiles?.username?.[0]?.toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        </Link>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <Link
-                                                    href={`/kullanici/${answer.profiles?.username}`}
-                                                    className="font-heading font-bold text-base hover:text-primary transition-colors"
-                                                >
-                                                    {answer.profiles?.username || "Anonim"}
-                                                </Link>
+                                {/* Right: Content column */}
+                                <div className="flex-1 min-w-0">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center flex-wrap gap-x-2">
+                                            <Link
+                                                href={`/kullanici/${answer.profiles?.username}`}
+                                                className="font-bold text-base hover:text-primary transition-colors flex items-center gap-1"
+                                            >
+                                                @{answer.profiles?.username || "Anonim"}
                                                 {answer.profiles?.is_verified && (
                                                     <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                                 )}
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">
+                                            </Link>
+                                            <span className="text-muted-foreground text-sm font-medium">·</span>
+                                            <span className="text-sm text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
                                                 {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
-                                            </p>
+                                            </span>
+                                            {answer.is_accepted && (
+                                                <span className="flex items-center gap-1 text-green-600 bg-green-500/10 px-2 py-0.5 rounded text-xs font-bold uppercase ml-2">
+                                                    <CheckCircle2 className="h-3 w-3" />
+                                                    Çözüm
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Actions Menu */}
+                                        <div className="flex items-center">
+                                            {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleToggleAccept(answer.id)}
+                                                    className={cn(
+                                                        "h-8 w-8 rounded-full hover:bg-green-500/10 transition-colors mr-1",
+                                                        answer.is_accepted ? "text-green-600" : "text-muted-foreground hover:text-green-600"
+                                                    )}
+                                                    title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
+                                                >
+                                                    <CheckCircle2 className="h-5 w-5" />
+                                                </Button>
+                                            )}
+
+                                            {(user?.id === answer.author_id || user?.email?.includes('admin')) && (
+                                                <DeleteAnswerButton
+                                                    answerId={answer.id}
+                                                    questionId={questionId}
+                                                    authorId={answer.author_id}
+                                                />
+                                            )}
+
+                                            <ReportDialog
+                                                resourceId={answer.id}
+                                                resourceType="answer"
+                                                trigger={
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/50 hover:text-destructive rounded-full">
+                                                        <Flag className="h-4 w-4" />
+                                                    </Button>
+                                                }
+                                            />
                                         </div>
                                     </div>
 
-                                    {/* Actions - Admin/Author */}
-                                    <div className="flex items-center gap-2">
-                                        {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
+                                    {/* Content */}
+                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-3 text-foreground/90 font-medium">
+                                        <MarkdownRenderer content={answer.content} />
+                                    </div>
+
+                                    {/* Action Bar (Twitter Style) */}
+                                    <div className="flex items-center justify-between max-w-md mt-3">
+                                        {/* Like Group */}
+                                        <div className="flex items-center group/like">
+                                            <AnswerLikeButton
+                                                answerId={answer.id}
+                                                initialLikeCount={answer.likeCount || 0}
+                                                initialIsLiked={answer.isLiked || false}
+                                                isLoggedIn={!!user}
+                                            />
+                                        </div>
+
+                                        {/* Reply Group */}
+                                        <div className="flex items-center group/reply">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => handleToggleAccept(answer.id)}
-                                                className={cn(
-                                                    "h-9 px-3 border-2 rounded-lg active:scale-95 transition-all",
-                                                    answer.is_accepted
-                                                        ? "border-primary text-primary hover:bg-primary/10"
-                                                        : "border-border hover:border-primary/40 hover:bg-primary/5"
-                                                )}
-                                                title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
+                                                className="flex items-center gap-1.5 px-2 hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors rounded-full h-8"
+                                                onClick={() => toggleComments(answer.id)}
                                             >
-                                                <CheckCircle2 className={cn("h-4 w-4 mr-1", answer.is_accepted && "fill-current")} />
-                                                <span className="text-xs font-bold">{answer.is_accepted ? "Kaldır" : "Kabul Et"}</span>
+                                                <MessageSquare className="h-4 w-4" />
+                                                <span className="text-xs font-bold">
+                                                    {answer.comments && answer.comments.length > 0
+                                                        ? answer.comments.length
+                                                        : "Yanıtla"}
+                                                </span>
                                             </Button>
-                                        )}
-                                        <DeleteAnswerButton
-                                            answerId={answer.id}
-                                            questionId={questionId}
-                                            authorId={answer.author_id}
-                                        />
-                                        <ReportDialog
-                                            resourceId={answer.id}
-                                            resourceType="answer"
-                                            trigger={
-                                                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive border-2 border-transparent hover:border-destructive/40 rounded-lg active:scale-95 transition-all">
-                                                    <Flag className="h-4 w-4" />
-                                                </Button>
-                                            }
-                                        />
+                                        </div>
+
+                                        {/* Share / More placeholder */}
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground/50 hover:text-primary rounded-full hover:bg-primary/10">
+                                            <ArrowBigUp className="h-5 w-5" />
+                                        </Button>
                                     </div>
-                                </div>
 
-                                {/* Answer Content */}
-                                <div className="prose prose-base md:prose-lg prose-neutral dark:prose-invert max-w-none mb-5">
-                                    <MarkdownRenderer content={answer.content} />
-                                </div>
-
-                                {/* Action Bar */}
-                                <div className="flex items-center gap-3 pt-4 border-t-2 border-border/40">
-                                    {/* Like Button */}
-                                    <AnswerLikeButton
-                                        answerId={answer.id}
-                                        initialLikeCount={answer.likeCount || 0}
-                                        initialIsLiked={answer.isLiked || false}
-                                        isLoggedIn={!!user}
-                                    />
-
-                                    {/* Comment Button */}
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-border bg-secondary/50 hover:border-primary/40 hover:bg-primary/5 transition-all duration-300 active:scale-95"
-                                        onClick={() => toggleComments(answer.id)}
-                                    >
-                                        <MessageSquare className="h-4 w-4" />
-                                        <span className="text-sm font-bold">
-                                            {answer.comments && answer.comments.length > 0
-                                                ? `${answer.comments.length} Yorum`
-                                                : "Yorum Yap"}
-                                        </span>
-                                    </Button>
-                                </div>
-
-                                {/* Comments Section */}
-                                {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
-                                    <div className="mt-5 pt-5 border-t-2 border-border/40 animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <RealtimeCommentList
-                                            answerId={answer.id}
-                                            initialComments={answer.comments || []}
-                                            currentUserId={user?.id}
-                                            questionId={questionId}
-                                            onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
-                                            onCommentsChange={(comments) => {
-                                                setAnswers(prev => prev.map(a => {
-                                                    if (a.id === answer.id) {
-                                                        if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
-                                                            return { ...a, comments };
-                                                        }
-                                                    }
-                                                    return a;
-                                                }));
-                                            }}
-                                        />
-
-                                        {expandedComments[answer.id] ? (
-                                            <AnswerCommentForm
+                                    {/* Expanded Comments */}
+                                    {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
+                                        <div className="mt-4 pl-4 border-l-2 border-border/40">
+                                            {/* Show comments here */}
+                                            <RealtimeCommentList
                                                 answerId={answer.id}
+                                                initialComments={answer.comments || []}
+                                                currentUserId={user?.id}
                                                 questionId={questionId}
-                                                onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
-                                                onCancel={() => toggleComments(answer.id)}
+                                                onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
+                                                onCommentsChange={(comments) => {
+                                                    setAnswers(prev => prev.map(a => {
+                                                        if (a.id === answer.id) {
+                                                            if (JSON.stringify(a.comments) !== JSON.stringify(comments)) {
+                                                                return { ...a, comments };
+                                                            }
+                                                        }
+                                                        return a;
+                                                    }));
+                                                }}
                                             />
-                                        ) : (
-                                            user && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="mt-3 text-sm border-2 border-border rounded-lg hover:border-primary/40 hover:text-primary active:scale-95 transition-all"
-                                                    onClick={() => toggleComments(answer.id)}
-                                                >
-                                                    Yorum Ekle
-                                                </Button>
-                                            )
-                                        )}
-                                    </div>
-                                )}
+
+                                            {expandedComments[answer.id] && (
+                                                <div className="mt-4">
+                                                    <AnswerCommentForm
+                                                        answerId={answer.id}
+                                                        questionId={questionId}
+                                                        onCommentAdded={(comment) => handleCommentAdded(answer.id, comment)}
+                                                        onCancel={() => toggleComments(answer.id)}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))
@@ -408,35 +415,52 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
             {/* New Answer Form */}
             {user ? (
-                <div id="answer-form" className="border-2 border-border/60 bg-card rounded-xl p-5 sm:p-6 hover:border-primary/40 transition-colors duration-300 scroll-mt-24">
-                    <h3 className="text-lg font-heading font-bold mb-4">Cevabınızı Yazın</h3>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="min-h-[200px] border-2 border-border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40 transition-all">
-                            <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
-                                <MarkdownEditor
-                                    value={newAnswer}
-                                    onChange={setNewAnswer}
-                                    placeholder="Cevabınızı buraya yazın... (Markdown desteklenir)"
-                                />
-                            </Suspense>
+                <div id="answer-form" className="mt-8 border-t-2 border-border/40 pt-8 sm:px-4">
+                    {/* Simplified "Tweet your reply" style editor */}
+                    <div className="flex gap-4">
+                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border hidden sm:block">
+                            <AvatarImage src={user.user_metadata?.avatar_url || ""} className="object-cover" />
+                            <AvatarFallback className="bg-muted text-muted-foreground font-bold">
+                                {user.user_metadata?.username?.[0]?.toUpperCase() || "S"}
+                            </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1">
+                            <h3 className="text-lg font-black mb-4 flex items-center gap-2">
+                                <span className="text-primary">Senin</span> Görüşün Ne?
+                            </h3>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="min-h-[150px] border-2 border-border rounded-xl overflow-hidden focus-within:border-primary/50 transition-all bg-card/50">
+                                    <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
+                                        <MarkdownEditor
+                                            value={newAnswer}
+                                            onChange={setNewAnswer}
+                                            placeholder="Tartışmaya katıl..."
+                                        />
+                                    </Suspense>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Button
+                                        type="submit"
+                                        disabled={isSubmitting || !newAnswer.trim()}
+                                        className="px-6 rounded-full font-bold h-10 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] border-2 border-black dark:border-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all bg-primary text-primary-foreground"
+                                    >
+                                        {isSubmitting ? "Gönderiliyor..." : "Yanıtla"}
+                                    </Button>
+                                </div>
+                            </form>
                         </div>
-                        <div className="flex justify-end">
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting || !newAnswer.trim()}
-                                className="px-6 border-2 border-primary hover:border-primary/80 active:scale-95 transition-all font-bold"
-                            >
-                                {isSubmitting ? "Gönderiliyor..." : "Cevabı Gönder"}
-                            </Button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             ) : (
-                <div className="p-6 rounded-xl bg-secondary/30 text-center border-2 border-dashed border-border">
-                    <p className="text-sm text-muted-foreground mb-4 font-medium">Cevap yazmak için giriş yapmalısın.</p>
-                    <Button variant="outline" size="sm" className="border-2 active:scale-95 transition-all" asChild>
-                        <a href="/login">Giriş Yap</a>
-                    </Button>
+                <div className="p-8 rounded-2xl bg-muted/10 text-center border-2 border-dashed border-border mt-8">
+                    <div className="max-w-xs mx-auto space-y-4">
+                        <h3 className="text-xl font-bold">Tartışmaya Katıl</h3>
+                        <p className="text-sm text-muted-foreground font-medium">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
+                        <Button className="w-full font-bold rounded-full" asChild>
+                            <a href="/login">Giriş Yap / Kayıt Ol</a>
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>
