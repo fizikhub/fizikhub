@@ -54,14 +54,13 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                 "w-full max-w-2xl mx-auto mb-6 sm:mb-10 z-[50]"
             )}
         >
-            {/* Top Bar (Simplified - No Traffic Lights) */}
-            <div className="relative h-8 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
+            <div className="relative h-7 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
                 <div className="absolute left-5 flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] shadow-sm" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] shadow-sm" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F] shadow-sm" />
+                    <div className="w-2 h-2 rounded-full bg-[#FF5F56] shadow-sm" />
+                    <div className="w-2 h-2 rounded-full bg-[#FFBD2E] shadow-sm" />
+                    <div className="w-2 h-2 rounded-full bg-[#27C93F] shadow-sm" />
                 </div>
-                <div className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Paylaş</div>
+                <div className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Paylaş</div>
             </div>
 
             <div className="p-3">
@@ -93,9 +92,9 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                     "Kapat"
                                 ) : (
                                     <span className="flex items-center gap-1 overflow-hidden">
-                                        <span className="truncate">Ne paylaşmak istersin,</span>
-                                        <span className="text-foreground font-semibold truncate hidden sm:inline">{firstName}?</span>
-                                        <span className="text-foreground font-semibold truncate sm:hidden">{firstName}?</span>
+                                        <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
+                                        <span className="truncate shrink min-w-0 hidden sm:inline">Ne paylaşmak istersin,</span>
+                                        <span className="text-foreground font-bold shrink-0">{firstName}?</span>
                                         <span className="text-primary animate-pulse font-light ml-0.5">|</span>
                                     </span>
                                 )}
