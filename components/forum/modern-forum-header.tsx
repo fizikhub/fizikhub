@@ -118,8 +118,8 @@ export function ModernForumHeader() {
         <div className="flex flex-col gap-4 sm:gap-8 mb-6 sm:mb-8">
             {/* NEOBRUTALIST HERO SECTION */}
             <div className={cn(
-                "relative rounded-xl overflow-hidden min-h-[140px] sm:min-h-[240px] flex items-center justify-center p-3 sm:p-10",
-                "bg-card border-none sm:border-2 border-border sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
+                "relative rounded-xl overflow-hidden min-h-[180px] sm:min-h-[240px] flex items-center justify-center p-4 sm:p-10",
+                "bg-card border-2 border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
                 isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none min-h-[160px] bg-black",
                 isPink && "bg-pink-50 border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,1)] sm:shadow-[8px_8px_0px_0px_rgba(255,192,203,1)]",
                 isDarkPink && "bg-zinc-950 border-pink-900/50"
@@ -146,29 +146,43 @@ export function ModernForumHeader() {
                 <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center gap-4 sm:gap-8">
 
                     {/* Title */}
-                    <div className="hidden sm:block space-y-2 sm:space-y-3 bg-background/80 backdrop-blur-sm p-3 sm:p-6 rounded-xl border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                         <h1 className={cn(
+                    <div className="space-y-2 sm:space-y-3 bg-background/80 backdrop-blur-sm p-3 sm:p-6 rounded-xl border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] inline-block">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className={cn(
                                 "text-2xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase",
                                 isPink && "text-pink-600",
-                                isCybernetic && "cyber-text text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 animate-pulse"
-                            )}>
+                                isCybernetic && "cyber-text text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600"
+                            )}
+                        >
                             Aklında Ne Var?
-                        </h1>
-                         <p className={cn(
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className={cn(
                                 "text-muted-foreground font-bold text-xs sm:text-lg uppercase tracking-widest",
                                 isPink && "text-pink-900/60"
-                            )}>
+                            )}
+                        >
                             Bilim topluluğu seni bekliyor.
-                        </p>
+                        </motion.p>
                     </div>
 
                     {/* Interactive Search/Ask Bar - NEOBRUTALIST */}
-                    <div className="w-full relative group">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="w-full relative group"
+                    >
                         <CreateQuestionDialog
                             trigger={
                                 <div className={cn(
                                     "w-full cursor-pointer overflow-hidden relative",
-                                    "bg-background/90 backdrop-blur-sm sm:bg-background border mt-10 sm:mt-0 border-border sm:border-2",
+                                    "bg-background/90 backdrop-blur-sm sm:bg-background border border-border sm:border-2",
                                     "rounded-xl transition-all duration-200",
                                     "shadow-sm sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]",
                                     "hover:bg-accent/5",
@@ -200,13 +214,13 @@ export function ModernForumHeader() {
 
                                     {/* Action Hint */}
                                     <div className={cn(
-                                        "hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black uppercase tracking-wider border-2 border-foreground",
+                                        "hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-black uppercase tracking-wider border border-foreground",
                                         "bg-foreground text-background",
                                         isPink && "bg-pink-600 text-white border-pink-800",
                                         isCybernetic && "bg-cyan-900/50 text-cyan-400 border-cyan-500 rounded-none"
                                     )}>
                                         <span>Başlat</span>
-                                        <ArrowRight className="w-4 h-4 stroke-[3px]" />
+                                        <ArrowRight className="w-4 h-4 stroke-[2px]" />
                                     </div>
                                     <div className="sm:hidden w-8 h-8 flex items-center justify-center text-muted-foreground/50">
                                         <ArrowRight className="w-4 h-4" />
@@ -215,7 +229,7 @@ export function ModernForumHeader() {
                                 </div>
                             }
                         />
-                    </div>
+                    </motion.div>
                 </div>
             </div>
 

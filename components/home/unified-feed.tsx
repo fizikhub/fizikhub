@@ -90,7 +90,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
 
                         {/* Injected Content - Soft styling */}
                         {index === 2 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 p-6 border border-primary/10">
+                            <div className="mt-6">
                                 <CommunityInviteBanner />
                             </div>
                         )}
