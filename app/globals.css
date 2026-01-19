@@ -928,7 +928,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
   background: rgb(var(--muted-foreground));
-  border: 2px solid rgb(var(--secondary));
+  border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
