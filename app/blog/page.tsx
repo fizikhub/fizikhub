@@ -39,10 +39,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     // --- NEW FILTERING LOGIC ---
     if (category) {
         if (category === "Blog") {
-            // "Blog" means everything EXCEPT Book Reviews and Experiments
+            // "Blog" means everything EXCEPT Book Reviews and Experiments, AND exclude writers (show only community)
             dbQuery = dbQuery
                 .neq("category", "Kitap İncelemesi")
-                .neq("category", "Deney");
+                .neq("category", "Deney")
+                // Only showing community posts for "Blog" path, as per user request to hide "Makale" (Writer) cards
+                .eq("profiles.is_writer", false);
         } else {
             // "Kitap İncelemesi" or "Deney" -> Specific match
             dbQuery = dbQuery.eq("category", category);
@@ -50,8 +52,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     } else if (!query) {
         // Default (All view) - Show everything? Or should default be "Blog"?
         // For now, if no category is selected, we show EVERYTHING.
-        // If user wants default to be "Blog" (excluding others), we can change valid logic.
-        // Let's assume URL '/blog' shows everything mixed.
+        // Default (All view) - If user lands on /blog without category.
+        // User requested: "blog sayfasında sadece blog yazılarının kartları gözüksün".
+        // Let's enforce the "Blog" behavior by default unless search query is present.
+        // Or if Tümü is selected (which maps to undefined here), we should arguably show everything?
+        // But the user said "currently article cards are also visible and they are green", implying they dislike the mix.
+        // I'll make the default view match the "Blog" category view (Community only).
+
+        dbQuery = dbQuery
+            .neq("category", "Kitap İncelemesi")
+            .neq("category", "Deney")
+            .eq("profiles.is_writer", false);
     }
 
     if (query) {

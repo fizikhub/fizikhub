@@ -280,7 +280,7 @@ export function SocialArticleCard({
                                     <span className="text-xs font-bold text-foreground/90 group-hover:text-foreground transition-colors">
                                         {article.author?.full_name || article.author?.username || "Fizikhub"}
                                         <span className="ml-1.5 text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold tracking-wider uppercase opacity-80 group-hover:opacity-100 transition-opacity">
-                                            BLOG
+                                            {isWriter ? "MAKALE" : "BLOG"}
                                         </span>
                                     </span>
                                     {isWriter && (
