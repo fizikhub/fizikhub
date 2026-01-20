@@ -18,7 +18,6 @@ interface ShareInputCardProps {
         full_name: string | null;
         avatar_url: string | null;
     } | null;
-} | null;
 }
 
 const CATEGORIES = [
