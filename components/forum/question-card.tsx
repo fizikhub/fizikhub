@@ -130,7 +130,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             transition={{ duration: 0.2 }}
             className={cn(
                 "group relative flex flex-col sm:flex-row gap-0",
-                "bg-card rounded-2xl overflow-hidden",
+                "bg-card rounded-3xl overflow-hidden", // Softer corners
                 "border-2 border-border transition-all duration-200",
                 "hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
                 isExpanded && "hover:shadow-none hover:translate-y-0 hover:translate-x-0 border-primary/50 shadow-lg",
@@ -250,8 +250,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         </h3>
                         <motion.div layout>
                             <p className={cn(
-                                "text-muted-foreground text-sm sm:text-base leading-relaxed opacity-90 group-hover/title:opacity-100 transition-opacity font-medium",
-                                !isExpanded && "line-clamp-6"
+                                "text-foreground/80 text-base sm:text-lg leading-relaxed font-medium", // Increased size and contrast
+                                !isExpanded && "line-clamp-4" // Show a bit more by default
                             )}>
                                 {stripHtml(question.content)}
                             </p>

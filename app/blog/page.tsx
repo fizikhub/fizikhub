@@ -81,7 +81,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     }
 
     return (
-        <div className="container md:px-32 px-4 py-8 max-w-[1400px] mx-auto min-h-screen">
+        <div className="container md:px-16 px-4 py-8 max-w-[1600px] mx-auto min-h-screen">
             <ModernExploreView
                 initialArticles={articles || []}
                 currentCategory={category}
