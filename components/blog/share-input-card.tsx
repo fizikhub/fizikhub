@@ -144,7 +144,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 "group relative flex flex-col overflow-visible rounded-[2rem] transition-all duration-300",
                 "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
                 "shadow-lg dark:shadow-none hover:shadow-xl transition-shadow", // Premium shadow
-                "w-full mb-4 sm:mb-6 z-[50]" // Removed max-w-3xl to let it fill container
+                "w-full mb-6 z-[20]" // Full width
             )}
         >
             <div className="relative h-7 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">

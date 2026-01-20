@@ -100,7 +100,7 @@ export function ModernExploreView({
 
             {/* Further Reduced Top Padding - Moved Up */}
             {/* Relaxed Container Width */}
-            <div className="container max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-6">
+            <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-6">
 
                 {/* Share Card - Reduced bottom margin */}
                 <div className="relative">
