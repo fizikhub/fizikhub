@@ -118,8 +118,8 @@ export function ModernForumHeader() {
         <div className="flex flex-col gap-4 sm:gap-8 mb-6 sm:mb-8">
             {/* NEOBRUTALIST HERO SECTION */}
             <div className={cn(
-                "relative rounded-xl overflow-hidden min-h-[180px] sm:min-h-[240px] flex items-center justify-center p-4 sm:p-10",
-                "bg-card border-2 border-border shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]",
+                "relative rounded-xl overflow-hidden min-h-[160px] sm:min-h-[240px] flex items-center justify-center p-3 sm:p-10",
+                "bg-card border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]",
                 isCybernetic && "cyber-card border-cyan-500/20 shadow-none !rounded-none min-h-[160px] bg-black",
                 isPink && "bg-pink-50 border-pink-200 shadow-[4px_4px_0px_0px_rgba(255,192,203,1)] sm:shadow-[8px_8px_0px_0px_rgba(255,192,203,1)]",
                 isDarkPink && "bg-zinc-950 border-pink-900/50"
@@ -146,7 +146,7 @@ export function ModernForumHeader() {
                 <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center gap-4 sm:gap-8">
 
                     {/* Title */}
-                    <div className="space-y-2 sm:space-y-3 bg-background/80 backdrop-blur-sm p-3 sm:p-6 rounded-xl border-2 border-border shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] inline-block">
+                    <div className="space-y-1 sm:space-y-3 bg-background/80 backdrop-blur-sm p-2 sm:p-6 rounded-lg sm:rounded-xl border-2 border-border shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] inline-block">
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -184,10 +184,10 @@ export function ModernForumHeader() {
                                     "w-full cursor-pointer overflow-hidden relative",
                                     "bg-background/90 backdrop-blur-sm sm:bg-background border border-border sm:border-2",
                                     "rounded-xl transition-all duration-200",
-                                    "shadow-sm sm:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]",
+                                    "shadow-sm sm:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]",
                                     "hover:bg-accent/5",
                                     "active:scale-[0.99]",
-                                    "flex items-center p-2 pr-3 pl-2 sm:pr-4 sm:pl-4 h-12 sm:h-20 gap-3 sm:gap-4",
+                                    "flex items-center p-1.5 pr-2 pl-1.5 sm:pr-4 sm:pl-4 h-10 sm:h-20 gap-2 sm:gap-4",
                                     isPink && "border-pink-500 shadow-[4px_4px_0px_0px_rgba(255,20,147,0.5)]",
                                     isCybernetic && "bg-black/90 border-cyan-500/50 !rounded-none shadow-none hover:shadow-[0_0_20px_rgba(0,255,255,0.3)] hover:border-cyan-400"
                                 )}>
@@ -245,9 +245,9 @@ export function ModernForumHeader() {
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
                                     className={cn(
-                                        "px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-bold uppercase tracking-wide border-2 transition-all duration-200 rounded-lg",
+                                        "px-3 py-1.5 sm:px-5 sm:py-2 text-[10px] sm:text-sm font-semibold capitalize tracking-normal border transition-all duration-200 rounded-lg",
                                         isActive
-                                            ? "bg-primary text-primary-foreground border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px]"
+                                            ? "bg-primary text-primary-foreground border-foreground shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] translate-x-[-1px] translate-y-[-1px]"
                                             : "bg-background text-muted-foreground border-border hover:border-foreground hover:text-foreground",
                                         isPink && isActive && "bg-pink-500 border-pink-800 shadow-[2px_2px_0px_0px_rgba(255,20,147,0.5)]",
                                         isCybernetic && "rounded-none",

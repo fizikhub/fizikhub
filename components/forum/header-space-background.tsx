@@ -49,7 +49,8 @@ export function HeaderSpaceBackground() {
         // Initial star
         setTimeout(triggerShootingStar, 1000);
 
-        const interval = setInterval(triggerShootingStar, 4000 + Math.random() * 3000);
+        // Frequent shooting stars
+        const interval = setInterval(triggerShootingStar, 1500 + Math.random() * 2000);
 
         return () => clearInterval(interval);
     }, []);
