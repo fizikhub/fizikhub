@@ -16,12 +16,8 @@ interface ShareInputCardProps {
         username: string | null;
         full_name: string | null;
         avatar_url: string | null;
-        user?: {
-            username: string | null;
-            full_name: string | null;
-            avatar_url: string | null;
-        } | null;
-    }
+    } | null;
+}
 
 import { createClient } from "@/lib/supabase"; // Client-side supabase
 
