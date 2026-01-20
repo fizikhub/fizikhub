@@ -60,7 +60,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     <div className="w-2 h-2 rounded-full bg-[#FFBD2E] shadow-sm" />
                     <div className="w-2 h-2 rounded-full bg-[#27C93F] shadow-sm" />
                 </div>
-                <div className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.2em]">Paylaş</div>
+                <div className="text-[9px] font-bold text-white uppercase tracking-[0.2em]">Paylaş</div>
             </div>
 
             <div className="p-3">

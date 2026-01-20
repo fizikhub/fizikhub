@@ -209,6 +209,8 @@ export function SocialArticleCard({
                     "translate-x-[0px] translate-y-[0px] hover:-translate-y-1 hover:translate-x-1",
                     // Colored border on hover
                     "hover:border-primary/50 dark:hover:border-primary/50",
+                    // PASTEL GREEN THEME FOR STANDARD ARTICLES
+                    !isWriter && !isCybernetic && !isCute && !isBlood && "bg-[#d1fae5] dark:bg-[#064e3b]/30 border-emerald-500/20 hover:border-emerald-500/50",
                     // Theme Overrides
                     isCute && "rounded-[1.5rem] cute-border",
                     isBlood && "bg-[rgba(40,0,0,0.6)] border-red-900/50 hover:border-red-500 hover:shadow-[0_0_15px_rgba(200,20,20,0.3)]"
@@ -277,6 +279,9 @@ export function SocialArticleCard({
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold text-foreground/90 group-hover:text-foreground transition-colors">
                                         {article.author?.full_name || article.author?.username || "Fizikhub"}
+                                        <span className="ml-1.5 text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold tracking-wider uppercase opacity-80 group-hover:opacity-100 transition-opacity">
+                                            BLOG
+                                        </span>
                                     </span>
                                     {isWriter && (
                                         <div className="flex items-center gap-1 text-[9px] font-black text-amber-600 dark:text-amber-500 uppercase tracking-wider">
