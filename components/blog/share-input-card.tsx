@@ -331,23 +331,22 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
                 {/* Centered Group */}
                 <div className="flex items-center gap-3">
-                    <Link href="/makale/yeni" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+
+                    <Link href="/makale/yeni" className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/40 dark:bg-secondary/20 hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer group shrink-0">
                         <PenTool className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Blog</span>
                     </Link>
 
-                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-border shrink-0 opacity-50" />
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/40 dark:bg-secondary/20 hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer group shrink-0">
                         <Plus className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Ekle</span>
                     </button>
 
-                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-border shrink-0 opacity-50" />
 
-                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
-
-                    <button onClick={handleQuickQuestion} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                    <button onClick={handleQuickQuestion} className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/40 dark:bg-secondary/20 hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-transparent hover:border-primary/20 transition-all cursor-pointer group shrink-0">
                         <HelpCircle className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Soru</span>
                     </button>
