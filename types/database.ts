@@ -88,7 +88,9 @@ export interface Database {
                     author_id: string | null
                     category: string | null
                     tags: string[] | null
+                    tags: string[] | null
                     views: number
+                    status: string
                 }
                 Insert: {
                     id?: number
@@ -98,7 +100,9 @@ export interface Database {
                     author_id?: string | null
                     category?: string | null
                     tags?: string[] | null
+                    tags?: string[] | null
                     views?: number
+                    status?: string
                 }
                 Update: {
                     id?: number
@@ -108,7 +112,9 @@ export interface Database {
                     author_id?: string | null
                     category?: string | null
                     tags?: string[] | null
+                    tags?: string[] | null
                     views?: number
+                    status?: string
                 }
             }
             answers: {

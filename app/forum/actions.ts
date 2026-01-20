@@ -96,7 +96,7 @@ export async function toggleAnswerLike(answerId: number) {
 }
 
 
-export async function createQuestion(formData: { title: string; content: string; category: string }) {
+export async function createQuestion(formData: { title: string; content: string; category: string; status?: 'published' | 'draft' }) {
     const supabase = await createClient();
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -110,7 +110,8 @@ export async function createQuestion(formData: { title: string; content: string;
         content: formData.content,
         category: formData.category,
         author_id: user.id,
-        tags: []
+        tags: [],
+        status: formData.status || 'published'
     }).select().single();
 
     if (error) {
@@ -118,14 +119,16 @@ export async function createQuestion(formData: { title: string; content: string;
         return { success: false, error: error.message };
     }
 
-    // Add reputation for asking question
-    await supabase.rpc('add_reputation', {
-        p_user_id: user.id,
-        p_points: 5,
-        p_reason: 'question_created',
-        p_reference_type: 'question',
-        p_reference_id: data.id
-    });
+    // Add reputation for asking question ONLY IF PUBLISHED
+    if (data.status === 'published') {
+        await supabase.rpc('add_reputation', {
+            p_user_id: user.id,
+            p_points: 5,
+            p_reason: 'question_created',
+            p_reference_type: 'question',
+            p_reference_id: data.id
+        });
+    }
 
     revalidatePath('/forum');
     return { success: true };

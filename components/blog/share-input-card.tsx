@@ -8,6 +8,9 @@ import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { createQuestion } from "@/app/forum/actions"; // Import action
+import { toast } from "sonner"; // Import toast
+
 interface ShareInputCardProps {
     user?: {
         username: string | null;
@@ -16,6 +19,18 @@ interface ShareInputCardProps {
     } | null;
 }
 
+const CATEGORIES = [
+    "Kuantum Fiziği",
+    "Genel Görelilik",
+    "Klasik Mekanik",
+    "Termodinamik",
+    "Elektromanyetizma",
+    "Optik",
+    "Nükleer Fizik",
+    "Astrofizik",
+    "Diğer"
+];
+
 export function ShareInputCard({ user }: ShareInputCardProps) {
     const avatarUrl = user?.avatar_url || "https://github.com/shadcn.png";
     const displayName = user?.full_name || user?.username || "Misafir";
@@ -23,6 +38,13 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
+    const [mode, setMode] = useState<"default" | "question">("default"); // New mode state
+
+    // Form State
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [category, setCategory] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -45,6 +67,49 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
     const handleNavigation = (path: string) => {
         setIsOpen(false);
         router.push(path);
+    };
+
+    const handleQuickQuestion = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setMode("question");
+        setIsOpen(true); // Ensure expanded
+    };
+
+    const handleClose = () => {
+        setIsOpen(false);
+        setTimeout(() => setMode("default"), 300); // Reset mode after animation
+    };
+
+    const submitQuestion = async (status: 'published' | 'draft') => {
+        if (!title.trim() || !content.trim() || !category) {
+            toast.error("Lütfen tüm alanları doldurun.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const result = await createQuestion({
+                title,
+                content,
+                category,
+                status
+            });
+
+            if (result.success) {
+                toast.success(status === 'published' ? "Sorunuz yayınlandı! 🚀" : "Taslak kaydedildi. 📝");
+                setTitle("");
+                setContent("");
+                setCategory("");
+                handleClose();
+                if (status === 'published') router.push('/forum');
+            } else {
+                toast.error(result.error);
+            }
+        } catch (error) {
+            toast.error("Bir hata oluştu.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -84,36 +149,98 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
 
                     {/* Input Trigger */}
                     <div className="flex-1 min-w-0 relative">
-                        <button
-                            ref={triggerRef}
-                            onClick={() => setIsOpen(!isOpen)}
-                            className={cn(
-                                "w-full h-12 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                "bg-muted/20 hover:bg-muted/40", // Lighter background
-                                "border border-transparent hover:border-primary/20",
-                                "rounded-2xl",
-                                isOpen && "ring-2 ring-primary/20 bg-primary/5",
-                            )}
-                        >
-                            <span className="text-muted-foreground font-medium text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 flex-1 block">
-                                {isOpen ? (
-                                    "Kapat"
-                                ) : (
-                                    <span className="flex items-center gap-1 overflow-hidden">
-                                        <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
-                                        <span className="truncate shrink min-w-0 hidden sm:inline">Ne paylaşmak istersin,</span>
-                                        <span className="text-foreground font-bold shrink-0">{firstName}?</span>
-                                        <span className="text-primary animate-pulse font-light ml-0.5">|</span>
+                        {/* QUESTION MODE FORM */}
+                        <AnimatePresence mode="wait">
+                            {mode === "question" ? (
+                                <motion.div
+                                    key="question-form"
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="w-full bg-muted/30 rounded-2xl p-4 border border-primary/10 space-y-3"
+                                >
+                                    <input
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        placeholder="Sorunun başlığı ne olsun?"
+                                        className="w-full bg-transparent border-b border-border/50 px-2 py-2 text-sm font-bold focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/50"
+                                        autoFocus
+                                    />
+
+                                    <textarea
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        placeholder="Detayları buraya yazabilirsin..."
+                                        className="w-full bg-transparent border-b border-border/50 px-2 py-2 text-sm min-h-[80px] focus:outline-none focus:border-primary/50 transition-colors resize-none placeholder:text-muted-foreground/50"
+                                    />
+
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                        {CATEGORIES.map(cat => (
+                                            <button
+                                                key={cat}
+                                                onClick={() => setCategory(cat)}
+                                                className={cn(
+                                                    "px-3 py-1 rounded-full text-[10px] font-bold border transition-all",
+                                                    category === cat
+                                                        ? "bg-primary text-primary-foreground border-primary"
+                                                        : "bg-background border-border text-muted-foreground hover:border-primary/50"
+                                                )}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-2 pt-2">
+                                        <button
+                                            onClick={() => submitQuestion('draft')}
+                                            disabled={isSubmitting}
+                                            className="px-4 py-1.5 rounded-full text-xs font-bold text-muted-foreground hover:bg-muted transition-colors"
+                                        >
+                                            Taslak Kaydet
+                                        </button>
+                                        <button
+                                            onClick={() => submitQuestion('published')}
+                                            disabled={isSubmitting}
+                                            className="px-6 py-1.5 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+                                        >
+                                            {isSubmitting ? "..." : "Yayınla"}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                <button
+                                    ref={triggerRef}
+                                    onClick={() => isOpen ? handleClose() : setIsOpen(true)}
+                                    className={cn(
+                                        "w-full h-12 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
+                                        "bg-muted/20 hover:bg-muted/40", // Lighter background
+                                        "border border-transparent hover:border-primary/20",
+                                        "rounded-2xl",
+                                        isOpen && "ring-2 ring-primary/20 bg-primary/5",
+                                    )}
+                                >
+                                    <span className="text-muted-foreground font-medium text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 flex-1 block">
+                                        {isOpen ? (
+                                            "Kapat"
+                                        ) : (
+                                            <span className="flex items-center gap-1 overflow-hidden">
+                                                <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
+                                                <span className="truncate shrink min-w-0 hidden sm:inline">Ne paylaşmak istersin,</span>
+                                                <span className="text-foreground font-bold shrink-0">{firstName}?</span>
+                                                <span className="text-primary animate-pulse font-light ml-0.5">|</span>
+                                            </span>
+                                        )}
                                     </span>
-                                )}
-                            </span>
-                            <div className={cn(
-                                "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
-                                isOpen ? "bg-primary text-primary-foreground rotate-45" : "bg-background shadow-sm text-foreground/50 group-hover/input:text-primary"
-                            )}>
-                                <Plus className="w-4 h-4" />
-                            </div>
-                        </button>
+                                    <div className={cn(
+                                        "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
+                                        isOpen ? "bg-primary text-primary-foreground rotate-45" : "bg-background shadow-sm text-foreground/50 group-hover/input:text-primary"
+                                    )}>
+                                        <Plus className="w-4 h-4" />
+                                    </div>
+                                </button>
+                            )}
+                        </AnimatePresence>
 
                         {/* Dropdown Menu */}
                         <AnimatePresence>
@@ -143,19 +270,19 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                             </div>
                                         </Link>
 
-                                        {/* Soru Sor */}
-                                        <Link
-                                            href="/forum"
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-500/10 transition-all group rounded-xl"
+                                        {/* Soru Sor - Direct Action */}
+                                        <button
+                                            onClick={handleQuickQuestion}
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-500/10 transition-all group rounded-xl text-left"
                                         >
                                             <div className="relative w-9 h-9 bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 rounded-lg group-hover:scale-105 transition-transform">
                                                 <BrainCircuit className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-blue-600 transition-colors truncate">Soru Sor</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Topluluğa Danış</p>
+                                                <h4 className="font-bold text-sm text-foreground group-hover:text-blue-600 transition-colors truncate">Hızlı Soru Sor</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Buradan Hızlıca Sor</p>
                                             </div>
-                                        </Link>
+                                        </button>
 
                                         {/* Deney Paylaş */}
                                         <Link
@@ -197,10 +324,12 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
 
                     <div className="w-1 h-1 rounded-full bg-border shrink-0" />
 
-                    <Link href="/forum" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
+                    <div className="w-1 h-1 rounded-full bg-border shrink-0" />
+
+                    <button onClick={handleQuickQuestion} className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-background/80 hover:text-primary hover:shadow-sm border border-transparent hover:border-border/50 transition-all cursor-pointer group shrink-0">
                         <HelpCircle className="w-3.5 h-3.5" />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Soru</span>
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Version Absolute Right */}
