@@ -225,15 +225,32 @@ export function SocialArticleCard({
 
                     {/* 1. HEADER: Category & Date (Compact Padding) */}
                     <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:pt-4 sm:pb-2">
-                        <span className={cn(
-                            "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest border", // Slightly rectangular (rounded-md)
-                            // Clean, non-neon look
-                            isWriter
-                                ? "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800/50"
-                                : "bg-muted text-muted-foreground border-border/50"
-                        )}>
-                            {article.category || "GENEL"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className={cn(
+                                "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest border",
+                                isWriter
+                                    ? "bg-amber-100/50 text-amber-800 border-amber-200/50 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800/30"
+                                    : "bg-muted text-muted-foreground border-border/50"
+                            )}>
+                                {article.category || "GENEL"}
+                            </span>
+
+                            {/* NEW BADGE POSITION - Natural & Premium */}
+                            <span className={cn(
+                                "px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border flex items-center gap-1",
+                                isWriter
+                                    ? "bg-amber-500 text-white border-amber-600 shadow-[0_2px_10px_rgba(245,158,11,0.2)]" // Premium Amber for Writer
+                                    : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" // Subtle for Blog
+                            )}>
+                                {isWriter ? (
+                                    <>
+                                        <BadgeCheck className="w-3 h-3" />
+                                        MAKALE
+                                    </>
+                                ) : "BLOG"}
+                            </span>
+                        </div>
+
                         <time className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
                             {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                         </time>
@@ -279,9 +296,6 @@ export function SocialArticleCard({
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold text-foreground/90 group-hover:text-foreground transition-colors">
                                         {article.author?.full_name || article.author?.username || "Fizikhub"}
-                                        <span className="ml-1.5 text-[9px] text-emerald-600 dark:text-emerald-400 font-extrabold tracking-wider uppercase opacity-80 group-hover:opacity-100 transition-opacity">
-                                            {isWriter ? "MAKALE" : "BLOG"}
-                                        </span>
                                     </span>
                                     {isWriter && (
                                         <div className="flex items-center gap-1 text-[9px] font-black text-amber-600 dark:text-amber-500 uppercase tracking-wider">
