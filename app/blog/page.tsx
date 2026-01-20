@@ -9,39 +9,59 @@ export const metadata = {
     description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
 };
 
-export default async function DiscoverPage({
-    searchParams,
-}: {
-    searchParams: Promise<{ q?: string; category?: string }>;
-}) {
+const VALID_CATEGORIES = ["Blog", "Kitap İncelemesi", "Deney"];
+
+interface BlogPageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
     const supabase = await createClient();
-    const { q: query, category } = await searchParams;
+    const params = await searchParams;
+
+    const category = typeof params.category === 'string' && VALID_CATEGORIES.includes(params.category)
+        ? params.category
+        : undefined;
+    const query = typeof params.q === 'string' ? params.q : undefined;
+    const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
+    const limit = 12;
+    const offset = (page - 1) * limit;
 
     let dbQuery = supabase
-        .from("articles")
+        .from('articles')
         .select(`
             *,
-            profiles!articles_author_id_fkey!inner (
-                username,
-                full_name,
-                avatar_url,
-                is_writer
-            )
-        `)
+            profiles(username, full_name, avatar_url, is_writer, is_verified)
+        `, { count: 'exact' })
         .eq("status", "published")
-        .eq("status", "published")
-        // .eq("profiles.is_writer", false) // Removed to show ALL content (writers + community)
         .order("created_at", { ascending: false });
+
+    // --- NEW FILTERING LOGIC ---
+    if (category) {
+        if (category === "Blog") {
+            // "Blog" means everything EXCEPT Book Reviews and Experiments
+            dbQuery = dbQuery
+                .neq("category", "Kitap İncelemesi")
+                .neq("category", "Deney");
+        } else {
+            // "Kitap İncelemesi" or "Deney" -> Specific match
+            dbQuery = dbQuery.eq("category", category);
+        }
+    } else if (!query) {
+        // Default (All view) - Show everything? Or should default be "Blog"?
+        // For now, if no category is selected, we show EVERYTHING.
+        // If user wants default to be "Blog" (excluding others), we can change valid logic.
+        // Let's assume URL '/blog' shows everything mixed.
+    }
 
     if (query) {
         dbQuery = dbQuery.ilike("title", `%${query}%`);
     }
 
-    if (category) {
-        dbQuery = dbQuery.eq("category", category);
-    }
+    const { data: articles, count } = await dbQuery
+        .range(offset, offset + limit - 1);
 
-    const { data: articles } = await dbQuery;
+    const totalPages = count ? Math.ceil(count / limit) : 0;
 
     // Fetch current user for the share card
     const { data: { user } } = await supabase.auth.getUser();
@@ -56,26 +76,16 @@ export default async function DiscoverPage({
         userProfile = profile;
     }
 
-    const categories = [
-        "Kitap İncelemesi",
-        "Deney",
-        "Kuantum Fiziği",
-        "Astrofizik",
-        "Modern Fizik",
-        "Klasik Fizik",
-        "Parçacık Fiziği",
-        "Termodinamik",
-        "Bilim Tarihi",
-        "Popüler Bilim"
-    ];
-
     return (
-        <ModernExploreView
-            initialArticles={articles || []}
-            categories={categories}
-            currentQuery={query}
-            currentCategory={category}
-            user={userProfile}
-        />
+        <div className="container md:px-32 px-4 py-8 max-w-[1400px] mx-auto min-h-screen">
+            <ModernExploreView
+                initialArticles={articles || []}
+                currentCategory={category}
+                categories={VALID_CATEGORIES}
+                searchQuery={query}
+                totalPages={totalPages}
+                currentPage={page}
+            />
+        </div>
     );
 }

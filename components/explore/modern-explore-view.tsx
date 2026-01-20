@@ -35,6 +35,9 @@ interface ModernExploreViewProps {
     currentQuery?: string;
     currentCategory?: string;
     user?: any;
+    totalPages?: number;
+    currentPage?: number;
+    searchQuery?: string; // Add this prop
 }
 
 // Simple internal component for background animations
@@ -68,9 +71,13 @@ function SpaceBackground() {
 export function ModernExploreView({
     initialArticles,
     categories,
+    categories,
     currentQuery,
     currentCategory,
-    user
+    user,
+    totalPages, // Add these
+    currentPage,
+    searchQuery // Add this
 }: ModernExploreViewProps) {
 
     const transformedArticles = initialArticles.map(article => ({
@@ -165,46 +172,50 @@ export function ModernExploreView({
                     <SearchInput />
                 </div>
 
-                {/* Categories */}
-                <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-md border-b-2 border-border/10 py-3 mb-6 -mx-4 px-4 md:static md:bg-transparent md:border-none md:p-0 md:mb-8 md:mx-0">
-                    <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-2 md:flex-wrap md:justify-center px-1">
-                        <Link href="/blog" className="shrink-0">
-                            <motion.div whileTap={{ scale: 0.95 }}>
-                                <div
-                                    className={cn(
-                                        "px-4 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full",
-                                        !currentCategory
-                                            ? "bg-primary text-primary-foreground border-primary shadow-[1px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                            : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
-                                    )}
-                                >
-                                    TÜMÜ
-                                </div>
-                            </motion.div>
-                        </Link>
-                        {categories.map((cat, idx) => (
-                            <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`} className="shrink-0">
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.5 + idx * 0.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
+                {/* Categories - Redesigned Tab System */}
+                <div className="flex justify-center mb-10">
+                    <div className="inline-flex p-1.5 bg-muted/20 border border-primary/5 rounded-2xl backdrop-blur-sm relative items-center gap-1">
+
+                        {/* Categories Loop */}
+                        {categories.map((cat) => {
+                            const isActive = currentCategory === cat;
+                            // Icon Mapping
+                            let Icon;
+                            if (cat === 'Blog') Icon = Telescope; // Will change to proper icon in actual map logic or strict list
+
+                            return (
+                                <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`}>
                                     <div
                                         className={cn(
-                                            "px-4 py-1.5 text-xs font-bold uppercase border-2 transition-all duration-200 cursor-pointer whitespace-nowrap rounded-full",
-                                            currentCategory === cat
-                                                ? "bg-foreground text-background border-foreground shadow-[1px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_2px_0px_0px_rgba(255,255,255,1)] -translate-y-0.5"
-                                                : "bg-background border-border text-muted-foreground hover:border-primary hover:text-primary hover:-translate-y-0.5"
+                                            "relative px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-2",
+                                            isActive
+                                                ? "text-primary-foreground shadow-lg shadow-primary/20 scale-100"
+                                                : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                                            isActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
+                                            isActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
+                                            isActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50"
                                         )}
                                     >
-                                        {cat.toUpperCase()}
+                                        {/* Simple dot indicator for active state */}
+                                        {isActive && (
+                                            <motion.span
+                                                layoutId="active-dot"
+                                                className="absolute inset-0 rounded-xl bg-white/10 mix-blend-overlay"
+                                                initial={false}
+                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                            />
+                                        )}
+
+                                        <span className="relative z-10 tracking-tight">{cat}</span>
                                     </div>
-                                </motion.div>
-                            </Link>
-                        ))}
+                                </Link>
+                            )
+                        })}
                     </div>
                 </div>
+
+                {/* Reset Filter Button (Optional - Shows only if a category is selected and user might want to go back to 'mixed' view, though user request implied these 3 are the main views. I'll leave a subtle way to clear if needed, or rely on just switching tabs.) */}
+                {/* For now, assuming these 3 are the primary navigation modes. */}
 
                 {/* Feed */}
                 <div className="space-y-6 sm:space-y-8">
