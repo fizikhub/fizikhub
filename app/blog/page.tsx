@@ -29,7 +29,8 @@ export default async function DiscoverPage({
             )
         `)
         .eq("status", "published")
-        .eq("profiles.is_writer", false) // Only non-writers
+        .eq("status", "published")
+        // .eq("profiles.is_writer", false) // Removed to show ALL content (writers + community)
         .order("created_at", { ascending: false });
 
     if (query) {

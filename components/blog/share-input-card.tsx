@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, Book, FlaskConical, MessageCircleQuestion } from "lucide-react";
+import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
@@ -24,10 +24,17 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
 
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            // Check if click is outside BOTH dropdown and trigger button
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node) &&
+                triggerRef.current &&
+                !triggerRef.current.contains(event.target as Node)
+            ) {
                 setIsOpen(false);
             }
         }
@@ -78,6 +85,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                     {/* Input Trigger */}
                     <div className="flex-1 min-w-0 relative">
                         <button
+                            ref={triggerRef}
                             onClick={() => setIsOpen(!isOpen)}
                             className={cn(
                                 "w-full h-12 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
@@ -127,7 +135,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                             className="w-full flex items-center gap-3 p-3 hover:bg-rose-500/10 transition-all group rounded-xl"
                                         >
                                             <div className="relative w-9 h-9 bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <Book className="w-4.5 h-4.5" />
+                                                <LibraryBig className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-sm text-foreground group-hover:text-rose-600 transition-colors truncate">Kitap İncelemesi</h4>
@@ -141,7 +149,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                             className="w-full flex items-center gap-3 p-3 hover:bg-blue-500/10 transition-all group rounded-xl"
                                         >
                                             <div className="relative w-9 h-9 bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <MessageCircleQuestion className="w-4.5 h-4.5" />
+                                                <BrainCircuit className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-sm text-foreground group-hover:text-blue-600 transition-colors truncate">Soru Sor</h4>
@@ -155,7 +163,7 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
                                             className="w-full flex items-center gap-3 p-3 hover:bg-emerald-500/10 transition-all group rounded-xl"
                                         >
                                             <div className="relative w-9 h-9 bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <FlaskConical className="w-4.5 h-4.5" />
+                                                <Atom className="w-4.5 h-4.5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-sm text-foreground group-hover:text-emerald-600 transition-colors truncate">Deney Paylaş</h4>
