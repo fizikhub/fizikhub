@@ -41,22 +41,20 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     // --- NEW FILTERING LOGIC ---
     if (category === "Blog") {
         // "Blog" means everything EXCEPT Book Reviews and Experiments
-        // Also exclude writers if that's the desired rule for "Blog" tab
+        // We REMOVED the '.eq("profiles.is_writer", false)' check because it was hiding the user's own posts.
+        // If a writer posts a "Blog", it should show up here.
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
-            .neq("category", "Deney")
-            .eq("profiles.is_writer", false);
+            .neq("category", "Deney");
     } else if (category) {
         // Specific category match
         dbQuery = dbQuery.eq("category", category);
     }
-    // If NO category is selected (e.g. /blog root), user said "currently article cards are also visible and they are green".
-    // This implies they want the "Blog" view by default.
+    // If NO category is selected (e.g. /blog root)
     else if (!query) {
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
-            .neq("category", "Deney")
-            .eq("profiles.is_writer", false);
+            .neq("category", "Deney");
     }
 
     if (query) {

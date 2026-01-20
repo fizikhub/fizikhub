@@ -16,8 +16,14 @@ interface ShareInputCardProps {
         username: string | null;
         full_name: string | null;
         avatar_url: string | null;
-    } | null;
-}
+        user?: {
+            username: string | null;
+            full_name: string | null;
+            avatar_url: string | null;
+        } | null;
+    }
+
+import { createClient } from "@/lib/supabase"; // Client-side supabase
 
 const CATEGORIES = [
     "Kuantum Fiziği",
@@ -31,7 +37,27 @@ const CATEGORIES = [
     "Diğer"
 ];
 
-export function ShareInputCard({ user }: ShareInputCardProps) {
+export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
+    // Client-side user state to fix "Misafir" persistence
+    const [user, setUser] = useState(initialUser);
+    const [supabase] = useState(() => createClient());
+
+    useEffect(() => {
+        // If no user prop or just double checking, fetch on client
+        const fetchUser = async () => {
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            if (authUser) {
+                const { data: profile } = await supabase
+                    .from("profiles")
+                    .select("*")
+                    .eq("id", authUser.id)
+                    .single();
+                if (profile) setUser(profile);
+            }
+        };
+        if (!initialUser) fetchUser();
+    }, [initialUser, supabase]);
+
     const avatarUrl = user?.avatar_url || "https://github.com/shadcn.png";
     const displayName = user?.full_name || user?.username || "Misafir";
     const firstName = displayName.split(" ")[0];
@@ -122,8 +148,9 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-[2rem] transition-all duration-300",
                 "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
+                "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
                 "shadow-lg dark:shadow-none hover:shadow-xl transition-shadow", // Premium shadow
-                "w-full max-w-3xl mx-auto mb-4 sm:mb-6 z-[50]"
+                "w-full mb-4 sm:mb-6 z-[50]" // Removed max-w-3xl to let it fill container
             )}
         >
             <div className="relative h-7 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
