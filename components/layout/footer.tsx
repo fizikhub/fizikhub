@@ -27,15 +27,17 @@ export function Footer() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number }>>([]);
+    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number; opacity: number }>>([]);
 
     useEffect(() => {
-        const newStars = Array.from({ length: 50 }).map((_, i) => ({
+        // Increased star count for better density
+        const newStars = Array.from({ length: 150 }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            size: Math.random() * 2 + 1,
-            duration: Math.random() * 10 + 10,
+            size: Math.random() * 2 + 0.5, // Varied sizes
+            duration: Math.random() * 20 + 10,
+            opacity: Math.random() * 0.7 + 0.3
         }));
         setStars(newStars);
     }, []);
@@ -45,7 +47,14 @@ export function Footer() {
     return (
         <footer className="relative bg-[#050505] pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
             {/* Star Field Background */}
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+            <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+                {/* CSS Galaxies - Realistic (Mobile/Desktop) */}
+                <div className="absolute top-[10%] left-[10%] w-[300px] h-[300px] opacity-20 blur-[60px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-purple-900 to-transparent animate-[spin_120s_linear_infinite]" />
+                <div className="absolute bottom-[20%] right-[5%] w-[400px] h-[400px] opacity-20 blur-[80px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600 via-cyan-900 to-transparent animate-[spin_150s_linear_infinite_reverse]" />
+                {/* Small distant galaxy */}
+                <div className="absolute top-[40%] right-[30%] w-[150px] h-[150px] opacity-30 blur-[40px] bg-[conic-gradient(from_0deg,_#4338ca,_#000000,_#4338ca)] rounded-full animate-[spin_60s_linear_infinite]" />
+
+
                 {stars.map((star) => (
                     <motion.div
                         key={star.id}
@@ -55,9 +64,10 @@ export function Footer() {
                             top: `${star.y}%`,
                             width: star.size,
                             height: star.size,
+                            opacity: star.opacity
                         }}
                         animate={{
-                            opacity: [0.2, 1, 0.2],
+                            opacity: [star.opacity, 1, star.opacity],
                             scale: [1, 1.2, 1],
                         }}
                         transition={{
@@ -165,9 +175,10 @@ export function Footer() {
                         <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
                             <Twitter className="h-5 w-5" />
                         </a>
-                        <a href="https://github.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
-                            <Github className="h-5 w-5" />
+                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
+                            <Twitter className="h-5 w-5" />
                         </a>
+                        {/* Github Removed as requested */}
                     </div>
                 </div>
             </div>

@@ -38,49 +38,48 @@ export function DidYouKnow() {
 
     return (
         <div className="w-full max-w-md mx-auto my-8 px-4">
-            <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-amber-500/10 p-1 shadow-2xl group">
-                {/* Animated Border Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[200%] animate-shimmer" />
+            <Card className="relative overflow-hidden border-orange-500/20 bg-black p-[2px] shadow-2xl group max-w-2xl mx-auto">
+                {/* Event Horizon Glow (Subtle) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-900/40 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
 
-                <div className="relative bg-zinc-900/90 backdrop-blur-xl rounded-xl p-5 md:p-6 overflow-hidden">
+                <div className="relative bg-black rounded-xl p-6 md:p-8 overflow-hidden border border-white/5">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                            <div className="p-1.5 rounded-lg bg-amber-500/10">
-                                <Lightbulb className="h-4 w-4 text-amber-400" />
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-full bg-orange-500/10 border border-orange-500/20">
+                                <Lightbulb className="h-4 w-4 text-orange-400" />
                             </div>
-                            <span className="font-bold text-sm tracking-wide bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
-                                BUNU BİLİYOR MUYDUN?
+                            <span className="font-black text-sm tracking-[0.2em] text-zinc-400 uppercase">
+                                SİNGULARİTE VERİSİ
                             </span>
                         </div>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={nextFact}
-                            className="h-8 w-8 rounded-full hover:bg-white/5 hover:rotate-180 transition-all duration-500"
+                            className="h-8 w-8 rounded-full text-zinc-500 hover:text-white hover:bg-white/10 transition-all duration-300"
                         >
-                            <RefreshCw className="h-3.5 w-3.5 text-zinc-400" />
+                            <RefreshCw className="h-4 w-4" />
                         </Button>
                     </div>
 
-                    <div className="min-h-[100px] flex items-center justify-center relative py-2">
+                    <div className="min-h-[120px] flex items-center justify-center relative py-2">
                         <AnimatePresence mode="wait">
                             <motion.p
                                 key={index}
-                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                                transition={{ duration: 0.4, ease: "easeOut" }}
-                                className="text-lg md:text-xl text-center font-medium leading-relaxed text-zinc-200"
+                                initial={{ opacity: 0, filter: "blur(10px)" }}
+                                animate={{ opacity: 1, filter: "blur(0px)" }}
+                                exit={{ opacity: 0, filter: "blur(10px)" }}
+                                transition={{ duration: 0.5, ease: "circOut" }}
+                                className="text-xl md:text-2xl text-left font-bold leading-relaxed text-white drop-shadow-[0_0_15px_rgba(255,165,0,0.3)]"
                             >
-                                &quot;{facts[index]}&quot;
+                                {facts[index]}
                             </motion.p>
                         </AnimatePresence>
                     </div>
 
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-fuchsia-500/10 rounded-full blur-[50px] pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-violet-500/10 rounded-full blur-[40px] pointer-events-none" />
+                    {/* Decorative Void Elements */}
+                    <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px] pointer-events-none" />
                 </div>
             </Card>
         </div>
