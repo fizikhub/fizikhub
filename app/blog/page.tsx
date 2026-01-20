@@ -40,12 +40,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
     // --- NEW FILTERING LOGIC ---
     if (category === "Blog") {
-        // "Blog" means everything EXCEPT Book Reviews and Experiments
-        // We REMOVED the '.eq("profiles.is_writer", false)' check because it was hiding the user's own posts.
-        // If a writer posts a "Blog", it should show up here.
+        // "Blog" means everything EXCEPT Book Reviews, Experiments, and Terms
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
-            .neq("category", "Deney");
+            .neq("category", "Deney")
+            .neq("category", "Terim");
     } else if (category) {
         // Specific category match
         dbQuery = dbQuery.eq("category", category);
@@ -54,7 +53,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     else if (!query) {
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
-            .neq("category", "Deney");
+            .neq("category", "Deney")
+            .neq("category", "Terim");
     }
 
     if (query) {

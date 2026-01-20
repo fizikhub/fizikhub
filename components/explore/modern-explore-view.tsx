@@ -195,7 +195,8 @@ export function ModernExploreView({
                                                 : "text-muted-foreground hover:text-primary hover:bg-primary/5",
                                             isActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
                                             isActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
-                                            isActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50"
+                                            isActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50",
+                                            isActive && cat === 'Terim' && "bg-gradient-to-tr from-blue-500 to-cyan-500 border-blue-400/50"
                                         )}
                                     >
                                         {/* Simple dot indicator for active state */}
