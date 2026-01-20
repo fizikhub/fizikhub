@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase-server";
 import { ModernExploreView } from "@/components/explore/modern-explore-view";
 
-// ISR: Regenerate every 60 seconds for fresh content with optimal performance
-export const revalidate = 60;
+// ISR Removed for accurate auth state
+// export const revalidate = 0;
+// Use forced dynamic to ensure user is fetched correctly every time
+export const dynamic = "force-dynamic";
 
 export const metadata = {
     title: "Blog | Fizikhub",

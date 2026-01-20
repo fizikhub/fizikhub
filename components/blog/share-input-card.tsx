@@ -127,15 +127,15 @@ export function ShareInputCard({ user }: ShareInputCardProps) {
             )}
         >
             <div className="relative h-7 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
-                <div className="absolute left-5 flex gap-1.5">
+                <div className="absolute left-4 sm:left-5 flex gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-[#FF5F56] shadow-sm" />
                     <div className="w-2 h-2 rounded-full bg-[#FFBD2E] shadow-sm" />
                     <div className="w-2 h-2 rounded-full bg-[#27C93F] shadow-sm" />
                 </div>
-                <div className="text-[9px] font-bold text-white uppercase tracking-[0.2em]">Paylaş</div>
+                <div className="text-[8px] sm:text-[9px] font-bold text-white uppercase tracking-[0.2em]">Paylaş</div>
             </div>
 
-            <div className="p-3">
+            <div className="p-2 sm:p-3">
                 <div className="flex gap-3 items-center">
                     {/* Avatar Area */}
                     <div className="shrink-0">
