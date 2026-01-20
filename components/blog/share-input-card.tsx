@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 import { createQuestion } from "@/app/forum/actions"; // Import action
 import { toast } from "sonner"; // Import toast
+import { createClient } from "@/lib/supabase"; // Client-side supabase
 
 interface ShareInputCardProps {
     user?: {
@@ -17,9 +18,8 @@ interface ShareInputCardProps {
         full_name: string | null;
         avatar_url: string | null;
     } | null;
+} | null;
 }
-
-import { createClient } from "@/lib/supabase"; // Client-side supabase
 
 const CATEGORIES = [
     "Kuantum Fiziği",
@@ -143,7 +143,6 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-[2rem] transition-all duration-300",
-                "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
                 "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
                 "shadow-lg dark:shadow-none hover:shadow-xl transition-shadow", // Premium shadow
                 "w-full mb-4 sm:mb-6 z-[50]" // Removed max-w-3xl to let it fill container
