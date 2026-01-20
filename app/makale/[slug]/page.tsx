@@ -10,6 +10,7 @@ import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ArticleReader } from "@/components/blog/article-reader";
 import { BookReviewDetail } from "@/components/book-review/book-review-detail";
+import { TermDetail } from "@/components/term/term-detail";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -195,6 +196,14 @@ export default async function ArticlePage({ params }: PageProps) {
                         comments={comments || []}
                         isLoggedIn={!!user}
                         userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                    />
+                ) : article.category === 'Terim' ? (
+                    <TermDetail
+                        article={article}
+                        readingTime={formattedReadingTime}
+                        likeCount={likeCount || 0}
+                        initialLiked={!!userLike}
+                        initialBookmarked={!!userBookmark}
                     />
                 ) : (
                     <>

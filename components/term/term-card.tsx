@@ -40,8 +40,8 @@ export function TermCard({ article, index }: TermCardProps) {
             <Link href={`/makale/${article.slug}`} className="block h-full">
                 <div className="group relative h-full bg-card hover:bg-gradient-to-br hover:from-card hover:to-blue-500/5 dark:hover:to-blue-900/10 border border-border/50 hover:border-blue-500/30 rounded-3xl p-6 sm:p-8 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 overflow-hidden flex flex-col justify-between">
 
-                    {/* Decorative Watermark - Serif Quote */}
-                    <div className="absolute -right-2 -top-6 text-[8rem] leading-none font-serif text-blue-500/5 rotate-12 select-none pointer-events-none group-hover:text-blue-500/10 transition-colors duration-500">
+                    {/* Decorative Watermark - Serif Quote - ADJUSTED POSITION */}
+                    <div className="absolute right-4 -top-2 text-[8rem] leading-none font-serif text-blue-500/5 rotate-12 select-none pointer-events-none group-hover:text-blue-500/10 transition-colors duration-500">
                         &rdquo;
                     </div>
 
@@ -74,11 +74,22 @@ export function TermCard({ article, index }: TermCardProps) {
                     {/* Footer */}
                     <div className="flex items-center justify-between mt-8 pt-5 border-t border-border/20 group-hover:border-blue-500/10 transition-colors">
                         <div className="flex items-center gap-3">
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-[10px] text-white font-black uppercase shadow-lg shadow-blue-500/20">
-                                {article.author?.full_name?.[0] || "A"}
+                            {/* UPDATED AVATAR LOGIC */}
+                            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-border/50 shadow-sm bg-muted/50">
+                                {article.author?.avatar_url ? (
+                                    <img
+                                        src={article.author.avatar_url}
+                                        alt={article.author.full_name || "Author"}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-[10px] text-white font-black uppercase">
+                                        {article.author?.full_name?.[0] || "A"}
+                                    </div>
+                                )}
                             </div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
-                                <span className="text-blue-500/50 mr-1">Tarafından:</span>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors flex flex-col justify-center">
+                                <span className="text-blue-500/50 text-[9px] leading-none mb-0.5">TARAFINDAN</span>
                                 {article.author?.full_name || article.author?.username || "Anonim"}
                             </div>
                         </div>
