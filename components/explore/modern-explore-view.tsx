@@ -71,7 +71,6 @@ function SpaceBackground() {
 export function ModernExploreView({
     initialArticles,
     categories,
-    categories,
     currentQuery,
     currentCategory,
     user,

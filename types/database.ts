@@ -88,7 +88,6 @@ export interface Database {
                     author_id: string | null
                     category: string | null
                     tags: string[] | null
-                    tags: string[] | null
                     views: number
                     status: string
                 }
