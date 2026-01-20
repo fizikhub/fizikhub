@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit } from "lucide-react";
+import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
@@ -304,6 +304,20 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 <p className="text-[10px] text-muted-foreground leading-tight truncate">Buradan Hızlıca Sor</p>
                                             </div>
                                         </button>
+
+                                        {/* Terim Ekle - CYAN COLOR */}
+                                        <Link
+                                            href="/makale/yeni?type=term"
+                                            className="w-full flex items-center gap-3 p-3 hover:bg-cyan-500/10 transition-all group rounded-xl"
+                                        >
+                                            <div className="relative w-9 h-9 bg-cyan-100 dark:bg-cyan-500/20 flex items-center justify-center text-cyan-600 rounded-lg group-hover:scale-105 transition-transform">
+                                                <WholeWord className="w-4.5 h-4.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-sm text-foreground group-hover:text-cyan-600 transition-colors truncate">Terim Ekle</h4>
+                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Sözlüğe Katkı Yap</p>
+                                            </div>
+                                        </Link>
 
                                         {/* Deney Paylaş */}
                                         <Link

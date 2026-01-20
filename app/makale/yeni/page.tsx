@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { NewArticleForm } from "@/components/article/new-article-form";
 import { ExperimentEditor } from "@/components/experiment/experiment-editor";
+import { TermEditor } from "@/components/term/term-editor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -46,7 +47,7 @@ export default async function NewArticlePage(props: NewArticlePageProps) {
                                 </Button>
                             </Link>
                             <h1 className="text-xl md:text-2xl font-black tracking-tight">
-                                {isExperiment ? 'Deney Paylaş' : 'Blog Oluştur'}
+                                {isExperiment ? 'Deney Paylaş' : type === 'term' ? 'Terim Ekle' : 'Blog Oluştur'}
                             </h1>
                         </div>
                     </div>
@@ -57,6 +58,8 @@ export default async function NewArticlePage(props: NewArticlePageProps) {
             <div className="container max-w-5xl mx-auto px-4 py-8">
                 {isExperiment ? (
                     <ExperimentEditor userId={user.id} />
+                ) : type === 'term' ? (
+                    <TermEditor userId={user.id} />
                 ) : (
                     <NewArticleForm
                         userId={user.id}

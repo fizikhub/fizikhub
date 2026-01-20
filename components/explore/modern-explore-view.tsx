@@ -8,6 +8,7 @@ import { ShareInputCard } from "@/components/blog/share-input-card";
 import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 import { SearchInput } from "@/components/blog/search-input";
+import { TermCard } from "@/components/term/term-card";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 interface Article {
@@ -246,6 +247,8 @@ export function ModernExploreView({
                                     <BookReviewCard article={article as any} index={idx} />
                                 ) : article.category === "Deney" ? (
                                     <ExperimentCard article={article as any} index={idx} />
+                                ) : article.category === "Terim" ? (
+                                    <TermCard article={article as any} index={idx} />
                                 ) : (
                                     <SocialArticleCard
                                         article={article as any}
