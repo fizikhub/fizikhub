@@ -261,7 +261,7 @@ export function SocialArticleCard({
                             {article.title}
                         </h3>
 
-                        <p className="text-xs sm:text-sm text-muted-foreground/80 line-clamp-2 sm:line-clamp-4 font-medium leading-relaxed">
+                        <p className="text-sm sm:text-base text-muted-foreground/80 line-clamp-3 sm:line-clamp-4 font-medium leading-relaxed">
                             {article.summary || (article.content ? article.content.replace(/<[^>]*>?/gm, '').slice(0, 180) + "..." : "Özet bulunmuyor.")}
                         </p>
 
@@ -292,13 +292,13 @@ export function SocialArticleCard({
                     {/* 4. FOOTER ACTIONS */}
                     <div className="px-5 py-4 border-t border-border/30 bg-muted/20 flex items-center justify-between group/actions">
                         {/* Text Info */}
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                        <div className="flex items-center gap-1.5 text-xs sm:text-xs font-bold uppercase tracking-wider text-muted-foreground/60">
                             <BookOpen className="w-3.5 h-3.5" />
                             <span>{getReadingTime(article.content)} dk</span>
                         </div>
 
                         {/* Action Buttons (Strict Equal Spacing using fixed width containers + justify-between) */}
-                        <div className="flex items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-0 sm:gap-1">
                             <button
                                 onClick={handleLike}
                                 className={cn(
