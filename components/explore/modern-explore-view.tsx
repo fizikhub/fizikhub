@@ -99,14 +99,16 @@ export function ModernExploreView({
             <SpaceBackground />
 
             {/* Further Reduced Top Padding - Moved Up */}
-            <div className="container max-w-2xl mx-auto px-4 py-2 sm:py-6">
+            {/* Relaxed Container Width */}
+            <div className="container max-w-5xl mx-auto px-4 py-2 sm:py-6">
 
                 {/* Share Card - Reduced bottom margin */}
                 <div className="relative">
                     <ShareInputCard user={user} />
 
                     {/* Description Text - Repositioned */}
-                    <div className="mt-8 mb-8 flex items-center justify-between px-2">
+                    {/* Description Text - Repositioned & Compacted */}
+                    <div className="mt-4 mb-4 flex items-center justify-between px-2">
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

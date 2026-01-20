@@ -37,28 +37,20 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         .order("created_at", { ascending: false });
 
     // --- NEW FILTERING LOGIC ---
-    if (category) {
-        if (category === "Blog") {
-            // "Blog" means everything EXCEPT Book Reviews and Experiments, AND exclude writers (show only community)
-            dbQuery = dbQuery
-                .neq("category", "Kitap İncelemesi")
-                .neq("category", "Deney")
-                // Only showing community posts for "Blog" path, as per user request to hide "Makale" (Writer) cards
-                .eq("profiles.is_writer", false);
-        } else {
-            // "Kitap İncelemesi" or "Deney" -> Specific match
-            dbQuery = dbQuery.eq("category", category);
-        }
-    } else if (!query) {
-        // Default (All view) - Show everything? Or should default be "Blog"?
-        // For now, if no category is selected, we show EVERYTHING.
-        // Default (All view) - If user lands on /blog without category.
-        // User requested: "blog sayfasında sadece blog yazılarının kartları gözüksün".
-        // Let's enforce the "Blog" behavior by default unless search query is present.
-        // Or if Tümü is selected (which maps to undefined here), we should arguably show everything?
-        // But the user said "currently article cards are also visible and they are green", implying they dislike the mix.
-        // I'll make the default view match the "Blog" category view (Community only).
-
+    if (category === "Blog") {
+        // "Blog" means everything EXCEPT Book Reviews and Experiments
+        // Also exclude writers if that's the desired rule for "Blog" tab
+        dbQuery = dbQuery
+            .neq("category", "Kitap İncelemesi")
+            .neq("category", "Deney")
+            .eq("profiles.is_writer", false);
+    } else if (category) {
+        // Specific category match
+        dbQuery = dbQuery.eq("category", category);
+    }
+    // If NO category is selected (e.g. /blog root), user said "currently article cards are also visible and they are green".
+    // This implies they want the "Blog" view by default.
+    else if (!query) {
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
             .neq("category", "Deney")
@@ -79,9 +71,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     let userProfile = null;
 
     if (user) {
+        // Fetch full profile to ensure we have name/avatar
         const { data: profile } = await supabase
             .from("profiles")
-            .select("username, full_name, avatar_url")
+            .select("*")
             .eq("id", user.id)
             .single();
         userProfile = profile;
