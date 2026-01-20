@@ -12,9 +12,10 @@ import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 
 import { BookReviewCard } from "@/components/book-review/book-review-card";
+import { TermCard } from "@/components/term/term-card";
 
 export interface FeedItem {
-    type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review';
+    type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term';
     data: any;
     sortDate: string;
 }
@@ -73,6 +74,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
 
                         {item.type === 'book-review' && (
                             <BookReviewCard
+                                article={item.data}
+                                index={index}
+                            />
+                        )}
+
+                        {item.type === 'term' && (
+                            <TermCard
                                 article={item.data}
                                 index={index}
                             />

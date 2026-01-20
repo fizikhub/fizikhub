@@ -84,6 +84,8 @@ export default async function Home() {
       type = 'experiment';
     } else if (a.category === 'Kitap İncelemesi') {
       type = 'book-review';
+    } else if (a.category === 'Terim') {
+      type = 'term';
     }
 
     // We need to fetch/attach loop counts for likes? For MVP just pass 0 or mock? 

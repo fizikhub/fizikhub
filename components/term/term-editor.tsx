@@ -59,7 +59,8 @@ export function TermEditor({ userId }: TermEditorProps) {
             const formData = new FormData();
             formData.append("title", `${termName}`); // Title is just the term name
             formData.append("content", finalContent);
-            formData.append("excerpt", `${termName}: ${content.substring(0, 120)}...`); // Simple excerpt
+            const plainContent = content.replace(/<[^>]*>?/gm, '');
+            formData.append("excerpt", `${termName}: ${plainContent.substring(0, 120)}...`); // Simple plain excerpt
             formData.append("category", "Terim"); // New category
             // No cover image for terms by default, layout handles it
             formData.append("status", targetStatus === "published" ? "published" : "draft"); // Auto publish for now or draft

@@ -11,7 +11,7 @@ export const metadata = {
     description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
 };
 
-const VALID_CATEGORIES = ["Blog", "Kitap İncelemesi", "Deney"];
+const VALID_CATEGORIES = ["Blog", "Kitap İncelemesi", "Deney", "Terim"];
 
 interface BlogPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
