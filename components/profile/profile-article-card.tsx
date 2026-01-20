@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Calendar, Clock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -27,10 +28,11 @@ export function ProfileArticleCard({ article }: ProfileArticleCardProps) {
                 {/* Cover Image */}
                 {article.cover_url && (
                     <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-muted/30 to-muted/10">
-                        <img
+                        <Image
                             src={article.cover_url}
                             alt={article.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 grayscale-[20%]"
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-300 grayscale-[20%]"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
 

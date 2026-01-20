@@ -210,16 +210,8 @@ export async function startConversation(otherUserId: string) {
     }
 
     // Use the database function to create or get conversation
-    if (process.env.NODE_ENV === 'development') {
-        console.log("Calling create_conversation RPC...");
-    }
     const { data: conversationId, error } = await supabase
         .rpc('create_conversation', { other_user_id: otherUserId });
-
-    if (process.env.NODE_ENV === 'development') {
-        console.log("RPC Response - conversationId:", conversationId);
-        console.log("RPC Response - error:", error);
-    }
 
     if (error) {
         if (process.env.NODE_ENV === 'development') {
@@ -233,8 +225,6 @@ export async function startConversation(otherUserId: string) {
         .from('conversation_participants')
         .select('*')
         .eq('conversation_id', conversationId);
-
-
 
     revalidatePath('/mesajlar');
     return { success: true, conversationId };

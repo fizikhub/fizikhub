@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Star, BookOpen, User } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface BookReviewCardProps {
     article: {
@@ -75,10 +75,11 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                     {/* Spine/Cover with 3D effect */}
                     <div className="relative shadow-2xl rounded-[2px] overflow-hidden w-20 sm:w-24 md:w-36 aspect-[2/3] transition-all duration-500 will-change-transform group-hover:scale-105 group-hover:-rotate-2 group-hover:shadow-rose-900/20 [perspective:1000px]">
                         {article.cover_url ? (
-                            <img
+                            <Image
                                 src={article.cover_url}
                                 alt={bookTitle}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
                             />
                         ) : (
                             <div className="w-full h-full bg-rose-900 flex flex-col items-center justify-center p-4 text-center text-rose-100 border-l-2 border-white/10">

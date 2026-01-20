@@ -72,7 +72,7 @@ export default async function Home() {
   const feedItems: FeedItem[] = [];
 
   // Add Articles (Distinguish Blog vs Article if needed, e.g. by is_writer or category, but for now treating similarly as 'article' or 'blog' type for visuals)
-  articles.forEach((a: any) => {
+  articles.forEach((a: { author?: { is_writer?: boolean }; category?: string; created_at: string;[key: string]: any }) => {
     // If author is writer -> Article style (maybe), if not -> Blog style? 
     // User said "blogların ve makalelerin kartları makale sayfası ve blog sayfasındaki ... ile aynı olsun".
     // Makale page uses SocialArticleCard. Blog page uses SocialArticleCard. They are visually same/similar.
@@ -103,7 +103,7 @@ export default async function Home() {
     });
   });
 
-  questions.forEach((q: any) => {
+  questions.forEach((q: { id: string; answers?: { count: number }[]; created_at: string;[key: string]: any }) => {
     feedItems.push({
       type: 'question',
       data: {
