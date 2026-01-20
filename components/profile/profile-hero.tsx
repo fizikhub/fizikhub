@@ -315,7 +315,7 @@ export function ProfileHero({
 
                             {/* Bio */}
                             {profile?.bio && (
-                                <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed max-w-2xl text-sm mt-2">
+                                <p className="text-foreground/90 whitespace-pre-wrap leading-relaxed max-w-2xl text-sm mt-3 md:mt-2">
                                     {profile.bio}
                                 </p>
                             )}
@@ -368,7 +368,7 @@ export function ProfileHero({
                         {/* Reddit-Style Stats & Badges Row */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-1">
                             {/* Stats */}
-                            <div className="flex items-center divide-x divide-border/40">
+                            <div className="flex items-center divide-x divide-border/40 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
                                 <div className="pr-4 md:pr-6 text-center sm:text-left">
                                     <div className="text-lg font-black text-foreground leading-none">{stats.followersCount}</div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 opacity-80">Takipçi</div>
@@ -377,6 +377,7 @@ export function ProfileHero({
                                     <div className="text-lg font-black text-foreground leading-none">{stats.followingCount}</div>
                                     <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-1 opacity-80">Takip</div>
                                 </div>
+                                {/* Removed 'flex items-center' from parent div of this block to allow wrapping if needed, but 'divide-x' needs flex */}
                                 <div className="px-4 md:px-6 text-center sm:text-left cursor-pointer relative group/hub" title="">
                                     <Link href="/puanlar-nedir">
                                         <div className="flex flex-col items-center sm:items-start group-hover/hub:scale-105 transition-transform">

@@ -9,7 +9,7 @@ export function Logo() {
             <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative z-10 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110">
-                    <SiteLogo className="h-9 w-9 sm:h-11 sm:w-11 text-primary drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                    <SiteLogo className="h-10 w-10 sm:h-11 sm:w-11 text-primary drop-shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
                 </div>
             </div>
 
