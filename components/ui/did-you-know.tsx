@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, RefreshCw, Atom } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { RefreshCw } from "lucide-react";
 
 const facts = [
     "Bir nötron yıldızının bir çay kaşığı kadarı, Everest Dağı kadar ağırdır.",
@@ -36,70 +33,36 @@ export function DidYouKnow() {
     if (!isClient) return null;
 
     return (
-        <div className="w-full max-w-sm md:max-w-md mx-auto my-12 px-2 perspective-1000">
-            <motion.div
-                initial={{ transform: "rotateX(5deg)" }}
-                whileHover={{ transform: "rotateX(0deg) scale(1.02)" }}
-                transition={{ duration: 0.5 }}
-                className="relative group"
-            >
-                {/* Cosmic Glow Behind */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl opacity-40 group-hover:opacity-70 blur-xl transition-opacity duration-1000 animate-pulse" />
+        <div className="w-full max-w-md mx-auto my-8 px-4">
+            {/* Simple, minimal card - no flashy effects */}
+            <div className="relative bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+                        Biliyor muydun?
+                    </span>
+                    <button
+                        onClick={nextFact}
+                        className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-md transition-colors"
+                    >
+                        <RefreshCw className="h-3.5 w-3.5" />
+                    </button>
+                </div>
 
-                <Card className="relative overflow-hidden border-0 bg-black/40 backdrop-blur-2xl rounded-2xl p-0 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,1)]">
-
-                    {/* Glass Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-50 pointer-events-none" />
-
-                    {/* Content Container */}
-                    <div className="relative p-6 md:p-8 flex flex-col items-start gap-4 z-10 w-full">
-                        {/* Minimal Header */}
-                        <div className="flex w-full items-center justify-between border-b border-white/5 pb-4 mb-2">
-                            <div className="flex items-center gap-3">
-                                <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
-                                <span className="text-[10px] font-mono text-orange-500/80 uppercase tracking-[0.2em]">SİNGÜLARİTE VERİSİ</span>
-                            </div>
-
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={nextFact}
-                                className="h-8 w-8 rounded-full p-0 text-zinc-600 hover:text-white hover:bg-white/5 transition-all hover:rotate-180 duration-500"
-                            >
-                                <RefreshCw className="h-3.5 w-3.5" />
-                            </Button>
-                        </div>
-
-                        {/* Fact Display */}
-                        <div className="min-h-[100px] flex items-center w-full">
-                            <AnimatePresence mode="wait">
-                                <motion.p
-                                    key={index}
-                                    initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-                                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                                    exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-                                    transition={{ duration: 0.4 }}
-                                    className="text-lg md:text-xl font-medium leading-relaxed text-zinc-100"
-                                >
-                                    {facts[index]}
-                                </motion.p>
-                            </AnimatePresence>
-                        </div>
-
-                        {/* Footer Decorative Tech */}
-                        <div className="w-full flex items-center justify-between pt-2">
-                            <div className="flex gap-1">
-                                {[...Array(3)].map((_, i) => (
-                                    <div key={i} className="h-1 w-1 rounded-full bg-zinc-700 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
-                                ))}
-                            </div>
-                            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
-                                Veri Akışı: Aktif
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-            </motion.div>
+                {/* Fact */}
+                <AnimatePresence mode="wait">
+                    <motion.p
+                        key={index}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="text-base text-zinc-200 leading-relaxed"
+                    >
+                        {facts[index]}
+                    </motion.p>
+                </AnimatePresence>
+            </div>
         </div>
     );
 }

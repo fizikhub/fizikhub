@@ -20,104 +20,68 @@ export function Footer() {
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isSingularityActive, setIsSingularityActive] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    // Shooting stars state
-    const [shootingStars, setShootingStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+
+    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
 
     useEffect(() => {
         setIsMobile(window.innerWidth < 768);
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
 
-        // Initial shooting stars setup
-        setShootingStars(Array.from({ length: 5 }).map((_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 50,
-            delay: Math.random() * 20
-        })));
-
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number; opacity: number }>>([]);
-
-    useEffect(() => {
-        // High density star field
-        const newStars = Array.from({ length: 300 }).map((_, i) => ({
+        // Star field setup
+        const newStars = Array.from({ length: 200 }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            size: Math.random() * 1.5 + 0.1,
-            duration: Math.random() * 5 + 3,
-            opacity: Math.random() * 0.8 + 0.2
+            size: Math.random() * 1.5 + 0.3,
+            opacity: Math.random() * 0.5 + 0.2
         }));
         setStars(newStars);
+
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#020202] pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
-            {/* Deep Space Background Layer */}
-            <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_bottom,_#0a0a0a_0%,_#000000_100%)]" />
+        <footer className="relative bg-black pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
+            {/* Pure Black Background */}
+            <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* REALISTIC GALAXY SYSTEM - ENHANCED VISIBILITY */}
+            {/* Subtle Deep Space Elements */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                {/* Very subtle distant nebula glows */}
+                <div className="absolute top-[10%] left-[5%] w-[400px] h-[300px] bg-blue-950/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[30%] right-[10%] w-[300px] h-[200px] bg-purple-950/8 blur-[100px] rounded-full" />
 
-                {/* 1. Large Spiral Galaxy (Top Left) - Increased Opacity */}
-                <div className="absolute -top-[10%] -left-[10%] w-[900px] h-[900px] opacity-100 animate-[spin_180s_linear_infinite]">
-                    {/* Core */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-600/40 blur-[80px] rounded-full mix-blend-screen" />
-                    {/* Arms - Brightened */}
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(140,80,255,0.3)_90deg,transparent_180deg,rgba(140,80,255,0.3)_270deg,transparent_360deg)] blur-[60px]" />
-                    {/* Extra detail layer */}
-                    <div className="absolute inset-0 bg-[conic-gradient(from_45deg,transparent_0deg,rgba(100,50,255,0.2)_120deg,transparent_360deg)] blur-[40px] mix-blend-plus-lighter" />
-                </div>
+                {/* CSS Shooting Stars */}
+                <style jsx>{`
+                    @keyframes shootingStar {
+                        0% {
+                            transform: translate(-50px, -50px) rotate(45deg);
+                            opacity: 0;
+                        }
+                        5% { opacity: 1; }
+                        95% { opacity: 1; }
+                        100% {
+                            transform: translate(calc(100vw + 50px), calc(100vh + 50px)) rotate(45deg);
+                            opacity: 0;
+                        }
+                    }
+                    .shooting-star {
+                        position: absolute;
+                        width: 60px;
+                        height: 1px;
+                        background: linear-gradient(to right, transparent, white 60%, transparent);
+                        animation: shootingStar linear infinite;
+                    }
+                `}</style>
 
-                {/* 1.5. Second Spiral Galaxy (Bottom Right) - Increased Opacity & Size */}
-                <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] opacity-80 animate-[spin_150s_linear_infinite_reverse]">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-600/30 blur-[70px] rounded-full mix-blend-screen" />
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(50,120,255,0.25)_120deg,transparent_240deg)] blur-[50px]" />
-                </div>
+                <div className="shooting-star" style={{ top: '8%', left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
+                <div className="shooting-star" style={{ top: '20%', left: '40%', animationDuration: '3s', animationDelay: '6s' }} />
+                <div className="shooting-star" style={{ top: '5%', left: '70%', animationDuration: '2s', animationDelay: '15s' }} />
 
-                {/* 2. Distant Nebula (Bottom Right) - Brightened */}
-                <div className="absolute bottom-0 right-0 w-[1000px] h-[600px] bg-gradient-to-t from-indigo-900/30 via-purple-900/10 to-transparent blur-[90px] opacity-70 mix-blend-screen" />
-
-                {/* 3. Colorful Star Clusters */}
-                <div className="absolute top-[30%] right-[20%] w-[300px] h-[300px] bg-indigo-500/20 blur-[90px] rounded-full animate-pulse" style={{ animationDuration: '6s' }} />
-
-                {/* 4. Shooting Stars - Top Left to Bottom Right */}
-                {shootingStars.map((star) => (
-                    <motion.div
-                        key={star.id}
-                        initial={{ x: -200, y: -200, opacity: 0, scale: 0.5 }}
-                        animate={{
-                            x: ['-10vw', '120vw'],
-                            y: ['-10vh', '120vh'],
-                            opacity: [0, 1, 1, 0],
-                            scale: [0.5, 1, 1, 0.5]
-                        }}
-                        transition={{
-                            duration: Math.random() * 2 + 1.5, // 1.5s to 3.5s duration
-                            repeat: Infinity,
-                            repeatDelay: Math.random() * 10 + 2,
-                            ease: "easeInOut",
-                            delay: star.delay // Use the random delay from state
-                        }}
-                        className="absolute z-10"
-                        style={{
-                            top: `${star.y - 20}%`, // Offset starting position slightly based on random Y
-                            left: `${star.x - 20}%` // Offset starting position slightly based on random X
-                        }}
-                    >
-                        {/* Star Head */}
-                        <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
-                        {/* Star Tail */}
-                        <div className="absolute top-1/2 right-full w-[150px] h-[2px] bg-gradient-to-l from-white via-blue-200/50 to-transparent -translate-y-1/2 origin-right -rotate-6" />
-                    </motion.div>
-                ))}
-
-                {/* Static Star Field - Brighter */}
+                {/* Static Star Field */}
                 {stars.map((star) => (
                     <div
                         key={star.id}
@@ -127,8 +91,7 @@ export function Footer() {
                             top: `${star.y}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
-                            opacity: star.opacity + 0.2, // Boost opacity
-                            boxShadow: `0 0 ${star.size * 2}px rgba(255,255,255,${star.opacity})`
+                            opacity: star.opacity,
                         }}
                     />
                 ))}
@@ -160,10 +123,8 @@ export function Footer() {
             </div>
 
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
-
-                {/* Technical Links Grid - Enhanced Visibility */}
+                {/* Technical Links Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
-
                     {/* 1. Keşif Modülü */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
@@ -218,7 +179,7 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* Bottom Bar - Flush to bottom */}
+            {/* Bottom Bar */}
             <div className="relative z-40 w-full border-t border-white/5 bg-black/90 backdrop-blur-md">
                 <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
                     <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 text-center md:text-left">
@@ -240,6 +201,6 @@ export function Footer() {
                     </div>
                 </div>
             </div>
-        </footer >
-    )
+        </footer>
+    );
 }
