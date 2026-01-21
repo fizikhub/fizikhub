@@ -10,6 +10,8 @@ import { ExperimentCard } from "@/components/experiment/experiment-card";
 import { SearchInput } from "@/components/blog/search-input";
 import { TermCard } from "@/components/term/term-card";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition, useState } from "react";
 
 interface Article {
     id: number;
@@ -80,6 +82,23 @@ export function ModernExploreView({
     searchQuery // Add this
 }: ModernExploreViewProps) {
 
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
+    const handleCategoryChange = (category: string) => {
+        startTransition(() => {
+            const params = new URLSearchParams(window.location.search);
+            if (category === "Tümü") {
+                params.delete("category");
+            } else {
+                params.set("category", category);
+            }
+            // Reset page to 1 on category change
+            params.delete("page");
+            router.push(`/blog?${params.toString()}`);
+        });
+    };
+
     const transformedArticles = initialArticles.map(article => ({
         ...article,
         image_url: article.cover_url || article.image_url,
@@ -95,6 +114,46 @@ export function ModernExploreView({
     const { scrollY } = useScroll();
     const headerTitleY = useTransform(scrollY, [0, 200], [0, -20]);
 
+    // Helper to get empty state message
+    const getEmptyStateContent = () => {
+        switch (currentCategory) {
+            case "Kitap İncelemesi":
+                return {
+                    icon: BookReviewCard, // Just valid component ref or icon
+                    title: "Henüz inceleme yok...",
+                    desc: "Okuduğun son kitabı anlatmaya ne dersin?",
+                    action: "İlk İncelemeyi Yaz",
+                    link: "/kitap-inceleme/yeni"
+                };
+            case "Deney":
+                return {
+                    icon: ExperimentCard,
+                    title: "Laboratuvar sessiz...",
+                    desc: "Çılgın bir deney yapıp sonuçlarını paylaş!",
+                    action: "Deney Paylaş",
+                    link: "/makale/yeni?type=experiment"
+                };
+            case "Terim":
+                return {
+                    icon: TermCard,
+                    title: "Sözlük boş...",
+                    desc: "Bilimsel bir terimi açıklayarak bize öğret.",
+                    action: "Terim Ekle",
+                    link: "/makale/yeni?type=term"
+                };
+            default:
+                return {
+                    icon: Sparkles,
+                    title: "Henüz makale yok...",
+                    desc: "Bu konuda henüz kimse bir şey yazmamış.",
+                    action: "İlk Yazıyı Sen Yaz",
+                    link: "/makale/yeni"
+                };
+        }
+    };
+
+    const emptyState = getEmptyStateContent();
+
     return (
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
             <SpaceBackground />
@@ -104,20 +163,25 @@ export function ModernExploreView({
             <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-6">
 
                 {/* Share Card - Reduced bottom margin */}
-                <div className="relative">
+                <div className="relative mb-8">
                     <ShareInputCard user={user} />
 
-                    {/* Description Text - Repositioned */}
-                    {/* Description Text - Repositioned & Compacted */}
-                    <div className="mt-4 mb-4 flex items-center justify-between px-2">
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="text-muted-foreground font-medium text-xs sm:text-sm max-w-lg leading-relaxed italic"
+                    {/* New Premium Helper Text Design */}
+                    <div className="flex items-center justify-center -mt-2 mb-2 relative z-10 px-4">
+                        <div className="bg-gradient-to-r from-transparent via-muted/40 to-transparent h-px w-full absolute top-1/2 -z-10" />
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                            className="bg-background/80 backdrop-blur-md px-6 py-1.5 rounded-full border border-primary/10 shadow-sm text-center"
                         >
-                            Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
-                        </motion.p>
+                            <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                <span>Fikirlerini Özgürce Paylaş</span>
+                                <span className="hidden sm:inline text-primary/40">|</span>
+                                <span className="hidden sm:inline text-primary/60">Bilim Topluluğuna Katıl</span>
+                            </p>
+                        </motion.div>
                     </div>
 
                     {/* Improved UFO - Floating on the right side of the share area */}
@@ -180,38 +244,47 @@ export function ModernExploreView({
 
                         {/* Categories Loop */}
                         {categories.map((cat) => {
-                            const isActive = currentCategory === cat;
-                            // Icon Mapping
-                            let Icon;
-                            if (cat === 'Blog') Icon = Telescope; // Will change to proper icon in actual map logic or strict list
+                            const isActive = currentCategory === cat || (!currentCategory && cat === "Tümü"); // Assuming 'Tümü' might be added, or handling undefined
+                            const isActuallyActive = currentCategory === cat;
 
                             return (
-                                <Link key={cat} href={`/blog?category=${encodeURIComponent(cat)}`}>
-                                    <div
-                                        className={cn(
-                                            "relative px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-2",
-                                            isActive
-                                                ? "text-primary-foreground shadow-lg shadow-primary/20 scale-100"
-                                                : "text-muted-foreground hover:text-primary hover:bg-primary/5",
-                                            isActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
-                                            isActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
-                                            isActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50",
-                                            isActive && cat === 'Terim' && "bg-gradient-to-tr from-blue-500 to-cyan-500 border-blue-400/50"
-                                        )}
-                                    >
-                                        {/* Simple dot indicator for active state */}
-                                        {isActive && (
-                                            <motion.span
-                                                layoutId="active-dot"
-                                                className="absolute inset-0 rounded-xl bg-white/10 mix-blend-overlay"
-                                                initial={false}
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                            />
-                                        )}
+                                <div
+                                    key={cat}
+                                    onClick={() => handleCategoryChange(cat)}
+                                    className={cn(
+                                        "relative px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-2 select-none group",
+                                        isActuallyActive
+                                            ? "text-primary-foreground shadow-lg shadow-primary/20 scale-100"
+                                            : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                                        isActuallyActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
+                                        isActuallyActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
+                                        isActuallyActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50",
+                                        isActuallyActive && cat === 'Terim' && "bg-gradient-to-tr from-blue-500 to-cyan-500 border-blue-400/50",
+                                        isPending && !isActuallyActive && "opacity-50 grayscale"
+                                    )}
+                                >
+                                    {/* Loading Indicator for Pending State */}
+                                    {isPending && isActuallyActive && (
+                                        <div className="absolute right-2 top-2">
+                                            <span className="flex h-2 w-2">
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                                            </span>
+                                        </div>
+                                    )}
 
-                                        <span className="relative z-10 tracking-tight">{cat}</span>
-                                    </div>
-                                </Link>
+                                    {/* Simple dot indicator for active state */}
+                                    {isActuallyActive && (
+                                        <motion.span
+                                            layoutId="active-dot"
+                                            className="absolute inset-0 rounded-xl bg-white/10 mix-blend-overlay"
+                                            initial={false}
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+
+                                    <span className="relative z-10 tracking-tight">{cat}</span>
+                                </div>
                             )
                         })}
                     </div>
@@ -221,14 +294,28 @@ export function ModernExploreView({
                 {/* For now, assuming these 3 are the primary navigation modes. */}
 
                 {/* Feed */}
-                <div className="space-y-6 sm:space-y-8">
+                <div className={cn("space-y-6 sm:space-y-8 min-h-[400px]", isPending && "opacity-50 transition-opacity duration-300")}>
                     {!initialArticles || initialArticles.length === 0 ? (
-                        <div className="py-16 text-center rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5">
-                            <Telescope className="w-12 h-12 text-primary/40 mx-auto mb-4" />
-                            <p className="text-muted-foreground font-bold text-sm">Henüz makale yok...</p>
-                            <Link href="/makale/yeni" className="text-xs sm:text-sm text-primary hover:underline mt-2 inline-block font-black uppercase tracking-wide">
-                                <Sparkles className="w-3 h-3 inline mr-1" />
-                                İlk başlatıcı sen ol!
+                        <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="w-24 h-24 mb-6 rounded-full bg-gradient-to-tr from-muted/20 to-muted/5 flex items-center justify-center border border-white/5 relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-primary/10 blur-xl animate-pulse" />
+                                <Telescope className="w-10 h-10 text-muted-foreground relative z-10" />
+                            </motion.div>
+
+                            <h3 className="text-xl font-black text-foreground mb-2">{emptyState.title}</h3>
+                            <p className="text-muted-foreground max-w-xs mx-auto mb-8 text-sm">{emptyState.desc}</p>
+
+                            <Link
+                                href={emptyState.link}
+                                className="group relative inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground font-bold overflow-hidden shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-105"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                                <Sparkles className="w-4 h-4" />
+                                <span>{emptyState.action}</span>
                             </Link>
                         </div>
                     ) : (
