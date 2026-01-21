@@ -44,50 +44,56 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-black pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
+        <footer className="relative bg-[#020205] pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
             {/* Pure Black Background */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* Deep Space Elements */}
+            {/* Deep Space Elements - High Visibility Adjustment */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
 
-                {/* MILKY WAY BAND - Visible Diagonal Stream */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[500px] bg-gradient-to-r from-transparent via-blue-900/20 to-transparent -rotate-45 blur-[100px] mix-blend-screen" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[200px] bg-gradient-to-r from-transparent via-purple-900/20 to-transparent -rotate-45 blur-[80px] mix-blend-screen" />
+                {/* 1. MILKY WAY CORE - Aggressive Brightness */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[700px] bg-gradient-to-r from-transparent via-blue-900/40 to-transparent -rotate-45 blur-[120px] mix-blend-screen" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[300px] bg-gradient-to-r from-transparent via-purple-800/30 to-transparent -rotate-45 blur-[90px] mix-blend-screen" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100px] bg-white/5 -rotate-45 blur-[60px] mix-blend-overlay" />
 
-                {/* Brighter Distant Nebulae */}
-                <div className="absolute top-[10%] left-[5%] w-[500px] h-[400px] bg-blue-800/20 blur-[130px] rounded-full mix-blend-screen" />
-                <div className="absolute bottom-[20%] right-[10%] w-[600px] h-[400px] bg-indigo-900/20 blur-[120px] rounded-full mix-blend-screen" />
+                {/* 2. SPIRAL GALAXY - Top Right Corner */}
+                <div className="absolute -top-[10%] -right-[10%] w-[900px] h-[900px] opacity-40 mix-blend-screen animate-[spin_200s_linear_infinite]">
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(60,140,255,0.4)_120deg,transparent_240deg)] blur-[80px]" />
+                    <div className="absolute inset-0 bg-[conic-gradient(from_180deg,transparent_0deg,rgba(140,50,255,0.3)_120deg,transparent_240deg)] blur-[100px]" />
+                </div>
 
-                {/* CSS Shooting Stars - Rare & Realistic */}
+                {/* 3. NEBULA CLOUDS - Left Side */}
+                <div className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] bg-indigo-900/40 blur-[150px] rounded-full mix-blend-screen" />
+
+                {/* 4. CSS Shooting Stars with Trails */}
                 <style jsx>{`
                     @keyframes shootingStar {
                         0% {
-                            transform: translate(-50px, -50px) rotate(45deg);
+                            transform: translate(-100px, -100px) rotate(45deg);
                             opacity: 0;
                         }
-                        5% { opacity: 1; }
-                        20% { opacity: 0; }
+                        10% { opacity: 1; }
+                        80% { opacity: 0; }
                         100% {
-                            transform: translate(calc(60vw + 50px), calc(60vh + 50px)) rotate(45deg);
+                            transform: translate(calc(80vw + 100px), calc(80vh + 100px)) rotate(45deg);
                             opacity: 0;
                         }
                     }
                     .shooting-star {
                         position: absolute;
-                        width: 120px; /* Longer tail */
-                        height: 1px;
-                        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
-                        filter: drop-shadow(0 0 2px white);
+                        width: 150px;
+                        height: 2px;
+                        background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1) 50%, rgba(255,255,255,0));
+                        filter: drop-shadow(0 0 3px rgba(255,255,255,0.8));
                         animation: shootingStar linear infinite;
-                        opacity: 0; /* Default invisible */
+                        opacity: 0;
                     }
                 `}</style>
 
-                {/* Adjusted timings for rarity */}
-                <div className="shooting-star" style={{ top: '0%', left: '20%', animationDuration: '4s', animationDelay: '5s' }} />
-                <div className="shooting-star" style={{ top: '20%', left: '0%', animationDuration: '3.5s', animationDelay: '18s' }} />
-                <div className="shooting-star" style={{ top: '-10%', left: '60%', animationDuration: '5s', animationDelay: '2s' }} />
+                <div className="shooting-star" style={{ top: '0%', left: '10%', animationDuration: '6s', animationDelay: '2s' }} />
+                <div className="shooting-star" style={{ top: '10%', left: '40%', animationDuration: '5s', animationDelay: '7s' }} />
+                <div className="shooting-star" style={{ top: '-10%', left: '70%', animationDuration: '7s', animationDelay: '12s' }} />
+                <div className="shooting-star" style={{ top: '40%', left: '-10%', animationDuration: '5.5s', animationDelay: '18s' }} />
 
                 {/* Static Star Field */}
                 {stars.map((star) => (
@@ -99,7 +105,8 @@ export function Footer() {
                             top: `${star.y}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
-                            opacity: star.opacity,
+                            opacity: star.opacity * 0.8, /* Boosted star brightness */
+                            boxShadow: `0 0 ${star.size}px rgba(255,255,255,${star.opacity})`
                         }}
                     />
                 ))}
