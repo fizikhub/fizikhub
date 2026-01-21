@@ -1,19 +1,11 @@
 "use client";
 
-import { Instagram, Twitter } from "lucide-react"
 import Link from "next/link";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-
-
-const SolarSystem = dynamic(() => import("@/components/ui/solar-system").then(mod => mod.SolarSystem), {
-    ssr: false,
-    loading: () => <div className="w-[10px] h-[10px]" />
-});
 
 export function Footer() {
     const pathname = usePathname();
@@ -102,7 +94,7 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end">
+        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end [mask-image:linear-gradient(to_bottom,transparent,black_150px)]">
 
             {/* 1. BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
@@ -115,8 +107,8 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-[5%] right-[-45%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
-                    style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateY(10deg)' }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-60 animate-[spin_240s_linear_infinite]"
+                    style={{ transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(55deg) rotateY(10deg)' }}
                 >
 
                     {/* A. Intense Core Bulge */}
@@ -200,13 +192,9 @@ export function Footer() {
 
             {/* 3. LAYER: CONTENT */}
 
-            {/* Solar System at the bottom center */}
-            <div className="absolute bottom-[180px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-[0.4] md:scale-[0.6]">
-                <SolarSystem />
-            </div>
 
             {/* Links Grid */}
-            <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-12 md:py-20">
+            <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-12 md:py-20 min-h-[500px] justify-center">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
                     {/* 1. Keşif Modülü */}
                     <div className="flex flex-col gap-4">
@@ -263,24 +251,15 @@ export function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="relative z-40 w-full border-t border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
-                <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
-                    <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 text-center md:text-left">
-                        <SiteLogo className="h-8 w-8 text-white opacity-90" />
-                        <p className="text-zinc-400">
+            <div className="relative z-40 w-full border-t border-white/5 bg-white/[0.03] backdrop-blur-3xl shadow-[0_-20px_60px_rgba(0,0,0,0.8)] pb-12 pt-8">
+                <div className="container flex flex-col items-center justify-center gap-6 text-center">
+                    <div className="flex flex-col items-center gap-3 text-xs font-mono text-zinc-500">
+                        <SiteLogo className="h-10 w-10 text-white opacity-80 mb-2" />
+                        <p className="text-zinc-400 leading-relaxed">
                             &copy; 2025 FİZİKHUB.
                             <br />
-                            <span className="text-orange-500/90 font-bold text-[10px] tracking-widest">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
+                            <span className="text-orange-500/90 font-bold text-[10px] tracking-[0.2em] mt-2 block shadow-orange-500/20 drop-shadow-lg">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
                         </p>
-                    </div>
-
-                    <div className="flex gap-4">
-                        <a href="https://instagram.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-3 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all border border-white/5 hover:border-white/20 hover:scale-110">
-                            <Instagram className="h-4 w-4" />
-                        </a>
-                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-3 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all border border-white/5 hover:border-white/20 hover:scale-110">
-                            <Twitter className="h-4 w-4" />
-                        </a>
                     </div>
                 </div>
             </div>
