@@ -166,21 +166,10 @@ export function ModernExploreView({
                 <div className="relative mb-8">
                     <ShareInputCard user={user} />
 
-                    {/* New Premium Helper Text Design */}
-                    <div className="flex items-center justify-center -mt-2 mb-2 relative z-10 px-4">
-                        <div className="bg-gradient-to-r from-transparent via-muted/40 to-transparent h-px w-full absolute top-1/2 -z-10" />
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            className="bg-background/80 backdrop-blur-md px-6 py-1.5 rounded-full border border-primary/10 shadow-sm text-center"
-                        >
-                            <p className="text-[11px] font-medium text-muted-foreground flex items-center justify-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
-                                <span>Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.</span>
-                            </p>
-                        </motion.div>
-                    </div>
+                    {/* Simple Helper Text - No Flashy Containers */}
+                    <p className="text-center text-xs text-muted-foreground/70 italic mt-3 mb-0">
+                        Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
+                    </p>
 
                     {/* Improved UFO - Floating on the right side of the share area */}
                     <motion.div
