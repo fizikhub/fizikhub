@@ -102,7 +102,7 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[800px] flex flex-col justify-end">
+        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end">
 
             {/* 1. BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
@@ -201,11 +201,12 @@ export function Footer() {
             {/* 3. LAYER: CONTENT */}
 
             {/* Solar System at the bottom center */}
-            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-[0.4] md:scale-[0.6]">
+            <div className="absolute bottom-[180px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-[0.4] md:scale-[0.6]">
                 <SolarSystem />
             </div>
+
             {/* Links Grid */}
-            <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
+            <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-12 md:py-20">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
                     {/* 1. Keşif Modülü */}
                     <div className="flex flex-col gap-4">
@@ -262,11 +263,11 @@ export function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="relative z-40 w-full border-t border-white/5 bg-black/90 backdrop-blur-md">
+            <div className="relative z-40 w-full border-t border-white/10 bg-white/5 backdrop-blur-md">
                 <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
                     <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 text-center md:text-left">
-                        <SiteLogo className="h-8 w-8 text-white" />
-                        <p>
+                        <SiteLogo className="h-8 w-8 text-white opacity-90" />
+                        <p className="text-zinc-400">
                             &copy; 2025 FİZİKHUB // <span className="text-zinc-300">TÜM HAKLARI SAKLIDIR.</span>
                             <br />
                             <span className="text-orange-500/80">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
