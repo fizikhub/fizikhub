@@ -72,7 +72,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'DENY',
+            // Changed from DENY to SAMEORIGIN to prevent issues with in-app browsers
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-XSS-Protection',
@@ -98,7 +99,7 @@ const nextConfig: NextConfig = {
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
-              "frame-ancestors 'none'",
+              "frame-ancestors 'self'", // Changed from none to self for better compatibility
               "upgrade-insecure-requests",
             ].join('; '),
           },
