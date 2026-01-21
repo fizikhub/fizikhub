@@ -38,44 +38,46 @@ export function TermCard({ article, index }: TermCardProps) {
             className="h-full"
         >
             <Link href={`/makale/${article.slug}`} className="block h-full">
-                <div className="group relative h-full bg-card hover:bg-gradient-to-br hover:from-card hover:to-blue-500/5 dark:hover:to-blue-900/10 border border-border/50 hover:border-blue-500/30 rounded-3xl p-6 sm:p-8 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 overflow-hidden flex flex-col justify-between">
+                <div className="group relative h-full bg-card hover:bg-muted/30 border border-border/60 hover:border-primary/20 rounded-3xl p-6 sm:p-8 transition-all duration-300 shadow-sm hover:shadow-lg overflow-hidden flex flex-col justify-between">
 
-                    {/* Decorative Watermark - Serif Quote - ADJUSTED POSITION */}
-                    <div className="absolute right-4 -top-2 text-[8rem] leading-none font-serif text-blue-500/5 rotate-12 select-none pointer-events-none group-hover:text-blue-500/10 transition-colors duration-500">
-                        &rdquo;
+                    {/* Dictionary Style Decoration - Top Right */}
+                    <div className="absolute top-6 right-8 text-xs font-serif text-muted-foreground/20 font-bold select-none pointer-events-none">
+                        [n.]
                     </div>
 
-                    {/* Subtle Background Blob */}
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl -z-10 group-hover:opacity-100 opacity-0 transition-opacity duration-500" />
-
-                    <div className="relative z-10 flex flex-col gap-5">
-                        {/* Header: Field Badge */}
-                        <div className="flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/10 text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 group-hover:border-blue-500/30 transition-colors">
-                                <Hash className="w-3 h-3" />
+                    <div className="relative z-10 flex flex-col gap-3">
+                        {/* Header: Field Badge - More subtle */}
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground/60 group-hover:text-primary/80 transition-colors">
                                 {relatedField}
                             </span>
                         </div>
 
-                        {/* Term Name & Content */}
-                        <div className="space-y-4">
-                            <h3 className="text-2xl sm:text-4xl font-black font-heading text-foreground tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors decoration-clone leading-none">
-                                {termName}
-                            </h3>
+                        {/* Term Name & Content - Dictionary Style */}
+                        <div className="space-y-3">
+                            <div className="flex flex-col gap-1">
+                                <h3 className="text-3xl sm:text-4xl font-black font-serif text-foreground tracking-tight group-hover:text-primary transition-colors decoration-clone leading-tight">
+                                    {termName}
+                                </h3>
+                                <div className="flex items-center gap-2 text-muted-foreground/50 text-sm font-serif italic">
+                                    <span>/{termName.toLowerCase().replace(/\s/g, '-')}/</span>
+                                    <span className="w-1 h-1 rounded-full bg-current opacity-50" />
+                                    <span>isim</span>
+                                </div>
+                            </div>
 
-                            <div className="relative pl-5 border-l-2 border-blue-500/30 group-hover:border-blue-500 transition-colors duration-300">
-                                <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed italic opacity-90 line-clamp-4">
+                            <div className="relative mt-4">
+                                <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed font-serif opacity-90 line-clamp-4 first-letter:float-left first-letter:text-3xl first-letter:pr-2 first-letter:font-black first-letter:text-foreground/20">
                                     {definition}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="flex items-center justify-between mt-8 pt-5 border-t border-border/20 group-hover:border-blue-500/10 transition-colors">
-                        <div className="flex items-center gap-3">
-                            {/* UPDATED AVATAR LOGIC */}
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-border/50 shadow-sm bg-muted/50">
+                    {/* Footer - Minimalist */}
+                    <div className="flex items-center justify-between mt-8 pt-5 border-t border-border/10 group-hover:border-border/30 transition-colors">
+                        <div className="flex items-center gap-2">
+                            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-border/50 shadow-sm bg-muted/50 grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
                                 {article.author?.avatar_url ? (
                                     <img
                                         src={article.author.avatar_url}
@@ -83,17 +85,18 @@ export function TermCard({ article, index }: TermCardProps) {
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center text-[10px] text-white font-black uppercase">
+                                    <div className="w-full h-full bg-gradient-to-tr from-gray-500 to-slate-500 flex items-center justify-center text-[8px] text-white font-black uppercase">
                                         {article.author?.full_name?.[0] || "A"}
                                     </div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors flex flex-col justify-center">
-                                <span className="text-blue-500/50 text-[9px] leading-none mb-0.5">TARAFINDAN</span>
-                                {article.author?.full_name || article.author?.username || "Anonim"}
-                            </div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
+                                {article.author?.full_name || article.author?.username || "Sözlük"}
+                            </span>
                         </div>
-                        <BookType className="w-4 h-4 text-muted-foreground/30 group-hover:text-blue-500 transition-colors" />
+                        <span className="text-xs font-serif text-muted-foreground/30 italic group-hover:text-primary/50 transition-colors">
+                            bakınız &rarr;
+                        </span>
                     </div>
                 </div>
             </Link>
