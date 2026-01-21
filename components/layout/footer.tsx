@@ -2,6 +2,7 @@
 
 import { Rocket, Github, Twitter, Instagram } from "lucide-react"
 import Link from "next/link";
+import Image from "next/image";
 import { DidYouKnow } from "@/components/ui/did-you-know";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
@@ -44,28 +45,45 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#020205] pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
+        <footer className="relative bg-black pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
             {/* Pure Black Background */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* Deep Space Elements - High Visibility Adjustment */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-
-                {/* 1. MILKY WAY CORE - Aggressive Brightness */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300%] h-[700px] bg-gradient-to-r from-transparent via-blue-900/40 to-transparent -rotate-45 blur-[120px] mix-blend-screen" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[300px] bg-gradient-to-r from-transparent via-purple-800/30 to-transparent -rotate-45 blur-[90px] mix-blend-screen" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100px] bg-white/5 -rotate-45 blur-[60px] mix-blend-overlay" />
-
-                {/* 2. SPIRAL GALAXY - Top Right Corner */}
-                <div className="absolute -top-[10%] -right-[10%] w-[900px] h-[900px] opacity-40 mix-blend-screen animate-[spin_200s_linear_infinite]">
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(60,140,255,0.4)_120deg,transparent_240deg)] blur-[80px]" />
-                    <div className="absolute inset-0 bg-[conic-gradient(from_180deg,transparent_0deg,rgba(140,50,255,0.3)_120deg,transparent_240deg)] blur-[100px]" />
+            {/* REALISTIC SPACE IMAGERY */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-80">
+                {/* 1. Spiral Galaxy (Andromeda-like) - Top Right */}
+                <div className="absolute -top-[10%] -right-[15%] w-[800px] h-[800px] opacity-60 mix-blend-screen rotate-12">
+                    <Image
+                        src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000&auto=format&fit=crop"
+                        alt="Spiral Galaxy"
+                        fill
+                        className="object-contain"
+                        priority
+                    />
                 </div>
 
-                {/* 3. NEBULA CLOUDS - Left Side */}
-                <div className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] bg-indigo-900/40 blur-[150px] rounded-full mix-blend-screen" />
+                {/* 2. Nebula Cloud - Bottom Left */}
+                <div className="absolute bottom-[10%] -left-[10%] w-[900px] h-[700px] opacity-50 mix-blend-screen -rotate-12">
+                    <Image
+                        src="https://images.unsplash.com/photo-1541873676-a18131494184?q=80&w=2000&auto=format&fit=crop"
+                        alt="Nebula"
+                        fill
+                        className="object-contain"
+                        priority
+                    />
+                </div>
 
-                {/* 4. CSS Shooting Stars with Trails */}
+                {/* 3. Milky Way Dust - Center Diagonal */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] opacity-30 mix-blend-screen -rotate-45 pointer-events-none">
+                    <Image
+                        src="https://images.unsplash.com/photo-1534849144194-b791dc089d61?q=80&w=2000&auto=format&fit=crop"
+                        alt="Milky Way"
+                        fill
+                        className="object-cover blur-sm"
+                    />
+                </div>
+
+                {/* CSS Shooting Stars */}
                 <style jsx>{`
                     @keyframes shootingStar {
                         0% {
@@ -105,7 +123,7 @@ export function Footer() {
                             top: `${star.y}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
-                            opacity: star.opacity * 0.8, /* Boosted star brightness */
+                            opacity: star.opacity * 0.9,
                             boxShadow: `0 0 ${star.size}px rgba(255,255,255,${star.opacity})`
                         }}
                     />
