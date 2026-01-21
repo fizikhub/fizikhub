@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 
-const Pulsar = dynamic(() => import("@/components/ui/pulsar").then(mod => mod.Pulsar), {
+const SolarSystem = dynamic(() => import("@/components/ui/solar-system").then(mod => mod.SolarSystem), {
     ssr: false,
     loading: () => <div className="w-[10px] h-[10px]" />
 });
@@ -200,9 +200,9 @@ export function Footer() {
 
             {/* 3. LAYER: CONTENT */}
 
-            {/* Pulsar at the bottom center (replaces Black Hole) */}
-            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-75 md:scale-100 opacity-80 mix-blend-screen">
-                <Pulsar />
+            {/* Solar System at the bottom center */}
+            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-[0.4] md:scale-[0.6]">
+                <SolarSystem />
             </div>
             {/* Links Grid */}
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
