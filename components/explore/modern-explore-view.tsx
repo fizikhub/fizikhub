@@ -175,11 +175,9 @@ export function ModernExploreView({
                             transition={{ delay: 0.5 }}
                             className="bg-background/80 backdrop-blur-md px-6 py-1.5 rounded-full border border-primary/10 shadow-sm text-center"
                         >
-                            <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                                <span>Fikirlerini Özgürce Paylaş</span>
-                                <span className="hidden sm:inline text-primary/40">|</span>
-                                <span className="hidden sm:inline text-primary/60">Bilim Topluluğuna Katıl</span>
+                            <p className="text-[11px] font-medium text-muted-foreground flex items-center justify-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shrink-0" />
+                                <span>Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.</span>
                             </p>
                         </motion.div>
                     </div>
