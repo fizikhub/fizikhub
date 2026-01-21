@@ -115,7 +115,7 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-[-0%] right-[-25%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
+                    className="absolute top-[5%] right-[-45%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
                     style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateY(10deg)' }}
                 >
 
@@ -263,14 +263,14 @@ export function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="relative z-40 w-full border-t border-white/10 bg-white/5 backdrop-blur-md">
+            <div className="relative z-40 w-full border-t border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
                 <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
                     <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 text-center md:text-left">
                         <SiteLogo className="h-8 w-8 text-white opacity-90" />
                         <p className="text-zinc-400">
-                            &copy; 2025 FİZİKHUB // <span className="text-zinc-300">TÜM HAKLARI SAKLIDIR.</span>
+                            &copy; 2025 FİZİKHUB.
                             <br />
-                            <span className="text-orange-500/80">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
+                            <span className="text-orange-500/90 font-bold text-[10px] tracking-widest">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
                         </p>
                     </div>
 

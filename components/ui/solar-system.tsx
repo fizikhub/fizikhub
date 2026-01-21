@@ -19,38 +19,45 @@ export function SolarSystem() {
     return (
         <div className="relative flex items-center justify-center w-[900px] h-[900px]" style={{ transformStyle: 'preserve-3d' }}>
 
-            {/* THE SUN */}
-            <div className="absolute w-16 h-16 rounded-full bg-orange-100 shadow-[0_0_100px_rgba(255,160,50,0.8)] z-50">
-                <div className="absolute inset-0 bg-yellow-500 rounded-full blur-[2px] opacity-80" />
-                <div className="absolute inset-[-4px] bg-orange-500 rounded-full blur-[8px] opacity-40 animate-pulse" />
+            {/* THE SUN - Enhanced Glow */}
+            <div className="absolute w-12 h-12 md:w-16 md:h-16 rounded-full bg-orange-50 shadow-[0_0_80px_rgba(255,140,0,0.6)] z-50">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 to-orange-600 rounded-full blur-[1px]" />
+                <div className="absolute inset-[-4px] bg-orange-400/30 rounded-full blur-[6px] animate-pulse" />
             </div>
 
             {/* PLANETS */}
             {planets.map((planet, i) => (
-                <div key={planet.name} className={cn("absolute rounded-full border border-white/5", planet.orbit)} style={{ transformStyle: 'preserve-3d' }}>
+                <div key={planet.name} className={cn("absolute rounded-full border border-white/[0.08]", planet.orbit)} style={{ transformStyle: 'preserve-3d' }}>
                     <motion.div
                         className="absolute w-full h-full"
                         animate={{ rotate: 360 }}
                         transition={{ duration: planet.duration, repeat: Infinity, ease: "linear" }}
                     >
-                        {/* The Planet itself - Positioned at top of orbit loop (offset -50% for centering) */}
+                        {/* The Planet itself */}
                         <div
-                            className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg", planet.color, planet.size)}
+                            className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-sm", planet.size)}
                             style={{
-                                boxShadow: `0 0 10px ${planet.color.replace('bg-', '')}` // Approximate glow
+                                backgroundColor: !planet.color.includes('gradient') ? 'currentColor' : undefined,
                             }}
                         >
+                            {/* Planet Body with 3D Shader Effect - applies depth safely */}
+                            <div className={cn("w-full h-full rounded-full", planet.color)} style={{
+                                background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.1) 20%, rgba(0,0,0,0.1) 100%)`, // Highlight
+                                boxShadow: 'inset -2px -2px 6px rgba(0,0,0,0.5)' // Shadow
+                            }} />
+
                             {/* Saturn's Rings */}
                             {planet.hasRings && (
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[34px] h-[34px] rounded-full border-[3px] border-stone-400/60 skew-x-12 scale-y-50" />
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240%] h-[240%] rounded-full border-[3px] border-stone-300/30 skew-x-12 scale-y-[0.3]" />
                             )}
                         </div>
                     </motion.div>
                 </div>
             ))}
 
-            {/* ASTEROID BELT (Between Mars and Jupiter) */}
-            <div className="absolute w-[320px] h-[320px] rounded-full border-[12px] border-dotted border-white/5 opacity-30 animate-[spin_200s_linear_infinite]" />
+            {/* ASTEROID BELT - Refined */}
+            <div className="absolute w-[320px] h-[320px] rounded-full border-[6px] border-dotted border-white/20 opacity-30 animate-[spin_240s_linear_infinite]"
+                style={{ maskImage: 'radial-gradient(transparent 50%, black 100%)' }} />
 
         </div>
     );
