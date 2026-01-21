@@ -107,8 +107,8 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-[40%] left-1/2 md:top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1400px] md:h-[1400px] animate-[spin_240s_linear_infinite]"
-                    style={{ transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(45deg)' }}
+                    className="absolute top-[35%] left-1/2 md:top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] md:w-[1400px] md:h-[1400px] animate-[spin_240s_linear_infinite] origin-center [transform:translate(-50%,-50%)] md:[transform:translate(-50%,-50%)_rotateX(45deg)_rotateY(10deg)]"
+                    style={{ transformStyle: 'preserve-3d' }}
                 >
 
                     {/* A. Intense Core Bulge - BRIGHTER & BIGGER */}
