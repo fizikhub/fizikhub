@@ -1,8 +1,7 @@
 "use client";
 
-import { Rocket, Github, Twitter, Instagram } from "lucide-react"
+import { Instagram, Twitter } from "lucide-react"
 import Link from "next/link";
-import Image from "next/image";
 import { DidYouKnow } from "@/components/ui/did-you-know";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
@@ -13,107 +12,109 @@ import dynamic from "next/dynamic";
 
 const RealisticBlackHole = dynamic(() => import("@/components/ui/realistic-black-hole").then(mod => mod.RealisticBlackHole), {
     ssr: false,
-    loading: () => <div className="w-[500px] h-[500px]" />
+    loading: () => <div className="w-[300px] h-[300px]" />
 });
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isSingularityActive, setIsSingularityActive] = useState(true);
-    const [isMobile, setIsMobile] = useState(false);
 
+    // Star field state
     const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
 
     useEffect(() => {
-        setIsMobile(window.innerWidth < 768);
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-
-        // Star field setup
-        const newStars = Array.from({ length: 200 }).map((_, i) => ({
+        // Generate static stars once
+        const newStars = Array.from({ length: 300 }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            size: Math.random() * 1.5 + 0.3,
-            opacity: Math.random() * 0.5 + 0.2
+            size: Math.random() * 2 + 0.5, // slightly larger stars
+            opacity: Math.random() * 0.7 + 0.3
         }));
         setStars(newStars);
-
-        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-black pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
-            {/* Pure Black Background */}
+        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[800px] flex flex-col justify-end">
+
+            {/* 1. LAYER: PURE BLACK BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* REALISTIC SPACE IMAGERY */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-80">
-                {/* 1. Spiral Galaxy (Andromeda-like) - Top Right */}
-                <div className="absolute -top-[10%] -right-[15%] w-[800px] h-[800px] opacity-60 mix-blend-screen rotate-12">
-                    <Image
-                        src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000&auto=format&fit=crop"
-                        alt="Spiral Galaxy"
-                        fill
-                        className="object-contain"
-                        priority
+            {/* 2. LAYER: CUSTOM PROGRAMMATIC GALAXY (CSS TRICKS) */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+
+                {/* 
+                   REALISTIC SPIRAL GALAXY ANIMATION 
+                   Positioned Top-Right for Desktop, Centered/Subtle for Mobile
+                */}
+                <div className="absolute top-[-10%] right-[-30%] md:right-[-10%] md:top-[-20%] w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-100 mix-blend-screen animate-[spin_240s_linear_infinite]">
+
+                    {/* Core Glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] h-[15%] rounded-full bg-white blur-[40px] z-20" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] rounded-full bg-blue-300/30 blur-[80px] z-10" />
+
+                    {/* Spiral Arm 1 */}
+                    <div className="absolute inset-0 rounded-full"
+                        style={{
+                            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(100, 180, 255, 0.4) 90deg, transparent 180deg)',
+                            maskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
+                            WebkitMaskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
+                            filter: 'blur(40px)',
+                            transform: 'rotate(0deg) scale(1.0)'
+                        }}
+                    />
+
+                    {/* Spiral Arm 2 */}
+                    <div className="absolute inset-0 rounded-full"
+                        style={{
+                            background: 'conic-gradient(from 180deg, transparent 0deg, rgba(160, 100, 255, 0.3) 90deg, transparent 180deg)',
+                            maskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
+                            WebkitMaskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
+                            filter: 'blur(50px)',
+                            transform: 'rotate(180deg) scale(1.1)'
+                        }}
+                    />
+
+                    {/* Dusty Nebula Overlay */}
+                    <div className="absolute inset-0 rounded-full mix-blend-overlay opacity-50"
+                        style={{
+                            background: 'radial-gradient(circle at 30% 30%, rgba(255,0,0,0.1), transparent 50%), radial-gradient(circle at 70% 70%, rgba(0,0,255,0.1), transparent 50%)',
+                            filter: 'blur(60px)'
+                        }}
                     />
                 </div>
 
-                {/* 2. Nebula Cloud - Bottom Left */}
-                <div className="absolute bottom-[10%] -left-[10%] w-[900px] h-[700px] opacity-50 mix-blend-screen -rotate-12">
-                    <Image
-                        src="https://images.unsplash.com/photo-1541873676-a18131494184?q=80&w=2000&auto=format&fit=crop"
-                        alt="Nebula"
-                        fill
-                        className="object-contain"
-                        priority
-                    />
-                </div>
+                {/* Secondary Distant Nebula (Left Side - Subtle) */}
+                <div className="absolute top-[30%] left-[-20%] w-[800px] h-[800px] bg-indigo-950/20 rounded-full blur-[150px] mix-blend-screen" />
 
-                {/* 3. Milky Way Dust - Center Diagonal */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] opacity-30 mix-blend-screen -rotate-45 pointer-events-none">
-                    <Image
-                        src="https://images.unsplash.com/photo-1534849144194-b791dc089d61?q=80&w=2000&auto=format&fit=crop"
-                        alt="Milky Way"
-                        fill
-                        className="object-cover blur-sm"
-                    />
-                </div>
 
-                {/* CSS Shooting Stars */}
+                {/* SHOOTING STARS */}
                 <style jsx>{`
                     @keyframes shootingStar {
-                        0% {
-                            transform: translate(-100px, -100px) rotate(45deg);
-                            opacity: 0;
-                        }
-                        10% { opacity: 1; }
-                        80% { opacity: 0; }
-                        100% {
-                            transform: translate(calc(80vw + 100px), calc(80vh + 100px)) rotate(45deg);
-                            opacity: 0;
-                        }
+                        0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+                        5% { opacity: 1; }
+                        20% { opacity: 0; } /* Fade out quickly */
+                        100% { transform: translateX(100vh) translateY(100vh) rotate(45deg); opacity: 0; }
                     }
-                    .shooting-star {
+                    .star-trail {
                         position: absolute;
-                        width: 150px;
-                        height: 2px;
-                        background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1) 50%, rgba(255,255,255,0));
-                        filter: drop-shadow(0 0 3px rgba(255,255,255,0.8));
+                        height: 1px;
+                        background: linear-gradient(to right, transparent, white, transparent);
                         animation: shootingStar linear infinite;
                         opacity: 0;
                     }
                 `}</style>
 
-                <div className="shooting-star" style={{ top: '0%', left: '10%', animationDuration: '6s', animationDelay: '2s' }} />
-                <div className="shooting-star" style={{ top: '10%', left: '40%', animationDuration: '5s', animationDelay: '7s' }} />
-                <div className="shooting-star" style={{ top: '-10%', left: '70%', animationDuration: '7s', animationDelay: '12s' }} />
-                <div className="shooting-star" style={{ top: '40%', left: '-10%', animationDuration: '5.5s', animationDelay: '18s' }} />
+                {/* Rare, fast meteors */}
+                <div className="star-trail w-[150px]" style={{ top: '0%', left: '30%', animationDuration: '4s', animationDelay: '2s' }} />
+                <div className="star-trail w-[200px]" style={{ top: '-10%', left: '60%', animationDuration: '6s', animationDelay: '8s' }} />
+                <div className="star-trail w-[100px]" style={{ top: '20%', left: '-10%', animationDuration: '7s', animationDelay: '15s' }} />
 
-                {/* Static Star Field */}
+
+                {/* STATIC STARS */}
                 {stars.map((star) => (
                     <div
                         key={star.id}
@@ -123,12 +124,15 @@ export function Footer() {
                             top: `${star.y}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
-                            opacity: star.opacity * 0.9,
-                            boxShadow: `0 0 ${star.size}px rgba(255,255,255,${star.opacity})`
+                            opacity: star.opacity,
+                            boxShadow: `0 0 ${star.size}px rgba(255, 255, 255, ${star.opacity})`
                         }}
                     />
                 ))}
             </div>
+
+
+            {/* 3. LAYER: CONTENT (Event Horizon, Card, Links) */}
 
             {/* Event Horizon Warning Line */}
             <div className={cn(
@@ -146,17 +150,19 @@ export function Footer() {
                 </motion.div>
             </div>
 
-            <div className="relative z-20 mb-auto pt-16">
+
+            {/* Singularite Card */}
+            <div className="relative z-20 mb-auto pt-24 md:pt-32">
                 <DidYouKnow />
             </div>
 
-            {/* Center Singularity Brand & Toggle */}
+            {/* Black Hole */}
             <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none scale-75 md:scale-100">
                 <RealisticBlackHole />
             </div>
 
+            {/* Links Grid */}
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
-                {/* Technical Links Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
                     {/* 1. Keşif Modülü */}
                     <div className="flex flex-col gap-4">
