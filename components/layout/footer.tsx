@@ -20,24 +20,36 @@ export function Footer() {
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isSingularityActive, setIsSingularityActive] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    // Shooting stars state
+    const [shootingStars, setShootingStars] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+
     useEffect(() => {
         setIsMobile(window.innerWidth < 768);
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         window.addEventListener('resize', handleResize);
+
+        // Initial shooting stars setup
+        setShootingStars(Array.from({ length: 5 }).map((_, i) => ({
+            id: i,
+            x: Math.random() * 100,
+            y: Math.random() * 50,
+            delay: Math.random() * 20
+        })));
+
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; duration: number; opacity: number }>>([]);
 
     useEffect(() => {
-        // Increased star count for better density
-        const newStars = Array.from({ length: 150 }).map((_, i) => ({
+        // High density star field
+        const newStars = Array.from({ length: 300 }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            size: Math.random() * 2 + 0.5, // Varied sizes
-            duration: Math.random() * 20 + 10,
-            opacity: Math.random() * 0.7 + 0.3
+            size: Math.random() * 1.5 + 0.1,
+            duration: Math.random() * 5 + 3,
+            opacity: Math.random() * 0.8 + 0.2
         }));
         setStars(newStars);
     }, []);
@@ -45,140 +57,167 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#050505] pt-1 overflow-hidden min-h-[600px] flex flex-col justify-end">
-            {/* Star Field Background */}
-            <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-                {/* CSS Galaxies - Realistic (Mobile/Desktop) */}
-                <div className="absolute top-[10%] left-[10%] w-[300px] h-[300px] opacity-20 blur-[60px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-purple-900 to-transparent animate-[spin_120s_linear_infinite]" />
-                <div className="absolute bottom-[20%] right-[5%] w-[400px] h-[400px] opacity-20 blur-[80px] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-600 via-cyan-900 to-transparent animate-[spin_150s_linear_infinite_reverse]" />
-                {/* Small distant galaxy */}
-                <div className="absolute top-[40%] right-[30%] w-[150px] h-[150px] opacity-30 blur-[40px] bg-[conic-gradient(from_0deg,_#4338ca,_#000000,_#4338ca)] rounded-full animate-[spin_60s_linear_infinite]" />
+        <footer className="relative bg-[#020202] pt-1 overflow-hidden min-h-[700px] flex flex-col justify-end">
+            {/* Deep Space Background Layer */}
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_bottom,_#0a0a0a_0%,_#000000_100%)]" />
 
+            {/* REALISTIC GALAXY SYSTEM */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
 
-                {stars.map((star) => (
+                {/* 1. Large Spiral Galaxy (Top Left) */}
+                <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] opacity-30 animate-[spin_200s_linear_infinite]">
+                    {/* Core */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/20 blur-[50px] rounded-full" />
+                    {/* Arms */}
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(100,50,255,0.1)_90deg,transparent_180deg,rgba(100,50,255,0.1)_270deg,transparent_360deg)] blur-[60px]" />
+                </div>
+
+                {/* 2. Distant Nebula (Bottom Right) */}
+                <div className="absolute bottom-0 right-0 w-[1000px] h-[600px] bg-gradient-to-t from-blue-900/10 via-transparent to-transparent blur-[100px] opacity-40 mix-blend-screen" />
+
+                {/* 3. Colorful Star Clusters */}
+                <div className="absolute top-[30%] right-[20%] w-[200px] h-[200px] bg-indigo-600/10 blur-[80px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
+
+                {/* 4. Shooting Stars */}
+                {shootingStars.map((star) => (
                     <motion.div
                         key={star.id}
-                        className="absolute bg-white rounded-full"
+                        initial={{ x: -100, y: -100, opacity: 0 }}
+                        animate={{
+                            x: ['0vw', '100vw'],
+                            y: ['0vh', '100vh'],
+                            opacity: [0, 1, 0]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatDelay: star.delay,
+                            ease: "linear"
+                        }}
+                        className="absolute w-[200px] h-[1px] bg-gradient-to-r from-transparent via-white to-transparent rotate-45"
+                        style={{ top: `${star.y}%`, left: `${star.x}%` }}
+                    />
+                ))}
+
+                {/* Static Star Field */}
+                {stars.map((star) => (
+                    <div
+                        key={star.id}
+                        className="absolute bg-white rounded-full transition-opacity duration-1000"
                         style={{
                             left: `${star.x}%`,
                             top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                            opacity: star.opacity
-                        }}
-                        animate={{
-                            opacity: [star.opacity, 1, star.opacity],
-                            scale: [1, 1.2, 1],
-                        }}
-                        transition={{
-                            duration: star.duration,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: Math.random() * 5,
+                            width: `${star.size}px`,
+                            height: `${star.size}px`,
+                            opacity: star.opacity,
                         }}
                     />
                 ))}
             </div>
-            {/* Event Horizon Warning Line - ENHANCED */}
+
+            {/* Event Horizon Warning Line */}
             <div className={cn(
-                "absolute top-0 left-0 right-0 h-10 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 border-b-2",
-                isSingularityActive
-                    ? "bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] border-primary/50 shadow-[0_4px_20px_rgba(234,88,12,0.3)]"
-                    : "bg-black opacity-0 border-transparent"
+                "absolute top-0 left-0 right-0 h-8 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 border-b border-orange-900/30",
+                isSingularityActive ? "bg-orange-950/20" : "bg-transparent"
             )}>
                 <motion.div
-                    animate={isSingularityActive ? {
-                        x: ["0%", "-50%"],
-                        opacity: [0.7, 1, 0.7]
-                    } : { opacity: 0 }}
-                    transition={{
-                        x: { duration: 30, repeat: Infinity, ease: "linear" },
-                        opacity: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                    }}
-                    className="flex whitespace-nowrap text-[11px] font-black uppercase tracking-[0.5em] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+                    animate={isSingularityActive ? { x: ["0%", "-50%"] } : {}}
+                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                    className="flex whitespace-nowrap text-[9px] font-black uppercase tracking-[0.5em] text-orange-500/60"
                 >
-                    <span className="shrink-0">
-                        {Array(8).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ").join(" ")}
-                    </span>
-                    <span className="shrink-0">
-                        {Array(8).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ ").join(" ")}
-                    </span>
+                    {Array(20).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ • ").map((text, i) => (
+                        <span key={i} className="shrink-0 mx-4">{text}</span>
+                    ))}
                 </motion.div>
             </div>
 
-
-
-            <div className="relative z-20 mb-auto pt-10">
+            <div className="relative z-20 mb-auto pt-16">
                 <DidYouKnow />
             </div>
 
             {/* Center Singularity Brand & Toggle */}
-            <div className="absolute bottom-[180px] md:bottom-[220px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none">
+            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none scale-75 md:scale-100">
                 <RealisticBlackHole />
             </div>
 
-            <div className="container relative z-30 flex flex-col items-center justify-between gap-20 py-16 md:py-20">
+            <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
 
-                {/* Technical Links Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-8 text-center md:text-left w-full max-w-2xl mx-auto pt-8 relative min-h-[300px]">
+                {/* Technical Links Grid - Enhanced Visibility */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative bg-black/40 backdrop-blur-sm p-8 rounded-3xl border border-white/5">
+
                     {/* 1. Keşif Modülü */}
-                    <div className="flex flex-col gap-2">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Keşif Modülü</h4>
-                        <Link href="/kesfet" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Keşfet</Link>
-                        <Link href="/testler" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Testler</Link>
-                        <Link href="/sozluk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sözlük</Link>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                            <div className="w-1 h-4 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
+                            <h4 className="text-xs font-bold text-blue-100 uppercase tracking-widest">Keşif Modülü</h4>
+                        </div>
+                        <nav className="flex flex-col gap-2">
+                            <Link href="/kesfet" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Keşfet</Link>
+                            <Link href="/testler" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Testler</Link>
+                            <Link href="/sozluk" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Sözlük</Link>
+                        </nav>
                     </div>
 
                     {/* 2. Topluluk */}
-                    <div className="flex flex-col gap-2">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Topluluk</h4>
-                        <Link href="/forum" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Forum</Link>
-                        <Link href="/siralamalar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Sıralamalar</Link>
-                        <Link href="/yazar" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Yazarlar</Link>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                            <div className="w-1 h-4 bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.8)]" />
+                            <h4 className="text-xs font-bold text-purple-100 uppercase tracking-widest">Topluluk</h4>
+                        </div>
+                        <nav className="flex flex-col gap-2">
+                            <Link href="/forum" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Forum</Link>
+                            <Link href="/siralamalar" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Sıralamalar</Link>
+                            <Link href="/yazar" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Yazarlar</Link>
+                        </nav>
                     </div>
 
                     {/* 3. Kurumsal */}
-                    <div className="flex flex-col gap-2 md:text-right">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Kurumsal</h4>
-                        <Link href="/hakkimizda" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Hakkımızda</Link>
-                        <Link href="/iletisim" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">İletişim</Link>
-                        <Link href="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Blog</Link>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                            <div className="w-1 h-4 bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.8)]" />
+                            <h4 className="text-xs font-bold text-green-100 uppercase tracking-widest">Kurumsal</h4>
+                        </div>
+                        <nav className="flex flex-col gap-2">
+                            <Link href="/hakkimizda" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Hakkımızda</Link>
+                            <Link href="/iletisim" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">İletişim</Link>
+                            <Link href="/blog" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Blog</Link>
+                        </nav>
                     </div>
 
                     {/* 4. Protokoller */}
-                    <div className="flex flex-col gap-2 md:text-right">
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-2">Protokoller</h4>
-                        <Link href="/gizlilik-politikasi" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Gizlilik</Link>
-                        <Link href="/kullanim-sartlari" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">Şartlar</Link>
-                        <Link href="/kvkk" className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium">KVKK</Link>
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                            <div className="w-1 h-4 bg-red-500 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+                            <h4 className="text-xs font-bold text-red-100 uppercase tracking-widest">Protokoller</h4>
+                        </div>
+                        <nav className="flex flex-col gap-2">
+                            <Link href="/gizlilik-politikasi" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Gizlilik</Link>
+                            <Link href="/kullanim-sartlari" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Şartlar</Link>
+                            <Link href="/kvkk" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">KVKK</Link>
+                        </nav>
                     </div>
                 </div>
-
             </div>
 
             {/* Bottom Bar - Flush to bottom */}
-            <div className="relative z-40 w-full border-t border-white/10 bg-black/80 backdrop-blur-md">
+            <div className="relative z-40 w-full border-t border-white/5 bg-black/90 backdrop-blur-md">
                 <div className="container flex flex-col md:flex-row items-center justify-between gap-6 py-6">
-                    <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground text-center md:text-left">
-                        <SiteLogo className="h-8 w-8 animate-bounce" />
+                    <div className="flex items-center gap-4 text-xs font-mono text-zinc-500 text-center md:text-left">
+                        <SiteLogo className="h-8 w-8 text-white" />
                         <p>
-                            &copy; 2025 FİZİKHUB // TÜM HAKLARI SAKLIDIR.
+                            &copy; 2025 FİZİKHUB // <span className="text-zinc-300">TÜM HAKLARI SAKLIDIR.</span>
                             <br />
-                            <span className="text-primary/60">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
+                            <span className="text-orange-500/80">İZİNSİZ KOPYALAYANI KARA DELİĞE ATARIZ.</span>
                         </p>
                     </div>
 
                     <div className="flex gap-4">
-                        <a href="https://instagram.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
-                            <Instagram className="h-5 w-5" />
+                        <a href="https://instagram.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-3 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all border border-white/5 hover:border-white/20 hover:scale-110">
+                            <Instagram className="h-4 w-4" />
                         </a>
-                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
-                            <Twitter className="h-5 w-5" />
+                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-3 text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-all border border-white/5 hover:border-white/20 hover:scale-110">
+                            <Twitter className="h-4 w-4" />
                         </a>
-                        <a href="https://twitter.com/fizikhub" target="_blank" rel="noopener noreferrer" className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded-full transition-all border border-transparent hover:border-primary/20">
-                            <Twitter className="h-5 w-5" />
-                        </a>
-                        {/* Github Removed as requested */}
                     </div>
                 </div>
             </div>

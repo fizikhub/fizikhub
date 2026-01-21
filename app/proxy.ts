@@ -34,7 +34,7 @@ function isRateLimited(ip: string, maxRequests: number): boolean {
 // Note: Cleanup happens naturally via time-based expiry check in isRateLimited()
 // setInterval is not supported in Edge Runtime
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const ip = getClientIP(request);
 

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lightbulb, RefreshCw } from "lucide-react";
+import { Sparkles, RefreshCw, Atom } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const facts = [
     "Bir nötron yıldızının bir çay kaşığı kadarı, Everest Dağı kadar ağırdır.",
@@ -24,9 +25,7 @@ export function DidYouKnow() {
     const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsClient(true);
-        // Random start
         setIndex(Math.floor(Math.random() * facts.length));
     }, []);
 
@@ -37,51 +36,79 @@ export function DidYouKnow() {
     if (!isClient) return null;
 
     return (
-        <div className="w-full max-w-md mx-auto my-8 px-4">
-            <Card className="relative overflow-hidden border-orange-500/20 bg-black p-[2px] shadow-2xl group max-w-2xl mx-auto">
-                {/* Event Horizon Glow (Subtle) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-900/40 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="w-full max-w-sm md:max-w-md mx-auto my-12 px-2 perspective-1000">
+            <motion.div
+                initial={{ transform: "rotateX(5deg)" }}
+                whileHover={{ transform: "rotateX(0deg) scale(1.02)" }}
+                transition={{ duration: 0.5 }}
+                className="relative group"
+            >
+                {/* Cosmic Glow Behind */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl opacity-40 group-hover:opacity-70 blur-xl transition-opacity duration-1000 animate-pulse" />
 
-                <div className="relative bg-black rounded-xl p-6 md:p-8 overflow-hidden border border-white/5">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-full bg-orange-500/10 border border-orange-500/20">
-                                <Lightbulb className="h-4 w-4 text-orange-400" />
+                <Card className="relative overflow-hidden border-0 bg-black/40 backdrop-blur-2xl rounded-2xl p-0 ring-1 ring-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,1)]">
+
+                    {/* Glass Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-50 pointer-events-none" />
+
+                    {/* Content Container */}
+                    <div className="relative p-6 md:p-8 flex flex-col items-start gap-4 z-10">
+                        {/* Header Badge */}
+                        <div className="flex w-full items-center justify-between border-b border-white/5 pb-4 mb-2">
+                            <div className="flex items-center gap-2.5">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-orange-500 blur-sm opacity-50 animate-pulse" />
+                                    <div className="relative h-8 w-8 rounded-lg bg-black/50 border border-orange-500/30 flex items-center justify-center">
+                                        <Atom className="h-4 w-4 text-orange-400" />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest leading-none">Keşif Modülü</span>
+                                    <span className="text-xs font-medium text-zinc-400">Singularite Verisi</span>
+                                </div>
                             </div>
-                            <span className="font-black text-sm tracking-[0.2em] text-zinc-400 uppercase">
-                                SİNGULARİTE VERİSİ
-                            </span>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={nextFact}
-                            className="h-8 w-8 rounded-full text-zinc-500 hover:text-white hover:bg-white/10 transition-all duration-300"
-                        >
-                            <RefreshCw className="h-4 w-4" />
-                        </Button>
-                    </div>
 
-                    <div className="min-h-[120px] flex items-center justify-center relative py-2">
-                        <AnimatePresence mode="wait">
-                            <motion.p
-                                key={index}
-                                initial={{ opacity: 0, filter: "blur(10px)" }}
-                                animate={{ opacity: 1, filter: "blur(0px)" }}
-                                exit={{ opacity: 0, filter: "blur(10px)" }}
-                                transition={{ duration: 0.5, ease: "circOut" }}
-                                className="text-xl md:text-2xl text-left font-bold leading-relaxed text-white drop-shadow-[0_0_15px_rgba(255,165,0,0.3)]"
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={nextFact}
+                                className="h-8 w-8 rounded-full p-0 text-zinc-500 hover:text-white hover:bg-white/10 transition-all hover:rotate-180 duration-500"
                             >
-                                {facts[index]}
-                            </motion.p>
-                        </AnimatePresence>
-                    </div>
+                                <RefreshCw className="h-4 w-4" />
+                            </Button>
+                        </div>
 
-                    {/* Decorative Void Elements */}
-                    <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-600/5 rounded-full blur-[80px] pointer-events-none" />
-                </div>
-            </Card>
+                        {/* Fact Display */}
+                        <div className="min-h-[100px] flex items-center w-full">
+                            <AnimatePresence mode="wait">
+                                <motion.p
+                                    key={index}
+                                    initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
+                                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                                    exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+                                    transition={{ duration: 0.4 }}
+                                    className="text-lg md:text-xl font-medium leading-relaxed text-zinc-100"
+                                >
+                                    <span className="text-orange-500 font-bold mr-2">Did you know?</span>
+                                    {facts[index]}
+                                </motion.p>
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Footer Decorative Tech */}
+                        <div className="w-full flex items-center justify-between pt-2">
+                            <div className="flex gap-1">
+                                {[...Array(3)].map((_, i) => (
+                                    <div key={i} className="h-1 w-1 rounded-full bg-zinc-700 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+                                ))}
+                            </div>
+                            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
+                                Veri Akışı: Aktif
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            </motion.div>
         </div>
     );
 }
