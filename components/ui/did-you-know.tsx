@@ -52,29 +52,21 @@ export function DidYouKnow() {
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-50 pointer-events-none" />
 
                     {/* Content Container */}
-                    <div className="relative p-6 md:p-8 flex flex-col items-start gap-4 z-10">
-                        {/* Header Badge */}
+                    <div className="relative p-6 md:p-8 flex flex-col items-start gap-4 z-10 w-full">
+                        {/* Minimal Header */}
                         <div className="flex w-full items-center justify-between border-b border-white/5 pb-4 mb-2">
-                            <div className="flex items-center gap-2.5">
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-orange-500 blur-sm opacity-50 animate-pulse" />
-                                    <div className="relative h-8 w-8 rounded-lg bg-black/50 border border-orange-500/30 flex items-center justify-center">
-                                        <Atom className="h-4 w-4 text-orange-400" />
-                                    </div>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest leading-none">Keşif Modülü</span>
-                                    <span className="text-xs font-medium text-zinc-400">Singularite Verisi</span>
-                                </div>
+                            <div className="flex items-center gap-3">
+                                <div className="h-2 w-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
+                                <span className="text-[10px] font-mono text-orange-500/80 uppercase tracking-[0.2em]">SİNGÜLARİTE VERİSİ</span>
                             </div>
 
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={nextFact}
-                                className="h-8 w-8 rounded-full p-0 text-zinc-500 hover:text-white hover:bg-white/10 transition-all hover:rotate-180 duration-500"
+                                className="h-8 w-8 rounded-full p-0 text-zinc-600 hover:text-white hover:bg-white/5 transition-all hover:rotate-180 duration-500"
                             >
-                                <RefreshCw className="h-4 w-4" />
+                                <RefreshCw className="h-3.5 w-3.5" />
                             </Button>
                         </div>
 
@@ -89,7 +81,6 @@ export function DidYouKnow() {
                                     transition={{ duration: 0.4 }}
                                     className="text-lg md:text-xl font-medium leading-relaxed text-zinc-100"
                                 >
-                                    <span className="text-orange-500 font-bold mr-2">Did you know?</span>
                                     {facts[index]}
                                 </motion.p>
                             </AnimatePresence>

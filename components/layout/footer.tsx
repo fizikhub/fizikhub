@@ -65,11 +65,16 @@ export function Footer() {
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
 
                 {/* 1. Large Spiral Galaxy (Top Left) */}
-                <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] opacity-30 animate-[spin_200s_linear_infinite]">
+                <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] opacity-60 animate-[spin_200s_linear_infinite]">
                     {/* Core */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/20 blur-[50px] rounded-full" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/30 blur-[60px] rounded-full" />
                     {/* Arms */}
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(100,50,255,0.1)_90deg,transparent_180deg,rgba(100,50,255,0.1)_270deg,transparent_360deg)] blur-[60px]" />
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(120,50,255,0.2)_90deg,transparent_180deg,rgba(120,50,255,0.2)_270deg,transparent_360deg)] blur-[50px]" />
+                </div>
+
+                {/* 1.5. Second Spiral Galaxy (Bottom Right - Subtle) */}
+                <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] opacity-40 animate-[spin_150s_linear_infinite_reverse]">
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(50,100,255,0.15)_120deg,transparent_240deg)] blur-[40px]" />
                 </div>
 
                 {/* 2. Distant Nebula (Bottom Right) */}
@@ -82,20 +87,21 @@ export function Footer() {
                 {shootingStars.map((star) => (
                     <motion.div
                         key={star.id}
-                        initial={{ x: -100, y: -100, opacity: 0 }}
+                        initial={{ x: -100, y: -100, opacity: 0, scale: 0.5 }}
                         animate={{
-                            x: ['0vw', '100vw'],
-                            y: ['0vh', '100vh'],
-                            opacity: [0, 1, 0]
+                            x: ['10vw', '120vw'],
+                            y: ['-10vh', '120vh'],
+                            opacity: [0, 1, 0],
+                            scale: [0.5, 1.2, 0.5]
                         }}
                         transition={{
-                            duration: 2,
+                            duration: Math.random() * 1.5 + 0.5, // Faster, random speed
                             repeat: Infinity,
-                            repeatDelay: star.delay,
-                            ease: "linear"
+                            repeatDelay: Math.random() * 15 + 5, // More random delays
+                            ease: "easeIn" // Accelerate like gravity
                         }}
-                        className="absolute w-[200px] h-[1px] bg-gradient-to-r from-transparent via-white to-transparent rotate-45"
-                        style={{ top: `${star.y}%`, left: `${star.x}%` }}
+                        className="absolute w-[150px] h-[2px] bg-gradient-to-r from-transparent via-blue-100 to-transparent rotate-45 blur-[0.5px]"
+                        style={{ top: `${star.y - 20}%`, left: `${star.x - 20}%` }}
                     />
                 ))}
 
@@ -143,7 +149,7 @@ export function Footer() {
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
 
                 {/* Technical Links Grid - Enhanced Visibility */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative bg-black/40 backdrop-blur-sm p-8 rounded-3xl border border-white/5">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
 
                     {/* 1. Keşif Modülü */}
                     <div className="flex flex-col gap-4">
