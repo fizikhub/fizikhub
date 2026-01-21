@@ -312,7 +312,7 @@ export function ProfileHero({
                                 <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight leading-tight">
                                     {profile?.full_name}
                                 </h1>
-                                {profile?.role === 'admin' && (
+                                {profile?.role === 'admin' && isOwnProfile && (
                                     <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/20 border-red-500/20 text-[10px] h-5 px-1.5">
                                         Admin
                                     </Badge>

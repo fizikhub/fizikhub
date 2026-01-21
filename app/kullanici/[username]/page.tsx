@@ -94,21 +94,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         answersCount: answers?.length || 0,
     };
 
-    // --- RETRO PROFILE CHECK ---
-    if (username.toLowerCase() === "baranbozkurt") {
-        const { RetroProfileView } = await import("@/components/profile/retro-profile-view");
 
-        return (
-            <RetroProfileView
-                profile={profile}
-                articles={articles || []}
-                questions={questions || []}
-                userBadges={userBadges || []}
-                stats={stats}
-            />
-        );
-    }
-    // ---------------------------
 
     return (
         <div className="min-h-screen bg-background relative overflow-hidden pb-20">
