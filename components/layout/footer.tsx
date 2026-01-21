@@ -55,61 +55,68 @@ export function Footer() {
         const cx = size / 2;
         const cy = size / 2;
 
-        // Galaxy Parameters - RESTORED HIGH COUNT
-        // Canvas can handle thousands easily.
-        const galaxyParticleCount = 1500; // WOW effect back!
+        // Galaxy Parameters - REFINED AESTHETICS (Fixed 'Blob' issue)
+        const galaxyParticleCount = 2000;
         const arms = 2;
-        const b = 0.4;
+        const b = 0.5; // Slightly looser spiral
 
         // Clear
         ctx.clearRect(0, 0, size, size);
 
-        // Blend mode for glowing effect
-        ctx.globalCompositeOperation = 'screen';
+        // Blend mode normal for better definition, then adds for glow
+        ctx.globalCompositeOperation = 'lighter';
 
         for (let i = 0; i < galaxyParticleCount; i++) {
-            const isStar = Math.random() > 0.3;
+            const isStar = Math.random() > 0.5; // More stars, less dust
             const armOffset = (Math.floor(Math.random() * arms) * 2 * Math.PI) / arms;
-            const randomTheta = Math.random() * 3.5 * Math.PI;
+            const randomTheta = Math.random() * 3 * Math.PI;
             const theta = randomTheta + armOffset;
 
-            const spreadFactor = isStar ? 0.3 : 0.6;
-            const spread = (Math.random() - 0.5) * spreadFactor * (randomTheta * 0.5);
+            // Tighter spread for defined arms
+            const spreadFactor = isStar ? 0.2 : 0.4;
+            const spread = (Math.random() - 0.5) * spreadFactor * (randomTheta * 0.4);
             const finalTheta = theta + spread;
 
-            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 18;
+            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 22;
 
-            // Map percentage radius to pixels (relative to 50% max radius being ~40-45%)
-            // r goes from 0 to ~60 in the logic.
-            // Map r=60 to size*0.45
-            const pixelR = (r / 60) * (size * 0.45);
+            const pixelR = (r / 60) * (size * 0.42);
 
             const x = cx + pixelR * Math.cos(finalTheta);
             const y = cy + pixelR * Math.sin(finalTheta);
 
             const distRatio = r / 50;
-            let color = '255, 255, 255'; // rgb values
+            let color = '255, 255, 255';
 
             if (isStar) {
-                if (distRatio < 0.15) color = '255, 220, 180'; // Core Yellow
-                else if (distRatio < 0.5) color = '220, 240, 255'; // Mid White
-                else color = '160, 210, 255'; // Edge Blue
+                if (distRatio < 0.2) color = '255, 240, 200'; // Core warm
+                else if (distRatio < 0.6) color = '200, 230, 255'; // Mid cool
+                else color = '160, 200, 255'; // Edge blue
             } else {
                 const gasType = Math.random();
-                if (gasType < 0.4) color = '60, 30, 80'; // Dark Dust (lighter for screen blend)
-                else if (gasType < 0.7) color = '180, 50, 255'; // Purple
-                else color = '50, 100, 255'; // Blue
+                // More vibrant gas colors
+                if (gasType < 0.3) color = '80, 0, 120'; // Deep Purple
+                else if (gasType < 0.6) color = '20, 40, 100'; // Deep Blue
+                else color = '180, 50, 100'; // Red/Pink
             }
 
             if (r < 60) {
                 ctx.beginPath();
-                const opacity = isStar ? (Math.random() * 0.8 + 0.2) : (Math.random() * 0.3 + 0.1);
-                const pSize = isStar ? (Math.random() * 1.5 + 0.5) : (Math.random() * 20 + 5);
+                // Much smaller particles for realism
+                const opacity = isStar ? (Math.random() * 0.9 + 0.1) : (Math.random() * 0.15 + 0.05);
+                const pSize = isStar ? (Math.random() * 1.5 + 0.2) : (Math.random() * 4 + 1); // Dust max ~5px, not 25px
 
-                ctx.fillStyle = `rgba(${color}, ${opacity})`;
+                // Radial gradient for soft dust
+                if (!isStar) {
+                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, pSize);
+                    gradient.addColorStop(0, `rgba(${color}, ${opacity})`);
+                    gradient.addColorStop(1, `rgba(${color}, 0)`);
+                    ctx.fillStyle = gradient;
+                    ctx.arc(x, y, pSize, 0, Math.PI * 2);
+                } else {
+                    ctx.fillStyle = `rgba(${color}, ${opacity})`;
+                    ctx.arc(x, y, pSize, 0, Math.PI * 2);
+                }
 
-                // Draw
-                ctx.arc(x, y, pSize, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
