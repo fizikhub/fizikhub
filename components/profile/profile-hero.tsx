@@ -282,7 +282,7 @@ export function ProfileHero({
                                                 usernameChangeCount={profile?.username_changes_count || 0}
                                             />
                                             {(profile?.role === 'writer' || profile?.role === 'admin') && (
-                                                <Link href="/makale/yeni">
+                                                <Link href="/yazar/yeni">
                                                     <Button variant="default" size="icon" className="rounded-full bg-amber-500 hover:bg-amber-600 text-black h-9 w-9" title="Makale Yaz">
                                                         <PenSquare className="h-4 w-4" />
                                                     </Button>
