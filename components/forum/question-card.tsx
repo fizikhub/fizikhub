@@ -218,31 +218,31 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </span>
                 </div>
 
-                {/* Main Content Info - UPSCALED & SPACIOUS - Taller */}
-                <div className="p-5 sm:p-8 flex flex-col gap-6 flex-1 min-h-[200px] justify-start">
+                {/* Main Content Info - REFINED & PREMIUM */}
+                <div className="p-5 sm:p-7 flex flex-col gap-3 sm:gap-4 flex-1 min-h-[140px] justify-start">
                     {/* Desktop Meta Row */}
                     <div className="hidden sm:flex items-center gap-3">
                         <span className={cn(
-                            "px-3 py-1 text-xs font-bold font-mono uppercase tracking-wider border-2 rounded",
-                            "bg-background text-foreground border-border",
+                            "px-2.5 py-0.5 text-[11px] font-bold font-mono uppercase tracking-wider border rounded-md",
+                            "bg-muted/50 text-muted-foreground border-border/50",
                             isCybernetic && "bg-cyan-500/10 text-cyan-400 border-cyan-500/30 rounded-none",
                             isPink && "bg-pink-50 text-pink-700 border-pink-200"
                         )}>
                             {question.category}
                         </span>
-                        <span className="text-muted-foreground text-sm font-bold flex items-center gap-1 opacity-60">
+                        <span className="text-muted-foreground text-xs font-bold flex items-center gap-1 opacity-60">
                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                         </span>
                     </div>
 
-                    <div className="group/title block space-y-3 cursor-pointer" onClick={(e) => {
+                    <div className="group/title block space-y-2 cursor-pointer" onClick={(e) => {
                         // If not clicking read more, go to detail
                         if (!(e.target as HTMLElement).closest('button')) {
                             handleCardClick();
                         }
                     }}>
                         <h3 className={cn(
-                            "text-xl sm:text-2xl font-bold font-heading text-foreground leading-tight tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
+                            "text-xl sm:text-2xl font-bold font-heading text-foreground leading-snug tracking-tight group-hover/title:text-primary transition-colors line-clamp-2",
                             isPink && "group-hover/title:text-pink-600",
                             isCybernetic && "group-hover/title:text-cyan-400"
                         )}>
@@ -250,8 +250,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         </h3>
                         <motion.div layout>
                             <p className={cn(
-                                "text-foreground/80 text-base sm:text-lg leading-relaxed font-medium", // Increased size and contrast
-                                !isExpanded && "line-clamp-4" // Show a bit more by default
+                                "text-muted-foreground text-base sm:text-[17px] leading-relaxed font-normal",
+                                !isExpanded && "line-clamp-3" // Show a bit less by default for cleaner look
                             )}>
                                 {stripHtml(question.content)}
                             </p>
@@ -264,7 +264,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     setIsExpanded(!isExpanded);
                                 }}
                                 className={cn(
-                                    "inline-flex items-center gap-1 text-sm font-bold mt-2 hover:underline transition-all",
+                                    "inline-flex items-center gap-1 text-xs font-bold mt-1 hover:underline transition-all",
                                     "text-primary",
                                     isPink && "text-pink-600",
                                     isCybernetic && "text-cyan-400"
@@ -272,11 +272,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             >
                                 {isExpanded ? (
                                     <>
-                                        Küçült <ChevronUp className="w-4 h-4" />
+                                        Küçült <ChevronUp className="w-3 h-3" />
                                     </>
                                 ) : (
                                     <>
-                                        Devamını Oku <ChevronDown className="w-4 h-4" />
+                                        Devamını Oku <ChevronDown className="w-3 h-3" />
                                     </>
                                 )}
                             </button>

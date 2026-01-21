@@ -47,7 +47,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
             transition={{ delay: 0.5 }}
             className="w-full"
         >
-            <div className="relative overflow-hidden group transition-all duration-300 bg-gradient-to-br from-black via-gray-900 to-black border-2 border-white/20 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] hover:-translate-x-0.5 hover:-translate-y-0.5">
+            <div className="relative overflow-hidden group transition-all duration-300 bg-gradient-to-br from-black via-gray-900 to-black border border-white/10 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1">
                 {/* Space Background with Stars */}
                 <div className="absolute inset-0 overflow-hidden">
                     {/* Gradient overlay */}
@@ -89,7 +89,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
                 <div className="p-4 md:p-5 space-y-4 relative z-10">
                     {/* Header Section - Brutalist */}
                     <div className="space-y-1.5">
-                        <div className="inline-flex items-center gap-2 px-2 py-1 bg-primary/20 border border-primary/40 backdrop-blur-sm">
+                        <div className="inline-flex items-center gap-2 px-2 py-1 bg-primary/20 border border-primary/40 backdrop-blur-sm rounded-md">
                             <FlaskConical className="h-3 w-3 text-primary" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Deney #42</span>
                         </div>
@@ -100,15 +100,15 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
                     </div>
 
                     {/* Question Content - Enhanced */}
-                    <div className="relative pl-3 border-l-2 border-primary/50 bg-white/5 backdrop-blur-sm p-3 rounded-r-sm">
+                    <div className="relative pl-3 border-l-2 border-primary/50 bg-white/5 backdrop-blur-sm p-3 rounded-r-xl">
                         <h3 className="text-sm md:text-base font-bold leading-relaxed text-white/90 line-clamp-3">
                             "{questionTitle}"
                         </h3>
                     </div>
 
                     {/* Technical Data / Reward - Brutalist Card */}
-                    <div className="flex items-center gap-3 p-3 bg-white/5 backdrop-blur-md border border-white/20 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]">
-                        <div className="p-1.5 bg-primary border border-white/30 text-white">
+                    <div className="flex items-center gap-3 p-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-inner">
+                        <div className="p-1.5 bg-primary/20 border border-primary/40 text-primary rounded-lg">
                             <Atom className="h-4 w-4" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -121,7 +121,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
 
                     {/* Action Button - Enhanced Brutalist */}
                     <Link href={targetUrl} className="block">
-                        <Button size="sm" className="w-full h-10 gap-2 bg-primary hover:bg-primary/90 text-white font-black uppercase text-xs sm:text-sm border-2 border-white/20 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none group relative overflow-hidden rounded-none">
+                        <Button size="sm" className="w-full h-10 gap-2 bg-primary hover:bg-primary/90 text-white font-black uppercase text-xs sm:text-sm border-0 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 group relative overflow-hidden rounded-xl">
                             <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.1)_50%,transparent_75%)] bg-[length:250%_250%] animate-[shimmer_2s_infinite] opacity-0 group-hover:opacity-100 transition-opacity" />
                             <Microscope className="h-4 w-4" />
                             <span className="relative z-10">Analiz Başlat</span>
