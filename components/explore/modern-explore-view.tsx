@@ -241,6 +241,7 @@ export function ModernExploreView({
                                         isActuallyActive
                                             ? "text-primary-foreground shadow-lg shadow-primary/20 scale-100"
                                             : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                                        isActuallyActive && cat === 'Tümü' && "bg-primary border-primary/50",
                                         isActuallyActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
                                         isActuallyActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
                                         isActuallyActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50",

@@ -11,7 +11,7 @@ export const metadata = {
     description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
 };
 
-const VALID_CATEGORIES = ["Blog", "Kitap İncelemesi", "Deney", "Terim"];
+const VALID_CATEGORIES = ["Tümü", "Blog", "Kitap İncelemesi", "Deney", "Terim"];
 
 interface BlogPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -23,7 +23,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
     const category = typeof params.category === 'string' && VALID_CATEGORIES.includes(params.category)
         ? params.category
-        : undefined;
+        : "Tümü"; // Default to Tümü if invalid or missing
+
     const query = typeof params.q === 'string' ? params.q : undefined;
     const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
     const limit = 12;
@@ -39,23 +40,19 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         .order("created_at", { ascending: false });
 
     // --- NEW FILTERING LOGIC ---
+    // "Tümü" or undefined shows EVERYTHING.
+    // "Blog" specifically shows only standard articles (excludes special types).
+
     if (category === "Blog") {
-        // "Blog" means everything EXCEPT Book Reviews, Experiments, and Terms
         dbQuery = dbQuery
             .neq("category", "Kitap İncelemesi")
             .neq("category", "Deney")
             .neq("category", "Terim");
-    } else if (category) {
-        // Specific category match
+    } else if (category && category !== "Tümü") {
+        // Specific category match (e.g. "Kitap İncelemesi")
         dbQuery = dbQuery.eq("category", category);
     }
-    // If NO category is selected (e.g. /blog root)
-    else if (!query) {
-        dbQuery = dbQuery
-            .neq("category", "Kitap İncelemesi")
-            .neq("category", "Deney")
-            .neq("category", "Terim");
-    }
+    // No 'else if (!query)' block anymore - default allows everything.
 
     if (query) {
         dbQuery = dbQuery.ilike("title", `%${query}%`);
