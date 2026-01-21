@@ -10,11 +10,14 @@ import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
 
+const Pulsar = dynamic(() => import("@/components/ui/pulsar").then(mod => mod.Pulsar), {
+    ssr: false,
+    loading: () => <div className="w-[10px] h-[10px]" />
+});
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
-
     const [isMobile, setIsMobile] = useState(false);
 
     // Star field state
@@ -112,7 +115,7 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-[-10%] right-[-40%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
+                    className="absolute top-[-0%] right-[-25%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
                     style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateY(10deg)' }}
                 >
 
@@ -197,11 +200,10 @@ export function Footer() {
 
             {/* 3. LAYER: CONTENT */}
 
-
-
-
-
-
+            {/* Pulsar at the bottom center (replaces Black Hole) */}
+            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-20 pointer-events-none scale-75 md:scale-100 opacity-80 mix-blend-screen">
+                <Pulsar />
+            </div>
             {/* Links Grid */}
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 text-center md:text-left w-full max-w-4xl mx-auto pt-8 relative">
