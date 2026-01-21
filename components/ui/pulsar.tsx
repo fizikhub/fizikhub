@@ -4,47 +4,54 @@ import { motion } from "framer-motion";
 
 export function Pulsar() {
     return (
-        <div className="relative flex items-center justify-center w-[300px] h-[300px]">
-            {/* 1. Core Glow (The Neutron Star) */}
-            <div className="absolute w-4 h-4 bg-white rounded-full shadow-[0_0_40px_rgba(200,220,255,0.9)] z-20 animate-pulse" />
+        <div className="relative flex items-center justify-center w-[500px] h-[500px]">
+            {/* 1. Ambient Glow (Large, soft blue atmosphere) */}
+            <div className="absolute inset-0 rounded-full bg-blue-900/10 blur-[80px]" />
 
-            {/* 2. Rapidly Rotating Beams (The Lighthouse Effect) */}
+            {/* 2. Magnetic Rings (Slowly rotating, tilted) */}
             <motion.div
-                className="absolute w-full h-full flex items-center justify-center pointer-events-none"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 0.1, repeat: Infinity, ease: "linear" }} // Very fast rotation (600 RPM)
+                transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 flex items-center justify-center"
             >
-                {/* Top Beam */}
-                <div className="absolute top-1/2 left-1/2 w-[80px] h-[600px] -translate-x-1/2 -translate-y-full origin-bottom opacity-40"
+                <div className="w-[300px] h-[300px] rounded-full border border-blue-400/10 blur-[1px] skew-x-12 scale-y-75" />
+                <div className="absolute w-[250px] h-[250px] rounded-full border border-purple-400/10 blur-[1px] skew-y-12 scale-75" />
+            </motion.div>
+
+            {/* 3. The Jet Beams (Cone shaped, soft, transparent) */}
+            <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                className="absolute w-full h-full flex items-center justify-center pointer-events-none"
+            >
+                {/* North Jet */}
+                <div
+                    className="absolute top-1/2 left-1/2 w-[60px] h-[300px] origin-bottom -translate-x-1/2 -translate-y-full"
                     style={{
-                        background: 'linear-gradient(to top, rgba(200,230,255,0.8) 0%, rgba(100,150,255,0.1) 60%, transparent 100%)',
-                        filter: 'blur(8px)',
-                        clipPath: 'polygon(40% 100%, 60% 100%, 100% 0%, 0% 0%)'
+                        background: 'conic-gradient(from 180deg at 50% 100%, transparent 160deg, rgba(150, 200, 255, 0.4) 180deg, transparent 200deg)',
+                        filter: 'blur(20px)',
                     }}
                 />
-
-                {/* Bottom Beam */}
-                <div className="absolute top-1/2 left-1/2 w-[80px] h-[600px] -translate-x-1/2 origin-top opacity-40"
+                {/* South Jet */}
+                <div
+                    className="absolute top-1/2 left-1/2 w-[60px] h-[300px] origin-top -translate-x-1/2"
                     style={{
-                        background: 'linear-gradient(to bottom, rgba(200,230,255,0.8) 0%, rgba(100,150,255,0.1) 60%, transparent 100%)',
-                        filter: 'blur(8px)',
-                        clipPath: 'polygon(40% 0%, 60% 0%, 100% 100%, 0% 100%)'
+                        background: 'conic-gradient(from 0deg at 50% 0%, transparent 160deg, rgba(150, 200, 255, 0.4) 180deg, transparent 200deg)',
+                        filter: 'blur(20px)',
                     }}
                 />
             </motion.div>
 
-            {/* 3. Magnetic Field Rings (Accretion) */}
-            <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[120px] h-[120px] rounded-full border border-blue-400/20 z-10"
-                style={{ transform: 'rotateX(60deg)' }}
-            />
-            <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute w-[180px] h-[180px] rounded-full border border-purple-400/10 z-10"
-                style={{ transform: 'rotateX(60deg) rotateY(10deg)' }}
+            {/* 4. Core Neutron Star (Small, dense, blindingly bright) */}
+            <div className="relative w-3 h-3 bg-white rounded-full shadow-[0_0_30px_rgba(100,200,255,1)] z-20 animate-pulse">
+                {/* Inner Halo */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-400/30 rounded-full blur-md" />
+            </div>
+
+            {/* 5. Accretion Disk (Small, intense ring near core) */}
+            <div
+                className="absolute w-16 h-16 rounded-full border-2 border-white/20 blur-[2px]"
+                style={{ transform: 'rotateX(70deg)' }}
             />
         </div>
     );
