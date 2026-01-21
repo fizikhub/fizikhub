@@ -9,15 +9,12 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
-const RealisticBlackHole = dynamic(() => import("@/components/ui/realistic-black-hole").then(mod => mod.RealisticBlackHole), {
-    ssr: false,
-    loading: () => <div className="w-[300px] h-[300px]" />
-});
+
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
-    const [isSingularityActive, setIsSingularityActive] = useState(true);
+
     const [isMobile, setIsMobile] = useState(false);
 
     // Star field state
@@ -200,27 +197,10 @@ export function Footer() {
 
             {/* 3. LAYER: CONTENT */}
 
-            {/* Event Horizon Warning Line */}
-            <div className={cn(
-                "absolute top-0 left-0 right-0 h-8 flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 border-b border-orange-900/30",
-                isSingularityActive ? "bg-orange-950/20" : "bg-transparent"
-            )}>
-                <motion.div
-                    animate={isSingularityActive ? { x: ["0%", "-50%"] } : {}}
-                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                    className="flex whitespace-nowrap text-[9px] font-black uppercase tracking-[0.5em] text-orange-500/60"
-                >
-                    {Array(20).fill("⚠ DİKKAT OLAY UFKU TESPİT EDİLDİ • ").map((text, i) => (
-                        <span key={i} className="shrink-0 mx-4">{text}</span>
-                    ))}
-                </motion.div>
-            </div>
 
 
-            {/* Black Hole */}
-            <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none scale-75 md:scale-100">
-                <RealisticBlackHole />
-            </div>
+
+
 
             {/* Links Grid */}
             <div className="container relative z-30 flex flex-col items-center justify-between gap-10 py-16 md:py-20">
