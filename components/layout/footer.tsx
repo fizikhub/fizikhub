@@ -2,7 +2,6 @@
 
 import { Instagram, Twitter } from "lucide-react"
 import Link from "next/link";
-
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -22,7 +21,7 @@ export function Footer() {
 
     // Star field state
     const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
-    const [galaxyStars, setGalaxyStars] = useState<Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string }>>([]);
+    const [galaxyObjects, setGalaxyObjects] = useState<Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }>>([]);
 
     useEffect(() => {
         // 1. Background static stars
@@ -35,44 +34,54 @@ export function Footer() {
         }));
         setStars(newStars);
 
-        // 2. Galaxy Spiral Stars (Logarithmic Spiral Distribution)
-        // r = a * e^(b * theta)
-        const galaxyStarCount = 400;
-        const newGalaxyStars = [];
-        const arms = 2;
-        const b = 0.5; // Spiral tightness
+        // 2. Galaxy Spiral Generator (Stars + Gas Haze)
+        const galaxyParticleCount = 800;
+        const newGalaxyObjects: Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }> = [];
+        const arms = 2; // Two main arms for a grand design spiral
+        const b = 0.4; // Tighter spiral
 
-        for (let i = 0; i < galaxyStarCount; i++) {
+        for (let i = 0; i < galaxyParticleCount; i++) {
+            const isStar = Math.random() > 0.3; // 70% stars, 30% dust haze
             const armOffset = (Math.floor(Math.random() * arms) * 2 * Math.PI) / arms;
-            const randomTheta = Math.random() * 3 * Math.PI; // How far out
+            const randomTheta = Math.random() * 3.5 * Math.PI;
             const theta = randomTheta + armOffset;
 
-            // Add some randomness to spread stars around the arm
-            const spread = (Math.random() - 0.5) * 0.5 * randomTheta;
+            // Spread: More spread further out
+            const spreadFactor = isStar ? 0.3 : 0.6; // Dust is more spread out
+            const spread = (Math.random() - 0.5) * spreadFactor * (randomTheta * 0.5);
             const finalTheta = theta + spread;
 
             // Logarithmic spiral radius
-            // Normalizing to percentage (0-50% from center)
-            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 15;
+            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 18;
 
-            // Color variations: Core is yellow/white, arms are blue/white
+            // Color Logic
             const distRatio = r / 50;
-            const color = distRatio < 0.2 ? 'rgb(255, 240, 200)' : // Core: Warm
-                distRatio < 0.6 ? 'rgb(200, 220, 255)' : // Mid: White-Blue
-                    'rgb(150, 200, 255)';                   // Edge: Blue
+            let color = 'white';
 
-            if (r < 50) { // Keep within container
-                newGalaxyStars.push({
+            if (isStar) {
+                // Stars: Core=Yellow, Mid=White, Edge=Blue
+                color = distRatio < 0.15 ? 'rgba(255, 220, 180, 0.9)' :
+                    distRatio < 0.5 ? 'rgba(220, 240, 255, 0.8)' :
+                        'rgba(160, 210, 255, 0.8)';
+            } else {
+                // Dust/Gas: Pink/Purple hues for H-II regions
+                color = distRatio < 0.3 ? 'rgba(255, 150, 100, 0.1)' :
+                    'rgba(100, 50, 255, 0.1)';
+            }
+
+            if (r < 60) {
+                newGalaxyObjects.push({
                     id: i,
-                    r: r, // % from center
+                    r: r,
                     theta: finalTheta,
-                    size: Math.random() * 1.5 + 0.5,
-                    opacity: Math.random() * 0.8 + 0.2,
-                    color: color
+                    size: isStar ? (Math.random() * 1.5 + 0.5) : (Math.random() * 15 + 5), // Dust is large puffy blobs
+                    opacity: isStar ? (Math.random() * 0.8 + 0.2) : (Math.random() * 0.2 + 0.05),
+                    color: color,
+                    type: isStar ? 'star' : 'dust'
                 });
             }
         }
-        setGalaxyStars(newGalaxyStars);
+        setGalaxyObjects(newGalaxyObjects);
 
     }, []);
 
@@ -81,62 +90,61 @@ export function Footer() {
     return (
         <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[800px] flex flex-col justify-end">
 
-            {/* 1. LAYER: PURE BLACK BACKGROUND */}
+            {/* 1. BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* 2. LAYER: CUSTOM PROGRAMMATIC GALAXY */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            {/* 2. PROGRAMMATIC GALAXY CONTAINER */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none perspective-[1000px]">
 
                 {/* 
-                   REALISTIC SPIRAL GALAXY ANIMATION 
-                   Positioned Top-Right (Desktop) / Far Right (Mobile)
+                   GALAXY DISK
+                   Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
-                <div className="absolute top-[-25%] right-[-50%] md:right-[-10%] md:top-[-20%] w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] opacity-70 md:opacity-100 mix-blend-screen animate-[spin_200s_linear_infinite]">
+                <div
+                    className="absolute top-[-10%] right-[-40%] md:right-[-10%] md:top-[-10%] w-[800px] h-[800px] md:w-[1200px] md:h-[1200px] opacity-80 md:opacity-100 animate-[spin_240s_linear_infinite]"
+                    style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateY(10deg)' }}
+                >
 
-                    {/* A. Bright Galactic Core */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[12%] h-[12%] rounded-full bg-yellow-100 blur-[20px] z-30" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[25%] h-[25%] rounded-full bg-orange-200/40 blur-[50px] z-20" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[20%] rounded-full bg-blue-900/40 blur-[80px] rotate-45 z-10" />
+                    {/* A. Intense Core Bulge */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] h-[15%] rounded-full bg-orange-100 blur-[30px] z-40 shadow-[0_0_80px_rgba(255,200,150,0.4)]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[10%] rounded-full bg-white/20 blur-[50px] z-30" />
 
-                    {/* B. Spiral Arms (Gradients) */}
+                    {/* B. Base Glow & Spiral Arms */}
                     <div className="absolute inset-0 rounded-full"
                         style={{
-                            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(100, 150, 255, 0.4) 70deg, transparent 140deg, transparent 180deg, rgba(100, 150, 255, 0.4) 250deg, transparent 320deg)',
-                            filter: 'blur(50px)',
-                            transform: 'scale(1.2)'
+                            background: 'radial-gradient(circle, rgba(50,100,200,0.1) 0%, transparent 70%)',
+                            filter: 'blur(60px)',
+                            transform: 'scale(1.0)'
                         }}
                     />
 
-                    {/* C. Dust Lanes (Subtractive Dark Swirls) */}
-                    <div className="absolute inset-0 rounded-full mix-blend-multiply opacity-80"
-                        style={{
-                            background: 'conic-gradient(from 45deg, transparent 0deg, #000 60deg, transparent 100deg, transparent 180deg, #000 240deg, transparent 280deg)',
-                            filter: 'blur(30px)',
-                            transform: 'scale(1.0) rotate(10deg)'
-                        }}
-                    />
-
-                    {/* D. Individual Galaxy Stars (The "it's made of stars" look) */}
-                    {galaxyStars.map((star) => (
+                    {/* C. Generated Particles (Stars & Dust) */}
+                    {galaxyObjects.map((obj) => (
                         <div
-                            key={star.id}
-                            className="absolute rounded-full"
+                            key={obj.id}
+                            className={cn("absolute rounded-full", obj.type === 'dust' ? "blur-[8px]" : "")}
                             style={{
-                                left: `${50 + star.r * Math.cos(star.theta)}%`,
-                                top: `${50 + star.r * Math.sin(star.theta)}%`,
-                                width: `${star.size}px`,
-                                height: `${star.size}px`,
-                                backgroundColor: star.color,
-                                opacity: star.opacity,
-                                boxShadow: `0 0 ${star.size * 2}px ${star.color}`
+                                left: `${50 + obj.r * Math.cos(obj.theta)}%`,
+                                top: `${50 + obj.r * Math.sin(obj.theta)}%`,
+                                width: `${obj.size}px`,
+                                height: `${obj.size}px`,
+                                backgroundColor: obj.color,
+                                opacity: obj.opacity,
+                                boxShadow: obj.type === 'star' ? `0 0 ${obj.size}px ${obj.color}` : 'none'
                             }}
                         />
                     ))}
 
-                </div>
+                    {/* D. Dust Lanes (Dark Rifts) */}
+                    <div className="absolute inset-0 rounded-full mix-blend-multiply opacity-70"
+                        style={{
+                            background: 'conic-gradient(from 0deg, transparent 0deg, #000 40deg, transparent 90deg, transparent 180deg, #000 220deg, transparent 270deg)',
+                            filter: 'blur(40px)',
+                            transform: 'scale(0.8) rotate(20deg)'
+                        }}
+                    />
 
-                {/* Secondary Nebula (Deep Space Depth) */}
-                <div className="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-purple-900/10 rounded-full blur-[100px] mix-blend-screen" />
+                </div>
 
 
                 {/* SHOOTING STARS */}
@@ -155,13 +163,11 @@ export function Footer() {
                         opacity: 0;
                     }
                 `}</style>
-
                 <div className="star-trail w-[150px]" style={{ top: '0%', left: '30%', animationDuration: '4s', animationDelay: '2s' }} />
                 <div className="star-trail w-[200px]" style={{ top: '-10%', left: '60%', animationDuration: '6s', animationDelay: '8s' }} />
                 <div className="star-trail w-[100px]" style={{ top: '20%', left: '-10%', animationDuration: '7s', animationDelay: '15s' }} />
 
-
-                {/* BACKGROUND STARS */}
+                {/* STATIC BACKGROUND STARS */}
                 {stars.map((star) => (
                     <div
                         key={star.id}
@@ -195,8 +201,6 @@ export function Footer() {
                     ))}
                 </motion.div>
             </div>
-
-
 
 
             {/* Black Hole */}
