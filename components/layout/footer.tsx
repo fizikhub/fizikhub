@@ -61,61 +61,74 @@ export function Footer() {
             {/* Deep Space Background Layer */}
             <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_bottom,_#0a0a0a_0%,_#000000_100%)]" />
 
-            {/* REALISTIC GALAXY SYSTEM */}
+            {/* REALISTIC GALAXY SYSTEM - ENHANCED VISIBILITY */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
 
-                {/* 1. Large Spiral Galaxy (Top Left) */}
-                <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] opacity-60 animate-[spin_200s_linear_infinite]">
+                {/* 1. Large Spiral Galaxy (Top Left) - Increased Opacity */}
+                <div className="absolute -top-[10%] -left-[10%] w-[900px] h-[900px] opacity-100 animate-[spin_180s_linear_infinite]">
                     {/* Core */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/30 blur-[60px] rounded-full" />
-                    {/* Arms */}
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(120,50,255,0.2)_90deg,transparent_180deg,rgba(120,50,255,0.2)_270deg,transparent_360deg)] blur-[50px]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-600/40 blur-[80px] rounded-full mix-blend-screen" />
+                    {/* Arms - Brightened */}
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(140,80,255,0.3)_90deg,transparent_180deg,rgba(140,80,255,0.3)_270deg,transparent_360deg)] blur-[60px]" />
+                    {/* Extra detail layer */}
+                    <div className="absolute inset-0 bg-[conic-gradient(from_45deg,transparent_0deg,rgba(100,50,255,0.2)_120deg,transparent_360deg)] blur-[40px] mix-blend-plus-lighter" />
                 </div>
 
-                {/* 1.5. Second Spiral Galaxy (Bottom Right - Subtle) */}
-                <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] opacity-40 animate-[spin_150s_linear_infinite_reverse]">
-                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(50,100,255,0.15)_120deg,transparent_240deg)] blur-[40px]" />
+                {/* 1.5. Second Spiral Galaxy (Bottom Right) - Increased Opacity & Size */}
+                <div className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] opacity-80 animate-[spin_150s_linear_infinite_reverse]">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-blue-600/30 blur-[70px] rounded-full mix-blend-screen" />
+                    <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(50,120,255,0.25)_120deg,transparent_240deg)] blur-[50px]" />
                 </div>
 
-                {/* 2. Distant Nebula (Bottom Right) */}
-                <div className="absolute bottom-0 right-0 w-[1000px] h-[600px] bg-gradient-to-t from-blue-900/10 via-transparent to-transparent blur-[100px] opacity-40 mix-blend-screen" />
+                {/* 2. Distant Nebula (Bottom Right) - Brightened */}
+                <div className="absolute bottom-0 right-0 w-[1000px] h-[600px] bg-gradient-to-t from-indigo-900/30 via-purple-900/10 to-transparent blur-[90px] opacity-70 mix-blend-screen" />
 
                 {/* 3. Colorful Star Clusters */}
-                <div className="absolute top-[30%] right-[20%] w-[200px] h-[200px] bg-indigo-600/10 blur-[80px] rounded-full animate-pulse" style={{ animationDuration: '8s' }} />
+                <div className="absolute top-[30%] right-[20%] w-[300px] h-[300px] bg-indigo-500/20 blur-[90px] rounded-full animate-pulse" style={{ animationDuration: '6s' }} />
 
-                {/* 4. Shooting Stars */}
+                {/* 4. Shooting Stars - Top Left to Bottom Right */}
                 {shootingStars.map((star) => (
                     <motion.div
                         key={star.id}
-                        initial={{ x: -100, y: -100, opacity: 0, scale: 0.5 }}
+                        initial={{ x: -200, y: -200, opacity: 0, scale: 0.5 }}
                         animate={{
-                            x: ['10vw', '120vw'],
+                            x: ['-10vw', '120vw'],
                             y: ['-10vh', '120vh'],
-                            opacity: [0, 1, 0],
-                            scale: [0.5, 1.2, 0.5]
+                            opacity: [0, 1, 1, 0],
+                            scale: [0.5, 1, 1, 0.5]
                         }}
                         transition={{
-                            duration: Math.random() * 1.5 + 0.5, // Faster, random speed
+                            duration: Math.random() * 2 + 1.5, // 1.5s to 3.5s duration
                             repeat: Infinity,
-                            repeatDelay: Math.random() * 15 + 5, // More random delays
-                            ease: "easeIn" // Accelerate like gravity
+                            repeatDelay: Math.random() * 10 + 2,
+                            ease: "easeInOut",
+                            delay: star.delay // Use the random delay from state
                         }}
-                        className="absolute w-[150px] h-[2px] bg-gradient-to-r from-transparent via-blue-100 to-transparent rotate-45 blur-[0.5px]"
-                        style={{ top: `${star.y - 20}%`, left: `${star.x - 20}%` }}
-                    />
+                        className="absolute z-10"
+                        style={{
+                            top: `${star.y - 20}%`, // Offset starting position slightly based on random Y
+                            left: `${star.x - 20}%` // Offset starting position slightly based on random X
+                        }}
+                    >
+                        {/* Star Head */}
+                        <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,1)]" />
+                        {/* Star Tail */}
+                        <div className="absolute top-1/2 right-full w-[150px] h-[2px] bg-gradient-to-l from-white via-blue-200/50 to-transparent -translate-y-1/2 origin-right -rotate-6" />
+                    </motion.div>
                 ))}
 
-                {/* Static Star Field */}
+                {/* Static Star Field - Brighter */}
                 {stars.map((star) => (
                     <div
                         key={star.id}
-                        className="absolute bg-white rounded-full transition-opacity duration-1000"
+                        className="absolute bg-white rounded-full"
                         style={{
                             left: `${star.x}%`,
                             top: `${star.y}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
-                            opacity: star.opacity,
+                            opacity: star.opacity + 0.2, // Boost opacity
+                            boxShadow: `0 0 ${star.size * 2}px rgba(255,255,255,${star.opacity})`
                         }}
                     />
                 ))}
