@@ -64,9 +64,18 @@ export function Footer() {
                     distRatio < 0.5 ? 'rgba(220, 240, 255, 0.8)' :
                         'rgba(160, 210, 255, 0.8)';
             } else {
-                // Dust/Gas: Pink/Purple hues for H-II regions
-                color = distRatio < 0.3 ? 'rgba(255, 150, 100, 0.1)' :
-                    'rgba(100, 50, 255, 0.1)';
+                // Dust/Gas: Mix of classic dark dust and vibrant purple/pink/orange ionized gas
+                const gasType = Math.random();
+                if (gasType < 0.4) {
+                    // Dark Dust
+                    color = 'rgba(10, 5, 20, 0.8)'; // Almost black
+                } else if (gasType < 0.7) {
+                    // Purple/Pink Nebula (Ionized Hydrogen/Oxygen)
+                    color = 'rgba(180, 50, 255, 0.15)';
+                } else {
+                    // Blueish gas
+                    color = 'rgba(50, 100, 255, 0.1)';
+                }
             }
 
             if (r < 60) {
@@ -74,8 +83,8 @@ export function Footer() {
                     id: i,
                     r: r,
                     theta: finalTheta,
-                    size: isStar ? (Math.random() * 1.5 + 0.5) : (Math.random() * 15 + 5), // Dust is large puffy blobs
-                    opacity: isStar ? (Math.random() * 0.8 + 0.2) : (Math.random() * 0.2 + 0.05),
+                    size: isStar ? (Math.random() * 1.5 + 0.5) : (Math.random() * 25 + 10), // Larger soft gas clouds
+                    opacity: isStar ? (Math.random() * 0.8 + 0.2) : (Math.random() * 0.3 + 0.1),
                     color: color,
                     type: isStar ? 'star' : 'dust'
                 });
