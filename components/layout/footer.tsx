@@ -91,7 +91,7 @@ export function Footer() {
                    REALISTIC SPIRAL GALAXY ANIMATION 
                    Positioned Top-Right (Desktop) / Far Right (Mobile)
                 */}
-                <div className="absolute top-[-10%] right-[-30%] md:right-[-10%] md:top-[-20%] w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-100 mix-blend-screen animate-[spin_200s_linear_infinite]">
+                <div className="absolute top-[-25%] right-[-50%] md:right-[-10%] md:top-[-20%] w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] opacity-70 md:opacity-100 mix-blend-screen animate-[spin_200s_linear_infinite]">
 
                     {/* A. Bright Galactic Core */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[12%] h-[12%] rounded-full bg-yellow-100 blur-[20px] z-30" />
