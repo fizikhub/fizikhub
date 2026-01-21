@@ -107,13 +107,13 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-60 animate-[spin_240s_linear_infinite]"
-                    style={{ transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(55deg) rotateY(10deg)' }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1400px] md:h-[1400px] animate-[spin_240s_linear_infinite]"
+                    style={{ transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(45deg) rotateY(10deg)' }}
                 >
 
-                    {/* A. Intense Core Bulge */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] h-[15%] rounded-full bg-orange-100 blur-[30px] z-40 shadow-[0_0_80px_rgba(255,200,150,0.4)]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[10%] rounded-full bg-white/20 blur-[50px] z-30" />
+                    {/* A. Intense Core Bulge - BRIGHTER & BIGGER */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] rounded-full bg-orange-100 blur-[40px] z-40 shadow-[0_0_100px_rgba(255,220,180,0.8)]" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[15%] rounded-full bg-white/40 blur-[60px] z-30" />
 
                     {/* B. Base Glow & Spiral Arms */}
                     <div className="absolute inset-0 rounded-full"

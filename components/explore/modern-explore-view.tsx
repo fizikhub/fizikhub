@@ -44,6 +44,7 @@ interface ModernExploreViewProps {
 }
 
 // Simple internal component for background animations
+// Simple internal component for background animations
 function SpaceBackground() {
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
@@ -77,9 +78,9 @@ export function ModernExploreView({
     currentQuery,
     currentCategory,
     user,
-    totalPages, // Add these
+    totalPages,
     currentPage,
-    searchQuery // Add this
+    searchQuery
 }: ModernExploreViewProps) {
 
     const router = useRouter();
@@ -111,15 +112,12 @@ export function ModernExploreView({
         } : null
     }));
 
-    const { scrollY } = useScroll();
-    const headerTitleY = useTransform(scrollY, [0, 200], [0, -20]);
-
     // Helper to get empty state message
     const getEmptyStateContent = () => {
         switch (currentCategory) {
             case "Kitap İncelemesi":
                 return {
-                    icon: BookReviewCard, // Just valid component ref or icon
+                    icon: BookReviewCard,
                     title: "Henüz inceleme yok...",
                     desc: "Okuduğun son kitabı anlatmaya ne dersin?",
                     action: "İlk İncelemeyi Yaz",
