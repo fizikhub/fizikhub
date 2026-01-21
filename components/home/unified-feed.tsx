@@ -7,7 +7,7 @@ import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
 import { WriterApplicationCard } from "@/components/home/writer-application-card";
 import { motion } from "framer-motion";
-import { DidYouKnow } from "@/components/ui/did-you-know";
+
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 

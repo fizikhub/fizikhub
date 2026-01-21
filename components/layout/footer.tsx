@@ -2,7 +2,7 @@
 
 import { Instagram, Twitter } from "lucide-react"
 import Link from "next/link";
-import { DidYouKnow } from "@/components/ui/did-you-know";
+
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -197,10 +197,7 @@ export function Footer() {
             </div>
 
 
-            {/* Singularite Card */}
-            <div className="relative z-20 mb-auto pt-24 md:pt-32">
-                <DidYouKnow />
-            </div>
+
 
             {/* Black Hole */}
             <div className="absolute bottom-[200px] md:bottom-[240px] left-1/2 -translate-x-1/2 translate-y-1/2 flex items-center justify-center z-30 pointer-events-none scale-75 md:scale-100">
