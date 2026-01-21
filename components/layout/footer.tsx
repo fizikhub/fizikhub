@@ -48,13 +48,18 @@ export function Footer() {
             {/* Pure Black Background */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* Subtle Deep Space Elements */}
+            {/* Deep Space Elements */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                {/* Very subtle distant nebula glows */}
-                <div className="absolute top-[10%] left-[5%] w-[400px] h-[300px] bg-blue-950/10 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[30%] right-[10%] w-[300px] h-[200px] bg-purple-950/8 blur-[100px] rounded-full" />
 
-                {/* CSS Shooting Stars */}
+                {/* MILKY WAY BAND - Visible Diagonal Stream */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[500px] bg-gradient-to-r from-transparent via-blue-900/20 to-transparent -rotate-45 blur-[100px] mix-blend-screen" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[200px] bg-gradient-to-r from-transparent via-purple-900/20 to-transparent -rotate-45 blur-[80px] mix-blend-screen" />
+
+                {/* Brighter Distant Nebulae */}
+                <div className="absolute top-[10%] left-[5%] w-[500px] h-[400px] bg-blue-800/20 blur-[130px] rounded-full mix-blend-screen" />
+                <div className="absolute bottom-[20%] right-[10%] w-[600px] h-[400px] bg-indigo-900/20 blur-[120px] rounded-full mix-blend-screen" />
+
+                {/* CSS Shooting Stars - Rare & Realistic */}
                 <style jsx>{`
                     @keyframes shootingStar {
                         0% {
@@ -62,24 +67,27 @@ export function Footer() {
                             opacity: 0;
                         }
                         5% { opacity: 1; }
-                        95% { opacity: 1; }
+                        20% { opacity: 0; }
                         100% {
-                            transform: translate(calc(100vw + 50px), calc(100vh + 50px)) rotate(45deg);
+                            transform: translate(calc(60vw + 50px), calc(60vh + 50px)) rotate(45deg);
                             opacity: 0;
                         }
                     }
                     .shooting-star {
                         position: absolute;
-                        width: 60px;
+                        width: 120px; /* Longer tail */
                         height: 1px;
-                        background: linear-gradient(to right, transparent, white 60%, transparent);
+                        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+                        filter: drop-shadow(0 0 2px white);
                         animation: shootingStar linear infinite;
+                        opacity: 0; /* Default invisible */
                     }
                 `}</style>
 
-                <div className="shooting-star" style={{ top: '8%', left: '15%', animationDuration: '2.5s', animationDelay: '0s' }} />
-                <div className="shooting-star" style={{ top: '20%', left: '40%', animationDuration: '3s', animationDelay: '6s' }} />
-                <div className="shooting-star" style={{ top: '5%', left: '70%', animationDuration: '2s', animationDelay: '15s' }} />
+                {/* Adjusted timings for rarity */}
+                <div className="shooting-star" style={{ top: '0%', left: '20%', animationDuration: '4s', animationDelay: '5s' }} />
+                <div className="shooting-star" style={{ top: '20%', left: '0%', animationDuration: '3.5s', animationDelay: '18s' }} />
+                <div className="shooting-star" style={{ top: '-10%', left: '60%', animationDuration: '5s', animationDelay: '2s' }} />
 
                 {/* Static Star Field */}
                 {stars.map((star) => (
