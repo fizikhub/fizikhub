@@ -22,17 +22,58 @@ export function Footer() {
 
     // Star field state
     const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
+    const [galaxyStars, setGalaxyStars] = useState<Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string }>>([]);
 
     useEffect(() => {
-        // Generate static stars once
+        // 1. Background static stars
         const newStars = Array.from({ length: 300 }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            size: Math.random() * 2 + 0.5, // slightly larger stars
+            size: Math.random() * 2 + 0.5,
             opacity: Math.random() * 0.7 + 0.3
         }));
         setStars(newStars);
+
+        // 2. Galaxy Spiral Stars (Logarithmic Spiral Distribution)
+        // r = a * e^(b * theta)
+        const galaxyStarCount = 400;
+        const newGalaxyStars = [];
+        const arms = 2;
+        const b = 0.5; // Spiral tightness
+
+        for (let i = 0; i < galaxyStarCount; i++) {
+            const armOffset = (Math.floor(Math.random() * arms) * 2 * Math.PI) / arms;
+            const randomTheta = Math.random() * 3 * Math.PI; // How far out
+            const theta = randomTheta + armOffset;
+
+            // Add some randomness to spread stars around the arm
+            const spread = (Math.random() - 0.5) * 0.5 * randomTheta;
+            const finalTheta = theta + spread;
+
+            // Logarithmic spiral radius
+            // Normalizing to percentage (0-50% from center)
+            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 15;
+
+            // Color variations: Core is yellow/white, arms are blue/white
+            const distRatio = r / 50;
+            const color = distRatio < 0.2 ? 'rgb(255, 240, 200)' : // Core: Warm
+                distRatio < 0.6 ? 'rgb(200, 220, 255)' : // Mid: White-Blue
+                    'rgb(150, 200, 255)';                   // Edge: Blue
+
+            if (r < 50) { // Keep within container
+                newGalaxyStars.push({
+                    id: i,
+                    r: r, // % from center
+                    theta: finalTheta,
+                    size: Math.random() * 1.5 + 0.5,
+                    opacity: Math.random() * 0.8 + 0.2,
+                    color: color
+                });
+            }
+        }
+        setGalaxyStars(newGalaxyStars);
+
     }, []);
 
     if (isMessagesPage) return null;
@@ -43,52 +84,59 @@ export function Footer() {
             {/* 1. LAYER: PURE BLACK BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
 
-            {/* 2. LAYER: CUSTOM PROGRAMMATIC GALAXY (CSS TRICKS) */}
+            {/* 2. LAYER: CUSTOM PROGRAMMATIC GALAXY */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
 
                 {/* 
                    REALISTIC SPIRAL GALAXY ANIMATION 
-                   Positioned Top-Right for Desktop, Centered/Subtle for Mobile
+                   Positioned Top-Right (Desktop) / Far Right (Mobile)
                 */}
-                <div className="absolute top-[-10%] right-[-30%] md:right-[-10%] md:top-[-20%] w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-100 mix-blend-screen animate-[spin_240s_linear_infinite]">
+                <div className="absolute top-[-10%] right-[-30%] md:right-[-10%] md:top-[-20%] w-[600px] h-[600px] md:w-[1000px] md:h-[1000px] opacity-100 mix-blend-screen animate-[spin_200s_linear_infinite]">
 
-                    {/* Core Glow */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[15%] h-[15%] rounded-full bg-white blur-[40px] z-20" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] rounded-full bg-blue-300/30 blur-[80px] z-10" />
+                    {/* A. Bright Galactic Core */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[12%] h-[12%] rounded-full bg-yellow-100 blur-[20px] z-30" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[25%] h-[25%] rounded-full bg-orange-200/40 blur-[50px] z-20" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[20%] rounded-full bg-blue-900/40 blur-[80px] rotate-45 z-10" />
 
-                    {/* Spiral Arm 1 */}
+                    {/* B. Spiral Arms (Gradients) */}
                     <div className="absolute inset-0 rounded-full"
                         style={{
-                            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(100, 180, 255, 0.4) 90deg, transparent 180deg)',
-                            maskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
-                            WebkitMaskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
-                            filter: 'blur(40px)',
-                            transform: 'rotate(0deg) scale(1.0)'
-                        }}
-                    />
-
-                    {/* Spiral Arm 2 */}
-                    <div className="absolute inset-0 rounded-full"
-                        style={{
-                            background: 'conic-gradient(from 180deg, transparent 0deg, rgba(160, 100, 255, 0.3) 90deg, transparent 180deg)',
-                            maskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
-                            WebkitMaskImage: 'radial-gradient(circle, transparent 20%, black 60%)',
+                            background: 'conic-gradient(from 0deg, transparent 0deg, rgba(100, 150, 255, 0.4) 70deg, transparent 140deg, transparent 180deg, rgba(100, 150, 255, 0.4) 250deg, transparent 320deg)',
                             filter: 'blur(50px)',
-                            transform: 'rotate(180deg) scale(1.1)'
+                            transform: 'scale(1.2)'
                         }}
                     />
 
-                    {/* Dusty Nebula Overlay */}
-                    <div className="absolute inset-0 rounded-full mix-blend-overlay opacity-50"
+                    {/* C. Dust Lanes (Subtractive Dark Swirls) */}
+                    <div className="absolute inset-0 rounded-full mix-blend-multiply opacity-80"
                         style={{
-                            background: 'radial-gradient(circle at 30% 30%, rgba(255,0,0,0.1), transparent 50%), radial-gradient(circle at 70% 70%, rgba(0,0,255,0.1), transparent 50%)',
-                            filter: 'blur(60px)'
+                            background: 'conic-gradient(from 45deg, transparent 0deg, #000 60deg, transparent 100deg, transparent 180deg, #000 240deg, transparent 280deg)',
+                            filter: 'blur(30px)',
+                            transform: 'scale(1.0) rotate(10deg)'
                         }}
                     />
+
+                    {/* D. Individual Galaxy Stars (The "it's made of stars" look) */}
+                    {galaxyStars.map((star) => (
+                        <div
+                            key={star.id}
+                            className="absolute rounded-full"
+                            style={{
+                                left: `${50 + star.r * Math.cos(star.theta)}%`,
+                                top: `${50 + star.r * Math.sin(star.theta)}%`,
+                                width: `${star.size}px`,
+                                height: `${star.size}px`,
+                                backgroundColor: star.color,
+                                opacity: star.opacity,
+                                boxShadow: `0 0 ${star.size * 2}px ${star.color}`
+                            }}
+                        />
+                    ))}
+
                 </div>
 
-                {/* Secondary Distant Nebula (Left Side - Subtle) */}
-                <div className="absolute top-[30%] left-[-20%] w-[800px] h-[800px] bg-indigo-950/20 rounded-full blur-[150px] mix-blend-screen" />
+                {/* Secondary Nebula (Deep Space Depth) */}
+                <div className="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-purple-900/10 rounded-full blur-[100px] mix-blend-screen" />
 
 
                 {/* SHOOTING STARS */}
@@ -96,7 +144,7 @@ export function Footer() {
                     @keyframes shootingStar {
                         0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
                         5% { opacity: 1; }
-                        20% { opacity: 0; } /* Fade out quickly */
+                        20% { opacity: 0; }
                         100% { transform: translateX(100vh) translateY(100vh) rotate(45deg); opacity: 0; }
                     }
                     .star-trail {
@@ -108,13 +156,12 @@ export function Footer() {
                     }
                 `}</style>
 
-                {/* Rare, fast meteors */}
                 <div className="star-trail w-[150px]" style={{ top: '0%', left: '30%', animationDuration: '4s', animationDelay: '2s' }} />
                 <div className="star-trail w-[200px]" style={{ top: '-10%', left: '60%', animationDuration: '6s', animationDelay: '8s' }} />
                 <div className="star-trail w-[100px]" style={{ top: '20%', left: '-10%', animationDuration: '7s', animationDelay: '15s' }} />
 
 
-                {/* STATIC STARS */}
+                {/* BACKGROUND STARS */}
                 {stars.map((star) => (
                     <div
                         key={star.id}
@@ -125,14 +172,13 @@ export function Footer() {
                             width: `${star.size}px`,
                             height: `${star.size}px`,
                             opacity: star.opacity,
-                            boxShadow: `0 0 ${star.size}px rgba(255, 255, 255, ${star.opacity})`
                         }}
                     />
                 ))}
             </div>
 
 
-            {/* 3. LAYER: CONTENT (Event Horizon, Card, Links) */}
+            {/* 3. LAYER: CONTENT */}
 
             {/* Event Horizon Warning Line */}
             <div className={cn(
