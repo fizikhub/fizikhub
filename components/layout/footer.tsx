@@ -107,7 +107,7 @@ export function Footer() {
                    Tilted 3D perspective (`rotateX(60deg)`) for a realistic view
                 */}
                 <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1400px] md:h-[1400px] animate-[spin_240s_linear_infinite]"
+                    className="absolute top-[70%] left-1/2 md:top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[1400px] md:h-[1400px] animate-[spin_240s_linear_infinite]"
                     style={{ transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(45deg) rotateY(10deg)' }}
                 >
 
