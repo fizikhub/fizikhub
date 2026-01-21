@@ -21,7 +21,7 @@ export function Footer() {
         setIsMobile(mobile);
 
         // 1. Background static stars
-        const starCount = mobile ? 100 : 200; // Moderate count for background
+        const starCount = 300; // Original high count
         const newStars = Array.from({ length: starCount }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
@@ -32,8 +32,8 @@ export function Footer() {
         setStars(newStars);
 
         // 2. Galaxy Spiral Generator (Stars + Gas Haze) - DOM VERSION RESTORED
-        // Optimized counts: Original was 800. Mobile 250 is decent, Desktop 500.
-        const galaxyParticleCount = mobile ? 250 : 500;
+        // Restored to exact original count (800) as requested by user
+        const galaxyParticleCount = 800;
         const newGalaxyObjects: Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }> = [];
         const arms = 2; // Two main arms for a grand design spiral
         const b = 0.4; // Tighter spiral
