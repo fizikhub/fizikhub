@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ShieldCheck, ScrollText, Users, AlertTriangle, Gavel } from "lucide-react";
+import { PolicyPageLayout, PolicySection } from "@/components/layout/policy-page-layout";
 
 export const metadata: Metadata = {
     title: "Kullanım Şartları (Veya: Birbirimizi Kırmayalım) | Fizikhub",
@@ -8,104 +9,100 @@ export const metadata: Metadata = {
 
 export default function TermsOfUsePage() {
     return (
-        <div className="container max-w-4xl py-12 px-4 md:px-6">
-            <div className="space-y-4 text-center mb-12">
-                <div className="inline-flex items-center justify-center p-3 bg-purple-500/10 rounded-full mb-4 ring-1 ring-purple-500/20">
-                    <Gavel className="w-10 h-10 text-purple-500" />
+        <PolicyPageLayout
+            title="Kullanım Anayasası"
+            subtitle="Fizikhub'a hoş geldiniz. Burası bir bilim arenasıdır, gladyatör dövüş alanı değil. Lütfen kılıçlarınızı kapıda bırakınız."
+            icon={<Gavel />}
+            themeColor="purple"
+        >
+            {/* 1. Telif Hakları */}
+            <PolicySection
+                number="01"
+                title="İçerik ve Telif Hakkı (Copy-Paste Yasası)"
+                icon={<ScrollText className="w-6 h-6" />}
+            >
+                <p>
+                    Fizikhub üzerinde paylaşılan içerikler, kullanıcılarımızın göz nurudur.
+                </p>
+                <div className="grid gap-4 mt-6">
+                    <div className="p-4 bg-black/40 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-all group/item">
+                        <strong className="text-white block mb-2 text-sm uppercase tracking-wide group-hover/item:text-purple-300 transition-colors">Paylaşın, Çoğaltın:</strong>
+                        <span className="text-sm opacity-80">Bilgi paylaştıkça çoğalır. İçeriklerimizi kaynak göstererek paylaşabilirsiniz.</span>
+                    </div>
+                    <div className="p-4 bg-black/40 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-all group/item">
+                        <strong className="text-white block mb-2 text-sm uppercase tracking-wide group-hover/item:text-purple-300 transition-colors">Kaynak Gösterin:</strong>
+                        <span className="text-sm opacity-80">"Ctrl+C / Ctrl+V" yapıp kaynak göstermemek, akademik dünyada büyük bir günahtır. Fizikhub'da da öyledir.</span>
+                    </div>
+                    <div className="p-4 bg-black/40 rounded-2xl border border-white/5 hover:border-purple-500/30 transition-all group/item">
+                        <strong className="text-white block mb-2 text-sm uppercase tracking-wide group-hover/item:text-purple-300 transition-colors">İzinsiz Alıntı:</strong>
+                        <span className="text-sm opacity-80">İzinsiz ve kaynak göstermeden içerik kopyalayanları, kara delik simülasyonuna hapsetme hakkımızı saklı tutuyoruz. (Şaka. Ama yasal işlem başlatabiliriz.)</span>
+                    </div>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent">
-                    Kullanım Anayasası
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Fizikhub'a hoş geldiniz. Burası bir bilim arenasıdır, gladyatör dövüş alanı değil. Lütfen kılıçlarınızı kapıda bırakınız.
+            </PolicySection>
+
+            {/* 2. Topluluk Kuralları */}
+            <PolicySection
+                number="02"
+                title="Topluluk Kuralları (Newton'un Nezaket Yasası)"
+                icon={<Users className="w-6 h-6" />}
+            >
+                <p>
+                    Etki-tepki prensibi gereği, siz nazik olursanız başkaları da size nazik olur.
+                </p>
+                <ul className="grid gap-3 mt-4 list-none">
+                    <li className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+                        <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
+                        <span className="text-sm"><strong className="text-white">Saygı:</strong> Hakaret, nefret söylemi ve trollük yasaktır. Burası Instagram yorumları değil.</span>
+                    </li>
+                    <li className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+                        <div className="w-2 h-2 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.5)]" />
+                        <span className="text-sm"><strong className="text-white">Spam:</strong> Sürekli aynı şeyi yazmak entropiyi arttırır ve biz düzeni severiz. Spam yapmayın.</span>
+                    </li>
+                    <li className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5">
+                        <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
+                        <span className="text-sm"><strong className="text-white">Yasal Uyumluluk:</strong> Türkiye Cumhuriyeti yasalarına aykırı hiçbir içerik paylaşılamaz. Schrödinger'in kedisi bile yasalara uymak zorundadır.</span>
+                    </li>
+                </ul>
+            </PolicySection>
+
+            {/* 3. Sorumluluk Reddi */}
+            <PolicySection
+                number="03"
+                title="Sorumluluk Reddi (Laboratuvar Kazaları)"
+                icon={<AlertTriangle className="w-6 h-6" />}
+            >
+                <div className="bg-orange-500/10 border border-orange-500/20 p-5 rounded-xl text-orange-200/90 text-sm leading-relaxed">
+                    <p className="mb-4">Sitedeki bilgiler eğitim ve eğlence amaçlıdır.</p>
+                    <ul className="list-disc pl-5 space-y-2 marker:text-orange-500">
+                        <li>Burada okuduğunuz bir deneyi evde denerken evi yakarsanız, sorumluluk kabul etmeyiz.</li>
+                        <li>Yazarların şahsi görüşleri Fizikhub'ı bağlamaz, herkes kendi tezinden sorumludur.</li>
+                        <li>Site "uptime" süresini %99.9 tutmaya çalışıyoruz ama bazen Murphy Kanunları devreye girebilir.</li>
+                    </ul>
+                </div>
+            </PolicySection>
+
+            {/* 4. Hesap Güvenliği */}
+            <PolicySection
+                number="04"
+                title="Hesap Güvenliği"
+                icon={<ShieldCheck className="w-6 h-6" />}
+            >
+                <p>
+                    Hesabınızın güvenliği işbirliği gerektirir.
+                </p>
+                <ul className="list-disc pl-5 space-y-2 mt-4 marker:text-purple-500 text-sm">
+                    <li>Şifrenizi "123456" veya "password" yaparsanız, hacklenmeniz an meselesidir.</li>
+                    <li>Hesabınızı başkasıyla paylaşmayın. Kuantum dolanıklık hesaplar için geçerli değildir.</li>
+                    <li>Şüpheli bir durum sezerseniz hemen bizimle iletişime geçin.</li>
+                </ul>
+            </PolicySection>
+
+            {/* Footer */}
+            <div className="text-center pt-8 border-t border-white/5">
+                <p className="text-zinc-500 text-xs tracking-widest uppercase">
+                    * Bu kuralları kabul ederek Fizikhub evrenine giriş yapmış sayılırsınız. İyi eğlenceler!
                 </p>
             </div>
-
-            <div className="grid gap-8 md:gap-12">
-                {/* 1. Telif Hakları */}
-                <section className="space-y-4 bg-muted/30 p-6 md:p-8 rounded-3xl border border-white/5">
-                    <div className="flex items-center gap-3 mb-2">
-                        <ScrollText className="w-6 h-6 text-blue-400" />
-                        <h2 className="text-2xl font-bold">1. İçerik ve Telif Hakkı (Copy-Paste Yasası)</h2>
-                    </div>
-                    <div className="prose dark:prose-invert max-w-none text-muted-foreground">
-                        <p>
-                            Fizikhub üzerinde paylaşılan içerikler, kullanıcılarımızın göz nurudur.
-                        </p>
-                        <ul className="grid gap-2 mt-4 list-none pl-0">
-                            <li className="p-3 bg-black/20 rounded-lg border border-white/5">
-                                <strong className="text-foreground block mb-1">Paylaşın, Çoğaltın:</strong> Bilgi paylaştıkça çoğalır. İçeriklerimizi kaynak göstererek paylaşabilirsiniz.
-                            </li>
-                            <li className="p-3 bg-black/20 rounded-lg border border-white/5">
-                                <strong className="text-foreground block mb-1">Kaynak Gösterin:</strong> "Ctrl+C / Ctrl+V" yapıp kaynak göstermemek, akademik dünyada büyük bir günahtır. Fizikhub'da da öyledir.
-                            </li>
-                            <li className="p-3 bg-black/20 rounded-lg border border-white/5">
-                                <strong className="text-foreground block mb-1">İzinsiz Alıntı:</strong> İzinsiz ve kaynak göstermeden içerik kopyalayanları, kara delik simülasyonuna hapsetme hakkımızı saklı tutuyoruz. (Şaka. Ama yasal işlem başlatabiliriz.)
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-
-                {/* 2. Topluluk Kuralları */}
-                <section className="space-y-4 bg-muted/30 p-6 md:p-8 rounded-3xl border border-white/5">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Users className="w-6 h-6 text-emerald-500" />
-                        <h2 className="text-2xl font-bold">2. Topluluk Kuralları (Newton'un Nezaket Yasası)</h2>
-                    </div>
-                    <div className="prose dark:prose-invert max-w-none text-muted-foreground">
-                        <p>
-                            Etki-tepki prensibi gereği, siz nazik olursanız başkaları da size nazik olur.
-                        </p>
-                        <ul className="list-disc pl-5 space-y-2">
-                            <li><strong>Saygı:</strong> Forum ve yorumlarda hakaret, nefret söylemi ve trollük yasaktır. Burası Instagram yorumları değil.</li>
-                            <li><strong>Spam:</strong> Sürekli aynı şeyi yazmak entropiyi arttırır ve biz düzeni severiz. Spam yapmayın.</li>
-                            <li><strong>Yasa Dışı İçerik:</strong> Türkiye Cumhuriyeti yasalarına aykırı hiçbir içerik paylaşılamaz. Schrödinger'in kedisi bile yasalara uymak zorundadır.</li>
-                        </ul>
-                    </div>
-                </section>
-
-                {/* 3. Sorumluluk Reddi */}
-                <section className="space-y-4 bg-muted/30 p-6 md:p-8 rounded-3xl border border-white/5">
-                    <div className="flex items-center gap-3 mb-2">
-                        <AlertTriangle className="w-6 h-6 text-amber-500" />
-                        <h2 className="text-2xl font-bold">3. Sorumluluk Reddi (Laboratuvar Kazaları)</h2>
-                    </div>
-                    <div className="prose dark:prose-invert max-w-none text-muted-foreground">
-                        <p>
-                            Sitedeki bilgiler eğitim ve eğlence amaçlıdır.
-                        </p>
-                        <ul className="list-disc pl-5 space-y-2">
-                            <li>Burada okuduğunuz bir deneyi evde denerken evi yakarsanız, sorumluluk kabul etmeyiz.</li>
-                            <li>Yazarların şahsi görüşleri Fizikhub'ı bağlamaz, herkes kendi tezinden sorumludur.</li>
-                            <li>Site "uptime" süresini %99.9 tutmaya çalışıyoruz ama bazen Murphy Kanunları devreye girebilir.</li>
-                        </ul>
-                    </div>
-                </section>
-
-                {/* 4. Hesap Güvenliği */}
-                <section className="space-y-4 bg-muted/30 p-6 md:p-8 rounded-3xl border border-white/5">
-                    <div className="flex items-center gap-3 mb-2">
-                        <ShieldCheck className="w-6 h-6 text-red-500" />
-                        <h2 className="text-2xl font-bold">4. Hesap Güvenliği</h2>
-                    </div>
-                    <div className="prose dark:prose-invert max-w-none text-muted-foreground">
-                        <p>
-                            Hesabınızın güvenliği işbirliği gerektirir.
-                        </p>
-                        <ul className="list-disc pl-5 space-y-2">
-                            <li>Şifrenizi "123456" veya "password" yaparsanız, hacklenmeniz an meselesidir.</li>
-                            <li>Hesabınızı başkasıyla paylaşmayın. Kuantum dolanıklık hesaplar için geçerli değildir.</li>
-                            <li>Şüpheli bir durum sezerseniz hemen bizimle iletişime geçin.</li>
-                        </ul>
-                    </div>
-                </section>
-
-                <div className="text-center pt-8 border-t border-white/10">
-                    <p className="text-muted-foreground text-sm">
-                        * Bu kuralları kabul ederek Fizikhub evrenine giriş yapmış sayılırsınız. İyi eğlenceler!
-                    </p>
-                </div>
-            </div>
-        </div>
+        </PolicyPageLayout>
     );
 }

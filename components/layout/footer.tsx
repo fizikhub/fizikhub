@@ -3,23 +3,21 @@
 import Link from "next/link";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isMobile, setIsMobile] = useState(false);
-    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
 
-    // Canvas ref for Galaxy
-    const galaxyCanvasRef = useRef<HTMLCanvasElement>(null);
-    const [mountGalaxy, setMountGalaxy] = useState(false);
+    // Star field state
+    const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
+    const [galaxyObjects, setGalaxyObjects] = useState<Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }>>([]);
 
     useEffect(() => {
-        setMountGalaxy(true);
-        const mobile = window.innerWidth < 768;
+        const checkMobile = () => window.innerWidth < 768;
+        const mobile = checkMobile();
         setIsMobile(mobile);
 
         // 1. Background static stars
@@ -32,96 +30,67 @@ export function Footer() {
             opacity: Math.random() * 0.7 + 0.3
         }));
         setStars(newStars);
-    }, []);
 
-    // Draw Galaxy on Canvas
-    useEffect(() => {
-        if (!mountGalaxy) return;
-        const canvas = galaxyCanvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d', { alpha: true });
-        if (!ctx) return;
-
-        // Set high resolution
-        const dpr = window.devicePixelRatio || 1;
-        // The container is 800px or 1400px. Let's fix canvas size to match visual high intent
-        const size = window.innerWidth < 768 ? 800 : 1400;
-        canvas.width = size * dpr;
-        canvas.height = size * dpr;
-        ctx.scale(dpr, dpr);
-
-        // Center coordinates
-        const cx = size / 2;
-        const cy = size / 2;
-
-        // Galaxy Parameters - REFINED AESTHETICS (Fixed 'Blob' issue)
-        const galaxyParticleCount = 2000;
-        const arms = 2;
-        const b = 0.5; // Slightly looser spiral
-
-        // Clear
-        ctx.clearRect(0, 0, size, size);
-
-        // Blend mode normal for better definition, then adds for glow
-        ctx.globalCompositeOperation = 'lighter';
+        // 2. Galaxy Spiral Generator (Stars + Gas Haze) - DOM VERSION RESTORED
+        // Optimized counts: Original was 800. Mobile 250 is decent, Desktop 500.
+        const galaxyParticleCount = mobile ? 250 : 500;
+        const newGalaxyObjects: Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }> = [];
+        const arms = 2; // Two main arms for a grand design spiral
+        const b = 0.4; // Tighter spiral
 
         for (let i = 0; i < galaxyParticleCount; i++) {
-            const isStar = Math.random() > 0.5; // More stars, less dust
+            const isStar = Math.random() > 0.3; // 70% stars, 30% dust haze
             const armOffset = (Math.floor(Math.random() * arms) * 2 * Math.PI) / arms;
-            const randomTheta = Math.random() * 3 * Math.PI;
+            const randomTheta = Math.random() * 3.5 * Math.PI;
             const theta = randomTheta + armOffset;
 
-            // Tighter spread for defined arms
-            const spreadFactor = isStar ? 0.2 : 0.4;
-            const spread = (Math.random() - 0.5) * spreadFactor * (randomTheta * 0.4);
+            // Spread: More spread further out
+            const spreadFactor = isStar ? 0.3 : 0.6; // Dust is more spread out
+            const spread = (Math.random() - 0.5) * spreadFactor * (randomTheta * 0.5);
             const finalTheta = theta + spread;
 
-            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 22;
+            // Logarithmic spiral radius
+            const r = (Math.exp(b * (randomTheta / 6)) - 1) * 18;
 
-            const pixelR = (r / 60) * (size * 0.42);
-
-            const x = cx + pixelR * Math.cos(finalTheta);
-            const y = cy + pixelR * Math.sin(finalTheta);
-
+            // Color Logic
             const distRatio = r / 50;
-            let color = '255, 255, 255';
+            let color = 'white';
 
             if (isStar) {
-                if (distRatio < 0.2) color = '255, 240, 200'; // Core warm
-                else if (distRatio < 0.6) color = '200, 230, 255'; // Mid cool
-                else color = '160, 200, 255'; // Edge blue
+                // Stars: Core=Yellow, Mid=White, Edge=Blue
+                color = distRatio < 0.15 ? 'rgba(255, 220, 180, 0.9)' :
+                    distRatio < 0.5 ? 'rgba(220, 240, 255, 0.8)' :
+                        'rgba(160, 210, 255, 0.8)';
             } else {
+                // Dust/Gas: Mix of classic dark dust and vibrant purple/pink/orange ionized gas
                 const gasType = Math.random();
-                // More vibrant gas colors
-                if (gasType < 0.3) color = '80, 0, 120'; // Deep Purple
-                else if (gasType < 0.6) color = '20, 40, 100'; // Deep Blue
-                else color = '180, 50, 100'; // Red/Pink
+                if (gasType < 0.4) {
+                    // Dark Dust
+                    color = 'rgba(10, 5, 20, 0.8)'; // Almost black
+                } else if (gasType < 0.7) {
+                    // Purple/Pink Nebula (Ionized Hydrogen/Oxygen)
+                    color = 'rgba(180, 50, 255, 0.15)';
+                } else {
+                    // Blueish gas
+                    color = 'rgba(50, 100, 255, 0.1)';
+                }
             }
 
             if (r < 60) {
-                ctx.beginPath();
-                // Much smaller particles for realism
-                const opacity = isStar ? (Math.random() * 0.9 + 0.1) : (Math.random() * 0.15 + 0.05);
-                const pSize = isStar ? (Math.random() * 1.5 + 0.2) : (Math.random() * 4 + 1); // Dust max ~5px, not 25px
-
-                // Radial gradient for soft dust
-                if (!isStar) {
-                    const gradient = ctx.createRadialGradient(x, y, 0, x, y, pSize);
-                    gradient.addColorStop(0, `rgba(${color}, ${opacity})`);
-                    gradient.addColorStop(1, `rgba(${color}, 0)`);
-                    ctx.fillStyle = gradient;
-                    ctx.arc(x, y, pSize, 0, Math.PI * 2);
-                } else {
-                    ctx.fillStyle = `rgba(${color}, ${opacity})`;
-                    ctx.arc(x, y, pSize, 0, Math.PI * 2);
-                }
-
-                ctx.fill();
+                newGalaxyObjects.push({
+                    id: i,
+                    r: r,
+                    theta: finalTheta,
+                    size: isStar ? (Math.random() * 1.5 + 0.5) : (Math.random() * 25 + 10), // Larger soft gas clouds
+                    opacity: isStar ? (Math.random() * 0.8 + 0.2) : (Math.random() * 0.3 + 0.1),
+                    color: color,
+                    type: isStar ? 'star' : 'dust'
+                });
             }
         }
+        setGalaxyObjects(newGalaxyObjects);
 
-    }, [mountGalaxy]);
+    }, []);
 
     if (isMessagesPage) return null;
 
@@ -156,11 +125,22 @@ export function Footer() {
                         }}
                     />
 
-                    {/* C. CANVAS GALAXY PARTICLES (Performance Optimized) */}
-                    <canvas
-                        ref={galaxyCanvasRef}
-                        className="absolute inset-0 w-full h-full"
-                    />
+                    {/* C. Generated Particles (Stars & Dust) */}
+                    {galaxyObjects.map((obj) => (
+                        <div
+                            key={obj.id}
+                            className={cn("absolute rounded-full", obj.type === 'dust' ? "blur-[8px]" : "")}
+                            style={{
+                                left: `${50 + obj.r * Math.cos(obj.theta)}%`,
+                                top: `${50 + obj.r * Math.sin(obj.theta)}%`,
+                                width: `${obj.size}px`,
+                                height: `${obj.size}px`,
+                                backgroundColor: obj.color,
+                                opacity: obj.opacity,
+                                boxShadow: obj.type === 'star' ? `0 0 ${obj.size}px ${obj.color}` : 'none'
+                            }}
+                        />
+                    ))}
 
                     {/* D. Dust Lanes (Dark Rifts) */}
                     <div className="absolute inset-0 rounded-full mix-blend-multiply opacity-70"
