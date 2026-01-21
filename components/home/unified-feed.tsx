@@ -33,10 +33,11 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 {items.map((item, index) => (
                     <motion.div
                         key={`${item.type}-${item.data.id}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
+
+                        initial={index < 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                        whileInView={index < 3 ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "100px" }}
+                        transition={{ duration: 0.4, delay: index < 3 ? 0 : 0.05, ease: "easeOut" }}
                         className="group"
                     >
                         {item.type === 'article' && (

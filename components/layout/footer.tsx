@@ -18,14 +18,20 @@ export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const [isSingularityActive, setIsSingularityActive] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
 
     // Star field state
     const [stars, setStars] = useState<Array<{ id: number; x: number; y: number; size: number; opacity: number }>>([]);
     const [galaxyObjects, setGalaxyObjects] = useState<Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }>>([]);
 
     useEffect(() => {
-        // 1. Background static stars
-        const newStars = Array.from({ length: 300 }).map((_, i) => ({
+        const checkMobile = () => window.innerWidth < 768;
+        const mobile = checkMobile();
+        setIsMobile(mobile);
+
+        // 1. Background static stars - Optimizing count for mobile
+        const bgStarCount = mobile ? 50 : 300;
+        const newStars = Array.from({ length: bgStarCount }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
@@ -34,8 +40,8 @@ export function Footer() {
         }));
         setStars(newStars);
 
-        // 2. Galaxy Spiral Generator (Stars + Gas Haze)
-        const galaxyParticleCount = 800;
+        // 2. Galaxy Spiral Generator (Stars + Gas Haze) - Heavily optimized for mobile
+        const galaxyParticleCount = mobile ? 180 : 800;
         const newGalaxyObjects: Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }> = [];
         const arms = 2; // Two main arms for a grand design spiral
         const b = 0.4; // Tighter spiral
