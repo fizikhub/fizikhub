@@ -178,34 +178,23 @@ export function Navbar() {
                             </SheetTrigger>
                             <SheetContent side="right" className="w-[280px] sm:w-[350px] border-l border-white/10 p-0 bg-background/95 backdrop-blur-3xl shadow-2xl">
                                 <SheetHeader className="relative p-6 border-b border-white/10 overflow-hidden bg-black/40 min-h-[140px] flex items-center justify-center">
-                                    {/* Space Background Layer 1 (Base) */}
+                                    {/* Simplified Space Background - replaces 20+ animated DOM elements */}
                                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-950/40 via-transparent to-transparent" />
 
-                                    {/* Stars Layer 1 (Small & Dense) */}
-                                    <div className="absolute inset-0 opacity-40">
-                                        <div className="absolute top-[10%] left-[20%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '3s' }} />
-                                        <div className="absolute top-[30%] left-[80%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '4s' }} />
-                                        <div className="absolute top-[15%] left-[50%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '2.5s' }} />
-                                        <div className="absolute top-[60%] left-[10%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '3.5s' }} />
-                                        <div className="absolute top-[80%] left-[70%] w-[1px] h-[1px] bg-white animate-pulse" style={{ animationDuration: '4.5s' }} />
-                                        {/* More random stars */}
-                                        <div className="absolute top-[40%] left-[30%] w-[1.5px] h-[1.5px] bg-blue-200/60" />
-                                        <div className="absolute top-[70%] left-[90%] w-[1px] h-[1px] bg-purple-200/60" />
-                                        <div className="absolute top-[20%] right-[10%] w-[2px] h-[2px] bg-white/40" />
-                                    </div>
-
-                                    {/* Stars Layer 2 (Bright & Featured) */}
-                                    <div className="absolute inset-0">
-                                        <div className="absolute top-1/4 left-1/4 h-[2px] w-[2px] bg-white shadow-[0_0_2px_#fff] animate-pulse" style={{ animationDuration: '2s' }} />
-                                        <div className="absolute top-1/3 right-1/4 h-[3px] w-[3px] bg-blue-100 shadow-[0_0_3px_#fff] animate-pulse" style={{ animationDuration: '3s' }} />
-                                        <div className="absolute bottom-1/3 left-1/3 h-[2px] w-[2px] bg-purple-100 shadow-[0_0_2px_#fff] animate-pulse" style={{ animationDuration: '4s' }} />
-                                    </div>
-
-                                    {/* Shooting Stars */}
-                                    <div className="absolute inset-0 overflow-hidden">
-                                        <div className="absolute -top-[10px] right-[100px] h-[100px] w-[1px] bg-gradient-to-b from-transparent via-white to-transparent opacity-40 rotate-[45deg] animate-[spin_5s_linear_infinite]" />
-                                        <div className="absolute -top-[50px] left-[50px] h-[150px] w-[1px] bg-gradient-to-b from-transparent via-white to-transparent opacity-20 rotate-[15deg] animate-[spin_7s_linear_infinite]" style={{ animationDelay: '2s' }} />
-                                    </div>
+                                    {/* Static stars via CSS - no JS animations */}
+                                    <div
+                                        className="absolute inset-0 opacity-60"
+                                        style={{
+                                            backgroundImage: `radial-gradient(1px 1px at 20% 10%, white 100%, transparent),
+                                                             radial-gradient(1px 1px at 80% 30%, white 100%, transparent),
+                                                             radial-gradient(1.5px 1.5px at 50% 15%, rgba(200, 200, 255, 0.8) 100%, transparent),
+                                                             radial-gradient(1px 1px at 10% 60%, white 100%, transparent),
+                                                             radial-gradient(2px 2px at 70% 80%, rgba(255,255,255,0.6) 100%, transparent),
+                                                             radial-gradient(1px 1px at 90% 50%, white 100%, transparent),
+                                                             radial-gradient(1.5px 1.5px at 30% 75%, rgba(180, 180, 255, 0.7) 100%, transparent)`,
+                                            backgroundSize: '100% 100%'
+                                        }}
+                                    />
 
                                     <div className="relative z-10 w-full flex justify-center items-center">
                                         <span className="text-4xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] [text-shadow:_0_1px_20px_rgba(255,255,255,0.4)]">

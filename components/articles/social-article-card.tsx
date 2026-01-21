@@ -7,7 +7,6 @@ import { tr } from "date-fns/locale";
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, BookOpen, ChevronUp, ChevronDown, Share, BadgeCheck } from "lucide-react";
 import { Article } from "@/lib/api";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -193,10 +192,7 @@ export function SocialArticleCard({
     // RENDER: STANDARD THEME (Soft Neo-Brutalist Redesign)
     // ----------------------------------------------------------------------
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+        <div
             className={cn("h-full", className)}
         >
             <Link href={`/blog/${article.slug}`} className="block h-full group font-sans">
@@ -353,6 +349,6 @@ export function SocialArticleCard({
                     </div>
                 </article>
             </Link>
-        </motion.div>
+        </div>
     );
 }

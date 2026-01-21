@@ -21,8 +21,9 @@ export function Footer() {
         const mobile = checkMobile();
         setIsMobile(mobile);
 
-        // 1. Background static stars
-        const newStars = Array.from({ length: 300 }).map((_, i) => ({
+        // 1. Background static stars - REDUCED FOR PERFORMANCE
+        const starCount = mobile ? 80 : 100; // Was 300
+        const newStars = Array.from({ length: starCount }).map((_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
@@ -31,8 +32,8 @@ export function Footer() {
         }));
         setStars(newStars);
 
-        // 2. Galaxy Spiral Generator (Stars + Gas Haze)
-        const galaxyParticleCount = 800;
+        // 2. Galaxy Spiral Generator (Stars + Gas Haze) - REDUCED FOR PERFORMANCE
+        const galaxyParticleCount = mobile ? 150 : 300; // Was 800
         const newGalaxyObjects: Array<{ id: number; r: number; theta: number; size: number; opacity: number; color: string; type: 'star' | 'dust' }> = [];
         const arms = 2; // Two main arms for a grand design spiral
         const b = 0.4; // Tighter spiral
@@ -153,22 +154,7 @@ export function Footer() {
                 </div>
 
 
-                {/* SHOOTING STARS */}
-                <style jsx>{`
-                    @keyframes shootingStar {
-                        0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
-                        5% { opacity: 1; }
-                        20% { opacity: 0; }
-                        100% { transform: translateX(100vh) translateY(100vh) rotate(45deg); opacity: 0; }
-                    }
-                    .star-trail {
-                        position: absolute;
-                        height: 1px;
-                        background: linear-gradient(to right, transparent, white, transparent);
-                        animation: shootingStar linear infinite;
-                        opacity: 0;
-                    }
-                `}</style>
+                {/* SHOOTING STARS - CSS moved to mobile-optimizations.css */}
                 <div className="star-trail w-[150px]" style={{ top: '0%', left: '30%', animationDuration: '4s', animationDelay: '2s' }} />
                 <div className="star-trail w-[200px]" style={{ top: '-10%', left: '60%', animationDuration: '6s', animationDelay: '8s' }} />
                 <div className="star-trail w-[100px]" style={{ top: '20%', left: '-10%', animationDuration: '7s', animationDelay: '15s' }} />

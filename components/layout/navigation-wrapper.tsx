@@ -2,12 +2,17 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 
 
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
 import dynamic from "next/dynamic";
+
+// Lazy load Footer for better initial page load performance
+const Footer = dynamic(
+    () => import("@/components/layout/footer").then(mod => mod.Footer),
+    { ssr: false }
+);
 
 const DailyGreeting = dynamic(
     () => import("@/components/ui/daily-greeting").then(mod => mod.DailyGreeting),

@@ -596,3 +596,42 @@ iframe {
     width: 300px;
     height: 300px;
 }
+
+/* ========== FOOTER SHOOTING STARS ========== */
+/* Moved from inline JSX for better performance */
+
+@keyframes shootingStar {
+    0% {
+        transform: translateX(0) translateY(0) rotate(45deg);
+        opacity: 0;
+    }
+
+    5% {
+        opacity: 1;
+    }
+
+    20% {
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(100vh) translateY(100vh) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.star-trail {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(to right, transparent, white, transparent);
+    animation: shootingStar linear infinite;
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+/* Disable shooting stars on mobile for performance */
+@media (max-width: 767px) {
+    .star-trail {
+        display: none;
+    }
+}

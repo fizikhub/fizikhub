@@ -1,116 +1,145 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+
+// CSS-only shooting star animation - lightweight alternative to motion.div
+const ShootingStar = ({ delay }: { delay: number }) => (
+    <div
+        className="absolute h-[2px] w-[100px] rotate-45 opacity-0 pointer-events-none"
+        style={{
+            top: `${Math.random() * 30}%`,
+            left: `${Math.random() * 50 + 20}%`,
+            background: 'linear-gradient(90deg, transparent 0%, white 30%, transparent 100%)',
+            animation: `headerShootingStar 1.2s ease-out ${delay}s infinite`,
+            animationDelay: `${delay}s`,
+        }}
+    />
+);
 
 export function HeaderSpaceBackground() {
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; duration: number }[]>([]);
-    const [shootingStar, setShootingStar] = useState<{ x: number; y: number; delay: number; angle: number } | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        // Ensure this runs on client and generates stars immediately
-        const generateStars = () => {
-            const newStars = [];
-            const count = 200; // Increased star count for better density on PC
+        const mobile = window.innerWidth < 768;
+        setIsMobile(mobile);
 
-            for (let i = 0; i < count; i++) {
-                newStars.push({
-                    x: Math.random() * 100,
-                    y: Math.random() * 100,
-                    size: Math.random() * 2.5 + 1, // Slightly larger base size
-                    opacity: Math.random() * 0.7 + 0.3, // Higher base opacity
-                    duration: Math.random() * 3 + 2,
-                });
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Set canvas size to match container
+        const resizeCanvas = () => {
+            if (canvas && canvas.parentElement) {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
             }
-            setStars(newStars);
         };
+        resizeCanvas();
 
-        generateStars();
-    }, []);
+        // Star properties - REDUCED COUNT for performance
+        const starCount = mobile ? 40 : 80; // Was 200
+        const stars: { x: number; y: number; size: number; baseOpacity: number; opacityDirection: number; speed: number }[] = [];
 
-    // Shooting Star Logic - Frequent and visible
-    useEffect(() => {
-        const triggerShootingStar = () => {
-            const startX = Math.random() * 60 + 20; // Start mostly in the middle-ish horizontally
-            const startY = Math.random() * 40; // Top half
-            const angle = 45;
+        // Initialize stars
+        for (let i = 0; i < starCount; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1,
+                baseOpacity: Math.random() * 0.7 + 0.3,
+                opacityDirection: 1,
+                speed: Math.random() * 0.02 + 0.005
+            });
+        }
 
-            setShootingStar({
-                x: startX,
-                y: startY,
-                delay: 0,
-                angle: angle
+        let animationFrameId: number;
+        let currentOpacity: number[] = stars.map(s => s.baseOpacity);
+
+        const render = () => {
+            if (!canvas || !ctx) return;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw and animate stars
+            stars.forEach((star, i) => {
+                // Twinkle effect
+                currentOpacity[i] += star.speed * (star.opacityDirection);
+                if (currentOpacity[i] > star.baseOpacity * 1.5) {
+                    star.opacityDirection = -1;
+                } else if (currentOpacity[i] < star.baseOpacity * 0.5) {
+                    star.opacityDirection = 1;
+                }
+
+                // Draw star
+                ctx.fillStyle = `rgba(255, 255, 255, ${currentOpacity[i]})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Optional glow for larger stars
+                if (star.size > 1.5) {
+                    ctx.shadowBlur = star.size * 2;
+                    ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
             });
 
-            // Clear after animation
-            setTimeout(() => setShootingStar(null), 1200);
+            animationFrameId = requestAnimationFrame(render);
         };
 
-        // Initial star
-        setTimeout(triggerShootingStar, 1000);
+        render();
 
-        // Frequent shooting stars
-        const interval = setInterval(triggerShootingStar, 1500 + Math.random() * 2000);
+        // Handle resize
+        const handleResize = () => {
+            resizeCanvas();
+            // Reposition stars on resize
+            stars.forEach(star => {
+                star.x = Math.random() * canvas.width;
+                star.y = Math.random() * canvas.height;
+            });
+        };
+        window.addEventListener('resize', handleResize);
 
-        return () => clearInterval(interval);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animationFrameId);
+        };
     }, []);
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-[#050505]">
-            {/* Pure Black Background with slight gradient for depth */}
+            {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000000_100%)] opacity-40" />
 
-            {/* Stars */}
-            {stars.map((star, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute bg-white rounded-full"
-                    style={{
-                        left: `${star.x}%`,
-                        top: `${star.y}%`,
-                        width: star.size,
-                        height: star.size,
-                        opacity: star.opacity,
-                        boxShadow: `0 0 ${star.size}px rgba(255, 255, 255, 0.8)`
-                    }}
-                    animate={{
-                        opacity: [star.opacity, star.opacity * 1.5, star.opacity],
-                    }}
-                    transition={{
-                        duration: star.duration,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                />
-            ))}
+            {/* Canvas-based stars - GPU accelerated */}
+            <canvas
+                ref={canvasRef}
+                className="absolute inset-0 w-full h-full"
+                style={{ background: 'transparent' }}
+            />
 
-            {/* Realistic Shooting Star */}
-            {shootingStar && (
-                <motion.div
-                    key="shooting-star"
-                    initial={{
-                        top: `${shootingStar.y}%`,
-                        left: `${shootingStar.x}%`,
-                        opacity: 1,
-                        transform: `rotate(${shootingStar.angle}deg) translateX(0)`
-                    }}
-                    animate={{
-                        opacity: [1, 1, 0],
-                        transform: `rotate(${shootingStar.angle}deg) translateX(400px)` // Longer travel
-                    }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    className="absolute z-10 pointer-events-none"
-                    style={{
-                        width: "120px",
-                        height: "2px",
-                        background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 100%)",
-                        boxShadow: "0 0 10px 1px rgba(255, 255, 255, 0.6)",
-                    }}
-                >
-                    {/* Glowing Head */}
-                    <div className="absolute top-1/2 left-[30%] -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_15px_3px_rgba(255,255,255,1)]" />
-                </motion.div>
+            {/* CSS-only shooting stars - desktop only */}
+            {!isMobile && (
+                <>
+                    <ShootingStar delay={2} />
+                    <ShootingStar delay={5} />
+                    <ShootingStar delay={8} />
+                </>
             )}
+
+            {/* Header shooting star keyframes - inline to ensure it loads */}
+            <style>{`
+                @keyframes headerShootingStar {
+                    0% { transform: rotate(45deg) translateX(0); opacity: 0; }
+                    10% { opacity: 1; }
+                    100% { transform: rotate(45deg) translateX(300px); opacity: 0; }
+                }
+            `}</style>
         </div>
     );
 }
