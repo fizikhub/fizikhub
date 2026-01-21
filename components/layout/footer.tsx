@@ -94,7 +94,7 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end [mask-image:linear-gradient(to_bottom,transparent,black_150px)]">
+        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end [mask-image:linear-gradient(to_bottom,transparent_0%,black_30%)]">
 
             {/* 1. BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
