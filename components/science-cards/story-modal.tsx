@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Clock, User } from "lucide-react";
-import Image from "next/image";
+import NextImage from "next/image";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -92,7 +92,7 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
 
                     {/* Main Content Image */}
                     <div className="absolute inset-0">
-                        <Image
+                        <NextImage
                             src={story.image_url}
                             alt={story.title}
                             fill

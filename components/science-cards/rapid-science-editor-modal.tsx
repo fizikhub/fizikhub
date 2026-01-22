@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import imageCompression from "browser-image-compression";
+import NextImage from "next/image";
 
 interface RapidScienceEditorModalProps {
     isOpen: boolean;
@@ -50,14 +51,14 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
                 setImagePreview(URL.createObjectURL(compressedFile));
             } catch (err) {
                 console.error(err);
-                toast.error("Resim sıkıştırılamadı.");
+                toast.error("Resim sıkıştırılamadı. Hay anasını ya tekrar dene olmazsa barana bildir");
             }
         }
     };
 
     const handleSubmit = async () => {
         if (!title || !imageFile) {
-            toast.error("Başlık ve resim zorunludur.");
+            toast.error("Başlık ve resim zorunludur hocam.");
             return;
         }
 
@@ -84,7 +85,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
 
             // Get profile id
             const { data: profile } = await supabase.from('profiles').select('id, is_writer').eq('id', user.id).single();
-            if (!profile?.is_writer) throw new Error("Yazar yetkiniz yok.");
+            if (!profile?.is_writer) throw new Error("Yazar yetkiniz yok. Bu araya nasıl ulaştın? Ulaşmaman lazımdı.");
 
             const { error: insertError } = await supabase
                 .from('stories')
@@ -180,7 +181,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
                                         className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                     />
                                     {imagePreview ? (
-                                        <Image src={imagePreview} alt="Preview" fill className="object-cover" />
+                                        <NextImage src={imagePreview} alt="Preview" fill className="object-cover" />
                                     ) : (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-white/40 group-hover:text-white transition-colors">
                                             <ImageIcon className="w-8 h-8 mb-2" />
@@ -232,7 +233,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
                                     disabled={isSubmitting}
                                     className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold h-12 rounded-xl mt-4"
                                 >
-                                    {isSubmitting ? "Paylaşılıyor..." : (
+                                    {isSubmitting ? "Paylaşılıyor... Bekle lütf" : (
                                         <>
                                             Paylaş <Send className="w-4 h-4 ml-2" />
                                         </>
