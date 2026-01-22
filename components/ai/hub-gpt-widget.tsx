@@ -84,30 +84,31 @@ export function HubGPTWidget() {
                         className="fixed bottom-24 right-4 z-50 w-[90vw] md:w-[400px] h-[600px] max-h-[80vh] bg-[#0a0a0a] border-2 border-amber-500/50 rounded-2xl shadow-[8px_8px_0px_0px_rgba(245,158,11,0.2)] flex flex-col overflow-hidden backdrop-blur-sm"
                     >
                         {/* Header */}
-                        <div className="bg-neutral-900/90 p-4 border-b border-amber-500/20 flex items-center justify-between backdrop-blur-md">
+                        {/* Header */}
+                        <div className="bg-[#0a0a0a] p-4 border-b-2 border-amber-500 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center relative overflow-hidden">
-                                    <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/0 via-amber-500/0 to-amber-500/20" />
+                                {/* Custom Logo */}
+                                <div className="w-10 h-10 bg-amber-500 border-2 border-amber-600 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                    <span className="font-black text-black text-xl italic tracking-tighter">H</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-white tracking-tight flex items-center gap-2">
+                                    <h3 className="font-black text-white text-lg tracking-tight flex items-center gap-2">
                                         HubGPT
-                                        <span className="px-1.5 py-0.5 text-[10px] font-mono bg-amber-500/20 text-amber-500 rounded border border-amber-500/30">BETA</span>
+                                        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-white text-black border border-black">BETA</span>
                                     </h3>
-                                    <p className="text-xs text-neutral-400 font-medium">Sanal Asistan</p>
+                                    <p className="text-[10px] text-zinc-500 font-mono font-bold uppercase tracking-widest">Sanal Asistan</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="p-2 hover:bg-white/5 rounded-lg text-neutral-400 hover:text-white transition-all hover:rotate-90 duration-300"
+                                className="w-8 h-8 flex items-center justify-center border-2 border-transparent hover:border-amber-500 hover:bg-amber-500/10 text-zinc-500 hover:text-amber-500 transition-all"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="w-6 h-6" strokeWidth={3} />
                             </button>
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar bg-[url('/noise.png')] bg-repeat opacity-95">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar bg-neutral-950">
                             {messages.map((msg, idx) => (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
@@ -115,15 +116,14 @@ export function HubGPTWidget() {
                                     key={idx}
                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
-                                    <div className={`max-w-[85%] relative group ${msg.role === 'user' ? 'items-end' : 'items-start'
-                                        } flex flex-col gap-1`}>
-                                        <div className={`p-4 text-sm font-medium leading-relaxed shadow-lg backdrop-blur-sm border ${msg.role === 'user'
-                                            ? 'bg-amber-600 text-white rounded-2xl rounded-tr-sm border-amber-500'
-                                            : 'bg-neutral-900/80 text-gray-200 rounded-2xl rounded-tl-sm border-white/10'
+                                    <div className={`max-w-[85%] relative group flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                                        <div className={`p-4 text-sm font-bold leading-relaxed shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 ${msg.role === 'user'
+                                            ? 'bg-amber-500 text-black border-amber-600 rounded-none'
+                                            : 'bg-zinc-900 text-zinc-300 border-zinc-800 rounded-none' /* Neo-brutalist: No rounded corners */
                                             }`}>
                                             {msg.content}
                                         </div>
-                                        <span className="text-[10px] text-white/20 px-2 font-mono uppercase">
+                                        <span className="text-[10px] text-zinc-600 px-1 font-mono uppercase font-bold">
                                             {msg.role === 'user' ? 'Siz' : 'HubGPT'}
                                         </span>
                                     </div>
@@ -136,10 +136,10 @@ export function HubGPTWidget() {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="flex justify-start"
                                 >
-                                    <div className="bg-neutral-900/50 p-4 rounded-2xl rounded-tl-sm border border-white/5 flex gap-1.5 items-center">
-                                        <span className="w-2 h-2 bg-amber-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                                        <span className="w-2 h-2 bg-amber-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                                        <span className="w-2 h-2 bg-amber-500 rounded-full animate-bounce" />
+                                    <div className="bg-zinc-900 p-4 border-2 border-zinc-800 flex gap-1.5 items-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                        <div className="w-2 h-2 bg-amber-500 animate-bounce [animation-delay:-0.3s]" />
+                                        <div className="w-2 h-2 bg-amber-500 animate-bounce [animation-delay:-0.15s]" />
+                                        <div className="w-2 h-2 bg-amber-500 animate-bounce" />
                                     </div>
                                 </motion.div>
                             )}
@@ -147,29 +147,26 @@ export function HubGPTWidget() {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSubmit} className="p-4 bg-neutral-900 border-t border-amber-500/20">
-                            <div className="relative group">
-                                <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-500/20 to-amber-600/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-                                <div className="relative flex items-center bg-black/50 rounded-xl border border-white/10 focus-within:border-amber-500/50 transition-colors">
-                                    <input
-                                        type="text"
-                                        value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        placeholder="Bir şeyler sorun..."
-                                        className="w-full bg-transparent py-3.5 pl-4 pr-12 text-sm text-white placeholder:text-neutral-500 focus:outline-none font-medium"
-                                    />
-                                    <button
-                                        type="submit"
-                                        disabled={!inputValue.trim() || isTyping}
-                                        className="absolute right-2 p-2 bg-amber-600 rounded-lg hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-amber-600 transition-all active:scale-95"
-                                    >
-                                        <Send className="w-4 h-4 text-white" />
-                                    </button>
-                                </div>
+                        <form onSubmit={handleSubmit} className="p-4 bg-black border-t-2 border-amber-500">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    placeholder="Bir şeyler sorun..."
+                                    className="flex-1 bg-zinc-900 border-2 border-zinc-800 p-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:bg-zinc-900/50 transition-all font-mono font-medium"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!inputValue.trim() || isTyping}
+                                    className="h-full aspect-square p-3 bg-amber-500 border-2 border-amber-600 hover:bg-amber-400 hover:translate-x-1 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:cursor-not-allowed shadow-[0px_0px_0px_0px_rgba(0,0,0,0)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center justify-center text-black"
+                                >
+                                    <Send className="w-5 h-5" strokeWidth={2.5} />
+                                </button>
                             </div>
-                            <div className="text-center mt-2">
-                                <p className="text-[10px] text-neutral-600 font-mono">
-                                    Powered by Gemini &bull; FizikHub Intelligence
+                            <div className="text-center mt-3">
+                                <p className="text-[10px] text-zinc-600 font-black tracking-widest uppercase opacity-50">
+                                    FizikHub Stupid Intelligence
                                 </p>
                             </div>
                         </form>
