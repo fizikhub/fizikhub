@@ -1,44 +1,22 @@
 {
-  "name": "Fizikhub",
-  "short_name": "Fizikhub",
-  "description": "Türkiye'nin Fizik Topluluğu - Fizik soruları, makaleler ve tartışmalar",
+  "name": "FizikHub",
+  "short_name": "FizikHub",
+  "description": "Evrenin Derinliklerine Yolculuk",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#FF6B35",
-  "orientation": "portrait-primary",
+  "theme_color": "#d97706",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": ["education", "science", "social"],
-  "lang": "tr",
-  "dir": "ltr",
-  "scope": "/",
-  "shortcuts": [
-    {
-      "name": "Forum",
-      "short_name": "Forum",
-      "description": "Fizik soruları sor ve cevapla",
-      "url": "/forum",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Keşfet",
-      "short_name": "Keşfet",
-      "description": "Yeni makaleleri keşfet",
-      "url": "/kesfet",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "type": "image/png"
     }
   ]
 }

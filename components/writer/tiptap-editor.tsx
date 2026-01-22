@@ -19,7 +19,7 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator, MonitorPlay
 } from "lucide-react"
-import { useCallback, useRef, useState, useEffect } from "react"
+import { useCallback, useRef, useState } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
@@ -30,18 +30,9 @@ import { IframeExtension } from './extensions/iframe-extension'
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
     const { node, updateAttributes, selected } = props;
-    const [altText, setAltText] = useState(node.attrs.alt || '');
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        if (node.attrs.alt !== altText) {
-            setAltText(node.attrs.alt || '');
-        }
-    }, [node.attrs.alt]);
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newAlt = e.target.value;
-        setAltText(newAlt);
         updateAttributes({ alt: newAlt });
     };
 
@@ -58,7 +49,7 @@ const ImageNodeView = (props: NodeViewProps) => {
             </div>
             <div className="mt-2 w-full max-w-md">
                 <Input
-                    value={altText}
+                    value={node.attrs.alt || ''}
                     onChange={handleAltChange}
                     placeholder="Görsel açıklaması ekle..."
                     className="text-center text-sm text-muted-foreground border-transparent hover:border-border focus:border-primary bg-transparent h-8"
@@ -315,7 +306,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                                                 {/* We need InlineMath here. I'll add the import in a previous step or next step. */}
                                                 <InlineMath
                                                     math={mathLatex.replace(/^\$+|\$+$/g, '')}
-                                                    renderError={(error) => {
+                                                    renderError={() => {
                                                         return <span className="text-red-500 font-mono text-sm">{mathLatex}</span>
                                                     }}
                                                 />

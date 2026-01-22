@@ -134,6 +134,8 @@ import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+import { FizikGPTWidget } from "@/components/ai/fizik-gpt-widget";
 
 // Dynamic Imports Removed (Moved to NavigationWrapper)
 // import dynamic from 'next/dynamic';
@@ -244,6 +246,8 @@ export default async function RootLayout({
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
+              <InstallPrompt />
+              <FizikGPTWidget />
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster

@@ -417,6 +417,7 @@
     @apply bg-background text-foreground antialiased;
     background-image: radial-gradient(circle at top center, rgba(var(--primary), 0.03) 0%, transparent 50%);
     background-attachment: fixed;
+    overflow-x: hidden;
   }
 
   /* Cybernetic Background Support */

@@ -7,23 +7,23 @@ export function SnowfallEffect() {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
+    const [snowflakes, setSnowflakes] = useState<any[]>([]);
+
     useEffect(() => {
         setMounted(true);
+        setSnowflakes(Array.from({ length: 50 }, (_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            animationDuration: `${8 + Math.random() * 12}s`,
+            animationDelay: `${Math.random() * 8}s`,
+            opacity: 0.3 + Math.random() * 0.7,
+            size: 2 + Math.random() * 4,
+        })));
     }, []);
 
     if (!mounted || theme !== "christmas") {
         return null;
     }
-
-    // Generate 50 snowflakes with random properties
-    const snowflakes = Array.from({ length: 50 }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        animationDuration: `${8 + Math.random() * 12}s`,
-        animationDelay: `${Math.random() * 8}s`,
-        opacity: 0.3 + Math.random() * 0.7,
-        size: 2 + Math.random() * 4,
-    }));
 
     return (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">

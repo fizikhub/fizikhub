@@ -7,6 +7,7 @@ import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
 import { CategoryStories } from "@/components/home/category-stories";
 import { DailyGreeting } from "@/components/ui/daily-greeting";
+import { ScienceStories } from "@/components/science-cards/science-stories";
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -130,6 +131,11 @@ export default async function Home() {
         {/* Story-style Categories */}
         <div className="pt-1 pb-0">
           <CategoryStories />
+        </div>
+
+        {/* Snack Content (Science Stories) */}
+        <div className="mt-6 mb-2">
+          <ScienceStories />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">

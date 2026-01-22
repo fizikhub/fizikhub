@@ -22,12 +22,12 @@ function getReadingTime(content: string | null): number {
 }
 
 export function MagazineHero({ articles }: MagazineHeroProps) {
+    const mainArticle = articles?.[0]; // Access safely
+    const [mainImgSrc, setMainImgSrc] = useState(mainArticle?.image_url || "/images/placeholder-hero.webp");
+
     if (!articles || articles.length === 0) return null;
 
-    const mainArticle = articles[0];
     const sideArticles = articles.slice(1, 3);
-
-    const [mainImgSrc, setMainImgSrc] = useState(mainArticle.image_url || "/images/placeholder-hero.webp");
 
     return (
         <section className="mb-12 sm:mb-16 md:mb-24">

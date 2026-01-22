@@ -8,23 +8,26 @@ export function MarsEffect() {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
+    const [dustParticles, setDustParticles] = useState<any[]>([]);
+
     useEffect(() => {
         setMounted(true);
+        // Generate stable particles on client side only
+        setDustParticles(Array.from({ length: 40 }, (_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            animationDuration: `${15 + Math.random() * 20}s`,
+            animationDelay: `${Math.random() * 10}s`,
+            opacity: 0.15 + Math.random() * 0.35,
+            size: 1.5 + Math.random() * 3,
+            colorH: 25,
+            colorL: 40 + Math.random() * 25
+        })));
     }, []);
 
     if (!mounted || theme !== "mars") {
         return null;
     }
-
-    // Generate subtle dust particles
-    const dustParticles = Array.from({ length: 40 }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        animationDuration: `${15 + Math.random() * 20}s`,
-        animationDelay: `${Math.random() * 10}s`,
-        opacity: 0.15 + Math.random() * 0.35,
-        size: 1.5 + Math.random() * 3,
-    }));
 
     return (
         <>
@@ -85,7 +88,7 @@ export function MarsEffect() {
                             opacity: particle.opacity,
                             width: `${particle.size}px`,
                             height: `${particle.size}px`,
-                            background: `hsl(25, 60%, ${40 + Math.random() * 25}%)`,
+                            background: `hsl(${particle.colorH}, 60%, ${particle.colorL}%)`,
                         }}
                     />
                 ))}
