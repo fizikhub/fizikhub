@@ -58,11 +58,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+
 // Enable ISR with 10 minute revalidation
 export const revalidate = 600;
 
 export async function generateStaticParams() {
-    const supabase = await createClient();
+    const supabase = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const { data: articles } = await supabase
         .from('articles')
         .select('slug')
