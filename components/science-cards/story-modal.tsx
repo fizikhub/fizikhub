@@ -92,12 +92,12 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
 
                     {/* Main Content Image */}
                     <div className="absolute inset-0">
-                        <NextImage
+                        {/* Use standard img to avoid Next.js Image issues in modal context */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                             src={story.image_url}
                             alt={story.title}
-                            fill
-                            className="object-cover"
-                            priority
+                            className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
                     </div>

@@ -79,9 +79,11 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                             <CreateArticleDialog />
                             <div>
                             </div>
-                            {/* Writers & Admins (RLS protected) */}
+                            {/* Writers & Admins (RLS protected) - Show if Writer OR if it's my own profile (so admins can see it) */}
                             <>
-                                <RapidScienceButton />
+                                {(profile?.is_writer || (user?.id && profile?.id === user.id)) && (
+                                    <RapidScienceButton />
+                                )}
                                 {(profile?.is_writer) && (
                                     <Link href="/yazar">
                                         <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
