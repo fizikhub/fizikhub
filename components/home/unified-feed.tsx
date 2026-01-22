@@ -13,6 +13,7 @@ import { ExperimentCard } from "@/components/experiment/experiment-card";
 
 import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { TermCard } from "@/components/term/term-card";
+import { ScienceStories } from "@/components/science-cards/science-stories";
 
 export interface FeedItem {
     type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term';
@@ -107,6 +108,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         {index === 5 && (
                             <div className="mt-6 rounded-2xl overflow-hidden">
                                 <ForumTeaserCard />
+                            </div>
+                        )}
+
+                        {/* Rapid Science Stories Injection - 7th position visually */}
+                        {index === 6 && (
+                            <div className="mt-8 mb-8 -mx-4 sm:mx-0">
+                                <ScienceStories />
                             </div>
                         )}
 

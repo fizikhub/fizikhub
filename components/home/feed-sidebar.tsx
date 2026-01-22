@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
+import { RapidScienceEditorModal } from "@/components/science-cards/rapid-science-editor-modal";
+import { useState } from "react";
+
 export function FeedSidebar() {
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
     return (
         <div className="space-y-6 lg:sticky lg:top-24">
             {/* Premium Join/Write Box */}
@@ -24,7 +28,19 @@ export function FeedSidebar() {
                         İçerik Üretmeye Başla
                     </Button>
                 </Link>
+
+                {/* Rapid Science Button - For Writers */}
+                <Button
+                    variant="outline"
+                    onClick={() => setIsEditorOpen(true)}
+                    className="w-full mt-3 border-amber-500/20 hover:bg-amber-500/10 text-amber-500 font-semibold"
+                >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Hızlı Bilim Paylaş
+                </Button>
             </div>
+
+            <RapidScienceEditorModal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)} />
 
             {/* Trending Topics (Simulation) */}
             <div className="bg-card/50 backdrop-blur-xl border border-foreground/5 rounded-2xl p-6">
