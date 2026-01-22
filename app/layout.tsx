@@ -135,10 +135,7 @@ import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
-import { FizikGPTWidget } from "@/components/ai/fizik-gpt-widget";
-
-// Dynamic Imports Removed (Moved to NavigationWrapper)
-// import dynamic from 'next/dynamic';
+import { HubGPTWidget } from "@/components/ai/hub-gpt-widget";
 
 export default async function RootLayout({
   children,
@@ -247,7 +244,7 @@ export default async function RootLayout({
                 {children}
               </NavigationWrapper>
               <InstallPrompt />
-              <FizikGPTWidget />
+              <HubGPTWidget />
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster

@@ -233,7 +233,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
                                     disabled={isSubmitting}
                                     className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold h-12 rounded-xl mt-4"
                                 >
-                                    {isSubmitting ? "Paylaşılıyor... Bekle lütf" : (
+                                    {isSubmitting ? "Paylaşılıyor... Bekle lütfen hocam" : (
                                         <>
                                             Paylaş <Send className="w-4 h-4 ml-2" />
                                         </>
