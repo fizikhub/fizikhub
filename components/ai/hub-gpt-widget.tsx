@@ -42,14 +42,16 @@ export function HubGPTWidget() {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.details || 'Sunucu hatası');
             }
 
             const data = await response.json();
             setMessages(prev => [...prev, { role: 'ai', content: data.content }]);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error:', error);
-            setMessages(prev => [...prev, { role: 'ai', content: 'Üzgünüm, şu an kozmik bir parazit var. Biraz sonra tekrar dener misin?' }]);
+            const errorMessage = error.message || 'Üzgünüm, şu an kozmik bir parazit var. Biraz sonra tekrar dener misin?';
+            setMessages(prev => [...prev, { role: 'ai', content: `⚠️ HATA: ${errorMessage}` }]);
         } finally {
             setIsTyping(false);
         }

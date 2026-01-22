@@ -59,10 +59,13 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ role: 'ai', content: text });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Chat API Error:", error);
         return NextResponse.json(
-            { error: "Internal Server Error" },
+            {
+                error: error.message || "Unknown Error",
+                details: error.toString()
+            },
             { status: 500 }
         );
     }
