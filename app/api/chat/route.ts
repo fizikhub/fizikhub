@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-flash-lite-latest",
+            model: "gemini-1.5-flash",
         });
 
         const userName = userProfile?.full_name || userProfile?.username || "Ziyaretçi";
