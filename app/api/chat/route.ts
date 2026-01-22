@@ -21,9 +21,16 @@ export async function POST(req: Request) {
         const dynamicSiteContext = await getSiteContext(supabase);
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-        });
+
+        // List of models to try in order of preference (Free tier friendly first)
+        const modelsToTry = [
+            "gemini-1.5-flash",
+            "gemini-1.5-flash-001",
+            "gemini-1.5-flash-latest",
+            "gemini-1.5-pro",
+            "gemini-1.5-pro-latest",
+            "gemini-pro"
+        ];
 
         const userName = userProfile?.full_name || userProfile?.username || "Ziyaretçi";
         const userContext = userProfile ? `KONUŞTUĞUN KİŞİ: ${userName} (Kullanıcı Adı: ${userProfile.username}). Ona ismiyle hitap et.` : "";
@@ -58,24 +65,42 @@ export async function POST(req: Request) {
 
         const lastMessage = messages[messages.length - 1].content;
 
-        const chat = model.startChat({
-            history: history,
-            generationConfig: {
-                maxOutputTokens: 1000,
-            },
-        });
+        let lastError = null;
 
-        const result = await chat.sendMessage(lastMessage);
-        const response = await result.response;
-        const text = response.text();
+        // Try models sequentially
+        for (const modelName of modelsToTry) {
+            try {
+                console.log(`Attempting model: ${modelName}`);
+                const model = genAI.getGenerativeModel({ model: modelName });
 
-        return NextResponse.json({ role: 'ai', content: text });
+                const chat = model.startChat({
+                    history: history,
+                    generationConfig: {
+                        maxOutputTokens: 1000,
+                    },
+                });
+
+                const result = await chat.sendMessage(lastMessage);
+                const response = await result.response;
+                const text = response.text();
+
+                return NextResponse.json({ role: 'ai', content: text });
+            } catch (error: any) {
+                console.error(`Model ${modelName} failed:`, error.message);
+                lastError = error;
+                // Continue if 404/not found, otherwise try next
+                continue;
+            }
+        }
+
+        // If we get here, all models failed
+        throw lastError;
 
     } catch (error: any) {
-        console.error("Chat API Error:", error);
+        console.error("Chat API Error (All models failed):", error);
         return NextResponse.json(
             {
-                error: error.message || "Unknown Error",
+                error: `Tüm modeller denendi ve başarısız oldu. Son hata: ${error.message || "Unknown Error"}`,
                 details: error.toString()
             },
             { status: 500 }
