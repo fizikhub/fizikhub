@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { FIZIKHUB_KNOWLEDGE_BASE } from "@/lib/ai-knowledge-base";
+import { getSiteContext } from "@/lib/get-site-context";
+import { createClient } from "@/lib/supabase-server"; // Ensure server client usage
 
 export async function POST(req: Request) {
     try {
@@ -14,6 +16,10 @@ export async function POST(req: Request) {
             );
         }
 
+        // Initialize Supabase to fetch context
+        const supabase = await createClient();
+        const dynamicSiteContext = await getSiteContext(supabase);
+
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
             model: "gemini-1.5-flash-latest",
@@ -24,10 +30,12 @@ export async function POST(req: Request) {
 
         const systemPrompt = `Sen HubGPT'sin.
 
-        AŞAĞIDAKİ "PERSONA KURALLARI" VE "BİLGİ BANKASI" SENİN TEK GERÇEĞİNDİR.
+        AŞAĞIDAKİ "PERSONA KURALLARI", "SİTE İÇERİKLERİ" VE "BİLGİ BANKASI" SENİN TEK GERÇEĞİNDİR.
         BUNLARIN DIŞINA ÇIKMA. YAPAY ZEKA GİBİ KONUŞMA.
         
         ${userContext}
+        
+        ${dynamicSiteContext}
         
         ${FIZIKHUB_KNOWLEDGE_BASE}
         
