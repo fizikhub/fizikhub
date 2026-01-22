@@ -133,10 +133,7 @@ export default async function Home() {
           <CategoryStories />
         </div>
 
-        {/* Snack Content (Science Stories) */}
-        <div className="mt-6 mb-2">
-          <ScienceStories />
-        </div>
+
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
 

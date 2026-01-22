@@ -15,6 +15,7 @@ import { NotificationBell } from "@/components/notifications/notification-bell";
 
 import { ReputationDisplay } from "@/components/reputation-display";
 import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
+import { RapidScienceButton } from "@/components/profile/rapid-science-button";
 
 interface ProfileHeaderProps {
     profile: any;
@@ -79,11 +80,14 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                             <div>
                             </div>
                             {profile?.is_writer && (
-                                <Link href="/yazar">
-                                    <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
-                                        <FileText className="h-4 w-4" />
-                                    </Button>
-                                </Link>
+                                <>
+                                    <RapidScienceButton />
+                                    <Link href="/yazar">
+                                        <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
+                                            <FileText className="h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                </>
                             )}
                             <ProfileMessagesButton />
                             <div className="hidden md:block">
