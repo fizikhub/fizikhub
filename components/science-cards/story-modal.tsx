@@ -49,7 +49,7 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-0 md:p-8"
+                className="fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-0 md:p-8"
                 onClick={onClose} // Close on backdrop click
             >
                 <button
