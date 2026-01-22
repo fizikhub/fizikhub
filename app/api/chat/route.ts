@@ -4,7 +4,7 @@ import { FIZIKHUB_KNOWLEDGE_BASE } from "@/lib/ai-knowledge-base";
 
 export async function POST(req: Request) {
     try {
-        const { messages } = await req.json();
+        const { messages, userProfile } = await req.json();
         const apiKey = process.env.GOOGLE_API_KEY;
 
         if (!apiKey) {
@@ -19,11 +19,15 @@ export async function POST(req: Request) {
             model: "gemini-flash-lite-latest",
         });
 
+        const userName = userProfile?.full_name || userProfile?.username || "Ziyaretçi";
+        const userContext = userProfile ? `KONUŞTUĞUN KİŞİ: ${userName} (Kullanıcı Adı: ${userProfile.username}). Ona ismiyle hitap et.` : "";
 
         const systemPrompt = `Sen HubGPT'sin.
 
         AŞAĞIDAKİ "PERSONA KURALLARI" VE "BİLGİ BANKASI" SENİN TEK GERÇEĞİNDİR.
         BUNLARIN DIŞINA ÇIKMA. YAPAY ZEKA GİBİ KONUŞMA.
+        
+        ${userContext}
         
         ${FIZIKHUB_KNOWLEDGE_BASE}
         

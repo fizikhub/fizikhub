@@ -11,6 +11,37 @@ export function HubGPTWidget() {
     ]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
+
+    useEffect(() => {
+        // Fetch user profile on mount
+        const fetchUser = async () => {
+            const { createClient } = await import('@/lib/supabase-client');
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('full_name, username')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    setUserProfile(profile);
+                    // Update initial message to include name if available
+                    setMessages(prev => {
+                        if (prev.length === 1 && prev[0].role === 'ai') {
+                            return [{ role: 'ai', content: `Selam ${profile.full_name?.split(' ')[0] || profile.username}! Ben HubGPT. Evrenin sırlarını çözmeye hazır mısın? Veya sadece sitede mi kayboldun?` }];
+                        }
+                        return prev;
+                    });
+                }
+            }
+        };
+        fetchUser();
+    }, []);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -37,7 +68,8 @@ export function HubGPTWidget() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    messages: [...messages, { role: 'user', content: userMessage }]
+                    messages: [...messages, { role: 'user', content: userMessage }],
+                    userProfile // Pass full profile to API
                 }),
             });
 
