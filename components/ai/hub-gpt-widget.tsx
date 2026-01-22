@@ -81,14 +81,13 @@ export function HubGPTWidget() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-24 right-4 z-50 w-[90vw] md:w-[400px] h-[600px] max-h-[80vh] bg-[#0a0a0a] border-2 border-amber-500/50 rounded-2xl shadow-[8px_8px_0px_0px_rgba(245,158,11,0.2)] flex flex-col overflow-hidden backdrop-blur-sm"
+                        className="fixed bottom-0 md:bottom-24 right-0 md:right-4 z-50 w-full md:w-[400px] h-[100dvh] md:h-[600px] md:max-h-[80vh] bg-[#0a0a0a] border-t-2 md:border-2 border-amber-500/50 md:rounded-2xl shadow-[8px_8px_0px_0px_rgba(245,158,11,0.2)] flex flex-col overflow-hidden backdrop-blur-sm"
                     >
                         {/* Header */}
-                        {/* Header */}
-                        <div className="bg-[#0a0a0a] p-4 border-b-2 border-amber-500 flex items-center justify-between">
+                        <div className="bg-[#0a0a0a] p-4 border-b-2 border-amber-500 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-3">
                                 {/* Custom Logo */}
-                                <div className="w-10 h-10 bg-amber-500 border-2 border-amber-600 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                <div className="w-10 h-10 bg-amber-500 border-2 border-amber-600 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] shrink-0">
                                     <span className="font-black text-black text-xl italic tracking-tighter">H</span>
                                 </div>
                                 <div>
@@ -101,7 +100,7 @@ export function HubGPTWidget() {
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 flex items-center justify-center border-2 border-transparent hover:border-amber-500 hover:bg-amber-500/10 text-zinc-500 hover:text-amber-500 transition-all"
+                                className="w-10 h-10 flex items-center justify-center border-2 border-transparent hover:border-amber-500 hover:bg-amber-500/10 text-zinc-500 hover:text-amber-500 transition-all active:scale-95"
                             >
                                 <X className="w-6 h-6" strokeWidth={3} />
                             </button>
@@ -147,24 +146,24 @@ export function HubGPTWidget() {
                         </div>
 
                         {/* Input */}
-                        <form onSubmit={handleSubmit} className="p-4 bg-black border-t-2 border-amber-500">
+                        <form onSubmit={handleSubmit} className="p-4 bg-black border-t-2 border-amber-500 pb-safe-area-bottom">
                             <div className="flex items-center gap-2">
                                 <input
                                     type="text"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     placeholder="Bir şeyler sorun..."
-                                    className="flex-1 bg-zinc-900 border-2 border-zinc-800 p-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:bg-zinc-900/50 transition-all font-mono font-medium"
+                                    className="flex-1 bg-zinc-900 border-2 border-zinc-800 p-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 focus:bg-zinc-900/50 transition-all font-mono font-medium rounded-none"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!inputValue.trim() || isTyping}
-                                    className="h-full aspect-square p-3 bg-amber-500 border-2 border-amber-600 hover:bg-amber-400 hover:translate-x-1 hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:cursor-not-allowed shadow-[0px_0px_0px_0px_rgba(0,0,0,0)] hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center justify-center text-black"
+                                    className="h-[46px] aspect-square p-0 bg-amber-500 border-2 border-amber-600 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0px_0px_0px_0px_rgba(0,0,0,0)] flex items-center justify-center text-black shrink-0 transition-all active:scale-95"
                                 >
                                     <Send className="w-5 h-5" strokeWidth={2.5} />
                                 </button>
                             </div>
-                            <div className="text-center mt-3">
+                            <div className="text-center mt-3 mb-2 md:mb-0">
                                 <p className="text-[10px] text-zinc-600 font-black tracking-widest uppercase opacity-50">
                                     FizikHub Stupid Intelligence
                                 </p>
