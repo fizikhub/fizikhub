@@ -107,41 +107,27 @@ export function ScienceStories() {
 function FeatureCard({ story, onClick }: { story: any, onClick: () => void }) {
     return (
         <motion.div
-            className="snap-start shrink-0 w-[140px] h-[220px] md:w-[160px] md:h-[240px] relative rounded-xl overflow-hidden group cursor-pointer border border-white/10 shadow-lg bg-black"
+            className="snap-start shrink-0 w-[140px] h-[220px] md:w-[160px] md:h-[240px] relative rounded-xl overflow-hidden group cursor-pointer border border-white/10 shadow-md bg-zinc-900"
             whileHover={{ scale: 0.98, y: -2 }}
             transition={{ duration: 0.2 }}
             onClick={onClick}
         >
-            {/* Holographic Border Effect */}
-            <div className="absolute inset-0 z-20 border border-white/5 group-hover:border-amber-500/50 transition-colors rounded-xl pointer-events-none" />
-
             {/* Image */}
             <NextImage
                 src={story.image_url}
                 alt={story.title}
                 fill
                 sizes="(max-width: 768px) 140px, 160px"
-                className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
             />
 
-            {/* Tech Scanlines */}
-            <div className="absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] opacity-20" />
+            {/* Gradient Overlay - Subtle & Premium */}
+            <div className={`absolute inset-0 bg-gradient-to-t ${story.color || 'from-amber-900/80 to-transparent'} opacity-40 mix-blend-multiply transition-opacity`} />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
 
-            {/* Gradient Overlay - Dynamic based on story color */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${story.color || 'from-amber-900/80 to-transparent'} opacity-60 mix-blend-multiply transition-opacity group-hover:opacity-80`} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
-
-            {/* Top Badge */}
-            <div className="absolute top-2 right-2 z-20">
-                <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-sm px-1.5 py-0.5 flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                    <span className="text-[9px] font-mono text-white/70 tracking-widest uppercase">DATA</span>
-                </div>
-            </div>
-
-            {/* Author Avatar (Small & Techy) */}
-            <div className="absolute top-2 left-2 z-20">
-                <div className="w-6 h-6 rounded-sm border border-white/20 overflow-hidden relative grayscale group-hover:grayscale-0 transition-all">
+            {/* Top Writer Badge */}
+            <div className="absolute top-2 left-2 z-20 flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full border border-white/20 overflow-hidden relative shadow-sm">
                     <NextImage
                         src={story.author?.avatar_url || "/images/default-avatar.png"}
                         alt="Author"
@@ -149,18 +135,16 @@ function FeatureCard({ story, onClick }: { story: any, onClick: () => void }) {
                         className="object-cover"
                     />
                 </div>
+                <span className="text-[10px] font-bold text-white/90 drop-shadow-md truncate max-w-[80px]">
+                    {story.author?.username}
+                </span>
             </div>
 
             {/* Content Area */}
             <div className="absolute bottom-0 left-0 w-full p-3 z-20">
-                <div className="h-[2px] w-8 bg-amber-500 mb-2 group-hover:w-full transition-all duration-500" />
-                <h3 className="text-xs md:text-sm font-bold text-white leading-tight line-clamp-3 font-mono">
+                <h3 className="text-sm font-bold text-white leading-tight line-clamp-3 mb-1 drop-shadow-md">
                     {story.title}
                 </h3>
-                <div className="mt-1 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity delay-100">
-                    <span className="text-[10px] text-amber-400 font-mono">OPEN_FILE_</span>
-                    <ArrowRight className="w-3 h-3 text-amber-500" />
-                </div>
             </div>
         </motion.div>
     );
