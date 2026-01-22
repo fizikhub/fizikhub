@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { FIZIKHUB_KNOWLEDGE_BASE } from "@/lib/ai-knowledge-base";
 
 export async function POST(req: Request) {
     try {
@@ -14,21 +15,42 @@ export async function POST(req: Request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({
+            model: "gemini-flash-latest",
+        });
 
-        const history = messages.slice(0, -1).map((msg: any) => ({
-            role: msg.role === "user" ? "user" : "model",
-            parts: [{ text: msg.content }],
-        }));
+
+        const systemPrompt = `Sen HubGPT'sin.
+
+        AŞAĞIDAKİ "PERSONA KURALLARI" VE "BİLGİ BANKASI" SENİN TEK GERÇEĞİNDİR.
+        BUNLARIN DIŞINA ÇIKMA. YAPAY ZEKA GİBİ KONUŞMA.
+        
+        ${FIZIKHUB_KNOWLEDGE_BASE}
+        
+        Kısa, net ve "bizden biri" gibi cevap ver.`;
+
+        const history = [
+            {
+                role: "user",
+                parts: [{ text: systemPrompt }]
+            },
+            {
+                role: "model",
+                parts: [{ text: "Anlaşıldı. HubGPT moduna geçiyorum. Sistem hazır. Sorularını bekliyorum." }]
+            },
+            ...messages.slice(0, -1).map((msg: any) => ({
+                role: msg.role === "user" ? "user" : "model",
+                parts: [{ text: msg.content }],
+            }))
+        ];
 
         const lastMessage = messages[messages.length - 1].content;
 
         const chat = model.startChat({
             history: history,
             generationConfig: {
-                maxOutputTokens: 500,
+                maxOutputTokens: 1000,
             },
-            systemInstruction: "Sen HubGPT'sin, FizikHub platformunun yapay zeka asistanısın. Görevin, kullanıcılara fizik, bilim ve FizikHub platformu hakkında yardımcı olmak. Yanıtların her zaman Türkçe, bilimsel olarak doğru, teşvik edici ve 'neo-brutalist' bir tonla hafifçe esprili olsun. Kısa ve öz cevaplar ver. Asla bir yapay zeka olduğunu vurgulama, sanki platformun kendisiymişsin gibi konuş. Emojiler kullan ama aşırıya kaçma.",
         });
 
         const result = await chat.sendMessage(lastMessage);
