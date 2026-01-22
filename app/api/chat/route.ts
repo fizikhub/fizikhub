@@ -23,13 +23,11 @@ export async function POST(req: Request) {
         const genAI = new GoogleGenerativeAI(apiKey);
 
         // List of models to try in order of preference (Free tier friendly first)
+        // BASED ON DEBUG RESULTS: Only 2.5 models are available for this key.
         const modelsToTry = [
-            "gemini-1.5-flash",
-            "gemini-1.5-flash-001",
-            "gemini-1.5-flash-latest",
-            "gemini-1.5-pro",
-            "gemini-1.5-pro-latest",
-            "gemini-pro"
+            "gemini-2.5-flash-lite", // Priority: Efficiency & Quota
+            "gemini-2.5-flash",      // Backup: Powerful
+            "gemini-2.0-flash-exp"   // Fallback: Experimental
         ];
 
         const userName = userProfile?.full_name || userProfile?.username || "Ziyaretçi";
