@@ -48,6 +48,13 @@ export default async function ProfilePage() {
         answersCount: answers?.length || 0,
     };
 
+    // Fix for BadgeDisplay type mismatch
+    // Supabase might return 'badges' as an array, but BadgeDisplay expects a single object
+    const formattedBadges = userBadges?.map((ub: any) => ({
+        awarded_at: ub.awarded_at,
+        badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
+    }))?.filter(ub => ub.badges) || []; // Filter out any empty badges
+
     return (
         <div className="min-h-screen bg-[#F0F0F0] dark:bg-black py-8">
             <div className="container max-w-6xl mx-auto px-4 md:px-6">
@@ -94,15 +101,15 @@ export default async function ProfilePage() {
                         <ProfileStatsCard stats={stats} />
 
                         {/* Badges Card */}
-                        {userBadges && userBadges.length > 0 && (
+                        {formattedBadges && formattedBadges.length > 0 && (
                             <div className="bg-[#FAF9F6] dark:bg-[#09090b] border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-6">
                                 <h2 className="text-xl font-black uppercase tracking-tight mb-4 flex items-center gap-2">
                                     Rozetler
                                     <div className="text-xs font-bold bg-amber-400 text-black px-2 py-0.5 rounded-full border border-black">
-                                        {userBadges.length}
+                                        {formattedBadges.length}
                                     </div>
                                 </h2>
-                                <BadgeDisplay userBadges={userBadges} size="md" maxDisplay={10} />
+                                <BadgeDisplay userBadges={formattedBadges} size="md" maxDisplay={10} />
                             </div>
                         )}
                     </div>
