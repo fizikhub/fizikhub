@@ -45,6 +45,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             <NeoArticleCard
                                 article={item.data}
                                 initialLikes={item.data.likes_count || 0}
+                                initialComments={item.data.comments_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
                             />
