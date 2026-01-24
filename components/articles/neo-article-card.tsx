@@ -156,19 +156,61 @@ export function NeoArticleCard({
                     <p className="hidden sm:block font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-neutral-400 line-clamp-2">
                         {article.summary}
                     </p>
-                    <button
-                        onClick={handleBookmark}
-                        className={cn(
-                            "w-8 h-8 flex items-center justify-center rounded-md border-2 border-black dark:border-white transition-all",
-                            isBookmarked ? "bg-black text-white dark:bg-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-800"
-                        )}
-                    >
-                        <Bookmark className={cn("w-4 h-4", isBookmarked && "fill-current")} />
-                    </button>
                 </div>
-            </div>
-        </div>
-            </article >
-        </Link >
+
+                {/* 3. FOOTER SECTION - Solid Color Block for Actions */}
+                <div className="mt-auto border-t-[3px] border-black dark:border-white bg-neutral-50 dark:bg-zinc-900 p-3 flex items-center justify-between gap-3">
+
+                    {/* Author Avatar - Popping out */}
+                    <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 rounded-full border-[3px] border-black dark:border-white overflow-hidden bg-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
+                            <Image
+                                src={article.profiles?.avatar_url || "/images/default-avatar.png"}
+                                alt="Author"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Action Buttons - Physical Buttons */}
+                    <div className="flex items-center gap-2">
+                        {/* Like */}
+                        <button
+                            onClick={handleLike}
+                            className={cn(
+                                "h-10 px-3 flex items-center justify-center rounded-lg border-[3px] border-black dark:border-white transition-all active:translate-y-1 active:shadow-none",
+                                isLiked
+                                    ? "bg-[#FFC800] shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]"
+                                    : "bg-white dark:bg-black shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] hover:bg-neutral-100 dark:hover:bg-zinc-800"
+                            )}
+                        >
+                            <Heart className={cn("w-5 h-5", isLiked ? "fill-black stroke-black" : "text-black dark:text-white")} />
+                            {likeCount > 0 && <span className="ml-2 font-black text-xs text-black dark:text-white">{likeCount}</span>}
+                        </button>
+
+                        {/* Bookmark */}
+                        <button
+                            onClick={handleBookmark}
+                            className={cn(
+                                "w-10 h-10 flex items-center justify-center rounded-lg border-[3px] border-black dark:border-white bg-white dark:bg-black transition-all active:translate-y-1 active:shadow-none",
+                                "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] hover:bg-neutral-100 dark:hover:bg-zinc-800",
+                                isBookmarked && "bg-black dark:bg-white"
+                            )}
+                        >
+                            <Bookmark className={cn("w-5 h-5", isBookmarked ? "text-white dark:text-black fill-current" : "text-black dark:text-white")} />
+                        </button>
+
+                        {/* Share - Hidden on small mobile */}
+                        <button
+                            onClick={handleShare}
+                            className="hidden sm:flex w-10 h-10 items-center justify-center rounded-lg border-[3px] border-black dark:border-white bg-[#23A9FA] shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] transition-all active:translate-y-1 active:shadow-none"
+                        >
+                            <Share2 className="w-5 h-5 text-black" />
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </Link>
     );
 }
