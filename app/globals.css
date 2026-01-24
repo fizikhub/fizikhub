@@ -3,28 +3,20 @@
 @theme {
   --color-background: rgb(var(--background));
   --color-foreground: rgb(var(--foreground));
-
   --color-card: rgb(var(--card));
   --color-card-foreground: rgb(var(--card-foreground));
-
   --color-popover: rgb(var(--popover));
   --color-popover-foreground: rgb(var(--popover-foreground));
-
   --color-primary: rgb(var(--primary));
   --color-primary-foreground: rgb(var(--primary-foreground));
-
   --color-secondary: rgb(var(--secondary));
   --color-secondary-foreground: rgb(var(--secondary-foreground));
-
   --color-muted: rgb(var(--muted));
   --color-muted-foreground: rgb(var(--muted-foreground));
-
   --color-accent: rgb(var(--accent));
   --color-accent-foreground: rgb(var(--accent-foreground));
-
   --color-destructive: rgb(var(--destructive));
   --color-destructive-foreground: rgb(var(--destructive-foreground));
-
   --color-border: rgb(var(--border));
   --color-input: rgb(var(--input));
   --color-ring: rgb(var(--ring));
@@ -40,90 +32,57 @@
   --radius-md: calc(0.5rem - 2px);
   --radius-sm: calc(0.5rem - 4px);
 
-  /* AUTHENTIC NEO-BRUTALIST SHADOWS - HARD & BLACK */
   --shadow-neo: 4px 4px 0px 0px #000;
   --shadow-neo-hover: 2px 2px 0px 0px #000;
   --shadow-neo-lg: 8px 8px 0px 0px #000;
   --shadow-neo-active: 0px 0px 0px 0px #000;
 
-  /* Font aliases */
   --font-base: var(--font-inter);
   --font-heading: var(--font-outfit);
 }
 
-@custom-variant dark (&:is(.dark *));
-
 @layer base {
   :root {
-    /* DEFAULT (LIGHT) */
     --background: 255 255 255;
-    /* Pure White */
     --foreground: 0 0 0;
-    /* Pure Black */
-
     --card: 255 255 255;
     --card-foreground: 0 0 0;
-
     --popover: 255 255 255;
     --popover-foreground: 0 0 0;
-
-    /* AMBER YELLOW as requested - #FFC800 */
     --primary: 255 200 0;
     --primary-foreground: 0 0 0;
-
     --secondary: 230 230 230;
-    /* Light Gray for neutral buttons */
     --secondary-foreground: 0 0 0;
-
     --muted: 240 240 240;
     --muted-foreground: 50 50 50;
-
     --accent: 255 200 0;
-    /* Same as Primary */
     --accent-foreground: 0 0 0;
-
     --destructive: 255 80 80;
     --destructive-foreground: 0 0 0;
-
     --border: 0 0 0;
-    /* BLACK BORDERS ALWAYS in Light Mode */
     --input: 0 0 0;
     --ring: 0 0 0;
-
     --radius: 0.5rem;
   }
 
   .dark {
-    /* DARK MODE - Keeping High Contrast */
-    /* DARK MODE - Soft Grey Background as requested */
     --background: 24 24 27;
-    /* #18181b (Zinc 900) */
     --foreground: 255 255 255;
-
     --card: 20 20 20;
     --card-foreground: 255 255 255;
-
     --popover: 20 20 20;
     --popover-foreground: 255 255 255;
-
     --primary: 255 200 0;
-    /* Stay Amber */
     --primary-foreground: 0 0 0;
-
     --secondary: 40 40 40;
     --secondary-foreground: 255 255 255;
-
     --muted: 30 30 30;
     --muted-foreground: 200 200 200;
-
     --accent: 255 200 0;
     --accent-foreground: 0 0 0;
-
     --destructive: 255 80 80;
     --destructive-foreground: 0 0 0;
-
     --border: 255 255 255;
-    /* White Borders in Dark Mode */
     --input: 255 255 255;
     --ring: 255 255 255;
   }
@@ -137,28 +96,9 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
-
-  ::selection {
-    @apply bg-primary text-black;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-heading), ui-sans-serif, system-ui;
-    @apply font-black tracking-tight;
-  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* UTILITY CLASSES FOR COMPONENTS */
   .neo-box {
     @apply border-2 border-black bg-white text-black shadow-neo dark:border-white dark:bg-black dark:text-white dark:shadow-[4px_4px_0px_0px_#fff];
   }
