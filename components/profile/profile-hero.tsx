@@ -109,11 +109,15 @@ export function ProfileHero({
                     {isOwnProfile ? (
                         <>
                             <div className="flex-1">
-                                <ProfileSettingsButton
-                                    currentUsername={profile?.username}
-                                    currentFullName={profile?.full_name}
-                                    currentBio={profile?.bio}
-                                // ... other props passed implicitly or handled inside
+                                currentUsername={profile?.username || ""}
+                                currentFullName={profile?.full_name || ""}
+                                currentBio={profile?.bio || ""}
+                                currentAvatarUrl={profile?.avatar_url || ""}
+                                currentCoverUrl={profile?.cover_url || ""}
+                                currentWebsite={profile?.website || ""}
+                                currentSocialLinks={profile?.social_links}
+                                userEmail={user?.email}
+                                usernameChangeCount={profile?.username_changes_count || 0}
                                 />
                             </div>
                             {(profile?.role === 'writer' || profile?.role === 'admin') && (
