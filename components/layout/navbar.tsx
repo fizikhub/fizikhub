@@ -11,6 +11,7 @@ import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -26,48 +27,45 @@ export function Navbar() {
     }, []);
 
     const navLinks = [
-        { href: "/", label: "Anasayfa", icon: Home },
-        { href: "/makale", label: "Makale", icon: Feather },
-        { href: "/blog", label: "Blog", icon: Compass },
-        { href: "/forum", label: "Forum", icon: MessageCircle },
-        { href: "/sozluk", label: "Lügat", icon: Library },
-        { href: "/siralamalar", label: "Sıralama", icon: Trophy },
+        { href: "/", label: "Anasayfa", icon: Home, desc: "Keşfet" },
+        { href: "/makale", label: "Makale", icon: Feather, desc: "Oku" },
+        { href: "/blog", label: "Blog", icon: Compass, desc: "Düşün" },
+        { href: "/forum", label: "Forum", icon: MessageCircle, desc: "Tartış" },
+        { href: "/sozluk", label: "Lügat", icon: Library, desc: "Öğren" },
+        { href: "/siralamalar", label: "Sıralama", icon: Trophy, desc: "Yarış" },
     ];
 
     return (
         <>
             {/* 
-                V9 NEO-BRUTALIST NAVBAR 
-                - Height: 64px (h-16)
-                - Border: 3px Black
-                - Background: Soft Grey / Dark Soft Grey
-                - Interaction: Tactile Buttons
+                V11 NEO-SWISS NAVBAR
+                - Concept: "Editorial / Magazine"
+                - Style: Clean, Bold, Minimalist
+                - Mobile: Full Screen Overlay
             */}
             <header
                 className={cn(
                     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                    "h-16 border-b-[3px] border-black dark:border-black", // Fixed height & border
-                    "bg-[#FAF9F6] dark:bg-[#18181b]", // V9 Colors
-                    scrolled ? "shadow-md" : ""
+                    "border-b-2 border-black dark:border-white", // Solid 2px Border
+                    "bg-[#FAF9F6]/90 backdrop-blur-md dark:bg-[#18181b]/90", // Frosted Glass
+                    scrolled ? "h-16" : "h-20"
                 )}
             >
-                <div className="container max-w-7xl mx-auto px-4 md:px-6 h-full">
+                <div className="container max-w-7xl mx-auto px-6 h-full">
                     <div className="flex items-center justify-between h-full">
 
-                        {/* 1. BRAND - Tighter, Cleaner */}
-                        <Link href="/" className="flex items-center gap-2 group relative z-50">
-                            {/* Logo Icon in Box - Kept for Brand Identity, verified visibility with bg-black */}
-                            <div className="relative w-10 h-10 flex items-center justify-center bg-[#FFC800] border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none transition-all">
-                                <SiteLogo className="w-5 h-5 bg-black" />
+                        {/* 1. BRAND - Pure & Bold */}
+                        <Link href="/" className="flex items-center gap-3 group relative z-50">
+                            <div className="w-10 h-10 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black rounded-lg group-hover:rotate-6 transition-transform">
+                                <SiteLogo className="w-6 h-6 fill-current bg-white dark:bg-black" />
                             </div>
-                            {/* Brand Text - Pure Text, No "Hub Box" to avoid PH resemblance */}
-                            <span className="text-xl md:text-2xl font-black tracking-tight text-black dark:text-white uppercase">
+                            <span className="text-2xl font-black tracking-tighter text-black dark:text-white uppercase leading-none">
                                 FİZİK<span className="text-[#FFC800]">HUB</span>
                             </span>
                         </Link>
 
-                        {/* 2. DESKTOP NAV - Sticker Style */}
-                        <nav className="hidden lg:flex items-center gap-1">
+                        {/* 2. DESKTOP NAV - Minimal Links */}
+                        <nav className="hidden lg:flex items-center gap-8">
                             {navLinks.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
@@ -75,99 +73,100 @@ export function Navbar() {
                                         key={link.href}
                                         href={link.href}
                                         className={cn(
-                                            "px-3 py-1.5 text-sm font-bold border-[2px] rounded-md transition-all duration-200 uppercase tracking-wide",
+                                            "text-sm font-black uppercase tracking-wide transition-colors relative group py-2",
                                             isActive
-                                                ? "bg-[#FFC800] border-black text-black shadow-[2px_2px_0px_0px_#000] -translate-y-0.5"
-                                                : "bg-transparent border-transparent text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-[#27272a] hover:border-black hover:text-black dark:hover:text-white hover:shadow-[2px_2px_0px_0px_#000]"
+                                                ? "text-black dark:text-white"
+                                                : "text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
                                         )}
                                     >
                                         {link.label}
+                                        <span className={cn(
+                                            "absolute bottom-0 left-0 w-full h-[2px] bg-[#FFC800] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300",
+                                            isActive && "scale-x-100"
+                                        )} />
                                     </Link>
                                 )
                             })}
                         </nav>
 
-                        {/* 3. ACTIONS - Unified Button Sizes */}
-                        <div className="flex items-center gap-2 md:gap-3">
+                        {/* 3. ACTIONS */}
+                        <div className="flex items-center gap-4">
 
                             {/* Search */}
                             <button
                                 onClick={() => setIsSearchOpen(true)}
-                                className="w-10 h-10 flex items-center justify-center bg-white dark:bg-[#27272a] border-[2px] border-black text-black dark:text-white hover:bg-[#FFC800] dark:hover:bg-[#FFC800] hover:text-black dark:hover:text-black transition-colors rounded-md"
+                                className="w-10 h-10 flex items-center justify-center rounded-full bg-transparent hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
                             >
-                                <Search className="w-5 h-5" />
+                                <Search className="w-5 h-5 text-black dark:text-white" />
                             </button>
 
-                            {/* Notifications */}
-                            <div className="hidden sm:flex w-10 h-10 items-center justify-center bg-white dark:bg-[#27272a] border-[2px] border-black text-black dark:text-white hover:bg-[#FFC800] dark:hover:bg-[#FFC800] hover:text-black dark:hover:text-black transition-colors rounded-md">
-                                <NotificationBell />
-                            </div>
-
-                            {/* Desktop Auth */}
+                            {/* Auth */}
                             <div className="hidden lg:block">
                                 <AuthButton />
                             </div>
 
-                            {/* Mobile Menu Trigger */}
+                            {/* MOBILE MENU TRIGGER - Simple & Bold */}
                             <div className="lg:hidden">
                                 <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                                     <SheetTrigger asChild>
-                                        <button className="w-10 h-10 flex items-center justify-center bg-[#FFC800] border-[2px] border-black text-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-md">
-                                            <Menu className="w-6 h-6 stroke-[3px]" />
+                                        <button className="flex items-center gap-2 group">
+                                            <span className="font-bold text-sm uppercase hidden sm:block">Menü</span>
+                                            <div className="w-10 h-10 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black rounded-lg group-active:scale-95 transition-transform">
+                                                <Menu className="w-6 h-6" />
+                                            </div>
                                         </button>
                                     </SheetTrigger>
-                                    <SheetContent side="right" className="w-[85vw] sm:w-[400px] bg-[#FAF9F6] border-l-[3px] border-black p-0 text-black dark:bg-[#18181b] dark:text-white dark:border-black overflow-hidden z-[100]">
-                                        <div className="h-full flex flex-col">
-                                            {/* Mobile Header */}
-                                            <div className="h-16 px-6 border-b-[3px] border-black bg-[#FFC800] flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 flex items-center justify-center bg-black border-[2px] border-black shadow-[2px_2px_0px_0px_white]">
-                                                        <SiteLogo className="w-5 h-5 bg-[#FFC800]" />
-                                                    </div>
-                                                    <span className="text-xl font-black text-black uppercase tracking-tight">MENÜ</span>
-                                                </div>
-                                                <SheetClose className="w-8 h-8 flex items-center justify-center bg-black text-white hover:bg-white hover:text-black border-2 border-black transition-colors">
-                                                    <X className="w-5 h-5" />
+                                    <SheetContent side="right" className="w-full sm:w-[400px] bg-[#FAF9F6] dark:bg-[#0D0D0D] border-l-2 border-black dark:border-white p-0 overflow-hidden z-[100]">
+
+                                        <div className="flex flex-col h-full">
+                                            {/* DRAWER HEADER */}
+                                            <div className="p-6 flex items-center justify-between border-b-2 border-black dark:border-white">
+                                                <span className="text-xl font-black uppercase text-black dark:text-white">Navigasyon</span>
+                                                <SheetClose className="w-10 h-10 flex items-center justify-center bg-black dark:bg-white text-white dark:text-black rounded-lg hover:rotate-90 transition-transform">
+                                                    <X className="w-6 h-6" />
                                                 </SheetClose>
                                             </div>
 
-                                            {/* Mobile Links */}
-                                            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                                                {navLinks.map((link) => {
-                                                    const isActive = pathname === link.href;
-                                                    return (
-                                                        <Link
-                                                            key={link.href}
-                                                            href={link.href}
-                                                            onClick={() => setIsMobileMenuOpen(false)}
-                                                            className={cn(
-                                                                "flex items-center gap-4 p-3 border-[2px] rounded-lg transition-all font-bold text-lg uppercase",
-                                                                isActive
-                                                                    ? "bg-[#FFC800] border-black text-black shadow-[3px_3px_0px_0px_#000]"
-                                                                    : "bg-white dark:bg-[#27272a] border-black dark:border-black text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                                                            )}
-                                                        >
-                                                            <link.icon className="w-5 h-5" />
+                                            {/* DRAWER LINKS - Huge Typography */}
+                                            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 ">
+                                                {navLinks.map((link, idx) => (
+                                                    <Link
+                                                        key={link.href}
+                                                        href={link.href}
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                        className="group flex flex-col border-b-2 border-gray-200 dark:border-zinc-800 pb-4 last:border-0"
+                                                    >
+                                                        <span className="text-[10px] font-bold text-[#FFC800] uppercase tracking-widest mb-1 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                                                            {link.desc}
+                                                        </span>
+                                                        <span className={cn(
+                                                            "text-4xl font-black uppercase tracking-tighter text-black dark:text-white transition-all group-hover:text-black dark:group-hover:text-white group-hover:pl-4",
+                                                            pathname === link.href ? "text-[#FFC800] dark:text-[#FFC800]" : ""
+                                                        )}>
                                                             {link.label}
-                                                        </Link>
-                                                    )
-                                                })}
+                                                        </span>
+                                                    </Link>
+                                                ))}
 
-                                                <div className="my-4 border-t-[3px] border-black dark:border-zinc-700" />
-
-                                                {/* Mobile Auth */}
-                                                <div className="flex flex-col gap-3">
+                                                <div className="mt-auto">
                                                     <AuthButton />
                                                 </div>
                                             </div>
 
-                                            {/* Mobile Footer Decor */}
-                                            <div className="p-4 bg-black text-white text-center border-t-[3px] border-black">
-                                                <p className="font-bold text-[10px] uppercase tracking-[0.2em] opacity-80">
-                                                    FizikHub &copy; 2026
-                                                </p>
+                                            {/* DRAWER FOOTER */}
+                                            <div className="p-6 bg-black dark:bg-white text-white dark:text-black">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-bold uppercase tracking-widest text-xs">FizikHub v2.0</span>
+                                                    <div className="flex gap-2 text-xs opacity-60">
+                                                        <span>Gizlilik</span>
+                                                        <span>•</span>
+                                                        <span>Şartlar</span>
+                                                    </div>
+                                                </div>
                                             </div>
+
                                         </div>
+
                                     </SheetContent>
                                 </Sheet>
                             </div>
@@ -177,8 +176,8 @@ export function Navbar() {
                 </div>
             </header>
 
-            {/* Spacer for Fixed Header */}
-            <div className="h-16" />
+            {/* Spacer to prevent content jump */}
+            <div className={scrolled ? "h-16" : "h-20"} />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
