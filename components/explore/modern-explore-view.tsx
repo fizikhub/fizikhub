@@ -11,7 +11,7 @@ import { SearchInput } from "@/components/blog/search-input";
 import { TermCard } from "@/components/term/term-card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useEffect } from "react";
 
 interface Article {
     id: number;
@@ -46,25 +46,38 @@ interface ModernExploreViewProps {
 // Simple internal component for background animations
 // Simple internal component for background animations
 function SpaceBackground() {
+    const [stars, setStars] = useState<Array<{ width: string, height: string, top: string, left: string, duration: number, delay: number }>>([]);
+
+    useEffect(() => {
+        const newStars = Array.from({ length: 120 }, () => ({
+            width: `${Math.random() * 2 + 0.5}px`,
+            height: `${Math.random() * 2 + 0.5}px`,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            duration: Math.random() * 4 + 3,
+            delay: Math.random() * 5
+        }));
+        setStars(newStars);
+    }, []);
+
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-            {/* Stars - Increased Count for finer texture */}
-            {[...Array(120)].map((_, i) => (
+            {stars.map((star, i) => (
                 <motion.div
                     key={i}
                     className="absolute bg-foreground/30 rounded-full"
                     style={{
-                        width: Math.random() * 2 + 0.5 + "px",
-                        height: Math.random() * 2 + 0.5 + "px",
-                        top: Math.random() * 100 + "%",
-                        left: Math.random() * 100 + "%",
+                        width: star.width,
+                        height: star.height,
+                        top: star.top,
+                        left: star.left,
                     }}
                     animate={{ opacity: [0.1, 0.8, 0.1], scale: [1, 1.5, 1] }}
                     transition={{
-                        duration: Math.random() * 4 + 3,
+                        duration: star.duration,
                         repeat: Infinity,
                         ease: "easeInOut",
-                        delay: Math.random() * 5
+                        delay: star.delay
                     }}
                 />
             ))}
@@ -154,68 +167,22 @@ export function ModernExploreView({
 
     return (
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
-            <SpaceBackground />
+            {/* Removed SpaceBackground & UFO for flat Neo-Brutalist look */}
 
-            {/* Further Reduced Top Padding - Moved Up */}
-            {/* Relaxed Container Width */}
-            <div className="w-full max-w-5xl mx-auto px-2 sm:px-4 py-2 sm:py-6">
-
-                {/* Share Card - Reduced bottom margin */}
-                <div className="relative mb-8">
-                    <ShareInputCard user={user} />
-
-                    {/* Simple Helper Text - No Flashy Containers */}
-                    <p className="text-center text-xs text-muted-foreground/70 italic mt-3 mb-0">
+            <div className="w-full max-w-5xl mx-auto px-4 py-8">
+                {/* Intro Section - Hard Box */}
+                <div className="mb-10 text-center neo-box bg-[#FFC800] p-6 lg:p-8 transform rotate-1">
+                    <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2 text-black">
+                        HOŞGELDİN, KAŞİF!
+                    </h1>
+                    <p className="font-bold text-black/80 max-w-md mx-auto">
                         Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
                     </p>
+                </div>
 
-                    {/* Improved UFO - Floating on the right side of the share area */}
-                    <motion.div
-                        className="absolute right-0 top-0 sm:-right-8 sm:-top-12 z-50 pointer-events-none" // Moved mobile top from -top-6 to top-0 to keep it visible
-                        initial={{ x: 100, opacity: 0 }}
-                        animate={{
-                            x: 0,
-                            opacity: 1,
-                            y: [0, -10, 0]
-                        }}
-                        transition={{
-                            y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                            default: { duration: 1 }
-                        }}
-                    >
-                        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-16 h-10 sm:w-32 sm:h-20 drop-shadow-xl opacity-90 sm:opacity-100">
-                            {/* Glow */}
-                            <ellipse cx="60" cy="40" rx="35" ry="10" fill="#22c55e" fillOpacity="0.2" className="animate-pulse" />
-
-                            {/* Beam (Optional/Subtle) */}
-                            <path d="M60 50 L40 80 H80 L60 50" fill="url(#beam-gradient)" opacity="0.3" />
-                            <defs>
-                                <linearGradient id="beam-gradient" x1="60" y1="50" x2="60" y2="80" gradientUnits="userSpaceOnUse">
-                                    <stop stopColor="#22c55e" stopOpacity="0.5" />
-                                    <stop offset="1" stopColor="#22c55e" stopOpacity="0" />
-                                </linearGradient>
-                            </defs>
-
-                            {/* Dome */}
-                            <path d="M45 32 C45 20, 75 20, 75 32" fill="#e0f2fe" fillOpacity="0.8" stroke="#38bdf8" strokeWidth="1" />
-
-                            {/* Alien Head (Tiny detail) */}
-                            <circle cx="60" cy="28" r="4" fill="#22c55e" />
-                            <circle cx="58.5" cy="27" r="1" fill="black" fillOpacity="0.5" />
-                            <circle cx="61.5" cy="27" r="1" fill="black" fillOpacity="0.5" />
-
-                            {/* Body Ring */}
-                            <ellipse cx="60" cy="40" rx="45" ry="12" fill="#1e293b" stroke="#475569" strokeWidth="2" />
-                            <ellipse cx="60" cy="37" rx="45" ry="12" fill="#334155" />
-
-                            {/* Lights */}
-                            <circle cx="25" cy="40" r="2" fill="#ef4444" className="animate-pulse" />
-                            <circle cx="42" cy="46" r="2" fill="#eab308" className="animate-pulse delay-75" />
-                            <circle cx="60" cy="48" r="2" fill="#22c55e" className="animate-pulse delay-150" />
-                            <circle cx="78" cy="46" r="2" fill="#3b82f6" className="animate-pulse delay-300" />
-                            <circle cx="95" cy="40" r="2" fill="#a855f7" className="animate-pulse delay-500" />
-                        </svg>
-                    </motion.div>
+                {/* Share Card - Updated Styles */}
+                <div className="relative mb-8">
+                    <ShareInputCard user={user} />
                 </div>
 
                 {/* Search Input */}
@@ -223,53 +190,27 @@ export function ModernExploreView({
                     <SearchInput />
                 </div>
 
-                {/* Categories - Redesigned Tab System */}
-                <div className="flex justify-center mb-10">
-                    <div className="inline-flex p-1.5 bg-muted/20 border border-primary/5 rounded-2xl backdrop-blur-sm relative items-center gap-1">
-
-                        {/* Categories Loop */}
+                {/* Categories - Neo-Brutalist Tabs */}
+                <div className="flex justify-center mb-10 overflow-x-auto pb-4 no-scrollbar">
+                    <div className="inline-flex gap-4 p-2">
                         {categories.map((cat) => {
-                            const isActive = currentCategory === cat || (!currentCategory && cat === "Tümü"); // Assuming 'Tümü' might be added, or handling undefined
-                            const isActuallyActive = currentCategory === cat;
+                            const isActuallyActive = currentCategory === cat || (!currentCategory && cat === "Tümü");
 
                             return (
                                 <div
                                     key={cat}
                                     onClick={() => handleCategoryChange(cat)}
                                     className={cn(
-                                        "relative px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 cursor-pointer flex items-center gap-2 select-none group",
+                                        "px-6 py-3 text-sm font-black uppercase tracking-wider cursor-pointer border-2 border-black transition-all whitespace-nowrap",
                                         isActuallyActive
-                                            ? "text-primary-foreground shadow-lg shadow-primary/20 scale-100"
-                                            : "text-muted-foreground hover:text-primary hover:bg-primary/5",
-                                        isActuallyActive && cat === 'Tümü' && "bg-primary border-primary/50",
-                                        isActuallyActive && cat === 'Blog' && "bg-gradient-to-tr from-amber-500 to-orange-500 border-orange-400/50",
-                                        isActuallyActive && cat === 'Kitap İncelemesi' && "bg-gradient-to-tr from-red-500 to-rose-500 border-red-400/50",
-                                        isActuallyActive && cat === 'Deney' && "bg-gradient-to-tr from-green-500 to-emerald-500 border-green-400/50",
-                                        isActuallyActive && cat === 'Terim' && "bg-gradient-to-tr from-blue-500 to-cyan-500 border-blue-400/50",
-                                        isPending && !isActuallyActive && "opacity-50 grayscale"
+                                            ? "bg-[#FFC800] text-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 transform rotate-1"
+                                            : "bg-white text-black hover:bg-zinc-100 hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1"
                                     )}
                                 >
-                                    {/* Loading Indicator for Pending State */}
+                                    {cat}
                                     {isPending && isActuallyActive && (
-                                        <div className="absolute right-2 top-2">
-                                            <span className="flex h-2 w-2">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-                                            </span>
-                                        </div>
+                                        <span className="ml-2 inline-block w-2 h-2 bg-black rounded-full animate-bounce" />
                                     )}
-
-                                    {/* Simple dot indicator for active state */}
-                                    {isActuallyActive && (
-                                        <motion.span
-                                            layoutId="active-dot"
-                                            className="absolute inset-0 rounded-xl bg-white/10 mix-blend-overlay"
-                                            initial={false}
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-
-                                    <span className="relative z-10 tracking-tight">{cat}</span>
                                 </div>
                             )
                         })}

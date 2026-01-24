@@ -61,6 +61,9 @@ function ClassicHero() {
                     />
                 ))}
             </div>
+            {/* Neo-Brutalist Container Override */}
+            <div className="absolute inset-0 border-[3px] border-black dark:border-white rounded-xl pointer-events-none z-20" />
+
             <div className="relative z-10 px-5 py-4 sm:px-6 sm:py-5">
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex-1 min-w-0">

@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Compass, Feather } from "lucide-react";
+import { Home, BookOpen, MessageCircle, User, Feather } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
@@ -12,16 +14,14 @@ export function BottomNav() {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-
             // Show if at top or scrolling up
             if (currentScrollY < 50 || currentScrollY < lastScrollY) {
                 setIsVisible(true);
             }
-            // Hide if scrolling down and not at top (threshold 50 for smoother initial scroll)
+            // Hide if scrolling down and not at top
             else if (currentScrollY > lastScrollY && currentScrollY > 50) {
                 setIsVisible(false);
             }
-
             setLastScrollY(currentScrollY);
         };
 
@@ -30,82 +30,67 @@ export function BottomNav() {
     }, [lastScrollY]);
 
     const links = [
-        {
-            href: "/",
-            label: "ANA SAYFA",
-            icon: Home
-        },
-        {
-            href: "/makale",
-            label: "MAKALE",
-            icon: BookOpen
-        },
-        {
-            href: "/blog",
-            label: "BLOG",
-            icon: Feather
-        },
-        {
-            href: "/forum",
-            label: "FORUM",
-            icon: MessageCircle
-        },
-        {
-            href: "/profil",
-            label: "PROFİL",
-            icon: User
-        }
+        { href: "/", label: "ANA SAYFA", icon: Home },
+        { href: "/makale", label: "MAKALE", icon: BookOpen },
+        { href: "/blog", label: "BLOG", icon: Feather },
+        { href: "/forum", label: "FORUM", icon: MessageCircle },
+        { href: "/profil", label: "PROFİL", icon: User }
     ];
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 w-full z-[100] md:hidden transition-all duration-300 ease-in-out",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-[100%] opacity-0"
+            "fixed bottom-6 left-4 right-4 z-[100] md:hidden transition-all duration-300 ease-in-out pointer-events-none",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-[150%] opacity-0"
         )}>
-            <div className="bg-background/60 backdrop-blur-2xl border-t border-border/50 shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.3)] dark:shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.5)]">
-                {/* Premium top glow line */}
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-                <div className="flex h-12 items-center justify-around px-2">
-                    {links.map((link) => {
-                        const Icon = link.icon;
-                        const isActive = pathname === link.href || (link.href !== "/" && link.href !== "#search" && pathname.startsWith(link.href));
+            {/* 
+                NEO-BRUTAL FLOATING ISLAND
+                - Bg: Fizik Yellow (#F2C32E)
+                - Border: 3px Black
+                - Shadow: Hard 4px Black
+            */}
+            <nav className="
+                pointer-events-auto
+                bg-[#F2C32E] 
+                border-[3px] border-black 
+                rounded-xl 
+                shadow-[4px_4px_0px_0px_#000]
+                h-16
+                flex items-center justify-between
+                px-2
+            ">
+                {links.map((link) => {
+                    const Icon = link.icon;
+                    const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
 
-                        return (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                prefetch={true}
+                    return (
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            prefetch={true}
+                            className={cn(
+                                "flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200",
+                                // Active: Black Box with White Icon
+                                isActive
+                                    ? "bg-black text-white translate-x-[1px] translate-y-[1px] shadow-none"
+                                    : "text-black hover:bg-black/10 active:scale-95"
+                            )}
+                        >
+                            <Icon
                                 className={cn(
-                                    "relative flex flex-col items-center justify-center gap-0.5 px-1 min-w-[50px] h-full group transition-all nav-item-glow",
-                                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                                    "w-6 h-6 mb-0.5",
+                                    isActive ? "stroke-[3px]" : "stroke-[2.5px]"
                                 )}
-                            >
-                                {isActive && (
-                                    <div className="absolute top-0 w-full h-0.5 bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
-                                )}
-
-                                <div className="relative z-10 transition-transform duration-200 group-active:scale-90">
-                                    <Icon
-                                        className={cn(
-                                            "h-5 w-5",
-                                            isActive ? "stroke-[2.5px]" : "stroke-[1.5px]"
-                                        )}
-                                    />
-                                </div>
-
-                                <span className={cn(
-                                    "text-[8px] font-black uppercase tracking-wider transition-colors duration-200",
-                                    isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-70"
-                                )}>
-                                    {link.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
-                </div>
-                {/* Safe area padding for newer iPhones */}
-                <div className="h-safe-area-bottom"></div>
-            </div>
+                            />
+                            {/* <span className={cn(
+                                "text-[8px] font-black uppercase tracking-wider",
+                                isActive ? "text-white" : "text-black"
+                            )}>
+                                {link.label}
+                            </span> */}
+                        </Link>
+                    );
+                })}
+            </nav>
         </div>
     );
 }

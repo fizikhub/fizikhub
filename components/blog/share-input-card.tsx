@@ -141,28 +141,29 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             transition={{ duration: 0.5, ease: "backOut" }}
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
-                "group relative flex flex-col overflow-visible rounded-[2rem] transition-all duration-300",
-                "bg-card/80 backdrop-blur-md border border-border/50", // More subtle border
-                "shadow-lg dark:shadow-none hover:shadow-xl transition-shadow", // Premium shadow
-                "w-full mb-6 z-[20]" // Full width
+                "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
+                "bg-white text-black", // Force White BG, Black Text (Pop Style)
+                "border-[3px] border-black", // Hard Black Border
+                "shadow-[6px_6px_0px_0px_#000]", // Hard Black Shadow
+                "w-full mb-6 z-[20]"
             )}
         >
-            <div className="relative h-7 border-b border-border/40 bg-muted/20 flex items-center justify-center select-none rounded-t-[2rem]">
-                <div className="absolute left-4 sm:left-5 flex gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[#FF5F56] shadow-sm" />
-                    <div className="w-2 h-2 rounded-full bg-[#FFBD2E] shadow-sm" />
-                    <div className="w-2 h-2 rounded-full bg-[#27C93F] shadow-sm" />
+            <div className="relative h-9 border-b-[3px] border-black bg-white flex items-center justify-center select-none rounded-t-xl">
+                <div className="absolute left-4 sm:left-5 flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black" />
+                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black" />
+                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black" />
                 </div>
-                <div className="text-[8px] sm:text-[9px] font-bold text-white uppercase tracking-[0.2em]">Paylaş</div>
+                <div className="text-[10px] sm:text-xs font-black text-black uppercase tracking-[0.2em]">Paylaşım Merkezi</div>
             </div>
 
-            <div className="p-2 sm:p-3">
-                <div className="flex gap-3 items-center">
+            <div className="p-4 sm:p-5">
+                <div className="flex gap-4 items-center">
                     {/* Avatar Area */}
                     <div className="shrink-0">
-                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-background shadow-md rounded-2xl ring-2 ring-border/20">
+                        <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
                             <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-primary/10 text-primary font-black rounded-2xl">
+                            <AvatarFallback className="bg-neo-yellow text-black font-black text-lg rounded-xl">
                                 {displayName?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
@@ -178,13 +179,13 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="w-full bg-muted/30 rounded-2xl p-4 border border-primary/10 space-y-3"
+                                    className="w-full bg-white rounded-xl p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] space-y-3"
                                 >
                                     <input
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         placeholder="Sorunun başlığı ne olsun?"
-                                        className="w-full bg-transparent border-b border-border/50 px-2 py-2 text-sm font-bold focus:outline-none focus:border-primary/50 transition-colors placeholder:text-muted-foreground/50"
+                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-black/40 text-black"
                                         autoFocus
                                     />
 
@@ -192,7 +193,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
                                         placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-transparent border-b border-border/50 px-2 py-2 text-sm min-h-[80px] focus:outline-none focus:border-primary/50 transition-colors resize-none placeholder:text-muted-foreground/50"
+                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-black/40 text-black"
                                     />
 
                                     <div className="flex flex-wrap gap-2 pt-1">
@@ -201,10 +202,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 key={cat}
                                                 onClick={() => setCategory(cat)}
                                                 className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-bold border transition-all",
+                                                    "px-3 py-1 rounded-lg text-[10px] font-black border-[2px] border-black transition-all",
                                                     category === cat
-                                                        ? "bg-primary text-primary-foreground border-primary"
-                                                        : "bg-background border-border text-muted-foreground hover:border-primary/50"
+                                                        ? "bg-neo-yellow text-black shadow-[2px_2px_0px_0px_#000]"
+                                                        : "bg-white text-black hover:bg-black hover:text-white"
                                                 )}
                                             >
                                                 {cat}
@@ -216,14 +217,14 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         <button
                                             onClick={() => submitQuestion('draft')}
                                             disabled={isSubmitting}
-                                            className="px-4 py-1.5 rounded-full text-xs font-bold text-muted-foreground hover:bg-muted transition-colors"
+                                            className="px-4 py-2 rounded-lg text-xs font-bold text-black border-[2px] border-black hover:bg-black hover:text-white transition-colors"
                                         >
-                                            Taslak Kaydet
+                                            Taslak
                                         </button>
                                         <button
                                             onClick={() => submitQuestion('published')}
                                             disabled={isSubmitting}
-                                            className="px-6 py-1.5 rounded-full text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+                                            className="px-6 py-2 rounded-lg text-xs font-black bg-neo-green text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50"
                                         >
                                             {isSubmitting ? "..." : "Yayınla"}
                                         </button>
@@ -234,36 +235,36 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     ref={triggerRef}
                                     onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                                     className={cn(
-                                        "w-full h-12 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                        "bg-muted/20 hover:bg-muted/40", // Lighter background
-                                        "border border-transparent hover:border-primary/20",
-                                        "rounded-2xl",
-                                        isOpen && "ring-2 ring-primary/20 bg-primary/5",
+                                        "w-full h-14 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
+                                        "bg-white text-black",
+                                        "border-[3px] border-black",
+                                        "rounded-xl",
+                                        "shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
+                                        isOpen && "bg-neo-yellow"
                                     )}
                                 >
-                                    <span className="text-muted-foreground font-medium text-sm sm:text-base group-hover/input:text-primary transition-colors truncate mr-2 flex-1 block">
+                                    <span className="text-black font-bold text-sm sm:text-base truncate mr-2 flex-1 block">
                                         {isOpen ? (
                                             "Kapat"
                                         ) : (
                                             <span className="flex items-center gap-1 overflow-hidden">
                                                 <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
-                                                <span className="truncate shrink min-w-0 hidden sm:inline">Ne paylaşmak istersin,</span>
-                                                <span className="text-foreground font-bold shrink-0">{firstName}?</span>
-                                                <span className="text-primary animate-pulse font-light ml-0.5">|</span>
+                                                <span className="truncate shrink min-w-0 hidden sm:inline">Ne düşünüyorsun,</span>
+                                                <span className="font-black shrink-0 uppercase">{firstName}?</span>
                                             </span>
                                         )}
                                     </span>
                                     <div className={cn(
-                                        "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
-                                        isOpen ? "bg-primary text-primary-foreground rotate-45" : "bg-background shadow-sm text-foreground/50 group-hover/input:text-primary"
+                                        "w-8 h-8 rounded-lg border-[2px] border-black flex items-center justify-center transition-all duration-300 shrink-0",
+                                        isOpen ? "bg-black text-white rotate-45" : "bg-neo-yellow text-black"
                                     )}>
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-5 h-5 stroke-[3px]" />
                                     </div>
                                 </button>
                             )}
                         </AnimatePresence>
 
-                        {/* Dropdown Menu */}
+                        {/* Dropdown Menu - Neo Style */}
                         <AnimatePresence>
                             {isOpen && (
                                 <motion.div
@@ -272,66 +273,36 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-card/95 backdrop-blur-xl border border-border/50 shadow-2xl z-[100] overflow-hidden rounded-2xl ring-1 ring-black/5"
+                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000] z-[100] overflow-hidden rounded-xl"
                                 >
-                                    <div className="p-1.5 space-y-1">
-                                        <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-muted-foreground/50 ml-1">Seçenekler</div>
+                                    <div className="p-2 space-y-2">
+                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-black/50 ml-1">Seçenekler</div>
 
-                                        {/* Kitap İncelemesi - ROSE COLOR */}
-                                        <Link
-                                            href="/kitap-inceleme/yeni"
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-rose-500/10 transition-all group rounded-xl"
-                                        >
-                                            <div className="relative w-9 h-9 bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <LibraryBig className="w-4.5 h-4.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-rose-600 transition-colors truncate">Kitap İncelemesi</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Puanla ve İncele</p>
-                                            </div>
-                                        </Link>
-
-                                        {/* Soru Sor - Direct Action */}
-                                        <button
-                                            onClick={handleQuickQuestion}
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-500/10 transition-all group rounded-xl text-left"
-                                        >
-                                            <div className="relative w-9 h-9 bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <BrainCircuit className="w-4.5 h-4.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-blue-600 transition-colors truncate">Hızlı Soru Sor</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Buradan Hızlıca Sor</p>
-                                            </div>
-                                        </button>
-
-                                        {/* Terim Ekle - CYAN COLOR */}
-                                        <Link
-                                            href="/makale/yeni?type=term"
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-cyan-500/10 transition-all group rounded-xl"
-                                        >
-                                            <div className="relative w-9 h-9 bg-cyan-100 dark:bg-cyan-500/20 flex items-center justify-center text-cyan-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <WholeWord className="w-4.5 h-4.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-cyan-600 transition-colors truncate">Terim Ekle</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Sözlüğe Katkı Yap</p>
-                                            </div>
-                                        </Link>
-
-                                        {/* Deney Paylaş */}
-                                        <Link
-                                            href="/makale/yeni?type=experiment"
-                                            className="w-full flex items-center gap-3 p-3 hover:bg-emerald-500/10 transition-all group rounded-xl"
-                                        >
-                                            <div className="relative w-9 h-9 bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 rounded-lg group-hover:scale-105 transition-transform">
-                                                <Atom className="w-4.5 h-4.5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-sm text-foreground group-hover:text-emerald-600 transition-colors truncate">Deney Paylaş</h4>
-                                                <p className="text-[10px] text-muted-foreground leading-tight truncate">Bilimsel Çalışman</p>
-                                            </div>
-                                        </Link>
+                                        {/* Items with thick borders on hover */}
+                                        {[
+                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-neo-pink" },
+                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-neo-blue" },
+                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-neo-purple" },
+                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-neo-green" }
+                                        ].map((item, idx) => {
+                                            const Comp = item.href ? Link : 'button';
+                                            const props = item.href ? { href: item.href } : { onClick: item.action };
+                                            return (
+                                                <Comp
+                                                    key={idx}
+                                                    {...props as any}
+                                                    className="w-full flex items-center gap-3 p-3 hover:bg-black hover:text-white transition-all group rounded-lg border-[2px] border-transparent hover:border-black"
+                                                >
+                                                    <div className={`relative w-10 h-10 ${item.color} border-[2px] border-black flex items-center justify-center text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all`}>
+                                                        <item.icon className="w-5 h-5 stroke-[2.5px]" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 text-left">
+                                                        <h4 className="font-black text-sm transition-colors truncate">{item.label}</h4>
+                                                        <p className="text-[10px] opacity-70 leading-tight truncate font-bold">{item.sub}</p>
+                                                    </div>
+                                                </Comp>
+                                            )
+                                        })}
                                     </div>
                                 </motion.div>
                             )}
@@ -340,35 +311,27 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 </div>
             </div>
 
-            {/* Bottom Actions Bar - CENTERED BUTTONS */}
-            <div className="px-5 py-3 border-t border-border/30 bg-muted/20 flex items-center justify-center gap-3 text-[10px] font-bold text-muted-foreground overflow-x-auto rounded-b-[2rem] scrollbar-hide relative group/bar">
+            {/* Bottom Actions Bar - Neo Style */}
+            <div className="px-5 py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
 
-                {/* Centered Group */}
-                <div className="flex items-center gap-3">
+                {/* Centered Group - Buttons with Hard Shadows */}
+                <div className="flex items-center gap-4">
 
-                    <Link href="/makale/yeni" className="flex items-center justify-center gap-2 w-[4.5rem] h-8 rounded-full bg-secondary/40 dark:bg-muted/40 text-muted-foreground hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-border/50 hover:border-primary/30 transition-all cursor-pointer group shrink-0">
-                        <PenTool className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Blog</span>
+                    <Link href="/makale/yeni" className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <PenTool className="w-4 h-4 stroke-[2.5px]" />
+                        <span className="text-[11px] font-black uppercase tracking-wider">Blog</span>
                     </Link>
 
-                    <div className="w-1 h-1 rounded-full bg-border shrink-0 opacity-50" />
-
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 w-[4.5rem] h-8 rounded-full bg-secondary/40 dark:bg-muted/40 text-muted-foreground hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-border/50 hover:border-primary/30 transition-all cursor-pointer group shrink-0">
-                        <Plus className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Ekle</span>
+                    <button onClick={handleQuickQuestion} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <HelpCircle className="w-4 h-4 stroke-[2.5px]" />
+                        <span className="text-[11px] font-black uppercase tracking-wider">Soru</span>
                     </button>
 
-                    <div className="w-1 h-1 rounded-full bg-border shrink-0 opacity-50" />
-
-                    <button onClick={handleQuickQuestion} className="flex items-center justify-center gap-2 w-[4.5rem] h-8 rounded-full bg-secondary/40 dark:bg-muted/40 text-muted-foreground hover:bg-secondary/60 hover:text-primary hover:shadow-sm border border-border/50 hover:border-primary/30 transition-all cursor-pointer group shrink-0">
-                        <HelpCircle className="w-3.5 h-3.5" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Soru</span>
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-neo-yellow text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <Plus className="w-4 h-4 stroke-[3px]" />
+                        <span className="text-[11px] font-black uppercase tracking-wider">Ekle</span>
                     </button>
-                </div>
 
-                {/* Version Absolute Right */}
-                <div className="absolute right-5 text-[9px] text-muted-foreground/30 font-mono hidden sm:block">
-                    v2.2
                 </div>
             </div>
         </motion.div>

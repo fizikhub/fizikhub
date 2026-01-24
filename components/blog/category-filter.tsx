@@ -19,10 +19,10 @@ export function CategoryFilter({
                 <button
                     onClick={() => onSelectCategory("Tümü")}
                     className={cn(
-                        "px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all duration-200 whitespace-nowrap border-2",
+                        "px-4 py-2 text-sm font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border-[2px] rounded-lg shadow-[2px_2px_0px_0px_#000]",
                         selectedCategory === "Tümü"
-                            ? "bg-amber-500 text-black border-amber-500"
-                            : "bg-transparent text-white/70 border-white/20 hover:border-amber-500/50 hover:text-white"
+                            ? "bg-neo-yellow text-black border-black"
+                            : "bg-white text-black border-black hover:bg-black hover:text-white"
                     )}
                 >
                     Tümü
@@ -32,10 +32,10 @@ export function CategoryFilter({
                         key={category}
                         onClick={() => onSelectCategory(category)}
                         className={cn(
-                            "px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-all duration-200 whitespace-nowrap border-2",
+                            "px-4 py-2 text-sm font-black uppercase tracking-wider transition-all duration-200 whitespace-nowrap border-[2px] rounded-lg shadow-[2px_2px_0px_0px_#000]",
                             selectedCategory === category
-                                ? "bg-amber-500 text-black border-amber-500"
-                                : "bg-transparent text-white/70 border-white/20 hover:border-amber-500/50 hover:text-white"
+                                ? "bg-neo-yellow text-black border-black"
+                                : "bg-white text-black border-black hover:bg-black hover:text-white"
                         )}
                     >
                         {category}

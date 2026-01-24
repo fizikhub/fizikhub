@@ -15,15 +15,14 @@ export function ForumTeaserCard() {
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                     >
-                        {/* Improved Card */}
                         <div
                             className={cn(
-                                "relative overflow-hidden rounded-[2rem] transition-all duration-300",
-                                "bg-card border-3 border-foreground/10",
+                                "relative overflow-hidden rounded-xl transition-all duration-300",
+                                "bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-white",
                                 "p-6 md:p-8",
+                                "shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#fff]",
                                 "group-hover:-translate-y-1 group-hover:translate-x-1",
-                                "group-hover:border-primary/50 dark:group-hover:border-primary/50",
-                                "group-hover:shadow-[-4px_4px_0px_0px_rgba(var(--primary),0.2)]"
+                                "group-hover:shadow-[2px_2px_0px_0px_#000] dark:group-hover:shadow-[2px_2px_0px_0px_#fff]"
                             )}
                         >
                             {/* Animated Corner Accent */}

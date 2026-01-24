@@ -43,7 +43,7 @@ export function CategoryStories() {
     return (
         <div className="w-full py-4 px-4 sm:px-0">
             {/* Section Header */}
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-6 mt-2">
                 <div className="h-1 w-8 bg-primary" />
                 <h2 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Kategoriler</h2>
                 <div className="flex-1 h-px bg-border/50" />
@@ -65,17 +65,19 @@ export function CategoryStories() {
                             whileTap={{ scale: 0.95 }}
                             className="group relative"
                         >
-                            {/* Main Card */}
+                            {/* Main Card - Neo Brutalist */}
                             <div
                                 className={cn(
-                                    "relative w-24 sm:w-28 backdrop-blur-sm rounded-xl border border-border/50 hover:border-border transition-all duration-200 overflow-hidden shadow-sm hover:shadow-md",
-                                    isBlood ? "bg-[rgb(40,0,0)] border-[rgb(100,20,20)]" : "bg-card/80",
+                                    "relative w-24 sm:w-28 bg-card rounded-xl border-[3px] border-black transition-all duration-200 overflow-hidden",
+                                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] dark:border-white",
+                                    "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
+                                    isBlood ? "bg-[rgb(40,0,0)] border-[rgb(100,20,20)]" : "",
                                     isCybernetic && "cyber-card border border-cyan-500/20 bg-black/40 shadow-none !rounded-none"
                                 )}
                             >
-                                {/* Top Accent Line */}
+                                {/* Top Accent Line - Thicker */}
                                 <div
-                                    className="h-1 w-full"
+                                    className="h-2 w-full border-b-[3px] border-black dark:border-white"
                                     style={{ background: cat.accent }}
                                 />
 
@@ -86,34 +88,26 @@ export function CategoryStories() {
                                         transition={{ duration: 0.6, ease: "easeInOut" }}
                                         className="relative"
                                     >
-                                        {/* Icon Ring */}
+                                        {/* Icon Ring - Stark */}
                                         <div
-                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-secondary/50 border border-border"
+                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-neo-yellow border-[3px] border-black text-black z-10 relative"
                                         >
-                                            <cat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/70" />
+                                            <cat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                                         </div>
+                                        {/* Offset shadow for ring */}
+                                        <div className="absolute inset-0 bg-black rounded-full translate-x-1 translate-y-1 -z-0" />
                                     </motion.div>
 
                                     {/* Label */}
                                     <span
                                         className={cn(
-                                            "text-[10px] sm:text-xs font-black uppercase tracking-wider text-center leading-tight text-muted-foreground group-hover:text-foreground transition-colors",
+                                            "text-[10px] sm:text-xs font-black uppercase tracking-wider text-center leading-tight text-foreground transition-colors",
                                             isCybernetic && "cyber-text text-[9px]"
                                         )}
                                     >
                                         {cat.name}
                                     </span>
                                 </div>
-
-                                {/* Bottom Corner Cut */}
-                                <div
-                                    className="absolute bottom-0 right-0 w-4 h-4"
-                                    style={{
-                                        background: isCybernetic
-                                            ? `linear-gradient(135deg, transparent 50%, rgba(0, 240, 255, 0.4) 50%)`
-                                            : `linear-gradient(135deg, transparent 50%, ${cat.accent} 50%)`
-                                    }}
-                                />
                             </div>
                         </motion.div>
                     </Link>
