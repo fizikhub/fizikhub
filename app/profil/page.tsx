@@ -55,9 +55,9 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        /* V15 PAGE BACKGROUND: High Contrast Yellow/Black Pattern */
-        <div className="min-h-screen bg-[#FFC800] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px] py-8 pb-32">
-            <div className="container max-w-6xl mx-auto px-4 md:px-6">
+        /* V16 BACKGROUND: Clean Zinc-50 for professionalism */
+        <div className="min-h-screen bg-zinc-50 py-6 pb-20">
+            <div className="container max-w-5xl mx-auto px-4 md:px-6">
 
                 {/* 1. HEADER CARD (Full Width) */}
                 <ProfileHero
@@ -67,22 +67,21 @@ export default async function ProfilePage() {
                     stats={stats}
                 />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-                    {/* LEFT COLUMN (2/3) - About & Portfolio */}
-                    <div className="lg:col-span-2 space-y-8">
-                        {/* About Me Card */}
+                    {/* LEFT COLUMN (2/3) */}
+                    <div className="lg:col-span-2 space-y-5">
                         <ProfileAboutCard
                             bio={profile?.bio}
                             fullName={profile?.full_name}
                             role={profile?.role}
                         />
 
-                        {/* Portfolio / Content Feed */}
-                        <div className="bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8">
-                            <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-6 flex items-center gap-3">
-                                <div className="w-3 h-8 bg-[#FFC800] rounded-sm" />
+                        {/* Portfolio Card */}
+                        <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] p-6">
+                            <h2 className="text-lg font-black uppercase tracking-tight mb-5 flex items-center gap-2 text-black">
                                 Portfolyo
+                                <div className="h-0.5 flex-1 bg-black/10 rounded-full" />
                             </h2>
                             <ProfileContentFeed
                                 articles={articles || []}
@@ -95,22 +94,20 @@ export default async function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* RIGHT COLUMN (1/3) - Stats & Badges */}
-                    <div className="space-y-8">
-                        {/* Stats Card */}
+                    {/* RIGHT COLUMN (1/3) */}
+                    <div className="space-y-5">
                         <ProfileStatsCard stats={stats} />
 
-                        {/* Badges Card */}
+                        {/* Badges */}
                         {formattedBadges && formattedBadges.length > 0 && (
-                            <div className="bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8">
-                                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-6 flex items-center gap-3">
-                                    <div className="w-3 h-8 bg-blue-500 rounded-sm" />
+                            <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] p-6">
+                                <h2 className="text-lg font-black uppercase tracking-tight mb-4 flex items-center gap-2 text-black">
                                     Rozetler
-                                    <div className="text-xs font-bold bg-[#FFC800] text-black px-2 py-0.5 rounded border border-black">
+                                    <div className="text-xs font-bold bg-amber-300 text-black px-2 py-0.5 rounded border border-black">
                                         {formattedBadges.length}
                                     </div>
                                 </h2>
-                                <BadgeDisplay userBadges={formattedBadges} size="md" maxDisplay={10} />
+                                <BadgeDisplay userBadges={formattedBadges} size="md" maxDisplay={8} />
                             </div>
                         )}
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, Users, FileText, MessageCircle, HelpCircle, Activity } from "lucide-react";
+import { Trophy, Users, FileText, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ProfileStatsCardProps {
@@ -19,80 +19,50 @@ export function ProfileStatsCard({ stats }: ProfileStatsCardProps) {
         {
             label: "Hub Puanı",
             value: stats.reputation,
-            desc: "İtibar Seviyesi",
             icon: Trophy,
-            color: "text-[#FFC800]",
-            border: "border-[#FFC800]",
-            bg: "bg-[#FFC800]/20"
+            bg: "bg-amber-100",
+            text: "text-amber-700"
         },
         {
             label: "Takipçi",
             value: stats.followersCount,
-            desc: "Takip Edenler",
             icon: Users,
-            color: "text-blue-400",
-            border: "border-blue-400",
-            bg: "bg-blue-400/20"
+            bg: "bg-blue-100",
+            text: "text-blue-700"
         },
         {
             label: "Makaleler",
             value: stats.articlesCount,
-            desc: "Yayınlanan",
             icon: FileText,
-            color: "text-green-400",
-            border: "border-green-400",
-            bg: "bg-green-400/20"
+            bg: "bg-green-100",
+            text: "text-green-700"
         },
         {
             label: "Sorular",
             value: stats.questionsCount,
-            desc: "Meraklar",
             icon: HelpCircle,
-            color: "text-purple-400",
-            border: "border-purple-400",
-            bg: "bg-purple-400/20"
+            bg: "bg-purple-100",
+            text: "text-purple-700"
         }
     ];
 
     return (
-        <div className="w-full bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8 mb-8">
-            <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-full bg-white border-2 border-white flex items-center justify-center text-black">
-                    <Activity className="w-5 h-5 stroke-[3px]" />
-                </div>
-                <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
-                    İSTATİSTİK
-                </h2>
-            </div>
+        <div className="w-full bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] p-6 mb-6">
+            <h2 className="text-lg font-black uppercase tracking-tight mb-5 text-black">
+                Özet
+            </h2>
 
-            <div className="relative space-y-6 pl-2">
-                {/* Connector Line */}
-                <div className="absolute left-[27px] top-4 bottom-4 w-[2px] bg-white/20" />
-
+            <div className="grid grid-cols-2 gap-4">
                 {items.map((item, index) => (
-                    <div key={index} className="relative flex items-center gap-5 group">
-                        {/* Icon Circle */}
-                        <div className={cn(
-                            "w-14 h-14 rounded-full border-[3px] flex items-center justify-center shrink-0 z-10 bg-black transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(0,0,0,0.5)]",
-                            item.border,
-                            item.color
-                        )}>
-                            <item.icon className="w-6 h-6 stroke-[2.5px]" />
+                    <div key={index} className="flex flex-col items-start p-3 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-white hover:border-black transition-colors group">
+                        <div className={cn("w-8 h-8 rounded-md flex items-center justify-center mb-2", item.bg, item.text)}>
+                            <item.icon className="w-4 h-4" />
                         </div>
-
-                        {/* Content */}
-                        <div className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 pr-4 group-hover:bg-white/10 transition-colors">
-                            <div className="flex justify-between items-baseline">
-                                <div className="text-3xl font-black tabular-nums tracking-tighter text-white">
-                                    {item.value}
-                                </div>
-                                <div className={cn("text-xs font-black uppercase tracking-wider opacity-80", item.color)}>
-                                    {item.label}
-                                </div>
-                            </div>
-                            <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">
-                                {item.desc}
-                            </div>
+                        <div className="text-2xl font-black tabular-nums text-black leading-none mb-1">
+                            {item.value}
+                        </div>
+                        <div className="text-xs font-bold text-zinc-500 uppercase">
+                            {item.label}
                         </div>
                     </div>
                 ))}
