@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Star, BookOpen, User } from "lucide-react";
+import { Star, BookOpen } from "lucide-react";
 
 interface BookReviewCardProps {
     article: {
@@ -43,37 +43,28 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     const bookTitle = metadata.bookTitle || article.title;
     const bookAuthor = metadata.bookAuthor || "Bilinmeyen Yazar";
     const rating = metadata.rating || 0;
-
-    // Clean excerpt if it contains the formatted string we added
     const displayExcerpt = article.excerpt || "";
-
     const authorName = article.author?.full_name || article.author?.username || "Anonim";
     const authorInitials = authorName.substring(0, 2).toUpperCase();
 
     return (
-        <Link href={`/makale/${article.slug}`} className="block group font-sans">
+        <Link href={`/makale/${article.slug}`} className="block group font-sans h-full">
             <article className={cn(
-                "relative flex flex-row overflow-hidden rounded-2xl transition-all duration-300",
-                "bg-card border-2 border-slate-200 dark:border-slate-800",
-                "hover:border-rose-500/50 dark:hover:border-rose-500/50",
-                "shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1"
+                "relative flex flex-col sm:flex-row h-full overflow-hidden transition-all duration-300",
+                // NEO-BRUTALIST V9 CONTAINER
+                "bg-white dark:bg-[#27272a]",
+                "border-[3px] border-black rounded-[8px]",
+                "shadow-[4px_4px_0px_0px_#000]",
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
             )}>
-                {/* Visual Bookmark Element */}
-                <div className="absolute top-0 right-8 w-8 h-12 bg-rose-600 shadow-md z-20 flex flex-col items-center justify-end pb-1 clip-path-ribbon transition-transform duration-300 group-hover:-translate-y-1">
-                </div>
-                <style jsx>{`
-                    .clip-path-ribbon {
-                        clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-                    }
-                `}</style>
+                {/* NOISE TEXTURE */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                />
 
-                {/* Book Cover Section - Enhanced */}
-                <div className="relative w-32 sm:w-40 md:w-56 h-auto shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center p-3 md:p-6 overflow-hidden border-r border-border/50">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-
-                    {/* Spine/Cover with 3D effect */}
-                    <div className="relative shadow-2xl rounded-[2px] overflow-hidden w-20 sm:w-24 md:w-36 aspect-[2/3] transition-all duration-500 will-change-transform group-hover:scale-105 group-hover:-rotate-2 group-hover:shadow-rose-900/20 [perspective:1000px]">
+                {/* BOOK COVER SECTION - Neo Style */}
+                <div className="relative w-full sm:w-40 shrink-0 bg-[#FFC800] dark:bg-[#FFC800] border-b-[3px] sm:border-b-0 sm:border-r-[3px] border-black flex items-center justify-center p-6 z-10">
+                    <div className="relative w-24 sm:w-28 aspect-[2/3] shadow-[4px_4px_0px_0px_#000] border-2 border-black bg-white group-hover:-rotate-2 transition-transform duration-300">
                         {article.cover_url ? (
                             <Image
                                 src={article.cover_url}
@@ -82,82 +73,67 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                                 className="object-cover"
                             />
                         ) : (
-                            <div className="w-full h-full bg-rose-900 flex flex-col items-center justify-center p-4 text-center text-rose-100 border-l-2 border-white/10">
-                                <BookOpen className="w-8 h-8 mb-3 opacity-70" />
-                                <span className="text-xs font-serif leading-tight line-clamp-3">{bookTitle}</span>
+                            <div className="w-full h-full flex items-center justify-center bg-neutral-100">
+                                <BookOpen className="w-8 h-8 text-black opacity-20" />
                             </div>
                         )}
-
-                        {/* Lighting effect/Sheen */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/10 pointer-events-none" />
-                        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-white/20 z-10" /> {/* Spine highlight */}
                     </div>
                 </div>
 
-                {/* Content Section */}
-                <div className="flex-1 p-4 md:p-7 flex flex-col justify-between relative bg-gradient-to-br from-card to-rose-50/50 dark:to-rose-950/10">
+                {/* CONTENT SECTION */}
+                <div className="flex-1 p-5 flex flex-col justify-between z-10 relative">
                     <div>
-                        {/* Header */}
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400">
-                                        Kitap İncelemesi
-                                    </div>
-                                    <div className="hidden sm:flex items-center gap-1 text-amber-500">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star
-                                                key={i}
-                                                className={cn(
-                                                    "w-3 h-3",
-                                                    i < rating ? "fill-current" : "text-slate-300 dark:text-slate-600 fill-transparent"
-                                                )}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <h3 className="text-lg sm:text-2xl md:text-3xl font-bold font-heading leading-tight text-foreground group-hover:text-rose-600 transition-colors pt-1 md:pt-2 line-clamp-2 md:line-clamp-none">
-                                    {bookTitle}
-                                </h3>
-
-                                <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 pt-1">
-                                    <span className="w-4 h-[1px] bg-rose-400 inline-block" />
-                                    <span className="italic text-foreground/80">{bookAuthor}</span>
-                                </p>
+                        {/* Header Badge */}
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="bg-black text-white text-[10px] font-black uppercase px-2 py-0.5 rounded-[4px] tracking-wider">
+                                İNCELEME
+                            </span>
+                            <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                        key={i}
+                                        className={cn(
+                                            "w-3.5 h-3.5 stroke-[2px] stroke-black",
+                                            i < rating ? "fill-[#FFC800]" : "fill-transparent text-neutral-300"
+                                        )}
+                                    />
+                                ))}
                             </div>
                         </div>
 
+                        {/* Title & Author */}
+                        <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-2 group-hover:underline decoration-4 decoration-[#FFC800] underline-offset-4">
+                            {bookTitle}
+                        </h3>
+                        <p className="text-xs font-mono font-bold text-neutral-500 mb-4 uppercase tracking-wide">
+                            YAZAR: <span className="text-black dark:text-zinc-300">{bookAuthor}</span>
+                        </p>
+
                         {/* Excerpt */}
-                        <p className="text-muted-foreground line-clamp-2 md:line-clamp-3 leading-relaxed text-xs sm:text-sm md:text-base mb-2 md:mb-6 font-medium">
+                        <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-zinc-300 line-clamp-3 leading-relaxed">
                             {displayExcerpt}
                         </p>
                     </div>
 
-                    {/* Footer - Elegant - Mobile Optimized (Stacked) */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-3 md:pt-5 border-t border-dashed border-border/60 gap-3 sm:gap-0">
-                        <div className="flex items-center gap-2 md:gap-3">
-                            <Avatar className="w-8 h-8 border-2 border-background ring-1 ring-border">
-                                <AvatarImage src={article.author?.avatar_url || ""} />
-                                <AvatarFallback className="text-[10px] bg-rose-50 text-rose-600 font-bold">
-                                    {authorInitials}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-bold text-foreground group-hover:text-rose-600 transition-colors">
-                                    {authorName}
-                                </span>
-                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
-                                    Eleştirmen
-                                </span>
+                    {/* Footer - Dashed Separator */}
+                    <div className="mt-4 pt-3 border-t-[2px] border-dashed border-black/10 dark:border-white/10 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white">
+                                <Image
+                                    src={article.author?.avatar_url || "/images/default-avatar.png"}
+                                    alt={authorName}
+                                    width={24}
+                                    height={24}
+                                    className="object-cover"
+                                />
                             </div>
+                            <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400">
+                                {authorName}
+                            </span>
                         </div>
-
-                        <div className="flex flex-col items-start sm:items-end">
-                            <time className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                                {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
-                            </time>
-                        </div>
+                        <time className="text-[10px] font-bold text-neutral-400 uppercase">
+                            {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                        </time>
                     </div>
                 </div>
             </article>
