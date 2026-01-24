@@ -130,12 +130,12 @@ export function ProfileHero({
                                 </Link>
                             )}
                         </>
-                    ) : (
+                    ) : targetUserId ? (
                         <>
                             <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
                             <StartChatButton otherUserId={targetUserId} />
                         </>
-                    )}
+                    ) : null}
                 </div>
 
             </div>
