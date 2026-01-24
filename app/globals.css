@@ -1,117 +1,19 @@
 @import "tailwindcss";
 
+/* TEMPORARILY COMMENTED OUT FOR DEBUGGING */
 @theme {
-  --color-background: rgb(var(--background));
-  --color-foreground: rgb(var(--foreground));
-  --color-card: rgb(var(--card));
-  --color-card-foreground: rgb(var(--card-foreground));
-  --color-popover: rgb(var(--popover));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-  --color-primary: rgb(var(--primary));
-  --color-primary-foreground: rgb(var(--primary-foreground));
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
-  --color-destructive: rgb(var(--destructive));
-  --color-destructive-foreground: rgb(var(--destructive-foreground));
-  --color-border: rgb(var(--border));
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-
-  --color-neo-yellow: #FFC800;
-  --color-neo-pink: #FF90E8;
-  --color-neo-blue: #23A9FA;
-  --color-neo-green: #00F050;
-  --color-neo-purple: #9D74FF;
-  --color-neo-orange: #FF5D23;
-
-  --radius-lg: 0.5rem;
-  --radius-md: calc(0.5rem - 2px);
-  --radius-sm: calc(0.5rem - 4px);
-
-  --shadow-neo: 4px 4px 0px 0px #000;
-  --shadow-neo-hover: 2px 2px 0px 0px #000;
-  --shadow-neo-lg: 8px 8px 0px 0px #000;
-  --shadow-neo-active: 0px 0px 0px 0px #000;
-
-  --font-base: var(--font-inter);
-  --font-heading: var(--font-outfit);
+  --font-base: "Inter", sans-serif;
+  --font-heading: "Outfit", sans-serif;
 }
 
-@layer base {
-  :root {
-    --background: 255 255 255;
-    --foreground: 0 0 0;
-    --card: 255 255 255;
-    --card-foreground: 0 0 0;
-    --popover: 255 255 255;
-    --popover-foreground: 0 0 0;
-    --primary: 255 200 0;
-    --primary-foreground: 0 0 0;
-    --secondary: 230 230 230;
-    --secondary-foreground: 0 0 0;
-    --muted: 240 240 240;
-    --muted-foreground: 50 50 50;
-    --accent: 255 200 0;
-    --accent-foreground: 0 0 0;
-    --destructive: 255 80 80;
-    --destructive-foreground: 0 0 0;
-    --border: 0 0 0;
-    --input: 0 0 0;
-    --ring: 0 0 0;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 24 24 27;
-    --foreground: 255 255 255;
-    --card: 20 20 20;
-    --card-foreground: 255 255 255;
-    --popover: 20 20 20;
-    --popover-foreground: 255 255 255;
-    --primary: 255 200 0;
-    --primary-foreground: 0 0 0;
-    --secondary: 40 40 40;
-    --secondary-foreground: 255 255 255;
-    --muted: 30 30 30;
-    --muted-foreground: 200 200 200;
-    --accent: 255 200 0;
-    --accent-foreground: 0 0 0;
-    --destructive: 255 80 80;
-    --destructive-foreground: 0 0 0;
-    --border: 255 255 255;
-    --input: 255 255 255;
-    --ring: 255 255 255;
-  }
+/* 
+@theme {
+   ... (restored later)
 }
+*/
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground antialiased;
-  }
-}
-
-@layer utilities {
-  .neo-box {
-    @apply border-2 border-black bg-white text-black shadow-neo dark:border-white dark:bg-black dark:text-white dark:shadow-[4px_4px_0px_0px_#fff];
-  }
-
-  .neo-box-yellow {
-    @apply border-2 border-black bg-primary text-black shadow-neo hover:shadow-neo-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-active transition-all dark:border-white dark:shadow-[4px_4px_0px_0px_#fff];
-  }
-
-  .neo-button {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-bold ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-black bg-white hover:bg-zinc-100 text-black shadow-neo hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-neo-hover active:translate-x-[4px] active:translate-y-[4px] active:shadow-none dark:border-white dark:bg-black dark:text-white dark:hover:bg-zinc-900;
-  }
-
-  .neo-input {
-    @apply flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-black dark:text-white dark:placeholder:text-zinc-400 dark:focus-visible:ring-white;
+    @apply bg-white text-black;
   }
 }
