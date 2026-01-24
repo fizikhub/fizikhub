@@ -1,19 +1,108 @@
-@import "tailwindcss";
-
-/* TEMPORARILY COMMENTED OUT FOR DEBUGGING */
-@theme {
-  --font-base: "Inter", sans-serif;
-  --font-heading: "Outfit", sans-serif;
-}
-
-/* 
-@theme {
-   ... (restored later)
-}
-*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    --primary: 47 100% 50%;
+    /* #FFC800 Amber */
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 47 100% 50%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 0%;
+    /* Black Borders */
+    --input: 0 0% 0%;
+    --ring: 0 0% 0%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    /* #09090b Zinc-950/Black */
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 47 100% 50%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 47 100% 50%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 100%;
+    /* White Borders */
+    --input: 0 0% 100%;
+    --ring: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
   body {
-    @apply bg-white text-black;
+    @apply bg-background text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-black tracking-tight;
+  }
+}
+
+@layer utilities {
+  .neo-box {
+    @apply border-2 border-black bg-white text-black shadow-neo dark:border-white dark:bg-black dark:text-white dark:shadow-neo-dark;
+  }
+
+  .neo-box-yellow {
+    @apply border-2 border-black bg-primary text-black shadow-neo hover:shadow-neo-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-active transition-all dark:border-white dark:shadow-neo-dark;
+  }
+
+  .neo-button {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border-2 border-black bg-white hover:bg-zinc-100 text-black shadow-neo hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-neo-hover active:translate-x-[4px] active:translate-y-[4px] active:shadow-none dark:border-white dark:bg-black dark:text-white dark:hover:bg-zinc-900;
+  }
+
+  .neo-input {
+    @apply flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-black dark:text-white dark:placeholder:text-zinc-400;
   }
 }

@@ -72,7 +72,6 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.1.1",
-    "@tailwindcss/postcss": "^4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -80,8 +79,9 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "^16.0.7",
-    "tailwindcss": "^4",
-    "postcss": "^8",
+    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
     "typescript": "^5"
   }
 }
