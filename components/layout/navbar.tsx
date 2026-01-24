@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { SiteLogo } from "@/components/icons/site-logo";
-import { Menu, Search, Home, Feather, MessageCircle, Library, Trophy, Compass, X, Sparkles, ChevronRight } from "lucide-react";
+import { Menu, Search, Home, Feather, MessageCircle, Library, Trophy, Compass, X, ChevronRight, LogOut, User } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -25,15 +25,6 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // Lock body scroll when menu is open
-    useEffect(() => {
-        if (isMobileMenuOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
-    }, [isMobileMenuOpen]);
-
     const navLinks = [
         { href: "/", label: "Anasayfa", icon: Home },
         { href: "/makale", label: "Makale", icon: Feather },
@@ -44,187 +35,160 @@ export function Navbar() {
     ];
 
     return (
-        <LayoutGroup>
+        <>
             {/* 
-                V12 LIQUID MORPH NAVBAR
-                - Concept: "Dynamic Island" / Organic Fluidity
-                - Tech: Framer Motion Layout Transitions
-                - Style: Glassmorphism, Borderless, Soft Shadows
+                V13 REFINED NEO-BRUTALIST NAVBAR
+                - Style: Sharp, Clean, Functional.
+                - Borders: 2px Black (Elegant Brutalism).
+                - Branding: Corrected (No "Hub" Box).
+                - Mobile: Clean Sheet Menu.
             */}
-
-            {/* DESKTOP: Floating Glass Strip */}
-            <motion.header
+            <header
                 className={cn(
-                    "hidden lg:block fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out",
-                    scrolled ? "pt-4" : "pt-6"
+                    "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+                    "h-16 border-b-2 border-black dark:border-white", // Fixed 64px height
+                    "bg-[#FAF9F6] dark:bg-[#09090b]", // Solid background
+                    scrolled ? "shadow-[0_4px_0_0_rgba(0,0,0,1)]" : "" // Hard shadow on scroll
                 )}
             >
-                <motion.div
-                    layout
-                    className={cn(
-                        "mx-auto flex items-center justify-between px-2 bg-white/70 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)]",
-                        scrolled
-                            ? "max-w-5xl h-14 rounded-full"
-                            : "max-w-7xl h-16 rounded-2xl"
-                    )}
-                >
-                    {/* 1. BRAND */}
-                    <Link href="/" className="flex items-center gap-3 pl-4 group">
-                        <div className="relative">
-                            <div className="absolute inset-0 bg-[#FFC800] blur-[10px] opacity-0 group-hover:opacity-40 transition-opacity rounded-full" />
-                            <SiteLogo className="relative w-8 h-8 mask-image-none" />
-                        </div>
-                        <span className="text-lg font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
-                            fizik<span className="text-[#FFC800]">hub</span>
-                        </span>
-                    </Link>
+                <div className="container max-w-7xl mx-auto px-4 md:px-6 h-full">
+                    <div className="flex items-center justify-between h-full">
 
-                    {/* 2. NAV */}
-                    <nav className="flex items-center gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-full">
-                        {navLinks.map((link) => {
-                            const isActive = pathname === link.href;
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={cn(
-                                        "relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors",
-                                        isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
-                                    )}
-                                >
-                                    {link.label}
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="desktop-nav-pill"
-                                            className="absolute inset-0 bg-white dark:bg-zinc-800 rounded-full shadow-sm z-[-1]"
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-                                </Link>
-                            )
-                        })}
-                    </nav>
-
-                    {/* 3. ACTIONS */}
-                    <div className="flex items-center gap-2 pr-2">
-                        <button
-                            onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-600 dark:text-zinc-400 transition-colors"
-                        >
-                            <Search className="w-5 h-5" />
-                        </button>
-                        <AuthButton />
-                    </div>
-                </motion.div>
-            </motion.header>
-
-
-            {/* MOBILE: The "Liquid Morph" Dynamic Header */}
-            <div className="lg:hidden fixed top-4 left-4 right-4 z-50 pointer-events-none flex flex-col items-center">
-                <motion.div
-                    layout
-                    initial={false}
-                    animate={isMobileMenuOpen ? "open" : "closed"}
-                    className={cn(
-                        "pointer-events-auto overflow-hidden bg-white/80 dark:bg-[#121212]/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)]",
-                        isMobileMenuOpen ? "w-full rounded-[32px]" : "w-full rounded-full"
-                    )}
-                    style={{
-                        originY: 0,
-                    }}
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                >
-                    {/* CLOSED STATE HEADER (Visible always, morphs) */}
-                    <div className="h-16 flex items-center justify-between px-4">
-                        <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                            <SiteLogo className="w-8 h-8" />
-                            <span className="text-lg font-bold text-black dark:text-white">
-                                fizik<span className="text-[#FFC800]">hub</span>
+                        {/* 1. BRAND - Corrected & Visible */}
+                        <Link href="/" className="flex items-center gap-3 group relative z-50">
+                            {/* Logo Icon - Black Box for Visibility */}
+                            <div className="relative w-10 h-10 flex items-center justify-center bg-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none transition-all">
+                                <SiteLogo className="w-6 h-6 bg-[#FFC800]" />
+                            </div>
+                            {/* Text Logo - NO YELLOW BOX on 'HUB' */}
+                            <span className="text-xl md:text-2xl font-black tracking-tight text-black dark:text-white uppercase select-none">
+                                FİZİK<span className="text-[#FFC800]">HUB</span>
                             </span>
                         </Link>
 
-                        <div className="flex items-center gap-2">
-                            {!isMobileMenuOpen && (
-                                <motion.button
-                                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                    onClick={() => setIsSearchOpen(true)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10"
-                                >
-                                    <Search className="w-5 h-5 text-black dark:text-white" />
-                                </motion.button>
-                            )}
+                        {/* 2. DESKTOP NAV - Clean & Bold */}
+                        <nav className="hidden lg:flex items-center gap-1">
+                            {navLinks.map((link) => {
+                                const isActive = pathname === link.href;
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={cn(
+                                            "px-4 py-2 text-sm font-bold border-2 rounded-md transition-all duration-200 uppercase tracking-wide",
+                                            isActive
+                                                ? "bg-[#FFC800] border-black text-black shadow-[2px_2px_0px_0px_#000] -translate-y-0.5"
+                                                : "bg-transparent border-transparent text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-zinc-900 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_#fff]"
+                                        )}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                )
+                            })}
+                        </nav>
 
+                        {/* 3. ACTIONS */}
+                        <div className="flex items-center gap-2 md:gap-3">
+
+                            {/* Search Button */}
                             <button
-                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className={cn(
-                                    "px-5 h-10 flex items-center gap-2 rounded-full transition-colors font-medium text-sm",
-                                    isMobileMenuOpen
-                                        ? "bg-black text-white dark:bg-white dark:text-black"
-                                        : "bg-black/5 dark:bg-white/10 text-black dark:text-white"
-                                )}
+                                onClick={() => setIsSearchOpen(true)}
+                                className="w-10 h-10 flex items-center justify-center bg-white dark:bg-zinc-900 border-2 border-black dark:border-white text-black dark:text-white hover:bg-[#FFC800] dark:hover:bg-[#FFC800] hover:text-black dark:hover:text-black transition-all shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none rounded-md"
                             >
-                                {isMobileMenuOpen ? (
-                                    <>
-                                        <span>Kapat</span>
-                                        <X className="w-4 h-4" />
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>Menü</span>
-                                        <Menu className="w-4 h-4" />
-                                    </>
-                                )}
+                                <Search className="w-5 h-5" />
                             </button>
+
+                            {/* Notifications */}
+                            <div className="hidden sm:flex w-10 h-10 items-center justify-center bg-white dark:bg-zinc-900 border-2 border-black dark:border-white text-black dark:text-white hover:bg-[#FFC800] dark:hover:bg-[#FFC800] hover:text-black dark:hover:text-black transition-all shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none rounded-md">
+                                <NotificationBell />
+                            </div>
+
+                            {/* Desktop Auth */}
+                            <div className="hidden lg:block relative z-50">
+                                <AuthButton />
+                            </div>
+
+                            {/* MOBILE MENU TRIGGER - Standard Neo-Brutalist Button */}
+                            <div className="lg:hidden">
+                                <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                                    <SheetTrigger asChild>
+                                        <button className="h-10 px-3 flex items-center gap-2 bg-[#FFC800] border-2 border-black text-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-md">
+                                            <span className="text-sm font-black uppercase">Menü</span>
+                                            <Menu className="w-5 h-5 stroke-[3px]" />
+                                        </button>
+                                    </SheetTrigger>
+                                    <SheetContent side="right" className="w-[85vw] sm:w-[380px] bg-[#FAF9F6] dark:bg-[#09090b] border-l-2 border-black dark:border-white p-0 overflow-y-auto z-[100]">
+                                        <div className="flex flex-col min-h-full">
+
+                                            {/* DRAWER HEADER */}
+                                            <div className="h-16 px-6 border-b-2 border-black dark:border-white bg-[#FFC800] flex items-center justify-between sticky top-0 z-10">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 flex items-center justify-center bg-black border-2 border-black shadow-[2px_2px_0px_0px_white]">
+                                                        <SiteLogo className="w-5 h-5 bg-[#FFC800]" />
+                                                    </div>
+                                                    <span className="text-lg font-black text-black uppercase tracking-tight">NAVİGASYON</span>
+                                                </div>
+                                                <SheetClose className="w-8 h-8 flex items-center justify-center bg-black text-white hover:bg-white hover:text-black border-2 border-black transition-colors shadow-[2px_2px_0px_0px_white]">
+                                                    <X className="w-5 h-5" />
+                                                </SheetClose>
+                                            </div>
+
+                                            {/* DRAWER LINKS */}
+                                            <div className="p-6 space-y-3 flex-1">
+                                                {navLinks.map((link) => {
+                                                    const isActive = pathname === link.href;
+                                                    return (
+                                                        <Link
+                                                            key={link.href}
+                                                            href={link.href}
+                                                            onClick={() => setIsMobileMenuOpen(false)}
+                                                            className={cn(
+                                                                "flex items-center justify-between p-4 border-2 rounded-lg transition-all font-bold text-base uppercase",
+                                                                isActive
+                                                                    ? "bg-[#FFC800] border-black text-black shadow-[4px_4px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]"
+                                                                    : "bg-white dark:bg-zinc-900 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-[#FFC800] dark:hover:bg-white dark:hover:text-black hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_#fff]"
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <link.icon className="w-5 h-5" />
+                                                                {link.label}
+                                                            </div>
+                                                            <ChevronRight className="w-5 h-5" />
+                                                        </Link>
+                                                    )
+                                                })}
+
+                                                <div className="my-6 border-t-2 border-black dark:border-zinc-800" />
+
+                                                {/* Mobile Auth */}
+                                                <div className="flex flex-col gap-3">
+                                                    <div className="p-4 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]">
+                                                        <span className="block text-xs font-bold text-gray-500 mb-2 uppercase tracking-wider">Kullanıcı İşlemleri</span>
+                                                        <AuthButton />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* FOOTER DECOR */}
+                                            <div className="p-4 bg-black text-white text-center border-t-2 border-black dark:border-white">
+                                                <p className="font-bold text-[10px] uppercase tracking-[0.2em] opacity-80">
+                                                    Bilimi Ti'ye Alıyoruz
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+                            </div>
+
                         </div>
                     </div>
+                </div>
+            </header>
 
-                    {/* EXPANDED MENU CONTENT */}
-                    <AnimatePresence>
-                        {isMobileMenuOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="px-4 pb-6"
-                            >
-                                <div className="space-y-2 pt-2">
-                                    {navLinks.map((link, i) => (
-                                        <Link
-                                            key={link.href}
-                                            href={link.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className="flex items-center justify-between p-4 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center text-black dark:text-white shadow-sm">
-                                                    <link.icon className="w-5 h-5" />
-                                                </div>
-                                                <span className="text-lg font-semibold text-black dark:text-white">
-                                                    {link.label}
-                                                </span>
-                                            </div>
-                                            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
-                                        </Link>
-                                    ))}
-                                </div>
-
-                                <div className="mt-6 pt-6 border-t border-black/5 dark:border-white/5">
-                                    <AuthButton />
-                                    <div className="mt-4 flex justify-center">
-                                        <span className="text-xs font-medium text-gray-400 flex items-center gap-1">
-                                            <Sparkles className="w-3 h-3 text-[#FFC800]" />
-                                            Designed for Exploration
-                                        </span>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-            </div>
+            {/* SPACER for fixed header */}
+            <div className="h-16" />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-        </LayoutGroup>
+        </>
     );
 }
