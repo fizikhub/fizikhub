@@ -97,15 +97,19 @@ export function NeoArticleCard({
         toast.success("Link kopyalandı!");
     };
 
+    // Fix: Fallback for author data
+    const authorName = article.author?.full_name || article.profiles?.full_name || "Anonim";
+    const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
+
     return (
         <Link href={`/blog/${article.slug}`} className="block group h-full">
             <article
                 className={cn(
                     "flex flex-col h-full bg-white dark:bg-[#111] relative overflow-hidden",
-                    // THE NEO-BRUTALIST CONTAINER
+                    // THE NEO-BRUTALIST CONTAINER - Thicker borders
                     "border-[3px] border-black dark:border-white rounded-xl",
-                    "shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] dark:shadow-[5px_5px_0px_0px_#fff]",
-                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
+                    "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_#fff]",
+                    "transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
                     className
                 )}
             >
@@ -118,9 +122,9 @@ export function NeoArticleCard({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
-                    {/* Category Label - Styled like a sticker */}
-                    <div className="absolute top-4 left-0">
-                        <span className="bg-white border-y-[3px] border-r-[3px] border-black text-black px-3 py-1 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000]">
+                    {/* Category Label - STICKER STYLE */}
+                    <div className="absolute top-3 left-3 z-10">
+                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform">
                             {article.category || "GENEL"}
                         </span>
                     </div>
@@ -129,80 +133,73 @@ export function NeoArticleCard({
                 {/* 2. CONTENT SECTION */}
                 <div className="flex flex-col flex-1 p-5 gap-4">
 
-                    {/* Title - Bold & Highlighted */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black text-black dark:text-white leading-[1.1] uppercase">
-                        <span className="bg-gradient-to-r from-[#FFC800]/50 to-[#FFC800]/50 bg-[length:100%_40%] bg-no-repeat bg-bottom group-hover:bg-[length:100%_100%] transition-all duration-300">
+                    {/* Title */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black text-black dark:text-white leading-[1.0] uppercase tracking-tight">
+                        <span className="bg-gradient-to-r from-[#FFC800] to-[#FFC800] bg-[length:0%_100%] bg-no-repeat bg-left group-hover:bg-[length:100%_100%] transition-all duration-300 decoration-clone px-1 -ml-1">
                             {article.title}
                         </span>
                     </h3>
 
-                    {/* Summary - Blockquote Style */}
-                    <div className="border-l-[4px] border-[#FFC800] pl-3 py-1">
-                        <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-700 dark:text-neutral-300 line-clamp-4 leading-relaxed">
-                            {article.summary}
+                    {/* Summary - HIGH VISIBILITY */}
+                    <div className="relative">
+                        <p className="font-[family-name:var(--font-inter)] text-sm font-bold text-neutral-600 dark:text-neutral-300 line-clamp-4 leading-normal">
+                            {article.summary || "Bu makale için bir özet bulunmuyor. Okumaya devam etmek için tıklayın."}
                         </p>
                     </div>
 
-                    {/* Spacer to push footer down */}
+                    {/* Spacer */}
                     <div className="mt-auto"></div>
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between pt-4 border-t-[3px] border-black/10 dark:border-white/10 border-dashed">
+                    <div className="flex items-center justify-between pt-4 border-t-[3px] border-black dark:border-white">
 
                         {/* Author Info */}
                         <div className="flex items-center gap-3">
-                            <div className="relative w-10 h-10 rounded-full border-2 border-black dark:border-white overflow-hidden bg-neutral-200 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
+                            <div className="relative w-10 h-10 rounded-none border-[2px] border-black dark:border-white overflow-hidden bg-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
                                 <Image
-                                    src={article.profiles?.avatar_url || "/images/default-avatar.png"}
-                                    alt={article.profiles?.full_name || "Yazar"}
+                                    src={authorAvatar}
+                                    alt={authorName}
                                     fill
                                     className="object-cover"
                                 />
                             </div>
-                            <div className="flex flex-col leading-tight">
-                                <span className="text-xs font-black uppercase text-black dark:text-white">
-                                    {article.profiles?.full_name || "Anonim"}
+                            <div className="flex flex-col leading-none gap-1">
+                                <span className="text-xs font-black uppercase text-black dark:text-white decoration-2 underline-offset-2 group-hover:underline decoration-[#FFC800] truncate max-w-[120px]">
+                                    {authorName}
                                 </span>
-                                <span className="text-[10px] font-bold text-neutral-500 uppercase">
+                                <span className="text-[10px] font-bold text-neutral-500 uppercase font-mono">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex items-center gap-1.5">
+                        {/* Action Buttons - REAL TACTILE BUTTONS */}
+                        <div className="flex items-center gap-2">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-9 h-9 flex items-center justify-center rounded-lg border-2 border-black dark:border-white transition-all transform active:scale-90",
-                                    isLiked ? "bg-[#FFC800] shadow-[2px_2px_0px_0px_#000]" : "bg-transparent hover:bg-neutral-100 dark:hover:bg-zinc-800"
+                                    "w-9 h-9 flex items-center justify-center border-[2px] border-black dark:border-white transition-all",
+                                    // PRESS EFFECT
+                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                    // NORMAL STATE
+                                    "shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#fff]",
+                                    isLiked ? "bg-[#FFC800]" : "bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-zinc-900"
                                 )}
                             >
                                 <Heart className={cn("w-4 h-4 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-black dark:stroke-white")} />
-                            </button>
-
-                            {/* Comment */}
-                            <Link href={`/blog/${article.slug}#comments`}
-                                className="w-9 h-9 flex items-center justify-center rounded-lg border-2 border-black dark:border-white bg-transparent hover:bg-[#23A9FA] transition-all transform active:scale-90"
-                            >
-                                <MessageCircle className="w-4 h-4 stroke-[2.5px] stroke-black dark:stroke-white" />
-                            </Link>
-
-                            {/* Share */}
-                            <button
-                                onClick={handleShare}
-                                className="w-9 h-9 flex items-center justify-center rounded-lg border-2 border-black dark:border-white bg-transparent hover:bg-[#00F050] transition-all transform active:scale-90"
-                            >
-                                <Share2 className="w-4 h-4 stroke-[2.5px] stroke-black dark:stroke-white" />
                             </button>
 
                             {/* Bookmark */}
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 flex items-center justify-center rounded-lg border-2 border-black dark:border-white transition-all transform active:scale-90",
-                                    isBookmarked ? "bg-black dark:bg-white text-white dark:text-black" : "bg-transparent hover:bg-[#FF90E8]"
+                                    "w-9 h-9 flex items-center justify-center border-[2px] border-black dark:border-white transition-all",
+                                    // PRESS EFFECT
+                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                                    // NORMAL STATE
+                                    "shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#fff]",
+                                    isBookmarked ? "bg-black text-white dark:bg-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-neutral-50"
                                 )}
                             >
                                 <Bookmark className={cn("w-4 h-4 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-black dark:stroke-white")} />
