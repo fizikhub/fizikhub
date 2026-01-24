@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { BookType, Hash, Quote } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -19,13 +18,10 @@ export function TermCard({ article, index }: TermCardProps) {
     const termName = metadata.termName || article.title;
     const relatedField = metadata.relatedField || "Genel";
 
-    // Clean content
+    // Clean content for V9 Preview (Simple text stripping)
     let cleanContent = article.content.replace(/<!--meta .*? -->/, "");
-    // STRIP HTML TAGS (Crucial fix for <p> tags)
     cleanContent = cleanContent.replace(/<[^>]*>?/gm, " ");
     cleanContent = cleanContent.trim();
-
-    // Get definition snippet
     const definition = cleanContent.slice(0, 160) + (cleanContent.length > 160 ? "..." : "");
 
     return (
@@ -34,71 +30,75 @@ export function TermCard({ article, index }: TermCardProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
-            whileHover={{ y: -6 }}
             className="h-full"
         >
-            <Link href={`/makale/${article.slug}`} className="block h-full">
-                <div className="group relative h-full bg-card hover:bg-muted/30 border border-border/60 hover:border-primary/20 rounded-3xl p-6 sm:p-8 transition-all duration-300 shadow-sm hover:shadow-lg overflow-hidden flex flex-col justify-between">
+            <Link href={`/makale/${article.slug}`} className="block h-full group">
+                <article
+                    className={cn(
+                        "flex flex-col h-full relative overflow-hidden",
+                        // CONTAINER STYLE (V9 Standard)
+                        "bg-white dark:bg-[#27272a]",
+                        "border-[3px] border-black rounded-[8px]",
+                        "shadow-[4px_4px_0px_0px_#000]",
+                        // HOVER
+                        "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                    )}
+                >
+                    {/* NOISE TEXTURE */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    />
 
-                    {/* Dictionary Style Decoration - Top Right */}
-                    <div className="absolute top-6 right-8 text-xs font-serif text-muted-foreground/20 font-bold select-none pointer-events-none">
-                        [n.]
-                    </div>
-
-                    <div className="relative z-10 flex flex-col gap-3">
-                        {/* Header: Field Badge - More subtle */}
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground/60 group-hover:text-primary/80 transition-colors">
-                                {relatedField}
-                            </span>
-                        </div>
-
-                        {/* Term Name & Content - Dictionary Style */}
-                        <div className="space-y-3">
-                            <div className="flex flex-col gap-1">
-                                <h3 className="text-3xl sm:text-4xl font-black font-serif text-foreground tracking-tight group-hover:text-primary transition-colors decoration-clone leading-tight">
-                                    {termName}
-                                </h3>
-                                <div className="flex items-center gap-2 text-muted-foreground/50 text-sm font-serif italic">
-                                    <span>/{termName.toLowerCase().replace(/\s/g, '-')}/</span>
-                                    <span className="w-1 h-1 rounded-full bg-current opacity-50" />
-                                    <span>isim</span>
-                                </div>
-                            </div>
-
-                            <div className="relative mt-4">
-                                <p className="text-sm sm:text-base text-muted-foreground font-medium leading-relaxed font-serif opacity-90 line-clamp-4 first-letter:float-left first-letter:text-3xl first-letter:pr-2 first-letter:font-black first-letter:text-foreground/20">
-                                    {definition}
-                                </p>
-                            </div>
+                    {/* HEADER: Term Type / Category */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FF90E8] z-10 relative">
+                        <span className="font-black text-xs uppercase tracking-widest text-black">
+                            {relatedField}
+                        </span>
+                        <div className="bg-black text-[#FF90E8] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
+                            TERİM
                         </div>
                     </div>
 
-                    {/* Footer - Minimalist */}
-                    <div className="flex items-center justify-between mt-8 pt-5 border-t border-border/10 group-hover:border-border/30 transition-colors">
+                    {/* CONTENT BODY */}
+                    <div className="flex-1 p-5 flex flex-col gap-4 z-10 relative">
+
+                        {/* Term Name - Huge Type */}
+                        <div>
+                            <h3 className="font-[family-name:var(--font-outfit)] text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 select-all hover:bg-[#FF90E8] hover:text-black inline-block transition-colors">
+                                {termName}
+                            </h3>
+                            <div className="flex items-center gap-2 text-neutral-500 dark:text-zinc-500 text-xs font-mono font-bold mt-1">
+                                <span>[ isim ]</span>
+                                <span className="w-1 h-1 rounded-full bg-current" />
+                                <span>/{termName.toLowerCase().replace(/\s/g, '-')}/</span>
+                            </div>
+                        </div>
+
+                        {/* Definition Text */}
+                        <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent">
+                            {definition}
+                        </p>
+                    </div>
+
+                    {/* FOOTER - Simple */}
+                    <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
                         <div className="flex items-center gap-2">
-                            <div className="relative w-6 h-6 rounded-full overflow-hidden border border-border/50 shadow-sm bg-muted/50 grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white">
                                 {article.author?.avatar_url ? (
-                                    <img
-                                        src={article.author.avatar_url}
-                                        alt={article.author.full_name || "Author"}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={article.author.avatar_url} alt="A" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-tr from-gray-500 to-slate-500 flex items-center justify-center text-[8px] text-white font-black uppercase">
-                                        {article.author?.full_name?.[0] || "A"}
-                                    </div>
+                                    <div className="w-full h-full bg-black" />
                                 )}
                             </div>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:text-foreground transition-colors">
-                                {article.author?.full_name || article.author?.username || "Sözlük"}
+                            <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400">
+                                {article.author?.full_name || "Sözlük"}
                             </span>
                         </div>
-                        <span className="text-xs font-serif text-muted-foreground/30 italic group-hover:text-primary/50 transition-colors">
-                            bakınız &rarr;
+                        <span className="text-xs font-black text-black dark:text-zinc-500 group-hover:translate-x-1 transition-transform">
+                            →
                         </span>
                     </div>
-                </div>
+                </article>
             </Link>
         </motion.div>
     );
