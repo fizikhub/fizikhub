@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { ArrowUpRight, Heart, Bookmark, Share2 } from "lucide-react";
+import { Heart, Bookmark, Share2, MessageCircle } from "lucide-react";
 import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -25,6 +25,7 @@ interface NeoArticleCardProps {
 export function NeoArticleCard({
     article,
     initialLikes = 0,
+    initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
     className
@@ -100,113 +101,105 @@ export function NeoArticleCard({
         <Link href={`/blog/${article.slug}`} className="block group h-full">
             <article
                 className={cn(
-                    "flex flex-col h-full relative overflow-hidden",
-                    // BORDER & SHAPE
-                    "bg-white dark:bg-[#18181b]",
-                    "border-[3px] border-black dark:border-white rounded-xl",
-                    // PRIMARY SHADOW - Deep and Hard
-                    "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_#fff]",
-                    // HOVER INTERACTION
-                    "transition-all duration-200 ease-out",
-                    "hover:translate-x-[2px] hover:translate-y-[2px]",
-                    "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
+                    "flex flex-col h-full relative",
+                    "bg-white dark:bg-[#111]",
+                    "border-4 border-black dark:border-white rounded-none sm:rounded-2xl", // Sharp or slightly rounded
+                    "shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#fff]", // HUGE SHADOW
+                    "transition-all duration-200 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_#000] dark:hover:shadow-[12px_12px_0px_0px_#fff]",
                     className
                 )}
             >
-                {/* 1. IMAGE SECTION with Bottom Border */}
-                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black dark:border-white bg-neutral-100 dark:bg-zinc-800 overflow-hidden">
-                    <Image
-                        src={article.image_url || "/images/placeholder-article.webp"}
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-
-                    {/* Category Tag - Absolute & Bold */}
-                    <div className="absolute top-0 left-0">
-                        <span className={cn(
-                            "inline-flex items-center justify-center px-4 py-2",
-                            "text-xs font-black uppercase tracking-widest text-black",
-                            "bg-[#FFC800] border-b-[3px] border-r-[3px] border-black",
-                            "rounded-br-xl"
-                        )}>
-                            {article.category || "GENEL"}
-                        </span>
-                    </div>
-                </div>
-
-                {/* 2. BODY SECTION */}
-                <div className="flex flex-col flex-1 p-5 gap-4">
-                    {/* Header: Date & Author Name */}
-                    <div className="flex items-center justify-between text-[11px] font-bold tracking-widest uppercase text-neutral-400">
-                        <span>{article.profiles?.full_name || "ANONİM"}</span>
-                        <span>
-                            {article.created_at
-                                ? formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })
-                                : "TARİH YOK"}
-                        </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black text-black dark:text-white leading-[1.1] uppercase line-clamp-3 group-hover:underline decoration-4 underline-offset-4 decoration-[#FFC800]">
-                        {article.title}
-                    </h3>
-
-                    {/* Excerpt - Hidden on mobile for cleaner look, visible on desktop */}
-                    <p className="hidden sm:block font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-neutral-400 line-clamp-2">
-                        {article.summary}
-                    </p>
-                </div>
-
-                {/* 3. FOOTER SECTION - Solid Color Block for Actions */}
-                <div className="mt-auto border-t-[3px] border-black dark:border-white bg-neutral-50 dark:bg-zinc-900 p-3 flex items-center justify-between gap-3">
-
-                    {/* Author Avatar - Popping out */}
+                {/* 1. HEADER BAR - Unique 'Folder Tab' look */}
+                <div className="flex items-center justify-between px-4 py-3 border-b-4 border-black dark:border-white bg-[#FFC800] text-black">
                     <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10 rounded-full border-[3px] border-black dark:border-white overflow-hidden bg-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
+                        {/* Author Avatar - Explicitly Visible */}
+                        <div className="relative w-8 h-8 rounded-full border-2 border-black overflow-hidden bg-white">
                             <Image
                                 src={article.profiles?.avatar_url || "/images/default-avatar.png"}
-                                alt="Author"
+                                alt={article.profiles?.full_name || "Yazar"}
                                 fill
                                 className="object-cover"
                             />
                         </div>
+                        <div className="flex flex-col leading-none">
+                            <span className="font-black text-xs uppercase tracking-wider">
+                                {article.profiles?.full_name || "ANONİM"}
+                            </span>
+                            <span className="font-bold text-[10px] opacity-80">
+                                {article.created_at
+                                    ? formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })
+                                    : "Tarih yok"}
+                            </span>
+                        </div>
                     </div>
 
-                    {/* Action Buttons - Physical Buttons */}
-                    <div className="flex items-center gap-2">
-                        {/* Like */}
+                    {/* Category Badge */}
+                    <div className="px-2 py-1 bg-black text-white text-[10px] font-black uppercase rounded-sm">
+                        {article.category || "GENEL"}
+                    </div>
+                </div>
+
+                {/* 2. IMAGE SECTION */}
+                <div className="relative aspect-[16/9] w-full border-b-4 border-black dark:border-white overflow-hidden bg-neutral-200">
+                    <Image
+                        src={article.image_url || "/images/placeholder-article.webp"}
+                        alt={article.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110 group-hover:rotate-1"
+                    />
+                    {/* Halftone Pattern Overlay */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                </div>
+
+                {/* 3. CONTENT BODY */}
+                <div className="flex flex-col flex-1 p-5 gap-4 bg-white dark:bg-[#111]">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-black text-black dark:text-white leading-[0.95] uppercase">
+                        {article.title}
+                    </h3>
+
+                    <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-neutral-400 line-clamp-3">
+                        {article.summary}
+                    </p>
+                </div>
+
+                {/* 4. ACTION FOOTER - The 'Control Panel' */}
+                <div className="mt-auto px-5 py-4 border-t-4 border-black dark:border-white bg-neutral-100 dark:bg-zinc-900 flex items-center justify-between">
+
+                    {/* Left Actions */}
+                    <div className="flex items-center gap-3">
                         <button
                             onClick={handleLike}
-                            className={cn(
-                                "h-10 px-3 flex items-center justify-center rounded-lg border-[3px] border-black dark:border-white transition-all active:translate-y-1 active:shadow-none",
-                                isLiked
-                                    ? "bg-[#FFC800] shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]"
-                                    : "bg-white dark:bg-black shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] hover:bg-neutral-100 dark:hover:bg-zinc-800"
-                            )}
+                            className="group/btn flex items-center gap-2 hover:bg-[#FFC800] px-3 py-2 rounded-lg border-2 border-transparent hover:border-black transition-all"
                         >
-                            <Heart className={cn("w-5 h-5", isLiked ? "fill-black stroke-black" : "text-black dark:text-white")} />
-                            {likeCount > 0 && <span className="ml-2 font-black text-xs text-black dark:text-white">{likeCount}</span>}
+                            <Heart className={cn("w-6 h-6 stroke-[3px]", isLiked ? "fill-red-500 stroke-red-500" : "stroke-black dark:stroke-white")} />
+                            <span className="font-black text-sm">{likeCount}</span>
                         </button>
 
-                        {/* Bookmark */}
+                        <Link href={`/blog/${article.slug}#comments`} className="group/btn flex items-center gap-2 hover:bg-[#23A9FA] px-3 py-2 rounded-lg border-2 border-transparent hover:border-black transition-all">
+                            <MessageCircle className="w-6 h-6 stroke-[3px] stroke-black dark:stroke-white" />
+                            <span className="font-black text-sm">{initialComments}</span>
+                        </Link>
+                    </div>
+
+                    {/* Right Actions */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleShare}
+                            className="p-2 hover:bg-[#00F050] rounded-lg border-2 border-transparent hover:border-black transition-all"
+                        >
+                            <Share2 className="w-6 h-6 stroke-[3px] stroke-black dark:stroke-white" />
+                        </button>
+
                         <button
                             onClick={handleBookmark}
                             className={cn(
-                                "w-10 h-10 flex items-center justify-center rounded-lg border-[3px] border-black dark:border-white bg-white dark:bg-black transition-all active:translate-y-1 active:shadow-none",
-                                "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] hover:bg-neutral-100 dark:hover:bg-zinc-800",
-                                isBookmarked && "bg-black dark:bg-white"
+                                "p-2 rounded-lg border-2 transition-all",
+                                isBookmarked
+                                    ? "bg-black text-white border-black"
+                                    : "hover:bg-[#FF90E8] border-transparent hover:border-black text-black dark:text-white"
                             )}
                         >
-                            <Bookmark className={cn("w-5 h-5", isBookmarked ? "text-white dark:text-black fill-current" : "text-black dark:text-white")} />
-                        </button>
-
-                        {/* Share - Hidden on small mobile */}
-                        <button
-                            onClick={handleShare}
-                            className="hidden sm:flex w-10 h-10 items-center justify-center rounded-lg border-[3px] border-black dark:border-white bg-[#23A9FA] shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] transition-all active:translate-y-1 active:shadow-none"
-                        >
-                            <Share2 className="w-5 h-5 text-black" />
+                            <Bookmark className={cn("w-6 h-6 stroke-[3px]", isBookmarked && "fill-white stroke-white")} />
                         </button>
                     </div>
                 </div>
