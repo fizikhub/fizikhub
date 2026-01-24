@@ -97,7 +97,21 @@ export function NeoArticleCard({
         toast.success("Link kopyalandı!");
     };
 
-    // Fix: Fallback for author data
+    // Helper: Strip HTML tags to get raw text for "first 4 lines"
+    const getPreviewText = (htmlContent: string | null | undefined, summary: string | null | undefined) => {
+        // If we have content, try to use it
+        if (htmlContent) {
+            // Remove HTML tags
+            const plainText = htmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (plainText.length > 20) return plainText;
+        }
+        // Fallback to summary
+        return summary || "Bu makale için içerik önizlemesi bulunmuyor.";
+    };
+
+    const previewText = getPreviewText(article.content, article.summary);
+
+    // Fallback for author data
     const authorName = article.author?.full_name || article.profiles?.full_name || "Anonim";
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
 
@@ -106,15 +120,17 @@ export function NeoArticleCard({
             <article
                 className={cn(
                     "flex flex-col h-full bg-white dark:bg-[#111] relative overflow-hidden",
-                    // THE NEO-BRUTALIST CONTAINER - Thicker borders
+                    // THE NEO-BRUTALIST CONTAINER - 3px borders, sharp but rounded
                     "border-[3px] border-black dark:border-white rounded-xl",
-                    "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_#fff]",
-                    "transition-all duration-150 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
+                    // DEFAULT SHADOW (Hard & Deep)
+                    "shadow-[5px_5px_0px_0px_#000] dark:shadow-[5px_5px_0px_0px_#fff]",
+                    // HOVER: Move down-right, reduce shadow
+                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
                     className
                 )}
             >
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black dark:border-white bg-[#FFC800]">
+                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black dark:border-white bg-neutral-100">
                     <Image
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
@@ -122,40 +138,38 @@ export function NeoArticleCard({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
-                    {/* Category Label - STICKER STYLE */}
+                    {/* Category Label - Floating Sticker */}
                     <div className="absolute top-3 left-3 z-10">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform">
+                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-bottom-left">
                             {article.category || "GENEL"}
                         </span>
                     </div>
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-5 gap-4">
+                <div className="flex flex-col flex-1 p-5 gap-3">
 
-                    {/* Title */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black text-black dark:text-white leading-[1.0] uppercase tracking-tight">
-                        <span className="bg-gradient-to-r from-[#FFC800] to-[#FFC800] bg-[length:0%_100%] bg-no-repeat bg-left group-hover:bg-[length:100%_100%] transition-all duration-300 decoration-clone px-1 -ml-1">
+                    {/* Title - Bold & Tight */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-white leading-[1.0] uppercase tracking-tight mb-1">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
                     </h3>
 
-                    {/* Summary - HIGH VISIBILITY */}
-                    <div className="relative">
-                        <p className="font-[family-name:var(--font-inter)] text-sm font-bold text-neutral-600 dark:text-neutral-300 line-clamp-4 leading-normal">
-                            {article.summary || "Bu makale için bir özet bulunmuyor. Okumaya devam etmek için tıklayın."}
-                        </p>
-                    </div>
+                    {/* Preview Text - The "First 4 Lines" equivalent */}
+                    <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-neutral-400 line-clamp-4 leading-relaxed">
+                        {previewText}
+                    </p>
 
                     {/* Spacer */}
                     <div className="mt-auto"></div>
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between pt-4 border-t-[3px] border-black dark:border-white">
+                    <div className="flex items-center justify-between pt-4 mt-2 border-t-[3px] border-black/10 dark:border-white/10 border-dashed">
 
-                        {/* Author Info */}
-                        <div className="flex items-center gap-3">
-                            <div className="relative w-10 h-10 rounded-none border-[2px] border-black dark:border-white overflow-hidden bg-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
+                        {/* Author */}
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="relative w-9 h-9 flex-shrink-0 rounded-full border-2 border-black dark:border-white overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_#fff]">
                                 <Image
                                     src={authorAvatar}
                                     alt={authorName}
@@ -163,46 +177,57 @@ export function NeoArticleCard({
                                     className="object-cover"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none gap-1">
-                                <span className="text-xs font-black uppercase text-black dark:text-white decoration-2 underline-offset-2 group-hover:underline decoration-[#FFC800] truncate max-w-[120px]">
+                            <div className="flex flex-col leading-none gap-0.5 min-w-0">
+                                <span className="text-xs font-black uppercase text-black dark:text-white truncate">
                                     {authorName}
                                 </span>
-                                <span className="text-[10px] font-bold text-neutral-500 uppercase font-mono">
+                                <span className="text-[10px] font-bold text-neutral-500 uppercase">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
                         </div>
 
-                        {/* Action Buttons - REAL TACTILE BUTTONS */}
-                        <div className="flex items-center gap-2">
+                        {/* Actions Code - Tactile Buttons */}
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-9 h-9 flex items-center justify-center border-[2px] border-black dark:border-white transition-all",
-                                    // PRESS EFFECT
-                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                    // NORMAL STATE
-                                    "shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#fff]",
-                                    isLiked ? "bg-[#FFC800]" : "bg-white dark:bg-black hover:bg-neutral-50 dark:hover:bg-zinc-900"
+                                    "w-8 h-8 flex items-center justify-center rounded-lg border-2 border-black dark:border-white transition-all",
+                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]",
+                                    isLiked ? "bg-[#FFC800]" : "bg-white dark:bg-black hover:bg-neutral-50"
                                 )}
                             >
-                                <Heart className={cn("w-4 h-4 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-black dark:stroke-white")} />
+                                <Heart className={cn("w-3.5 h-3.5 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-black dark:stroke-white")} />
+                            </button>
+
+                            {/* Comment */}
+                            <Link href={`/blog/${article.slug}#comments`}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-black dark:border-white bg-white dark:bg-black hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]"
+                            >
+                                <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px] stroke-black dark:stroke-white" />
+                            </Link>
+
+                            {/* Share */}
+                            <button
+                                onClick={handleShare}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-black dark:border-white bg-white dark:bg-black hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]"
+                            >
+                                <Share2 className="w-3.5 h-3.5 stroke-[2.5px] stroke-black dark:stroke-white" />
                             </button>
 
                             {/* Bookmark */}
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 flex items-center justify-center border-[2px] border-black dark:border-white transition-all",
-                                    // PRESS EFFECT
-                                    "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                    // NORMAL STATE
-                                    "shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#fff]",
-                                    isBookmarked ? "bg-black text-white dark:bg-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-neutral-50"
+                                    "w-8 h-8 flex items-center justify-center rounded-lg border-2 border-black dark:border-white transition-all",
+                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]",
+                                    isBookmarked ? "bg-black dark:bg-white text-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-[#FF90E8]"
                                 )}
                             >
-                                <Bookmark className={cn("w-4 h-4 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-black dark:stroke-white")} />
+                                <Bookmark className={cn("w-3.5 h-3.5 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-black dark:stroke-white")} />
                             </button>
                         </div>
                     </div>
