@@ -1,6 +1,6 @@
 "use client";
 
-import { SocialArticleCard } from "@/components/articles/social-article-card";
+import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { QuestionCard } from "@/components/forum/question-card";
 import { CommunityInviteBanner } from "@/components/explore/community-invite-banner";
 import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
@@ -42,28 +42,20 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         className="group"
                     >
                         {item.type === 'article' && (
-                            <SocialArticleCard
+                            <NeoArticleCard
                                 article={item.data}
-                                index={index}
                                 initialLikes={item.data.likes_count || 0}
-                                initialComments={item.data.comments_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
-                                badgeLabel="MAKALE"
-                                badgeClassName="bg-primary/10 text-primary px-2 py-0.5 rounded-md font-semibold text-xs"
                             />
                         )}
 
                         {item.type === 'blog' && (
-                            <SocialArticleCard
+                            <NeoArticleCard
                                 article={item.data}
-                                index={index}
                                 initialLikes={item.data.likes_count || 0}
-                                initialComments={item.data.comments_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
-                                badgeLabel="BLOG"
-                                badgeClassName="bg-secondary text-secondary-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
                             />
                         )}
 
