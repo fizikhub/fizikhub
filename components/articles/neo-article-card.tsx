@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Heart, Bookmark, Share2, MessageCircle } from "lucide-react";
+import { Heart, Bookmark, Share2, MessageCircle, ExternalLink } from "lucide-react";
 import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -101,107 +101,97 @@ export function NeoArticleCard({
         <Link href={`/blog/${article.slug}`} className="block group h-full">
             <article
                 className={cn(
-                    "flex flex-col h-full relative",
-                    "bg-white dark:bg-[#111]",
-                    "border-4 border-black dark:border-white rounded-none sm:rounded-2xl", // Sharp or slightly rounded
-                    "shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#fff]", // HUGE SHADOW
-                    "transition-all duration-200 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_#000] dark:hover:shadow-[12px_12px_0px_0px_#fff]",
+                    "flex flex-col h-full bg-white dark:bg-[#111]",
+                    "border-4 border-black dark:border-white", // Thick outer border
+                    "shadow-[8px_8px_0px_0px_#FFC800] dark:shadow-[8px_8px_0px_0px_#222]", // Colored Shadow
+                    "transition-transform hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_#FFC800]",
                     className
                 )}
             >
-                {/* 1. HEADER BAR - Unique 'Folder Tab' look */}
-                <div className="flex items-center justify-between px-4 py-3 border-b-4 border-black dark:border-white bg-[#FFC800] text-black">
-                    <div className="flex items-center gap-3">
-                        {/* Author Avatar - Explicitly Visible */}
-                        <div className="relative w-8 h-8 rounded-full border-2 border-black overflow-hidden bg-white">
-                            <Image
-                                src={article.profiles?.avatar_url || "/images/default-avatar.png"}
-                                alt={article.profiles?.full_name || "Yazar"}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-                        <div className="flex flex-col leading-none">
-                            <span className="font-black text-xs uppercase tracking-wider">
-                                {article.profiles?.full_name || "ANONİM"}
-                            </span>
-                            <span className="font-bold text-[10px] opacity-80">
-                                {article.created_at
-                                    ? formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })
-                                    : "Tarih yok"}
-                            </span>
-                        </div>
+                {/* GRID ROW 1: HEADER INFO */}
+                <div className="flex border-b-4 border-black dark:border-white h-10 divide-x-4 divide-black dark:divide-white">
+                    <div className="flex-1 flex items-center px-3 bg-black text-white dark:bg-white dark:text-black">
+                        <span className="font-mono text-xs font-bold uppercase truncate">
+                            {article.category || "GENEL"}
+                        </span>
                     </div>
-
-                    {/* Category Badge */}
-                    <div className="px-2 py-1 bg-black text-white text-[10px] font-black uppercase rounded-sm">
-                        {article.category || "GENEL"}
+                    <div className="px-3 flex items-center justify-center bg-[#FF90E8] text-black w-24">
+                        <span className="font-mono text-[10px] font-black">
+                            {article.created_at ? formatDistanceToNow(new Date(article.created_at), { locale: tr }).toUpperCase() : "..."}
+                        </span>
                     </div>
                 </div>
 
-                {/* 2. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-4 border-black dark:border-white overflow-hidden bg-neutral-200">
+                {/* GRID ROW 2: IMAGE */}
+                <div className="relative aspect-[16/9] w-full border-b-4 border-black dark:border-white overflow-hidden bg-neutral-100">
                     <Image
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110 group-hover:rotate-1"
+                        className="object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-hover:scale-110"
                     />
-                    {/* Halftone Pattern Overlay */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                    {/* SVG Noise Overlay */}
+                    <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    />
+
+                    {/* Floating Avatar Badge */}
+                    <div className="absolute bottom-0 left-0 p-2">
+                        <div className="flex items-center gap-2 bg-white border-2 border-black px-2 py-1 shadow-[4px_4px_0px_0px_#000]">
+                            <div className="relative w-5 h-5 rounded-sm overflow-hidden border border-black">
+                                <Image
+                                    src={article.profiles?.avatar_url || "/images/default-avatar.png"}
+                                    alt="Author"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <span className="text-[10px] font-black uppercase text-black">
+                                {article.profiles?.full_name || "YAZAR"}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* 3. CONTENT BODY */}
-                <div className="flex flex-col flex-1 p-5 gap-4 bg-white dark:bg-[#111]">
-                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-black text-black dark:text-white leading-[0.95] uppercase">
+                {/* GRID ROW 3: CONTENT */}
+                <div className="flex-1 p-4 bg-white dark:bg-[#111]">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black leading-[0.9] uppercase text-black dark:text-white mb-2 group-hover:underline decoration-4 decoration-[#FF90E8]">
                         {article.title}
                     </h3>
-
-                    <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-600 dark:text-neutral-400 line-clamp-3">
+                    <p className="font-mono text-xs font-medium text-neutral-500 line-clamp-3">
                         {article.summary}
                     </p>
                 </div>
 
-                {/* 4. ACTION FOOTER - The 'Control Panel' */}
-                <div className="mt-auto px-5 py-4 border-t-4 border-black dark:border-white bg-neutral-100 dark:bg-zinc-900 flex items-center justify-between">
+                {/* GRID ROW 4: ACTION TOOLBAR */}
+                <div className="grid grid-cols-4 h-12 border-t-4 border-black dark:border-white divide-x-4 divide-black dark:divide-white bg-neutral-100 dark:bg-zinc-900">
+                    <button
+                        onClick={handleLike}
+                        className={cn(
+                            "flex items-center justify-center hover:bg-[#FFC800] transition-colors group/btn",
+                            isLiked && "bg-[#FFC800]"
+                        )}
+                    >
+                        <Heart className={cn("w-5 h-5 transition-transform group-active/btn:scale-90", isLiked ? "fill-black stroke-black" : "stroke-black dark:stroke-white")} />
+                    </button>
 
-                    {/* Left Actions */}
-                    <div className="flex items-center gap-3">
-                        <button
-                            onClick={handleLike}
-                            className="group/btn flex items-center gap-2 hover:bg-[#FFC800] px-3 py-2 rounded-lg border-2 border-transparent hover:border-black transition-all"
-                        >
-                            <Heart className={cn("w-6 h-6 stroke-[3px]", isLiked ? "fill-red-500 stroke-red-500" : "stroke-black dark:stroke-white")} />
-                            <span className="font-black text-sm">{likeCount}</span>
-                        </button>
+                    <Link href={`/blog/${article.slug}#comments`} className="flex items-center justify-center hover:bg-[#23A9FA] transition-colors group/btn">
+                        <MessageCircle className="w-5 h-5 stroke-black dark:stroke-white transition-transform group-active/btn:scale-90" />
+                    </Link>
 
-                        <Link href={`/blog/${article.slug}#comments`} className="group/btn flex items-center gap-2 hover:bg-[#23A9FA] px-3 py-2 rounded-lg border-2 border-transparent hover:border-black transition-all">
-                            <MessageCircle className="w-6 h-6 stroke-[3px] stroke-black dark:stroke-white" />
-                            <span className="font-black text-sm">{initialComments}</span>
-                        </Link>
-                    </div>
+                    <button
+                        onClick={handleBookmark}
+                        className="flex items-center justify-center hover:bg-[#FF90E8] transition-colors group/btn"
+                    >
+                        <Bookmark className={cn("w-5 h-5 transition-transform group-active/btn:scale-90", isBookmarked ? "fill-black stroke-black" : "stroke-black dark:stroke-white")} />
+                    </button>
 
-                    {/* Right Actions */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleShare}
-                            className="p-2 hover:bg-[#00F050] rounded-lg border-2 border-transparent hover:border-black transition-all"
-                        >
-                            <Share2 className="w-6 h-6 stroke-[3px] stroke-black dark:stroke-white" />
-                        </button>
-
-                        <button
-                            onClick={handleBookmark}
-                            className={cn(
-                                "p-2 rounded-lg border-2 transition-all",
-                                isBookmarked
-                                    ? "bg-black text-white border-black"
-                                    : "hover:bg-[#FF90E8] border-transparent hover:border-black text-black dark:text-white"
-                            )}
-                        >
-                            <Bookmark className={cn("w-6 h-6 stroke-[3px]", isBookmarked && "fill-white stroke-white")} />
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleShare}
+                        className="flex items-center justify-center hover:bg-[#00F050] transition-colors group/btn"
+                    >
+                        <Share2 className="w-5 h-5 stroke-black dark:stroke-white transition-transform group-active/btn:scale-90" />
+                    </button>
                 </div>
             </article>
         </Link>
