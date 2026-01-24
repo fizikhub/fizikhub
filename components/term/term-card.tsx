@@ -49,12 +49,12 @@ export function TermCard({ article, index }: TermCardProps) {
                         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                     />
 
-                    {/* HEADER: Term Type / Category */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FF90E8] z-10 relative">
+                    {/* HEADER: Term Type / Category - NEO BLUE (#23A9FA) UPDATE */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#23A9FA] z-10 relative">
                         <span className="font-black text-xs uppercase tracking-widest text-black">
                             {relatedField}
                         </span>
-                        <div className="bg-black text-[#FF90E8] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
+                        <div className="bg-black text-[#23A9FA] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
                             TERİM
                         </div>
                     </div>
@@ -64,7 +64,7 @@ export function TermCard({ article, index }: TermCardProps) {
 
                         {/* Term Name - Huge Type */}
                         <div>
-                            <h3 className="font-[family-name:var(--font-outfit)] text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 select-all hover:bg-[#FF90E8] hover:text-black inline-block transition-colors">
+                            <h3 className="font-[family-name:var(--font-outfit)] text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 select-all hover:bg-[#23A9FA] hover:text-black inline-block transition-colors">
                                 {termName}
                             </h3>
                             <div className="flex items-center gap-2 text-neutral-500 dark:text-zinc-500 text-xs font-mono font-bold mt-1">
