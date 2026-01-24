@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
 
 @theme {
   --color-background: rgb(var(--background));
@@ -97,7 +97,8 @@
   .dark {
     /* DARK MODE - Keeping High Contrast */
     /* DARK MODE - Soft Grey Background as requested */
-    --background: 24 24 27; /* #18181b (Zinc 900) */
+    --background: 24 24 27;
+    /* #18181b (Zinc 900) */
     --foreground: 255 255 255;
 
     --card: 20 20 20;
