@@ -56,11 +56,13 @@ export function Navbar() {
 
                         {/* 1. BRAND - Tighter, Cleaner */}
                         <Link href="/" className="flex items-center gap-2 group relative z-50">
+                            {/* Logo Icon in Box - Kept for Brand Identity, verified visibility with bg-black */}
                             <div className="relative w-10 h-10 flex items-center justify-center bg-[#FFC800] border-[3px] border-black shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-none transition-all">
-                                <SiteLogo className="w-5 h-5 text-black fill-current" />
+                                <SiteLogo className="w-5 h-5 bg-black" />
                             </div>
+                            {/* Brand Text - Pure Text, No "Hub Box" to avoid PH resemblance */}
                             <span className="text-xl md:text-2xl font-black tracking-tight text-black dark:text-white uppercase">
-                                FİZİK<span className="text-black bg-[#FFC800] px-1 border-[2px] border-black ml-0.5 shadow-[1px_1px_0px_0px_#000]">HUB</span>
+                                FİZİK<span className="text-[#FFC800]">HUB</span>
                             </span>
                         </Link>
 
@@ -119,8 +121,8 @@ export function Navbar() {
                                             {/* Mobile Header */}
                                             <div className="h-16 px-6 border-b-[3px] border-black bg-[#FFC800] flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-8 h-8 flex items-center justify-center bg-black text-[#FFC800]">
-                                                        <SiteLogo className="w-5 h-5 fill-current" />
+                                                    <div className="w-8 h-8 flex items-center justify-center bg-black border-[2px] border-black shadow-[2px_2px_0px_0px_white]">
+                                                        <SiteLogo className="w-5 h-5 bg-[#FFC800]" />
                                                     </div>
                                                     <span className="text-xl font-black text-black uppercase tracking-tight">MENÜ</span>
                                                 </div>
