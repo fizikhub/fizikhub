@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, PenSquare, Twitter, Github, Linkedin, Instagram, LinkIcon, Settings, MessageCircle } from "lucide-react";
+import { BadgeCheck, PenSquare, Twitter, Github, Linkedin, Instagram, LinkIcon, MapPin, Calendar, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
@@ -17,8 +17,8 @@ interface ProfileHeroProps {
     isOwnProfile: boolean;
     isFollowing?: boolean;
     targetUserId?: string;
-    stats?: any; // Kept for interface compatibility but not used in header
-    badges?: any[]; // Kept for interface compatibility
+    stats?: any;
+    badges?: any[];
     createdAt?: string;
 }
 
@@ -32,80 +32,80 @@ export function ProfileHero({
     const socialLinks = profile?.social_links || {};
 
     return (
-        <div className="w-full bg-[#FAF9F6] dark:bg-[#09090b] border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] overflow-hidden mb-6">
+        /* V15 CARD CONTAINER: Deep Black BG, White Border, White Hard Shadow */
+        <div className="w-full bg-[#050505] border-[3px] border-white rounded-[2rem] shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden mb-8 relative group">
 
-            {/* 1. Header Banner (40% Height approx) */}
-            <div className="relative h-48 md:h-64 w-full bg-gray-100 dark:bg-zinc-900 border-b-2 border-black dark:border-white">
+            {/* 1. Banner Image (Grayscale + Grain effect for 'Premium' feel) */}
+            <div className="relative h-56 md:h-72 w-full border-b-[3px] border-white">
                 {profile?.cover_url ? (
-                    <Image
-                        src={profile.cover_url}
-                        alt="Cover"
-                        fill
-                        className="object-cover"
-                        priority
-                    />
+                    <>
+                        <Image
+                            src={profile.cover_url}
+                            alt="Cover"
+                            fill
+                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all duration-700" />
+                    </>
                 ) : (
-                    <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
+                    <div className="absolute inset-0 bg-zinc-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-80" />
                 )}
-                {/* Overlay for contrast */}
-                <div className="absolute inset-0 bg-black/5" />
             </div>
 
-            {/* 2. Avatar & Info Section */}
-            <div className="relative px-6 pb-6 pt-16 md:pt-20 text-center flex flex-col items-center">
+            {/* 2. Avatar (Intersecting) */}
+            <div className="absolute top-56 md:top-72 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                <div className="w-36 h-36 md:w-44 md:h-44 rounded-full border-[4px] border-white bg-black p-1 shadow-[0px_10px_20px_rgba(0,0,0,0.5)]">
+                    <Avatar className="w-full h-full rounded-full border-2 border-zinc-800">
+                        <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                        <AvatarFallback className="text-5xl font-black bg-zinc-900 text-white">
+                            {profile?.full_name?.charAt(0) || "U"}
+                        </AvatarFallback>
+                    </Avatar>
 
-                {/* Floating Avatar */}
-                <div className="absolute -top-16 md:-top-20 left-1/2 -translate-x-1/2">
-                    <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[4px] border-black dark:border-white bg-[#FAF9F6] dark:bg-[#09090b] p-1 shadow-lg">
-                        <Avatar className="w-full h-full rounded-full border-2 border-gray-200 dark:border-zinc-800">
-                            <AvatarImage src={profile?.avatar_url} className="object-cover" />
-                            <AvatarFallback className="text-4xl font-black bg-gray-100 text-gray-500">
-                                {profile?.full_name?.charAt(0) || "U"}
-                            </AvatarFallback>
-                        </Avatar>
-                        {profile?.is_verified && (
-                            <div className="absolute bottom-2 right-2 bg-blue-500 text-white p-1 rounded-full border-2 border-white shadow-sm" title="Doğrulanmış">
-                                <BadgeCheck className="w-5 h-5" />
-                            </div>
-                        )}
-                    </div>
+                    {profile?.is_verified && (
+                        <div className="absolute bottom-2 right-2 bg-[#1D9BF0] text-white p-1 rounded-full border-[3px] border-black shadow-lg" title="Onaylı Hesap">
+                            <BadgeCheck className="w-6 h-6" />
+                        </div>
+                    )}
                 </div>
+            </div>
 
-                {/* Name & Title */}
-                <h1 className="text-3xl font-black uppercase tracking-tight text-black dark:text-white mb-2">
+            {/* 3. Info Section */}
+            <div className="pt-24 pb-8 px-6 md:px-12 text-center bg-[#050505] text-white relative z-10">
+
+                {/* Name & Role */}
+                <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2 leading-none">
                     {profile?.full_name}
                 </h1>
-
-                <div className="flex items-center gap-2 mb-4 justify-center">
-                    <Badge variant="outline" className="border-2 border-black dark:border-white text-black dark:text-white font-bold px-3 py-1 bg-transparent hover:bg-black hover:text-white transition-colors">
-                        @{profile?.username}
-                    </Badge>
+                <div className="flex items-center justify-center gap-2 mb-6 opacity-90">
+                    <span className="font-mono text-zinc-400 font-bold tracking-wider">@{profile?.username}</span>
                     {profile?.role === 'admin' && (
-                        <Badge className="bg-red-500 text-white border-2 border-black font-bold">ADMIN</Badge>
+                        <span className="bg-[#FF0055] text-white text-[10px] font-black px-2 py-0.5 rounded border border-white/20">ADMIN</span>
                     )}
                 </div>
 
-                {/* Socials Row */}
-                <div className="flex items-center gap-3 mb-6">
+                {/* Social Actions Row */}
+                <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
                     {socialLinks.twitter && (
-                        <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" className="p-2 rounded-lg border-2 border-black dark:border-white hover:bg-[#1DA1F2] hover:text-white hover:border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none">
+                        <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/20 hover:border-white hover:bg-white hover:text-black transition-all">
                             <Twitter className="w-5 h-5" />
                         </a>
                     )}
                     {socialLinks.github && (
-                        <a href={`https://github.com/${socialLinks.github}`} target="_blank" className="p-2 rounded-lg border-2 border-black dark:border-white hover:bg-black hover:text-white hover:border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none">
+                        <a href={`https://github.com/${socialLinks.github}`} target="_blank" className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/20 hover:border-white hover:bg-white hover:text-black transition-all">
                             <Github className="w-5 h-5" />
                         </a>
                     )}
                     {profile?.website && (
-                        <a href={profile.website} target="_blank" className="p-2 rounded-lg border-2 border-black dark:border-white hover:bg-green-500 hover:text-white hover:border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none">
+                        <a href={profile.website} target="_blank" className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-white/20 hover:border-white hover:bg-[#FFC800] hover:text-black transition-all">
                             <LinkIcon className="w-5 h-5" />
                         </a>
                     )}
                 </div>
 
-                {/* Interaction Buttons */}
-                <div className="flex items-center gap-3 w-full justify-center max-w-sm">
+                {/* Primary Actions (Big Buttons) */}
+                <div className="flex items-center justify-center gap-4 w-full max-w-md mx-auto">
                     {isOwnProfile ? (
                         <>
                             <div className="flex-1">
@@ -119,21 +119,29 @@ export function ProfileHero({
                                     currentSocialLinks={profile?.social_links}
                                     userEmail={user?.email}
                                     usernameChangeCount={profile?.username_changes_count || 0}
-                                />
+                                >
+                                    <Button variant="outline" className="w-full h-12 rounded-xl border-[2px] border-white/30 text-white hover:bg-white hover:text-black hover:border-white font-bold tracking-tight text-base transition-all">
+                                        AYARLAR
+                                    </Button>
+                                </ProfileSettingsButton>
                             </div>
                             {(profile?.role === 'writer' || profile?.role === 'admin') && (
-                                <Link href="/yazar/yeni">
-                                    <Button className="w-full border-2 border-black bg-amber-400 text-black hover:bg-amber-500 font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                        <PenSquare className="w-4 h-4 mr-2" />
-                                        Yazı Yaz
+                                <Link href="/yazar/yeni" className="flex-1">
+                                    <Button className="w-full h-12 rounded-xl bg-[#FFC800] text-black border-[2px] border-[#FFC800] hover:bg-white hover:border-white font-black tracking-tight text-base shadow-[0px_0px_15px_rgba(255,200,0,0.4)] hover:shadow-none transition-all">
+                                        <PenSquare className="w-5 h-5 mr-2" />
+                                        YAZI YAZ
                                     </Button>
                                 </Link>
                             )}
                         </>
                     ) : targetUserId ? (
                         <>
-                            <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
-                            <StartChatButton otherUserId={targetUserId} />
+                            <div className="flex-1">
+                                <FollowButton targetUserId={targetUserId} initialIsFollowing={isFollowing || false} />
+                            </div>
+                            <div className="flex-1">
+                                <StartChatButton otherUserId={targetUserId} />
+                            </div>
                         </>
                     ) : null}
                 </div>

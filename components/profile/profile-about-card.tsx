@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { User } from "lucide-react";
 
 interface ProfileAboutCardProps {
     bio?: string;
@@ -10,23 +11,33 @@ interface ProfileAboutCardProps {
 
 export function ProfileAboutCard({ bio, fullName, role }: ProfileAboutCardProps) {
     return (
-        <div className="w-full bg-[#FAF9F6] dark:bg-[#09090b] border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-6 mb-6">
-            <h2 className="text-xl font-black uppercase tracking-tight mb-4 flex items-center gap-2">
-                Hakkımda
-                <div className="h-1 flex-1 bg-black dark:bg-white rounded-full opacity-20" />
-            </h2>
+        <div className="w-full bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8 mb-8 relative overflow-hidden">
+
+            {/* Header with Icon */}
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+                <div className="w-10 h-10 rounded-full bg-[#FFC800] border-2 border-white flex items-center justify-center text-black">
+                    <User className="w-5 h-5 stroke-[3px]" />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
+                    HAKKIMDA
+                </h2>
+                <div className="h-0.5 flex-1 bg-white/20" />
+            </div>
 
             {bio ? (
-                <div className="prose dark:prose-invert max-w-none">
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed font-medium">
+                <div className="relative z-10">
+                    <p className="text-lg text-zinc-300 font-medium leading-relaxed whitespace-pre-wrap">
                         {bio}
                     </p>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-gray-400 dark:text-gray-600 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-lg">
-                    <p className="font-bold">Henüz bir biyografi eklenmemiş.</p>
+                <div className="flex flex-col items-center justify-center py-10 text-zinc-500 border-2 border-dashed border-white/10 rounded-xl bg-white/5">
+                    <p className="font-bold">Henüz biyografi eklenmemiş.</p>
                 </div>
             )}
+
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFC800] blur-[80px] opacity-5 pointer-events-none" />
         </div>
     );
 }

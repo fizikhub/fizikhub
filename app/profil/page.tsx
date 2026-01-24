@@ -49,14 +49,14 @@ export default async function ProfilePage() {
     };
 
     // Fix for BadgeDisplay type mismatch
-    // Supabase might return 'badges' as an array, but BadgeDisplay expects a single object
     const formattedBadges = userBadges?.map((ub: any) => ({
         awarded_at: ub.awarded_at,
         badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
-    }))?.filter(ub => ub.badges) || []; // Filter out any empty badges
+    }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-[#F0F0F0] dark:bg-black py-8">
+        /* V15 PAGE BACKGROUND: High Contrast Yellow/Black Pattern */
+        <div className="min-h-screen bg-[#FFC800] bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px] py-8 pb-32">
             <div className="container max-w-6xl mx-auto px-4 md:px-6">
 
                 {/* 1. HEADER CARD (Full Width) */}
@@ -67,10 +67,10 @@ export default async function ProfilePage() {
                     stats={stats}
                 />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                     {/* LEFT COLUMN (2/3) - About & Portfolio */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-8">
                         {/* About Me Card */}
                         <ProfileAboutCard
                             bio={profile?.bio}
@@ -79,10 +79,10 @@ export default async function ProfilePage() {
                         />
 
                         {/* Portfolio / Content Feed */}
-                        <div className="bg-[#FAF9F6] dark:bg-[#09090b] border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-6">
-                            <h2 className="text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-2">
+                        <div className="bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8">
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-6 flex items-center gap-3">
+                                <div className="w-3 h-8 bg-[#FFC800] rounded-sm" />
                                 Portfolyo
-                                <div className="h-1 flex-1 bg-black dark:bg-white rounded-full opacity-20" />
                             </h2>
                             <ProfileContentFeed
                                 articles={articles || []}
@@ -96,16 +96,17 @@ export default async function ProfilePage() {
                     </div>
 
                     {/* RIGHT COLUMN (1/3) - Stats & Badges */}
-                    <div className="space-y-6">
+                    <div className="space-y-8">
                         {/* Stats Card */}
                         <ProfileStatsCard stats={stats} />
 
                         {/* Badges Card */}
                         {formattedBadges && formattedBadges.length > 0 && (
-                            <div className="bg-[#FAF9F6] dark:bg-[#09090b] border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-6">
-                                <h2 className="text-xl font-black uppercase tracking-tight mb-4 flex items-center gap-2">
+                            <div className="bg-[#050505] border-[3px] border-white rounded-[1.5rem] shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] p-8">
+                                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-6 flex items-center gap-3">
+                                    <div className="w-3 h-8 bg-blue-500 rounded-sm" />
                                     Rozetler
-                                    <div className="text-xs font-bold bg-amber-400 text-black px-2 py-0.5 rounded-full border border-black">
+                                    <div className="text-xs font-bold bg-[#FFC800] text-black px-2 py-0.5 rounded border border-black">
                                         {formattedBadges.length}
                                     </div>
                                 </h2>
