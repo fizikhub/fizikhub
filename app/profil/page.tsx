@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Settings, Edit, FileText, Zap, MessageCircle } from "lucide-react";
+import { Settings, Edit, FileText, Zap, MessageCircle, ShieldCheck } from "lucide-react";
 
 // V27: REFINED PROFILE HEADER
 
@@ -49,6 +49,11 @@ function CompactHeader({ profile, user, stats, isOwnProfile }: any) {
                                 <Link href="/ayarlar" className="bg-zinc-800 border border-zinc-700 p-2 rounded-md text-zinc-400 hover:text-white hover:border-white transition-all">
                                     <Settings className="w-4 h-4" />
                                 </Link>
+                                {profile?.username === 'baranbozkurt' && (
+                                    <Link href="/admin" className="bg-red-900/20 border border-red-900/50 p-2 rounded-md text-red-500 hover:bg-red-900/40 transition-all">
+                                        <ShieldCheck className="w-4 h-4" />
+                                    </Link>
+                                )}
                             </div>
                         )}
                     </div>
@@ -80,6 +85,12 @@ function CompactHeader({ profile, user, stats, isOwnProfile }: any) {
                         <Link href="/ayarlar" className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-zinc-400 hover:text-white transition-all" title="Ayarlar">
                             <Settings className="w-5 h-5" />
                         </Link>
+                        {/* Admin Link for Baran */}
+                        {profile?.username === 'baranbozkurt' && (
+                            <Link href="/admin" className="bg-red-900/20 hover:bg-red-900/40 border border-red-900/50 p-2 rounded-lg text-red-500 hover:text-red-400 transition-all" title="Admin Panel">
+                                <ShieldCheck className="w-5 h-5" />
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>
