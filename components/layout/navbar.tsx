@@ -100,7 +100,7 @@ export function Navbar() {
                             {/* Notifications */}
                             <div className="relative">
                                 {/* NotificationBell logic overridden by wrapper style */}
-                                <NotificationBell className={cn(btnClass, "!p-0")} />
+                                <NotificationBell className={cn(btnClass, "!p-0 text-black")} />
                             </div>
 
                             {/* Menu */}
