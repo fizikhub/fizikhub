@@ -9,6 +9,7 @@ import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -36,15 +37,14 @@ export function Navbar() {
 
     // V7 Common Button Class - Matched to User's "Card" aesthetic
     // White BG + Black Border + YELLOW Shadow (Matches 'Hub' and 'Card Tag')
-    const btnClass = "relative h-9 w-9 flex items-center justify-center bg-white border-2 border-black rounded-md shadow-[3px_3px_0px_0px_#FFC800] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#FFC800] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all group";
+    const btnClass = "relative h-9 w-9 flex items-center justify-center bg-white border-2 border-black rounded-md shadow-[3px_3px_0px_0px_#FFC800]";
 
     return (
         <>
             {/* 
-                V7: "CLEAN NEUBRUTALISM"
-                - Reference: User's Image 2 & 3 (Article Cards)
-                - Style: Clean Sans Typography, Yellow Accents, Black Strokes
-                - Buttons: White + Black Stroke + Yellow Hard Shadow
+                V8: "INTERACTIVE NEUBRUTALISM"
+                - Reference: V7 + "Further Development"
+                - Features: Framer Motion physics for tactile feel, Logo micro-interaction
             */}
             <header
                 className={cn(
@@ -60,55 +60,77 @@ export function Navbar() {
                     {/* 1. Star Overlay - Subtle */}
                     <div className="absolute inset-0 opacity-50" style={{ backgroundImage: starPattern }} />
 
-                    {/* 2. Minimized Atmospheric Purple (User said "hafiften morluklar olsun") */}
-                    {/* Positioned far corners to leave center clean for logo/content */}
+                    {/* 2. Minimized Atmospheric Purple */}
                     <div className="absolute -top-[100px] right-0 w-[400px] h-[400px] bg-purple-900/10 blur-[100px] rounded-full mix-blend-screen" />
                 </div>
 
                 <div className="relative container max-w-7xl mx-auto px-4 h-full">
                     <div className="flex items-center justify-between h-full">
 
-                        {/* BRAND: Clean Neubrutalist Typography (Matches User Image 3) */}
+                        {/* BRAND: Clean Neubrutalist Typography with Motion */}
                         <Link href="/" className="group flex flex-col justify-center select-none z-10 pt-0.5">
-                            <div className="flex items-baseline leading-none tracking-tight">
+                            <motion.div
+                                className="flex items-baseline leading-none tracking-tight"
+                                whileHover={{ x: 2 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            >
                                 {/* FIZIK - White, Heavy Tone */}
                                 <span className="text-[26px] md:text-3xl font-black text-white font-heading">
                                     Fizik
                                 </span>
                                 {/* HUB - Yellow, Same Height, Clean */}
-                                <span className="text-[26px] md:text-3xl font-black text-[#FFC800] font-heading ml-0.5">
+                                <motion.span
+                                    className="text-[26px] md:text-3xl font-black text-[#FFC800] font-heading ml-0.5"
+                                    whileHover={{ display: "inline-block", rotate: 2 }}
+                                >
                                     Hub
-                                </span>
-                            </div>
+                                </motion.span>
+                            </motion.div>
                             {/* "Bilim Platformu" - Clean, Aligned */}
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] -mt-0.5 ml-0.5 opacity-90 group-hover:text-white transition-colors">
                                 Bilim Platformu
                             </span>
                         </Link>
 
-                        {/* ACTIONS - "Card Tag" Aesthetics */}
+                        {/* ACTIONS - "Card Tag" Aesthetics with Physics */}
                         <div className="flex items-center gap-2.5">
 
                             {/* Search */}
-                            <button
+                            <motion.button
                                 onClick={() => setIsSearchOpen(true)}
                                 className={btnClass}
+                                whileHover={{ y: -2, x: -2, boxShadow: "5px 5px 0px 0px #FFC800" }}
+                                whileTap={{ y: 2, x: 2, boxShadow: "1px 1px 0px 0px #FFC800", scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 15 }}
                             >
-                                <Search className="w-[18px] h-[18px] text-black stroke-[2.5px] group-hover:scale-110 transition-transform" />
-                            </button>
+                                <Search className="w-[18px] h-[18px] text-black stroke-[2.5px]" />
+                            </motion.button>
 
                             {/* Notifications */}
                             <div className="relative">
-                                {/* NotificationBell logic overridden by wrapper style */}
-                                <NotificationBell className={cn(btnClass, "!p-0 text-black")} />
+                                {/* Wrapped for motion, bypassing internal styles */}
+                                <motion.div
+                                    className={cn(btnClass, "flex items-center justify-center cursor-pointer")}
+                                    whileHover={{ y: -2, x: -2, boxShadow: "5px 5px 0px 0px #FFC800" }}
+                                    whileTap={{ y: 2, x: 2, boxShadow: "1px 1px 0px 0px #FFC800", scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                >
+                                    {/* We pass !p-0 to reset padding, and text-black to ensure icon visibility */}
+                                    <NotificationBell className="w-full h-full flex items-center justify-center !p-0 text-black bg-transparent border-none shadow-none" />
+                                </motion.div>
                             </div>
 
                             {/* Menu */}
                             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                                 <SheetTrigger asChild>
-                                    <button className={btnClass}>
-                                        <Menu className="w-[20px] h-[20px] text-black stroke-[2.5px] group-hover:scale-110 transition-transform" />
-                                    </button>
+                                    <motion.button
+                                        className={btnClass}
+                                        whileHover={{ y: -2, x: -2, boxShadow: "5px 5px 0px 0px #FFC800" }}
+                                        whileTap={{ y: 2, x: 2, boxShadow: "1px 1px 0px 0px #FFC800", scale: 0.95 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                    >
+                                        <Menu className="w-[20px] h-[20px] text-black stroke-[2.5px]" />
+                                    </motion.button>
                                 </SheetTrigger>
 
                                 <SheetContent side="right" className="w-[85vw] sm:w-[380px] bg-[#0a0a0a] border-l-2 border-white/20 p-0 overflow-hidden z-[100]">
@@ -119,43 +141,60 @@ export function Navbar() {
                                         {/* Drawer Header */}
                                         <div className="h-16 px-6 border-b-2 border-white/10 flex items-center justify-between bg-[#111]">
                                             <span className="text-xl font-black uppercase text-[#FFC800] tracking-tight">Menü</span>
-                                            <SheetClose className="w-8 h-8 flex items-center justify-center bg-[#FFC800] border-2 border-black text-black rounded shadow-[2px_2px_0px_0px_#fff] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
-                                                <X className="w-4 h-4 stroke-[3px]" />
+                                            <SheetClose asChild>
+                                                <motion.button
+                                                    className="w-8 h-8 flex items-center justify-center bg-[#FFC800] border-2 border-black text-black rounded shadow-[2px_2px_0px_0px_#fff]"
+                                                    whileHover={{ scale: 1.1, rotate: 90 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                >
+                                                    <X className="w-4 h-4 stroke-[3px]" />
+                                                </motion.button>
                                             </SheetClose>
                                         </div>
 
                                         {/* Drawer Content */}
                                         <div className="p-6 flex-1 overflow-y-auto">
                                             <div className="space-y-3">
-                                                {navLinks.map((link) => {
+                                                {navLinks.map((link, i) => {
                                                     const isActive = pathname === link.href;
                                                     return (
-                                                        <Link
+                                                        <motion.div
                                                             key={link.href}
-                                                            href={link.href}
-                                                            onClick={() => setIsMobileMenuOpen(false)}
-                                                            className={cn(
-                                                                "group flex items-center gap-4 p-4 border-2 rounded-lg transition-all font-bold text-sm uppercase",
-                                                                isActive
-                                                                    ? "bg-[#FFC800] border-black text-black shadow-[3px_3px_0px_0px_#fff]"
-                                                                    : "bg-[#151515] border-white/10 text-gray-300 hover:bg-white hover:border-black hover:text-black hover:shadow-[3px_3px_0px_0px_#FFC800]"
-                                                            )}
+                                                            initial={{ opacity: 0, x: 20 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: i * 0.05 }}
                                                         >
-                                                            <link.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                                            {link.label}
-                                                        </Link>
+                                                            <Link
+                                                                href={link.href}
+                                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                                className={cn(
+                                                                    "group flex items-center gap-4 p-4 border-2 rounded-lg transition-all font-bold text-sm uppercase",
+                                                                    isActive
+                                                                        ? "bg-[#FFC800] border-black text-black shadow-[3px_3px_0px_0px_#fff]"
+                                                                        : "bg-[#151515] border-white/10 text-gray-300 hover:bg-white hover:border-black hover:text-black hover:shadow-[3px_3px_0px_0px_#FFC800]"
+                                                                )}
+                                                            >
+                                                                <link.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                                                {link.label}
+                                                            </Link>
+                                                        </motion.div>
                                                     )
                                                 })}
                                             </div>
 
                                             <div className="my-8 border-t border-white/10" />
 
-                                            <div className="bg-[#151515] border-2 border-white/10 p-5 rounded-lg">
+                                            <motion.div
+                                                className="bg-[#151515] border-2 border-white/10 p-5 rounded-lg"
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.3 }}
+                                            >
                                                 <span className="text-[10px] font-black text-[#FFC800] uppercase mb-4 block tracking-widest">Kullanıcı</span>
                                                 <div className="flex justify-center">
                                                     <AuthButton />
                                                 </div>
-                                            </div>
+                                            </motion.div>
                                         </div>
                                     </div>
                                 </SheetContent>
