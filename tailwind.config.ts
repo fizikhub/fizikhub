@@ -22,7 +22,7 @@ const config = {
                 border: "#000000", // Force Black Borders
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
-                background: "#09090b", // Void
+                background: "hsl(var(--background))", // Dynamic from globals.css
                 foreground: "#ffffff",
                 primary: {
                     DEFAULT: "#facc15", // Warning Yellow

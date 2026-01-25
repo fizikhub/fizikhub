@@ -36,16 +36,15 @@ export function CategoryStories() {
     ];
 
     return (
-        <div className="w-full py-6 px-0 overflow-hidden">
+        <div className="w-full py-2 px-0 overflow-hidden">
             {/* 
-                NEO-PILL CATEGORIES (V15.5 Style)
-                - Horizontal Scroll
-                - Capsule Shape
-                - Black Border + Hard Shadow
-                - Yellow Hover
+                V16 NEO-TAGS
+                - "Kötü olmuş" fix: Moving away from generic pills to "Interactive Tags".
+                - Style: Black background, White Text, Yellow Hover.
+                - Border: Thicker, Brutalist.
             */}
 
-            <div className="flex overflow-x-auto pb-6 gap-3 snap-x snap-mandatory px-4 sm:px-0 scrollbar-hide">
+            <div className="flex overflow-x-auto pb-4 gap-2.5 snap-x snap-mandatory px-3 sm:px-0 scrollbar-hide">
                 {categories.map((cat, index) => (
                     <Link
                         href={cat.href}
@@ -53,30 +52,23 @@ export function CategoryStories() {
                         className="flex-shrink-0 snap-start"
                     >
                         <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05, type: "spring", stiffness: 200 }}
-                            whileHover={{ y: -4, x: -2 }}
-                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.03 }}
+                            whileTap={{ scale: 0.9 }}
                         >
                             <div
                                 className={cn(
-                                    "flex items-center gap-2 pl-2 pr-4 py-2",
-                                    "bg-white dark:bg-[#1a1a1a]", // Contrast background
-                                    "border-[2px] border-black dark:border-zinc-700", // Stroke
-                                    "rounded-full", // Pill Shape
-                                    "shadow-[3px_3px_0px_0px_#000]", // Hard Shadow
-                                    "hover:shadow-[1px_1px_0px_0px_#000] hover:bg-[#FFC800] dark:hover:bg-[#FFC800] hover:text-black", // Interaction
-                                    "transition-all duration-200 group"
+                                    "flex items-center gap-1.5 px-3 py-1.5",
+                                    "bg-[#111] border-[2px] border-[#333]", // Base dark
+                                    "text-gray-300",
+                                    "rounded-lg", // Slightly rect for brutalism
+                                    "hover:bg-[#FFC800] hover:text-black hover:border-black hover:shadow-[3px_3px_0px_0px_#000]", // Interaction Pop
+                                    "transition-all duration-200"
                                 )}
                             >
-                                {/* Icon Circle */}
-                                <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-black border border-black flex items-center justify-center group-hover:bg-white transition-colors">
-                                    <cat.icon className="w-4 h-4 text-black dark:text-white group-hover:text-black" />
-                                </div>
-
-                                {/* Text */}
-                                <span className="text-xs sm:text-sm font-black uppercase tracking-wide text-black dark:text-white group-hover:text-black">
+                                <cat.icon className="w-4 h-4" />
+                                <span className="text-xs font-bold uppercase tracking-wider">
                                     {cat.name}
                                 </span>
                             </div>
