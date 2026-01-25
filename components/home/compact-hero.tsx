@@ -43,7 +43,7 @@ const ClassicUFO = () => (
 
 function ClassicHero() {
     return (
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl mb-4 shadow-lg">
+        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl mb-4 border-[3px] border-black shadow-neo">
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-orange-500/5 pointer-events-none" />
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {[

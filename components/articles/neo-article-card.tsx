@@ -119,8 +119,8 @@ export function NeoArticleCard({
                     "bg-white dark:bg-[#27272a]",
                     // BORDER: Pure Black (rgb(0,0,0)) ALWAYS
                     "border-[3px] border-black rounded-[8px]",
-                    // SHADOW: Pure Black (rgb(0,0,0)) ALWAYS
-                    "shadow-[4px_4px_0px_0px_#000]",
+                    // SHADOW: Standardized Neo Token
+                    "shadow-neo border-black",
                     // HOVER
                     "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
                     className
