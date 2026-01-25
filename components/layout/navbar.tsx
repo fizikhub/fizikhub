@@ -12,14 +12,18 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
+const jellyVariants = {
+    tap: { scale: 0.85, rotate: -5 },
+    hover: { scale: 1.05, rotate: 2 }
+};
+
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const pathname = usePathname();
-
-    // V15 RESTORATION
     const [mounted, setMounted] = useState(false);
+
     useEffect(() => setMounted(true), []);
 
     useEffect(() => {
@@ -37,31 +41,37 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V15: DANK NEO-NAVBAR (RESTORED)
-                - Layout: Wide Floating Bar
-                - Style: High Contrast, Animated, "Cool"
-                - Shadow: Standard 4px offset (Not the V16 "Lip")
+                V17: THE "WORLD'S BEST" NEO-NAVBAR
+                - Multi-Color: Cyan, Yellow, Pink
+                - Physics: Jelly/Rubberband
+                - Style: Maximum Personality
             */}
             <header className="fixed top-2 sm:top-4 left-0 right-0 z-50 flex justify-center px-2 sm:px-4 pointer-events-none">
                 <motion.div
-                    initial={{ y: -100, rotateX: 90 }}
-                    animate={{ y: 0, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    initial={{ y: -150, borderRadius: "50%" }}
+                    animate={{ y: 0, borderRadius: "16px" }}
+                    transition={{ type: "spring", stiffness: 180, damping: 15, delay: 0.2 }}
                     className={cn(
                         "pointer-events-auto",
-                        "flex items-center justify-between pl-4 pr-2 py-2",
+                        "flex items-center justify-between pl-4 pr-3 py-2.5",
                         "bg-[#111]/95 backdrop-blur-xl border-[3px] border-black",
-                        "rounded-2xl shadow-[4px_4px_0px_0px_#FFC800]", // V15 YELLOW SHADOW
-                        "w-full max-w-7xl",
+                        // SHADOW: Rainbow Gradient Shadow via pseudo-element simulation or just solid distinct color
+                        "shadow-[4px_4px_0px_0px_#000]",
+                        "w-full max-w-7xl relative overflow-hidden"
                     )}
                 >
-                    {/* LEFT: ANIMATED BRAND */}
-                    <Link href="/" className="group">
+                    {/* RAINBOW BORDER BOTTOM */}
+                    <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-yellow-400 to-pink-500 z-20" />
+
+                    {/* LEFT: V17 BRAND */}
+                    <Link href="/" className="group relative z-30">
                         <DankLogo />
+                        {/* Sparkles on hover */}
+                        <div className="absolute -top-2 -right-2 text-xl animate-pulse opacity-0 group-hover:opacity-100 transition-opacity">✨</div>
                     </Link>
 
-                    {/* RIGHT: ACTIONS */}
-                    <div className="flex items-center gap-2">
+                    {/* RIGHT: MULTI-COLOR ACTIONS */}
+                    <div className="flex items-center gap-3 relative z-30">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-1 mr-4">
@@ -70,7 +80,7 @@ export function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-2 font-bold uppercase rounded-lg border-2 border-transparent hover:border-black hover:bg-[#FFC800] hover:text-black transition-all",
+                                        "px-4 py-2 font-bold uppercase rounded-lg border-2 border-transparent hover:border-black hover:bg-white hover:text-black transition-all",
                                         pathname === item.href ? "text-[#FFC800]" : "text-gray-400"
                                     )}
                                 >
@@ -79,66 +89,75 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* Search Button */}
+                        {/* 1. SEARCH: CYAN */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-10 h-10 bg-[#1a1a1a] border-2 border-transparent hover:border-[#FFC800] rounded-xl text-white transition-colors"
+                            variants={jellyVariants}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="flex items-center justify-center w-11 h-11 bg-[#22D3EE] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-5 h-5" />
+                            <Search className="w-6 h-6 stroke-[3px]" />
                         </motion.button>
 
-                        {/* Special Action (Mobile) */}
+                        {/* 2. ZAP: YELLOW */}
                         <Link href="/ozel" className="md:hidden">
                             <motion.div
-                                whileTap={{ scale: 0.9 }}
-                                className="flex items-center justify-center w-10 h-10 bg-[#FFC800] border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#fff]"
+                                variants={jellyVariants}
+                                whileTap="tap"
+                                whileHover="hover"
+                                className="flex items-center justify-center w-11 h-11 bg-[#FFC800] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
                             >
-                                <Zap className="w-5 h-5 text-black fill-black" />
+                                <Zap className="w-6 h-6 fill-black stroke-[3px]" />
                             </motion.div>
                         </Link>
 
-                        {/* MENU TRIGGER */}
+                        {/* 3. MENU: PINK */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
                                 <motion.button
-                                    whileTap={{ scale: 0.9 }}
-                                    className="flex items-center justify-center w-10 h-10 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000]"
+                                    variants={jellyVariants}
+                                    whileTap="tap"
+                                    whileHover="hover"
+                                    className="flex items-center justify-center w-11 h-11 bg-[#F472B6] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
                                 >
-                                    <Menu className="w-6 h-6 text-black stroke-[3px]" />
+                                    <Menu className="w-6 h-6 stroke-[3px]" />
                                 </motion.button>
                             </SheetTrigger>
-                            <SheetContent side="top" className="w-full h-auto min-h-[60vh] bg-[#0a0a0a] border-b-[4px] border-[#FFC800] rounded-b-[40px] p-0 text-white overflow-hidden">
 
-                                <div className="absolute inset-0 opacity-10 pointer-events-none"
-                                    style={{ backgroundImage: 'radial-gradient(#FFC800 1px, transparent 1px)', backgroundSize: '20px 20px' }}
-                                />
+                            {/* MENU DRAWER */}
+                            <SheetContent side="top" className="w-full h-auto min-h-[70vh] bg-[#0a0a0a] border-b-[6px] border-pink-500 rounded-b-[48px] p-0 text-white overflow-hidden">
+                                <div className="absolute inset-0 z-0">
+                                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                                </div>
 
-                                <div className="relative z-10 p-8 pt-24 flex flex-col gap-6 items-center">
+                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-8 gap-8">
                                     <DankLogo />
 
-                                    <div className="w-full h-1 bg-[#FFC800]/20 rounded-full" />
-
-                                    <div className="grid grid-cols-2 gap-4 w-full">
+                                    <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
                                         {[
-                                            { href: "/", label: "Ana Sayfa", color: "bg-blue-400" },
-                                            { href: "/makale", label: "Keşfet", color: "bg-green-400" },
-                                            { href: "/blog", label: "Blog", color: "bg-purple-400" },
-                                            { href: "/profil", label: "Profil", color: "bg-orange-400" },
+                                            { href: "/", label: "ANA SAYFA", color: "bg-cyan-400" },
+                                            { href: "/makale", label: "KEŞFET", color: "bg-green-400" },
+                                            { href: "/blog", label: "BLOG", color: "bg-purple-400" },
+                                            { href: "/profil", label: "PROFİL", color: "bg-pink-400" },
                                         ].map((link, i) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="group relative flex items-center justify-center h-20 bg-[#151515] border-[3px] border-[#333] hover:border-[#FFC800] rounded-2xl overflow-hidden transition-all"
+                                                className="group relative h-28 border-[3px] border-black rounded-2xl overflow-hidden hover:scale-105 transition-transform"
                                             >
-                                                <span className="relative z-10 font-black text-xl uppercase italic tracking-tighter group-hover:scale-110 transition-transform">{link.label}</span>
-                                                <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity", link.color)} />
+                                                <div className={cn("absolute inset-0 border-b-4 border-black/20", link.color)} />
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className="font-black text-xl italic text-black/90 tracking-tighter uppercase drop-shadow-sm group-hover:tracking-widest transition-all">
+                                                        {link.label}
+                                                    </span>
+                                                </div>
                                             </Link>
                                         ))}
                                     </div>
 
-                                    <div className="mt-4 w-full">
+                                    <div className="w-full max-w-xs p-1 bg-white border-2 border-black rounded-xl">
                                         <AuthButton />
                                     </div>
                                 </div>

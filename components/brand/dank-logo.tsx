@@ -5,12 +5,11 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none">
+        <div className="flex flex-col select-none relative group cursor-pointer">
             {/* 
-        V15 LOGO (RESTORED)
-        - Thick Black Outline (WebkitTextStroke)
-        - Gradient Fill (Yellow -> Orange)
-        - Hard Drop Shadow
+        V17 "WORLD CLASS" LOGO 
+        - Base: V15 Stroke Style (User Liked this)
+        - New: Glitch Interactivity + Rainbow Underline
       */}
             <div className="relative z-10">
                 <motion.h1
@@ -20,31 +19,27 @@ export function DankLogo() {
                         textShadow: "3px 3px 0px #000",
                         fontFamily: "var(--font-heading)",
                     }}
-                    animate={{
-                        y: [0, -2, 0],
-                        rotate: [0, 1, 0, -1, 0]
+                    whileHover={{
+                        x: [0, -2, 2, -1, 0],
+                        y: [0, 1, -1, 0],
+                        filter: ["hue-rotate(0deg)", "hue-rotate(90deg)", "hue-rotate(0deg)"]
                     }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
+                    transition={{ duration: 0.2 }}
                 >
                     FIZIKHUB
                 </motion.h1>
 
-                {/* Shine Effect Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-[200%] -translate-x-full animate-[shimmer_3s_infinite]" />
+                {/* Rainbow Underline Animation */}
+                <div className="h-1.5 w-full mt-1 rounded-full bg-gradient-to-r from-cyan-400 via-yellow-400 to-pink-500 border border-black shadow-[1px_1px_0px_0px_#000]" />
             </div>
 
-            {/* Subtitle Badge */}
+            {/* Subtitle - Rotated Sticker */}
             <motion.div
-                className="self-start -mt-0.5"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+                className="self-start -mt-2 ml-1 z-20"
+                animate={{ rotate: [-2, -4, -2] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
             >
-                <span className="bg-white border-2 border-black text-black text-[9px] font-black uppercase px-1.5 py-0.5 rounded-sm shadow-[2px_2px_0px_0px_#000] tracking-wider transform -rotate-2 inline-block">
+                <span className="bg-white border-2 border-black text-black text-[9px] font-black uppercase px-1.5 py-0.5 rounded-sm shadow-[2px_2px_0px_0px_#000] tracking-wider inline-block">
                     BİLİM PLATFORMU
                 </span>
             </motion.div>
