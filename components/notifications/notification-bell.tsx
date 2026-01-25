@@ -202,11 +202,10 @@ export function NotificationBell({ className }: { className?: string }) {
                             animate={unreadCount > 0 ? {
                                 rotate: [0, -15, 15, -15, 15, 0],
                                 scale: [1, 1.1, 1],
-                                color: ["currentColor", "#a855f7", "currentColor"]
                             } : {}}
                             transition={{ duration: 0.6, repeat: unreadCount > 0 ? Infinity : 0, repeatDelay: 3 }}
                         >
-                            <Bell className={cn("h-5 w-5 transition-colors", unreadCount > 0 ? "text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" : "text-foreground")} />
+                            <Bell className="h-5 w-5" />
                         </motion.div>
 
                         {unreadCount > 0 && (
