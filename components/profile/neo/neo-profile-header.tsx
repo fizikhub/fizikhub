@@ -4,32 +4,24 @@ import { cn } from "@/lib/utils";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { EditableCover } from "@/components/profile/editable-cover";
 import { BadgeDisplay } from "@/components/badge-display";
-import { EditProfileButton } from "@/components/profile/edit-profile-button";
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
-import { NotificationBell } from "@/components/notifications/notification-bell";
-import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
-import { RapidScienceButton } from "@/components/profile/rapid-science-button";
 import { FollowButton } from "@/components/profile/follow-button";
-import { ReputationDisplay } from "@/components/reputation-display";
 import {
     Calendar,
     Link as LinkIcon,
     Share2,
-    FileText,
     Twitter,
     Github,
     Instagram,
     Linkedin,
     BadgeCheck,
-    Shield,
-    PenLine
+    PenLine,
+    Mail,
+    Edit3
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
 
-// Random gradient for cover fallback
 const GRADIENTS = [
     "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
     "bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-500",
@@ -61,7 +53,6 @@ export function NeoProfileHeader({
     stats,
     userBadges = []
 }: NeoProfileHeaderProps) {
-    // Deterministic gradient based on user id
     const gradientIndex = profile?.id ?
         profile.id.charCodeAt(0) % GRADIENTS.length : 0;
     const gradient = GRADIENTS[gradientIndex];
@@ -71,255 +62,165 @@ export function NeoProfileHeader({
     const isVerified = profile?.is_verified;
 
     return (
-        <div className="w-full">
-            {/* === COVER SECTION === */}
-            <EditableCover
-                url={profile?.cover_url}
-                gradient={gradient}
-                editable={isOwnProfile}
-            />
+        <div className="w-full flex flex-col gap-6 relative">
+            {/* === MODULAR BLOCK 1: MAIN PROFILE CARD === */}
+            <div className="flex flex-col rounded-[32px] bg-card border-[3px] border-black dark:border-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
+                {/* Cover & Avatar Header Section */}
+                <div className="relative">
+                    <div className="h-40 sm:h-52 overflow-hidden">
+                        <EditableCover
+                            url={profile?.cover_url}
+                            gradient={gradient}
+                            editable={isOwnProfile}
+                        />
+                    </div>
 
-            {/* === MAIN PROFILE CARD === */}
-            <div className="relative -mt-16 mx-2 sm:mx-0">
-                <div className="bg-card border-3 border-black dark:border-white rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
-
-                    {/* TOP SECTION: Avatar + Actions */}
-                    <div className="px-4 sm:px-6 pt-4 pb-4">
-                        <div className="flex items-end justify-between gap-4">
-                            {/* Avatar with Neo border */}
-                            <div className="relative -mt-20 shrink-0">
-                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-black dark:border-white bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
-                                    <AvatarUpload
-                                        currentAvatarUrl={profile?.avatar_url}
-                                        userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
-                                        className="h-full w-full"
-                                    />
-                                </div>
-
-                                {/* Verified/Admin Badge */}
-                                {(isVerified || isAdmin) && (
-                                    <div className="absolute -bottom-1 -right-1 bg-primary border-2 border-black rounded-full p-1 shadow-md">
-                                        {isAdmin ? (
-                                            <Shield className="h-4 w-4 text-black fill-black/20" />
-                                        ) : (
-                                            <BadgeCheck className="h-4 w-4 text-black fill-black/20" />
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                                {isOwnProfile ? (
-                                    <>
-                                        {/* Share Button */}
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(window.location.href);
-                                            }}
-                                            className="neo-button-sm bg-primary"
-                                            title="Profili Paylaş"
-                                        >
-                                            <Share2 className="h-4 w-4" />
-                                        </button>
-
-                                        {/* Write Article */}
-                                        <Link
-                                            href="/makale/yaz"
-                                            className="neo-button-primary flex items-center gap-2"
-                                        >
-                                            <PenLine className="h-4 w-4" />
-                                            <span className="hidden sm:inline">Yazı Yaz</span>
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        {/* Share Button */}
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(window.location.href);
-                                            }}
-                                            className="neo-button-sm bg-primary"
-                                            title="Profili Paylaş"
-                                        >
-                                            <Share2 className="h-4 w-4" />
-                                        </button>
-
-                                        {/* Follow Button */}
-                                        <FollowButton
-                                            targetUserId={profile?.id}
-                                            initialIsFollowing={isFollowing}
-                                            targetUsername={profile?.username}
-                                        />
-                                    </>
-                                )}
-                            </div>
+                    {/* Avatar - Positioned to peek over cover */}
+                    <div className="absolute -bottom-16 left-8">
+                        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-[6px] border-card bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] overflow-hidden p-1">
+                            <AvatarUpload
+                                currentAvatarUrl={profile?.avatar_url}
+                                userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
+                                className="h-full w-full rounded-full"
+                            />
                         </div>
                     </div>
 
-                    {/* USER INFO SECTION */}
-                    <div className="px-4 sm:px-6 pb-4">
-                        {/* Name + Username + Role Badge */}
-                        <div className="mb-3">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h1 className="text-2xl sm:text-3xl font-black tracking-tight uppercase">
-                                    {profile?.full_name || "İsimsiz Kullanıcı"}
-                                </h1>
-
-                                {/* Role Badges */}
-                                {isAdmin && (
-                                    <span className="neo-badge bg-primary text-black">
-                                        ADMİN
-                                    </span>
-                                )}
-                                {isWriter && !isAdmin && (
-                                    <span className="neo-badge bg-emerald-400 text-black">
-                                        YAZAR
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="flex items-center gap-2 mt-1 text-muted-foreground">
-                                <span className="font-semibold text-sm">@{profile?.username || "kullanici"}</span>
-                                <span>•</span>
-                                <span className="text-xs flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    yaklaşık {format(new Date(user?.created_at || Date.now()), 'MM.yyyy', { locale: tr })} önce
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Bio */}
-                        {profile?.bio && (
-                            <p className="text-foreground/80 text-sm leading-relaxed mb-3 max-w-lg">
-                                {profile.bio}
-                            </p>
+                    {/* Action Bar Overlay on Cover (Top Right) */}
+                    <div className="absolute top-6 right-6 flex gap-2">
+                        {isOwnProfile ? (
+                            <Link href="/profil/duzenle" className="neo-button-sm bg-white dark:bg-zinc-800 border-2 border-black">
+                                <Edit3 className="w-4 h-4" />
+                            </Link>
+                        ) : (
+                            <button className="neo-button-sm bg-white border-2 border-black">
+                                <Mail className="w-4 h-4" />
+                            </button>
                         )}
+                        <button
+                            onClick={() => navigator.clipboard.writeText(window.location.href)}
+                            className="neo-button-sm bg-primary border-2 border-black"
+                        >
+                            <Share2 className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
 
-                        {/* Website & Social Links */}
-                        <div className="flex items-center gap-4 flex-wrap text-sm mb-4">
-                            {profile?.website && (
-                                <a
-                                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-primary hover:underline font-medium"
-                                >
-                                    <LinkIcon className="h-3.5 w-3.5" />
-                                    <span>{profile.website.replace(/^https?:\/\//, '')}</span>
-                                </a>
+                {/* Content Area - Padded top for Avatar overlap */}
+                <div className="px-8 pt-20 pb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h1 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase italic leading-none">
+                                    {profile?.full_name || "BİLİNİP DURULMAMIŞ"}
+                                </h1>
+                                {isVerified && <BadgeCheck className="w-8 h-8 text-primary" />}
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                                <p className="font-mono text-lg font-black text-muted-foreground opacity-60">
+                                    @{profile?.username || "yok"}
+                                </p>
+                                {isAdmin && <span className="px-3 py-1 bg-black text-white text-[10px] font-black rounded-full uppercase tracking-widest">SİSTEM ADMİNİ</span>}
+                                {isWriter && !isAdmin && <span className="px-3 py-1 bg-emerald-400 text-black text-[10px] font-black rounded-full uppercase tracking-widest">YAZAR</span>}
+                            </div>
+                        </div>
+
+                        {!isOwnProfile && (
+                            <div className="shrink-0 scale-110 origin-right">
+                                <FollowButton
+                                    targetUserId={profile?.id}
+                                    initialIsFollowing={isFollowing}
+                                    targetUsername={profile?.username}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Bio & Social Details Container */}
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                        <div className="space-y-4">
+                            {profile?.bio && (
+                                <p className="text-lg font-bold leading-[1.3] text-foreground/80 font-heading">
+                                    {profile.bio}
+                                </p>
                             )}
-
-                            {/* Social Icons */}
-                            {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
-                                <div className="flex items-center gap-3">
-                                    {profile.social_links?.twitter && (
-                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                                            <Twitter className="h-4 w-4" />
-                                        </a>
-                                    )}
-                                    {profile.social_links?.github && (
-                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                                            <Github className="h-4 w-4" />
-                                        </a>
-                                    )}
-                                    {profile.social_links?.linkedin && (
-                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                                            <Linkedin className="h-4 w-4" />
-                                        </a>
-                                    )}
-                                    {profile.social_links?.instagram && (
-                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
-                                            <Instagram className="h-4 w-4" />
-                                        </a>
-                                    )}
+                            <div className="flex items-center gap-5 text-sm font-black text-muted-foreground italic">
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <span>{format(new Date(user?.created_at || Date.now()), 'd MMMM yyyy', { locale: tr })}</span>
                                 </div>
-                            )}
+                                {profile?.website && (
+                                    <a href={profile.website} target="_blank" className="flex items-center gap-2 text-primary">
+                                        <LinkIcon className="w-4 h-4" />
+                                        <span>WEBSITE</span>
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Social Icons Card */}
+                        <div className="flex items-center gap-4 justify-start md:justify-end">
+                            {profile.social_links?.twitter && <SocialIcon icon={Twitter} />}
+                            {profile.social_links?.github && <SocialIcon icon={Github} />}
+                            {profile.social_links?.instagram && <SocialIcon icon={Instagram} />}
+                            {profile.social_links?.linkedin && <SocialIcon icon={Linkedin} />}
                         </div>
                     </div>
+                </div>
 
-                    {/* === STATS GRID === */}
-                    <div className="grid grid-cols-3 border-t-3 border-black dark:border-white">
-                        {/* Followers */}
-                        <StatCell
-                            value={stats.followersCount}
-                            label="TAKİPÇİ"
-                            className="border-r-3 border-black dark:border-white"
-                        />
-                        {/* Following */}
-                        <StatCell
-                            value={stats.followingCount}
-                            label="TAKİP"
-                            className="border-r-3 border-black dark:border-white"
-                        />
-                        {/* Reputation - Highlighted */}
-                        <StatCell
-                            value={stats.reputation}
-                            label="REPÜTASYON"
-                            highlight
-                        />
-                    </div>
+                {/* === STATS SECTION (MODULAR) === */}
+                <div className="grid grid-cols-3 border-t-[4px] border-black dark:border-white">
+                    <StatBox value={stats.reputation} label="REPÜTASYON" color="bg-primary" border />
+                    <StatBox value={stats.followersCount} label="TAKİPÇİ" border />
+                    <StatBox value={stats.followingCount} label="TAKİP" />
 
-                    {/* Secondary Stats Row */}
-                    <div className="grid grid-cols-3 border-t-3 border-black dark:border-white">
-                        <StatCell
-                            value={stats.articlesCount}
-                            label="MAKALE"
-                            className="border-r-3 border-black dark:border-white"
-                        />
-                        <StatCell
-                            value={stats.questionsCount}
-                            label="SORU"
-                            className="border-r-3 border-black dark:border-white"
-                        />
-                        <StatCell
-                            value={stats.answersCount}
-                            label="CEVAP"
-                        />
-                    </div>
+                    <StatBox value={stats.articlesCount} label="MAKALE" topBorder border />
+                    <StatBox value={stats.questionsCount} label="SORU" topBorder border />
+                    <StatBox value={stats.answersCount} label="CEVAP" topBorder />
                 </div>
             </div>
 
-            {/* === STICKER COLLECTION === */}
+            {/* === MODULAR BLOCK 2: STICKER COLLECTION === */}
             {userBadges && userBadges.length > 0 && (
-                <div className="mt-6 flex justify-center px-4">
-                    <BadgeDisplay userBadges={userBadges} size="md" maxDisplay={4} />
+                <div className="bg-card border-[3px] border-black dark:border-white rounded-[32px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.8)] p-6">
+                    <div className="flex items-center justify-between mb-6 px-4">
+                        <h2 className="text-2xl font-black italic uppercase tracking-tighter">STICKER Koleksiyonun</h2>
+                        <div className="h-[2px] flex-1 mx-6 bg-black/10 dark:bg-white/10" />
+                        <span className="font-mono font-black text-muted-foreground opacity-50">{userBadges.length} ADET</span>
+                    </div>
+                    <div className="flex justify-center">
+                        <BadgeDisplay userBadges={userBadges} size="md" maxDisplay={6} />
+                    </div>
                 </div>
             )}
         </div>
     );
 }
 
-// Stat Cell Component
-function StatCell({
-    value,
-    label,
-    highlight = false,
-    className = ""
-}: {
-    value: number;
-    label: string;
-    highlight?: boolean;
-    className?: string;
-}) {
+function StatBox({ value, label, color = "", border = false, topBorder = false }: any) {
     return (
         <div className={cn(
-            "flex flex-col items-center justify-center py-4 px-2 transition-colors",
-            highlight ? "bg-primary text-black" : "bg-card hover:bg-muted/50",
-            className
+            "flex flex-col items-center justify-center py-8 transition-colors hover:bg-muted/30",
+            color,
+            border && "border-r-[4px] border-black dark:border-white",
+            topBorder && "border-t-[4px] border-black dark:border-white",
+            (color === "bg-primary") && "dark:text-black"
         )}>
-            <span className={cn(
-                "text-2xl sm:text-3xl font-black tracking-tight",
-                highlight ? "text-black" : "text-foreground"
-            )}>
+            <span className="text-3xl sm:text-5xl font-black tracking-tighter tabular-nums leading-none mb-2">
                 {value.toLocaleString('tr-TR')}
             </span>
-            <span className={cn(
-                "text-[10px] font-bold tracking-widest mt-0.5",
-                highlight ? "text-black/70" : "text-muted-foreground"
-            )}>
+            <span className="text-[10px] sm:text-xs font-black tracking-[0.3em] uppercase opacity-60">
                 {label}
             </span>
+        </div>
+    );
+}
+
+function SocialIcon({ icon: Icon }: any) {
+    return (
+        <div className="w-12 h-12 flex items-center justify-center bg-card border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer">
+            <Icon className="w-5 h-5" />
         </div>
     );
 }

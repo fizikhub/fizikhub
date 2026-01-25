@@ -14,15 +14,8 @@ import {
     ThumbsUp,
     Eye,
     ArrowUpRight,
-    Edit2,
-    Grid3X3,
-    LayoutList
+    Edit2
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-
-// ============================================
-// TYPES
-// ============================================
 
 interface NeoProfileFeedProps {
     articles: any[];
@@ -36,10 +29,6 @@ interface NeoProfileFeedProps {
 
 type TabValue = "articles" | "questions" | "answers" | "drafts" | "saved";
 
-// ============================================
-// MAIN COMPONENT
-// ============================================
-
 export function NeoProfileFeed({
     articles,
     questions,
@@ -49,10 +38,8 @@ export function NeoProfileFeed({
     drafts = [],
     isOwnProfile = true
 }: NeoProfileFeedProps) {
-    const router = useRouter();
     const [activeTab, setActiveTab] = useState<TabValue>("articles");
 
-    // Combine bookmarked items
     const savedItems = useMemo(() => [
         ...(bookmarkedArticles || []).map((item: any) => ({
             type: 'article' as const,
@@ -61,7 +48,6 @@ export function NeoProfileFeed({
             slug: item.articles?.slug,
             date: item.created_at,
             category: item.articles?.category,
-            author: item.articles?.author
         })),
         ...(bookmarkedQuestions || []).map((item: any) => ({
             type: 'question' as const,
@@ -72,344 +58,147 @@ export function NeoProfileFeed({
         }))
     ].filter(item => item.id).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [bookmarkedArticles, bookmarkedQuestions]);
 
-    // Tab configuration
     const tabs = [
-        { value: "articles" as const, label: "MAKALELER", icon: FileText, count: articles?.length || 0 },
-        { value: "questions" as const, label: "SORULAR", icon: MessageSquare, count: questions?.length || 0 },
-        { value: "answers" as const, label: "CEVAPLAR", icon: MessageCircle, count: answers?.length || 0 },
-        ...(isOwnProfile && drafts?.length > 0 ? [{ value: "drafts" as const, label: "TASLAKLAR", icon: PenTool, count: drafts.length }] : []),
-        ...(isOwnProfile && savedItems.length > 0 ? [{ value: "saved" as const, label: "KAYDEDİLENLER", icon: Bookmark, count: savedItems.length }] : []),
+        { value: "articles" as const, label: "MAKALE", icon: FileText, count: articles?.length || 0 },
+        { value: "questions" as const, label: "SORU", icon: MessageSquare, count: questions?.length || 0 },
+        { value: "answers" as const, label: "CEVAP", icon: MessageCircle, count: answers?.length || 0 },
+        ...(isOwnProfile && drafts?.length > 0 ? [{ value: "drafts" as const, label: "TASLAK", icon: PenTool, count: drafts.length }] : []),
+        ...(isOwnProfile && savedItems.length > 0 ? [{ value: "saved" as const, label: "KAYDI", icon: Bookmark, count: savedItems.length }] : []),
     ];
 
     return (
-        <div className="w-full mt-6">
-            {/* === NAV TABS === */}
-            <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
-                <div className="inline-flex items-center gap-1 p-1 bg-muted/30 border-3 border-black dark:border-white rounded-xl min-w-max">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.value;
-
-                        return (
-                            <button
-                                key={tab.value}
-                                onClick={() => setActiveTab(tab.value)}
-                                className={cn(
-                                    "flex items-center gap-2 px-4 py-2.5 rounded-lg font-bold text-sm transition-all whitespace-nowrap",
-                                    isActive
-                                        ? "bg-primary text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                )}
-                            >
-                                <Icon className="w-4 h-4" />
-                                <span>{tab.label}</span>
-                                {tab.count > 0 && (
-                                    <span className={cn(
-                                        "text-xs px-1.5 py-0.5 rounded-md font-bold",
-                                        isActive
-                                            ? "bg-black/20 text-black"
-                                            : "bg-muted-foreground/20"
-                                    )}>
-                                        {tab.count}
-                                    </span>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
+        <div className="w-full flex flex-col gap-6 mt-6 pb-20">
+            {/* === NAVIGATION TABS === */}
+            <div className="flex flex-wrap items-center gap-2 p-1.5 bg-card border-[3px] border-black dark:border-white rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)]">
+                {tabs.map((tab) => {
+                    const isActive = activeTab === tab.value;
+                    return (
+                        <button
+                            key={tab.value}
+                            onClick={() => setActiveTab(tab.value)}
+                            className={cn(
+                                "flex-1 min-w-[100px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-black text-xs uppercase tracking-tighter transition-all",
+                                isActive
+                                    ? "bg-primary text-black border-2 border-black"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            )}
+                        >
+                            <tab.icon className="w-4 h-4" />
+                            <span>{tab.label}</span>
+                            {tab.count > 0 && (
+                                <span className={cn(
+                                    "px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 text-black font-bold",
+                                    isActive ? "bg-black/20" : "bg-muted text-muted-foreground"
+                                )}>
+                                    {tab.count}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
-            {/* === CONTENT === */}
-            <div className="mt-4">
-                {/* Articles */}
+            {/* === CONTENT FEED AREA === */}
+            <div className="flex flex-col gap-4">
                 {activeTab === "articles" && (
-                    articles?.length > 0 ? (
-                        <div className="space-y-3">
-                            {articles.map((article) => (
-                                <NeoFeedCard
-                                    key={article.id}
-                                    type="article"
-                                    title={article.title}
-                                    description={article.excerpt}
-                                    href={`/blog/${article.slug}`}
-                                    date={article.created_at}
-                                    category={article.category}
-                                    stats={{
-                                        likes: article.likes_count,
-                                        views: article.views
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <NeoEmptyState
-                            icon={FileText}
-                            title={isOwnProfile ? "HENÜZ MAKALE YOK" : "MAKALE BULUNAMADI"}
-                            description={isOwnProfile ? "Bilimsel yazılarını burada paylaş." : "Bu kullanıcı henüz makale yayınlamamış."}
-                        />
-                    )
+                    articles?.length > 0 ? articles.map(a => (
+                        <FeedItem key={a.id} type="article" title={a.title} desc={a.excerpt} href={`/blog/${a.slug}`} date={a.created_at} stats={{ views: a.views, likes: a.likes_count }} cat={a.category} />
+                    )) : <EmptyState icon={FileText} title="Makale Bulunmuyor" desc="Henüz bir bilimsel makale yayınlanmamış." />
                 )}
 
-                {/* Questions */}
                 {activeTab === "questions" && (
-                    questions?.length > 0 ? (
-                        <div className="space-y-3">
-                            {questions.map((question) => (
-                                <NeoFeedCard
-                                    key={question.id}
-                                    type="question"
-                                    title={question.title}
-                                    href={`/forum/${question.id}`}
-                                    date={question.created_at}
-                                    category={question.category}
-                                    stats={{
-                                        comments: question.answers_count,
-                                        views: question.views
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <NeoEmptyState
-                            icon={MessageSquare}
-                            title={isOwnProfile ? "HENÜZ SORU YOK" : "SORU BULUNAMADI"}
-                            description={isOwnProfile ? "Takıldığın yerlerde topluluğa sor." : "Bu kullanıcı henüz soru sormamış."}
-                        />
-                    )
+                    questions?.length > 0 ? questions.map(q => (
+                        <FeedItem key={q.id} type="question" title={q.title} href={`/forum/${q.id}`} date={q.created_at} stats={{ views: q.views, comments: q.answers_count }} cat={q.category} />
+                    )) : <EmptyState icon={MessageSquare} title="Soru Bulunmuyor" desc="Ufukta henüz bir soru görünmüyor." />
                 )}
 
-                {/* Answers */}
                 {activeTab === "answers" && (
-                    answers?.length > 0 ? (
-                        <div className="space-y-3">
-                            {answers.map((answer) => (
-                                <NeoFeedCard
-                                    key={answer.id}
-                                    type="answer"
-                                    title={answer.questions?.title || "Silinmiş Soru"}
-                                    description={answer.content}
-                                    href={`/forum/${answer.questions?.id || '#'}`}
-                                    date={answer.created_at}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <NeoEmptyState
-                            icon={MessageCircle}
-                            title={isOwnProfile ? "HENÜZ CEVAP YOK" : "CEVAP BULUNAMADI"}
-                            description={isOwnProfile ? "Başkalarının sorularına yardım et." : "Bu kullanıcı henüz cevap vermemiş."}
-                        />
-                    )
+                    answers?.length > 0 ? answers.map(ans => (
+                        <FeedItem key={ans.id} type="answer" title={ans.questions?.title || "Bilinmeyen Soru"} desc={ans.content} href={`/forum/${ans.questions?.id || '#'}`} date={ans.created_at} />
+                    )) : <EmptyState icon={MessageCircle} title="Cevap Bulunmuyor" desc="Henüz bir bilimsel tartışmaya katılınmamış." />
                 )}
 
-                {/* Drafts */}
                 {activeTab === "drafts" && (
-                    drafts?.length > 0 ? (
-                        <div className="space-y-3">
-                            {drafts.map((draft: any) => (
-                                <NeoFeedCard
-                                    key={draft.id}
-                                    type="draft"
-                                    title={draft.title || "(Başlıksız Taslak)"}
-                                    href={`/makale/duzenle/${draft.id}`}
-                                    date={draft.created_at}
-                                    category={draft.category}
-                                    status="draft"
-                                    onEdit={() => router.push(`/makale/duzenle/${draft.id}`)}
-                                />
-                            ))}
-                        </div>
-                    ) : null
+                    drafts?.map(d => (
+                        <FeedItem key={d.id} type="draft" title={d.title || "İsimsiz Taslak"} href={`/makale/duzenle/${d.id}`} date={d.created_at} cat={d.category} isDraft />
+                    ))
                 )}
 
-                {/* Saved */}
                 {activeTab === "saved" && (
-                    savedItems?.length > 0 ? (
-                        <div className="space-y-3">
-                            {savedItems.map((item) => (
-                                <NeoFeedCard
-                                    key={`${item.type}-${item.id}`}
-                                    type={item.type}
-                                    title={item.title}
-                                    href={item.type === 'article' ? `/blog/${item.slug}` : `/forum/${item.id}`}
-                                    date={item.date}
-                                    category={item.category}
-                                />
-                            ))}
-                        </div>
-                    ) : null
+                    savedItems?.map(s => (
+                        <FeedItem key={`${s.type}-${s.id}`} type={s.type} title={s.title} href={s.type === 'article' ? `/blog/${s.slug}` : `/forum/${s.id}`} date={s.date} cat={s.category} />
+                    ))
                 )}
             </div>
         </div>
     );
 }
 
-// ============================================
-// FEED CARD COMPONENT
-// ============================================
-
-interface NeoFeedCardProps {
-    type: "article" | "question" | "answer" | "draft";
-    title: string;
-    description?: string;
-    href: string;
-    date: string | Date;
-    stats?: {
-        views?: number;
-        likes?: number;
-        comments?: number;
-    };
-    category?: string;
-    status?: string;
-    onEdit?: () => void;
-}
-
-function NeoFeedCard({
-    type,
-    title,
-    description,
-    href,
-    date,
-    stats,
-    category,
-    status,
-    onEdit
-}: NeoFeedCardProps) {
-    const formattedDate = format(new Date(date), 'dd MMM yyyy', { locale: tr });
-
-    const typeLabels = {
-        article: "Makale",
-        question: "Soru",
-        answer: "Cevap",
-        draft: "Taslak"
-    };
-
-    const typeColors = {
-        article: "bg-sky-400",
-        question: "bg-amber-400",
-        answer: "bg-emerald-400",
-        draft: "bg-zinc-400"
-    };
+function FeedItem({ type, title, desc, href, date, stats, cat, isDraft = false }: any) {
+    const formattedDate = format(new Date(date), 'dd.MM.yyyy', { locale: tr });
 
     return (
-        <Link
-            href={href}
-            className="group block"
-        >
-            <div className={cn(
-                "relative p-4 bg-card border-3 border-black dark:border-white rounded-xl",
-                "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)]",
-                "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
-                "transition-all duration-200"
-            )}>
-                {/* Type Badge */}
-                <div className="flex items-center justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-2">
-                        <span className={cn(
-                            "px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-black border-2 border-black rounded-md",
-                            typeColors[type]
-                        )}>
-                            {typeLabels[type]}
-                        </span>
-
-                        {category && (
-                            <span className="text-xs text-primary font-semibold">
-                                {category}
-                            </span>
-                        )}
-
-                        {status === "draft" && (
-                            <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-yellow-400/20 text-yellow-600 border border-yellow-500 rounded">
-                                Taslak
-                            </span>
-                        )}
-                    </div>
-
-                    <span className="text-xs text-muted-foreground font-medium">
+        <Link href={href} className="group block">
+            <div className="relative p-5 bg-card border-[3px] border-black dark:border-white rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                    <span className={cn(
+                        "px-2 py-0.5 text-[10px] font-black uppercase tracking-widest border-2 border-black rounded-md",
+                        type === 'article' ? "bg-sky-400" : type === 'question' ? "bg-amber-400" : "bg-emerald-400 text-black"
+                    )}>
+                        {type === 'article' ? "MAKALE" : type === 'question' ? "SORU" : "CEVAP"}
+                    </span>
+                    <span className="text-[10px] font-black tracking-widest text-muted-foreground opacity-60">
                         {formattedDate}
                     </span>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1">
+                <h3 className="text-lg font-black tracking-tight leading-tight group-hover:text-primary transition-colors mb-2 uppercase italic">
                     {title}
                 </h3>
 
-                {/* Description */}
-                {description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-2">
-                        {description}
+                {desc && (
+                    <p className="text-sm font-semibold text-muted-foreground line-clamp-2 leading-relaxed mb-4">
+                        {desc}
                     </p>
                 )}
 
-                {/* Stats Footer */}
-                {stats && (
-                    <div className="flex items-center gap-4 pt-2 border-t border-border/40">
-                        {stats.likes !== undefined && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <ThumbsUp className="w-3.5 h-3.5" />
-                                <span className="font-medium">{stats.likes}</span>
-                            </div>
-                        )}
-                        {stats.comments !== undefined && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <MessageCircle className="w-3.5 h-3.5" />
-                                <span className="font-medium">{stats.comments}</span>
-                            </div>
-                        )}
-                        {stats.views !== undefined && (
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Eye className="w-3.5 h-3.5" />
-                                <span className="font-medium">{stats.views}</span>
-                            </div>
-                        )}
-
-                        {/* Arrow */}
-                        <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                            <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
-                        </div>
+                <div className="flex items-center justify-between border-t-2 border-dashed border-black/10 dark:border-white/10 pt-4 mt-2">
+                    <div className="flex items-center gap-4">
+                        {stats?.likes !== undefined && <Stat value={stats.likes} icon={ThumbsUp} />}
+                        {stats?.comments !== undefined && <Stat value={stats.comments} icon={MessageCircle} />}
+                        {stats?.views !== undefined && <Stat value={stats.views} icon={Eye} />}
+                        {cat && <span className="text-[10px] font-black text-primary uppercase">{cat}</span>}
                     </div>
-                )}
+                    <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
 
-                {/* Edit button for drafts */}
-                {onEdit && (
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onEdit();
-                        }}
-                        className="absolute top-4 right-4 p-2 bg-muted hover:bg-primary hover:text-black rounded-lg opacity-0 group-hover:opacity-100 transition-all border-2 border-transparent hover:border-black"
-                    >
-                        <Edit2 className="w-4 h-4" />
-                    </button>
+                {isDraft && (
+                    <div className="absolute top-4 right-4 bg-yellow-400 border-2 border-black p-1.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <Edit2 className="w-4 h-4 text-black" />
+                    </div>
                 )}
             </div>
         </Link>
     );
 }
 
-// ============================================
-// EMPTY STATE COMPONENT
-// ============================================
-
-interface NeoEmptyStateProps {
-    icon: any;
-    title: string;
-    description: string;
+function Stat({ value, icon: Icon }: any) {
+    return (
+        <div className="flex items-center gap-1.5 text-xs font-black text-muted-foreground">
+            <Icon className="w-3.5 h-3.5" />
+            <span>{value}</span>
+        </div>
+    );
 }
 
-function NeoEmptyState({ icon: Icon, title, description }: NeoEmptyStateProps) {
+function EmptyState({ icon: Icon, title, desc }: any) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-            <div className="w-20 h-20 flex items-center justify-center bg-muted border-3 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] mb-4">
-                <Icon className="w-10 h-10 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center py-20 px-6 text-center bg-card border-[3px] border-dashed border-black/10 dark:border-white/10 rounded-3xl">
+            <div className="w-16 h-16 flex items-center justify-center bg-muted border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4 -rotate-3">
+                <Icon className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-black uppercase tracking-tight mb-1">
-                {title}
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-[280px]">
-                {description}
-            </p>
+            <h4 className="text-lg font-black uppercase tracking-tighter mb-1">{title}</h4>
+            <p className="text-sm font-semibold text-muted-foreground max-w-[250px]">{desc}</p>
         </div>
     );
 }

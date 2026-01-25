@@ -52,8 +52,8 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-background py-4 sm:py-8 pb-32">
-            <div className="container max-w-[600px] lg:max-w-[700px] mx-auto px-4">
+        <div className="min-h-screen bg-background py-4 sm:py-8 pb-60">
+            <div className="container max-w-[600px] lg:max-w-[800px] mx-auto px-4 flex flex-col gap-12">
 
                 {/* NEO-BRUTALIST HEADER */}
                 <NeoProfileHeader
