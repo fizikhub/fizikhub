@@ -244,7 +244,6 @@ export default async function RootLayout({
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
-              <CompactDock />
               <InstallPrompt />
               <HubGPTWidget />
             </TimeLimitProvider>
