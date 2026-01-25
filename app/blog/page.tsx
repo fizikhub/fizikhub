@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
-import { V33BlogLayout } from "@/components/blog/v33-blog-layout";
+import { ModernExploreView } from "@/components/explore/modern-explore-view";
 
 // ISR Removed for accurate auth state
 // export const revalidate = 0;
@@ -78,10 +78,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     }
 
     return (
-        <V33BlogLayout
-            articles={(articles || []) as any}
-            categories={VALID_CATEGORIES}
-            currentCategory={category}
-        />
+        <div className="container md:px-16 px-0 py-4 md:py-8 max-w-[1600px] mx-auto min-h-screen">
+            <ModernExploreView
+                initialArticles={articles || []}
+                currentCategory={category}
+                categories={VALID_CATEGORIES}
+                searchQuery={query}
+                totalPages={totalPages}
+                currentPage={page}
+            />
+        </div>
     );
 }
