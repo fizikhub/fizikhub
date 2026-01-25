@@ -5,46 +5,35 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none">
+        <div className="flex flex-col select-none relative group cursor-default">
             {/* 
-        DANK BANK STYLE TEXT
-        - Thick Black Outline
-        - Gradient Fill (Yellow -> Orange)
-        - Hard Drop Shadow
+        V16 HYPER-LOGO 
+        - Solid Yellow (Clean)
+        - Italic, Heavy
+        - liquid Shimmer Animation
       */}
-            <div className="relative z-10">
+            <div className="relative z-10 overflow-hidden py-1">
                 <motion.h1
-                    className="font-black text-3xl italic tracking-tighter leading-none text-[#FFC800]"
-                    style={{
-                        WebkitTextStroke: "1.5px black",
-                        textShadow: "3px 3px 0px #000",
-                        fontFamily: "var(--font-heading)",
-                    }}
-                    animate={{
-                        y: [0, -2, 0],
-                        rotate: [0, 1, 0, -1, 0]
-                    }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
+                    className="font-black text-[28px] sm:text-3xl italic tracking-tighter leading-none text-[#FFC800] drop-shadow-sm"
+                    style={{ fontFamily: "var(--font-heading)" }}
+                    initial={{ skewX: -10 }}
+                    whileHover={{ skewX: -15, scale: 1.05 }}
                 >
                     FIZIKHUB
                 </motion.h1>
 
-                {/* Shine Effect Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-[200%] -translate-x-full animate-[shimmer_3s_infinite]" />
+                {/* Liquid Shimmer Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/80 to-transparent w-[50%] skew-x-[-20deg] animate-[shimmer_2.5s_infinite] mix-blend-overlay" />
             </div>
 
-            {/* Subtitle Badge */}
+            {/* Subtitle Badge - Sticker Style */}
             <motion.div
-                className="self-start -mt-0.5"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
+                className="self-start -mt-1 ml-1"
+                initial={{ rotate: -2 }}
+                whileHover={{ rotate: 2, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
             >
-                <span className="bg-white border-2 border-black text-black text-[9px] font-black uppercase px-1.5 py-0.5 rounded-sm shadow-[2px_2px_0px_0px_#000] tracking-wider transform -rotate-2 inline-block">
+                <span className="bg-white border-2 border-black text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-sm shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block">
                     BİLİM PLATFORMU
                 </span>
             </motion.div>

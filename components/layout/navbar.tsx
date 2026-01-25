@@ -16,7 +16,10 @@ export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const pathname = usePathname();
+
+    // V16: Add mounting check to prevent hydration mismatch on random animations
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -24,117 +27,112 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const navItems = [
-        { href: "/", label: "Ana" },
-        { href: "/makale", label: "Keşfet" },
-        { href: "/siralamalar", label: "Lig" },
-    ];
-
     return (
         <>
             {/* 
-                V15: DANK NEO-NAVBAR
-                - Layout: Wide Floating Bar (Left Logo, Right Actions).
-                - Style: High Contrast, Animated, "Cool".
+                V16: HYPER-NEO NAVBAR
+                - "One Level Up" from V15.
+                - Cleaner, darker, punchier.
             */}
-            <header className="fixed top-2 sm:top-4 left-0 right-0 z-50 flex justify-center px-2 sm:px-4 pointer-events-none">
+            <header className="fixed top-3 left-0 right-0 z-50 flex justify-center px-3 pointer-events-none">
                 <motion.div
-                    initial={{ y: -100, rotateX: 90 }}
-                    animate={{ y: 0, rotateX: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    initial={{ y: -120, scale: 0.9 }}
+                    animate={{ y: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 20 }}
                     className={cn(
                         "pointer-events-auto",
-                        "flex items-center justify-between pl-4 pr-2 py-2",
-                        "bg-[#111]/95 backdrop-blur-xl border-[3px] border-black",
-                        "rounded-2xl shadow-[4px_4px_0px_0px_#FFC800]", // YELLOW SHADOW VIBE
-                        "w-full max-w-7xl", // Full width container
+                        "flex items-center justify-between pl-5 pr-3 py-2.5",
+                        "bg-[#050505] border-[3px] border-black", // Deep Black Body
+                        "rounded-2xl",
+                        // THE YELLOW LIP SHADOW (As seen in screenshot)
+                        "shadow-[0px_6px_0px_0px_#FFC800]",
+                        "w-full max-w-7xl relative overflow-hidden"
                     )}
                 >
-                    {/* LEFT: ANIMATED BRAND */}
-                    <Link href="/" className="group">
-                        <DankLogo />
-                    </Link>
+                    {/* Background Noise Texture for "Premium" Feel */}
+                    <div className="absolute inset-0 opacity-10 pointer-events-none z-0"
+                        style={{ backgroundImage: 'radial-gradient(#333 1px, transparent 1px)', backgroundSize: '4px 4px' }}
+                    />
 
-                    {/* RIGHT: ACTIONS */}
-                    <div className="flex items-center gap-2">
+                    {/* LEFT: HYPER BRAND */}
+                    <div className="relative z-10 flex-shrink-0">
+                        <Link href="/">
+                            <DankLogo />
+                        </Link>
+                    </div>
 
-                        {/* Desktop Links (Hidden on Mobile) */}
-                        <div className="hidden md:flex items-center gap-1 mr-4">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        "px-4 py-2 font-bold uppercase rounded-lg border-2 border-transparent hover:border-black hover:bg-[#FFC800] hover:text-black transition-all",
-                                        pathname === item.href ? "text-[#FFC800]" : "text-gray-400"
-                                    )}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </div>
+                    {/* RIGHT: CYBER ACTIONS */}
+                    <div className="relative z-10 flex items-center gap-3">
 
-                        {/* Search Button */}
+                        {/* 1. SEARCH - Glassy Dark */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-10 h-10 bg-[#1a1a1a] border-2 border-transparent hover:border-[#FFC800] rounded-xl text-white transition-colors"
+                            whileHover={{ y: -2 }}
+                            className="flex items-center justify-center w-11 h-11 bg-white/5 border border-white/10 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
                         >
                             <Search className="w-5 h-5" />
                         </motion.button>
 
-                        {/* Special Action (Mobile) */}
-                        <Link href="/ozel" className="md:hidden">
+                        {/* 2. SPECIAL - Electric Yellow */}
+                        <Link href="/ozel">
                             <motion.div
                                 whileTap={{ scale: 0.9 }}
-                                className="flex items-center justify-center w-10 h-10 bg-[#FFC800] border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#fff]"
+                                whileHover={{ y: -2, boxShadow: "0px 0px 20px rgba(255, 200, 0, 0.4)" }}
+                                className="flex items-center justify-center w-11 h-11 bg-[#FFC800] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000]"
                             >
-                                <Zap className="w-5 h-5 text-black fill-black" />
+                                <Zap className="w-6 h-6 text-black fill-black" />
                             </motion.div>
                         </Link>
 
-                        {/* MENU TRIGGER */}
+                        {/* 3. MENU - Stark White */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
-                                    className="flex items-center justify-center w-10 h-10 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000]"
+                                    whileHover={{ y: -2 }}
+                                    className="flex items-center justify-center w-11 h-11 bg-white border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000]"
                                 >
                                     <Menu className="w-6 h-6 text-black stroke-[3px]" />
                                 </motion.button>
                             </SheetTrigger>
-                            <SheetContent side="top" className="w-full h-auto min-h-[60vh] bg-[#0a0a0a] border-b-[4px] border-[#FFC800] rounded-b-[40px] p-0 text-white overflow-hidden">
+                            <SheetContent side="top" className="w-full h-[80vh] bg-[#050505] border-b-[6px] border-[#FFC800] rounded-b-[48px] p-0 text-white overflow-hidden">
 
-                                {/* Menu Background / Doodles? */}
-                                <div className="absolute inset-0 opacity-10 pointer-events-none"
-                                    style={{ backgroundImage: 'radial-gradient(#FFC800 1px, transparent 1px)', backgroundSize: '20px 20px' }}
-                                />
+                                {/* Menu Background */}
+                                <div className="absolute inset-0 z-0">
+                                    <div className="absolute inset-0 opacity-[0.03] bg-[url('/noise.png')] mix-blend-overlay" />
+                                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#FFC800]/10 to-transparent opacity-50" />
+                                </div>
 
-                                <div className="relative z-10 p-8 pt-24 flex flex-col gap-6 items-center">
-                                    <DankLogo />
+                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-8 gap-8">
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ delay: 0.1, type: "spring" }}
+                                    >
+                                        <DankLogo />
+                                    </motion.div>
 
-                                    <div className="w-full h-1 bg-[#FFC800]/20 rounded-full" />
-
-                                    <div className="grid grid-cols-2 gap-4 w-full">
+                                    <div className="grid grid-cols-2 gap-4 w-full max-w-md">
                                         {[
-                                            { href: "/", label: "Ana Sayfa", color: "bg-blue-400" },
-                                            { href: "/makale", label: "Keşfet", color: "bg-green-400" },
-                                            { href: "/blog", label: "Blog", color: "bg-purple-400" },
-                                            { href: "/profil", label: "Profil", color: "bg-orange-400" },
+                                            { href: "/", label: "ANA SAYFA", icon: "🏠" },
+                                            { href: "/makale", label: "KEŞFET", icon: "🧭" },
+                                            { href: "/blog", label: "BLOG", icon: "📝" },
+                                            { href: "/profil", label: "PROFİL", icon: "👤" },
                                         ].map((link, i) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="group relative flex items-center justify-center h-20 bg-[#151515] border-[3px] border-[#333] hover:border-[#FFC800] rounded-2xl overflow-hidden transition-all"
+                                                className="group relative flex flex-col items-center justify-center h-24 bg-[#111] border-[2px] border-[#222] hover:border-[#FFC800] hover:bg-[#FFC800] rounded-2xl transition-all duration-300"
                                             >
-                                                <span className="relative z-10 font-black text-xl uppercase italic tracking-tighter group-hover:scale-110 transition-transform">{link.label}</span>
-                                                <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity", link.color)} />
+                                                <span className="text-2xl mb-1 group-hover:scale-125 transition-transform duration-300">{link.icon}</span>
+                                                <span className="font-black text-sm text-zinc-500 group-hover:text-black tracking-widest">{link.label}</span>
                                             </Link>
                                         ))}
                                     </div>
 
-                                    <div className="mt-4 w-full">
+                                    <div className="w-full max-w-xs">
                                         <AuthButton />
                                     </div>
                                 </div>
@@ -144,7 +142,7 @@ export function Navbar() {
                 </motion.div>
             </header>
 
-            {/* SPACER for Content */}
+            {/* SPACER */}
             <div className="h-[20px] sm:h-[40px]" />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
