@@ -73,15 +73,24 @@ const config = {
                 '3': "3px",
             },
             boxShadow: {
-                'neo': '5px 5px 0px 0px #000000', // Desktop
-                'neo-sm': '3px 3px 0px 0px #000000', // Mobile
+                // Neo-Brutalism Shadow Scale (RetroUI inspired, 0 blur)
+                'neo-xs': '1px 1px 0px 0px #000000',    // Micro elements
+                'neo-sm': '2px 2px 0px 0px #000000',    // Mobile/Compact
+                'neo': '4px 4px 0px 0px #000000',    // Default
+                'neo-lg': '6px 6px 0px 0px #000000',    // Large components
+                'neo-xl': '10px 10px 0px 0px #000000',  // Hero elements
+                // Interactive States
+                'neo-hover': '2px 2px 0px 0px #000000',
+                'neo-active': '0px 0px 0px 0px #000000',
+                // Dark Mode Variants
+                'neo-dark': '4px 4px 0px 0px #ffffff',
                 'neo-white': '4px 4px 0px 0px #ffffff',
-                'neo-hover': '2px 2px 0px 0px #000000', // Restored for globals.css
-                'neo-active': '0px 0px 0px 0px #000000', // Restored
-                'neo-dark': '4px 4px 0px 0px #ffffff', // Restored (White shadow for dark mode)
+                // Colored Shadows (Accent)
+                'neo-yellow': '4px 4px 0px 0px #facc15',
+                'neo-purple': '4px 4px 0px 0px #8b5cf6',
             },
             fontFamily: {
-                sans: ["var(--font-inter)", "sans-serif"], // Keep Inter as fallback if Archivo not loaded yet
+                sans: ["var(--font-inter)", "sans-serif"],
                 heading: ["var(--font-outfit)", "sans-serif"],
             },
             keyframes: {
@@ -97,12 +106,28 @@ const config = {
                     "0%, 100%": { transform: "translateX(0)" },
                     "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-2px)" },
                     "20%, 40%, 60%, 80%": { transform: "translateX(2px)" },
-                }
+                },
+                // Extracted from NeoBaseAI
+                "fade-in": {
+                    "0%": { opacity: "0" },
+                    "100%": { opacity: "1" },
+                },
+                "slide-up": {
+                    "0%": { opacity: "0", transform: "translateY(10px)" },
+                    "100%": { opacity: "1", transform: "translateY(0)" },
+                },
+                "slide-down": {
+                    "0%": { opacity: "0", transform: "translateY(-10px)" },
+                    "100%": { opacity: "1", transform: "translateY(0)" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "shake": "shake 0.4s cubic-bezier(.36,.07,.19,.97) both",
+                "fade-in": "fade-in 0.2s ease-out forwards",
+                "slide-up": "slide-up 0.2s ease-out",
+                "slide-down": "slide-down 0.2s ease-out",
             },
         },
     },
