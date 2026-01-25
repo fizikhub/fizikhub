@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Search, Menu, Zap, Rocket, Flame } from "lucide-react";
+import { Search, Menu, Zap, Rocket } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -40,65 +40,78 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V21: SCIENCE CONSOLE (SLIM + PHYSICS TICKER)
-                - Fixed Height (h-14)
-                - Animated Physics Equations Background
-                - Rocket with Thrust
-                - Ruler Ticks
+                V22: ULTRA SLIM SCIENCE CONSOLE
+                - Height: h-12 (48px) - Requested "Thinner"
+                - Rocket: Sine Wave Trajectory (Curved Path) + Dynamic Rotation
+                - Fire: Enhanced visual
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 h-12 sm:h-14 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-3 sm:px-4",
                         "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]",
+                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
                     {/* PHYSICS TICKER BACKGROUND */}
-                    <div className="absolute inset-0 flex items-center opacity-20 overflow-hidden pointer-events-none select-none">
+                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
                         <motion.div
-                            className="flex gap-8 whitespace-nowrap text-xs sm:text-sm font-mono font-bold text-black"
+                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
                             animate={{ x: ["0%", "-50%"] }}
-                            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                         >
-                            {[...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
+                            {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
                                 <span key={i} className="inline-block">{eq}</span>
                             ))}
                         </motion.div>
                     </div>
 
-                    {/* ROCKET PATROL WITH FIRE */}
+                    {/* SINE WAVE ROCKET */}
                     <motion.div
-                        className="absolute top-1/2 -translate-y-1/2 -left-10 z-0"
-                        animate={{ x: ["-10vw", "110vw"] }}
-                        transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 1 }}
+                        className="absolute left-0 top-1/2 z-0 pointer-events-none"
+                        initial={{ x: "-10vw" }}
+                        animate={{
+                            x: "110vw",
+                            y: [0, -12, 0, 12, 0, -12, 0], // Sine Wave
+                        }}
+                        transition={{
+                            x: { duration: 12, repeat: Infinity, ease: "linear" },
+                            y: { duration: 12, repeat: Infinity, ease: "linear" } // Synced with X
+                        }}
                     >
-                        <div className="relative">
-                            <Rocket className="w-5 h-5 sm:w-6 sm:h-6 rotate-90 fill-white stroke-black stroke-[1.5px] relative z-10" />
-                            {/* Fire Trail */}
-                            <motion.div
-                                className="absolute top-1.5 -left-3 w-4 h-2 bg-orange-500 rounded-full blur-[2px]"
-                                animate={{ scale: [1, 1.5, 1], opacity: [0.8, 1, 0.8] }}
-                                transition={{ duration: 0.1, repeat: Infinity }}
-                            />
-                            <motion.div
-                                className="absolute top-2 -left-5 w-3 h-1 bg-yellow-400 rounded-full blur-[1px]"
-                                animate={{ scale: [1, 1.2, 1], x: [-1, -3, -1] }}
-                                transition={{ duration: 0.15, repeat: Infinity }}
-                            />
-                        </div>
+                        <motion.div
+                            animate={{ rotate: [0, -15, 0, 15, 0, -15, 0] }} // Rotate with slope
+                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                        >
+                            <div className="relative">
+                                {/* The Rocket */}
+                                <Rocket className="w-5 h-5 sm:w-6 sm:h-6 rotate-90 fill-white stroke-black stroke-[1.5px] relative z-10" />
+
+                                {/* MEGA FIRE THRUST (Pulsating) */}
+                                <motion.div
+                                    className="absolute top-1.5 -left-4 w-6 h-2 bg-[#FF4500] rounded-l-full blur-[2px]"
+                                    animate={{ scaleX: [1, 1.5, 0.8, 1.2], opacity: [0.8, 1, 0.7] }}
+                                    transition={{ duration: 0.2, repeat: Infinity }}
+                                />
+                                <motion.div
+                                    className="absolute top-2 -left-3 w-4 h-1.5 bg-[#FFD700] rounded-l-full blur-[1px]"
+                                    animate={{ scaleX: [1, 1.3, 0.9], x: [0, -2, 0] }}
+                                    transition={{ duration: 0.15, repeat: Infinity }}
+                                />
+                            </div>
+                        </motion.div>
                     </motion.div>
 
-                    {/* RULER TICKS (Bottom Edge) */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40">
-                        {[...Array(40)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 5 === 0 ? '100%' : '50%' }} />
+                    {/* RULER TICKS (Condensed for slim bar) */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
                         ))}
                     </div>
 
-                    {/* LEFT: COMPACT BRAND */}
+                    {/* LEFT: BRAND (Scaled Down) */}
                     <div className="relative z-10 flex-shrink-0">
                         <Link href="/">
                             <DankLogo />
@@ -106,16 +119,16 @@ export function Navbar() {
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-2">
+                    <div className="relative z-10 flex items-center gap-1.5">
 
-                        {/* Desktop Links - Minimal Tabs */}
+                        {/* Desktop Links - Tiny Tabs */}
                         <div className="hidden md:flex items-center gap-1 mr-4">
                             {navItems.map((item) => (
                                 <Link
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-3 py-1 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        "px-2.5 py-0.5 text-[10px] sm:text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
                                         pathname === item.href && "bg-[#FFC800]"
                                     )}
                                 >
@@ -130,20 +143,20 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
+                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 2. ZAP (Mobile) */}
+                        {/* 2. ZAP */}
                         <Link href="/ozel" className="md:hidden">
                             <motion.div
                                 variants={clickVariant}
                                 whileTap="tap"
                                 whileHover="hover"
-                                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                                className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                             >
-                                <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-black stroke-[2.5px]" />
+                                <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-black stroke-[2.5px]" />
                             </motion.div>
                         </Link>
 
@@ -154,16 +167,15 @@ export function Navbar() {
                                     variants={clickVariant}
                                     whileTap="tap"
                                     whileHover="hover"
-                                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
+                                    className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
                                 >
-                                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
+                                    <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                                 </motion.button>
                             </SheetTrigger>
                             <SheetContent side="top" className="w-full min-h-[50vh] bg-[#3B82F6] border-b-[4px] border-black p-0 overflow-hidden">
                                 <div className="absolute inset-0 opacity-20"
                                     style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '32px 32px' }}
                                 />
-
                                 <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 pt-12 gap-6">
                                     <DankLogo />
                                     <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
@@ -200,7 +212,7 @@ export function Navbar() {
                 </div>
             </header>
 
-            <div className="h-[56px] sm:h-[64px]" />
+            <div className="h-[48px] sm:h-[56px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
