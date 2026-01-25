@@ -19,65 +19,69 @@ const config = {
         },
         extend: {
             colors: {
-                border: "hsl(var(--border))",
+                border: "#000000", // Force Black Borders
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
+                background: "#09090b", // Void
+                foreground: "#ffffff",
                 primary: {
-                    DEFAULT: "hsl(var(--primary))",
-                    foreground: "hsl(var(--primary-foreground))",
+                    DEFAULT: "#facc15", // Warning Yellow
+                    foreground: "#000000",
                 },
                 secondary: {
-                    DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))",
+                    DEFAULT: "#8b5cf6", // Quantum Purple
+                    foreground: "#ffffff",
+                },
+                card: {
+                    DEFAULT: "#1f2937", // Matter
+                    foreground: "#ffffff",
                 },
                 destructive: {
                     DEFAULT: "hsl(var(--destructive))",
                     foreground: "hsl(var(--destructive-foreground))",
                 },
                 muted: {
-                    DEFAULT: "hsl(var(--muted))",
-                    foreground: "hsl(var(--muted-foreground))",
+                    DEFAULT: "#27272a",
+                    foreground: "#a1a1aa",
                 },
                 accent: {
-                    DEFAULT: "hsl(var(--accent))",
-                    foreground: "hsl(var(--accent-foreground))",
+                    DEFAULT: "#facc15",
+                    foreground: "#000000",
                 },
                 popover: {
-                    DEFAULT: "hsl(var(--popover))",
-                    foreground: "hsl(var(--popover-foreground))",
-                },
-                card: {
-                    DEFAULT: "hsl(var(--card))",
-                    foreground: "hsl(var(--card-foreground))",
+                    DEFAULT: "#1f2937",
+                    foreground: "#ffffff",
                 },
                 // Custom Neo-Brutalist Colors
                 neo: {
-                    yellow: "#FFC800",
-                    pink: "#FF90E8",
-                    blue: "#23A9FA",
-                    green: "#00F050",
-                    purple: "#9D74FF",
-                    orange: "#FF5D23",
+                    yellow: "#facc15",
+                    purple: "#8b5cf6",
                     black: "#000000",
-                    white: "#FFFFFF"
+                    white: "#FFFFFF",
+                    void: "#09090b",
+                    matter: "#1f2937"
                 }
             },
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+                none: "0px",
+            },
+            borderWidth: {
+                DEFAULT: "2px",
+                '3': "3px",
             },
             boxShadow: {
-                neo: "4px 4px 0px 0px #000",
-                "neo-hover": "2px 2px 0px 0px #000",
-                "neo-lg": "8px 8px 0px 0px #000",
-                "neo-active": "0px 0px 0px 0px #000",
-                "neo-dark": "4px 4px 0px 0px #fff",
+                'neo': '5px 5px 0px 0px #000000', // Desktop
+                'neo-sm': '3px 3px 0px 0px #000000', // Mobile
+                'neo-white': '4px 4px 0px 0px #ffffff',
+                'neo-hover': '2px 2px 0px 0px #000000', // Restored for globals.css
+                'neo-active': '0px 0px 0px 0px #000000', // Restored
+                'neo-dark': '4px 4px 0px 0px #ffffff', // Restored (White shadow for dark mode)
             },
             fontFamily: {
-                sans: ["var(--font-inter)", "sans-serif"],
+                sans: ["var(--font-inter)", "sans-serif"], // Keep Inter as fallback if Archivo not loaded yet
                 heading: ["var(--font-outfit)", "sans-serif"],
             },
             keyframes: {
@@ -89,15 +93,16 @@ const config = {
                     from: { height: "var(--radix-accordion-content-height)" },
                     to: { height: "0" },
                 },
-                "spin-slow": {
-                    from: { transform: "rotate(0deg)" },
-                    to: { transform: "rotate(360deg)" }
+                "shake": {
+                    "0%, 100%": { transform: "translateX(0)" },
+                    "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-2px)" },
+                    "20%, 40%, 60%, 80%": { transform: "translateX(2px)" },
                 }
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
-                "spin-slow": "spin-slow 10s linear infinite",
+                "shake": "shake 0.4s cubic-bezier(.36,.07,.19,.97) both",
             },
         },
     },
