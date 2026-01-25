@@ -33,166 +33,132 @@ export function Navbar() {
         { href: "/siralamalar", label: "Sıralama", icon: Trophy },
     ];
 
+    // Deterministic "Random" Stars for Natural Look
+    // Using box-shadow to create stars is efficient and allows "random" positioning in CSS
+    const starShadowsSmall = "10vw 10vh #fff, 20vw 50vh #fff, 30vw 30vh #fff, 40vw 80vh #fff, 50vw 10vh #fff, 60vw 60vh #fff, 70vw 20vh #fff, 80vw 90vh #fff, 90vw 40vh #fff, 15vw 85vh #fff, 85vw 15vh #fff";
+    const starShadowsMedium = "5vw 90vh #fff, 25vw 20vh #fff, 45vw 60vh #fff, 65vw 10vh #fff, 85vw 50vh #fff, 10vw 40vh #fff, 35vw 70vh #fff, 75vw 80vh #fff, 95vw 25vh #fff";
+
     return (
         <>
             {/* 
-                SPACE NEO-BRUTALIST NAVBAR V2
-                - Refined Galaxy Background (Subtle)
-                - Long 'H' Logo Style
-                - Uniform Action Buttons
+                V3: COMPACT NEO-BRUTALIST NAVBAR
+                - Height: 56px (Mobile), 64px (Desktop)
+                - Buttons: Vibrant, Small, Tactile
+                - BG: Natural Stars
             */}
             <header
                 className={cn(
                     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                    "h-[72px] md:h-20",
-                    "border-b-2 border-white/20",
-                    "bg-[#0a0a0a]" // Always keep solid background for consistency, shadows added below if scrolled
+                    "h-14 md:h-16", // Compact Height
+                    "border-b-2 border-black/20 dark:border-white/10",
+                    "bg-[#0a0a0a]", // Deep dark base
+                    scrolled ? "shadow-md" : ""
                 )}
             >
-                {/* REFINED GALAXY BACKGROUND */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    {/* Deep Space Base */}
-                    <div className="absolute inset-0 bg-[#050505]" />
+                {/* NATURAL STARS BACKGROUND (CSS-only) */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-60">
+                    {/* Small Stars */}
+                    <div className="absolute w-[1px] h-[1px] bg-white rounded-full" style={{ boxShadow: starShadowsSmall }} />
+                    {/* Medium Stars */}
+                    <div className="absolute w-[2px] h-[2px] bg-white rounded-full opacity-50" style={{ boxShadow: starShadowsMedium }} />
 
-                    {/* Subtle Gradients - Toned down opacity */}
-                    <div className="absolute top-[-50%] left-[20%] w-[600px] h-[600px] bg-purple-900/10 blur-[120px] rounded-full mix-blend-screen" />
-                    <div className="absolute top-[-50%] right-[20%] w-[500px] h-[500px] bg-blue-900/5 blur-[100px] rounded-full mix-blend-screen" />
-
-                    {/* Dense Stars - Layer 1 */}
-                    <div className="absolute inset-0 opacity-40"
-                        style={{
-                            backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
-                            backgroundSize: '30px 30px'
-                        }}
-                    />
-                    {/* Dense Stars - Layer 2 (Offset) */}
-                    <div className="absolute inset-0 opacity-20"
-                        style={{
-                            backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
-                            backgroundSize: '15px 15px',
-                            backgroundPosition: '10px 10px'
-                        }}
-                    />
+                    {/* Very Subtle Nebula Tint (Optional) */}
+                    <div className="absolute top-0 right-0 w-[50%] h-full bg-purple-900/10 blur-3xl mix-blend-screen" />
                 </div>
 
-                <div className="relative container max-w-7xl mx-auto px-4 md:px-6 h-full">
+                <div className="relative container max-w-7xl mx-auto px-4 h-full">
                     <div className="flex items-center justify-between h-full">
 
-                        {/* 1. BRAND - LONG 'H' DESIGN */}
-                        <Link href="/" className="group flex flex-col justify-center select-none pt-1">
-                            <div className="flex items-end leading-none">
+                        {/* 1. BRAND - Refined Compact Logo */}
+                        <Link href="/" className="group flex flex-col justify-center select-none z-10">
+                            <div className="flex items-baseline leading-none">
                                 {/* FIZIK */}
-                                <span className="text-3xl md:text-4xl font-black tracking-tighter text-white font-heading z-10">
+                                <span className="text-xl md:text-2xl font-black tracking-tight text-white font-heading">
                                     Fizik
                                 </span>
-                                {/* HUB - "Long H" Style */}
-                                <div className="flex items-baseline ml-1">
-                                    {/* The Long H */}
-                                    <span className="text-5xl md:text-6xl font-black text-[#FFC800] transform translate-y-[6px] md:translate-y-[8px] -mr-0.5">
+                                {/* HUB - Long H Setup */}
+                                <div className="flex items-baseline ml-0.5">
+                                    <span className="text-3xl md:text-4xl font-black text-[#FFC800] transform translate-y-[3px]">
                                         H
                                     </span>
-                                    <span className="text-3xl md:text-4xl font-black text-[#FFC800]">
+                                    <span className="text-xl md:text-2xl font-black text-[#FFC800]">
                                         ub
                                     </span>
                                 </div>
                             </div>
-                            {/* Subtitle - Aligned */}
-                            <span className="text-[10px] md:text-[11px] font-bold text-gray-400/80 uppercase tracking-[0.2em] -mt-1 ml-0.5">
+                            <span className="text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-widest -mt-0.5 ml-0.5">
                                 Bilim Platformu
                             </span>
                         </Link>
 
-                        {/* 2. ACTIONS - UNIFORM NEO-BRUTALIST BUTTONS */}
-                        <div className="flex items-center gap-2 md:gap-3">
+                        {/* 2. ACTIONS - Vibrant Neo-Brutalist Buttons */}
+                        <div className="flex items-center gap-2">
 
-                            {/* Search Button */}
+                            {/* Search */}
                             <button
                                 onClick={() => setIsSearchOpen(true)}
-                                className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-white border-2 border-black rounded-md shadow-[3px_3px_0px_0px_white] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group"
+                                className="w-9 h-9 flex items-center justify-center bg-white border-2 border-black rounded shadow-[2px_2px_0px_0px_#23A9FA] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                             >
-                                <Search className="w-5 h-5 md:w-6 md:h-6 stroke-[3px] text-black group-hover:scale-110 transition-transform" />
+                                <Search className="w-4 h-4 text-black stroke-[3px]" />
                             </button>
 
-                            {/* Notifications Button - Visible on Mobile now */}
-                            <div className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-white border-2 border-black rounded-md shadow-[3px_3px_0px_0px_white] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group">
-                                <div className="text-black group-hover:scale-110 transition-transform">
-                                    <NotificationBell />
-                                </div>
+                            {/* Notifications */}
+                            <div className="w-9 h-9 flex items-center justify-center bg-white border-2 border-black rounded shadow-[2px_2px_0px_0px_#FF90E8] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer">
+                                <NotificationBell />
                             </div>
 
-                            {/* Menu Button */}
+                            {/* Menu Trigger */}
                             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                                 <SheetTrigger asChild>
-                                    <button className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-white border-2 border-black rounded-md shadow-[3px_3px_0px_0px_white] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group">
-                                        <Menu className="w-6 h-6 md:w-7 md:h-7 stroke-[3px] text-black group-hover:scale-110 transition-transform" />
+                                    <button className="w-9 h-9 flex items-center justify-center bg-[#FFC800] border-2 border-black rounded shadow-[2px_2px_0px_0px_#fff] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+                                        <Menu className="w-5 h-5 text-black stroke-[3px]" />
                                     </button>
                                 </SheetTrigger>
-                                <SheetContent side="right" className="w-[85vw] sm:w-[380px] bg-[#0a0a0a] border-l-2 border-white p-0 overflow-y-auto z-[100]">
-                                    {/* Mobile Menu Galaxy BG */}
-                                    <div className="absolute inset-0 overflow-hidden pointer-events-none z-[-1]">
-                                        <div className="absolute top-[10%] right-[-20%] w-[300px] h-[300px] bg-purple-900/20 blur-[80px] rounded-full" />
-                                        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                                    </div>
 
-                                    <div className="flex flex-col min-h-full relative text-white">
+                                {/* MOBILE DRAWER */}
+                                <SheetContent side="right" className="w-[85vw] sm:w-[350px] bg-[#111] border-l-2 border-white/20 p-0 overflow-hidden z-[100]">
+                                    <div className="flex flex-col h-full text-white">
 
-                                        {/* DRAWER HEADER */}
-                                        <div className="h-20 px-6 border-b-2 border-white/20 flex items-center justify-between sticky top-0 z-10 bg-[#0a0a0a]/80 backdrop-blur-md">
-                                            <div className="flex flex-col">
-                                                <span className="text-2xl font-black uppercase tracking-tighter text-white font-heading">MENÜ</span>
-                                            </div>
-                                            <SheetClose className="w-10 h-10 flex items-center justify-center bg-[#FFC800] text-black border-2 border-black shadow-[3px_3px_0px_0px_white] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-md">
-                                                <X className="w-6 h-6 stroke-[3px]" />
+                                        {/* Drawer Header */}
+                                        <div className="h-14 px-5 border-b-2 border-white/10 flex items-center justify-between bg-[#151515]">
+                                            <span className="text-lg font-black uppercase text-[#FFC800]">Menü</span>
+                                            <SheetClose className="w-8 h-8 flex items-center justify-center bg-zinc-800 border-2 border-black/50 text-white rounded shadow-[2px_2px_0px_0px_#000]">
+                                                <X className="w-4 h-4" />
                                             </SheetClose>
                                         </div>
 
-                                        {/* DRAWER LINKS */}
-                                        <div className="p-6 space-y-3 flex-1">
-                                            {navLinks.map((link) => {
-                                                const isActive = pathname === link.href;
-                                                return (
-                                                    <Link
-                                                        key={link.href}
-                                                        href={link.href}
-                                                        onClick={() => setIsMobileMenuOpen(false)}
-                                                        className={cn(
-                                                            "group flex items-center justify-between p-4 border-2 rounded-xl transition-all font-bold text-base uppercase",
-                                                            isActive
-                                                                ? "bg-[#FFC800] border-black text-black shadow-[4px_4px_0px_0px_white]"
-                                                                : "bg-transparent border-white/30 text-white hover:bg-white hover:border-black hover:text-black hover:shadow-[4px_4px_0px_0px_#FFC800]"
-                                                        )}
-                                                    >
-                                                        <div className="flex items-center gap-4">
-                                                            <div className={cn("p-2 rounded-lg border-2 border-transparent group-hover:border-black group-hover:bg-[#FFC800] transition-colors", isActive ? "bg-black text-[#FFC800]" : "bg-white/10")}>
-                                                                <link.icon className="w-5 h-5" />
-                                                            </div>
+                                        {/* Drawer Content */}
+                                        <div className="p-5 flex-1 overflow-y-auto">
+                                            <div className="grid gap-3">
+                                                {navLinks.map((link) => {
+                                                    const isActive = pathname === link.href;
+                                                    return (
+                                                        <Link
+                                                            key={link.href}
+                                                            href={link.href}
+                                                            onClick={() => setIsMobileMenuOpen(false)}
+                                                            className={cn(
+                                                                "flex items-center gap-3 p-3 rounded-lg border-2 transition-all font-bold text-sm uppercase",
+                                                                isActive
+                                                                    ? "bg-[#FFC800] border-black text-black shadow-[3px_3px_0px_0px_#fff]"
+                                                                    : "bg-[#1a1a1a] border-white/10 text-gray-300 hover:bg-[#222] hover:border-white/30"
+                                                            )}
+                                                        >
+                                                            <link.icon className="w-4 h-4" />
                                                             {link.label}
-                                                        </div>
-                                                        <ChevronRight className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                                                    </Link>
-                                                )
-                                            })}
+                                                        </Link>
+                                                    )
+                                                })}
+                                            </div>
 
-                                            <div className="my-6 border-t-2 border-white/20" />
+                                            <div className="my-6 border-t border-white/10" />
 
-                                            {/* Mobile Auth */}
-                                            <div className="flex flex-col gap-3">
-                                                <div className="p-5 bg-zinc-900/50 border-2 border-white/20 rounded-xl relative overflow-hidden">
-                                                    <div className="relative z-10">
-                                                        <span className="block text-xs font-bold text-gray-400 mb-3 uppercase tracking-wider">HESAP</span>
-                                                        <div className="flex justify-center">
-                                                            <AuthButton />
-                                                        </div>
-                                                    </div>
+                                            <div className="bg-[#1a1a1a] border-2 border-white/10 p-4 rounded-xl">
+                                                <span className="text-xs font-bold text-gray-500 uppercase mb-3 block">Hesap</span>
+                                                <div className="flex justify-center">
+                                                    <AuthButton />
                                                 </div>
                                             </div>
-                                        </div>
-
-                                        {/* FOOTER DECOR */}
-                                        <div className="p-4 bg-black/50 text-white text-center border-t-2 border-white/20">
-                                            <p className="font-bold text-[10px] uppercase tracking-[0.2em] text-[#FFC800]">
-                                                Bilimi Ti'ye Alıyoruz
-                                            </p>
                                         </div>
                                     </div>
                                 </SheetContent>
@@ -203,8 +169,8 @@ export function Navbar() {
                 </div>
             </header>
 
-            {/* SPACER for fixed header */}
-            <div className="h-[72px] md:h-20" />
+            {/* SPACER */}
+            <div className="h-14 md:h-16" />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
