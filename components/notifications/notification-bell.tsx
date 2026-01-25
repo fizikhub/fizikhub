@@ -37,7 +37,7 @@ interface Notification {
     };
 }
 
-export function NotificationBell() {
+export function NotificationBell({ className }: { className?: string }) {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
@@ -192,7 +192,7 @@ export function NotificationBell() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="relative rounded-xl h-10 w-10 hover:bg-primary/10 transition-all duration-300 group overflow-hidden"
+                        className={cn("relative rounded-xl h-10 w-10 hover:bg-primary/10 transition-all duration-300 group overflow-hidden", className)}
                         suppressHydrationWarning
                     >
                         {/* Glow effect behind the bell */}
