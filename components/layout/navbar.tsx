@@ -11,6 +11,11 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
+const clickVariant = {
+    tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
+    hover: { y: -2, x: -2, boxShadow: "3px 3px 0px 0px #000" }
+};
+
 const physicsTicker = [
     "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
     "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 299,792,458 m/s"
@@ -19,21 +24,13 @@ const physicsTicker = [
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-    const pathname = usePathname();
     const [mounted, setMounted] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => setMounted(true), []);
 
-    // Add scroll listener for glass effect intensity
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
     const navItems = [
-        { href: "/", label: "Ana Sayfa" },
+        { href: "/", label: "Ana" },
         { href: "/makale", label: "Keşfet" },
         { href: "/siralamalar", label: "Lig" },
     ];
@@ -41,144 +38,144 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V24: PROFESSIONAL SCIENCE UI
-                - Vibe: Modern, Clean, High-Tech, Trusted.
-                - Colors: Dark Slate, Electric Blue Accent, White Text.
-                - Removed: Thick borders, hard shadows, cartoon vibes.
+                V23: CLEAN SCIENCE CONSOLE (RESTORED)
+                - Height: h-14 (56px)
+                - Blue Base, Thick Borders, Physics Echo
             */}
-            <header
-                className={cn(
-                    "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                    scrolled
-                        ? "h-14 bg-[#09090b]/90 backdrop-blur-md border-b border-white/10" // Scrolled: Compact & Glass
-                        : "h-16 bg-[#09090b] border-b border-white/5" // Top: Spacious & Solid
-                )}
-            >
-                <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between relative overflow-hidden">
-
-                    {/* SUBTLE PHYSICS TEXTURE (Background) */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none overflow-hidden">
-                        <div className="whitespace-nowrap text-xs font-mono font-medium text-white header-ticker-mask">
-                            {[...physicsTicker, ...physicsTicker].map((eq, i) => (
-                                <span key={i} className="mx-8">{eq}</span>
+            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
+                <div
+                    className={cn(
+                        "pointer-events-auto h-full",
+                        "flex items-center justify-between px-3 sm:px-4",
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
+                        "w-full relative overflow-hidden"
+                    )}
+                >
+                    {/* PHYSICS TICKER BACKGROUND */}
+                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
+                        <motion.div
+                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        >
+                            {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
+                                <span key={i} className="inline-block">{eq}</span>
                             ))}
-                        </div>
+                        </motion.div>
+                    </div>
+
+                    {/* RULER TICKS */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
                     </div>
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0">
+                    <div className="relative z-10 flex-shrink-0 pt-0.5">
                         <Link href="/">
                             <DankLogo />
                         </Link>
                     </div>
 
-                    {/* CENTER: DESKTOP NAV (Modern Tabs) */}
-                    <nav className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-                        {navItems.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
+                    {/* RIGHT: COMPACT CONTROLS */}
+                    <div className="relative z-10 flex items-center gap-2">
+
+                        {/* Desktop Links */}
+                        <div className="hidden md:flex items-center gap-1 mr-4">
+                            {navItems.map((item) => (
                                 <Link
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "relative px-4 py-1.5 text-sm font-medium transition-colors rounded-full",
-                                        isActive ? "text-white" : "text-zinc-400 hover:text-white"
+                                        "px-3 py-1 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        pathname === item.href && "bg-[#FFC800]"
                                     )}
                                 >
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="nav-pill"
-                                            className="absolute inset-0 bg-white/10 rounded-full"
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-                                    <span className="relative z-10">{item.label}</span>
+                                    {item.label}
                                 </Link>
-                            )
-                        })}
-                    </nav>
+                            ))}
+                        </div>
 
-                    {/* RIGHT: CONTROLS (Clean) */}
-                    <div className="relative z-10 flex items-center gap-3">
-
-                        {/* Search */}
-                        <button
+                        {/* 1. SEARCH */}
+                        <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            className="p-2 text-zinc-400 hover:text-white transition-colors hover:bg-white/5 rounded-full"
-                            aria-label="Search"
+                            variants={clickVariant}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-5 h-5" />
-                        </button>
+                            <Search className="w-4 h-4 stroke-[2.5px]" />
+                        </motion.button>
 
-                        {/* Special (Mobile Zap) */}
+                        {/* 2. ZAP */}
                         <Link href="/ozel" className="md:hidden">
-                            <button className="p-2 text-yellow-500 hover:text-yellow-400 transition-colors hover:bg-yellow-500/10 rounded-full">
-                                <Zap className="w-5 h-5 fill-current" />
-                            </button>
+                            <motion.div
+                                variants={clickVariant}
+                                whileTap="tap"
+                                whileHover="hover"
+                                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            >
+                                <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
+                            </motion.div>
                         </Link>
 
-                        {/* Menu Trigger */}
+                        {/* 3. MENU */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
-                                <button className="p-2 text-zinc-400 hover:text-white transition-colors hover:bg-white/5 rounded-full md:hidden">
-                                    <Menu className="w-5 h-5" />
-                                </button>
+                                <motion.button
+                                    variants={clickVariant}
+                                    whileTap="tap"
+                                    whileHover="hover"
+                                    className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
+                                >
+                                    <Menu className="w-4 h-4 stroke-[2.5px]" />
+                                </motion.button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="bg-[#09090b] border-l border-white/10 w-[300px]">
-                                <div className="flex flex-col gap-6 mt-8">
-                                    <div className="pb-6 border-b border-white/10">
+                            <SheetContent side="top" className="w-full min-h-[50vh] bg-[#3B82F6] border-b-[4px] border-black p-0 overflow-hidden">
+                                <div className="absolute inset-0 opacity-20"
+                                    style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '32px 32px' }}
+                                />
+                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 pt-12 gap-6">
+                                    <div className="scale-125">
                                         <DankLogo />
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        {navItems.map((item) => (
+                                    <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+                                        {[
+                                            { href: "/", label: "ANA SAYFA", bg: "bg-white" },
+                                            { href: "/makale", label: "KEŞFET", bg: "bg-[#FFC800]" },
+                                            { href: "/blog", label: "BLOG", bg: "bg-cyan-300" },
+                                            { href: "/profil", label: "PROFİL", bg: "bg-[#F472B6]" },
+                                        ].map((link, i) => (
                                             <Link
-                                                key={item.href}
-                                                href={item.href}
+                                                key={link.href}
+                                                href={link.href}
                                                 onClick={() => setIsMenuOpen(false)}
                                                 className={cn(
-                                                    "px-4 py-3 text-sm font-medium rounded-lg transition-colors border border-transparent",
-                                                    pathname === item.href
-                                                        ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                                    "group relative h-16 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all",
+                                                    link.bg
                                                 )}
                                             >
-                                                {item.label}
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className="font-black text-sm sm:text-base text-black tracking-wider uppercase drop-shadow-sm">
+                                                        {link.label}
+                                                    </span>
+                                                </div>
                                             </Link>
                                         ))}
-                                        <Link
-                                            href="/blog"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="px-4 py-3 text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                                        >
-                                            Blog
-                                        </Link>
-                                        <Link
-                                            href="/profil"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="px-4 py-3 text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                                        >
-                                            Profil
-                                        </Link>
                                     </div>
-                                    <div className="mt-auto">
+                                    <div className="w-full max-w-[200px]">
                                         <AuthButton />
                                     </div>
                                 </div>
                             </SheetContent>
                         </Sheet>
-
-                        {/* Desktop Auth */}
-                        <div className="hidden md:block">
-                            <AuthButton />
-                        </div>
                     </div>
                 </div>
-
-                {/* Tech Line at Bottom */}
-                <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-50" />
             </header>
 
-            <div className="h-16" />
+            <div className="h-[56px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );

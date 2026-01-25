@@ -3,143 +3,132 @@ import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { Settings, Edit, FileText, Bookmark, Medal, Zap } from "lucide-react";
+import { Settings, Edit, FileText, Zap, Bookmark } from "lucide-react";
 
-// Inline Components for V23 Design to ensure "Fresh Start"
+// V25: ELEGANT NEO-BRUTALIST COMPONENTS
 
-function ScientistIDCard({ profile, user, stats, badges, isOwnProfile }: any) {
+function CompactHeader({ profile, user, stats, isOwnProfile }: any) {
     return (
-        <div className="relative group perspective-1000 w-full max-w-2xl mx-auto">
+        <div className="w-full">
             {/* 
-                V23 ID CARD: "PHYSICS LAB ACCESS PASS"
-                - Style: Industrial / Technical
-                - Base: White with Blue Header
-                - Border: Thick Black
+                V25 HEADER: COMPACT & ELEGANT
+                - Background: Dark Grey (Site BG)
+                - Layout: Horizontal Flex for Mobile
             */}
-            <div className={cn(
-                "relative overflow-hidden",
-                "bg-white border-[3px] border-black",
-                "shadow-[8px_8px_0px_0px_#000]",
-                "flex flex-col md:flex-row"
-            )}>
-                {/* LEFT: PHOTO & BASIC INFO */}
-                <div className="w-full md:w-1/3 bg-[#3B82F6] p-6 flex flex-col items-center justify-center border-b-[3px] md:border-b-0 md:border-r-[3px] border-black relative">
-                    {/* "Hole Punch" for lanyard */}
-                    <div className="absolute top-4 w-4 h-4 rounded-full bg-[#111] border-2 border-white/20" />
+            <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end mb-8">
 
-                    {/* Avatar Container */}
-                    <div className="relative mt-4">
-                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white border-[3px] border-black overflow-hidden relative shadow-[4px_4px_0px_0px_#000]">
+                {/* 1. IDENTITY BLOCK (Avatar + Name) */}
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className="relative">
+                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-zinc-800 border-[2px] border-black rounded-xl overflow-hidden shadow-[4px_4px_0px_0px_#000]">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt={profile.username} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-zinc-100 text-4xl font-black text-black/20">?</div>
+                                <div className="w-full h-full flex items-center justify-center bg-[#FFC800] text-3xl font-black text-black">?</div>
                             )}
                         </div>
-                        {/* Security Level Badge */}
-                        <div className="absolute -bottom-3 -right-3 rotate-[-5deg]">
-                            <span className="bg-[#FFC800] border-[2px] border-black px-2 py-0.5 text-xs font-black uppercase text-black shadow-sm">
+                        {/* Level Badge - Absolute */}
+                        <div className="absolute -bottom-2 -right-2">
+                            <div className="bg-black text-[#FFC800] text-[10px] font-black px-2 py-0.5 border border-[#FFC800] rounded-full">
                                 LVL {Math.floor(stats.reputation / 100) + 1}
-                            </span>
-                        </div>
-                    </div>
-
-                    <h1 className="mt-6 text-xl font-black text-white uppercase text-center leading-tight drop-shadow-md">
-                        {profile?.full_name || user.email?.split('@')[0]}
-                    </h1>
-                    <p className="text-blue-100 font-mono text-xs mt-1 bg-blue-700/50 px-2 py-0.5 rounded">
-                        @{profile?.username}
-                    </p>
-
-                    {isOwnProfile && (
-                        <div className="flex gap-2 mt-6 w-full">
-                            <Link href="/profil/duzenle" className="flex-1 bg-white border-[2px] border-black p-2 flex items-center justify-center hover:bg-zinc-100 transition-colors shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:shadow-none">
-                                <Edit className="w-4 h-4" />
-                            </Link>
-                            <Link href="/ayarlar" className="flex-1 bg-white border-[2px] border-black p-2 flex items-center justify-center hover:bg-zinc-100 transition-colors shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:shadow-none">
-                                <Settings className="w-4 h-4" />
-                            </Link>
-                        </div>
-                    )}
-                </div>
-
-                {/* RIGHT: STATS & DETAILS */}
-                <div className="w-full md:w-2/3 p-6 flex flex-col bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <h3 className="text-xs font-black uppercase text-zinc-400 tracking-widest">CLEARANCE</h3>
-                            <div className="text-2xl font-black text-black">SCIENTIST CLASS A</div>
-                        </div>
-                        <Zap className="w-8 h-8 text-[#FFC800] fill-black stroke-black stroke-[1.5px]" />
-                    </div>
-
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-                        {[
-                            { label: "REP", value: stats.reputation },
-                            { label: "ARTICLES", value: stats.articlesCount },
-                            { label: "FOLLOWERS", value: stats.followersCount },
-                        ].map((stat) => (
-                            <div key={stat.label} className="bg-white border-[2px] border-black p-2 shadow-[3px_3px_0px_0px_#ddd] group-hover:shadow-[3px_3px_0px_0px_#FFC800] transition-shadow">
-                                <div className="text-[10px] font-bold text-zinc-500">{stat.label}</div>
-                                <div className="text-lg font-black text-black leading-none mt-0.5">{stat.value}</div>
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="mt-auto">
-                        <div className="text-[10px] font-mono text-zinc-400 border-t border-black/10 pt-2 flex justify-between">
-                            <span>ID: {user.id.slice(0, 8).toUpperCase()}</span>
-                            <span>VALID: 2026</span>
                         </div>
                     </div>
+
+                    <div className="flex-1 min-w-0">
+                        <h1 className="text-xl sm:text-2xl font-black text-white leading-none tracking-tight">
+                            {profile?.full_name || user.email?.split('@')[0]}
+                        </h1>
+                        <p className="text-zinc-500 font-mono text-xs mt-1">
+                            @{profile?.username}
+                        </p>
+
+                        {/* Mobile Actions */}
+                        {isOwnProfile && (
+                            <div className="flex gap-2 mt-3 sm:hidden">
+                                <Link href="/profil/duzenle" className="bg-zinc-800 border border-zinc-700 p-1.5 rounded-md text-zinc-400 hover:text-white hover:border-white transition-all">
+                                    <Edit className="w-3.5 h-3.5" />
+                                </Link>
+                                <Link href="/ayarlar" className="bg-zinc-800 border border-zinc-700 p-1.5 rounded-md text-zinc-400 hover:text-white hover:border-white transition-all">
+                                    <Settings className="w-3.5 h-3.5" />
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
+
+                {/* 2. STATS ROW (Elegant) */}
+                <div className="flex gap-6 sm:ml-auto border-t sm:border-t-0 border-zinc-800 pt-4 sm:pt-0 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+                    {[
+                        { label: "YAZILAR", value: stats.articlesCount },
+                        { label: "TAKİPÇİ", value: stats.followersCount },
+                        { label: "PUAN", value: stats.reputation },
+                    ].map((stat) => (
+                        <div key={stat.label} className="flex flex-col">
+                            <span className="text-[10px] font-bold text-zinc-500 tracking-wider mb-0.5">{stat.label}</span>
+                            <span className="text-lg font-black text-white">{stat.value}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop Actions */}
+                {isOwnProfile && (
+                    <div className="hidden sm:flex gap-2">
+                        <Link href="/profil/duzenle" className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                            DÜZENLE
+                        </Link>
+                        <Link href="/ayarlar" className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-2 rounded-lg text-white transition-all">
+                            <Settings className="w-4 h-4" />
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-function ResearchLog({ title, items, icon: Icon, emptyMsg, type }: any) {
-    if (!items?.length) return null;
-    return (
-        <div className="w-full max-w-2xl mx-auto mt-8">
-            <div className="flex items-center gap-2 mb-3 px-2">
-                <div className="bg-black text-white p-1.5 rounded-md">
-                    <Icon className="w-4 h-4" />
-                </div>
-                <h2 className="font-black text-lg uppercase tracking-tight">{title}</h2>
-                <div className="flex-1 h-[2px] bg-black/10 ml-2" />
-            </div>
+function ContentFeed({ items, emptyMsg }: any) {
+    if (!items?.length) return (
+        <div className="py-12 text-center border-t border-zinc-800">
+            <span className="text-zinc-600 font-mono text-sm">{emptyMsg}</span>
+        </div>
+    );
 
-            <div className="space-y-3">
-                {items.map((item: any) => (
-                    <Link
-                        href={type === 'article' ? `/makale/${item.slug}` : type === 'question' ? `/forum/${item.id}` : '#'}
-                        key={item.id}
-                        className="block group"
-                    >
-                        <div className="bg-white border-[2px] border-black p-3 shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#3B82F6] transition-all flex items-start gap-3">
-                            {/* Category Chip */}
-                            {item.category && (
-                                <div className="flex-shrink-0 mt-0.5">
-                                    <span className="bg-[#FFC800] border border-black text-[10px] font-bold px-1.5 py-0.5 uppercase">
-                                        {item.category.slice(0, 3)}
-                                    </span>
-                                </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-sm sm:text-base leading-tight truncate group-hover:text-blue-600">
-                                    {item.title || item.content?.slice(0, 50)}
+    return (
+        <div className="flex flex-col gap-3">
+            {items.map((item: any) => (
+                <Link
+                    key={item.id}
+                    href={item.answers_count !== undefined ? `/forum/${item.id}` : `/makale/${item.slug}`}
+                    className="block group"
+                >
+                    {/* 
+                        V25 CARD: DARK & SLEEK
+                        - Bg: Zinc-900 (matches site)
+                        - Border: Black (Thick) or Zinc-700 (Thin)? User said "Neo Brutalistic".
+                        - Let's do: Zinc-800 Card + Black Border + Hover Lift
+                    */}
+                    <div className="relative bg-[#18181b] border border-black rounded-lg p-4 transition-all hover:-translate-y-1 hover:border-[#3B82F6] hover:shadow-[4px_4px_0px_0px_#000]">
+                        <div className="flex justify-between items-start gap-4">
+                            <div className="flex-1">
+                                <h3 className="text-white font-bold leading-snug group-hover:text-[#3B82F6] transition-colors line-clamp-2">
+                                    {item.title}
                                 </h3>
-                                <div className="flex items-center gap-3 mt-1.5 text-xs font-mono text-zinc-500">
+                                <div className="flex items-center gap-3 mt-2 text-[10px] font-mono text-zinc-500 uppercase tracking-wide">
                                     <span>{new Date(item.created_at).toLocaleDateString()}</span>
-                                    {item.views !== undefined && <span>• {item.views} VIEW</span>}
+                                    {item.category && <span className="text-zinc-400">• {item.category}</span>}
+                                    {item.views !== undefined && <span>• {item.views} OKUMA</span>}
                                 </div>
                             </div>
+
+                            {/* Icon Indicator */}
+                            <div className="text-zinc-700 group-hover:text-[#FFC800] transition-colors">
+                                {item.answers_count !== undefined ? <Zap className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+                            </div>
                         </div>
-                    </Link>
-                ))}
-            </div>
+                    </div>
+                </Link>
+            ))}
         </div>
     );
 }
@@ -152,7 +141,7 @@ export default async function ProfilePage() {
         redirect("/login");
     }
 
-    // Parallel Data Fetching (Preserved logic)
+    // Parallel Data Fetching
     const [
         { data: profile },
         { data: articles },
@@ -185,36 +174,50 @@ export default async function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 py-12 pb-32">
-            <div className="container px-4 mx-auto">
-                <ScientistIDCard
+        // Use bg-transparent so the global site background (Gray) shows through
+        <div className="min-h-screen py-8 sm:py-12 pb-32">
+            <div className="container max-w-2xl mx-auto px-4">
+
+                {/* V25 HEADER */}
+                <CompactHeader
                     profile={profile}
                     user={user}
                     stats={stats}
                     isOwnProfile={true}
                 />
 
-                <div className="flex flex-col gap-2 mt-12 mb-8 items-center">
-                    <div className="w-1 h-12 bg-black/10 mb-2"></div>
-                    <div className="font-mono text-xs uppercase tracking-widest text-zinc-400">Lab Activity Log</div>
+                {/* DIVIDER */}
+                <div className="h-[1px] bg-zinc-800 w-full mb-8"></div>
+
+                {/* SECTIONS */}
+                <div className="space-y-8">
+                    {/* Drafts (If any) */}
+                    {drafts && drafts.length > 0 && (
+                        <div>
+                            <h2 className="text-zinc-400 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                                TASLAKLAR
+                            </h2>
+                            <ContentFeed items={drafts} />
+                        </div>
+                    )}
+
+                    {/* Articles */}
+                    <div>
+                        <h2 className="text-white text-sm font-black uppercase tracking-widest mb-4 border-l-4 border-[#3B82F6] pl-3">
+                            YAYINLANAN MAKALELER
+                        </h2>
+                        <ContentFeed items={articles} emptyMsg="Henüz bir makale yayınlanmamış." />
+                    </div>
+
+                    {/* Questions */}
+                    <div>
+                        <h2 className="text-white text-sm font-black uppercase tracking-widest mb-4 border-l-4 border-[#FFC800] pl-3">
+                            FORUM TARTIŞMALARI
+                        </h2>
+                        <ContentFeed items={questions} emptyMsg="Henüz bir soru sorulmamış." />
+                    </div>
                 </div>
-
-                {drafts && drafts.length > 0 && (
-                    <div className="mb-12 opacity-80 hover:opacity-100 transition-opacity">
-                        <ResearchLog title="Drafts (Private)" items={drafts} icon={FileText} type="article" />
-                    </div>
-                )}
-
-                <ResearchLog title="Published Research" items={articles} icon={FileText} type="article" />
-                <div className="h-8" />
-                <ResearchLog title="Forum Queries" items={questions} icon={Zap} type="question" />
-                <div className="h-8" />
-
-                {(!articles?.length && !questions?.length) && (
-                    <div className="text-center py-12 opacity-50 font-mono">
-                        NO ACTIVITY DETECTED. START RESEARCHING.
-                    </div>
-                )}
             </div>
         </div>
     );
