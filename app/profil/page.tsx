@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
-import { getFollowStats, checkIsFollowing } from "@/app/profil/actions";
+import { getFollowStats } from "@/app/profil/actions";
 import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
 import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
 
