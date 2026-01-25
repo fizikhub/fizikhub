@@ -136,7 +136,6 @@ import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { HubGPTWidget } from "@/components/ai/hub-gpt-widget";
-import { MobileNavbar } from "@/components/mobile/mobile-navbar"; // Inserted
 
 export default async function RootLayout({
   children,
@@ -244,7 +243,6 @@ export default async function RootLayout({
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
-              <MobileNavbar />
               <InstallPrompt />
               <HubGPTWidget />
             </TimeLimitProvider>
