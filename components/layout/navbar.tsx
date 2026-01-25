@@ -97,7 +97,7 @@ export function Navbar() {
                             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                                 <SheetTrigger asChild>
                                     <motion.button
-                                        className={btnClass}
+                                        className={cn(btnClass, "hidden md:flex")}
                                         whileTap={{ scale: 0.9 }}
                                     >
                                         <Menu className="w-6 h-6 text-black stroke-[3px]" />
