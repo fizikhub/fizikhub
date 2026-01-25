@@ -40,12 +40,11 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V22: ULTRA SLIM SCIENCE CONSOLE
-                - Height: h-12 (48px) - Requested "Thinner"
-                - Rocket: Sine Wave Trajectory (Curved Path) + Dynamic Rotation
-                - Fire: Enhanced visual
+                V23: CLEAN SCIENCE CONSOLE
+                - Height: h-14 (56px) - "Bir tık kalın"
+                - Rocket Removed
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-12 sm:h-14 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
@@ -67,42 +66,6 @@ export function Navbar() {
                             ))}
                         </motion.div>
                     </div>
-
-                    {/* SINE WAVE ROCKET */}
-                    <motion.div
-                        className="absolute left-0 top-1/2 z-0 pointer-events-none"
-                        initial={{ x: "-10vw" }}
-                        animate={{
-                            x: "110vw",
-                            y: [0, -12, 0, 12, 0, -12, 0], // Sine Wave
-                        }}
-                        transition={{
-                            x: { duration: 12, repeat: Infinity, ease: "linear" },
-                            y: { duration: 12, repeat: Infinity, ease: "linear" } // Synced with X
-                        }}
-                    >
-                        <motion.div
-                            animate={{ rotate: [0, -15, 0, 15, 0, -15, 0] }} // Rotate with slope
-                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                        >
-                            <div className="relative">
-                                {/* The Rocket */}
-                                <Rocket className="w-5 h-5 sm:w-6 sm:h-6 rotate-90 fill-white stroke-black stroke-[1.5px] relative z-10" />
-
-                                {/* MEGA FIRE THRUST (Pulsating) */}
-                                <motion.div
-                                    className="absolute top-1.5 -left-4 w-6 h-2 bg-[#FF4500] rounded-l-full blur-[2px]"
-                                    animate={{ scaleX: [1, 1.5, 0.8, 1.2], opacity: [0.8, 1, 0.7] }}
-                                    transition={{ duration: 0.2, repeat: Infinity }}
-                                />
-                                <motion.div
-                                    className="absolute top-2 -left-3 w-4 h-1.5 bg-[#FFD700] rounded-l-full blur-[1px]"
-                                    animate={{ scaleX: [1, 1.3, 0.9], x: [0, -2, 0] }}
-                                    transition={{ duration: 0.15, repeat: Infinity }}
-                                />
-                            </div>
-                        </motion.div>
-                    </motion.div>
 
                     {/* RULER TICKS (Condensed for slim bar) */}
                     <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
@@ -212,7 +175,7 @@ export function Navbar() {
                 </div>
             </header>
 
-            <div className="h-[48px] sm:h-[56px]" />
+            <div className="h-[56px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
