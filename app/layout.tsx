@@ -135,7 +135,6 @@ import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
-import { HubGPTWidget } from "@/components/ai/hub-gpt-widget";
 import { CompactDock } from "@/components/mobile/compact-dock";
 
 export default async function RootLayout({
@@ -245,7 +244,6 @@ export default async function RootLayout({
                 {children}
               </NavigationWrapper>
               <InstallPrompt />
-              <HubGPTWidget />
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster

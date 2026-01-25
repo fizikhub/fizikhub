@@ -1,146 +1,121 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Share2, Sparkles, Atom } from "lucide-react";
+import { Zap, Skull, Brain, Atom, Ghost } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MEMES = [
     {
         id: 1,
-        title: "Schrödinger'in Kedisi",
-        content: "Kutuyu açana kadar hem ölü hem canlıyım.\n(Spoiler: Açınca ölüyorum 💀)",
-        tag: "KUANTUM"
+        title: "Schrödinger",
+        setup: "Kutuyu açtım...",
+        punchline: "Hem ölü hem canlı? Yok artık!",
+        icon: Ghost
     },
     {
         id: 2,
-        title: "Newton'un Kafası",
-        content: "Newton: Elma düştü.\nEinstein: Uzay-zaman eğrildi, elma ne yapsın?\nBen: Elma bedava, yerim.",
-        tag: "GRAVİTE"
+        title: "Heisenberg",
+        setup: "Polis: Hızını biliyor musun?",
+        punchline: "Hayır ama nerede olduğumu biliyorum!",
+        icon: Zap
     },
     {
         id: 3,
-        title: "Yazılımcı vs Fizikçi",
-        content: "Fizikçi: Evrenin sınırlarını zorluyorum, kara delikleri modelliyorum.\nYazılımcı: Div'i ortalayamadım.",
-        tag: "TEKNİK"
-    },
-    {
-        id: 4,
-        title: "Termodinamik Yasası",
-        content: "Odanın dağınıklığı entropi yasasıdır anne, ben yapmadım evren yaptı.",
-        tag: "ENTROPİ"
+        title: "Pascal",
+        setup: "Newton, Einstein, Pascal saklambaç oynar...",
+        punchline: "Pascal saklanır, Newton kare çizer!",
+        icon: Brain
     }
 ];
 
 export function MemeCorner() {
-    const [index, setIndex] = useState(0);
-    const [direction, setDirection] = useState(0);
+    const [spinning, setSpinning] = useState(false);
+    const [result, setResult] = useState(MEMES[0]);
 
-    // Auto-advance removed for user control, but "Living" background added.
+    const handleSpin = () => {
+        if (spinning) return;
+        setSpinning(true);
 
-    const nextMeme = () => {
-        setDirection(1);
-        setIndex((prev) => (prev + 1) % MEMES.length);
+        let spins = 0;
+        const interval = setInterval(() => {
+            setResult(MEMES[Math.floor(Math.random() * MEMES.length)]);
+            spins++;
+            if (spins > 10) {
+                clearInterval(interval);
+                setSpinning(false);
+            }
+        }, 100);
     };
 
-    const currentMeme = MEMES[index];
+    const Icon = result.icon;
 
     return (
-        <div className="relative w-full overflow-hidden rounded-3xl border-[3px] border-black bg-black shadow-[8px_8px_0px_0px_rgba(59,130,246,1)] group">
+        <div className="relative w-full overflow-hidden rounded-3xl border-[4px] border-black bg-zinc-900 shadow-[8px_8px_0px_0px_#000]">
 
-            {/* 1. ANIMATED BACKGROUND (The "Vibe") */}
-            <div className="absolute inset-0 z-0 opacity-20">
-                <div className="absolute inset-0 bg-[linear-gradient(45deg,#3B82F6_25%,transparent_25%,transparent_50%,#3B82F6_50%,#3B82F6_75%,transparent_75%,transparent)] bg-[length:40px_40px] animate-[slide_2s_linear_infinite]" />
-            </div>
-
-            {/* Floating Particles (N2O Molecules) */}
-            <motion.div
-                className="absolute top-2 right-2 text-white/10 font-black text-6xl pointer-events-none select-none z-0"
-                animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                transition={{ duration: 20, repeat: Infinity }}
-            >
-                N₂O
-            </motion.div>
-
-            {/* 2. HEADER: QUANTUM HUMOR CONSOLE */}
-            <div className="relative z-10 flex items-center justify-between bg-[#FFC800] border-b-[3px] border-black px-5 py-3">
+            {/* Header */}
+            <div className="bg-[#FFC800] border-b-[4px] border-black p-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                    <motion.div
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                    >
-                        <Sparkles className="w-6 h-6 text-black fill-white" />
-                    </motion.div>
-                    <h2 className="font-black text-black tracking-tighter text-lg uppercase">
-                        BİLİMİ Tİ'YE ALIYORUZ
-                    </h2>
+                    <div className="w-3 h-3 rounded-full bg-red-500 border border-black animate-pulse" />
+                    <h2 className="font-black text-black text-lg tracking-tight uppercase">MİZAH MAKİNESİ</h2>
                 </div>
                 <div className="flex gap-1">
-                    <div className="w-3 h-3 rounded-full bg-black border border-white" />
-                    <div className="w-3 h-3 rounded-full bg-black/50 border border-white" />
+                    {[1, 2, 3].map(i => <div key={i} className="w-10 h-2 bg-black opacity-20 transform -skew-x-12" />)}
                 </div>
             </div>
 
-            {/* 3. CONTENT STAGE */}
-            <div className="relative z-10 p-8 min-h-[300px] flex flex-col items-center justify-center">
+            {/* Display Screen */}
+            <div className="p-6 relative min-h-[220px] flex items-center justify-center bg-[radial-gradient(circle_at_center,#222_0%,#000_100%)]">
+                {/* Grid Lines */}
+                <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(0,255,0,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,0,0.1)_1px,transparent_1px)] bg-[length:20px_20px]" />
 
-                <AnimatePresence mode="wait" custom={direction}>
-                    <motion.div
-                        key={index}
-                        initial={{ x: 100, opacity: 0, scale: 0.9, rotate: 5 }}
-                        animate={{ x: 0, opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ x: -100, opacity: 0, scale: 0.9, rotate: -5 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                        className="w-full max-w-md"
-                    >
-                        {/* THE JOKE CARD */}
-                        <div className="bg-white border-[3px] border-black p-6 pl-8 relative shadow-[0px_10px_20px_rgba(0,0,0,0.3)] rotate-1 transform transition-all hover:rotate-0 hover:scale-[1.02]">
+                <div className="relative z-10 text-center w-full">
+                    <AnimatePresence mode="wait">
+                        {!spinning && (
+                            <motion.div
+                                key={result.id}
+                                initial={{ scale: 0.8, opacity: 0, filter: "blur(10px)" }}
+                                animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+                                exit={{ scale: 1.2, opacity: 0, filter: "blur(10px)" }}
+                                className="flex flex-col items-center gap-4"
+                            >
+                                <div className="p-4 bg-zinc-800 border-[2px] border-[#3B82F6] rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                                    <Icon className="w-12 h-12 text-[#3B82F6]" />
+                                </div>
 
-                            {/* Tape Effect */}
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-6 bg-blue-500/20 backdrop-blur-sm -rotate-2 border-l border-r border-white/30" />
-
-                            <div className="flex justify-between items-start mb-4">
-                                <span className="inline-block bg-black text-[#FFC800] text-xs font-bold px-2 py-1 rounded-sm rotate-[-2deg]">
-                                    #{currentMeme.tag}
-                                </span>
-                                <span className="text-4xl leading-[0]">❝</span>
-                            </div>
-
-                            <h3 className="text-2xl font-black text-black mb-3 underline decoration-[#FFC800] decoration-4 underline-offset-2">
-                                {currentMeme.title}
-                            </h3>
-
-                            <p className="text-lg font-bold text-zinc-800 font-mono leading-relaxed whitespace-pre-line">
-                                {currentMeme.content}
-                            </p>
-
-                            <div className="mt-4 text-right">
-                                <span className="text-4xl leading-[0] text-gray-200">❞</span>
-                            </div>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
-
+                                <div className="bg-black/80 border border-white/20 p-4 rounded-lg w-full backdrop-blur">
+                                    <h3 className="text-[#FFC800] font-black uppercase text-sm mb-1">{result.setup}</h3>
+                                    <p className="text-white font-bold text-lg font-mono">{result.punchline}</p>
+                                </div>
+                            </motion.div>
+                        )}
+                        {spinning && (
+                            <motion.div
+                                key="spinning"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 flex items-center justify-center"
+                            >
+                                <div className="text-4xl font-black text-white/20 animate-pulse">
+                                    YÜKLENİYOR...
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
 
-            {/* 4. CONTROLS FOOTER */}
-            <div className="relative z-10 bg-black/80 backdrop-blur-md border-t-[3px] border-black p-4 flex justify-between items-center gap-4">
-
-                <div className="text-white text-xs font-mono opacity-50 hidden sm:block">
-                    QUANTUM_HUMOR_V2.6 :: LAUGH_INITIATED
-                </div>
-
-                <div className="flex gap-3 ml-auto w-full sm:w-auto">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={nextMeme}
-                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#3B82F6] hover:bg-blue-400 text-white font-black uppercase text-sm px-6 py-3 border-[2px] border-white shadow-[4px_4px_0px_0px_#FFF] transition-all active:shadow-none active:translate-y-1 rounded-lg"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                        SIRADAKİ DOZ
-                    </motion.button>
-                </div>
+            {/* Controls */}
+            <div className="bg-[#111] border-t-[4px] border-black p-4">
+                <button
+                    onClick={handleSpin}
+                    disabled={spinning}
+                    className="w-full bg-[#3B82F6] hover:bg-blue-400 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-black uppercase text-xl py-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#FFF] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 rounded-xl group"
+                >
+                    <Atom className={cn("w-6 h-6", spinning && "animate-spin")} />
+                    {spinning ? "HESAPLANIYOR..." : "ŞAKA ÜRET"}
+                </button>
             </div>
         </div>
     );

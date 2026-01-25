@@ -14,11 +14,9 @@ export function BottomNav() {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            // Show if at top or scrolling up
             if (currentScrollY < 50 || currentScrollY < lastScrollY) {
                 setIsVisible(true);
             }
-            // Hide if scrolling down and not at top
             else if (currentScrollY > lastScrollY && currentScrollY > 50) {
                 setIsVisible(false);
             }
@@ -39,24 +37,25 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-6 left-4 right-4 z-[100] md:hidden transition-all duration-300 ease-in-out pointer-events-none",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-[150%] opacity-0"
+            "fixed bottom-0 left-0 right-0 z-[100] md:hidden transition-transform duration-300 ease-in-out",
+            isVisible ? "translate-y-0" : "translate-y-full"
         )}>
             {/* 
-                NEO-BRUTAL FLOATING ISLAND
-                - Bg: Fizik Yellow (#F2C32E)
-                - Border: 3px Black
-                - Shadow: Hard 4px Black
+                V28 BOTTOM NAV: FIXED & COMPACT
+                - Position: Fixed Bottom (Edge to Edge)
+                - Height: h-14 (56px) - Reduced from h-16
+                - Style: Flat Yellow Bar with Top Border
+                - Removed: Floating margins, rounded corners
             */}
             <nav className="
-                pointer-events-auto
+                w-full
                 bg-[#F2C32E] 
-                border-[3px] border-black 
-                rounded-xl 
-                shadow-[4px_4px_0px_0px_#000]
-                h-16
+                border-t-[3px] border-black 
+                shadow-[0px_-4px_10px_rgba(0,0,0,0.1)]
+                h-14
                 flex items-center justify-between
-                px-2
+                px-4
+                pb-safe
             ">
                 {links.map((link) => {
                     const Icon = link.icon;
@@ -68,25 +67,19 @@ export function BottomNav() {
                             href={link.href}
                             prefetch={true}
                             className={cn(
-                                "flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-all duration-200",
-                                // Active: Black Box with White Icon
+                                "flex flex-col items-center justify-center w-10 h-10 rounded-lg transition-all duration-200",
+                                // Active: Black Box
                                 isActive
-                                    ? "bg-black text-white translate-x-[1px] translate-y-[1px] shadow-none"
+                                    ? "bg-black text-white shadow-none"
                                     : "text-black hover:bg-black/10 active:scale-95"
                             )}
                         >
                             <Icon
                                 className={cn(
-                                    "w-6 h-6 mb-0.5",
+                                    "w-5 h-5",
                                     isActive ? "stroke-[3px]" : "stroke-[2.5px]"
                                 )}
                             />
-                            {/* <span className={cn(
-                                "text-[8px] font-black uppercase tracking-wider",
-                                isActive ? "text-white" : "text-black"
-                            )}>
-                                {link.label}
-                            </span> */}
                         </Link>
                     );
                 })}
