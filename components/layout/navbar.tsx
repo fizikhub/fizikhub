@@ -120,11 +120,11 @@ export function Navbar() {
                                 </motion.div>
                             </div>
 
-                            {/* Menu */}
+                            {/* Menu - Hidden on Mobile via class 'hidden md:flex' */}
                             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                                 <SheetTrigger asChild>
                                     <motion.button
-                                        className={btnClass}
+                                        className={cn(btnClass, "hidden md:flex")}
                                         whileHover={{ y: -2, x: -2, boxShadow: "5px 5px 0px 0px #FFC800" }}
                                         whileTap={{ y: 2, x: 2, boxShadow: "1px 1px 0px 0px #FFC800", scale: 0.95 }}
                                         transition={{ type: "spring", stiffness: 400, damping: 15 }}
