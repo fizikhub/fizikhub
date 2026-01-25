@@ -1,56 +1,41 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer">
+        <div className="flex items-center gap-2 select-none relative group cursor-pointer">
             {/* 
-        V20 LOGO: RESPONSIVE SCALING
-        - Mobile: text-2xl (Slimmer)
-        - Desktop: text-4xl (Bold)
-        - Style: "Mosko Science" Block Text preserved
+        V24 LOGO: PROFESSIONAL SCIENCE
+        - Style: Modern, clean, technical.
+        - Font: Sans-serif (Inter/Geist) + Mono accents.
+        - Colors: White + Electric Blue.
+        - Removed: Heavy strokes, cartoon shadows, yellow blocks.
       */}
-            <div className="relative z-10">
-                <motion.h1
-                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
-                    style={{
-                        WebkitTextStroke: "1.5px black", // Thinner stroke for mobile
-                        fontFamily: "var(--font-heading)",
-                        filter: "drop-shadow(3px 3px 0px #000)" // Scaled down shadow
-                    }}
-                    whileHover={{
-                        scale: 1.05,
-                        filter: "drop-shadow(5px 5px 0px #000)"
-                    }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                >
-                    FIZIKHUB
-                </motion.h1>
 
-                {/* Retro Star Accent */}
+            {/* Abstract Atom/Orbit Symbol */}
+            <div className="relative w-8 h-8 flex items-center justify-center">
                 <motion.div
-                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
+                    className="absolute inset-0 rounded-full border border-blue-500/30"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
-                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
-                    </svg>
-                </motion.div>
+                />
+                <motion.div
+                    className="absolute inset-1 rounded-full border border-blue-400/50"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+                />
+                <div className="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
             </div>
 
-            {/* Slogan - Compacted for mobile */}
-            <motion.div
-                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
-                initial={{ rotate: -3 }}
-                whileHover={{ rotate: 3 }}
-            >
-                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
-                    BİLİM PLATFORMU
+            <div className="flex flex-col">
+                <h1 className="font-black text-xl sm:text-2xl tracking-tighter leading-none text-white">
+                    FIZIK<span className="text-blue-500">HUB</span>
+                </h1>
+                <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-zinc-400 uppercase">
+                    Bilim Platformu
                 </span>
-            </motion.div>
+            </div>
         </div>
     );
 }
