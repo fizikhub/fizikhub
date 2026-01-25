@@ -12,11 +12,6 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
-const jellyVariants = {
-    tap: { scale: 0.85, rotate: -5 },
-    hover: { scale: 1.05, rotate: 2 }
-};
-
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,37 +36,33 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V17: THE "WORLD'S BEST" NEO-NAVBAR
-                - Multi-Color: Cyan, Yellow, Pink
-                - Physics: Jelly/Rubberband
-                - Style: Maximum Personality
+                V15.5: SLIMMER HERO
+                - Reverted to V15 Monochrome (Yellow/Black)
+                - Reduced vertical padding (py-1.5)
+                - Smaller buttons on mobile (h-9 w-9)
             */}
-            <header className="fixed top-2 sm:top-4 left-0 right-0 z-50 flex justify-center px-2 sm:px-4 pointer-events-none">
+            <header className="fixed top-2 left-0 right-0 z-50 flex justify-center px-2 sm:px-4 pointer-events-none">
                 <motion.div
-                    initial={{ y: -150, borderRadius: "50%" }}
-                    animate={{ y: 0, borderRadius: "16px" }}
-                    transition={{ type: "spring", stiffness: 180, damping: 15, delay: 0.2 }}
+                    initial={{ y: -100 }}
+                    animate={{ y: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
                     className={cn(
                         "pointer-events-auto",
-                        "flex items-center justify-between pl-4 pr-3 py-2.5",
-                        "bg-[#111]/95 backdrop-blur-xl border-[3px] border-black",
-                        // SHADOW: Rainbow Gradient Shadow via pseudo-element simulation or just solid distinct color
-                        "shadow-[4px_4px_0px_0px_#000]",
+                        "flex items-center justify-between pl-3 pr-2 py-1.5 sm:py-2.5", // Reduced Padding
+                        "bg-[#111]/95 backdrop-blur-xl border-[2px] sm:border-[3px] border-black",
+                        "rounded-xl sm:rounded-2xl shadow-[3px_3px_0px_0px_#FFC800]", // Smaller Shadow
                         "w-full max-w-7xl relative overflow-hidden"
                     )}
                 >
-                    {/* RAINBOW BORDER BOTTOM */}
-                    <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-400 via-yellow-400 to-pink-500 z-20" />
+                    {/* LEFT: COMPACT BRAND */}
+                    <div className="flex-shrink-0 pt-0.5">
+                        <Link href="/" className="group">
+                            <DankLogo />
+                        </Link>
+                    </div>
 
-                    {/* LEFT: V17 BRAND */}
-                    <Link href="/" className="group relative z-30">
-                        <DankLogo />
-                        {/* Sparkles on hover */}
-                        <div className="absolute -top-2 -right-2 text-xl animate-pulse opacity-0 group-hover:opacity-100 transition-opacity">✨</div>
-                    </Link>
-
-                    {/* RIGHT: MULTI-COLOR ACTIONS */}
-                    <div className="flex items-center gap-3 relative z-30">
+                    {/* RIGHT: COMPACT ACTIONS */}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-1 mr-4">
@@ -80,7 +71,7 @@ export function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-2 font-bold uppercase rounded-lg border-2 border-transparent hover:border-black hover:bg-white hover:text-black transition-all",
+                                        "px-3 py-1.5 font-bold uppercase rounded-md border-2 border-transparent hover:border-black hover:bg-[#FFC800] hover:text-black transition-all text-sm",
                                         pathname === item.href ? "text-[#FFC800]" : "text-gray-400"
                                     )}
                                 >
@@ -89,75 +80,65 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH: CYAN */}
+                        {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            variants={jellyVariants}
-                            whileTap="tap"
-                            whileHover="hover"
-                            className="flex items-center justify-center w-11 h-11 bg-[#22D3EE] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
+                            whileTap={{ scale: 0.9 }}
+                            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#1a1a1a] border-[1.5px] sm:border-2 border-zinc-800 hover:border-[#FFC800] rounded-lg text-white transition-colors"
                         >
-                            <Search className="w-6 h-6 stroke-[3px]" />
+                            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                         </motion.button>
 
-                        {/* 2. ZAP: YELLOW */}
+                        {/* 2. ZAP (Mobile) */}
                         <Link href="/ozel" className="md:hidden">
                             <motion.div
-                                variants={jellyVariants}
-                                whileTap="tap"
-                                whileHover="hover"
-                                className="flex items-center justify-center w-11 h-11 bg-[#FFC800] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
+                                whileTap={{ scale: 0.9 }}
+                                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#FFC800] border-[1.5px] sm:border-2 border-black rounded-lg shadow-[1px_1px_0px_0px_#fff]"
                             >
-                                <Zap className="w-6 h-6 fill-black stroke-[3px]" />
+                                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-black fill-black" />
                             </motion.div>
                         </Link>
 
-                        {/* 3. MENU: PINK */}
+                        {/* 3. MENU */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <SheetTrigger asChild>
                                 <motion.button
-                                    variants={jellyVariants}
-                                    whileTap="tap"
-                                    whileHover="hover"
-                                    className="flex items-center justify-center w-11 h-11 bg-[#F472B6] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
+                                    whileTap={{ scale: 0.9 }}
+                                    className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white border-[1.5px] sm:border-2 border-black rounded-lg shadow-[1px_1px_0px_0px_#000]"
                                 >
-                                    <Menu className="w-6 h-6 stroke-[3px]" />
+                                    <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-black stroke-[3px]" />
                                 </motion.button>
                             </SheetTrigger>
+                            <SheetContent side="top" className="w-full h-auto min-h-[60vh] bg-[#0a0a0a] border-b-[4px] border-[#FFC800] rounded-b-[32px] p-0 text-white overflow-hidden">
+                                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                    style={{ backgroundImage: 'radial-gradient(#FFC800 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+                                />
 
-                            {/* MENU DRAWER */}
-                            <SheetContent side="top" className="w-full h-auto min-h-[70vh] bg-[#0a0a0a] border-b-[6px] border-pink-500 rounded-b-[48px] p-0 text-white overflow-hidden">
-                                <div className="absolute inset-0 z-0">
-                                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
-                                </div>
-
-                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-8 gap-8">
+                                <div className="relative z-10 p-6 pt-20 flex flex-col gap-6 items-center">
                                     <DankLogo />
 
-                                    <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
+                                    <div className="w-full h-px bg-[#FFC800]/20" />
+
+                                    <div className="grid grid-cols-2 gap-3 w-full">
                                         {[
-                                            { href: "/", label: "ANA SAYFA", color: "bg-cyan-400" },
-                                            { href: "/makale", label: "KEŞFET", color: "bg-green-400" },
-                                            { href: "/blog", label: "BLOG", color: "bg-purple-400" },
-                                            { href: "/profil", label: "PROFİL", color: "bg-pink-400" },
+                                            { href: "/", label: "Ana Sayfa", color: "bg-blue-400" },
+                                            { href: "/makale", label: "Keşfet", color: "bg-green-400" },
+                                            { href: "/blog", label: "Blog", color: "bg-purple-400" },
+                                            { href: "/profil", label: "Profil", color: "bg-orange-400" },
                                         ].map((link, i) => (
                                             <Link
                                                 key={link.href}
                                                 href={link.href}
                                                 onClick={() => setIsMenuOpen(false)}
-                                                className="group relative h-28 border-[3px] border-black rounded-2xl overflow-hidden hover:scale-105 transition-transform"
+                                                className="group relative flex items-center justify-center h-16 bg-[#151515] border-2 border-[#333] hover:border-[#FFC800] rounded-xl overflow-hidden transition-all"
                                             >
-                                                <div className={cn("absolute inset-0 border-b-4 border-black/20", link.color)} />
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="font-black text-xl italic text-black/90 tracking-tighter uppercase drop-shadow-sm group-hover:tracking-widest transition-all">
-                                                        {link.label}
-                                                    </span>
-                                                </div>
+                                                <span className="relative z-10 font-bold text-lg uppercase italic tracking-tight group-hover:scale-110 transition-transform">{link.label}</span>
+                                                <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity", link.color)} />
                                             </Link>
                                         ))}
                                     </div>
 
-                                    <div className="w-full max-w-xs p-1 bg-white border-2 border-black rounded-xl">
+                                    <div className="mt-2 w-full">
                                         <AuthButton />
                                     </div>
                                 </div>

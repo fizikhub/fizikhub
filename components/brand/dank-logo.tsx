@@ -7,39 +7,31 @@ export function DankLogo() {
     return (
         <div className="flex flex-col select-none relative group cursor-pointer">
             {/* 
-        V17 "WORLD CLASS" LOGO 
-        - Base: V15 Stroke Style (User Liked this)
-        - New: Glitch Interactivity + Rainbow Underline
+        V15.5 COMPACT LOGO 
+        - Reverted to simple Stroke Style (No Rainbow/Glitch)
+        - Slightly smaller text for slimmer mobile bar
       */}
             <div className="relative z-10">
                 <motion.h1
-                    className="font-black text-3xl italic tracking-tighter leading-none text-[#FFC800]"
+                    className="font-black text-2xl sm:text-3xl italic tracking-tighter leading-none text-[#FFC800]" // Reduced mobile text size
                     style={{
-                        WebkitTextStroke: "1.5px black",
-                        textShadow: "3px 3px 0px #000",
+                        WebkitTextStroke: "1px black", // Thinner stroke for smaller text
+                        textShadow: "2px 2px 0px #000", // Smaller shadow
                         fontFamily: "var(--font-heading)",
                     }}
-                    whileHover={{
-                        x: [0, -2, 2, -1, 0],
-                        y: [0, 1, -1, 0],
-                        filter: ["hue-rotate(0deg)", "hue-rotate(90deg)", "hue-rotate(0deg)"]
-                    }}
-                    transition={{ duration: 0.2 }}
+                    whileHover={{ scale: 1.05 }}
                 >
                     FIZIKHUB
                 </motion.h1>
-
-                {/* Rainbow Underline Animation */}
-                <div className="h-1.5 w-full mt-1 rounded-full bg-gradient-to-r from-cyan-400 via-yellow-400 to-pink-500 border border-black shadow-[1px_1px_0px_0px_#000]" />
             </div>
 
             {/* Subtitle - Rotated Sticker */}
             <motion.div
-                className="self-start -mt-2 ml-1 z-20"
-                animate={{ rotate: [-2, -4, -2] }}
-                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                className="self-start -mt-1 ml-0.5 z-20"
+                initial={{ rotate: -2 }}
+                whileHover={{ rotate: 0 }}
             >
-                <span className="bg-white border-2 border-black text-black text-[9px] font-black uppercase px-1.5 py-0.5 rounded-sm shadow-[2px_2px_0px_0px_#000] tracking-wider inline-block">
+                <span className="bg-white border text-black text-[8px] sm:text-[9px] font-black uppercase px-1 py-0.5 rounded-sm shadow-[1px_1px_0px_0px_#000] tracking-wider inline-block border-black">
                     BİLİM PLATFORMU
                 </span>
             </motion.div>
