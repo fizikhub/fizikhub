@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
-import { ProfileHero } from "@/components/profile/profile-hero";
-import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
-import { ProfileAboutCard } from "@/components/profile/profile-about-card";
-import { ProfileStatsCard } from "@/components/profile/profile-stats-card";
 import { BadgeDisplay } from "@/components/badge-display";
+import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
+import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -55,64 +53,36 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        /* V16 BACKGROUND: Clean Zinc-50 for professionalism */
-        <div className="min-h-screen bg-zinc-50 py-6 pb-20">
-            <div className="container max-w-5xl mx-auto px-4 md:px-6">
+        /* BACKGROUND: Clean Zinc-50 */
+        <div className="min-h-screen bg-zinc-50 dark:bg-black py-4 sm:py-8 pb-32">
+            <div className="container max-w-[600px] lg:max-w-[700px] mx-auto px-4">
 
-                {/* 1. HEADER CARD (Full Width) */}
-                <ProfileHero
+                {/* 1. COMPACT NEO HEADER */}
+                <NeoProfileHeader
                     profile={profile}
                     user={user}
                     isOwnProfile={true}
                     stats={stats}
                 />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-                    {/* LEFT COLUMN (2/3) */}
-                    <div className="lg:col-span-2 space-y-5">
-                        <ProfileAboutCard
-                            bio={profile?.bio}
-                            fullName={profile?.full_name}
-                            role={profile?.role}
-                        />
-
-                        {/* Portfolio Card */}
-                        <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] p-6">
-                            <h2 className="text-lg font-black uppercase tracking-tight mb-5 flex items-center gap-2 text-black">
-                                Portfolyo
-                                <div className="h-0.5 flex-1 bg-black/10 rounded-full" />
-                            </h2>
-                            <ProfileContentFeed
-                                articles={articles || []}
-                                questions={questions || []}
-                                answers={answers || []}
-                                bookmarkedArticles={bookmarkedArticles || []}
-                                bookmarkedQuestions={bookmarkedQuestions || []}
-                                drafts={drafts || []}
-                            />
-                        </div>
+                {/* 2. BADGES (If any) */}
+                {formattedBadges && formattedBadges.length > 0 && (
+                    <div className="mb-8 flex justify-center">
+                        <BadgeDisplay userBadges={formattedBadges} size="md" maxDisplay={4} />
                     </div>
+                )}
 
-                    {/* RIGHT COLUMN (1/3) */}
-                    <div className="space-y-5">
-                        <ProfileStatsCard stats={stats} />
+                {/* 3. COMPACT FEED (Tabs) */}
+                <NeoProfileFeed
+                    articles={articles || []}
+                    questions={questions || []}
+                    answers={answers || []}
+                    bookmarkedArticles={bookmarkedArticles || []}
+                    bookmarkedQuestions={bookmarkedQuestions || []}
+                    drafts={drafts || []}
+                    isOwnProfile={true}
+                />
 
-                        {/* Badges */}
-                        {formattedBadges && formattedBadges.length > 0 && (
-                            <div className="bg-white border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] p-6">
-                                <h2 className="text-lg font-black uppercase tracking-tight mb-4 flex items-center gap-2 text-black">
-                                    Rozetler
-                                    <div className="text-xs font-bold bg-amber-300 text-black px-2 py-0.5 rounded border border-black">
-                                        {formattedBadges.length}
-                                    </div>
-                                </h2>
-                                <BadgeDisplay userBadges={formattedBadges} size="md" maxDisplay={8} />
-                            </div>
-                        )}
-                    </div>
-
-                </div>
             </div>
         </div>
     );
