@@ -171,17 +171,8 @@ export function ModernExploreView({
 
             <div className="w-full max-w-5xl mx-auto px-4 py-8">
                 {/* Intro Section - Hard Box */}
-                <div className="mb-10 text-center neo-box bg-[#FFC800] p-6 lg:p-8 transform rotate-1">
-                    <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-2 text-black">
-                        HOŞGELDİN, KAŞİF!
-                    </h1>
-                    <p className="font-bold text-black/80 max-w-md mx-auto">
-                        Burada blog yazabilir, bilimsel sorular sorabilir veya okuduğun kitapları inceleyebilirsin.
-                    </p>
-                </div>
-
-                {/* Share Card - Updated Styles */}
-                <div className="relative mb-8">
+                {/* Share Card - Moves to Top */}
+                <div className="relative mb-8 mt-4">
                     <ShareInputCard user={user} />
                 </div>
 

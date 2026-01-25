@@ -2,15 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord } from "lucide-react";
+import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-import { createQuestion } from "@/app/forum/actions"; // Import action
-import { toast } from "sonner"; // Import toast
-import { createClient } from "@/lib/supabase"; // Client-side supabase
+import { createQuestion } from "@/app/forum/actions";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase";
 
 interface ShareInputCardProps {
     user?: {
@@ -21,24 +20,15 @@ interface ShareInputCardProps {
 }
 
 const CATEGORIES = [
-    "Kuantum Fiziği",
-    "Genel Görelilik",
-    "Klasik Mekanik",
-    "Termodinamik",
-    "Elektromanyetizma",
-    "Optik",
-    "Nükleer Fizik",
-    "Astrofizik",
-    "Diğer"
+    "Kuantum Fiziği", "Genel Görelilik", "Klasik Mekanik", "Termodinamik",
+    "Elektromanyetizma", "Optik", "Nükleer Fizik", "Astrofizik", "Diğer"
 ];
 
 export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
-    // Client-side user state to fix "Misafir" persistence
     const [user, setUser] = useState(initialUser);
     const [supabase] = useState(() => createClient());
 
     useEffect(() => {
-        // If no user prop or just double checking, fetch on client
         const fetchUser = async () => {
             const { data: { user: authUser } } = await supabase.auth.getUser();
             if (authUser) {
@@ -55,11 +45,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
     const avatarUrl = user?.avatar_url || "https://github.com/shadcn.png";
     const displayName = user?.full_name || user?.username || "Misafir";
-    const firstName = displayName.split(" ")[0];
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, setMode] = useState<"default" | "question">("default"); // New mode state
+    const [mode, setMode] = useState<"default" | "question">("default");
 
     // Form State
     const [title, setTitle] = useState("");
@@ -67,38 +56,16 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const [category, setCategory] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const triggerRef = useRef<HTMLButtonElement>(null);
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            // Check if click is outside BOTH dropdown and trigger button
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node) &&
-                triggerRef.current &&
-                !triggerRef.current.contains(event.target as Node)
-            ) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const handleNavigation = (path: string) => {
-        setIsOpen(false);
-        router.push(path);
-    };
 
     const handleQuickQuestion = (e: React.MouseEvent) => {
         e.preventDefault();
         setMode("question");
-        setIsOpen(true); // Ensure expanded
+        setIsOpen(true);
     };
 
     const handleClose = () => {
         setIsOpen(false);
-        setTimeout(() => setMode("default"), 300); // Reset mode after animation
+        setTimeout(() => setMode("default"), 300);
     };
 
     const submitQuestion = async (status: 'published' | 'draft') => {
@@ -109,13 +76,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
         setIsSubmitting(true);
         try {
-            const result = await createQuestion({
-                title,
-                content,
-                category,
-                status
-            });
-
+            const result = await createQuestion({ title, content, category, status });
             if (result.success) {
                 toast.success(status === 'published' ? "Sorunuz yayınlandı! 🚀" : "Taslak kaydedildi. 📝");
                 setTitle("");
@@ -138,201 +99,139 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "backOut" }}
-            whileHover={{ y: -2, transition: { duration: 0.2 } }}
-            className={cn(
-                "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-white text-black", // Force White BG, Black Text (Pop Style)
-                "border-[3px] border-black", // Hard Black Border
-                "shadow-[6px_6px_0px_0px_#000]", // Hard Black Shadow
-                "w-full mb-6 z-[20]"
-            )}
+            className="group relative w-full mb-6 z-[20]"
         >
-            <div className="relative h-9 border-b-[3px] border-black bg-white flex items-center justify-center select-none rounded-t-xl">
-                <div className="absolute left-4 sm:left-5 flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black" />
-                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black" />
-                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black" />
-                </div>
-                <div className="text-[10px] sm:text-xs font-black text-black uppercase tracking-[0.2em]">Paylaşım Merkezi</div>
-            </div>
+            {/* V34 CARD: CLEANER, MODERN, YELLOW ACCENT */}
+            <div className="bg-[#111] rounded-2xl border border-white/20 shadow-[0px_10px_30px_rgba(0,0,0,0.5)] overflow-hidden">
 
-            <div className="p-4 sm:p-5">
-                <div className="flex gap-4 items-center">
-                    {/* Avatar Area */}
-                    <div className="shrink-0">
-                        <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
-                            <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-neo-yellow text-black font-black text-lg rounded-xl">
-                                {displayName?.[0]?.toUpperCase() || "?"}
-                            </AvatarFallback>
-                        </Avatar>
+                {/* Header */}
+                <div className="bg-[#FFC800] px-4 py-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-black">
+                        <Sparkles className="w-4 h-4 fill-white" />
+                        <span className="text-xs font-black uppercase tracking-widest">PAYLAŞIM MERKEZİ</span>
                     </div>
+                    <div className="flex gap-1">
+                        <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                        <div className="w-1.5 h-1.5 bg-black/30 rounded-full" />
+                    </div>
+                </div>
 
-                    {/* Input Trigger */}
-                    <div className="flex-1 min-w-0 relative">
-                        {/* QUESTION MODE FORM */}
-                        <AnimatePresence mode="wait">
-                            {mode === "question" ? (
-                                <motion.div
-                                    key="question-form"
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="w-full bg-white rounded-xl p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] space-y-3"
-                                >
-                                    <input
-                                        value={title}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        placeholder="Sorunun başlığı ne olsun?"
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-black/40 text-black"
-                                        autoFocus
-                                    />
+                <div className="p-4 sm:p-6 bg-[#111]">
+                    <div className="flex gap-4 items-start">
+                        <Avatar className="w-12 h-12 border-2 border-[#FFC800] rounded-xl shrink-0">
+                            <AvatarImage src={avatarUrl} />
+                            <AvatarFallback className="bg-zinc-800 text-white font-bold">{displayName?.[0]}</AvatarFallback>
+                        </Avatar>
 
-                                    <textarea
-                                        value={content}
-                                        onChange={(e) => setContent(e.target.value)}
-                                        placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-black/40 text-black"
-                                    />
+                        <div className="flex-1 w-full">
+                            <AnimatePresence mode="wait">
+                                {mode === "question" ? (
+                                    <motion.div
+                                        key="question-form"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-4"
+                                    >
+                                        <input
+                                            value={title}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                            placeholder="Sormak istediğin nedir?"
+                                            className="w-full bg-transparent border-b-2 border-zinc-700 focus:border-[#FFC800] px-0 py-2 text-white font-bold text-lg focus:outline-none placeholder:text-zinc-600 transition-colors"
+                                            autoFocus
+                                        />
+                                        <textarea
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            placeholder="Detaylandır..."
+                                            className="w-full bg-zinc-900/50 rounded-lg p-3 text-sm text-zinc-300 min-h-[100px] focus:outline-none focus:ring-1 focus:ring-[#FFC800] resize-none border border-white/5"
+                                        />
 
-                                    <div className="flex flex-wrap gap-2 pt-1">
-                                        {CATEGORIES.map(cat => (
+                                        <div className="flex flex-wrap gap-2">
+                                            {CATEGORIES.map(cat => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={() => setCategory(cat)}
+                                                    className={cn(
+                                                        "px-2 py-1 rounded text-[10px] font-bold border border-zinc-700 transition-colors",
+                                                        category === cat ? "bg-[#FFC800] text-black border-[#FFC800]" : "text-zinc-400 hover:text-white hover:border-white"
+                                                    )}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex justify-end gap-3 pt-2">
+                                            <button onClick={handleClose} className="text-xs text-zinc-500 hover:text-white font-bold px-3">İptal</button>
                                             <button
-                                                key={cat}
-                                                onClick={() => setCategory(cat)}
-                                                className={cn(
-                                                    "px-3 py-1 rounded-lg text-[10px] font-black border-[2px] border-black transition-all",
-                                                    category === cat
-                                                        ? "bg-neo-yellow text-black shadow-[2px_2px_0px_0px_#000]"
-                                                        : "bg-white text-black hover:bg-black hover:text-white"
-                                                )}
+                                                onClick={() => submitQuestion('published')}
+                                                disabled={isSubmitting}
+                                                className="bg-[#FFC800] text-black px-6 py-2 rounded-lg text-xs font-black uppercase hover:bg-yellow-400 transition-colors disabled:opacity-50"
                                             >
-                                                {cat}
+                                                {isSubmitting ? "..." : "YAYINLA"}
                                             </button>
-                                        ))}
+                                        </div>
+                                    </motion.div>
+                                ) : (
+                                    <div
+                                        onClick={() => setIsOpen(!isOpen)}
+                                        className="w-full h-12 bg-zinc-900 border border-white/10 rounded-xl flex items-center px-4 cursor-pointer hover:border-[#FFC800]/50 hover:bg-zinc-800 transition-all group"
+                                    >
+                                        <span className="text-zinc-500 text-sm font-medium group-hover:text-zinc-300">
+                                            Ne düşünüyorsun, <span className="text-white font-bold">{displayName.split(' ')[0]}</span>?
+                                        </span>
+                                        <Plus className="ml-auto w-5 h-5 text-zinc-600 group-hover:text-[#FFC800] transition-colors" />
                                     </div>
+                                )}
+                            </AnimatePresence>
 
-                                    <div className="flex items-center justify-end gap-2 pt-2">
-                                        <button
-                                            onClick={() => submitQuestion('draft')}
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 rounded-lg text-xs font-bold text-black border-[2px] border-black hover:bg-black hover:text-white transition-colors"
-                                        >
-                                            Taslak
-                                        </button>
-                                        <button
-                                            onClick={() => submitQuestion('published')}
-                                            disabled={isSubmitting}
-                                            className="px-6 py-2 rounded-lg text-xs font-black bg-neo-green text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50"
-                                        >
-                                            {isSubmitting ? "..." : "Yayınla"}
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            ) : (
-                                <button
-                                    ref={triggerRef}
-                                    onClick={() => isOpen ? handleClose() : setIsOpen(true)}
-                                    className={cn(
-                                        "w-full h-14 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                        "bg-white text-black",
-                                        "border-[3px] border-black",
-                                        "rounded-xl",
-                                        "shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
-                                        isOpen && "bg-neo-yellow"
-                                    )}
-                                >
-                                    <span className="text-black font-bold text-sm sm:text-base truncate mr-2 flex-1 block">
-                                        {isOpen ? (
-                                            "Kapat"
-                                        ) : (
-                                            <span className="flex items-center gap-1 overflow-hidden">
-                                                <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
-                                                <span className="truncate shrink min-w-0 hidden sm:inline">Ne düşünüyorsun,</span>
-                                                <span className="font-black shrink-0 uppercase">{firstName}?</span>
-                                            </span>
-                                        )}
-                                    </span>
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-lg border-[2px] border-black flex items-center justify-center transition-all duration-300 shrink-0",
-                                        isOpen ? "bg-black text-white rotate-45" : "bg-neo-yellow text-black"
-                                    )}>
-                                        <Plus className="w-5 h-5 stroke-[3px]" />
-                                    </div>
-                                </button>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Dropdown Menu - Neo Style */}
-                        <AnimatePresence>
-                            {isOpen && (
-                                <motion.div
-                                    ref={dropdownRef}
-                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                                    transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000] z-[100] overflow-hidden rounded-xl"
-                                >
-                                    <div className="p-2 space-y-2">
-                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-black/50 ml-1">Seçenekler</div>
-
-                                        {/* Items with thick borders on hover */}
+                            {/* Options Dropdown (When Question Mode is OFF but Menu is Open) */}
+                            <AnimatePresence>
+                                {isOpen && mode !== "question" && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="mt-4 grid grid-cols-2 gap-2"
+                                    >
                                         {[
-                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-neo-pink" },
-                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-neo-blue" },
-                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-neo-purple" },
-                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-neo-green" }
-                                        ].map((item, idx) => {
+                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", color: "text-pink-400" },
+                                            { action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", color: "text-blue-400" },
+                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", color: "text-purple-400" },
+                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", color: "text-green-400" }
+                                        ].map((item, i) => {
                                             const Comp = item.href ? Link : 'button';
                                             const props = item.href ? { href: item.href } : { onClick: item.action };
                                             return (
                                                 <Comp
-                                                    key={idx}
+                                                    key={i}
                                                     {...props as any}
-                                                    className="w-full flex items-center gap-3 p-3 hover:bg-black hover:text-white transition-all group rounded-lg border-[2px] border-transparent hover:border-black"
+                                                    className="flex items-center gap-3 p-3 rounded-lg bg-zinc-900 border border-white/5 hover:bg-zinc-800 hover:border-white/10 transition-all text-left"
                                                 >
-                                                    <div className={`relative w-10 h-10 ${item.color} border-[2px] border-black flex items-center justify-center text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all`}>
-                                                        <item.icon className="w-5 h-5 stroke-[2.5px]" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0 text-left">
-                                                        <h4 className="font-black text-sm transition-colors truncate">{item.label}</h4>
-                                                        <p className="text-[10px] opacity-70 leading-tight truncate font-bold">{item.sub}</p>
-                                                    </div>
+                                                    <item.icon className={cn("w-5 h-5", item.color)} />
+                                                    <span className="text-xs font-bold text-zinc-300">{item.label}</span>
                                                 </Comp>
                                             )
                                         })}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Bottom Actions Bar - Neo Style */}
-            <div className="px-5 py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
-
-                {/* Centered Group - Buttons with Hard Shadows */}
-                <div className="flex items-center gap-4">
-
-                    <Link href="/makale/yeni" className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <PenTool className="w-4 h-4 stroke-[2.5px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Blog</span>
-                    </Link>
-
-                    <button onClick={handleQuickQuestion} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <HelpCircle className="w-4 h-4 stroke-[2.5px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Soru</span>
-                    </button>
-
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-neo-yellow text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <Plus className="w-4 h-4 stroke-[3px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Ekle</span>
-                    </button>
-
-                </div>
+                {/* Bottom Stats/Actions */}
+                {!isOpen && (
+                    <div className="bg-[#18181b] px-6 py-3 flex items-center gap-6 text-[10px] font-bold text-zinc-500 border-t border-white/5">
+                        <Link href="/makale/yeni" className="hover:text-white flex items-center gap-1.5 transition-colors">
+                            <PenTool className="w-3 h-3" /> BLOG YAZ
+                        </Link>
+                        <button onClick={handleQuickQuestion} className="hover:text-white flex items-center gap-1.5 transition-colors">
+                            <HelpCircle className="w-3 h-3" /> SORU SOR
+                        </button>
+                    </div>
+                )}
             </div>
         </motion.div>
     );
