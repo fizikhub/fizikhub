@@ -59,8 +59,9 @@ export function Navbar() {
 
                         {/* BRAND */}
                         <Link href="/" className="flex flex-col justify-center select-none z-10 group">
-                            {/* Text Logo */}
-                            <div className="flex items-baseline leading-none tracking-tight">
+
+                            {/* DESKTOP LOGO (Full Text) */}
+                            <div className="hidden md:flex items-baseline leading-none tracking-tight">
                                 <span className="text-[32px] font-black text-white font-heading tracking-tighter">
                                     Fizik
                                 </span>
@@ -68,10 +69,20 @@ export function Navbar() {
                                     Hub
                                 </span>
                             </div>
-                            {/* Subtitle */}
-                            <span className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.25em] ml-1 -mt-1 group-hover:text-white transition-colors">
+                            <span className="hidden md:block text-[11px] font-bold text-gray-500 uppercase tracking-[0.25em] ml-1 -mt-1 group-hover:text-white transition-colors">
                                 Bilim Platformu
                             </span>
+
+                            {/* MOBILE LOGO (Symbol Only - V12) */}
+                            <div className="md:hidden flex items-center">
+                                <motion.div
+                                    className="flex items-center justify-center w-11 h-11 bg-[#FFC800] border-[3px] border-black rounded-lg shadow-[3px_3px_0px_0px_#fff]"
+                                    whileTap={{ scale: 0.9, rotate: -10 }}
+                                >
+                                    <span className="font-black text-2xl text-black font-heading leading-none">F</span>
+                                </motion.div>
+                            </div>
+
                         </Link>
 
                         {/* ACTIONS */}
