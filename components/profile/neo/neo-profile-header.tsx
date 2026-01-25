@@ -1,17 +1,47 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { Settings, PenSquare, Share2, MapPin, Link as LinkIcon, Calendar, Twitter, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
-import { formatDistanceToNow } from "date-fns";
+import { AvatarUpload } from "@/components/profile/avatar-upload";
+import { EditableCover } from "@/components/profile/editable-cover";
+import { BadgeDisplay } from "@/components/badge-display";
+import { EditProfileButton } from "@/components/profile/edit-profile-button";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
+import { RapidScienceButton } from "@/components/profile/rapid-science-button";
+import { FollowButton } from "@/components/profile/follow-button";
+import { ReputationDisplay } from "@/components/reputation-display";
+import {
+    Calendar,
+    Link as LinkIcon,
+    Share2,
+    FileText,
+    Twitter,
+    Github,
+    Instagram,
+    Linkedin,
+    BadgeCheck,
+    Shield,
+    PenLine
+} from "lucide-react";
+import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import Link from "next/link";
+
+// Random gradient for cover fallback
+const GRADIENTS = [
+    "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
+    "bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-500",
+    "bg-gradient-to-br from-purple-400 via-pink-500 to-rose-500",
+    "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500",
+];
 
 interface NeoProfileHeaderProps {
     profile: any;
     user: any;
     isOwnProfile: boolean;
+    isFollowing?: boolean;
     stats: {
         reputation: number;
         followersCount: number;
@@ -20,183 +50,274 @@ interface NeoProfileHeaderProps {
         questionsCount: number;
         answersCount: number;
     };
+    userBadges?: any[];
 }
 
 export function NeoProfileHeader({
     profile,
     user,
     isOwnProfile,
-    stats
+    isFollowing = false,
+    stats,
+    userBadges = []
 }: NeoProfileHeaderProps) {
-    const socialLinks = profile?.social_links || {};
+    // Deterministic gradient based on user id
+    const gradientIndex = profile?.id ?
+        profile.id.charCodeAt(0) % GRADIENTS.length : 0;
+    const gradient = GRADIENTS[gradientIndex];
 
-    const handleShare = () => {
-        const url = `${window.location.origin}/kullanici/${profile?.username}`;
-        navigator.clipboard.writeText(url);
-        // Toast can be added here
-    };
+    const isAdmin = profile?.is_admin;
+    const isWriter = profile?.is_writer;
+    const isVerified = profile?.is_verified;
 
     return (
-        <div className="w-full relative mb-8">
-            {/* MAIN CARD CONTAINER */}
-            <div className={cn(
-                "relative bg-white dark:bg-[#18181b] overflow-hidden",
-                "border-[3px] border-black rounded-xl",
-                "shadow-[6px_6px_0px_0px_#000]"
-            )}>
+        <div className="w-full">
+            {/* === COVER SECTION === */}
+            <EditableCover
+                url={profile?.cover_url}
+                gradient={gradient}
+                editable={isOwnProfile}
+            />
 
-                {/* 1. COMPACT COVER & PATTERN */}
-                <div className="h-32 sm:h-40 w-full relative border-b-[3px] border-black bg-[#FFC800] overflow-hidden">
-                    {profile?.cover_url ? (
-                        <Image
-                            src={profile.cover_url}
-                            alt="Cover"
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                    ) : (
-                        // MEMPHIS PATTERN FALLBACK
-                        <div className="absolute inset-0 opacity-20"
-                            style={{ backgroundImage: 'radial-gradient(circle, #000 2px, transparent 2.5px)', backgroundSize: '16px 16px' }}
-                        />
-                    )}
+            {/* === MAIN PROFILE CARD === */}
+            <div className="relative -mt-16 mx-2 sm:mx-0">
+                <div className="bg-card border-3 border-black dark:border-white rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
 
-                    {/* Settings Button (Absolute Top Right) */}
-                    {isOwnProfile && (
-                        <div className="absolute top-3 right-3 z-20">
-                            <ProfileSettingsButton
-                                currentUsername={profile?.username || ""}
-                                currentFullName={profile?.full_name || ""}
-                                currentBio={profile?.bio || ""}
-                                currentAvatarUrl={profile?.avatar_url || ""}
-                                currentCoverUrl={profile?.cover_url || ""}
-                                currentWebsite={profile?.website || ""}
-                                currentSocialLinks={profile?.social_links}
-                                userEmail={user?.email}
-                                usernameChangeCount={profile?.username_changes_count || 0}
-                            >
-                                <button className="w-10 h-10 flex items-center justify-center bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                    <Settings className="w-5 h-5" />
-                                </button>
-                            </ProfileSettingsButton>
-                        </div>
-                    )}
-                </div>
-
-                {/* 2. PROFILE INFO SECTION */}
-                <div className="px-4 sm:px-6 pb-6 relative">
-
-                    {/* AVATAR - Overlapping */}
-                    <div className="absolute -top-12 sm:-top-16 left-4 sm:left-6">
-                        <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,0.2)] overflow-hidden p-1">
-                            <div className="w-full h-full relative bg-zinc-100 overflow-hidden rounded-lg border border-black/10">
-                                {profile?.avatar_url ? (
-                                    <Image
-                                        src={profile.avatar_url}
-                                        alt={profile.full_name}
-                                        fill
-                                        className="object-cover"
+                    {/* TOP SECTION: Avatar + Actions */}
+                    <div className="px-4 sm:px-6 pt-4 pb-4">
+                        <div className="flex items-end justify-between gap-4">
+                            {/* Avatar with Neo border */}
+                            <div className="relative -mt-20 shrink-0">
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-black dark:border-white bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
+                                    <AvatarUpload
+                                        currentAvatarUrl={profile?.avatar_url}
+                                        userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
+                                        className="h-full w-full"
                                     />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-4xl font-black text-black/20">
-                                        {profile?.full_name?.charAt(0).toUpperCase()}
+                                </div>
+
+                                {/* Verified/Admin Badge */}
+                                {(isVerified || isAdmin) && (
+                                    <div className="absolute -bottom-1 -right-1 bg-primary border-2 border-black rounded-full p-1 shadow-md">
+                                        {isAdmin ? (
+                                            <Shield className="h-4 w-4 text-black fill-black/20" />
+                                        ) : (
+                                            <BadgeCheck className="h-4 w-4 text-black fill-black/20" />
+                                        )}
                                     </div>
+                                )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                                {isOwnProfile ? (
+                                    <>
+                                        {/* Share Button */}
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(window.location.href);
+                                            }}
+                                            className="neo-button-sm bg-primary"
+                                            title="Profili Paylaş"
+                                        >
+                                            <Share2 className="h-4 w-4" />
+                                        </button>
+
+                                        {/* Write Article */}
+                                        <Link
+                                            href="/makale/yaz"
+                                            className="neo-button-primary flex items-center gap-2"
+                                        >
+                                            <PenLine className="h-4 w-4" />
+                                            <span className="hidden sm:inline">Yazı Yaz</span>
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* Share Button */}
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(window.location.href);
+                                            }}
+                                            className="neo-button-sm bg-primary"
+                                            title="Profili Paylaş"
+                                        >
+                                            <Share2 className="h-4 w-4" />
+                                        </button>
+
+                                        {/* Follow Button */}
+                                        <FollowButton
+                                            targetUserId={profile?.id}
+                                            initialIsFollowing={isFollowing}
+                                            targetUsername={profile?.username}
+                                        />
+                                    </>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* ACTIONS ROW (Next to Avatar) */}
-                    <div className="flex justify-end pt-3 sm:pt-4 gap-2 mb-12 sm:mb-14">
-                        {/* Social Links (Compact) */}
-                        <div className="flex items-center gap-1 mr-auto pl-[110px] sm:pl-[140px] opacity-60 hidden sm:flex">
-                            {socialLinks.twitter && <Twitter className="w-4 h-4" />}
-                            {socialLinks.github && <Github className="w-4 h-4" />}
-                        </div>
+                    {/* USER INFO SECTION */}
+                    <div className="px-4 sm:px-6 pb-4">
+                        {/* Name + Username + Role Badge */}
+                        <div className="mb-3">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h1 className="text-2xl sm:text-3xl font-black tracking-tight uppercase">
+                                    {profile?.full_name || "İsimsiz Kullanıcı"}
+                                </h1>
 
-                        {/* Share Profile */}
-                        <button
-                            onClick={handleShare}
-                            className="h-9 px-3 flex items-center gap-2 bg-[#A3E635] border-2 border-black rounded-lg font-bold text-sm shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-                        >
-                            <Share2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Paylaş</span>
-                        </button>
-
-                        {/* Write Article (If Permitted) */}
-                        {isOwnProfile && (profile?.role === 'writer' || profile?.role === 'admin') && (
-                            <Link href="/yazar/yeni">
-                                <button className="h-9 px-4 flex items-center gap-2 bg-black text-white border-2 border-black rounded-lg font-bold text-sm shadow-[2px_2px_0px_#888] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
-                                    <PenSquare className="w-4 h-4" />
-                                    <span>Yazı Yaz</span>
-                                </button>
-                            </Link>
-                        )}
-                    </div>
-
-                    {/* NAME & BIO */}
-                    <div className="flex flex-col gap-2 mb-6">
-                        <div>
-                            <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-black dark:text-white leading-none mb-1">
-                                {profile?.full_name}
-                                {profile?.role === 'admin' && (
-                                    <span className="ml-2 inline-block text-[10px] bg-[#FFC800] border border-black px-1.5 py-0.5 rounded text-black align-middle transform -translate-y-1">
-                                        ADMIN
+                                {/* Role Badges */}
+                                {isAdmin && (
+                                    <span className="neo-badge bg-primary text-black">
+                                        ADMİN
                                     </span>
                                 )}
-                            </h1>
-                            <div className="flex items-center gap-2 text-sm font-bold text-neutral-500">
-                                <span>@{profile?.username}</span>
+                                {isWriter && !isAdmin && (
+                                    <span className="neo-badge bg-emerald-400 text-black">
+                                        YAZAR
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-2 mt-1 text-muted-foreground">
+                                <span className="font-semibold text-sm">@{profile?.username || "kullanici"}</span>
                                 <span>•</span>
-                                <span className="flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" />
-                                    {profile?.created_at && formatDistanceToNow(new Date(profile.created_at), { addSuffix: true, locale: tr })}
+                                <span className="text-xs flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    yaklaşık {format(new Date(user?.created_at || Date.now()), 'MM.yyyy', { locale: tr })} önce
                                 </span>
                             </div>
                         </div>
 
+                        {/* Bio */}
                         {profile?.bio && (
-                            <p className="text-sm sm:text-base font-medium text-neutral-700 dark:text-zinc-300 max-w-2xl leading-relaxed">
+                            <p className="text-foreground/80 text-sm leading-relaxed mb-3 max-w-lg">
                                 {profile.bio}
                             </p>
                         )}
 
-                        {/* WEBSITE */}
-                        {profile?.website && (
-                            <a href={profile.website} target="_blank" className="flex items-center gap-1 text-sm font-bold text-blue-600 hover:underline w-fit">
-                                <LinkIcon className="w-3 h-3" />
-                                {profile.website.replace(/^https?:\/\//, '')}
-                            </a>
-                        )}
+                        {/* Website & Social Links */}
+                        <div className="flex items-center gap-4 flex-wrap text-sm mb-4">
+                            {profile?.website && (
+                                <a
+                                    href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 text-primary hover:underline font-medium"
+                                >
+                                    <LinkIcon className="h-3.5 w-3.5" />
+                                    <span>{profile.website.replace(/^https?:\/\//, '')}</span>
+                                </a>
+                            )}
+
+                            {/* Social Icons */}
+                            {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
+                                <div className="flex items-center gap-3">
+                                    {profile.social_links?.twitter && (
+                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                            <Twitter className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.github && (
+                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                            <Github className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.linkedin && (
+                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                            <Linkedin className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                    {profile.social_links?.instagram && (
+                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                            <Instagram className="h-4 w-4" />
+                                        </a>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* STATS GRID - COMPACT NEO */}
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 py-4 border-t-2 border-dashed border-black/10">
-                        <StatBox label="Takipçi" value={stats.followersCount} />
-                        <StatBox label="Takip" value={stats.followingCount} />
-                        <StatBox label="Repütasyon" value={stats.reputation} highlight />
-                        <StatBox label="Makale" value={stats.articlesCount} />
-                        <StatBox label="Soru" value={stats.questionsCount} />
-                        <StatBox label="Cevap" value={stats.answersCount} />
+                    {/* === STATS GRID === */}
+                    <div className="grid grid-cols-3 border-t-3 border-black dark:border-white">
+                        {/* Followers */}
+                        <StatCell
+                            value={stats.followersCount}
+                            label="TAKİPÇİ"
+                            className="border-r-3 border-black dark:border-white"
+                        />
+                        {/* Following */}
+                        <StatCell
+                            value={stats.followingCount}
+                            label="TAKİP"
+                            className="border-r-3 border-black dark:border-white"
+                        />
+                        {/* Reputation - Highlighted */}
+                        <StatCell
+                            value={stats.reputation}
+                            label="REPÜTASYON"
+                            highlight
+                        />
                     </div>
 
+                    {/* Secondary Stats Row */}
+                    <div className="grid grid-cols-3 border-t-3 border-black dark:border-white">
+                        <StatCell
+                            value={stats.articlesCount}
+                            label="MAKALE"
+                            className="border-r-3 border-black dark:border-white"
+                        />
+                        <StatCell
+                            value={stats.questionsCount}
+                            label="SORU"
+                            className="border-r-3 border-black dark:border-white"
+                        />
+                        <StatCell
+                            value={stats.answersCount}
+                            label="CEVAP"
+                        />
+                    </div>
                 </div>
             </div>
+
+            {/* === STICKER COLLECTION === */}
+            {userBadges && userBadges.length > 0 && (
+                <div className="mt-6 flex justify-center px-4">
+                    <BadgeDisplay userBadges={userBadges} size="md" maxDisplay={4} />
+                </div>
+            )}
         </div>
     );
 }
 
-function StatBox({ label, value, highlight = false }: { label: string, value: number, highlight?: boolean }) {
+// Stat Cell Component
+function StatCell({
+    value,
+    label,
+    highlight = false,
+    className = ""
+}: {
+    value: number;
+    label: string;
+    highlight?: boolean;
+    className?: string;
+}) {
     return (
         <div className={cn(
-            "flex flex-col items-center justify-center p-2 rounded-lg border-2 border-black text-center transition-all hover:scale-105",
-            highlight ? "bg-[#FFC800] shadow-[2px_2px_0px_#000]" : "bg-zinc-50 dark:bg-zinc-800 shadow-[2px_2px_0px_#ccc] dark:shadow-none"
+            "flex flex-col items-center justify-center py-4 px-2 transition-colors",
+            highlight ? "bg-primary text-black" : "bg-card hover:bg-muted/50",
+            className
         )}>
-            <span className="text-xl sm:text-2xl font-black text-black dark:text-white leading-none mb-0.5">
-                {value}
+            <span className={cn(
+                "text-2xl sm:text-3xl font-black tracking-tight",
+                highlight ? "text-black" : "text-foreground"
+            )}>
+                {value.toLocaleString('tr-TR')}
             </span>
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase text-neutral-500 dark:text-zinc-400">
+            <span className={cn(
+                "text-[10px] font-bold tracking-widest mt-0.5",
+                highlight ? "text-black/70" : "text-muted-foreground"
+            )}>
                 {label}
             </span>
         </div>

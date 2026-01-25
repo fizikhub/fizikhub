@@ -2,10 +2,8 @@ import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { getFollowStatus, getFollowStats } from "@/app/profil/actions";
 import { Metadata } from "next";
-import { ProfileHero } from "@/components/profile/profile-hero";
-
-import { ProfileContentFeed } from "@/components/profile/profile-content-feed";
-import { SpaceBackground } from "@/components/home/space-background";
+import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
+import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
 
 interface PageProps {
     params: Promise<{ username: string }>;
@@ -62,22 +60,22 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 4. User articles
         supabase
             .from('articles')
-            .select('*')
+            .select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count')
             .eq('author_id', profile.id)
-            .eq('status', 'published') // Only show published articles for public view
+            .eq('status', 'published')
             .order('created_at', { ascending: false }),
 
         // 5. User questions
         supabase
             .from('questions')
-            .select('*, profiles(username, full_name), answers(count)')
+            .select('id, title, slug, created_at, category, views, answers_count')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false }),
 
         // 6. User answers
         supabase
             .from('answers')
-            .select('*, questions(id, title)')
+            .select('id, content, created_at, is_accepted, questions(id, title, slug)')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false })
     ]);
@@ -87,6 +85,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
     // Construct stats object
     const stats = {
+        reputation: profile?.reputation || 0,
         followersCount,
         followingCount,
         articlesCount: articles?.length || 0,
@@ -94,37 +93,36 @@ export default async function PublicProfilePage({ params }: PageProps) {
         answersCount: answers?.length || 0,
     };
 
-
+    // Fix for BadgeDisplay type mismatch
+    const formattedBadges = userBadges?.map((ub: any) => ({
+        awarded_at: ub.awarded_at,
+        badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
+    }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-background relative overflow-hidden pb-20">
-            {/* Space Background */}
-            <SpaceBackground />
+        <div className="min-h-screen bg-background py-4 sm:py-8 pb-32">
+            <div className="container max-w-[600px] lg:max-w-[700px] mx-auto px-4">
 
-            {/* Hero Section */}
-            <div className="relative z-10">
-                <ProfileHero
+                {/* NEO-BRUTALIST HEADER */}
+                <NeoProfileHeader
                     profile={profile}
-                    user={user}
+                    user={user || { created_at: profile.created_at }}
                     isOwnProfile={isOwnProfile}
                     isFollowing={isFollowing}
-                    targetUserId={profile.id}
                     stats={stats}
-                    badges={userBadges || []}
-                    createdAt={profile.created_at}
+                    userBadges={formattedBadges}
                 />
-            </div>
 
-            {/* Main Content */}
-            <div className="container max-w-5xl mx-auto px-4 py-6 relative z-10">
-                <ProfileContentFeed
+                {/* NEO-BRUTALIST FEED */}
+                <NeoProfileFeed
                     articles={articles || []}
                     questions={questions || []}
                     answers={answers || []}
-                    bookmarkedArticles={[]} // Don't show bookmarks for public profiles
-                    bookmarkedQuestions={[]} // Don't show bookmarks for public profiles
+                    bookmarkedArticles={[]}
+                    bookmarkedQuestions={[]}
                     isOwnProfile={isOwnProfile}
                 />
+
             </div>
         </div>
     );
