@@ -117,66 +117,67 @@ export function ModernForumHeader() {
     return (
         <div className="flex flex-col gap-4 sm:gap-8 mb-6 sm:mb-8">
             {/* UNIFIED HERO CARD - POP STYLE */}
+            {/* 
+                V30: PREMIUM SCIENTIFIC HERO CARD
+                - Theme: "Cerrah Titizliği" (Surgical Precision) / Deep Science
+                - Visuals: Dark Glass, Subtle Blue Glow, Clean Typography
+                - Compact & Elegant
+            */}
             <div className={cn(
-                "relative rounded-xl overflow-hidden min-h-[140px] sm:min-h-[200px] flex flex-col md:flex-row items-center justify-between p-6 sm:p-10 gap-6 sm:gap-10",
-                "bg-neo-yellow border-[3px] border-black shadow-[4px_4px_0px_0px_#000]",
-                "transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                "relative rounded-2xl overflow-hidden w-full",
+                "bg-[#09090b] border border-white/10 shadow-[0_0_40px_-10px_rgba(59,130,246,0.15)]", // Subtle blue ambient shadow
+                "min-h-[120px] sm:min-h-[140px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all"
             )}>
-                {/* Background Decor - Halftone / Grid Pattern */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none"
-                    style={{ backgroundImage: 'radial-gradient(#000 2px, transparent 2px)', backgroundSize: '20px 20px' }}
-                />
+                {/* Background Decor: Subtle Cosmic Gradient + Noise */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
 
-                {/* LEFT: Branding & Text */}
-                <div className="relative z-10 flex flex-col items-center md:items-start text-center md:text-left gap-2 shrink-0 md:max-w-lg">
-                    <motion.h1
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="text-4xl sm:text-6xl font-black tracking-tighter uppercase text-black leading-[0.9] drop-shadow-sm"
-                    >
-                        AKLINDA <span className="text-white text-stroke-black">NE VAR?</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1 }}
-                        className="hidden sm:block text-black/80 font-bold text-sm sm:text-base max-w-sm leading-relaxed"
-                    >
-                        Topluluk seninle beyin fırtınası yapmaya hazır.
-                    </motion.p>
-                </div>
+                {/* Content Container */}
+                <div className="relative z-10 w-full max-w-4xl flex flex-col items-center text-center gap-6">
 
-                {/* RIGHT: Action Input */}
-                <div className="relative z-10 w-full md:max-w-xl">
-                    <CreateQuestionDialog
-                        trigger={
-                            <div className={cn(
-                                "w-full cursor-pointer group relative overflow-hidden",
-                                "bg-white border-[3px] border-black hover:bg-neo-blue transition-all duration-200",
-                                "rounded-xl h-14 sm:h-16 flex items-center px-4 sm:px-6 gap-4",
-                                "shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
-                            )}>
+                    {/* Header Text */}
+                    <div className="space-y-2">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-2xl sm:text-3xl font-medium tracking-tight text-white/90"
+                        >
+                            <span className="font-extralight text-white/50">Bugün bilim adına...</span> <br className="sm:hidden" />
+                            Aklında <span className="text-blue-400 font-semibold glow-text">ne var?</span>
+                        </motion.h1>
+                    </div>
+
+                    {/* Premium Input Trigger */}
+                    <div className="w-full max-w-xl">
+                        <CreateQuestionDialog
+                            trigger={
                                 <div className={cn(
-                                    "w-10 h-10 rounded-lg bg-neo-pink text-black flex items-center justify-center shrink-0 border-2 border-black",
-                                    "group-hover:scale-110 transition-transform duration-200 group-hover:rotate-12"
+                                    "group relative w-full cursor-pointer h-12 sm:h-14 rounded-full",
+                                    "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-400/50 transition-all duration-300",
+                                    "flex items-center px-2 pr-6 shadow-inner overflow-hidden backdrop-blur-sm"
                                 )}>
-                                    <PenLine className="w-5 h-5 stroke-[2.5px]" />
-                                </div>
-
-                                <span className="text-lg font-black text-black group-hover:text-black transition-colors truncate">
-                                    Bugün neyi merak ediyorsun?
-                                </span>
-
-                                <div className="ml-auto">
-                                    <div className={cn(
-                                        "w-8 h-8 rounded-full bg-black text-white flex items-center justify-center group-hover:bg-white group-hover:text-black border-2 border-black transition-colors"
-                                    )}>
-                                        <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform duration-300 stroke-[3px]" />
+                                    {/* Icon Circle */}
+                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
+                                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5px]" />
                                     </div>
+
+                                    {/* Placeholder Text */}
+                                    <span className="ml-4 text-sm sm:text-base text-zinc-400 font-light group-hover:text-zinc-200 transition-colors">
+                                        Bugün neyi merak ediyorsun?
+                                    </span>
+
+                                    {/* Arrow Action */}
+                                    <div className="ml-auto opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-blue-400">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </div>
+
+                                    {/* Subtle Glow Effect on Hover */}
+                                    <div className="absolute inset-0 rounded-full ring-2 ring-blue-500/0 group-hover:ring-blue-500/20 transition-all duration-500" />
                                 </div>
-                            </div>
-                        }
-                    />
+                            }
+                        />
+                    </div>
+
                 </div>
             </div>
 
