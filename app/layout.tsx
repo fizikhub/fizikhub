@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Space_Grotesk, Permanent_Marker, Patrick_Hand } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./mobile-optimizations.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -27,22 +27,6 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space",
   display: "swap",
 });
-
-const permanentMarker = Permanent_Marker({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-permanent",
-  display: "swap",
-});
-
-const patrickHand = Patrick_Hand({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-patrick",
-  display: "swap",
-});
-
-
 
 export const viewport = {
   width: 'device-width',
@@ -246,7 +230,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} ${permanentMarker.variable} ${patrickHand.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         <UserActivityTracker />
         <ThemeProvider
           attribute="class"

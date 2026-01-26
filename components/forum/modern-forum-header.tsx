@@ -135,105 +135,141 @@ export function ModernForumHeader() {
                 <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-6">
 
                     {/* Animated Chalk Text */}
-                    <div className="text-center relative py-4">
-                        {/* Define SVG Filter for Subtle Chalk Distortion */}
+                    <div className="text-center relative">
+                        {/* Define SVG Filter for Chalk Distortion */}
                         <svg className="absolute w-0 h-0">
                             <filter id="chalk-distortion">
-                                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" result="noise" />
-                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+                                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
                             </filter>
                         </svg>
 
                         <motion.h1
-                            className="text-5xl sm:text-7xl tracking-widest text-white/95 uppercase leading-none font-permanent relative drop-shadow-md"
+                            className="text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
-                            style={{ filter: "url(#chalk-distortion)" }}
                         >
-                            <span className="relative inline-block whitespace-nowrap">
+                            <span className="relative inline-block">
                                 {"AKLINDA".split("").map((char, i) => (
                                     <motion.span
                                         key={`l1-${i}`}
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
+                                        initial={{ opacity: 0, x: -5 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{
-                                            delay: i * 0.1,
-                                            duration: 0.2,
+                                            delay: i * 0.15,
+                                            duration: 0.1,
+                                            ease: "easeOut"
                                         }}
                                         className="inline-block relative"
+                                        style={{ filter: "url(#chalk-distortion)" }}
                                     >
                                         {char}
-                                        {/* Simple Chalk Dust */}
+                                        {/* Realistic Chalk Dust - Bursting Effect */}
                                         <motion.span
                                             initial={{ opacity: 0, scale: 0 }}
-                                            animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5], y: [0, 10] }}
-                                            transition={{ delay: i * 0.1, duration: 0.4 }}
-                                            className="absolute -bottom-1 left-1/2 w-1 h-1 bg-white/50 rounded-full blur-[0.5px]"
+                                            animate={{
+                                                opacity: [0, 0.8, 0],
+                                                scale: [0.5, 1.5],
+                                                y: [0, 20],
+                                                x: [0, (Math.random() - 0.5) * 20]
+                                            }}
+                                            transition={{ delay: i * 0.15, duration: 1.2, ease: "easeOut" }}
+                                            className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"
                                         />
                                     </motion.span>
                                 ))}
                             </span>
                             <br className="sm:hidden" />
-                            <span className="relative inline-block sm:ml-6 mt-4 sm:mt-0 whitespace-nowrap">
+                            <span className="relative inline-block sm:ml-4">
                                 {"NE VAR?".split("").map((char, i) => (
                                     <motion.span
                                         key={`l2-${i}`}
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
+                                        initial={{ opacity: 0, x: -5 }}
+                                        animate={{ opacity: 1, x: 0 }}
                                         transition={{
-                                            delay: 0.5 + (i * 0.1),
-                                            duration: 0.2,
+                                            delay: 1.2 + (i * 0.15),
+                                            duration: 0.1,
+                                            ease: "easeOut"
                                         }}
                                         className={cn(
                                             "inline-block relative",
-                                            char === " " ? "min-w-[1.5ch]" : ""
+                                            char === " " ? "min-w-[1ch]" : ""
                                         )}
+                                        style={{ filter: "url(#chalk-distortion)" }}
                                     >
                                         {char}
                                         {char !== " " && (
                                             <motion.span
                                                 initial={{ opacity: 0, scale: 0 }}
-                                                animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.5], y: [0, 10] }}
-                                                transition={{ delay: 0.5 + (i * 0.1), duration: 0.4 }}
-                                                className="absolute -bottom-1 left-1/2 w-1 h-1 bg-white/50 rounded-full blur-[0.5px]"
+                                                animate={{
+                                                    opacity: [0, 0.8, 0],
+                                                    scale: [0.5, 1.5],
+                                                    y: [0, 20],
+                                                    x: [0, (Math.random() - 0.5) * 20]
+                                                }}
+                                                transition={{ delay: 1.2 + (i * 0.15), duration: 1.2, ease: "easeOut" }}
+                                                className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"
                                             />
                                         )}
                                     </motion.span>
                                 ))}
+
+                                {/* Moving Chalk Cursor */}
+                                <motion.div
+                                    className="absolute -right-6 top-1/2 w-3 h-8 bg-white rounded-sm shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20"
+                                    initial={{ opacity: 0, x: -200, y: -20, rotate: 15 }}
+                                    animate={{
+                                        opacity: [0, 1, 1, 0],
+                                        x: [-200, 0],
+                                        y: [0, -5, 5, 0],
+                                        rotate: [15, 10, 20, 15]
+                                    }}
+                                    transition={{
+                                        duration: 2.5,
+                                        times: [0, 0.1, 0.9, 1],
+                                        ease: "linear"
+                                    }}
+                                />
+
+                                {/* Underline Animation */}
+                                <motion.div
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ delay: 2.6, duration: 0.4, type: "spring" }}
+                                    className="absolute -bottom-2 left-0 right-0 h-1.5 bg-white/80 rounded-full origin-left opacity-80"
+                                    style={{
+                                        filter: "url(#chalk-distortion)",
+                                        boxShadow: "0 0 4px rgba(255,255,255,0.5)"
+                                    }}
+                                />
                             </span>
                         </motion.h1>
                     </div>
 
-                    {/* Input Trigger (Cleaner Chalk Style) */}
+                    {/* Input Trigger (Chalk Panel Style) */}
                     <div className="w-full md:max-w-xl">
                         <CreateQuestionDialog
                             trigger={
                                 <div className={cn(
-                                    "group relative w-full cursor-pointer h-16 sm:h-20",
-                                    "bg-transparent border-b-[3px] border-white/40 hover:border-white transition-all duration-300",
-                                    "flex items-center px-2 hover:px-4",
-                                    "rounded-none"
+                                    "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
+                                    "bg-white/5 border-[2px] border-white/30 hover:bg-white/10 hover:border-white/60 transition-all duration-200",
+                                    "flex items-center px-4 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
                                 )}>
-                                    {/* Placeholder */}
-                                    <div className="flex flex-col w-full">
-                                        <span className="text-sm font-bold text-white/50 uppercase tracking-widest mb-1 font-sans">
-                                            HIZLI SORU EKLE
-                                        </span>
-                                        <div className="flex items-center justify-between w-full">
-                                            <span className="text-2xl sm:text-3xl font-patrick text-white/90 group-hover:text-white transition-colors">
-                                                Bugün neyi merak ediyorsun?
-                                            </span>
-
-                                            {/* Minimal Arrow */}
-                                            <div className="ml-4 opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-                                                <ArrowRight className="w-6 h-6 text-white" />
-                                            </div>
-                                        </div>
+                                    {/* Icon Box */}
+                                    <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20 mr-4 group-hover:rotate-12 transition-transform">
+                                        <Sparkles className="w-5 h-5 opacity-80" />
                                     </div>
 
-                                    {/* Chalk Texture on Border */}
-                                    <div className="absolute bottom-[-3px] left-0 right-0 h-[3px] bg-white opacity-50 pointer-events-none group-hover:opacity-100 transition-opacity" style={{ filter: "url(#chalk-distortion)" }} />
+                                    {/* Placeholder */}
+                                    <span className="text-lg font-medium text-white/70 group-hover:text-white transition-colors font-mono">
+                                        Bugün neyi merak ediyorsun?
+                                    </span>
+
+                                    {/* Arrow Action */}
+                                    <div className="ml-auto text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
+                                        <ArrowRight className="w-5 h-5" />
+                                    </div>
                                 </div>
                             }
                         />
