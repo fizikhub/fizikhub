@@ -38,46 +38,47 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V25: GREEN REALISTIC CHALKBOARD
-                - Traditional Dark Green Background
-                - High Contrast Chalk Formulas
+                V26: BLUEPRINT ENGINEERING THEME
+                - Deep Cobalt Blue Background
+                - Technical Grid Overlay
+                - Drafting Style Formulas
             */}
             <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-3 sm:px-4",
-                        // Background: Deep Blackboard Green
-                        "bg-[#1B3A2B] border-b-[3px] border-[#8BA890]/50",
-                        "shadow-[0px_4px_10px_0px_rgba(0,0,0,0.6)]",
+                        // Background: Deep Blueprint Blue
+                        "bg-[#172554] border-b-[3px] border-[#3B82F6]",
+                        "shadow-[0px_4px_10px_0px_rgba(23,37,84,0.6)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* CHALKBOARD TEXTURE (Enhanced) */}
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-40 pointer-events-none mix-blend-multiply" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                    {/* BLUEPRINT GRID TEXTURE */}
+                    <div className="absolute inset-0 opacity-20 pointer-events-none"
+                        style={{
+                            backgroundImage: 'linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)',
+                            backgroundSize: '20px 20px'
+                        }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#172554]/50 pointer-events-none" />
 
-                    {/* PHYSICS TICKER BACKGROUND (HIGH CONTRAST CHALK STYLE) */}
-                    <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none select-none">
+                    {/* PHYSICS TICKER BACKGROUND (TECHNICAL/DRAFTING STYLE) */}
+                    <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none select-none mix-blend-screen">
                         <motion.div
-                            className="flex gap-16 whitespace-nowrap text-xl sm:text-2xl font-handwriting font-bold text-white/95"
-                            style={{
-                                fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif',
-                                textShadow: '2px 2px 4px rgba(0,0,0,0.5), 0 0 2px rgba(255,255,255,0.8)' // Chalk glow/shadow effect
-                            }}
+                            className="flex gap-20 whitespace-nowrap text-lg sm:text-xl font-mono font-bold text-blue-200/40"
+                            style={{ letterSpacing: '2px' }}
                             animate={{ x: ["0%", "-50%"] }}
-                            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
                         >
                             {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
-                                <span key={i} className="inline-block relative" style={{ transform: `rotate(${Math.random() * 8 - 4}deg)` }}>
+                                <span key={i} className="inline-block border border-blue-400/30 px-2 py-1 rounded-sm">
                                     {eq}
                                 </span>
                             ))}
                         </motion.div>
                     </div>
 
-                    {/* DUST/NOISE OVERLAY (Stronger) */}
-                    <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
 
                     {/* LEFT: BRAND */}
