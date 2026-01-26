@@ -92,80 +92,83 @@ export function CompactProfileView({
 
             {/* 1. COMPACT HEADER */}
             <div className="relative">
-                {/* Cover - Efficient Height */}
-                <div className="h-32 w-full bg-zinc-900 overflow-hidden relative">
+                {/* Cover - INCREASED HEIGHT */}
+                <div className="h-64 w-full bg-zinc-900 overflow-hidden relative">
                     {profile?.cover_url && (
-                        <img src={profile.cover_url} alt="" className="w-full h-full object-cover opacity-80" />
+                        <img src={profile.cover_url} alt="" className="w-full h-full object-cover" />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                    {/* Stronger Gradient for Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
                     {/* Top Actions */}
-                    <div className="absolute top-2 right-2 flex gap-2">
+                    <div className="absolute top-2 right-2 flex gap-2 z-20">
                         {isOwnProfile ? (
                             <Link href="/ayarlar">
-                                <Button size="icon" variant="ghost" className="h-8 w-8 bg-black/50 text-white rounded-full backdrop-blur-sm hover:bg-black/70">
-                                    <Settings className="w-4 h-4" />
+                                <Button size="icon" variant="ghost" className="h-9 w-9 bg-black/40 text-white rounded-full backdrop-blur-md hover:bg-black/60 ring-1 ring-white/10">
+                                    <Settings className="w-5 h-5" />
                                 </Button>
                             </Link>
                         ) : (
-                            <Button size="icon" variant="ghost" className="h-8 w-8 bg-black/50 text-white rounded-full backdrop-blur-sm">
-                                <MoreHorizontal className="w-4 h-4" />
+                            <Button size="icon" variant="ghost" className="h-9 w-9 bg-black/40 text-white rounded-full backdrop-blur-md">
+                                <MoreHorizontal className="w-5 h-5" />
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Identity Row - Overlapping */}
-                <div className="px-4 -mt-10 flex flex-col relative z-10">
-                    <div className="flex justify-between items-end">
-                        <div className="w-24 h-24 rounded-2xl border-[3px] border-background bg-zinc-800 overflow-hidden shadow-lg">
+                {/* Identity Row - Refined Layout */}
+                <div className="px-5 -mt-16 flex flex-col relative z-10 w-full mb-6">
+                    <div className="flex justify-between items-end w-full">
+                        {/* Larger Avatar */}
+                        <div className="w-32 h-32 rounded-2xl border-[4px] border-background bg-zinc-800 overflow-hidden shadow-2xl">
                             <Avatar className="w-full h-full rounded-none">
                                 <AvatarImage src={profile?.avatar_url} className="object-cover" />
-                                <AvatarFallback className="bg-primary text-black text-2xl font-bold rounded-none">
+                                <AvatarFallback className="bg-primary text-black text-4xl font-black rounded-none">
                                     {profile?.full_name?.[0]}
                                 </AvatarFallback>
                             </Avatar>
                         </div>
 
-                        {/* Action Buttons - Right of Avatar */}
-                        <div className="flex gap-2 pb-1">
+                        {/* Action Button - Better positioning */}
+                        <div className="mb-2">
                             {isOwnProfile ? (
-                                <Link href="/profil/duzenle" className="flex-1">
-                                    <Button size="sm" variant="outline" className="h-9 px-4 rounded-full border-border bg-background text-xs font-bold shadow-sm">
+                                <Link href="/profil/duzenle">
+                                    <Button size="sm" className="h-10 px-6 rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-md font-bold text-xs hover:bg-white/10 shadow-lg">
+                                        <Edit className="w-4 h-4 mr-2" />
                                         Düzenle
                                     </Button>
                                 </Link>
                             ) : (
-                                <Button size="sm" className="h-9 px-6 rounded-full bg-primary text-black font-bold text-xs hover:bg-primary/90">
+                                <Button size="sm" className="h-10 px-8 rounded-xl bg-primary text-black font-black text-xs hover:bg-primary/90 shadow-lg shadow-primary/20">
                                     Takip Et
                                 </Button>
                             )}
                         </div>
                     </div>
 
-                    <div className="mt-3">
-                        <h1 className="text-2xl font-black text-foreground leading-tight flex items-center gap-1">
+                    <div className="mt-4">
+                        <h1 className="text-3xl font-black text-foreground leading-none flex items-center gap-2 mb-1">
                             {profile?.full_name}
                             {userBadges?.some((b: any) => b.badges?.category === 'verified') && (
-                                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-blue-500"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
+                                <Zap className="w-6 h-6 text-primary fill-primary" />
                             )}
                         </h1>
-                        <p className="text-zinc-500 text-sm font-medium mb-2">@{profile?.username}</p>
+                        <p className="text-zinc-500 font-medium text-base mb-3">@{profile?.username}</p>
 
                         {profile?.bio && (
-                            <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3">
+                            <p className="text-zinc-300 text-sm leading-relaxed line-clamp-3 max-w-[90%]">
                                 {profile.bio}
                             </p>
                         )}
 
-                        <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500 font-medium">
-                            <span className="flex items-center gap-1">
-                                <Calendar className="w-3.5 h-3.5" />
-                                Joined {format(new Date(profile?.created_at || Date.now()), 'MMM yyyy')}
+                        <div className="flex items-center gap-4 mt-4 text-xs text-zinc-500 font-medium uppercase tracking-wide">
+                            <span className="flex items-center gap-1.5">
+                                <Calendar className="w-4 h-4 text-zinc-600" />
+                                {format(new Date(profile?.created_at || Date.now()), 'MMMM yyyy', { locale: tr })}
                             </span>
                             {profile?.website && (
-                                <a href={profile.website} target="_blank" className="flex items-center gap-1 text-primary">
-                                    <LinkIcon className="w-3.5 h-3.5" />
+                                <a href={profile.website} target="_blank" className="flex items-center gap-1.5 text-primary hover:underline">
+                                    <LinkIcon className="w-4 h-4" />
                                     Web
                                 </a>
                             )}
@@ -174,30 +177,24 @@ export function CompactProfileView({
                 </div>
             </div>
 
-            {/* 2. STATS STRIP - Horizontal Scroll */}
-            <div className="flex items-center gap-6 px-4 py-4 mt-4 overflow-x-auto no-scrollbar border-b border-border/40">
-                <div className="flex flex-col flex-shrink-0">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Repütasyon</span>
-                    <span className="text-lg font-black text-primary font-mono">{formatNumber(stats.reputation)}</span>
-                </div>
-                <div className="w-[1px] h-8 bg-border/40 flex-shrink-0" />
-                <div className="flex flex-col flex-shrink-0">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Takipçi</span>
-                    <span className="text-lg font-black text-foreground font-mono">{formatNumber(stats.followersCount)}</span>
-                </div>
-                <div className="flex flex-col flex-shrink-0">
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Takip</span>
-                    <span className="text-lg font-black text-foreground font-mono">{formatNumber(stats.followingCount)}</span>
-                </div>
-                <div className="w-[1px] h-8 bg-border/40 flex-shrink-0" />
-                <div className="flex gap-4">
-                    <div className="flex items-center gap-1.5 text-zinc-400 bg-secondary/30 px-2 py-1 rounded-md">
-                        <FileText className="w-3.5 h-3.5" />
-                        <span className="text-xs font-bold">{stats.articlesCount}</span>
+            {/* 2. STATS - Premium Dashboard Look */}
+            <div className="mx-4 bg-zinc-900/50 rounded-2xl border border-white/5 p-4 mb-2 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-2xl font-black text-primary font-mono tracking-tight">{formatNumber(stats.reputation)}</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Repütasyon</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-zinc-400 bg-secondary/30 px-2 py-1 rounded-md">
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span className="text-xs font-bold">{stats.questionsCount}</span>
+                    <div className="w-[1px] h-10 bg-white/10" />
+                    <div className="flex flex-col gap-0.5 text-center px-4">
+                        <span className="text-lg font-bold text-white font-mono">{formatNumber(stats.followersCount)}</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Takipçi</span>
+                    </div>
+                    <div className="w-[1px] h-10 bg-white/10" />
+                    <div className="flex flex-col gap-0.5 text-right">
+                        <span className="text-lg font-bold text-white font-mono">{formatNumber(stats.followingCount)}</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Takip</span>
                     </div>
                 </div>
             </div>
