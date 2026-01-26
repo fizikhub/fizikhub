@@ -38,39 +38,44 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V23: CLEAN SCIENCE CONSOLE (RESTORED)
-                - Height: h-14 (56px)
-                - Blue Base, Thick Borders, Physics Echo
+                V24: CHALKBOARD NAVBAR (MOBILE FOCUSED)
+                - Blackboard texture
+                - Chalk formulas
             */}
             <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-3 sm:px-4",
-                        "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
+                        // Background: Dark Gray/Blackboard + Border
+                        "bg-[#252525] border-b-[3px] border-[#e0e0e0]/50",
+                        "shadow-[0px_4px_10px_0px_rgba(0,0,0,0.5)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS TICKER BACKGROUND */}
-                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
+                    {/* CHALKBOARD TEXTURE */}
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] opacity-30 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+
+                    {/* PHYSICS TICKER BACKGROUND (CHALK STYLE) */}
+                    <div className="absolute inset-0 flex items-center opacity-40 overflow-hidden pointer-events-none select-none">
                         <motion.div
-                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
+                            className="flex gap-12 whitespace-nowrap text-lg sm:text-xl font-handwriting font-bold text-white/80 blur-[0.5px]"
+                            style={{ fontFamily: '"Comic Sans MS", "Chalkboard SE", sans-serif' }} // Fallback to "Chalkboard SE" on Mac
                             animate={{ x: ["0%", "-50%"] }}
-                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
                         >
                             {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
-                                <span key={i} className="inline-block">{eq}</span>
+                                <span key={i} className="inline-block" style={{ transform: `rotate(${Math.random() * 6 - 3}deg)` }}>
+                                    {eq}
+                                </span>
                             ))}
                         </motion.div>
                     </div>
 
-                    {/* RULER TICKS */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
-                    </div>
+                    {/* DUST/NOISE OVERLAY */}
+                    <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-10 flex-shrink-0 pt-0.5">
