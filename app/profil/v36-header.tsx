@@ -35,7 +35,7 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
 
             {/* 1. COVER PHOTO */}
             <div className={cn(
-                "h-32 sm:h-64 w-full rounded-b-3xl sm:rounded-3xl relative overflow-hidden", // Shortened mobile height
+                "h-40 sm:h-64 w-full rounded-b-2xl sm:rounded-3xl relative overflow-hidden",
                 "bg-gradient-to-br", coverGradient
             )}>
                 <div className="absolute inset-0 bg-black/20" />
@@ -61,7 +61,7 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
             </div>
 
             {/* 2. PROFILE INFO */}
-            <div className="px-4 sm:px-10 relative -mt-12 sm:-mt-20 flex flex-col sm:flex-row items-end sm:items-end gap-4 sm:gap-6">
+            <div className="px-4 sm:px-10 relative -mt-12 sm:-mt-20 flex flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-6">
 
                 {/* Avatar - SMALLER ON MOBILE */}
                 <div className="relative group/avatar">
@@ -77,8 +77,8 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
                 </div>
 
                 {/* Identity */}
-                <div className="flex-1 pb-1 w-full sm:w-auto">
-                    <div className="flex flex-row items-end justify-between sm:items-center">
+                <div className="flex-1 pb-1 w-full sm:w-auto mt-2 sm:mt-0">
+                    <div className="flex flex-row items-start sm:items-center justify-between">
                         <div>
                             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-2">
                                 {profile?.full_name || "İsimsiz Bilimci"}
@@ -88,13 +88,13 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
                         </div>
 
                         {/* Mobile Actions: Edit & Message (Compact) */}
-                        <div className="flex sm:hidden gap-2 mb-1">
+                        <div className="flex sm:hidden gap-2 self-start ml-auto sm:ml-0">
                             {isOwnProfile && (
                                 <>
                                     <Link
                                         href="/mesajlar"
                                         className={cn(
-                                            "w-10 h-10 flex items-center justify-center rounded-xl transition-all relative border border-zinc-700 bg-zinc-900",
+                                            "w-9 h-9 flex items-center justify-center rounded-xl transition-all relative border border-zinc-700 bg-zinc-900",
                                             hasUnread && "bg-[#FFC800] text-black border-[#FFC800] animate-pulse shadow-[0_0_15px_rgba(255,200,0,0.5)]"
                                         )}
                                     >
@@ -106,7 +106,7 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
                                             </div>
                                         )}
                                     </Link>
-                                    <Link href="/profil/duzenle" className="w-10 h-10 flex items-center justify-center bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-400">
+                                    <Link href="/profil/duzenle" className="w-9 h-9 flex items-center justify-center bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-400">
                                         <Edit className="w-5 h-5" />
                                     </Link>
                                 </>
@@ -122,7 +122,7 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
                         <div className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /><span>Dünya</span></div>
                     </div>
                     {/* Mobile Bio (Separate Block) */}
-                    <div className="mt-2 sm:hidden text-xs text-zinc-400 line-clamp-2">
+                    <div className="mt-3 sm:hidden text-xs text-zinc-400 line-clamp-3 leading-relaxed">
                         {profile?.bio}
                     </div>
                 </div>
@@ -168,7 +168,7 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
             </div>
 
             {/* Mobile Stats Row (Below everything) */}
-            <div className="flex sm:hidden justify-around mt-8 border-t border-b border-white/5 py-4 bg-black/20">
+            <div className="flex sm:hidden justify-around mt-6 border-t border-b border-white/5 py-4 bg-black/20">
                 <div className="text-center">
                     <div className="text-lg font-black text-white">{stats.followersCount}</div>
                     <div className="text-[10px] text-zinc-500 font-bold tracking-wider">TAKİPÇİ</div>
