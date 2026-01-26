@@ -148,13 +148,16 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 "w-full mb-6 z-[20]"
             )}
         >
-            <div className="relative h-9 border-b-[3px] border-black bg-white flex items-center justify-center select-none rounded-t-xl">
-                <div className="absolute left-4 sm:left-5 flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black" />
-                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black" />
-                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black" />
+            <div className="relative h-10 border-b-[3px] border-black bg-zinc-50 flex items-center justify-center select-none rounded-t-xl overflow-hidden">
+                {/* Subtle Pattern */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
+
+                <div className="absolute left-4 sm:left-5 flex gap-2 z-10">
+                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
                 </div>
-                <div className="text-[10px] sm:text-xs font-black text-black uppercase tracking-[0.2em]">Paylaşım Merkezi</div>
+                <div className="text-[10px] sm:text-xs font-black text-black/70 uppercase tracking-[0.2em] z-10">Paylaşım Merkezi</div>
             </div>
 
             <div className="p-4 sm:p-5">

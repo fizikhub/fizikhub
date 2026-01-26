@@ -169,10 +169,10 @@ export function ModernExploreView({
         <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
             {/* Removed SpaceBackground & UFO for flat Neo-Brutalist look */}
 
-            <div className="w-full max-w-5xl mx-auto px-4 py-8">
+            <div className="w-full max-w-5xl mx-auto px-4 pt-4 pb-8">
                 {/* Intro Section - Hard Box */}
                 {/* Share Card - Moves to Top */}
-                <div className="relative mb-8 mt-4">
+                <div className="relative mb-8 mt-0">
                     <ShareInputCard user={user} />
                 </div>
 
