@@ -44,6 +44,7 @@ interface NeoProfileHeaderProps {
         answersCount: number;
     };
     userBadges?: any[];
+    unreadCount?: number;
 }
 
 export function NeoProfileHeader({
@@ -52,7 +53,8 @@ export function NeoProfileHeader({
     isOwnProfile,
     isFollowing = false,
     stats,
-    userBadges = []
+    userBadges = [],
+    unreadCount = 0
 }: NeoProfileHeaderProps) {
     const gradientIndex = profile?.id ?
         profile.id.charCodeAt(0) % GRADIENTS.length : 0;
@@ -96,16 +98,32 @@ export function NeoProfileHeader({
                     {/* Action Bar Overlay on Cover (Top Right) */}
                     <div className="absolute top-6 right-6 flex gap-2">
                         {isOwnProfile ? (
-                            <ProfileSettingsDialog
-                                currentUsername={profile?.username}
-                                currentFullName={profile?.full_name}
-                                currentBio={profile?.bio}
-                                currentAvatarUrl={profile?.avatar_url}
-                                currentCoverUrl={profile?.cover_url}
-                                currentWebsite={profile?.website}
-                                currentSocialLinks={profile?.social_links}
-                                userEmail={user?.email}
-                            />
+                            <>
+                                <Link
+                                    href="/mesajlar"
+                                    className={cn(
+                                        "neo-button-sm border-2 border-black flex items-center justify-center relative",
+                                        unreadCount > 0 ? "bg-[#FFC800] text-black" : "bg-white text-black"
+                                    )}
+                                >
+                                    <Mail className="w-4 h-4" />
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-black">
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </Link>
+                                <ProfileSettingsDialog
+                                    currentUsername={profile?.username}
+                                    currentFullName={profile?.full_name}
+                                    currentBio={profile?.bio}
+                                    currentAvatarUrl={profile?.avatar_url}
+                                    currentCoverUrl={profile?.cover_url}
+                                    currentWebsite={profile?.website}
+                                    currentSocialLinks={profile?.social_links}
+                                    userEmail={user?.email}
+                                />
+                            </>
                         ) : (
                             <button className="neo-button-sm bg-white border-2 border-black">
                                 <Mail className="w-4 h-4" />

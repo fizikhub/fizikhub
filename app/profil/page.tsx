@@ -5,7 +5,7 @@ import { getTotalUnreadCount } from "@/app/mesajlar/actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Settings, Edit, FileText, Zap, MessageCircle, ShieldCheck } from "lucide-react";
-import { V36ProfileHeader } from "./v36-header";
+import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
 import { MobileProfileContent } from "./mobile-profile-content";
 
 // V27: REFINED PROFILE HEADER
@@ -188,11 +188,12 @@ export default async function ProfilePage() {
 
                 {/* V27 HEADER */}
                 {/* V36 Header with Cover Photo */}
-                <V36ProfileHeader
+                <NeoProfileHeader
                     profile={profile}
                     user={user}
                     stats={stats}
                     isOwnProfile={true}
+                    userBadges={userBadges || []}
                     unreadCount={unreadMessagesCount}
                 />
 
