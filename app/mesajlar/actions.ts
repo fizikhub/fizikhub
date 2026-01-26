@@ -362,3 +362,34 @@ export async function getMessageLikes(conversationId: string): Promise<{ [messag
 
     return result;
 }
+
+/**
+ * Get total unread count for all conversations
+ */
+export async function getTotalUnreadCount(): Promise<number> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return 0;
+
+    // Get all conversations user is part of
+    const { data: participations } = await supabase
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('user_id', user.id);
+
+    if (!participations || participations.length === 0) return 0;
+
+    const conversationIds = participations.map(p => p.conversation_id);
+
+    // Count unread messages in these conversations sent by OTHERS
+    const { count, error } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .in('conversation_id', conversationIds)
+        .neq('sender_id', user.id)
+        .eq('is_read', false);
+
+    if (error) return 0;
+    return count || 0;
+}

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
+import { getTotalUnreadCount } from "@/app/mesajlar/actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Settings, Edit, FileText, Zap, MessageCircle, ShieldCheck } from "lucide-react";
@@ -156,7 +157,8 @@ export default async function ProfilePage() {
         followStats,
         { data: bookmarkedArticles },
         { data: bookmarkedQuestions },
-        { data: drafts }
+        { data: drafts },
+        unreadMessagesCount
     ] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
@@ -166,7 +168,8 @@ export default async function ProfilePage() {
         getFollowStats(user.id),
         supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, excerpt, created_at, category, cover_url, author:profiles(full_name, username))').eq('user_id', user.id).order('created_at', { ascending: false }),
         supabase.from('question_bookmarks').select('created_at, questions(id, title, slug, content, created_at, category, profiles(full_name, username), answers(count))').eq('user_id', user.id).order('created_at', { ascending: false }),
-        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, status').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false })
+        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, status').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }),
+        getTotalUnreadCount() // Add this
     ]);
 
     const stats = {
@@ -189,6 +192,7 @@ export default async function ProfilePage() {
                     user={user}
                     stats={stats}
                     isOwnProfile={true}
+                    unreadCount={unreadMessagesCount}
                 />
 
                 {/* DIVIDER */}

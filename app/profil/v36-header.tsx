@@ -9,6 +9,7 @@ interface V36ProfileHeaderProps {
     user: any;
     stats: any;
     isOwnProfile: boolean;
+    unreadCount?: number;
 }
 
 // Generate consistent gradient based on string
@@ -25,22 +26,22 @@ const getGradient = (str: string) => {
     return colors[index];
 };
 
-export function V36ProfileHeader({ profile, user, stats, isOwnProfile }: V36ProfileHeaderProps) {
+export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCount = 0 }: V36ProfileHeaderProps) {
     const coverGradient = getGradient(profile?.username || "user");
+    const hasUnread = unreadCount > 0;
 
     return (
         <div className="w-full mb-8 relative group">
 
-            {/* 1. COVER PHOTO (Generative / Default) */}
+            {/* 1. COVER PHOTO */}
             <div className={cn(
-                "h-48 sm:h-64 w-full rounded-b-3xl sm:rounded-3xl relative overflow-hidden",
+                "h-32 sm:h-64 w-full rounded-b-3xl sm:rounded-3xl relative overflow-hidden", // Shortened mobile height
                 "bg-gradient-to-br", coverGradient
             )}>
                 <div className="absolute inset-0 bg-black/20" />
-                {/* Pattern Overlay */}
                 <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '20px 20px' }} />
 
-                {/* Floating Stats (Desktop) */}
+                {/* Desktop Stats */}
                 <div className="hidden sm:flex absolute top-6 right-6 gap-6 bg-black/40 backdrop-blur-md rounded-2xl px-6 py-3 border border-white/10">
                     <div className="text-center">
                         <div className="text-xl font-black text-white">{stats.followersCount}</div>
@@ -59,60 +60,92 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile }: V36Prof
                 </div>
             </div>
 
-            {/* 2. PROFILE INFO (Overlapping) */}
-            <div className="px-4 sm:px-10 relative -mt-16 sm:-mt-20 flex flex-col sm:flex-row items-end sm:items-end gap-6">
+            {/* 2. PROFILE INFO */}
+            <div className="px-4 sm:px-10 relative -mt-12 sm:-mt-20 flex flex-col sm:flex-row items-end sm:items-end gap-4 sm:gap-6">
 
-                {/* Avatar */}
+                {/* Avatar - SMALLER ON MOBILE */}
                 <div className="relative group/avatar">
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-black p-1.5 shadow-2xl">
+                    <div className="w-24 h-24 sm:w-40 sm:h-40 rounded-3xl bg-black p-1.5 shadow-2xl">
                         <img
                             src={profile?.avatar_url || "https://github.com/shadcn.png"}
                             alt={profile?.username}
                             className="w-full h-full object-cover rounded-2xl bg-zinc-800"
                         />
                     </div>
-                    {/* Online Status (Mock) */}
-                    <div className="absolute bottom-3 right-3 w-5 h-5 bg-green-500 border-[3px] border-black rounded-full" />
+                    {/* Online Status */}
+                    <div className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 border-[2px] sm:border-[3px] border-black rounded-full" />
                 </div>
 
-                {/* Identity & Bio */}
-                <div className="flex-1 pb-2">
-                    <div className="flex items-center justify-between">
+                {/* Identity */}
+                <div className="flex-1 pb-1 w-full sm:w-auto">
+                    <div className="flex flex-row items-end justify-between sm:items-center">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-2">
                                 {profile?.full_name || "İsimsiz Bilimci"}
-                                {profile?.is_verified && <ShieldCheck className="w-6 h-6 text-blue-500" />}
+                                {profile?.is_verified && <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />}
                             </h1>
-                            <p className="text-zinc-400 font-medium text-base sm:text-lg">@{profile?.username}</p>
+                            <p className="text-zinc-400 font-medium text-sm sm:text-lg">@{profile?.username}</p>
                         </div>
 
-                        {/* Mobile Actions (Right aligned) */}
-                        <div className="sm:hidden flex gap-2">
-                            {/* Mobile Edit/Settings handled below or here? */}
+                        {/* Mobile Actions: Edit & Message (Compact) */}
+                        <div className="flex sm:hidden gap-2 mb-1">
+                            {isOwnProfile && (
+                                <>
+                                    <Link
+                                        href="/mesajlar"
+                                        className={cn(
+                                            "w-10 h-10 flex items-center justify-center rounded-xl transition-all relative border border-zinc-700 bg-zinc-900",
+                                            hasUnread && "bg-[#FFC800] text-black border-[#FFC800] animate-pulse shadow-[0_0_15px_rgba(255,200,0,0.5)]"
+                                        )}
+                                    >
+                                        <MessageCircle className="w-5 h-5" />
+                                        {/* Count Badge for Mobile */}
+                                        {hasUnread && (
+                                            <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border border-black z-20">
+                                                {unreadCount}
+                                            </div>
+                                        )}
+                                    </Link>
+                                    <Link href="/profil/duzenle" className="w-10 h-10 flex items-center justify-center bg-zinc-800 border border-zinc-700 rounded-xl text-zinc-400">
+                                        <Edit className="w-5 h-5" />
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
 
                     {/* Bio / Metadata */}
-                    <div className="mt-4 flex flex-wrap gap-4 text-sm text-zinc-500 font-medium">
+                    <div className="mt-3 hidden sm:flex flex-wrap gap-4 text-sm text-zinc-500 font-medium">
+                        {/* Desktop Bio Layout... */}
                         {profile?.bio && <p className="w-full text-zinc-300 mb-2 leading-relaxed">{profile.bio}</p>}
-
-                        <div className="flex items-center gap-1.5">
-                            <Calendar className="w-4 h-4" />
-                            <span>Katılım: {new Date(user.created_at).getFullYear()}</span>
-                        </div>
-                        {/* Mock Location if we had it */}
-                        <div className="flex items-center gap-1.5">
-                            <MapPin className="w-4 h-4" />
-                            <span>Dünya</span>
-                        </div>
+                        <div className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /><span>{new Date(user.created_at).getFullYear()}</span></div>
+                        <div className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /><span>Dünya</span></div>
+                    </div>
+                    {/* Mobile Bio (Separate Block) */}
+                    <div className="mt-2 sm:hidden text-xs text-zinc-400 line-clamp-2">
+                        {profile?.bio}
                     </div>
                 </div>
 
                 {/* Desktop Actions Row */}
-                <div className="flex gap-3 pb-2 w-full sm:w-auto mt-4 sm:mt-0">
+                <div className="hidden sm:flex gap-3 pb-2 w-auto">
                     {isOwnProfile ? (
                         <>
-                            <Link href="/profil/duzenle" className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors">
+                            {/* Message Button for Owner (Desktop) */}
+                            <Link
+                                href="/mesajlar"
+                                className={cn(
+                                    "flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all border",
+                                    hasUnread
+                                        ? "bg-[#FFC800] text-black border-[#FFC800] animate-pulse shadow-[0_0_20px_rgba(255,200,0,0.3)]"
+                                        : "bg-zinc-900 text-zinc-400 border-zinc-700 hover:text-white"
+                                )}
+                            >
+                                <MessageCircle className={cn("w-5 h-5", hasUnread && "fill-black")} />
+                                {hasUnread && <span className="text-xs bg-black text-[#FFC800] px-1.5 py-0.5 rounded-full font-black">{unreadCount}</span>}
+                            </Link>
+
+                            <Link href="/profil/duzenle" className="flex items-center justify-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-zinc-200 transition-colors">
                                 <Edit className="w-4 h-4" />
                                 <span>Düzenle</span>
                             </Link>
