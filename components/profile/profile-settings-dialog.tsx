@@ -24,6 +24,7 @@ interface ProfileSettingsDialogProps {
     currentWebsite: string | null;
     currentSocialLinks: any | null;
     userEmail: string | null;
+    trigger?: React.ReactNode;
 }
 
 export function ProfileSettingsDialog({
@@ -34,7 +35,8 @@ export function ProfileSettingsDialog({
     currentCoverUrl,
     currentWebsite,
     currentSocialLinks,
-    userEmail
+    userEmail,
+    trigger
 }: ProfileSettingsDialogProps) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -140,10 +142,12 @@ export function ProfileSettingsDialog({
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="outline" className="gap-2 rounded-full font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
-                        <Settings className="w-4 h-4" />
-                        <span>Ayarlar</span>
-                    </Button>
+                    {trigger || (
+                        <Button variant="outline" className="gap-2 rounded-full font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+                            <Settings className="w-4 h-4" />
+                            <span>Ayarlar</span>
+                        </Button>
+                    )}
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl bg-card border-2 border-black dark:border-white p-0 overflow-hidden rounded-3xl">
                     <div className="flex flex-col h-[80vh] md:h-auto">

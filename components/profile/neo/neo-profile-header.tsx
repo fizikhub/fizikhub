@@ -17,7 +17,8 @@ import {
     BadgeCheck,
     PenLine,
     Mail,
-    Edit3
+    Edit3,
+    Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -122,6 +123,11 @@ export function NeoProfileHeader({
                                     currentWebsite={profile?.website}
                                     currentSocialLinks={profile?.social_links}
                                     userEmail={user?.email}
+                                    trigger={
+                                        <button className="neo-button-sm bg-white border-2 border-black flex items-center justify-center">
+                                            <Settings className="w-4 h-4" />
+                                        </button>
+                                    }
                                 />
                             </>
                         ) : (
