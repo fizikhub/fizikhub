@@ -23,7 +23,7 @@ export default function NotFound() {
                 >
                     <div className="relative w-[90vw] sm:w-[500px] aspect-square">
                         <Image
-                            src="/404-naked-scientist.png"
+                            src="/404-rick-scientist.png"
                             alt="Rick-like Scientist caught changing"
                             fill
                             className="object-contain drop-shadow-2xl"
