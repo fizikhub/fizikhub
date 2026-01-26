@@ -330,7 +330,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                         <span className="text-[11px] font-black uppercase tracking-wider">Soru</span>
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-neo-yellow text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-[#FF4433] text-white border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
                         <Plus className="w-4 h-4 stroke-[3px]" />
                         <span className="text-[11px] font-black uppercase tracking-wider">Ekle</span>
                     </button>

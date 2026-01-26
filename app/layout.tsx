@@ -234,7 +234,7 @@ export default async function RootLayout({
         <UserActivityTracker />
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          forcedTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >
