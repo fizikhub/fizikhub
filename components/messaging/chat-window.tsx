@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Message, sendMessage, deleteMessage, likeMessage, getMessageLikes } from "@/app/mesajlar/actions";
+import { Message, sendMessage, deleteMessage, likeMessage, getMessageLikes, markAsRead } from "@/app/mesajlar/actions";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, Heart, Trash2, MoreVertical, CheckCheck, Smile } from "lucide-react";
@@ -68,6 +68,11 @@ export function ChatWindow({
         return () => { supabase.removeChannel(channel); };
     }, [conversationId, supabase]);
 
+    // Mark as read
+    useEffect(() => {
+        markAsRead(conversationId);
+    }, [conversationId, messages.length]);
+
     // Likes Sub
     useEffect(() => {
         const channel = supabase
@@ -103,7 +108,7 @@ export function ChatWindow({
 
         if (!result.success) {
             setMessages((prev) => prev.filter(m => m.id !== tempMessage.id));
-            toast.error("İletilemedi");
+            toast.error("İletilemedi. İnternetini falan filan kontrol et.");
         }
     };
 
@@ -139,10 +144,10 @@ export function ChatWindow({
     // Simple logic: if previous msg sender is same, hide avatar
 
     return (
-        <div className="flex flex-col h-[calc(100vh-64px)] sm:h-[calc(100vh-0px)] bg-[#09090b] relative">
+        <div className="flex flex-col h-[85vh] sm:h-screen w-full bg-[#09090b] relative">
 
             {/* Chat Area */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth pb-32">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth">
                 {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center opacity-30">
                         <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-4">
@@ -166,7 +171,7 @@ export function ChatWindow({
                                 className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}
                                 key={msg.id}
                             >
-                                <div className={cn("flex max-w-[80%] sm:max-w-[70%] gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
+                                <div className={cn("flex max-w-[85%] sm:max-w-[70%] gap-2", isMe ? "flex-row-reverse" : "flex-row")}>
 
                                     {/* Avatar (Only for other user, grouped) */}
                                     <div className="w-8 flex-shrink-0 flex flex-col justify-end">
@@ -234,9 +239,9 @@ export function ChatWindow({
                 )}
             </div>
 
-            {/* Floating Input Bar */}
-            <div className="absolute bottom-4 left-0 right-0 px-4">
-                <div className="max-w-2xl mx-auto bg-zinc-900/80 backdrop-blur-xl border border-white/10 p-2 rounded-full shadow-2xl flex items-center gap-2 pl-4">
+            {/* Input Bar */}
+            <div className="p-3 sm:p-4 bg-zinc-900 border-t border-white/10 shrink-0">
+                <div className="max-w-2xl mx-auto bg-black/50 border border-white/10 p-1.5 rounded-full flex items-center gap-2 pl-4 focus-within:ring-2 ring-[#FFC800]/50 transition-all">
                     <input
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
@@ -246,7 +251,7 @@ export function ChatWindow({
                     <button
                         onClick={handleSend}
                         disabled={!inputText.trim() || sending}
-                        className="w-10 h-10 rounded-full bg-[#FFC800] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FFC800] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100"
                     >
                         <Send className="w-4 h-4 ml-0.5" />
                     </button>

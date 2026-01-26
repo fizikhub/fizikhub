@@ -5,6 +5,7 @@ import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { EditableCover } from "@/components/profile/editable-cover";
 import { BadgeDisplay } from "@/components/badge-display";
 import { FollowButton } from "@/components/profile/follow-button";
+import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import {
     Calendar,
     Link as LinkIcon,
@@ -68,30 +69,43 @@ export function NeoProfileHeader({
                 {/* Cover & Avatar Header Section */}
                 <div className="relative">
                     <div className="h-40 sm:h-52 overflow-hidden">
-                        <EditableCover
-                            url={profile?.cover_url}
-                            gradient={gradient}
-                            editable={isOwnProfile}
-                        />
+                        {/* Display Only Cover - Editing is now in Settings */}
+                        <div className={cn("w-full h-full", !profile?.cover_url && gradient)}>
+                            {profile?.cover_url && (
+                                <img src={profile.cover_url} alt="Cover" className="w-full h-full object-cover" />
+                            )}
+                        </div>
                     </div>
 
                     {/* Avatar - Positioned to peek over cover */}
                     <div className="absolute -bottom-16 left-8">
                         <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-[6px] border-card bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] overflow-hidden p-1">
-                            <AvatarUpload
-                                currentAvatarUrl={profile?.avatar_url}
-                                userInitial={profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
-                                className="h-full w-full rounded-full"
-                            />
+                            {/* Display Only Avatar - Editing is now in Settings */}
+                            <div className="w-full h-full rounded-full overflow-hidden relative">
+                                {profile?.avatar_url ? (
+                                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-muted flex items-center justify-center text-4xl font-black text-muted-foreground">
+                                        {profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* Action Bar Overlay on Cover (Top Right) */}
                     <div className="absolute top-6 right-6 flex gap-2">
                         {isOwnProfile ? (
-                            <Link href="/profil/duzenle" className="neo-button-sm bg-white dark:bg-zinc-800 border-2 border-black">
-                                <Edit3 className="w-4 h-4" />
-                            </Link>
+                            <ProfileSettingsDialog
+                                currentUsername={profile?.username}
+                                currentFullName={profile?.full_name}
+                                currentBio={profile?.bio}
+                                currentAvatarUrl={profile?.avatar_url}
+                                currentCoverUrl={profile?.cover_url}
+                                currentWebsite={profile?.website}
+                                currentSocialLinks={profile?.social_links}
+                                userEmail={user?.email}
+                            />
                         ) : (
                             <button className="neo-button-sm bg-white border-2 border-black">
                                 <Mail className="w-4 h-4" />
