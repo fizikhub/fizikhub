@@ -2,209 +2,135 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, Rocket, Atom, MoveLeft } from "lucide-react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { MoveLeft, Home, TriangleAlert, Frown, Ban } from "lucide-react";
+import { motion } from "framer-motion";
 
-// --- Components ---
-
-const StarField = () => {
-    // Generate random stars on client-side only to avoid hydration mismatch
-    const [stars, setStars] = useState<{ id: number; top: string; left: string; size: number; delay: number }[]>([]);
-
-    useEffect(() => {
-        const newStars = Array.from({ length: 50 }).map((_, i) => ({
-            id: i,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            size: Math.random() * 2 + 1,
-            delay: Math.random() * 5,
-        }));
-        setStars(newStars);
-    }, []);
-
+// Infinite Marquee Component
+const Marquee = ({ text, direction = "left", className }: { text: string; direction?: "left" | "right"; className?: string }) => {
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            {stars.map((star) => (
-                <motion.div
-                    key={star.id}
-                    className="absolute bg-white rounded-full opacity-80"
-                    style={{
-                        top: star.top,
-                        left: star.left,
-                        width: star.size,
-                        height: star.size,
-                    }}
-                    animate={{
-                        opacity: [0.2, 1, 0.2],
-                        scale: [1, 1.5, 1],
-                    }}
-                    transition={{
-                        duration: 3,
-                        delay: star.delay,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                />
-            ))}
+        <div className={`flex overflow-hidden whitespace-nowrap py-3 ${className}`}>
+            <motion.div
+                className="flex gap-4 text-4xl font-black uppercase tracking-tighter"
+                animate={{ x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            >
+                {Array.from({ length: 10 }).map((_, i) => (
+                    <span key={i} className="mx-4">{text}</span>
+                ))}
+            </motion.div>
         </div>
     );
 };
 
-const Astronaut = ({ mouseX, mouseY }: { mouseX: any; mouseY: any }) => {
-    // Parallax effect for astronaut
-    const x = useTransform(mouseX, [0, window.innerWidth], [-20, 20]);
-    const y = useTransform(mouseY, [0, window.innerHeight], [-20, 20]);
-    const rotate = useTransform(mouseX, [0, window.innerWidth], [-5, 5]);
-
-    return (
-        <motion.div
-            style={{ x, y, rotate }}
-            className="w-64 h-64 sm:w-96 sm:h-96 relative z-10"
-            animate={{
-                y: [0, -20, 0],
-            }}
-            transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-            }}
-        >
-            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-                {/* Backpack */}
-                <path d="M40 70H160V140C160 162.091 142.091 180 120 180H80C57.9086 180 40 162.091 40 140V70Z" fill="#E4E4E5" stroke="black" strokeWidth="4" />
-                {/* Helmet Outline */}
-                <circle cx="100" cy="80" r="50" fill="white" stroke="black" strokeWidth="4" />
-                {/* Visor */}
-                <path d="M70 80C70 63.4315 83.4315 50 100 50C116.569 50 130 63.4315 130 80C130 96.5685 116.569 110 100 110C83.4315 110 70 96.5685 70 80Z" fill="#09090B" stroke="black" strokeWidth="4" />
-                {/* Visor Reflection */}
-                <path d="M110 65C110 65 120 70 120 80" stroke="#06B6D4" strokeWidth="4" strokeLinecap="round" />
-                {/* Body Details */}
-                <rect x="80" y="140" width="40" height="20" rx="4" fill="#FACC15" stroke="black" strokeWidth="3" />
-                <path d="M60 140L60 180" stroke="black" strokeWidth="4" strokeLinecap="round" />
-                <path d="M140 140L140 180" stroke="black" strokeWidth="4" strokeLinecap="round" />
-                {/* Floating Wire (Tether) */}
-                <path d="M100 180C100 180 100 220 140 240" stroke="#52525B" strokeWidth="3" strokeDasharray="8 8" />
-            </svg>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
-        </motion.div>
-    );
-};
-
-// --- Main Page ---
-
 export default function NotFound() {
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        mouseX.set(e.clientX);
-        mouseY.set(e.clientY);
-    };
-
     return (
-        <div
-            className="min-h-screen bg-[#09090b] text-white flex flex-col items-center justify-center relative overflow-hidden font-sans selection:bg-[#FACC15] selection:text-black"
-            onMouseMove={handleMouseMove}
-        >
-            <StarField />
+        <div className="min-h-screen bg-[#FACC15] text-black overflow-hidden relative font-sans selection:bg-black selection:text-[#FACC15] flex flex-col">
 
-            {/* Grid Overlay */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+            {/* 1. Background Chaos */}
+            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                <div style={{ backgroundImage: "radial-gradient(#000 2px, transparent 2px)", backgroundSize: "30px 30px" }} className="w-full h-full" />
+            </div>
 
-            {/* Decorative Planets */}
-            <motion.div
-                className="absolute top-20 right-20 text-[#06B6D4] opacity-20 hidden sm:block pointer-events-none"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-            >
-                <Atom size={200} strokeWidth={0.5} />
-            </motion.div>
+            {/* 2. Marquee Barriers */}
+            <div className="relative z-10 w-full bg-black text-[#FACC15] rotate-[-2deg] scale-110 shadow-xl border-y-4 border-white mt-10 sm:mt-0">
+                <Marquee text="HATALI YOL // GERİ DÖN // BURASI ÇIKMAZ SOKAK //" direction="left" />
+            </div>
 
-            <motion.div
-                className="absolute bottom-20 left-10 text-[#EC4899] opacity-20 hidden sm:block pointer-events-none"
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <Rocket size={120} strokeWidth={1} />
-            </motion.div>
+            <div className="flex-1 flex flex-col items-center justify-center relative z-10 p-4">
 
-
-            <div className="container px-4 relative z-10 flex flex-col items-center text-center">
-
-                {/* 1. Glitchy 404 Header */}
-                <div className="relative mb-8">
-                    <h1 className="text-[12rem] sm:text-[16rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600 relative select-none">
-                        4
-                        <span className="inline-block animate-[spin_10s_linear_infinite] mx-4">0</span>
-                        4
-                    </h1>
-
-                    {/* Glitch Shadows (Decoration) */}
-                    <div className="absolute inset-0 text-[12rem] sm:text-[16rem] font-black leading-none tracking-tighter text-[#06B6D4] opacity-50 blur-[2px] translate-x-1 translate-y-1 -z-10 animate-pulse">
-                        404
-                    </div>
-                    <div className="absolute inset-0 text-[12rem] sm:text-[16rem] font-black leading-none tracking-tighter text-[#EC4899] opacity-50 blur-[2px] -translate-x-1 -translate-y-1 -z-20">
-                        404
-                    </div>
-                </div>
-
-                {/* 2. Interactive Astronaut */}
-                <div className="-mt-32 mb-12">
-                    <Astronaut mouseX={mouseX} mouseY={mouseY} />
-                </div>
-
-                {/* 3. Text Content (Neo-Brutalist Box) */}
+                {/* 3. Main Warning Box */}
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-[#18181b] border-2 border-white p-8 max-w-2xl relative shadow-[8px_8px_0px_0px_#FACC15] group"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="bg-white border-[5px] border-black p-8 sm:p-12 max-w-2xl w-full shadow-[15px_15px_0px_0px_#000] relative group hover:shadow-[20px_20px_0px_0px_#000] transition-shadow duration-300"
                 >
-                    {/* Decorative Corner Screws */}
-                    <div className="absolute top-2 left-2 w-2 h-2 bg-zinc-500 rounded-full border border-black" />
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-zinc-500 rounded-full border border-black" />
-                    <div className="absolute bottom-2 left-2 w-2 h-2 bg-zinc-500 rounded-full border border-black" />
-                    <div className="absolute bottom-2 right-2 w-2 h-2 bg-zinc-500 rounded-full border border-black" />
+                    {/* Floating "Error" Icons */}
+                    <motion.div
+                        className="absolute -top-12 -left-8 text-black"
+                        animate={{ rotate: [0, 10, -10, 0], y: [0, -10, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
+                        <TriangleAlert size={80} fill="#FACC15" strokeWidth={2.5} />
+                    </motion.div>
 
-                    <h2 className="text-3xl sm:text-5xl font-black uppercase text-white mb-4 tracking-tight">
-                        HOUSTON, <span className="text-[#FACC15]">BİR SORUNUMUZ VAR!</span>
-                    </h2>
+                    <motion.div
+                        className="absolute -bottom-10 -right-8 text-black sm:block hidden"
+                        animate={{ scale: [1, 1.2, 1], rotate: [0, -5, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                        <Ban size={100} fill="#F43F5E" strokeWidth={2.5} />
+                    </motion.div>
 
-                    <p className="text-zinc-400 font-mono text-base sm:text-lg mb-8 leading-relaxed">
-                        Aradığın sayfa olay ufkunda kaybolmuş olabilir veya bir solucan deliğinden geçerek paralel evrene ışınlanmış olabilir.
-                        <br /><br />
-                        <span className="text-[#06B6D4]">Durum Raporu:</span> Hedef koordinatlar bulunamadı (Error 404).
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <motion.h1
+                            className="text-[8rem] sm:text-[12rem] font-black leading-[0.8] tracking-tighter text-black relative select-none"
+                            animate={{
+                                x: [2, -2, 4, -4, 2],
+                                color: ["#000", "#333", "#000"]
+                            }}
+                            transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
+                        >
+                            404
+                            <span className="text-[2rem] sm:text-[3rem] absolute top-0 right-10 rotate-[20deg] bg-[#F43F5E] text-white px-2 py-1 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_#000] animate-bounce">
+                                PATLADIK
+                            </span>
+                        </motion.h1>
+                        <h2 className="text-3xl sm:text-5xl font-black uppercase mt-4 bg-black text-white inline-block px-4 py-1 transform -skew-x-6">
+                            HOOPP HEMŞERİM!
+                        </h2>
+                    </div>
+
+                    {/* Copy */}
+                    <p className="text-xl sm:text-2xl font-bold text-black border-l-4 border-black pl-4 mb-8 leading-tight">
+                        Dayı naptın ya? Aradığın sayfa buralarda yok.
+                        <br />
+                        <span className="text-zinc-500 font-medium text-lg mt-2 block">
+                            Link kırık olabilir, yanlış yazmış olabilirsin, ya da adminler sayfayı uçurmuş olabilir. Burası tekin değil, hemen kaç.
+                        </span>
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/">
-                            <Button className="w-full sm:w-auto h-14 px-8 bg-white text-black hover:bg-zinc-200 border-2 border-black rounded-none font-black text-lg shadow-[4px_4px_0px_0px_#06B6D4] hover:shadow-[2px_2px_0px_0px_#06B6D4] hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider gap-2">
-                                <Home className="w-5 h-5" />
-                                Ana Üsse Dön
+                    {/* Actions */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Link href="/" className="w-full">
+                            <Button className="w-full h-16 bg-[#F43F5E] text-white hover:bg-[#E11D48] text-xl font-black border-[3px] border-black rounded-xl shadow-[6px_6px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase flex items-center justify-center gap-3 group">
+                                <Home className="w-6 h-6 group-hover:animate-pulse" />
+                                ANA SAYFAYA TÜYLE
                             </Button>
                         </Link>
 
-                        <Link href="/forum">
-                            <Button className="w-full sm:w-auto h-14 px-8 bg-[#18181b] text-white hover:bg-zinc-800 border-2 border-white rounded-none font-bold text-lg shadow-[4px_4px_0px_0px_#EC4899] hover:shadow-[2px_2px_0px_0px_#EC4899] hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase tracking-wider gap-2">
-                                <MoveLeft className="w-5 h-5" />
-                                Geri Git
+                        <Link href="/forum" className="w-full">
+                            <Button className="w-full h-16 bg-black text-white hover:bg-zinc-800 text-xl font-black border-[3px] border-black rounded-xl shadow-[6px_6px_0px_0px_#94A3B8] hover:shadow-[2px_2px_0px_0px_#94A3B8] hover:translate-x-[4px] hover:translate-y-[4px] transition-all uppercase flex items-center justify-center gap-3">
+                                <MoveLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                                GERİ BAS
                             </Button>
                         </Link>
                     </div>
+
                 </motion.div>
-
-                {/* Footer Physics Joke */}
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                    className="mt-12 text-zinc-600 font-mono text-xs uppercase tracking-[0.2em] animate-pulse"
-                >
-                    "Enerji varken yok olmaz, sadece 404 olur." - Anonim Fizikçi
-                </motion.p>
-
             </div>
+
+            {/* 4. Bottom Marquee Chaos */}
+            <div className="relative z-10 w-full bg-[#F43F5E] text-white rotate-[1deg] scale-110 shadow-xl border-y-4 border-black mb-10 sm:mb-0">
+                <Marquee text="SAYFA BULUNAMADI // ERROR 404 // DAYI YANLIŞ GELDİN //" direction="right" />
+            </div>
+
+            {/* Random Floating Emoji */}
+            <motion.div
+                className="absolute top-1/4 right-[10%] text-6xl pointer-events-none hidden sm:block"
+                animate={{ y: [0, -50, 0], rotate: [0, 20, -20, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
+            >
+                🤯
+            </motion.div>
+            <motion.div
+                className="absolute bottom-1/4 left-[5%] text-6xl pointer-events-none hidden sm:block"
+                animate={{ y: [0, -50, 0], rotate: [0, -20, 20, 0] }}
+                transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+            >
+                💣
+            </motion.div>
+
         </div>
     );
 }
