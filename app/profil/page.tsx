@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Settings, Edit, FileText, Zap, MessageCircle, ShieldCheck } from "lucide-react";
 import { V36ProfileHeader } from "./v36-header";
+import { MobileProfileContent } from "./mobile-profile-content";
 
 // V27: REFINED PROFILE HEADER
 
@@ -200,37 +201,48 @@ export default async function ProfilePage() {
 
                 {/* SECTIONS */}
                 <div className="space-y-10">
-                    {/* Drafts */}
-                    {drafts && drafts.length > 0 && (
+
+                    {/* MOBILE CONTENT (Tabs) */}
+                    <MobileProfileContent
+                        articles={articles}
+                        questions={questions}
+                        drafts={drafts}
+                    />
+
+                    {/* DESKTOP CONTENT (Original Lists) */}
+                    <div className="hidden sm:block space-y-10">
+                        {/* Drafts */}
+                        {drafts && drafts.length > 0 && (
+                            <div>
+                                <h2 className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2 pl-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
+                                    TASLAKLAR
+                                </h2>
+                                <ContentFeed items={drafts} />
+                            </div>
+                        )}
+
+                        {/* Articles */}
                         <div>
-                            <h2 className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-3 flex items-center gap-2 pl-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-                                TASLAKLAR
-                            </h2>
-                            <ContentFeed items={drafts} />
+                            <div className="flex items-center justify-between mb-3 px-1">
+                                <h2 className="text-white text-xs font-black uppercase tracking-widest border-l-2 border-[#3B82F6] pl-2">
+                                    MAKALELER
+                                </h2>
+                                <span className="text-zinc-600 text-[10px] font-mono">{articles?.length || 0} KAYIT</span>
+                            </div>
+                            <ContentFeed items={articles} emptyMsg="Henüz bir makale yayınlanmamış." />
                         </div>
-                    )}
 
-                    {/* Articles */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3 px-1">
-                            <h2 className="text-white text-xs font-black uppercase tracking-widest border-l-2 border-[#3B82F6] pl-2">
-                                MAKALELER
-                            </h2>
-                            <span className="text-zinc-600 text-[10px] font-mono">{articles?.length || 0} KAYIT</span>
+                        {/* Questions */}
+                        <div>
+                            <div className="flex items-center justify-between mb-3 px-1">
+                                <h2 className="text-white text-xs font-black uppercase tracking-widest border-l-2 border-[#FFC800] pl-2">
+                                    FORUM
+                                </h2>
+                                <span className="text-zinc-600 text-[10px] font-mono">{questions?.length || 0} KAYIT</span>
+                            </div>
+                            <ContentFeed items={questions} emptyMsg="Henüz bir soru sorulmamış." />
                         </div>
-                        <ContentFeed items={articles} emptyMsg="Henüz bir makale yayınlanmamış." />
-                    </div>
-
-                    {/* Questions */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3 px-1">
-                            <h2 className="text-white text-xs font-black uppercase tracking-widest border-l-2 border-[#FFC800] pl-2">
-                                FORUM
-                            </h2>
-                            <span className="text-zinc-600 text-[10px] font-mono">{questions?.length || 0} KAYIT</span>
-                        </div>
-                        <ContentFeed items={questions} emptyMsg="Henüz bir soru sorulmamış." />
                     </div>
                 </div>
             </div>
