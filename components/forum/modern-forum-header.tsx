@@ -3,9 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, Sparkles, ArrowRight, PenLine, ChevronDown } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { CreateQuestionDialog } from "./create-question-dialog";
-import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -116,63 +115,52 @@ export function ModernForumHeader() {
 
     return (
         <div className="flex flex-col gap-4 sm:gap-8 mb-6 sm:mb-8">
-            {/* UNIFIED HERO CARD - POP STYLE */}
-            {/* 
-                V30: PREMIUM SCIENTIFIC HERO CARD
-                - Theme: "Cerrah Titizliği" (Surgical Precision) / Deep Science
-                - Visuals: Dark Glass, Subtle Blue Glow, Clean Typography
-                - Compact & Elegant
-            */}
+            {/* NEO-BRUTALIST SCIENCE HERO CARD */}
             <div className={cn(
-                "relative rounded-2xl overflow-hidden w-full",
-                "bg-[#09090b] border border-white/10 shadow-[0_0_40px_-10px_rgba(59,130,246,0.15)]", // Subtle blue ambient shadow
-                "min-h-[120px] sm:min-h-[140px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all"
+                "relative rounded-xl overflow-hidden w-full",
+                "bg-white border-[3px] border-black shadow-[4px_4px_0_0_#000]", // Neo-Brutalist Base
+                "min-h-[120px] sm:min-h-[160px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all",
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000]"
             )}>
-                {/* Background Decor: Subtle Cosmic Gradient + Noise */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(59,130,246,0.15),transparent_70%)] pointer-events-none" />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
+                {/* Background Decor: Blue Grid */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                    style={{ backgroundImage: 'linear-gradient(#3B82F6 1px, transparent 1px), linear-gradient(90deg, #3B82F6 1px, transparent 1px)', backgroundSize: '20px 20px' }}
+                />
 
                 {/* Content Container */}
-                <div className="relative z-10 w-full max-w-4xl flex flex-col items-center text-center gap-6">
+                <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-6 md:gap-10">
 
                     {/* Header Text */}
-                    <div className="space-y-2">
-                        <motion.h1
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-2xl sm:text-3xl font-medium tracking-tight text-white/90"
-                        >
-                            <span className="font-extralight text-white/50">Bugün bilim adına...</span> <br className="sm:hidden" />
-                            Aklında <span className="text-blue-400 font-semibold glow-text">ne var?</span>
-                        </motion.h1>
+                    <div className="text-center md:text-left shrink-0">
+                        <h1 className="text-3xl sm:text-5xl font-black italic tracking-tighter text-black uppercase leading-none transform -rotate-1">
+                            AKLINDA <br className="sm:hidden" />
+                            <span className="bg-[#3B82F6] text-white px-2 inline-block transform rotate-2 mt-1 shadow-[2px_2px_0_0_#000] border-2 border-black">NE VAR?</span>
+                        </h1>
                     </div>
 
-                    {/* Premium Input Trigger */}
-                    <div className="w-full max-w-xl">
+                    {/* Input Trigger (Neo-Brutalist Style) */}
+                    <div className="w-full md:max-w-xl">
                         <CreateQuestionDialog
                             trigger={
                                 <div className={cn(
-                                    "group relative w-full cursor-pointer h-12 sm:h-14 rounded-full",
-                                    "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-400/50 transition-all duration-300",
-                                    "flex items-center px-2 pr-6 shadow-inner overflow-hidden backdrop-blur-sm"
+                                    "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
+                                    "bg-white border-[3px] border-black hover:bg-[#EFF6FF] transition-all duration-200",
+                                    "flex items-center px-4 shadow-[4px_4px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
                                 )}>
-                                    {/* Icon Circle */}
-                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
-                                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5px]" />
+                                    {/* Icon Box */}
+                                    <div className="w-10 h-10 rounded bg-[#3B82F6] text-white flex items-center justify-center border-2 border-black mr-4 group-hover:rotate-6 transition-transform">
+                                        <Sparkles className="w-5 h-5 stroke-[2.5px]" />
                                     </div>
 
-                                    {/* Placeholder Text */}
-                                    <span className="ml-4 text-sm sm:text-base text-zinc-400 font-light group-hover:text-zinc-200 transition-colors">
+                                    {/* Placeholder */}
+                                    <span className="text-lg font-bold text-black group-hover:text-blue-700 transition-colors">
                                         Bugün neyi merak ediyorsun?
                                     </span>
 
                                     {/* Arrow Action */}
-                                    <div className="ml-auto opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-blue-400">
-                                        <ArrowRight className="w-5 h-5" />
+                                    <div className="ml-auto bg-black text-white p-1 rounded border-2 border-black group-hover:bg-[#3B82F6] transition-colors">
+                                        <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
                                     </div>
-
-                                    {/* Subtle Glow Effect on Hover */}
-                                    <div className="absolute inset-0 rounded-full ring-2 ring-blue-500/0 group-hover:ring-blue-500/20 transition-all duration-500" />
                                 </div>
                             }
                         />
