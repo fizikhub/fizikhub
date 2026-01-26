@@ -47,7 +47,7 @@ export function Navbar() {
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-3 sm:px-4",
-                        "bg-[#272d3a] border-b-[3px] border-black",
+                        "bg-[#3B82F6] border-b-[3px] border-black",
                         "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
                         "w-full relative overflow-hidden"
                     )}

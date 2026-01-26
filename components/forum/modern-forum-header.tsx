@@ -136,63 +136,107 @@ export function ModernForumHeader() {
 
                     {/* Animated Chalk Text */}
                     <div className="text-center relative">
+                        {/* Define SVG Filter for Chalk Distortion */}
+                        <svg className="absolute w-0 h-0">
+                            <filter id="chalk-distortion">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+                            </filter>
+                        </svg>
+
                         <motion.h1
-                            className="text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono"
+                            className="text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
                             initial="hidden"
-                            animate="visible"
+                            whileInView="visible"
+                            viewport={{ once: true }}
                         >
                             <span className="relative inline-block">
-                                {/* "AKLINDA" Writing Animation */}
                                 {"AKLINDA".split("").map((char, i) => (
                                     <motion.span
                                         key={`l1-${i}`}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: i * 0.1, duration: 0.05 }}
+                                        initial={{ opacity: 0, x: -5 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                            delay: i * 0.15,
+                                            duration: 0.1,
+                                            ease: "easeOut"
+                                        }}
                                         className="inline-block relative"
+                                        style={{ filter: "url(#chalk-distortion)" }}
                                     >
                                         {char}
-                                        {/* Chalk Dust Particles */}
+                                        {/* Realistic Chalk Dust - Bursting Effect */}
                                         <motion.span
-                                            initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-                                            animate={{ opacity: 0, y: 10 + Math.random() * 10, x: (Math.random() - 0.5) * 10, scale: 0 }}
-                                            transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
-                                            className="absolute bottom-0 left-1/2 w-1 h-1 bg-white/60 rounded-full blur-[1px]"
+                                            initial={{ opacity: 0, scale: 0 }}
+                                            animate={{
+                                                opacity: [0, 0.8, 0],
+                                                scale: [0.5, 1.5],
+                                                y: [0, 20],
+                                                x: [0, (Math.random() - 0.5) * 20]
+                                            }}
+                                            transition={{ delay: i * 0.15, duration: 1.2, ease: "easeOut" }}
+                                            className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"
                                         />
                                     </motion.span>
                                 ))}
                             </span>
                             <br className="sm:hidden" />
                             <span className="relative inline-block sm:ml-4">
-                                {/* "NE VAR?" Writing Animation */}
                                 {"NE VAR?".split("").map((char, i) => (
                                     <motion.span
                                         key={`l2-${i}`}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.8 + (i * 0.1), duration: 0.05 }}
+                                        initial={{ opacity: 0, x: -5 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                            delay: 1.2 + (i * 0.15),
+                                            duration: 0.1,
+                                            ease: "easeOut"
+                                        }}
                                         className={cn(
                                             "inline-block relative",
                                             char === " " ? "min-w-[1ch]" : ""
                                         )}
+                                        style={{ filter: "url(#chalk-distortion)" }}
                                     >
                                         {char}
-                                        {/* Chalk Dust Particles for Line 2 */}
                                         {char !== " " && (
                                             <motion.span
-                                                initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-                                                animate={{ opacity: 0, y: 10 + Math.random() * 10, x: (Math.random() - 0.5) * 10, scale: 0 }}
-                                                transition={{ delay: 0.8 + (i * 0.1), duration: 0.8, ease: "easeOut" }}
-                                                className="absolute bottom-0 left-1/2 w-1 h-1 bg-white/60 rounded-full blur-[1px]"
+                                                initial={{ opacity: 0, scale: 0 }}
+                                                animate={{
+                                                    opacity: [0, 0.8, 0],
+                                                    scale: [0.5, 1.5],
+                                                    y: [0, 20],
+                                                    x: [0, (Math.random() - 0.5) * 20]
+                                                }}
+                                                transition={{ delay: 1.2 + (i * 0.15), duration: 1.2, ease: "easeOut" }}
+                                                className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"
                                             />
                                         )}
                                     </motion.span>
                                 ))}
+
+                                {/* Moving Chalk Cursor */}
+                                <motion.div
+                                    className="absolute -right-6 top-1/2 w-3 h-8 bg-white rounded-sm shadow-[0_0_10px_rgba(255,255,255,0.8)] z-20"
+                                    initial={{ opacity: 0, x: -200, y: -20, rotate: 15 }}
+                                    animate={{
+                                        opacity: [0, 1, 1, 0],
+                                        x: [-200, 0],
+                                        y: [0, -5, 5, 0],
+                                        rotate: [15, 10, 20, 15]
+                                    }}
+                                    transition={{
+                                        duration: 2.5,
+                                        times: [0, 0.1, 0.9, 1],
+                                        ease: "linear"
+                                    }}
+                                />
+
                                 {/* Underline Animation */}
                                 <motion.div
                                     initial={{ scaleX: 0 }}
                                     animate={{ scaleX: 1 }}
-                                    transition={{ delay: 1.8, duration: 0.4, type: "spring" }}
+                                    transition={{ delay: 2.6, duration: 0.4, type: "spring" }}
                                     className="absolute -bottom-2 left-0 right-0 h-1.5 bg-white/80 rounded-full origin-left opacity-80"
                                     style={{
                                         filter: "url(#chalk-distortion)",
