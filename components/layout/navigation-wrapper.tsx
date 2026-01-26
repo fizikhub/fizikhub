@@ -14,11 +14,6 @@ const Footer = dynamic(
     { ssr: false }
 );
 
-const DailyGreeting = dynamic(
-    () => import("@/components/ui/daily-greeting").then(mod => mod.DailyGreeting),
-    { ssr: false }
-);
-
 const GlobalAdminNotification = dynamic(
     () => import("@/components/global-admin-notification").then(mod => mod.GlobalAdminNotification),
     { ssr: false }
@@ -57,7 +52,6 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             {children}
             <Footer />
             <BottomNav />
-            <DailyGreeting />
             <FloatingActionButton />
         </>
     );
