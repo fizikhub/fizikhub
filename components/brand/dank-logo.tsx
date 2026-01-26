@@ -5,46 +5,49 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer items-center justify-center leading-none">
+        <div className="flex flex-col select-none relative group cursor-pointer">
             {/* 
-                V24 LOGO: MOSKO STYLE (Reference Image)
-                - Chubby, Tight, Yellow Text
-                - Hard Black Deep Shadow
-                - Stacked Layout
-            */}
-
-            {/* TOP: FIZIKHUB */}
-            <motion.div
-                className="relative z-20"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400 }}
-            >
-                <h1
-                    className="font-black text-3xl sm:text-4xl tracking-tighter text-[#FFC800]"
+        V23 LOGO: MOSKO SCIENCE (Restored)
+        - Mobile: text-2xl
+        - Desktop: text-4xl
+        - Style: Blocky Yellow Text with Thick Black Stroke
+      */}
+            <div className="relative z-10">
+                <motion.h1
+                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
                     style={{
-                        textShadow: "4px 4px 0px #000",
-                        transform: "scaleY(1.1)", // Make it chubby
-                        WebkitTextStroke: "1px black" // Slight definition
+                        WebkitTextStroke: "1.5px black",
+                        fontFamily: "var(--font-heading)",
+                        filter: "drop-shadow(3px 3px 0px #000)"
                     }}
+                    whileHover={{
+                        scale: 1.05,
+                        filter: "drop-shadow(5px 5px 0px #000)"
+                    }}
+                    transition={{ type: "spring", stiffness: 400 }}
                 >
                     FIZIKHUB
-                </h1>
-            </motion.div>
+                </motion.h1>
 
-            {/* BOTTOM: BILIM PLATFORMU */}
-            <motion.div
-                className="relative z-10 -mt-1 sm:-mt-1.5"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400 }}
-            >
-                <span
-                    className="block font-black text-[10px] sm:text-[12px] tracking-tight text-[#FFC800] w-full text-justify"
-                    style={{
-                        textShadow: "2px 2px 0px #000",
-                        transform: "scaleY(1.1)", // Make it chubby
-                        WebkitTextStroke: "0.5px black"
-                    }}
+                {/* Retro Star Accent */}
+                <motion.div
+                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                 >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
+                    </svg>
+                </motion.div>
+            </div>
+
+            {/* Slogan */}
+            <motion.div
+                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
+                initial={{ rotate: -3 }}
+                whileHover={{ rotate: 3 }}
+            >
+                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
                     BİLİM PLATFORMU
                 </span>
             </motion.div>
