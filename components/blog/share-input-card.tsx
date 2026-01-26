@@ -145,28 +145,28 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 "bg-white text-black", // Force White BG, Black Text (Pop Style)
                 "border-[3px] border-black", // Hard Black Border
                 "shadow-[6px_6px_0px_0px_#000]", // Hard Black Shadow
-                "w-full mb-6 z-[20]"
+                "w-[calc(100%+12px)] -ml-[6px] sm:w-full sm:ml-0 mb-6 z-[20]" // Slightly wider on mobile
             )}
         >
-            <div className="relative h-10 border-b-[3px] border-black bg-zinc-50 flex items-center justify-center select-none rounded-t-xl overflow-hidden">
+            <div className="relative h-9 sm:h-10 border-b-[3px] border-black bg-zinc-50 flex items-center justify-center select-none rounded-t-xl overflow-hidden">
                 {/* Subtle Pattern */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
 
-                <div className="absolute left-4 sm:left-5 flex gap-2 z-10">
-                    <div className="w-3 h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                    <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                    <div className="w-3 h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                <div className="absolute left-3 sm:left-5 flex gap-1.5 sm:gap-2 z-10">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
                 </div>
                 <div className="text-[10px] sm:text-xs font-black text-black/70 uppercase tracking-[0.2em] z-10">Paylaşım Merkezi</div>
             </div>
 
-            <div className="p-4 sm:p-5">
-                <div className="flex gap-4 items-center">
+            <div className="p-3 sm:p-5">
+                <div className="flex gap-3 sm:gap-4 items-center">
                     {/* Avatar Area */}
                     <div className="shrink-0">
-                        <Avatar className="w-12 h-12 sm:w-14 sm:h-14 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
+                        <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
                             <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-neo-yellow text-black font-black text-lg rounded-xl">
+                            <AvatarFallback className="bg-neo-yellow text-black font-black text-base sm:text-lg rounded-xl">
                                 {displayName?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
@@ -238,7 +238,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     ref={triggerRef}
                                     onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                                     className={cn(
-                                        "w-full h-14 text-left px-5 flex items-center justify-between transition-all duration-200 group/input relative",
+                                        "w-full h-11 sm:h-14 text-left px-3 sm:px-5 flex items-center justify-between transition-all duration-200 group/input relative",
                                         "bg-white text-black",
                                         "border-[3px] border-black",
                                         "rounded-xl",
@@ -246,7 +246,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         isOpen && "bg-neo-yellow"
                                     )}
                                 >
-                                    <span className="text-black font-bold text-sm sm:text-base truncate mr-2 flex-1 block">
+                                    <span className="text-black font-bold text-xs sm:text-base truncate mr-2 flex-1 block">
                                         {isOpen ? (
                                             "Kapat"
                                         ) : (
@@ -258,10 +258,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         )}
                                     </span>
                                     <div className={cn(
-                                        "w-8 h-8 rounded-lg border-[2px] border-black flex items-center justify-center transition-all duration-300 shrink-0",
+                                        "w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-[2px] border-black flex items-center justify-center transition-all duration-300 shrink-0",
                                         isOpen ? "bg-black text-white rotate-45" : "bg-neo-yellow text-black"
                                     )}>
-                                        <Plus className="w-5 h-5 stroke-[3px]" />
+                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                                     </div>
                                 </button>
                             )}
@@ -315,24 +315,24 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             </div>
 
             {/* Bottom Actions Bar - Neo Style */}
-            <div className="px-5 py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
+            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
 
                 {/* Centered Group - Buttons with Hard Shadows */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 w-full justify-center">
 
-                    <Link href="/makale/yeni" className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <PenTool className="w-4 h-4 stroke-[2.5px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Blog</span>
+                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Blog</span>
                     </Link>
 
-                    <button onClick={handleQuickQuestion} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <HelpCircle className="w-4 h-4 stroke-[2.5px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Soru</span>
+                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Soru</span>
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-center gap-2 px-6 h-10 rounded-xl bg-[#FF4433] text-white border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <Plus className="w-4 h-4 stroke-[3px]" />
-                        <span className="text-[11px] font-black uppercase tracking-wider">Ekle</span>
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#FF4433] text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
+                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Ekle</span>
                     </button>
 
                 </div>
