@@ -9,11 +9,12 @@ import { motion } from "framer-motion";
 export default function NotFound() {
     return (
         // BG Color: RGB(41,41,41) => Hex #292929
+        // NO texture/noise ("pütürcükler olmasın")
         <div className="min-h-screen bg-[#292929] text-white font-sans flex flex-col items-center justify-center p-4 selection:bg-[#FF0055] selection:text-white overflow-hidden relative">
 
             <div className="max-w-2xl w-full flex flex-col items-center text-center relative z-10">
 
-                {/* 1. The Naked Scientist Asset (v4) */}
+                {/* 1. The Naked Scientist Asset (v7 - Rick Style) */}
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0, y: 50 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -23,7 +24,7 @@ export default function NotFound() {
                     <div className="relative w-[90vw] sm:w-[500px] aspect-square">
                         <Image
                             src="/404-naked-scientist.png"
-                            alt="Scientist caught changing"
+                            alt="Rick-like Scientist caught changing"
                             fill
                             className="object-contain drop-shadow-2xl"
                             priority
@@ -32,7 +33,7 @@ export default function NotFound() {
                     </div>
                 </motion.div>
 
-                {/* 2. Humorous Copy (More Witty) */}
+                {/* 2. Humorous Copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -45,10 +46,10 @@ export default function NotFound() {
 
                     <p className="text-lg sm:text-xl text-zinc-300 font-medium leading-normal bg-black/20 p-4 rounded-xl backdrop-blur-sm border border-white/5">
                         <strong className="text-white block mb-1">Olay Yeri İnceleme:</strong>
-                        Sayfa giyinme odasındaydı. Adamcağız daha önlüğünü ilikleyemeden içeri daldın.
+                        Sayfa giyinme odasındaydı. Adamcağız daha önlüğünü ilikleyemeden (ve çoraplarını eşleştiremeden) içeri daldın.
                         <br />
                         <span className="text-sm text-zinc-400 mt-2 block italic">
-                            (Yanağındaki ruj izini görmemiş gibi yap, özel hayatı bizi ilgilendirmez.)
+                            (Yanağındaki ruj izini ve yerdeki topuklu ayakkabıları görmemiş gibi yap, özel hayatı bizi ilgilendirmez.)
                         </span>
                     </p>
                 </motion.div>
@@ -75,9 +76,6 @@ export default function NotFound() {
                 </motion.div>
 
             </div>
-
-            {/* Background Pattern just to be sure it looks premium */}
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#444 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
         </div>
     );
 }
