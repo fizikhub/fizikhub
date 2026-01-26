@@ -34,6 +34,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleCardClick = () => {
         router.push(`/forum/${question.id}`);
@@ -128,18 +129,52 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-5 flex flex-col gap-3 z-10 relative">
+                <div className="flex-1 p-3 sm:p-5 flex flex-col gap-3 z-10 relative">
 
                     {/* Title (Big like TermCard) */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
                         {question.title}
                     </h3>
 
                     {/* Content Snippet */}
-                    <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent line-clamp-3">
-                        {cleanContent}
-                        {question.content?.length > 160 && "..."}
-                    </p>
+                    <div className="relative">
+                        <p className={cn(
+                            "font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent",
+                            !isExpanded && "line-clamp-5"
+                        )}>
+                            {cleanContent}
+                            {!isExpanded && question.content?.length > 160 && "..."}
+                            {isExpanded && question.content && (
+                                <span className="block mt-2">
+                                    {stripHtml(question.content).slice(160)}
+                                </span>
+                            )}
+                        </p>
+
+                        {question.content?.length > 160 && !isExpanded && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(true);
+                                }}
+                                className="mt-2 text-xs font-black uppercase tracking-wider text-[#FFBD2E] hover:underline bg-black px-2 py-1 rounded-sm"
+                            >
+                                Devamını Oku
+                            </button>
+                        )}
+
+                        {isExpanded && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsExpanded(false);
+                                }}
+                                className="mt-2 text-xs font-black uppercase tracking-wider text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                            >
+                                Küçült
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* 3. Footer (Term Style) */}
