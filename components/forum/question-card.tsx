@@ -84,7 +84,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     };
 
     const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
-    const cleanContent = stripHtml(question.content || "").slice(0, 200);
+    const cleanContent = stripHtml(question.content || "").slice(0, 160);
 
     return (
         <motion.div
@@ -97,88 +97,93 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             <div
                 onClick={handleCardClick}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group",
-                    "bg-white dark:bg-zinc-900",
-                    "border-[3px] border-black dark:border-white",
-                    "shadow-[5px_5px_0px_0px_#000] dark:shadow-[5px_5px_0px_0px_#fff]",
-                    "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_#fff]",
-                    "hover:translate-x-[2px] hover:translate-y-[2px]"
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[8px]",
+                    // CONTAINER STYLE (MATCHING TERM CARD)
+                    "bg-white dark:bg-[#27272a]",
+                    "border-[3px] border-black",
+                    "shadow-[4px_4px_0px_0px_#000]",
+                    "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
-                {/* 1. Header Bar (Yellow Strip like Article) */}
-                <div className="flex items-center justify-between border-b-[3px] border-black dark:border-white bg-[#F2C32E] px-4 py-2.5">
-                    <div className="flex items-center gap-2">
-                        <span className="bg-black text-white font-black uppercase tracking-widest px-2 py-0.5 text-[10px]">
-                            {question.category || "GENEL"}
-                        </span>
-                        {/* New Badge? */}
-                        {badgeLabel && <span className="text-[10px] font-bold text-black border border-black px-1 rounded-sm">{badgeLabel}</span>}
-                    </div>
-                    <span className="font-bold text-black uppercase tracking-wider text-[10px]">
-                        {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                {/* NOISE TEXTURE (If desired, consistent with Term) */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                />
+
+                {/* 1. Header Bar (Yellow Theme) */}
+                <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
+                    <span className="font-black text-xs uppercase tracking-widest text-black">
+                        {question.category || "GENEL"}
                     </span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-black opacity-60 uppercase tracking-widest">
+                            {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                        </span>
+                        {badgeLabel && (
+                            <div className="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
+                                {badgeLabel}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-5 flex flex-col gap-3">
+                <div className="flex-1 p-5 flex flex-col gap-3 z-10 relative">
 
-                    {/* User Info (Mini) */}
-                    <div className="flex items-center gap-2 mb-1">
-                        <Avatar className="w-6 h-6 border border-black dark:border-white">
-                            <AvatarImage src={question.profile?.avatar_url || question.profiles?.avatar_url} />
-                            <AvatarFallback className="text-[10px] bg-zinc-200 text-black">
-                                {question.profiles?.username?.[0]?.toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs font-bold text-zinc-500">@{question.profiles?.username}</span>
-                        {question.profiles?.is_verified && <BadgeCheck className="w-3 h-3 text-blue-500" />}
-                    </div>
-
-                    <h3 className="font-sans font-black text-xl sm:text-2xl leading-tight text-black dark:text-white group-hover:text-[#A26FE3] transition-colors">
+                    {/* Title (Big like TermCard) */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
                         {question.title}
                     </h3>
 
-                    <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed font-mono">
+                    {/* Content Snippet */}
+                    <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent line-clamp-3">
                         {cleanContent}
-                        {question.content?.length > 200 && "..."}
+                        {question.content?.length > 160 && "..."}
                     </p>
                 </div>
 
-                {/* 3. Action Footer */}
-                <div className="flex items-center justify-between border-t-[3px] border-black dark:border-white bg-zinc-50 dark:bg-zinc-800 px-4 py-3">
+                {/* 3. Footer (Term Style) */}
+                <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
 
-                    {/* Vote Action (Left) */}
-                    <div className="flex items-center gap-1 bg-white dark:bg-black border-2 border-black dark:border-white rounded-lg overflow-hidden shadow-sm" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            onClick={(e) => handleVote(e, 1)}
-                            className={cn(
-                                "p-1.5 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors border-r border-zinc-200 dark:border-zinc-700",
-                                voteState === 1 && "bg-green-100 dark:bg-green-900/50 text-green-600"
-                            )}>
-                            <ArrowBigUp className={cn("w-5 h-5", voteState === 1 && "fill-green-500 stroke-green-600")} />
-                        </button>
-                        <span className={cn("px-2 font-black text-sm min-w-[20px] text-center", votes > 0 ? "text-green-600" : (votes < 0 ? "text-red-500" : "text-zinc-500"))}>
-                            {votes}
-                        </span>
-                        <button
-                            onClick={(e) => handleVote(e, -1)}
-                            className={cn(
-                                "p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors border-l border-zinc-200 dark:border-zinc-700",
-                                voteState === -1 && "bg-red-100 dark:bg-red-900/50 text-red-600"
-                            )}>
-                            <div className="rotate-180"><ArrowBigUp className={cn("w-5 h-5", voteState === -1 && "fill-red-500 stroke-red-600")} /></div>
-                        </button>
+                    {/* Author (Left) */}
+                    <div className="flex items-center gap-2 z-20" onClick={(e) => e.stopPropagation()}>
+                        <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
+                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
+                                {question.profiles?.avatar_url ? (
+                                    <img src={question.profiles.avatar_url} alt="A" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full bg-black flex items-center justify-center text-[8px] text-white">?</div>
+                                )}
+                            </div>
+                            <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400 group-hover/author:text-[#FFBD2E] transition-colors">
+                                {question.full_name || question.profiles?.username}
+                            </span>
+                        </Link>
                     </div>
 
-                    {/* Stats (Right) */}
+                    {/* Actions (Right) */}
                     <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+
+                        {/* Vote Pod */}
+                        <div className="flex items-center gap-1 border-2 border-black bg-white dark:bg-black rounded-md overflow-hidden shadow-[2px_2px_0px_0px_#000]" onClick={(e) => e.stopPropagation()}>
+                            <button
+                                onClick={(e) => handleVote(e, 1)}
+                                className={cn("px-1.5 py-0.5 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border-r border-black", voteState === 1 && "bg-green-100 dark:bg-green-900")}>
+                                <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-600" : "text-black dark:text-zinc-400")} />
+                            </button>
+                            <span className={cn("px-1 min-w-[16px] text-center text-[10px] font-black", votes > 0 ? "text-green-600" : (votes < 0 ? "text-red-500" : "text-black dark:text-zinc-300"))}>
+                                {votes}
+                            </span>
+                            <button
+                                onClick={(e) => handleVote(e, -1)}
+                                className={cn("px-1.5 py-0.5 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border-l border-black", voteState === -1 && "bg-red-100 dark:bg-red-900")}>
+                                <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-600" : "text-black dark:text-zinc-400")} />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                             <MessageCircle className="w-4 h-4" />
                             <span className="text-xs font-bold">{answerCount}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400">
-                            <Eye className="w-4 h-4" />
-                            <span className="text-xs font-bold">{question.views || 0}</span>
                         </div>
                     </div>
                 </div>
