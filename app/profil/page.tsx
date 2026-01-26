@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { ModernProfileView } from "@/components/profile/modern-profile-view";
+import { UltimateProfileView } from "@/components/profile/ultimate-profile-view";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -44,7 +44,7 @@ export default async function ProfilePage() {
     };
 
     return (
-        <ModernProfileView
+        <UltimateProfileView
             profile={profile}
             isOwnProfile={true}
             stats={stats}

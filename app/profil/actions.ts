@@ -133,7 +133,7 @@ export async function followUser(targetUserId: string) {
     }
 
     if (user.id === targetUserId) {
-        return { success: false, error: "Kendinizi takip edemezsiniz." };
+        return { success: false, error: "Kendinizi takip edemezsiniz. Kendini bu kadar çok mu seviyorsun?" };
     }
 
     const { error } = await supabase
@@ -176,7 +176,7 @@ export async function unfollowUser(targetUserId: string) {
 
     if (error) {
         console.error("Unfollow error:", error);
-        return { success: false, error: "Takipten çıkılırken hata oluştu." };
+        return { success: false, error: "Takipten çıkılırken hata oluştu. Evren bu kişiyi takipten çıkmanı istemiyor sanırım." };
     }
 
     revalidatePath(`/kullanici/${targetUserId}`);
@@ -296,7 +296,7 @@ export async function uploadAvatar(file: File) {
 
         if (updateError) {
             console.error("Profile update error:", updateError);
-            return { success: false, error: "Profil güncellenirken hata oluştu" };
+            return { success: false, error: "Profil güncellenirken hata oluştu. Tekrar dener misin yavrum?" };
         }
 
         revalidatePath("/profil");
@@ -350,7 +350,7 @@ export async function uploadCover(file: File) {
 
         if (uploadError) {
             console.error("Upload error:", uploadError);
-            return { success: false, error: "Dosya yüklenirken hata oluştu" };
+            return { success: false, error: "Dosya yüklenirken hata oluştu. Aptal veritabanı" };
         }
 
         // Get public URL
@@ -370,7 +370,7 @@ export async function uploadCover(file: File) {
 
         if (updateError) {
             console.error("Profile update error:", updateError);
-            return { success: false, error: "Profil güncellenirken hata oluştu" };
+            return { success: false, error: "Profil güncellenirken hata oluştu. fuck einstein" };
         }
 
         revalidatePath("/profil");
