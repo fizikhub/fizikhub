@@ -52,7 +52,7 @@ export function NotificationBell({ className }: { className?: string }) {
         try {
             setIsLoading(true);
             if (process.env.NODE_ENV === 'development') {
-                console.log('[NotificationBell] Fetching notifications...');
+                // console.log('[NotificationBell] Fetching notifications...');
             }
 
             const [data, count] = await Promise.all([
@@ -61,7 +61,7 @@ export function NotificationBell({ className }: { className?: string }) {
             ]);
 
             if (process.env.NODE_ENV === 'development') {
-                console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
+                // console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
             }
 
             setNotifications(data as any);
@@ -99,7 +99,7 @@ export function NotificationBell({ className }: { className?: string }) {
                 },
                 (payload) => {
                     if (process.env.NODE_ENV === 'development') {
-                        console.log('[NotificationBell] New notification received:', payload);
+                        // console.log('[NotificationBell] New notification received:', payload);
                     }
                     setUnreadCount(prev => prev + 1);
                     fetchNotifications();
@@ -114,7 +114,7 @@ export function NotificationBell({ className }: { className?: string }) {
                 },
                 (payload) => {
                     if (process.env.NODE_ENV === 'development') {
-                        console.log('[NotificationBell] Notification updated:', payload);
+                        // console.log('[NotificationBell] Notification updated:', payload);
                     }
                     fetchNotifications();
                 }

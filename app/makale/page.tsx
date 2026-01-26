@@ -92,8 +92,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     }, {} as Record<number, number>);
 
     // Fetch User's Likes & Bookmarks
-    let userLikes = new Set<number>();
-    let userBookmarks = new Set<number>();
+    const userLikes = new Set<number>();
+    const userBookmarks = new Set<number>();
 
     if (user) {
         const { data: myLikes } = await supabase

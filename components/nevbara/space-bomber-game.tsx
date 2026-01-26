@@ -100,7 +100,7 @@ export function SpaceBomberGame() {
 
         // Generate Enemies
         enemies.current = [];
-        let enemyCount = 5 + lvl * 2;
+        const enemyCount = 5 + lvl * 2;
         for (let i = 0; i < enemyCount; i++) {
             const x = 500 + Math.random() * (width - 600);
             const groundY = 500 + (Math.sin(x * 0.01) * 50 + Math.sin(x * 0.05) * 20); // Rough ground position approximation
@@ -489,7 +489,7 @@ export function SpaceBomberGame() {
 
     // Handle Start
     const startGame = () => {
-        console.log("Starting game...");
+        // console.log("Starting game...");
         initLevel(level);
         setGameState('playing');
         lastTime.current = performance.now();

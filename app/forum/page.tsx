@@ -63,7 +63,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     const { data: questions, count: totalCount } = await query;
 
     // Fetch user's votes to show "voted" state
-    let userVotes = new Map<number, number>();
+    const userVotes = new Map<number, number>();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user && questions && questions.length > 0) {

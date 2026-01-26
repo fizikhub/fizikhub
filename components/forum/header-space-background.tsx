@@ -56,7 +56,7 @@ export function HeaderSpaceBackground() {
         }
 
         let animationFrameId: number;
-        let currentOpacity: number[] = stars.map(s => s.baseOpacity);
+        const currentOpacity: number[] = stars.map(s => s.baseOpacity);
 
         const render = () => {
             if (!canvas || !ctx) return;

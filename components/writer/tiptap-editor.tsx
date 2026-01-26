@@ -141,9 +141,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
         setIsUploading(true);
         try {
-            console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            // console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
             const compressedFile = await imageCompression(file, options);
-            console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+            // console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
             const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
