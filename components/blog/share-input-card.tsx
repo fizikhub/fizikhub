@@ -142,22 +142,22 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-white text-black", // Force White BG, Black Text (Pop Style)
+                "bg-[#323236] text-white", // Dark Gray BG (Requested), White Text (Pop Style)
                 "border-[3px] border-black", // Hard Black Border
                 "shadow-[6px_6px_0px_0px_#000]", // Hard Black Shadow
                 "w-[calc(100%+12px)] -ml-[6px] sm:w-full sm:ml-0 mb-6 z-[20]" // Slightly wider on mobile
             )}
         >
-            <div className="relative h-9 sm:h-10 border-b-[3px] border-black bg-zinc-50 flex items-center justify-center select-none rounded-t-xl overflow-hidden">
+            <div className="relative h-9 sm:h-10 border-b-[3px] border-black bg-[#2B2B2E] flex items-center justify-center select-none rounded-t-xl overflow-hidden">
                 {/* Subtle Pattern */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
+                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
 
                 <div className="absolute left-3 sm:left-5 flex gap-1.5 sm:gap-2 z-10">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
                 </div>
-                <div className="text-[10px] sm:text-xs font-black text-black/70 uppercase tracking-[0.2em] z-10">Paylaşım Merkezi</div>
+                <div className="text-[10px] sm:text-xs font-black text-white/90 uppercase tracking-[0.2em] z-10">Paylaşım Merkezi</div>
             </div>
 
             <div className="p-3 sm:p-5">
@@ -182,13 +182,13 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="w-full bg-white rounded-xl p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] space-y-3"
+                                    className="w-full bg-[#323236] rounded-xl p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] space-y-3"
                                 >
                                     <input
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         placeholder="Sorunun başlığı ne olsun?"
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-black/40 text-black"
+                                        className="w-full bg-transparent border-b-[3px] border-black/50 px-2 py-2 text-sm font-bold focus:outline-none focus:border-neo-yellow placeholder:text-white/30 text-white transition-colors"
                                         autoFocus
                                     />
 
@@ -196,7 +196,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
                                         placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-black/40 text-black"
+                                        className="w-full bg-transparent border-b-[3px] border-black/50 px-2 py-2 text-sm min-h-[80px] focus:outline-none focus:border-neo-yellow resize-none placeholder:text-white/30 text-white transition-colors"
                                     />
 
                                     <div className="flex flex-wrap gap-2 pt-1">
@@ -208,7 +208,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                     "px-3 py-1 rounded-lg text-[10px] font-black border-[2px] border-black transition-all",
                                                     category === cat
                                                         ? "bg-neo-yellow text-black shadow-[2px_2px_0px_0px_#000]"
-                                                        : "bg-white text-black hover:bg-black hover:text-white"
+                                                        : "bg-[#2B2B2E] text-white hover:bg-white hover:text-black"
                                                 )}
                                             >
                                                 {cat}
@@ -220,7 +220,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         <button
                                             onClick={() => submitQuestion('draft')}
                                             disabled={isSubmitting}
-                                            className="px-4 py-2 rounded-lg text-xs font-bold text-black border-[2px] border-black hover:bg-black hover:text-white transition-colors"
+                                            className="px-4 py-2 rounded-lg text-xs font-bold text-white border-[2px] border-black hover:bg-white hover:text-black transition-colors"
                                         >
                                             Taslak
                                         </button>
@@ -239,7 +239,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                                     className={cn(
                                         "w-full h-11 sm:h-14 text-left px-3 sm:px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                        "bg-white text-black",
+                                        "bg-[#323236] text-white", // Dark Input
                                         "border-[3px] border-black",
                                         "rounded-xl",
                                         "shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
@@ -253,7 +253,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                             <span className="flex items-center gap-1 overflow-hidden">
                                                 <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
                                                 <span className="truncate shrink min-w-0 hidden sm:inline">Ne düşünüyorsun,</span>
-                                                <span className="font-black shrink-0 uppercase">{firstName}?</span>
+                                                <span className="font-black shrink-0 uppercase text-white">{firstName}?</span>
                                             </span>
                                         )}
                                     </span>
@@ -276,10 +276,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000] z-[100] overflow-hidden rounded-xl"
+                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-[#323236] border-[3px] border-black shadow-[6px_6px_0px_0px_#000] z-[100] overflow-hidden rounded-xl"
                                 >
                                     <div className="p-2 space-y-2">
-                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-black/50 ml-1">Seçenekler</div>
+                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-white/50 ml-1">Seçenekler</div>
 
                                         {/* Items with thick borders on hover */}
                                         {[
@@ -294,7 +294,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 <Comp
                                                     key={idx}
                                                     {...props as any}
-                                                    className="w-full flex items-center gap-3 p-3 hover:bg-black hover:text-white transition-all group rounded-lg border-[2px] border-transparent hover:border-black"
+                                                    className="w-full flex items-center gap-3 p-3 hover:bg-white hover:text-black hover:border-black text-white transition-all group rounded-lg border-[2px] border-transparent"
                                                 >
                                                     <div className={`relative w-10 h-10 ${item.color} border-[2px] border-black flex items-center justify-center text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all`}>
                                                         <item.icon className="w-5 h-5 stroke-[2.5px]" />
@@ -315,17 +315,17 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             </div>
 
             {/* Bottom Actions Bar - Neo Style */}
-            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
+            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[3px] border-black bg-[#323236] flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-white overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
 
                 {/* Centered Group - Buttons with Hard Shadows */}
                 <div className="flex items-center gap-2 sm:gap-4 w-full justify-center">
 
-                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#2B2B2E] text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
                         <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Blog</span>
                     </Link>
 
-                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#2B2B2E] text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
                         <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Soru</span>
                     </button>
