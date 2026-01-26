@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { UltimateProfileView } from "@/components/profile/ultimate-profile-view";
+import { CompactProfileView } from "@/components/profile/compact-profile-view";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -13,7 +13,7 @@ export default async function ProfilePage() {
         redirect("/login");
     }
 
-    // Parallel Data Fetching - Keeping the efficient logic
+    // Parallel Data Fetching
     const [
         { data: profile },
         { data: articles },
@@ -44,7 +44,7 @@ export default async function ProfilePage() {
     };
 
     return (
-        <UltimateProfileView
+        <CompactProfileView
             profile={profile}
             isOwnProfile={true}
             stats={stats}
