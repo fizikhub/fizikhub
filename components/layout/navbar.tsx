@@ -38,62 +38,38 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V27: COSMIC SPACE THEME
-                - Deep Space Background (Black/Purple/Blue Gradient)
-                - Twinkling Stars
-                - Constellation Formulas
+                V23: CLEAN SCIENCE CONSOLE (RESTORED)
+                - Height: h-14 (56px)
+                - Blue Base, Thick Borders, Physics Echo
             */}
             <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-3 sm:px-4",
-                        // Background: Deep Space
-                        "bg-[#020617] border-b-[3px] border-indigo-500/30",
-                        "shadow-[0px_4px_20px_0px_rgba(79,70,229,0.3)]",
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* SPACE BACKGROUND LAYERS */}
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-[#020617] to-[#020617] pointer-events-none" />
-
-                    {/* STARS (CSS Generated) */}
-                    <div className="absolute inset-0 opacity-80 pointer-events-none mix-blend-screen"
-                        style={{
-                            backgroundImage: `
-                                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-                                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px)
-                            `,
-                            backgroundSize: '550px 550px, 350px 350px, 250px 250px',
-                            backgroundPosition: '0 0, 40px 60px, 130px 270px'
-                        }}
-                    />
-
-                    {/* NEBULA CLOUDS */}
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none animate-pulse" />
-
-                    {/* PHYSICS TICKER BACKGROUND (CONSTELLATION STYLE) */}
-                    <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none select-none">
+                    {/* PHYSICS TICKER BACKGROUND */}
+                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
                         <motion.div
-                            className="flex gap-24 whitespace-nowrap text-lg sm:text-2xl font-serif italic text-indigo-100/60"
-                            style={{
-                                textShadow: '0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(99, 102, 241, 0.5)' // Star glow
-                            }}
+                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
                             animate={{ x: ["0%", "-50%"] }}
-                            transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                         >
                             {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
-                                <span key={i} className="inline-block relative">
-                                    {/* Connection Line (Constellation Link) */}
-                                    <span className="absolute top-1/2 -left-12 w-12 h-[1px] bg-indigo-500/30 -translate-y-1/2" />
-                                    {eq}
-                                    {/* Star Dots on corners */}
-                                    <span className="absolute -top-1 -right-1 w-1 h-1 bg-white rounded-full shadow-[0_0_4px_white]" />
-                                    <span className="absolute -bottom-1 -left-1 w-1 h-1 bg-white rounded-full shadow-[0_0_4px_white]" />
-                                </span>
+                                <span key={i} className="inline-block">{eq}</span>
                             ))}
                         </motion.div>
+                    </div>
+
+                    {/* RULER TICKS */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
                     </div>
 
 
