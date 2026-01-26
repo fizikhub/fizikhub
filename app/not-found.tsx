@@ -2,140 +2,146 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoveLeft, Home, TriangleAlert, Atom, Zap } from "lucide-react";
+import { MoveLeft, Home, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Infinite Marquee Component
-const Marquee = ({ text, direction = "left", className }: { text: string; direction?: "left" | "right"; className?: string }) => {
+// --- Custom Character Component ---
+const ConfusedScientist = () => {
     return (
-        <div className={`flex overflow-hidden whitespace-nowrap py-3 ${className}`}>
-            <motion.div
-                className="flex gap-4 text-2xl sm:text-4xl font-black uppercase tracking-tighter"
-                animate={{ x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"] }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        <svg viewBox="0 0 400 400" className="w-64 h-64 sm:w-96 sm:h-96 drop-shadow-2xl">
+            <motion.g
+                initial={{ y: 10 }}
+                animate={{ y: -10 }}
+                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
             >
-                {Array.from({ length: 10 }).map((_, i) => (
-                    <span key={i} className="mx-4">{text}</span>
-                ))}
-            </motion.div>
-        </div>
+                {/* Hair (Wild & Messy) */}
+                <path d="M120 100 C 100 80, 80 120, 60 100 C 40 80, 80 40, 100 50 C 120 20, 160 20, 180 40 C 220 20, 240 60, 260 40 C 280 20, 320 60, 300 100 C 280 140, 340 140, 320 180"
+                    fill="#E4E4E5" stroke="#000" strokeWidth="4" />
+
+                {/* Face */}
+                <path d="M120 100 L120 250 Q200 300 280 250 L280 100 Z" fill="#FFDFC4" stroke="#000" strokeWidth="4" />
+
+                {/* Eyes (Wide Open / Shocked) */}
+                <circle cx="160" cy="160" r="30" fill="#FFF" stroke="#000" strokeWidth="3" />
+                <circle cx="240" cy="160" r="30" fill="#FFF" stroke="#000" strokeWidth="3" />
+                <circle cx="160" cy="160" r="5" fill="#000" />
+                <circle cx="240" cy="160" r="5" fill="#000" />
+
+                {/* Glasses (Askew) */}
+                <path d="M110 160 L50 150" stroke="#000" strokeWidth="4" /> {/* Left Leg */}
+                <path d="M290 160 L350 150" stroke="#000" strokeWidth="4" /> {/* Right Leg */}
+                <circle cx="160" cy="160" r="35" fill="none" stroke="#000" strokeWidth="4" opacity="0.5" />
+                <circle cx="240" cy="160" r="35" fill="none" stroke="#000" strokeWidth="4" opacity="0.5" />
+                <path d="M195 160 L205 160" stroke="#000" strokeWidth="4" /> {/* Bridge */}
+
+                {/* Mouth (O Shape - Oops) */}
+                <ellipse cx="200" cy="220" rx="15" ry="25" fill="#000" />
+
+                {/* Body / Lab Coat */}
+                <path d="M100 280 L80 400 L320 400 L300 280 Z" fill="#FFF" stroke="#000" strokeWidth="4" />
+                <path d="M200 280 L200 400" stroke="#000" strokeWidth="2" /> {/* Coat split */}
+
+                {/* Bow Tie (Crooked) */}
+                <path d="M180 290 L220 290 L230 270 L170 270 Z" fill="#F43F5E" stroke="#000" strokeWidth="3" transform="rotate(-15 200 280)" />
+
+                {/* Hand Holding Beaker */}
+                <circle cx="340" cy="300" r="20" fill="#FFDFC4" stroke="#000" strokeWidth="3" />
+                <path d="M330 280 L330 240 L350 240 L350 280" fill="none" stroke="#000" strokeWidth="3" />
+                <path d="M320 230 L360 230 L350 280 L330 280 Z" fill="#BFDBFE" stroke="#000" strokeWidth="3" opacity="0.8" />
+
+                {/* Explosion / Smoke from Beaker */}
+                <motion.path
+                    d="M340 230 Q320 200 340 180 Q360 160 380 180 Q400 200 380 220"
+                    fill="#52525B" opacity="0.5"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                />
+
+                {/* Question Marks */}
+                <text x="50" y="80" fontSize="60" fill="#000" fontFamily="sans-serif" fontWeight="bold" transform="rotate(-20 50 80)">?</text>
+                <text x="350" y="80" fontSize="60" fill="#000" fontFamily="sans-serif" fontWeight="bold" transform="rotate(20 350 80)">?</text>
+            </motion.g>
+        </svg>
     );
 };
 
-// Floating Formula Component
-const FloatingFormula = ({ text, x, y, delay, rotate }: any) => (
-    <motion.div
-        className="absolute text-black/10 font-serif font-bold pointer-events-none select-none z-0"
-        initial={{ x, y, opacity: 0 }}
-        animate={{
-            y: [y, y - 20, y],
-            rotate: [rotate - 5, rotate + 5, rotate - 5],
-            opacity: 1
-        }}
-        transition={{ duration: 5, repeat: Infinity, delay: delay, ease: "easeInOut" }}
-        style={{ fontSize: "clamp(2rem, 5vw, 4rem)" }}
-    >
-        {text}
-    </motion.div>
-);
-
 export default function NotFound() {
     return (
-        <div className="min-h-screen bg-[#FACC15] text-black overflow-hidden relative font-sans selection:bg-black selection:text-[#FACC15] flex flex-col">
+        <div className="min-h-screen bg-[#F8F9FA] text-black font-sans flex flex-col items-center justify-center p-4 selection:bg-[#FACC15]">
 
-            {/* 1. Scientific Grid Background */}
-            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-                {/* Horizontal Lines */}
-                <div style={{ backgroundImage: "linear-gradient(#000 1px, transparent 1px)", backgroundSize: "100% 40px" }} className="w-full h-full absolute inset-0" />
-                {/* Vertical Lines */}
-                <div style={{ backgroundImage: "linear-gradient(90deg, #000 1px, transparent 1px)", backgroundSize: "40px 100%" }} className="w-full h-full absolute inset-0" />
-            </div>
+            {/* Main Content Card */}
+            <div className="max-w-4xl w-full flex flex-col items-center text-center">
 
-            {/* Floating Physics Formulas */}
-            <FloatingFormula text="E = mc²" x="10%" y={100} delay={0} rotate={-10} />
-            <FloatingFormula text="F = ma" x="80%" y={150} delay={1} rotate={10} />
-            <FloatingFormula text="ΔS ≥ 0" x="20%" y={500} delay={2} rotate={-5} />
-            <FloatingFormula text="iℏ∂ψ/∂t = Ĥψ" x="70%" y={600} delay={3} rotate={5} />
-
-            {/* 2. Marquee Barriers */}
-            <div className="relative z-10 w-full bg-black text-[#FACC15] -rotate-1 shadow-xl border-y-4 border-white mt-16 sm:mt-0">
-                <Marquee text="DENEY PATLADI // 404 ERROR // FİZİK KURALLARINA AYKIRI //" direction="left" />
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-center relative z-10 p-4 w-full max-w-7xl mx-auto">
-
-                {/* 3. Main Warning Box */}
+                {/* 1. Header Typography */}
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="bg-white border-[4px] sm:border-[5px] border-black p-6 sm:p-12 w-full max-w-3xl shadow-[8px_8px_0px_0px_#000] sm:shadow-[15px_15px_0px_0px_#000] relative group transition-all duration-300 mx-4"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8"
                 >
-                    {/* Decorative Lab Elements */}
-                    <div className="absolute -top-6 -right-6 bg-black text-[#FACC15] p-3 border-4 border-white shadow-lg animate-bounce hidden sm:block">
-                        <Atom size={40} strokeWidth={3} />
+                    <h1 className="text-6xl sm:text-9xl font-black tracking-tighter text-[#0F172A] relative">
+                        HAYDAAA!
+                        {/* 404 Stamp */}
+                        <span className="absolute -top-4 -right-8 sm:-right-16 bg-[#EF4444] text-white text-lg sm:text-2xl font-bold px-3 py-1 rounded-lg rotate-[15deg] shadow-lg">
+                            404
+                        </span>
+                    </h1>
+                </motion.div>
+
+                {/* 2. Character Illustration */}
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: "spring" }}
+                    className="mb-8 sm:mb-12 relative"
+                >
+                    <div className="absolute inset-0 bg-blue-200/50 rounded-full blur-[100px] -z-10" />
+                    <ConfusedScientist />
+                </motion.div>
+
+                {/* 3. Text Content */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="space-y-6 max-w-2xl"
+                >
+                    <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 leading-tight">
+                        Laboratuvarda işler biraz karıştı...
+                    </h2>
+
+                    <p className="text-lg sm:text-xl text-zinc-600 font-medium leading-relaxed px-4">
+                        Dayı naptın? Aradığın sayfa ya
+                        <span className="text-blue-600 font-bold mx-1">havaya uçtu</span>
+                        ya da hiç var olmadı.
+                        <br className="hidden sm:block" />
+                        Deney tüplerini toplayıp güvenli bölgeye dönelim.
+                    </p>
+
+                    {/* 4. Actions */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                        <Link href="/" className="w-full sm:w-auto">
+                            <Button className="w-full h-14 px-10 bg-[#0F172A] text-white hover:bg-zinc-800 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+                                <Home className="w-5 h-5" />
+                                Ana Sayfaya Dön
+                            </Button>
+                        </Link>
+
+                        <Link href="/makale" className="w-full sm:w-auto">
+                            <Button variant="outline" className="w-full h-14 px-10 bg-white text-zinc-900 border-2 border-zinc-200 hover:bg-zinc-50 text-lg font-bold rounded-2xl flex items-center justify-center gap-3">
+                                <Search className="w-5 h-5" />
+                                Makalelere Bak
+                            </Button>
+                        </Link>
                     </div>
 
-                    {/* Header */}
-                    <div className="text-center mb-6 sm:mb-8 relative">
-                        {/* Huge 404 */}
-                        <div className="relative inline-block">
-                            <h1 className="text-[6rem] sm:text-[10rem] md:text-[12rem] font-black leading-[0.8] tracking-tighter text-black relative select-none z-10">
-                                404
-                            </h1>
-                            {/* Glitch Effect Behind */}
-                            <h1 className="text-[6rem] sm:text-[10rem] md:text-[12rem] font-black leading-[0.8] tracking-tighter text-[#F43F5E] absolute top-1 left-1 select-none -z-10 opacity-70 animate-pulse">
-                                404
-                            </h1>
-                        </div>
-
-                        {/* Slang Badge */}
-                        <div className="absolute top-0 right-[-10px] sm:right-10 rotate-[15deg] bg-[#F43F5E] text-white px-3 py-1 sm:px-4 sm:py-2 rounded-lg border-[3px] border-black shadow-[4px_4px_0px_0px_#000] z-20">
-                            <span className="text-lg sm:text-3xl font-black uppercase flex items-center gap-2">
-                                <Zap className="fill-white w-4 h-4 sm:w-6 sm:h-6" />
-                                PATLADIK
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="text-center mb-6">
-                        <h2 className="text-xl sm:text-4xl font-black uppercase bg-black text-white inline-block px-4 py-2 transform -skew-x-6 border-2 border-transparent">
-                            HOOPP HEMŞERİM!
-                        </h2>
-                    </div>
-
-                    {/* Copy */}
-                    <div className="text-lg sm:text-2xl font-bold text-black border-l-[6px] border-black pl-4 sm:pl-6 mb-8 text-left leading-normal">
-                        <p className="mb-2">Dayı naptın ya? Kuantum tünelleme yapayım derken boşluğa düştün.</p>
-                        <p className="text-base sm:text-lg text-zinc-600 font-medium">
-                            Link kırık olabilir, yanlış yazmış olabilirsin ya da Heisenberg Belirsizlik İlkesi yüzünden sayfa hem var hem yok.
+                    <div className="pt-12">
+                        <p className="text-sm font-mono text-zinc-400 uppercase tracking-widest">
+                            Error Code: 404_PAGE_EXPLODED
                         </p>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/" className="w-full">
-                            <Button className="w-full h-14 sm:h-16 bg-[#F43F5E] text-white hover:bg-[#E11D48] text-lg sm:text-xl font-black border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase flex items-center justify-center gap-2 group">
-                                <Home className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-pulse" />
-                                ANA SAYFAYA TÜYLE
-                            </Button>
-                        </Link>
-
-                        <Link href="/forum" className="w-full">
-                            <Button className="w-full h-14 sm:h-16 bg-black text-white hover:bg-zinc-800 text-lg sm:text-xl font-black border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#94A3B8] hover:shadow-[2px_2px_0px_0px_#94A3B8] hover:translate-x-[2px] hover:translate-y-[2px] transition-all uppercase flex items-center justify-center gap-2">
-                                <MoveLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform" />
-                                GERİ BAS
-                            </Button>
-                        </Link>
                     </div>
 
                 </motion.div>
             </div>
-
-            {/* 4. Bottom Marquee Chaos */}
-            <div className="relative z-10 w-full bg-[#F43F5E] text-white rotate-1 shadow-xl border-y-4 border-black mb-8 sm:mb-0">
-                <Marquee text="SAYFA BULUNAMADI // HOUSTON PROBLEM VAR // DAYI YANLIŞ GELDİN //" direction="right" />
-            </div>
-
         </div>
     );
 }
