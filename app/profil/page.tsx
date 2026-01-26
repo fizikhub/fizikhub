@@ -204,9 +204,9 @@ export default async function ProfilePage() {
 
                     {/* MOBILE CONTENT (Tabs) */}
                     <MobileProfileContent
-                        articles={articles}
-                        questions={questions}
-                        drafts={drafts}
+                        articles={articles || []}
+                        questions={questions || []}
+                        drafts={drafts || []}
                     />
 
                     {/* DESKTOP CONTENT (Original Lists) */}

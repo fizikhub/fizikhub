@@ -31,76 +31,90 @@ export function V36ProfileHeader({ profile, user, stats, isOwnProfile, unreadCou
     const hasUnread = unreadCount > 0;
 
     return (
-    return (
         <div className="w-full mb-8 relative group">
 
             {/* === MOBILE ID CARD LAYOUT (VISIBLE ONLY ON MOBILE) === */}
             <div className="sm:hidden w-full">
-                <div className="relative bg-[#F4F4F5] dark:bg-[#18181b] border-[3px] border-black rounded-[0px] shadow-[6px_6px_0px_0px_#000000] overflow-hidden">
-                    {/* Hole Punch Visual */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-4 bg-black/10 rounded-full blur-[1px] z-20 pointer-events-none"></div>
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-3 bg-[#09090b] rounded-full z-20 border border-zinc-700"></div>
+                <div className="relative bg-[#18181b] border-b border-white/10 overflow-hidden">
 
-                    {/* Header Strip */}
-                    <div className={cn("h-16 w-full border-b-[3px] border-black flex items-center justify-center bg-gradient-to-r", coverGradient)}>
-                        <span className="bg-black/80 text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full backdrop-blur-md border border-white/20">
-                            FIZIKHUB KIMLIK
-                        </span>
+                    {/* Blue Dotted Header */}
+                    <div className="h-32 w-full bg-[#3B82F6] relative overflow-hidden">
+                        <div className="absolute inset-0" style={{
+                            backgroundImage: 'radial-gradient(rgba(255,255,255,0.15) 2px, transparent 2px)',
+                            backgroundSize: '24px 24px'
+                        }} />
+                        {/* Optional Badge */}
+                        <div className="absolute top-3 left-3 bg-black/20 backdrop-blur-md text-white/90 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md border border-white/10 skew-x-[-10deg]">
+                            BİLİM PLATFORMU
+                        </div>
                     </div>
 
                     {/* Content Body */}
-                    <div className="p-5 flex flex-col items-center relative">
-                        {/* Avatar */}
-                        <div className="w-24 h-24 rounded-full border-[3px] border-black -mt-14 z-10 bg-white dark:bg-zinc-900 shadow-[0_4px_0_0_rgba(0,0,0,1)]">
-                            <img
-                                src={profile?.avatar_url || "https://github.com/shadcn.png"}
-                                alt={profile?.username}
-                                className="w-full h-full object-cover rounded-full p-1"
-                            />
+                    <div className="px-5 pb-6 relative">
+
+                        {/* Avatar & Actions Row */}
+                        <div className="flex justify-between items-end -mt-12 mb-3">
+                            {/* Avatar (Square Rounded, White Border) */}
+                            <div className="relative">
+                                <div className="w-24 h-24 rounded-2xl border-[4px] border-[#18181b] bg-[#18181b] shadow-xl relative z-10 overflow-hidden">
+                                    <img
+                                        src={profile?.avatar_url || "https://github.com/shadcn.png"}
+                                        alt={profile?.username}
+                                        className="w-full h-full object-cover rounded-xl bg-zinc-800"
+                                    />
+                                </div>
+                                {/* Online Indicator */}
+                                <div className="absolute -bottom-1 -right-1 z-20 w-5 h-5 bg-[#10B981] border-[4px] border-[#18181b] rounded-full"></div>
+                            </div>
                         </div>
 
-                        {/* Identity */}
-                        <div className="text-center mt-3 mb-6">
-                            <h1 className="text-2xl font-black text-black dark:text-white leading-none uppercase tracking-tighter flex items-center justify-center gap-1">
-                                {profile?.full_name || "İsimsiz"}
-                                {profile?.is_verified && <ShieldCheck className="w-5 h-5 text-blue-500" />}
-                            </h1>
-                            <p className="text-zinc-500 font-mono text-xs mt-1">@{profile?.username}</p>
-                            {profile?.bio && (
-                                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 max-w-[200px] mx-auto leading-relaxed border-t border-dashed border-zinc-700/50 pt-2">
-                                    {profile.bio}
+                        {/* Name & Actions */}
+                        <div className="flex items-start justify-between gap-2">
+                            <div>
+                                <h1 className="text-2xl font-black text-white leading-tight -ml-0.5 flex items-center gap-1.5">
+                                    {profile?.full_name || "İsimsiz"}
+                                    {profile?.is_verified && <ShieldCheck className="w-5 h-5 text-blue-500 fill-blue-500/20" />}
+                                </h1>
+                                <p className="text-zinc-400 text-sm font-medium">@{profile?.username}</p>
+                                <p className="text-zinc-600 text-[10px] font-medium mt-0.5">
+                                    @{profile?.username} · fizikhub.com
                                 </p>
+                            </div>
+
+                            {/* Action Buttons (Right Aligned) */}
+                            {isOwnProfile && (
+                                <div className="flex gap-2 shrink-0">
+                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-[#FACC15] text-black rounded-xl shadow-[0_4px_20px_rgba(250,204,21,0.2)] hover:scale-105 transition-transform relative">
+                                        <MessageCircle className="w-5 h-5 fill-current" />
+                                        {unreadCount > 0 && (
+                                            <div className="absolute -top-1.5 -right-1.5 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#18181b]">
+                                                {unreadCount}
+                                            </div>
+                                        )}
+                                    </Link>
+                                    <Link href="/profil/duzenle" className="w-10 h-10 flex items-center justify-center bg-zinc-800 text-zinc-400 border border-zinc-700/50 rounded-xl hover:bg-zinc-700 hover:text-white transition-colors">
+                                        <Edit className="w-5 h-5" />
+                                    </Link>
+                                </div>
                             )}
                         </div>
 
-                        {/* Barcode / Stats */}
-                        <div className="w-full grid grid-cols-3 gap-2 border-t-[3px] border-dashed border-black/20 pt-4 mt-2">
+                        {/* Stats Row (Cleaner) */}
+                        <div className="flex items-center gap-8 mt-6 pt-6 border-t border-white/5">
                             <div className="text-center">
-                                <div className="text-lg font-black text-black dark:text-white">{stats.followersCount}</div>
-                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">TAKİP</div>
-                            </div>
-                            <div className="text-center border-x border-dashed border-black/20">
-                                <div className="text-lg font-black text-black dark:text-white">{stats.articlesCount}</div>
-                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">YAZI</div>
+                                <div className="text-xl font-black text-white">{stats.followersCount}</div>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">TAKİPÇİ</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-lg font-black text-black dark:text-white">{stats.reputation}</div>
-                                <div className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">PUAN</div>
+                                <div className="text-xl font-black text-white">{stats.articlesCount}</div>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">YAZI</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-xl font-black text-white">{stats.reputation}</div>
+                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">PUAN</div>
                             </div>
                         </div>
 
-                        {/* Actions */}
-                        {isOwnProfile && (
-                            <div className="flex gap-3 mt-6 w-full">
-                                <Link href="/profil/duzenle" className="flex-1 bg-white border-2 border-black text-black text-xs font-bold py-2 rounded-lg text-center shadow-[2px_2px_0px_0px_#000] active:translate-y-[2px] active:shadow-none transition-all">
-                                    DÜZENLE
-                                </Link>
-                                <Link href="/mesajlar" className="flex-1 bg-black border-2 border-black text-white text-xs font-bold py-2 rounded-lg text-center shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] active:translate-y-[2px] active:shadow-none transition-all relative">
-                                    MESAJLAR
-                                    {unreadCount > 0 && <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#FFC800] text-black rounded-full flex items-center justify-center text-[10px] border-2 border-black">{unreadCount}</span>}
-                                </Link>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
