@@ -10,118 +10,129 @@ export default function NotFound() {
     return (
         // BG Color: RGB(41,41,41) => Hex #292929
         // NO texture/noise ("pütürcükler olmasın")
-        <div className="min-h-screen bg-[#292929] text-white font-sans flex flex-col items-center justify-center p-0 sm:p-4 selection:bg-[#FF0055] selection:text-white overflow-hidden relative">
+        <div className="min-h-screen bg-[#292929] text-white font-sans flex flex-col items-center justify-center p-4 selection:bg-[#FF0055] selection:text-white overflow-hidden relative">
 
             {/* 
-                V9: FINAL POLISH - COMPACT DISCO (Manual Overwrite)
-                - 404 with Disco Ball '0' behind Rick
-                - Compact Mobile Layout
-                - No Cutoffs
+                V8: PAVYON / DISCO THEME (RESTORED)
+                - Spinning Disco Ball
+                - Neon Marquee Lights
+                - 404 Behind Character
             */}
-            <div className="w-full max-w-2xl flex flex-col items-center text-center relative z-10 pt-10 sm:pt-0">
+            <div className="max-w-2xl w-full flex flex-col items-center text-center relative z-10 -mt-20 sm:mt-0">
 
-                <div className="relative w-full flex justify-center items-center">
-
-                    {/* 404 BEHIND RICK */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] flex justify-center items-center gap-2 sm:gap-8 -z-10 select-none opacity-90">
-                        {/* '4' */}
-                        <div className="text-[180px] sm:text-[250px] font-black italic text-transparent stroke-[4px] stroke-[#ff00ff] drop-shadow-[0_0_15px_rgba(255,0,255,0.6)]" style={{ WebkitTextStroke: '4px #ff00ff' }}>
-                            4
-                        </div>
-
-                        {/* '0' -> DISCO BALL */}
-                        <div className="relative w-32 h-32 sm:w-48 sm:h-48 shrink-0">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                                className="w-full h-full rounded-full bg-gradient-to-br from-gray-300 via-gray-100 to-gray-400 overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.8)] border-4 border-gray-400 relative"
-                            >
-                                {/* Mirrors */}
-                                {[...Array(12)].map((_, i) => (
-                                    <div key={i} className="absolute inset-0 border border-gray-500/30 rounded-full" style={{ transform: `rotate(${i * 30}deg) scaleX(0.6)` }} />
-                                ))}
-                                {[...Array(6)].map((_, i) => (
-                                    <div key={i} className="absolute inset-0 border-t border-gray-500/30" style={{ top: `${i * 16}%` }} />
-                                ))}
-                            </motion.div>
-                            {/* Sparkles on Disco Ball */}
-                            <motion.div
-                                animate={{ opacity: [0.5, 1, 0.5] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                className="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(255,255,255,0.6)] mix-blend-overlay"
-                            />
-                        </div>
-
-                        {/* '4' */}
-                        <div className="text-[180px] sm:text-[250px] font-black italic text-transparent stroke-[4px] stroke-[#ff00ff] drop-shadow-[0_0_15px_rgba(255,0,255,0.6)]" style={{ WebkitTextStroke: '4px #ff00ff' }}>
-                            4
-                        </div>
-                    </div>
-
-                    {/* RICK ASSET (Optimized Position) */}
+                {/* DISCO BALL */}
+                <div className="absolute -top-32 left-1/2 -translate-x-1/2 z-20 w-24 h-24">
+                    <div className="w-2 bg-gradient-to-b from-gray-600 to-gray-400 h-24 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full" />
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0, y: 50 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
-                        className="relative z-10 mt-8 mb-[-40px] sm:mb-[-60px]" // Negative margin to pull text card up
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                        className="w-full h-full rounded-full bg-gradient-to-br from-gray-300 via-gray-100 to-gray-400 overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.8)] border-2 border-gray-400 relative"
                     >
-                        <div className="relative w-[300px] h-[300px] sm:w-[500px] sm:h-[500px]">
-                            <Image
-                                src="/404-rick-scientist-transparent.png"
-                                alt="Rick-like Scientist"
-                                fill
-                                className="object-contain drop-shadow-2xl"
-                                priority
-                                sizes="(max-width: 768px) 300px, 500px"
-                            />
-                        </div>
+                        {[...Array(10)].map((_, i) => (
+                            <div key={i} className="absolute inset-0 border border-gray-400/30 rounded-full" style={{ transform: `rotate(${i * 36}deg) scaleX(0.5)` }} />
+                        ))}
+                        {[...Array(5)].map((_, i) => (
+                            <div key={i} className="absolute inset-0 border-t border-gray-400/30" style={{ top: `${i * 20}%` }} />
+                        ))}
                     </motion.div>
                 </div>
 
-                {/* COMPACT TEXT CARD */}
+                {/* LIGHTS (PAVYON STYLE) */}
+                <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,255,0.15),transparent_70%)] animate-pulse" />
+
+                {/* Neon 404 Background (BEHIND RICK) */}
+                <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] -z-10 pointer-events-none select-none">
+                    <svg viewBox="0 0 400 200" className="w-full h-full drop-shadow-[0_0_50px_rgba(255,0,255,0.8)] opacity-80">
+                        <defs>
+                            <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        {/* Disco Lights around 404 */}
+                        {[...Array(12)].map((_, i) => (
+                            <circle key={i} r="3" fill={i % 2 === 0 ? "#FACC15" : "#ff00ff"} className="animate-pulse">
+                                <animateMotion dur="6s" repeatCount="indefinite" path="M50,100 a150,50 0 1,0 300,0 a150,50 0 1,0 -300,0" begin={`${i * 0.5}s`} />
+                            </circle>
+                        ))}
+
+                        <text x="50%" y="55%" textAnchor="middle" dominantBaseline="middle"
+                            className="text-[160px] font-black fill-transparent stroke-[4px] stroke-[#ff00ff]"
+                            style={{ filter: "url(#neon-glow)" }}
+                        >
+                            404
+                        </text>
+                        <text x="50%" y="55%" textAnchor="middle" dominantBaseline="middle"
+                            className="text-[160px] font-black fill-[#ff00ff]/20 stroke-none blur-sm"
+                        >
+                            404
+                        </text>
+                    </svg>
+                </div>
+
+                {/* 1. The Naked Scientist Asset (v7 - Rick Style) */}
+                <motion.div
+                    initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
+                    className="relative w-full flex justify-center mb-0 z-10" // Reduced bottom margin
+                >
+                    <div className="relative w-[85vw] sm:w-[500px] aspect-square">
+                        <Image
+                            src="/404-rick-scientist-transparent.png"
+                            alt="Rick-like Scientist caught changing"
+                            fill
+                            className="object-contain drop-shadow-2xl"
+                            priority
+                            sizes="(max-width: 768px) 90vw, 500px"
+                        />
+                    </div>
+                </motion.div>
+
+                {/* 2. Humorous Code Copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="relative z-20 w-[90%] sm:w-full max-w-lg mx-auto bg-black/60 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
+                    className="space-y-4 max-w-lg mx-auto relative z-20 -mt-10 sm:-mt-12" // Negative top margin to pull text up overlapping with image feet
                 >
-                    <div className="space-y-2 mb-6">
-                        <div className="inline-block bg-[#FACC15] text-black text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest mb-1">
-                            Hata Kodu: 404
-                        </div>
-                        <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-none">
-                            DENEY HATASI: <span className="text-[#ff00ff] block sm:inline">PARALEL EVREN SAPMASI</span>
-                        </h1>
-                    </div>
+                    <h1 className="text-3xl sm:text-5xl font-black text-[#FACC15] uppercase tracking-tighter leading-none skew-x-[-10deg]">
+                        DENEY HATASI: <br />
+                        <span className="text-[#ff00ff]">PARALEL EVREN SAPMASI</span>
+                    </h1>
 
-                    <div className="text-left bg-white/5 rounded-xl p-4 border border-white/5 mb-6">
-                        <strong className="text-[#FACC15] flex items-center gap-2 mb-2 text-sm uppercase tracking-wide">
-                            <EyeOff className="w-4 h-4" />
-                            Kuantum Çökmesi Tespit Edildi
-                        </strong>
-                        <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
-                            Gözlemci etkisiyle bu sayfanın dalga fonksiyonunu çökerttin, ama beklendiği gibi maddeleşmedi. Belki de bir solucan deliğinden yanlış koordinata düştün.
-                        </p>
-                        <p className="text-xs text-zinc-500 mt-3 pt-3 border-t border-white/5 italic">
+                    <p className="text-lg sm:text-xl text-zinc-300 font-medium leading-normal bg-black/50 p-6 rounded-xl backdrop-blur-md border border-white/10 shadow-xl">
+                        <strong className="text-[#ff00ff] block mb-2 text-xl">⚠️ Kuantum Çökmesi Tespit Edildi</strong>
+                        Gözlemci etkisiyle bu sayfanın dalga fonksiyonunu çökerttin, ama beklendiği gibi maddeleşmedi. Belki de bir solucan deliğinden yanlış koordinata düştün.
+                        <br />
+                        <span className="text-sm text-zinc-500 mt-4 block italic border-t border-white/10 pt-2">
                             (Bu esnada laboratuvar güvenliği ihlal edilmiş olabilir. Lütfen yerdeki yüksek topuklu ayakkabılara basmadan sessizce uzaklaş.)
-                        </p>
-                    </div>
+                        </span>
+                    </p>
+                </motion.div>
 
-                    {/* Actions */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <Link href="/" className="flex-1">
-                            <Button className="w-full h-12 bg-[#FACC15] hover:bg-[#EAB308] text-black font-black rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all text-sm sm:text-base uppercase tracking-tight">
-                                <Home className="w-4 h-4 mr-2" />
-                                Ana Sayfaya Işınlan
-                            </Button>
-                        </Link>
-                        <Link href="/forum" className="flex-1">
-                            <Button variant="outline" className="w-full h-12 bg-transparent border-2 border-white/20 hover:bg-white/10 text-white font-bold rounded-lg hover:border-white transition-all text-sm sm:text-base">
-                                <MoveLeft className="w-4 h-4 mr-2" />
-                                Geri Dön
-                            </Button>
-                        </Link>
-                    </div>
+                {/* 3. Navigation Actions */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex flex-col sm:flex-row gap-4 justify-center pt-8 w-full"
+                >
+                    <Link href="/" className="w-full sm:w-auto">
+                        <Button className="w-full h-14 px-8 bg-[#FACC15] hover:bg-[#EAB308] text-black text-lg font-black rounded-xl shadow-[6px_6px_0_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_black] transition-all flex items-center justify-center gap-2 uppercase">
+                            <EyeOff className="w-5 h-5" />
+                            Görmedim Say, Eve Dön
+                        </Button>
+                    </Link>
+                    <Link href="/forum" className="w-full sm:w-auto">
+                        <Button variant="ghost" className="w-full h-14 px-8 text-zinc-400 hover:text-white hover:bg-white/10 text-lg font-bold rounded-xl flex items-center justify-center gap-2">
+                            <MoveLeft className="w-5 h-5" />
+                            Geri Geri Çık
+                        </Button>
+                    </Link>
                 </motion.div>
 
             </div>
