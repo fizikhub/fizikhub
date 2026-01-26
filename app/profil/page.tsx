@@ -4,6 +4,7 @@ import { getFollowStats } from "@/app/profil/actions";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Settings, Edit, FileText, Zap, MessageCircle, ShieldCheck } from "lucide-react";
+import { V36ProfileHeader } from "./v36-header";
 
 // V27: REFINED PROFILE HEADER
 
@@ -179,10 +180,11 @@ export default async function ProfilePage() {
 
     return (
         <div className="min-h-screen py-8 sm:py-12 pb-32">
-            <div className="container max-w-2xl mx-auto px-4">
+            <div className="container max-w-5xl mx-auto px-0 sm:px-4">
 
                 {/* V27 HEADER */}
-                <CompactHeader
+                {/* V36 Header with Cover Photo */}
+                <V36ProfileHeader
                     profile={profile}
                     user={user}
                     stats={stats}
