@@ -5,6 +5,7 @@ import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { CreateQuestionDialog } from "./create-question-dialog";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -115,57 +116,115 @@ export function ModernForumHeader() {
 
     return (
         <div className="flex flex-col gap-4 sm:gap-8 mb-6 sm:mb-8">
-            {/* DARK SCIENCE BRUTALIST HERO CARD */}
+            {/* CHALKBOARD HERO CARD */}
             <div className={cn(
                 "relative rounded-xl overflow-hidden w-full",
-                "bg-[#18181b] border-[3px] border-white shadow-[4px_4px_0_0_#3B82F6]", // Dark Base + White Border + Blue Shadow
-                "min-h-[120px] sm:min-h-[160px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all",
-                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#3B82F6]"
+                "bg-[#15201b] border-[4px] border-[#d4b483] shadow-[4px_4px_0_0_#1a1a1a]", // Dark Green Chalkboard + Wood Frame Border
+                "min-h-[140px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all",
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#1a1a1a]"
             )}>
-                {/* Background Decor: Technical Grid */}
-                <div className="absolute inset-0 opacity-20 pointer-events-none"
-                    style={{
-                        backgroundImage: 'linear-gradient(#3B82F6 1px, transparent 1px), linear-gradient(90deg, #3B82F6 1px, transparent 1px)',
-                        backgroundSize: '30px 30px'
-                    }}
-                />
+                {/* Chalkboard Texture */}
+                <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')]" />
+                <div className="absolute inset-0 opacity-10 pointer-events-none bg-noise" />
 
-                {/* Diagonal Stripes Overlay */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[repeating-linear-gradient(45deg,#fff,#fff_10px,transparent_10px,transparent_20px)]" />
+                {/* Eraser Smudges (Static) */}
+                <div className="absolute top-10 left-20 w-40 h-20 bg-white/5 blur-3xl rounded-full rotate-12 pointer-events-none" />
+                <div className="absolute bottom-10 right-20 w-32 h-16 bg-white/5 blur-2xl rounded-full -rotate-6 pointer-events-none" />
 
                 {/* Content Container */}
-                <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-6 md:gap-10">
+                <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-6">
 
-                    {/* Header Text */}
-                    <div className="text-center md:text-left shrink-0">
-                        <h1 className="text-3xl sm:text-5xl font-black italic tracking-tighter text-white uppercase leading-none transform -rotate-1 drop-shadow-[2px_2px_0_#3B82F6]">
-                            AKLINDA <br className="sm:hidden" />
-                            <span className="bg-[#3B82F6] text-white px-2 inline-block transform rotate-2 mt-1 border-2 border-white shadow-[2px_2px_0_0_#fff]">NE VAR?</span>
-                        </h1>
+                    {/* Animated Chalk Text */}
+                    <div className="text-center relative">
+                        <motion.h1
+                            className="text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono"
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <span className="relative inline-block">
+                                {/* "AKLINDA" Writing Animation */}
+                                {"AKLINDA".split("").map((char, i) => (
+                                    <motion.span
+                                        key={`l1-${i}`}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: i * 0.1, duration: 0.05 }}
+                                        className="inline-block relative"
+                                    >
+                                        {char}
+                                        {/* Chalk Dust Particles */}
+                                        <motion.span
+                                            initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                                            animate={{ opacity: 0, y: 10 + Math.random() * 10, x: (Math.random() - 0.5) * 10, scale: 0 }}
+                                            transition={{ delay: i * 0.1, duration: 0.8, ease: "easeOut" }}
+                                            className="absolute bottom-0 left-1/2 w-1 h-1 bg-white/60 rounded-full blur-[1px]"
+                                        />
+                                    </motion.span>
+                                ))}
+                            </span>
+                            <br className="sm:hidden" />
+                            <span className="relative inline-block sm:ml-4">
+                                {/* "NE VAR?" Writing Animation */}
+                                {"NE VAR?".split("").map((char, i) => (
+                                    <motion.span
+                                        key={`l2-${i}`}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.8 + (i * 0.1), duration: 0.05 }}
+                                        className={cn(
+                                            "inline-block relative",
+                                            char === " " ? "min-w-[1ch]" : ""
+                                        )}
+                                    >
+                                        {char}
+                                        {/* Chalk Dust Particles for Line 2 */}
+                                        {char !== " " && (
+                                            <motion.span
+                                                initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                                                animate={{ opacity: 0, y: 10 + Math.random() * 10, x: (Math.random() - 0.5) * 10, scale: 0 }}
+                                                transition={{ delay: 0.8 + (i * 0.1), duration: 0.8, ease: "easeOut" }}
+                                                className="absolute bottom-0 left-1/2 w-1 h-1 bg-white/60 rounded-full blur-[1px]"
+                                            />
+                                        )}
+                                    </motion.span>
+                                ))}
+                                {/* Underline Animation */}
+                                <motion.div
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ delay: 1.8, duration: 0.4, type: "spring" }}
+                                    className="absolute -bottom-2 left-0 right-0 h-1.5 bg-white/80 rounded-full origin-left opacity-80"
+                                    style={{
+                                        filter: "url(#chalk-distortion)",
+                                        boxShadow: "0 0 4px rgba(255,255,255,0.5)"
+                                    }}
+                                />
+                            </span>
+                        </motion.h1>
                     </div>
 
-                    {/* Input Trigger (Dark Science Style) */}
+                    {/* Input Trigger (Chalk Panel Style) */}
                     <div className="w-full md:max-w-xl">
                         <CreateQuestionDialog
                             trigger={
                                 <div className={cn(
                                     "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
-                                    "bg-[#09090b] border-[3px] border-white hover:border-[#3B82F6] transition-all duration-200",
-                                    "flex items-center px-4 shadow-[4px_4px_0_0_#fff] hover:shadow-[2px_2px_0_0_#3B82F6] hover:translate-x-[2px] hover:translate-y-[2px]"
+                                    "bg-white/5 border-[2px] border-white/30 hover:bg-white/10 hover:border-white/60 transition-all duration-200",
+                                    "flex items-center px-4 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
                                 )}>
                                     {/* Icon Box */}
-                                    <div className="w-10 h-10 rounded bg-[#3B82F6] text-white flex items-center justify-center border-2 border-white mr-4 group-hover:rotate-6 transition-transform">
-                                        <Sparkles className="w-5 h-5 stroke-[2.5px]" />
+                                    <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20 mr-4 group-hover:rotate-12 transition-transform">
+                                        <Sparkles className="w-5 h-5 opacity-80" />
                                     </div>
 
                                     {/* Placeholder */}
-                                    <span className="text-lg font-bold text-white group-hover:text-[#3B82F6] transition-colors">
+                                    <span className="text-lg font-medium text-white/70 group-hover:text-white transition-colors font-mono">
                                         Bugün neyi merak ediyorsun?
                                     </span>
 
                                     {/* Arrow Action */}
-                                    <div className="ml-auto bg-white text-black p-1 rounded border-2 border-black group-hover:bg-[#3B82F6] group-hover:text-white group-hover:border-white transition-all duration-300">
-                                        <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
+                                    <div className="ml-auto text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
+                                        <ArrowRight className="w-5 h-5" />
                                     </div>
                                 </div>
                             }
