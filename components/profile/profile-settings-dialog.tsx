@@ -149,7 +149,10 @@ export function ProfileSettingsDialog({
                         </Button>
                     )}
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl bg-card border-2 border-black dark:border-white p-0 overflow-hidden rounded-3xl">
+                <DialogContent
+                    className="max-w-2xl bg-card border-2 border-black dark:border-white p-0 overflow-hidden rounded-3xl fixed left-[50%] top-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%]"
+                    style={{ transform: "translate(-50%, -50%)" }}
+                >
                     <div className="flex flex-col h-[80vh] md:h-auto">
 
                         {/* Header */}
