@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { NeoProfileView } from "@/components/profile/neo-profile-view";
+import { SocialProfileView } from "@/components/profile/social-profile-view";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -48,7 +48,7 @@ export default async function ProfilePage() {
     };
 
     return (
-        <NeoProfileView
+        <SocialProfileView
             profile={profile}
             isOwnProfile={true}
             stats={stats}
