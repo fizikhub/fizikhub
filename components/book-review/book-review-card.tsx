@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
