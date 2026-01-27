@@ -38,7 +38,7 @@ function FloatingText() {
         <group>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
                 <Text
-                    font="/fonts/Inter-Bold.ttf" // Fallback usually works with default if missing, or use default font
+                    // font="/fonts/Inter-Bold.ttf" // REMOVED: Font not found, using default
                     fontSize={1.5}
                     color="#fbbf24" // Amber-400
                     position={[0, 1.5, 0]}
