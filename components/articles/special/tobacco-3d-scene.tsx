@@ -1,7 +1,8 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { ScrollControls, useScroll, Text, Float, Sparkles, Scroll } from "@react-three/drei";
+import { ScrollControls, useScroll, Text, Float, Sparkles, Scroll, Environment } from "@react-three/drei";
+import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import { useMemo, useRef, Component, ReactNode, Suspense } from "react";
 import * as THREE from "three";
 import { Skull, Wind, FlaskConical } from "lucide-react";
@@ -42,17 +43,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 // --- FALLBACK UI ---
 function FallbackUI() {
     return (
-        <div className="h-screen w-screen bg-[#1c1917] flex flex-col items-center justify-center text-white p-8">
-            <h1 className="text-6xl font-black mb-4">TÜTÜN</h1>
-            <p className="text-xl text-amber-500 mb-8 text-center max-w-xl">
-                Tanrıların dumanından, sanayi devriminin bacalarına...
-            </p>
-            <p className="text-sm text-stone-500 mb-8 max-w-md text-center">
-                (3D deneyim şu an yüklenemiyor. Ancak makaleyi okumaya devam edebilirsiniz.)
+        <div className="h-screen w-screen bg-[#0f172a] flex flex-col items-center justify-center text-white p-8">
+            <h1 className="text-6xl font-black mb-4 tracking-tighter">TÜTÜN</h1>
+            <p className="text-xl text-amber-500/80 mb-8 text-center max-w-xl font-serif italic">
+                "Tanrıların dumanı..."
             </p>
             <Link
                 href="/blog"
-                className="bg-amber-600 text-white px-8 py-4 rounded-full font-bold hover:scale-105 transition-transform"
+                className="border border-white/20 hover:bg-white/10 text-white px-8 py-4 rounded-full font-medium transition-all"
             >
                 Makaleye Dön
             </Link>
@@ -60,403 +58,271 @@ function FallbackUI() {
     );
 }
 
-// --- CUSTOM SHADERS & MATERIALS ---
+// --- ABSTRACT SHADERS & GEOMETRY ---
 
-const OceanMaterial = {
-    uniforms: {
-        uTime: { value: 0 },
-        uColorA: { value: new THREE.Color("#0c4a6e") }, // Deep Blue
-        uColorB: { value: new THREE.Color("#1e293b") }, // Dark Slate
-    },
-    vertexShader: `
-    uniform float uTime;
-    varying vec2 vUv;
-    varying float vElevation;
-    void main() {
-      vUv = uv;
-      vec3 pos = position;
-      
-      // Gentle long waves
-      float elevation = sin(pos.x * 1.5 + uTime * 0.5) * 0.2;
-      elevation += sin(pos.y * 1.0 + uTime * 0.3) * 0.2;
-      
-      pos.z += elevation;
-      vElevation = elevation;
-      
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-    }
-  `,
-    fragmentShader: `
-    uniform vec3 uColorA;
-    uniform vec3 uColorB;
-    varying float vElevation;
-    void main() {
-      float mixStrength = (vElevation + 0.2) * 2.0;
-      vec3 color = mix(uColorA, uColorB, mixStrength);
-      gl_FragColor = vec4(color, 0.9);
-    }
-  `
-};
+// 1. ABSTRACT SHIP (Silhouette Style)
+// Instead of building a complex model from primitives (which looks like Lego),
+// we use a single stylized shape with a custom glowing material.
+function AbstractShip() {
+    const scroll = useScroll();
+    const mesh = useRef<THREE.Group>(null);
 
-// --- SCENE COMPONENTS ---
+    useFrame((state) => {
+        if (!mesh.current) return;
+        const t = state.clock.elapsedTime;
 
-// 1. ASH PARTICLES (Replaces Stars)
-function AshParticles() {
-    const count = 400;
-    const mesh = useRef<THREE.InstancedMesh>(null);
-    const dummy = useMemo(() => new THREE.Object3D(), []);
+        const relativeProgress = (scroll.offset - 0.33) * 3;
+        const visible = scroll.range(0.25, 0.2) > 0.1;
 
-    const particles = useMemo(() => {
-        const temp = [];
-        for (let i = 0; i < count; i++) {
-            const t = Math.random() * 100;
-            const factor = 20 + Math.random() * 100;
-            const speed = 0.01 + Math.random() / 200;
-            const x = (Math.random() - 0.5) * 30;
-            const y = (Math.random() - 0.5) * 30;
-            const z = (Math.random() - 0.5) * 15;
-            temp.push({ t, factor, speed, x, y, z });
+        mesh.current.visible = visible;
+
+        if (visible) {
+            // Smooth cinematic movement
+            mesh.current.position.z = THREE.MathUtils.lerp(-20, 0, relativeProgress);
+            mesh.current.rotation.z = Math.sin(t * 0.5) * 0.05; // Gentle roll
+            mesh.current.rotation.y = Math.sin(t * 0.3) * 0.05; // Gentle yaw
         }
-        return temp;
-    }, []);
+    });
+
+    return (
+        <group ref={mesh} visible={false}>
+            {/* The Hull - Stylized elongated shape */}
+            <mesh position={[0, -1, 0]}>
+                <capsuleGeometry args={[0.8, 4, 4, 16]} />
+                <meshStandardMaterial
+                    color="#000"
+                    roughness={0.2}
+                    metalness={0.8}
+                    emissive="#451a03"
+                    emissiveIntensity={0.2}
+                />
+            </mesh>
+
+            {/* The Sales - Glowing Energy Sheets */}
+            <mesh position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]}>
+                <planeGeometry args={[0.1, 5, 4, 4]} />
+                <meshStandardMaterial
+                    color="#fbbf24"
+                    emissive="#fbbf24"
+                    emissiveIntensity={2}
+                    transparent
+                    opacity={0.8}
+                    side={THREE.DoubleSide}
+                />
+            </mesh>
+
+            <mesh position={[0, 3, 1.5]} rotation={[0.2, Math.PI / 2, 0]}>
+                <planeGeometry args={[0.05, 3]} />
+                <meshStandardMaterial
+                    color="#f59e0b"
+                    emissive="#f59e0b"
+                    emissiveIntensity={1.5}
+                    transparent
+                    opacity={0.6}
+                    side={THREE.DoubleSide}
+                />
+            </mesh>
+        </group>
+    );
+}
+
+
+// 2. MOLECULE (Cyberpunk/Neon Style)
+// Highly emissive points connected by thin lines
+function NeonMolecule() {
+    const scroll = useScroll();
+    const group = useRef<THREE.Group>(null);
+
+    useFrame((state, delta) => {
+        if (!group.current) return;
+        const visible = scroll.range(0.6, 0.2) > 0.1;
+        group.current.visible = visible;
+
+        if (visible) {
+            const progress = scroll.range(0.6, 0.2);
+            group.current.rotation.y += delta * 0.2;
+            group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.2) * 0.2;
+
+            // Zoom effect
+            group.current.position.z = THREE.MathUtils.lerp(-10, 0, progress);
+        }
+    });
+
+    return (
+        <group ref={group} visible={false}>
+            {/* Core Atoms - High Bloom */}
+            <Points count={6} radius={1.5} color="#06b6d4" />
+
+            {/* Connecting Bonds - Thin glowing lines */}
+            <mesh rotation={[0, 0, Math.PI / 4]}>
+                <torusGeometry args={[1.5, 0.02, 16, 100]} />
+                <meshBasicMaterial color="#22d3ee" toneMapped={false} />
+            </mesh>
+            <mesh rotation={[Math.PI / 4, 0, 0]}>
+                <torusGeometry args={[1.2, 0.02, 16, 100]} />
+                <meshBasicMaterial color="#22d3ee" toneMapped={false} />
+            </mesh>
+        </group>
+    )
+}
+
+function Points({ count, radius, color }: { count: number, radius: number, color: string }) {
+    const points = useMemo(() => {
+        const p = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            p[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            p[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            p[i * 3 + 2] = radius * Math.cos(phi);
+        }
+        return p;
+    }, [count, radius]);
+
+    return (
+        <points>
+            <bufferGeometry>
+                <bufferAttribute attach="attributes-position" count={count} array={points} itemSize={3} />
+            </bufferGeometry>
+            <pointsMaterial size={0.3} color={color} sizeAttenuation transparent opacity={0.8} />
+        </points>
+    )
+}
+
+// 3. ATMOSPHERIC PARTICLES (Ash/Ember)
+function Embers() {
+    const mesh = useRef<THREE.InstancedMesh>(null)
+    const count = 500
+    const dummy = useMemo(() => new THREE.Object3D(), [])
+    const particles = useMemo(() => {
+        const temp = []
+        for (let i = 0; i < count; i++) {
+            const t = Math.random() * 100
+            const factor = 20 + Math.random() * 100
+            const speed = 0.01 + Math.random() / 200
+            const x = (Math.random() - 0.5) * 20
+            const y = (Math.random() - 0.5) * 20
+            const z = (Math.random() - 0.5) * 20
+            temp.push({ t, factor, speed, x, y, z })
+        }
+        return temp
+    }, [])
 
     useFrame((state) => {
         if (!mesh.current) return;
         particles.forEach((particle, i) => {
-            let { t, speed, x, y, z } = particle;
+            let { t, factor, speed, x, y, z } = particle
+            t = particle.t += speed / 2
+            const a = Math.cos(t) + Math.sin(t * 1) / 10
+            const b = Math.sin(t) + Math.cos(t * 2) / 10
+            const s = Math.cos(t)
 
-            // Particles gently rise and drift
-            particle.t += speed;
-            particle.y += 0.008;
-
-            if (particle.y > 15) particle.y = -15; // Reset position
-
-            // Wobbly movement mimicking air currents
-            const wobbleX = Math.sin(particle.t * 0.5) * 0.5;
-            const wobbleZ = Math.cos(particle.t * 0.3) * 0.5;
-
-            dummy.position.set(x + wobbleX, y, z + wobbleZ);
-
-            // Random rotations
-            const s = Math.cos(particle.t);
-            dummy.rotation.set(s * 5, s * 5, s * 5);
-            dummy.scale.setScalar(0.05 + Math.random() * 0.05); // Random small sizes
-
-            dummy.updateMatrix();
-            mesh.current!.setMatrixAt(i, dummy.matrix);
-        });
-        mesh.current.instanceMatrix.needsUpdate = true;
-    });
+            dummy.position.set(
+                particle.x + Math.cos(t) + Math.sin(t * 1) / 10,
+                particle.y + Math.sin(t) + Math.cos(t * 2) / 10,
+                particle.z + Math.cos(t) + Math.sin(t * 3) / 10
+            )
+            // Breathing scale
+            dummy.scale.setScalar(s * 0.05 + 0.05)
+            dummy.rotation.set(s * 5, s * 5, s * 5)
+            dummy.updateMatrix()
+            mesh.current!.setMatrixAt(i, dummy.matrix)
+        })
+        mesh.current.instanceMatrix.needsUpdate = true
+    })
 
     return (
         <instancedMesh ref={mesh} args={[undefined, undefined, count]}>
             <dodecahedronGeometry args={[0.2, 0]} />
-            <meshStandardMaterial color="#a8a29e" transparent opacity={0.4} />
+            {/* Emissive orange for Ember look */}
+            <meshStandardMaterial color="#ea580c" emissive="#ea580c" emissiveIntensity={4} toneMapped={false} />
         </instancedMesh>
-    );
+    )
 }
 
-// 2. SCENE: INTRO
-function IntroScene() {
-    const scroll = useScroll();
-    const groupRef = useRef<THREE.Group>(null);
 
-    useFrame(() => {
-        if (groupRef.current) {
-            const opacity = 1 - scroll.range(0.25, 0.1);
-            // Move up and fade out
-            groupRef.current.position.y = THREE.MathUtils.lerp(0, 5, scroll.range(0, 0.33));
-            groupRef.current.visible = opacity > 0.01;
-        }
-    });
-
-    return (
-        <group ref={groupRef}>
-            {/* Dynamic Light source representing fire/sun */}
-            <pointLight position={[0, 2, -2]} intensity={2} color="#fbbf24" distance={10} />
-
-            <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
-                {/* Abstract "Smoke" or "Lead" shapes - stylized */}
-                <mesh position={[-2.5, 1, -5]} rotation={[0.5, 0.5, 0]}>
-                    <coneGeometry args={[1, 3, 5]} />
-                    <meshStandardMaterial color="#4d7c0f" roughness={0.8} />
-                </mesh>
-                <mesh position={[2.5, -1.5, -6]} rotation={[-0.5, -0.5, 0]}>
-                    <coneGeometry args={[0.8, 2.5, 4]} />
-                    <meshStandardMaterial color="#3f6212" roughness={0.9} />
-                </mesh>
-                {/* Floating Ash Cluster */}
-                <Sparkles count={50} scale={6} size={4} speed={0.4} opacity={0.5} color="#fbbf24" position={[0, 0, -4]} />
-            </Float>
-        </group>
-    );
-}
-
-// 3. SCENE: 1492 VOYAGE (Improved Boat)
-function VoyageScene() {
-    const scroll = useScroll();
-    const groupRef = useRef<THREE.Group>(null);
-    const shipRef = useRef<THREE.Group>(null);
-
-    const oceanMaterial = useMemo(() => new THREE.ShaderMaterial({
-        uniforms: {
-            uTime: { value: 0 },
-            uColorA: { value: new THREE.Color("#0f172a") },
-            uColorB: { value: new THREE.Color("#1e293b") }
-        },
-        vertexShader: OceanMaterial.vertexShader,
-        fragmentShader: OceanMaterial.fragmentShader,
-        transparent: true,
-        side: THREE.DoubleSide
-    }), []);
-
-    useFrame((state) => {
-        if (!groupRef.current || !shipRef.current) return;
-
-        const relativeProgress = (scroll.offset - 0.33) * 3;
-        const opacity = scroll.curve(1 / 3, 1 / 3);
-        groupRef.current.visible = opacity > 0.01;
-
-        if (groupRef.current.visible) {
-            // Ship moves forward into view
-            groupRef.current.position.z = THREE.MathUtils.lerp(-15, 2, relativeProgress);
-
-            // Ocean Bobbing (Sine wave motion)
-            groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.1 - 2;
-
-            // Ship tipping (Rolling)
-            shipRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 1.0) * 0.03;
-            shipRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.8) * 0.02;
-
-            oceanMaterial.uniforms.uTime.value = state.clock.elapsedTime;
-        }
-    });
-
-    return (
-        <group ref={groupRef} visible={false}>
-            {/* Ocean Surface */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-                <planeGeometry args={[40, 40, 64, 64]} />
-                <primitive object={oceanMaterial} attach="material" />
-            </mesh>
-
-            {/* DETAILED CARAVEL SHIP */}
-            <group ref={shipRef} position={[0, 0.2, 0]}>
-                {/* Hull */}
-                <mesh position={[0, 0.5, 0]}>
-                    <boxGeometry args={[1.4, 0.8, 3.5]} />
-                    <meshStandardMaterial color="#451a03" roughness={0.9} />
-                </mesh>
-                {/* Bow (Front) */}
-                <mesh position={[0, 0.7, 1.8]} rotation={[0.2, 0, 0]}>
-                    <boxGeometry args={[1.2, 0.8, 1.2]} />
-                    <meshStandardMaterial color="#503010" />
-                </mesh>
-                {/* Stern (Back) */}
-                <mesh position={[0, 1.1, -1.4]}>
-                    <boxGeometry args={[1.4, 1.0, 1.2]} />
-                    <meshStandardMaterial color="#503010" />
-                </mesh>
-
-                {/* Main Mast */}
-                <mesh position={[0, 2.5, 0.2]}>
-                    <cylinderGeometry args={[0.08, 0.08, 4.5]} />
-                    <meshStandardMaterial color="#2d2215" />
-                </mesh>
-                {/* Main Sail */}
-                <mesh position={[0, 3.2, 0.35]} rotation={[0.1, 0, 0]}>
-                    <boxGeometry args={[2.5, 1.8, 0.05]} />
-                    <meshStandardMaterial color="#e7e5e4" side={THREE.DoubleSide} />
-                </mesh>
-
-                {/* Front Mast */}
-                <mesh position={[0, 2, 1.4]} rotation={[0.15, 0, 0]}>
-                    <cylinderGeometry args={[0.06, 0.06, 3.5]} />
-                    <meshStandardMaterial color="#2d2215" />
-                </mesh>
-                {/* Front Sail */}
-                <mesh position={[0, 2.4, 1.5]} rotation={[0.25, 0, 0]}>
-                    <boxGeometry args={[1.8, 1.2, 0.05]} />
-                    <meshStandardMaterial color="#e7e5e4" side={THREE.DoubleSide} />
-                </mesh>
-
-                {/* Flag */}
-                <mesh position={[0, 4.8, 0.2]} rotation={[0, -1.5, 0]}>
-                    <planeGeometry args={[0.6, 0.3]} />
-                    <meshStandardMaterial color="#ef4444" side={THREE.DoubleSide} />
-                </mesh>
-            </group>
-        </group>
-    );
-}
-
-// 4. SCENE: NICOTINE MOLECULE (Scientific Glass Look)
-function ChemistryScene() {
-    const scroll = useScroll();
-    const groupRef = useRef<THREE.Group>(null);
-
-    // Glass Material
-    const atomMaterial = useMemo(() => new THREE.MeshPhysicalMaterial({
-        color: "#a5f3fc", // Cyan-ish white
-        transmission: 0.9, // Glass-like transparency
-        opacity: 1,
-        metalness: 0,
-        roughness: 0,
-        ior: 1.5, // Index of refraction for glass
-        thickness: 0.5,
-        clearcoat: 1,
-        attenuationColor: new THREE.Color("#06b6d4"),
-        attenuationDistance: 0.5,
-    }), []);
-
-    const bondMaterial = useMemo(() => new THREE.MeshStandardMaterial({
-        color: "#94a3b8",
-        roughness: 0.4,
-        metalness: 0.8
-    }), []);
-
-    useFrame((state, delta) => {
-        if (!groupRef.current) return;
-
-        const opacity = scroll.range(2 / 3, 1 / 3);
-        groupRef.current.visible = opacity > 0.01;
-
-        if (groupRef.current.visible) {
-            groupRef.current.rotation.y += delta * 0.3;
-            // Gentle floating rotation
-            groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
-            groupRef.current.position.z = THREE.MathUtils.lerp(-5, 0, scroll.range(2 / 3, 1 / 3));
-        }
-    });
-
-    return (
-        <group ref={groupRef} visible={false}>
-            {/* Center structure (simplified nicotine ring) */}
-            <mesh position={[0, 0, 0]} material={atomMaterial}>
-                <sphereGeometry args={[0.7, 32, 32]} />
-            </mesh>
-            {/* Glowing Core */}
-            <pointLight position={[0, 0, 0]} color="#22d3ee" intensity={1.5} distance={4} />
-
-            {/* Orbiting atoms */}
-            <mesh position={[1.2, 0.6, 0]} material={atomMaterial}>
-                <sphereGeometry args={[0.5, 32, 32]} />
-            </mesh>
-            <mesh position={[-1.2, -0.7, 0.2]} material={atomMaterial}>
-                <sphereGeometry args={[0.5, 32, 32]} />
-            </mesh>
-            <mesh position={[0.4, 1.2, -0.4]} material={atomMaterial}>
-                <sphereGeometry args={[0.4, 32, 32]} />
-            </mesh>
-
-            {/* Bonds */}
-            <mesh position={[0.6, 0.3, 0]} rotation={[0, 0, -1.1]}>
-                <cylinderGeometry args={[0.15, 0.15, 1.4]} />
-                <primitive object={bondMaterial} attach="material" />
-            </mesh>
-            <mesh position={[-0.6, -0.35, 0.1]} rotation={[0, 0, 1]}>
-                <cylinderGeometry args={[0.15, 0.15, 1.4]} />
-                <primitive object={bondMaterial} attach="material" />
-            </mesh>
-            <mesh position={[0.2, 0.6, -0.2]} rotation={[0, 0, -0.5]}>
-                <cylinderGeometry args={[0.12, 0.12, 1.2]} />
-                <primitive object={bondMaterial} attach="material" />
-            </mesh>
-        </group>
-    );
-}
-
-// --- MAIN COMPONENT ---
+// --- MAIN SCENE ---
 
 function Scene3D() {
     return (
         <Canvas
-            shadows
             dpr={[1, 1.5]}
-            gl={{
-                preserveDrawingBuffer: true,
-                antialias: true
-            }}
-            camera={{ position: [0, 0, 5], fov: 75 }}
+            gl={{ antialias: false, powerPreference: "high-performance", alpha: false }} // Disable default AA for PostProcessing
+            camera={{ position: [0, 0, 5], fov: 50 }}
         >
-            {/* ATMOSPHERE: Warm, Dark, Smoky */}
-            <color attach="background" args={['#1c1917']} /> {/* Stone 900 - Warm Black */}
-            <fog attach="fog" args={['#1c1917', 5, 25]} />
+            <color attach="background" args={['#020617']} />
+            <fog attach="fog" args={['#020617', 5, 20]} />
 
-            <ambientLight intensity={0.6} />
-            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow color="#fbbf24" />
-            <pointLight position={[-10, -5, -5]} intensity={0.5} color="#ea580c" /> {/* Ember glow */}
-
-            <AshParticles />
+            {/* LIGHTING */}
+            <ambientLight intensity={0.5} />
+            <spotLight position={[10, 10, 10]} angle={0.5} penumbra={1} intensity={10} color="#fbbf24" distance={20} />
+            <pointLight position={[-10, -10, -5]} intensity={5} color="#0ea5e9" distance={20} />
 
             <ScrollControls pages={4} damping={0.2}>
                 <Suspense fallback={null}>
-                    <IntroScene />
-                    <VoyageScene />
-                    <ChemistryScene />
+                    <AbstractShip />
+                    <NeonMolecule />
+                    <Embers />
                 </Suspense>
 
+                {/* POST PROCESSING - The "Cinema" Look */}
+                <EffectComposer disableNormalPass>
+                    {/* Bloom for the glow */}
+                    <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.6} />
+                    {/* Noise for "Film Grain" texture */}
+                    <Noise opacity={0.05} />
+                    {/* Vignette for focus */}
+                    <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                </EffectComposer>
+
+                {/* HTML CONTENT OVERLAY */}
                 <Scroll html style={{ width: '100vw', height: '100vh' }}>
-                    {/* SCENE 1: TITLE */}
+                    {/* 1. HERO */}
                     <section className="h-screen flex items-center justify-center relative pointer-events-none">
-                        <div className="text-center px-4">
-                            <span className="block mb-4 text-amber-500 tracking-[0.5em] text-sm font-bold uppercase drop-shadow-md">Fizikhub 3D Experience</span>
-                            <h1 className="text-6xl md:text-9xl font-black mb-6 tracking-tighter drop-shadow-2xl text-white">
+                        <div className="text-center px-4 mix-blend-difference">
+                            <h1 className="text-8xl md:text-[10rem] font-black mb-0 tracking-tighter text-white opacity-90 leading-none blur-[1px]">
                                 TÜTÜN
                             </h1>
-                            <p className="text-xl md:text-2xl text-stone-300 font-serif italic max-w-2xl mx-auto drop-shadow-lg">
-                                "Tanrıların dumanından, sanayi devriminin bacalarına..."
+                            <p className="text-xl md:text-2xl text-amber-500 font-serif italic tracking-widest mt-4">
+                                DUMANLI TARİH
                             </p>
                         </div>
                     </section>
 
-                    {/* SCENE 2: VOYAGE */}
+                    {/* 2. CONTACT */}
                     <section className="h-screen flex items-center relative pointer-events-none" style={{ top: '100vh', position: 'absolute' }}>
                         <div className="container mx-auto px-6 grid md:grid-cols-2">
-                            <div className="bg-stone-900/60 backdrop-blur-md border border-stone-700 p-8 rounded-2xl shadow-2xl">
-                                <div className="flex items-center gap-3 mb-4 text-amber-500">
-                                    <Wind className="animate-pulse" />
-                                    <h2 className="text-3xl font-bold">1492: Temas</h2>
-                                </div>
-                                <p className="text-lg text-stone-200 leading-relaxed">
-                                    Kristof Kolomb, Bahamalar'a ayak bastığında, yerliler ona "kuru yapraklar" hediye etti.
-                                    Bu yapraklar yorgunluğu alıyor, açlığı bastırıyordu.
+                            <div className="p-10 border-l-4 border-amber-500 bg-black/40 backdrop-blur-sm">
+                                <h2 className="text-6xl font-black text-white mb-6">1492</h2>
+                                <p className="text-2xl text-stone-300 font-serif leading-relaxed">
+                                    Yerliler "kuru yapraklar" sundu. <br />
+                                    <span className="text-amber-500">Avrupa nefesini tuttu.</span>
                                 </p>
                             </div>
                         </div>
                     </section>
 
-                    {/* SCENE 3: CHEMISTRY */}
-                    <section className="h-screen flex items-center justify-center relative pointer-events-none" style={{ top: '200vh', position: 'absolute' }}>
-                        <div className="bg-slate-900/60 backdrop-blur-xl border border-cyan-800/50 p-10 rounded-3xl max-w-4xl mx-auto shadow-2xl">
-                            <div className="flex flex-col md:flex-row gap-8 items-center">
-                                <div className="p-6 bg-cyan-950/50 rounded-full">
-                                    <FlaskConical size={64} className="text-cyan-400" />
-                                </div>
-                                <div>
-                                    <h2 className="text-4xl font-bold mb-4 text-white">Nikotin: <span className="text-cyan-400">C₁₀H₁₄N₂</span></h2>
-                                    <p className="text-lg text-slate-300 leading-relaxed">
-                                        Doğada bir böcek ilacı. Beyinde bir ödül mekanizması.
-                                        Sadece 7 saniyede beyne ulaşan, dopamin salgılatan kusursuz bir tuzak.
-                                    </p>
-                                </div>
-                            </div>
+                    {/* 3. ADDICTION */}
+                    <section className="h-screen flex items-center justify-end relative pointer-events-none px-6" style={{ top: '200vh', position: 'absolute', width: '100%' }}>
+                        <div className="text-right p-10 border-r-4 border-cyan-500 bg-black/40 backdrop-blur-sm">
+                            <h2 className="text-6xl font-black text-white mb-6">C₁₀H₁₄N₂</h2>
+                            <p className="text-2xl text-stone-300 font-serif leading-relaxed">
+                                7 saniye.<br />
+                                <span className="text-cyan-400">Beyniniz ele geçirildi.</span>
+                            </p>
                         </div>
                     </section>
 
-                    {/* SCENE 4: CONCLUSION */}
+                    {/* 4. FOOTER */}
                     <section className="h-screen flex flex-col items-center justify-center relative pointer-events-auto" style={{ top: '300vh', position: 'absolute', width: '100%' }}>
-                        <div className="text-center max-w-3xl bg-black/80 p-12 rounded-3xl backdrop-blur-md border border-red-900/50">
-                            <Skull className="w-24 h-24 text-red-600 mx-auto mb-8 animate-pulse" />
-                            <h2 className="text-5xl md:text-7xl font-black mb-8 text-white">SONUÇ.</h2>
-                            <p className="text-xl text-zinc-300 mb-12">
-                                Fizikhub'da bilimi keşfetmeye devam et.
-                            </p>
+                        <div className="text-center">
                             <Link
                                 href="/blog"
-                                className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-black text-lg hover:scale-105 transition-transform"
+                                className="group relative inline-flex h-16 w-64 items-center justify-center overflow-hidden rounded-full bg-white font-medium text-black transition-all duration-300 hover:w-80 hover:bg-amber-400"
                             >
-                                Diğer Makalelere Dön
+                                <span className="absolute inset-0 flex h-full w-full -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+                                <span className="relative text-lg font-bold tracking-tight">MAKALEYE DÖN</span>
+                                <Wind className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                             </Link>
                         </div>
                     </section>
