@@ -7,18 +7,26 @@ import { X } from "lucide-react";
 export function GetWellSoonOverlay() {
   const [isVisible, setIsVisible] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [cats, setCats] = useState<{ id: number; left: number; duration: number; delay: number; char: string }[]>([]);
+  const [cats, setCats] = useState<{ id: number; left: number; duration: number; delay: number; img: string }[]>([]);
 
   useEffect(() => {
     setMounted(true);
+    // Cat GIFs
+    const catGifs = [
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDl5bjM1ZHZ5a3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/mL9C8UcdV0EnT0pjsm/giphy.gif", // Cute walking cat
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazF6b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/JIX9t2j0ZTN9S/giphy.gif", // Pusheen
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/3oriO0OEd9QIDdllqo/giphy.gif", // Nyan cat style
+      "https://media.giphy.com/media/GeimqsH0TLDt4tScGw/giphy.gif", // Excited cat
+      "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" // Bongo cat
+    ];
+
     // Generate rain cats
-    const catChars = ["🐱", "😸", "😻", "😽", "🐈", "💖"];
-    const newCats = Array.from({ length: 30 }).map((_, i) => ({
+    const newCats = Array.from({ length: 20 }).map((_, i) => ({
       id: i,
       left: Math.random() * 100, // Random horizontal position 0-100%
-      duration: 3 + Math.random() * 4, // Random duration 3-7s
+      duration: 4 + Math.random() * 5, // Random duration 4-9s (slower for gifs)
       delay: Math.random() * 5, // Random delay
-      char: catChars[Math.floor(Math.random() * catChars.length)],
+      img: catGifs[Math.floor(Math.random() * catGifs.length)],
     }));
     setCats(newCats);
   }, []);
@@ -34,14 +42,14 @@ export function GetWellSoonOverlay() {
       {/* CSS Styles for Rain */}
       <style jsx global>{`
         @keyframes rain {
-          0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+          0% { transform: translateY(-100px); opacity: 0; }
           10% { opacity: 1; }
           90% { opacity: 1; }
-          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+          100% { transform: translateY(110vh); opacity: 0; }
         }
         .cat-rain {
           position: absolute;
-          top: -50px;
+          top: -100px;
           animation-name: rain;
           animation-timing-function: linear;
           animation-iteration-count: infinite;
@@ -58,10 +66,16 @@ export function GetWellSoonOverlay() {
               left: `${cat.left}%`,
               animationDuration: `${cat.duration}s`,
               animationDelay: `${cat.delay}s`,
-              fontSize: `${Math.random() * 20 + 20}px`,
+              width: '80px', // Fixed width for gifs
+              height: 'auto'
             }}
           >
-            {cat.char}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cat.img}
+              alt="raining cat"
+              className="w-full h-auto object-contain drop-shadow-lg"
+            />
           </div>
         ))}
       </div>
@@ -83,29 +97,34 @@ export function GetWellSoonOverlay() {
 
         {/* Decor Circles */}
         <div className="absolute top-0 left-0 w-32 h-32 bg-pink-100 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50" />
-        <div className="absolute bottom-0 right-0 w-40 h-40 bg-pink-100 rounded-full translate-x-1/2 translate-y-1/2 opacity-50" />
+        <div className="absolute bottom-0 right-0 w-40 h-40 bg-pink-100 rounded-full translate-x-1/2 -translate-y-1/2 opacity-50" />
 
         {/* Main Content */}
         <div className="relative z-10 space-y-6">
-          <div className="text-8xl filter drop-shadow-lg animate-bounce">
-            😿
+          <div className="w-32 h-32 mx-auto relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/mlvseq9yvZhba/giphy.gif"
+              alt="Cute cat"
+              className="w-full h-full object-cover rounded-full border-4 border-pink-100 shadow-md"
+            />
           </div>
 
-          <div className="space-y-2">
-            <h2 className="text-4xl font-black text-pink-500 tracking-tight font-outfit">
-              Geçmiş Olsun!
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black text-pink-500 tracking-tight font-outfit">
+              Geçmiş Olsun
             </h2>
-            <p className="text-pink-400 font-medium text-lg leading-relaxed px-4">
-              Baran Bozkurt, umarım en kısa sürede iyileşirsin. Kedicikler sana şifa diliyor!
+            <p className="text-pink-400 font-medium text-lg leading-relaxed px-2">
+              Silginim hanım, umarım en kısa sürede iyileşirsin ve dünyayı yok edersin! 😈💖
             </p>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-2">
             <button
               onClick={() => setIsVisible(false)}
-              className="px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-bold shadow-lg shadow-pink-500/30 transition-all font-outfit hover:scale-105 active:scale-95"
+              className="px-8 py-3 bg-pink-500 hover:bg-pink-600 text-white rounded-full font-bold shadow-lg shadow-pink-500/30 transition-all font-outfit hover:scale-105 active:scale-95 uppercase tracking-wide"
             >
-              Teşekkürler ❤️
+              teşekkürler
             </button>
           </div>
         </div>
