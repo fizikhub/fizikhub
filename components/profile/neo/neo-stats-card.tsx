@@ -5,17 +5,17 @@ import { cn } from "@/lib/utils";
 interface NeoStatsCardProps {
     label: string;
     value: number | string;
-    icon?: React.ElementType;
+    icon?: React.ElementType | React.ComponentType<any>;
     color?: "yellow" | "purple" | "white" | "black";
     className?: string;
 }
 
-export function NeoStatsCard({ 
-    label, 
-    value, 
+export function NeoStatsCard({
+    label,
+    value,
     icon: Icon,
     color = "white",
-    className 
+    className
 }: NeoStatsCardProps) {
     const colorStyles = {
         yellow: "bg-[#facc15] text-black",
