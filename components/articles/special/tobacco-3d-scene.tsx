@@ -305,7 +305,7 @@ function ChemistryScene() {
         ior: 1.5, // Index of refraction for glass
         thickness: 0.5,
         clearcoat: 1,
-        attenuationTint: new THREE.Color("#06b6d4"),
+        attenuationColor: new THREE.Color("#06b6d4"),
         attenuationDistance: 0.5,
     }), []);
 
