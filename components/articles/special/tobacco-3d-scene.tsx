@@ -89,6 +89,8 @@ const WaterMaterial = {
 
 // --- SCENE COMPONENTS ---
 
+// --- SCENE COMPONENTS ---
+
 function AztecScene() {
     const scroll = useScroll();
     const groupRef = useRef<THREE.Group>(null);
@@ -103,20 +105,24 @@ function AztecScene() {
 
     return (
         <group ref={groupRef}>
-            <Cloud opacity={0.5} speed={0.4} bounds={[10, 2, 10]} position={[0, -2, -5]} color="#064e3b" />
-            <Cloud opacity={0.3} speed={0.2} bounds={[10, 2, 10]} position={[0, 2, -8]} color="#10b981" />
-            <Sparkles count={100} scale={12} size={4} speed={0.4} opacity={0.8} color="#fef08a" />
+            {/* Replaced Cloud (texture risk) with Fog and Stars for guaranteed atmosphere */}
+            <fog attach="fog" args={['#020617', 5, 20]} />
+            <color attach="background" args={['#020617']} />
+
+            <Stars radius={50} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
+            <Sparkles count={300} scale={15} size={6} speed={0.4} opacity={0.8} color="#fef08a" />
+
             <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-                <Text
-                    position={[0, 0.5, -2]}
-                    fontSize={1.5}
-                    color="#ecfccb"
-                    anchorX="center"
-                    anchorY="middle"
-                >
-                    TÜTÜN
-                    <meshStandardMaterial color="#ecfccb" emissive="#3f6212" emissiveIntensity={2} toneMapped={false} />
-                </Text>
+                {/* 3D Text Geometry instead of Text component to avoid font loading issues */}
+                <mesh position={[0, 0.5, -2]}>
+                    <boxGeometry args={[3, 1, 0.2]} />
+                    <meshStandardMaterial color="#ecfccb" emissive="#3f6212" emissiveIntensity={2} transparent opacity={0.1} />
+                </mesh>
+                {/* Fallback visual if Text fails: A glowing green crystal */}
+                <mesh position={[0, 0, -2]} rotation={[Math.PI / 4, Math.PI / 4, 0]}>
+                    <octahedronGeometry args={[1, 0]} />
+                    <meshStandardMaterial color="#4ade80" emissive="#22c55e" emissiveIntensity={2} wireframe />
+                </mesh>
             </Float>
         </group>
     );
@@ -236,17 +242,16 @@ function Scene3D() {
     return (
         <Canvas
             shadows
-            dpr={[1, 2]}
+            dpr={[1, 1.5]} // More safe pixel ratio
             gl={{
                 preserveDrawingBuffer: true,
-                powerPreference: "high-performance",
                 antialias: true
             }}
             camera={{ position: [0, 0, 5], fov: 75 }}
         >
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
-            <spotLight position={[-10, -10, -10]} intensity={0.5} color="blue" />
+            <ambientLight intensity={0.7} />
+            <pointLight position={[10, 10, 10]} intensity={1.5} />
+            <spotLight position={[-10, -10, -10]} intensity={1} color="blue" />
 
             <ScrollControls pages={4} damping={0.2}>
                 <Suspense fallback={null}>
