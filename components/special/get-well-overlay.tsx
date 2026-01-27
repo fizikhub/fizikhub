@@ -12,8 +12,8 @@ export function GetWellOverlay() {
 
     useEffect(() => {
         const checkUser = async () => {
-            const hasSeen = sessionStorage.getItem("seen_get_well_card");
-            if (hasSeen) return;
+            // const hasSeen = sessionStorage.getItem("seen_get_well_card");
+            // if (hasSeen) return;
 
             const supabase = createClient(
                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -39,7 +39,7 @@ export function GetWellOverlay() {
 
     const handleClose = () => {
         setIsVisible(false);
-        sessionStorage.setItem("seen_get_well_card", "true");
+        // sessionStorage.setItem("seen_get_well_card", "true");
     };
 
     return (
