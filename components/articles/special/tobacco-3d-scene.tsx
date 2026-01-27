@@ -268,11 +268,8 @@ function Scene3D() {
                 {/* POST PROCESSING - The "Cinema" Look */}
                 {/* @ts-ignore */}
                 <EffectComposer disableNormalPass>
-                    {/* @ts-ignore */}
                     <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.6} />
-                    {/* @ts-ignore */}
                     <Noise opacity={0.05} />
-                    {/* @ts-ignore */}
                     <Vignette eskil={false} offset={0.1} darkness={1.1} />
                 </EffectComposer>
 
