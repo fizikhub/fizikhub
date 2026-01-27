@@ -207,10 +207,10 @@ export function MemeCorner() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
                         >
-                            {/* Filter: Normal visibility */}
-                            <div className="relative w-full h-full">
+                            {/* Filter: Normal visibility with Mask */}
+                            <div className="relative w-full h-full" style={{ maskImage: "radial-gradient(circle at center, black 60%, transparent 100%)", WebkitMaskImage: "radial-gradient(circle at center, black 60%, transparent 100%)" }}>
                                 <Image
-                                    src="https://freepngimg.com/thumb/car/31969-3-delorean-transparent-background.png"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Delorean_DMC-12_side.jpg/640px-Delorean_DMC-12_side.jpg"
                                     alt="DeLorean Time Machine"
                                     fill
                                     className="object-contain drop-shadow-2xl"
