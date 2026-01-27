@@ -5,24 +5,37 @@ import { GetWellCard } from "./get-well-card";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface GetWellOverlayProps {
-    shouldShow: boolean;
-}
+import { createClient } from "@supabase/supabase-js";
 
-export function GetWellOverlay({ shouldShow }: GetWellOverlayProps) {
+export function GetWellOverlay() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        if (shouldShow) {
-            // Check session storage to avoid annoyance on every refresh (optional, but good UX)
-            // For now, let's show it every time ensuring they see it, or use a session flag.
-            // User request is "when they enter the site".
+        const checkUser = async () => {
             const hasSeen = sessionStorage.getItem("seen_get_well_card");
-            if (!hasSeen) {
-                setIsVisible(true);
+            if (hasSeen) return;
+
+            const supabase = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            );
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile && ['silginim', 'baranbozkurt'].includes(profile.username)) {
+                    setIsVisible(true);
+                }
             }
-        }
-    }, [shouldShow]);
+        };
+
+        checkUser();
+    }, []);
 
     const handleClose = () => {
         setIsVisible(false);
