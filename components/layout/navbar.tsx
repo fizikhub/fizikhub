@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Menu, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
@@ -77,9 +78,9 @@ export function Navbar() {
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-10 flex-shrink-0 pt-0.5">
-                        <Link href="/">
+                        <ViewTransitionLink href="/">
                             <DankLogo />
-                        </Link>
+                        </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
@@ -88,7 +89,7 @@ export function Navbar() {
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-1 mr-4">
                             {navItems.map((item) => (
-                                <Link
+                                <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
@@ -97,7 +98,7 @@ export function Navbar() {
                                     )}
                                 >
                                     {item.label}
-                                </Link>
+                                </ViewTransitionLink>
                             ))}
                         </div>
 
@@ -113,7 +114,7 @@ export function Navbar() {
                         </motion.button>
 
                         {/* 2. ZAP */}
-                        <Link href="/ozel" className="md:hidden">
+                        <ViewTransitionLink href="/ozel" className="md:hidden">
                             <motion.div
                                 variants={clickVariant}
                                 whileTap="tap"
@@ -122,7 +123,7 @@ export function Navbar() {
                             >
                                 <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                             </motion.div>
-                        </Link>
+                        </ViewTransitionLink>
 
                         {/* 3. MENU */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -151,7 +152,7 @@ export function Navbar() {
                                             { href: "/blog", label: "BLOG", bg: "bg-cyan-300" },
                                             { href: "/profil", label: "PROFİL", bg: "bg-[#F472B6]" },
                                         ].map((link, i) => (
-                                            <Link
+                                            <ViewTransitionLink
                                                 key={link.href}
                                                 href={link.href}
                                                 onClick={() => setIsMenuOpen(false)}
@@ -165,7 +166,7 @@ export function Navbar() {
                                                         {link.label}
                                                     </span>
                                                 </div>
-                                            </Link>
+                                            </ViewTransitionLink>
                                         ))}
                                     </div>
                                     <div className="w-full max-w-[200px]">
