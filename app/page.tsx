@@ -71,7 +71,7 @@ export default async function Home() {
 
   // Check for special users
   // Note: We use the server client here to access cookies/auth context
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
   let showGetWell = false;
 
   try {
