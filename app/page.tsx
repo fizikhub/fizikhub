@@ -7,6 +7,7 @@ import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
 import { CategoryStories } from "@/components/home/category-stories";
 import { ScienceStories } from "@/components/science-cards/science-stories";
+import { WebGPUHero } from "@/components/home/webgpu-hero";
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -133,6 +134,11 @@ export default async function Home() {
 
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
+
+
+          <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
+            <WebGPUHero />
+          </div>
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
