@@ -1,11 +1,10 @@
 import { createClient } from "@/lib/supabase-server";
-import { NeoMagazineHero } from "@/components/articles/neo-magazine-hero";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { SearchInput } from "@/components/blog/search-input";
 import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
-import { Search, TrendingUp, Tag, Telescope, Flame, Clock, Sparkles } from "lucide-react";
+import { TrendingUp, Flame, Telescope } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { NeoArticleHeader } from "@/components/articles/neo-article-header";
 
 export const metadata: Metadata = {
     title: "Makaleler | Fizikhub",
@@ -29,8 +28,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Base Query
-    // 1. In blog/page.tsx
-    // Replace the query definition
     let query = supabase
         .from('articles')
         .select(`
@@ -52,7 +49,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
     // Apply Sorting
     if (sortParam === 'popular') {
-        // Approximate popularity by views or likes if available (falling back to views or random for now as DB might limit complex sorts)
         query = query.order('views', { ascending: false });
     } else {
         query = query.order('created_at', { ascending: false });
@@ -65,11 +61,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const articleIds = allArticles.map(a => a.id);
 
     // Fetch Interaction Counts (Likes & Comments)
-    // Note: In a real large-scale app, we'd use a view or materialized view. 
-    // Here we do efficient parallel fetches or just rely on client-side counts if server-side is too heavy.
-    // For "Real-time" feel, we fetch them here.
-
-    // Fetch Likes Count
     const { data: likesData } = await supabase
         .from('article_likes')
         .select('article_id')
@@ -80,7 +71,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         return acc;
     }, {} as Record<number, number>);
 
-    // Fetch Comments Count
     const { data: commentsData } = await supabase
         .from('article_comments')
         .select('article_id')
@@ -122,15 +112,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         is_bookmarked: userBookmarks.has(article.id)
     }));
 
-    // Featured articles for Hero (First 3 from "Latest" generally)
-    // We re-fetch or just slice from "latest" to ensure Hero always looks fresh regardless of filter?
-    // User probably wants filter to apply to the list below. Let's keep hero static or relevant?
-    // Let's keep Hero showing "Featured" or "Latest" mostly.
-    const featuredArticles = allArticles.slice(0, 3); // For now showing top of current filter
-
     // Extract categories for sidebar/tabs
-    // We need ALL categories, not just from filtered result. So we might need a separate lightweight query or hardcoded list if performance is key. 
-    // For now, let's derive from a separate optimized query or standard list.
     const { data: allCategoriesData } = await supabase
         .from('articles')
         .select('category')
@@ -138,40 +120,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
     const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
 
-    // Sidebar Stats
-    const uniqueAuthors = new Set((allCategoriesData || []).map((a: any) => a.author_id)).size; // simplified approximation
-
     return (
-        <div className="min-h-screen pb-20 bg-[#f0f0f0] dark:bg-[#0a0a0a]"> {/* Lighter bg for contrast */}
+        <div className="min-h-screen pb-20 bg-background"> {/* Restored to site default bg */}
             <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-8 sm:py-12 md:py-16">
 
-                {/* Header - Neo Brutalist */}
-                <header className="mb-8 sm:mb-12 border-b-[4px] border-black pb-6">
-                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                        <div>
-                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest mb-3 transform -rotate-1 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">
-                                <Telescope className="w-4 h-4 text-[#FFC800]" />
-                                Fizikhub Arşiv
-                            </div>
-                            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white leading-[0.8] mb-0 uppercase stroke-text">
-                                BİLİM<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFC800] to-[#FF8800]" style={{ WebkitTextStroke: '2px black' }}>ARŞİVİ</span>
-                            </h1>
-                        </div>
+                {/* Animated Neo Header */}
+                <NeoArticleHeader />
 
-                        {/* Search */}
-                        <div className="w-full max-w-md">
-                            <SearchInput />
-                        </div>
-                    </div>
-                </header>
-
-                {/* Neo Hero Section */}
-                {!searchParam && !categoryParam && sortParam === 'latest' && (
-                    <NeoMagazineHero articles={featuredArticles} />
-                )}
-
-                {/* Category Tabs - Neo Brutalist Style */}
-                <div className="sticky top-14 z-30 bg-[#f0f0f0] dark:bg-[#0a0a0a] py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[4px] border-black">
+                {/* Filters / Tabs */}
+                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[2px] border-black/10 dark:border-white/10">
                     <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
                         <Link
                             href="/makale"
@@ -211,7 +168,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
                     {/* Main Content - Social Feed */}
                     <div className="lg:col-span-8">
-                        {/* Feed Layout: Changed to Grid for Neo Cards */}
+                        {/* Feed Layout: Grid for Neo Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {feedArticles.map((article, index) => (
                                 <div key={article.id} className={index % 3 === 0 ? "md:col-span-2" : ""}>
