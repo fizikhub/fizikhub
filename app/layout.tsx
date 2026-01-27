@@ -247,10 +247,13 @@ export default async function RootLayout({
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster
+            position="top-center"
             toastOptions={{
-              className: "font-sans border border-white/10 bg-black/80 backdrop-blur-xl text-white shadow-[0_0_30px_-10px_rgba(255,255,255,0.3)] rounded-lg p-5",
+              className: "font-sans border-none bg-black text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-[40px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-bold tracking-tight dynamic-island-toast",
               style: {
-                borderRadius: "8px",
+                borderRadius: "40px",
+                background: "#000000",
+                color: "#ffffff",
               },
             }}
           />

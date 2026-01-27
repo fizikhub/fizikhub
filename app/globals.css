@@ -175,6 +175,47 @@
   }
 }
 
+/* Dynamic Island Toast Animations */
+@keyframes island-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+    filter: blur(10px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes island-exit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    filter: blur(5px);
+  }
+}
+
+.dynamic-island-toast {
+  animation: island-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+.dynamic-island-toast[data-state="closed"] {
+  animation: island-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
 /* Optional: Slide-over pattern for simpler card-to-page feeling override
    You can toggle specific classes on the root to change named transitions.
    For now, we stick to a clean fade-up/down "app-like" feel.
