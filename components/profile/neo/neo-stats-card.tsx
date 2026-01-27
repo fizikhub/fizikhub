@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface NeoStatsCardProps {
     label: string;
     value: number | string;
-    icon?: React.ElementType | React.ComponentType<any>;
+    icon?: any;
     color?: "yellow" | "purple" | "white" | "black";
     className?: string;
 }
