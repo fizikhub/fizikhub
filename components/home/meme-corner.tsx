@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-// --- SUB-COMPONENTS FOR PURE CODE GRAPHICS ---
+// --- SUB-COMPONENTS ---
 
-// 1. Floating Physics Equations (SVG/Text)
+// 1. Floating Physics Equations (Background Ambience)
 const equationConfigs = [
     { text: "E = mc²", top: "10%", left: "10%", delay: 0, rotate: -15, scale: 1.2 },
     { text: "F = ma", top: "20%", left: "80%", delay: 2, rotate: 10, scale: 0.9 },
@@ -23,7 +24,7 @@ function FloatingEquation({ text, top, left, delay, rotate, scale }: { text: str
             animate={{
                 y: [0, -20, 0],
                 rotate: [rotate, rotate + 5, rotate],
-                opacity: [0.2, 0.4, 0.2]
+                opacity: [0.1, 0.3, 0.1]
             }}
             transition={{
                 duration: 5 + Math.random() * 3,
@@ -37,35 +38,35 @@ function FloatingEquation({ text, top, left, delay, rotate, scale }: { text: str
     );
 }
 
-// 2. Pure CSS Star Field & Vortex
+// 2. Cosmic Background (The swirl/vortex feel)
 function CosmicSwirl() {
     return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Nebula Gradient Layer - Animated */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none bg-black">
+            {/* Nebula Gradient Layer */}
             <div className="absolute inset-[-50%] w-[200%] h-[200%] animate-[spin_60s_linear_infinite]"
                 style={{
-                    background: "conic-gradient(from 0deg at 50% 50%, #000000 0%, #0a0a0a 20%, #1a0033 40%, #001a33 60%, #0a0a0a 80%, #000000 100%)",
-                    filter: "blur(40px)",
-                    opacity: 0.8
+                    background: "conic-gradient(from 0deg at 50% 50%, #000 0%, #080214 20%, #1a0033 40%, #001a33 60%, #0a0a0a 80%, #000 100%)",
+                    filter: "blur(50px)",
+                    opacity: 0.9
                 }}
             />
 
-            {/* Stars Layer (Generated via CSS Box Shadow usually, but let's use small divs for animation control) */}
-            {Array.from({ length: 80 }).map((_, i) => (
+            {/* Stars */}
+            {Array.from({ length: 50 }).map((_, i) => (
                 <motion.div
                     key={i}
-                    className="absolute rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,0.8)]"
+                    className="absolute rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.9)]"
                     style={{
                         top: `${Math.random() * 100}%`,
                         left: `${Math.random() * 100}%`,
-                        width: Math.random() < 0.1 ? '3px' : '1.5px',
-                        height: Math.random() < 0.1 ? '3px' : '1.5px',
+                        width: Math.random() < 0.2 ? '3px' : '1px',
+                        height: Math.random() < 0.2 ? '3px' : '1px',
                     }}
-                    animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
+                    animate={{ opacity: [0.1, 1, 0.1], scale: [0.5, 1.5, 0.5] }}
                     transition={{
-                        duration: 2 + Math.random() * 3,
+                        duration: 1 + Math.random() * 4,
                         repeat: Infinity,
-                        delay: Math.random() * 2
+                        delay: Math.random() * 3
                     }}
                 />
             ))}
@@ -73,60 +74,8 @@ function CosmicSwirl() {
     );
 }
 
-// 3. DeLorean-inspired Time Machine Icon (Pure SVG)
-function TimeMachine() {
-    return (
-        <svg viewBox="0 0 100 60" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,255,255,0.6)]">
-            <defs>
-                <linearGradient id="metal" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#e0e0e0" />
-                    <stop offset="50%" stopColor="#909090" />
-                    <stop offset="100%" stopColor="#404040" />
-                </linearGradient>
-                <linearGradient id="neonBlue" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#00ffff" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#00ffff" />
-                    <stop offset="100%" stopColor="#00ffff" stopOpacity="0" />
-                </linearGradient>
-            </defs>
-
-            {/* Speed Lines / Lightning */}
-            <motion.path
-                d="M5,50 L-10,48 M5,52 L-15,55 M10,45 L-5,40"
-                stroke="#00ffff"
-                strokeWidth="1"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: [0, 1, 0], opacity: [0, 1, 0], x: [0, -20, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 0.2 }}
-            />
-
-            {/* Fire Trails */}
-            <motion.path
-                d="M10,55 Q5,58 -5,55 Q0,52 10,55"
-                fill="#ffaa00"
-                opacity="0.8"
-                animate={{ d: ["M10,55 Q5,60 -10,55 Q0,50 10,55", "M10,55 Q5,58 -5,55 Q0,52 10,55"] }} // Wiggle
-                transition={{ duration: 0.1, repeat: Infinity }}
-            />
-
-            {/* Car Body (Simplified Retro Side View) */}
-            <path d="M10,40 L30,40 L40,25 L70,25 L85,40 L95,40 Q98,40 98,45 L98,50 L10,50 Z" fill="url(#metal)" stroke="#ccc" strokeWidth="0.5" />
-
-            {/* Wheel Wells (Hover Mode - Wheels horizontal) */}
-            <ellipse cx="25" cy="50" rx="8" ry="3" fill="#111" stroke="#333" />
-            <ellipse cx="80" cy="50" rx="8" ry="3" fill="#111" stroke="#333" />
-
-            {/* Neon Strips */}
-            <rect x="15" y="48" width="75" height="1" fill="url(#neonBlue)" />
-
-            {/* Flux Capacitor Glow (Visual representation inside) */}
-            <circle cx="55" cy="35" r="2" fill="#ffff00" className="animate-pulse" />
-        </svg>
-    );
-}
-
 export function MemeCorner() {
-    // --- MOUSE PARALLAX LOGIC ---
+    // --- PARALLAX LOGIC ---
     const ref = useRef<HTMLDivElement>(null);
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -134,26 +83,21 @@ export function MemeCorner() {
     const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
     const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
 
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
 
-    // Parallax layers
-    const bgX = useTransform(mouseXSpring, [-0.5, 0.5], ["-5%", "5%"]);
-    const bgY = useTransform(mouseYSpring, [-0.5, 0.5], ["-5%", "5%"]);
+    // Parallax layers movement
+    const bgX = useTransform(mouseXSpring, [-0.5, 0.5], ["-3%", "3%"]);
+    const bgY = useTransform(mouseYSpring, [-0.5, 0.5], ["-3%", "3%"]);
+    const carX = useTransform(mouseXSpring, [-0.5, 0.5], ["-10px", "10px"]);
+    const carY = useTransform(mouseYSpring, [-0.5, 0.5], ["-10px", "10px"]);
+    const textZ = useTransform(mouseXSpring, [-0.5, 0.5], ["20px", "40px"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!ref.current) return;
         const rect = ref.current.getBoundingClientRect();
-
-        const width = rect.width;
-        const height = rect.height;
-
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-
+        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
         x.set(xPct);
         y.set(yPct);
     };
@@ -164,10 +108,32 @@ export function MemeCorner() {
     };
 
     return (
-        <div className="w-full relative py-4 perspective-1200">
+        <div className="w-full relative py-4 perspective-1000 group">
+            {/* Global Styles for Custom Gradients/Text */}
             <style jsx global>{`
-                .perspective-1200 { perspective: 1200px; }
-                .text-stroke { -webkit-text-stroke: 1px rgba(255,255,255,0.2); }
+                .bttf-gradient-text {
+                    background: linear-gradient(to bottom, #FFF33B 0%, #FFC800 40%, #FF5A00 55%, #CF0000 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    filter: drop-shadow(4px 4px 0px #000);
+                }
+                .bttf-stroke {
+                    position: relative;
+                }
+                .bttf-stroke::before {
+                    content: attr(data-text);
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    z-index: -1;
+                    width: 100%;
+                    height: 100%;
+                    -webkit-text-stroke: 8px #2A68CC; /* Blue outline */
+                    background: linear-gradient(to bottom, #2A68CC, #1D4E9E);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    transform: translateY(2px);
+                }
             `}</style>
 
             <motion.div
@@ -181,83 +147,89 @@ export function MemeCorner() {
                 }}
                 className={cn(
                     "relative w-full aspect-[21/9] sm:aspect-[3/1] md:aspect-[3.5/1]",
-                    "bg-black rounded-2xl overflow-hidden",
-                    // Hard Borders for Neo-Brutalism + Glow for Scifi
-                    "border-4 border-orange-500/80",
-                    "shadow-[0_0_60px_-10px_#FF8800,inset_0_0_30px_rgba(0,0,0,0.5)]",
-                    "group cursor-pointer select-none"
+                    "bg-black rounded-xl overflow-visible", // Overflow visible for pop-out
+                    "border-[3px] border-[#FF8800] shadow-[0_0_40px_-5px_#FF5500]",
+                    "cursor-pointer select-none"
                 )}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", duration: 0.8 }}
             >
-                {/* 1. Background Layer (Cosmic Swirl + Parallax) */}
-                <motion.div
-                    className="absolute inset-[-20%] z-0"
-                    style={{ x: bgX, y: bgY }}
-                >
-                    <CosmicSwirl />
-                </motion.div>
+                {/* 1. Background (Cropped inside card) */}
+                <div className="absolute inset-0 overflow-hidden rounded-xl bg-black">
+                    <motion.div className="absolute inset-[-10%]" style={{ x: bgX, y: bgY }}>
+                        <CosmicSwirl />
+                    </motion.div>
 
-                {/* 2. Floating Equations Layer */}
-                <div className="absolute inset-0 z-10 overflow-hidden mix-blend-screen">
-                    {equationConfigs.map((config, i) => (
-                        <FloatingEquation key={i} {...config} />
-                    ))}
+                    {/* Floating Equations */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        {equationConfigs.map((config, i) => (
+                            <FloatingEquation key={i} {...config} />
+                        ))}
+                    </div>
                 </div>
 
-                {/* 3. Main Content Layer */}
-                <div className="absolute inset-0 z-20 flex items-center justify-between px-6 sm:px-10 md:px-16">
-                    {/* Left: Typography */}
-                    <div className="flex flex-col space-y-2 z-30">
-                        <motion.div
-                            style={{ transform: "translateZ(60px)" }}
-                            className="flex flex-col"
-                        >
-                            {/* "BİLİMİ" - Retro Chrome Gradient */}
-                            <h1 className="flex flex-col font-black italic tracking-tighter transform -skew-x-6">
-                                <span className="text-4xl sm:text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 via-orange-500 to-red-600 drop-shadow-[0_2px_0_rgba(255,255,255,0.5)]">
+                {/* 2. Content Container (Z-Index Layers) */}
+                <div className="absolute inset-0 z-20 flex items-center justify-between px-6 sm:px-10 md:px-16 pointer-events-none">
+
+                    {/* LEFT: Typography (BTTF Style) */}
+                    <motion.div
+                        className="flex flex-col z-30 transform-gpu"
+                        style={{ translateZ: textZ }}
+                    >
+                        {/* 'BILIMI' - Skewed & Gradient */}
+                        <div className="transform -skew-x-[12deg] origin-bottom-left">
+                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.85] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]">
+                                <span className="bttf-gradient-text block" data-text="BİLİMİ">
                                     BİLİMİ
                                 </span>
-                                <span className="text-3xl sm:text-4xl md:text-5xl text-white drop-shadow-[0_0_10px_rgba(0,100,255,0.8)] mt-[-5px]">
+                            </h2>
+                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.85] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)] ml-4">
+                                <span className="bttf-gradient-text block" data-text="Tİ'YE ALIYORUZ">
                                     Tİ'YE ALIYORUZ
                                 </span>
-                            </h1>
+                            </h2>
+                        </div>
 
-                            {/* Subtitle Badge */}
-                            <div className="mt-4 self-start bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(0,255,255,0.3)]">
-                                <span className="text-[10px] sm:text-xs font-mono text-cyan-300 tracking-[0.2em] uppercase">
+                        {/* Subtitle Badge */}
+                        <div className="mt-4 ml-2 transform -skew-x-[12deg]">
+                            <div className="bg-black/40 backdrop-blur border border-cyan-400/50 px-3 py-1 inline-block rounded skew-x-[12deg] shadow-[0_0_15px_rgba(0,255,255,0.4)]">
+                                <span className="text-[10px] sm:text-xs font-mono text-cyan-300 tracking-[0.3em] font-bold uppercase drop-shadow-[0_0_5px_cyan]">
                                     Ama Ciddili Şekilde
                                 </span>
                             </div>
-                        </motion.div>
-                    </div>
-
-                    {/* Right: The Time Machine (Detailed SVG) */}
-                    <motion.div
-                        className="hidden sm:block w-32 h-20 md:w-64 md:h-40 z-20 opacity-90 mix-blend-lighten"
-                        style={{ transform: "translateZ(40px)" }}
-                        animate={{
-                            y: [-5, 5, -5],
-                            rotateZ: [-1, 1, -1]
-                        }}
-                        transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        }}
-                    >
-                        <TimeMachine />
+                        </div>
                     </motion.div>
+
+                    {/* RIGHT: DeLorean (Popping Out) */}
+                    <motion.div
+                        className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[-10%] sm:top-[-15%] md:top-[-20%] w-[50%] h-[140%] z-50 pointer-events-none"
+                        style={{ x: carX, y: carY, translateZ: "80px" }}
+                        initial={{ opacity: 0, x: 100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
+                    >
+                        {/* The Image Itself */}
+                        <div className="relative w-full h-full">
+                            <Image
+                                src="/assets/delorean-popout.png"
+                                alt="DeLorean Time Machine"
+                                fill
+                                className="object-contain drop-shadow-[0_20px_50px_rgba(0,100,255,0.4)]"
+                                priority
+                            />
+
+                            {/* Extra Engine Glow Pulse */}
+                            <div className="absolute  right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse" />
+                            <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75" />
+                        </div>
+                    </motion.div>
+
                 </div>
 
-                {/* 4. Effects Overlay */}
-                {/* Vignette */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)] pointer-events-none z-40" />
-
-                {/* Scanlines (Old TV Effect) */}
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none z-40" />
-                <div className="absolute inset-0 border-t border-white/5 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] pointer-events-none z-40" />
+                {/* Overlays (Scanlines, Vignette) */}
+                <div className="absolute inset-0 rounded-xl pointer-events-none overflow-hidden z-40">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)]" />
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+                    <div className="absolute inset-0 border-t border-white/5 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
+                </div>
 
             </motion.div>
         </div>
