@@ -208,9 +208,9 @@ export function MemeCorner() {
                             transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
                         >
                             {/* Filter: Normal visibility with Mask */}
-                            <div className="relative w-full h-full" style={{ maskImage: "radial-gradient(circle at center, black 60%, transparent 100%)", WebkitMaskImage: "radial-gradient(circle at center, black 60%, transparent 100%)" }}>
+                            <div className="relative w-full h-full" style={{ maskImage: "radial-gradient(circle at center, black 50%, transparent 90%)", WebkitMaskImage: "radial-gradient(circle at center, black 50%, transparent 90%)" }}>
                                 <Image
-                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Delorean_DMC-12_side.jpg/640px-Delorean_DMC-12_side.jpg"
+                                    src="/assets/delorean-popout.png"
                                     alt="DeLorean Time Machine"
                                     fill
                                     className="object-contain drop-shadow-2xl"
