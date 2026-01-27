@@ -69,31 +69,6 @@ const getCachedFeedData = unstable_cache(
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
-  // Check for special users
-  // Note: We use the server client here to access cookies/auth context
-  // const supabase = await createServerClient(); // REMOVED
-  let showGetWell = false;
-
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', user.id)
-        .single();
-
-      if (profile && ['silginim', 'baranbozkurt'].includes(profile.username)) {
-        showGetWell = true;
-      }
-    }
-  } catch (error) {
-    console.error("Error checking user for special card:", error);
-  }
-
-
-
-
   // Process and Merge Data
   const feedItems: FeedItem[] = [];
 
