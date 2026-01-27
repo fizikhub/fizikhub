@@ -73,7 +73,7 @@ function AztecScene() {
                     color="#ecfccb"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/Inter-Bold.ttf" // Fallback or assume standard font load if available, else default
+                // font="/fonts/Inter-Bold.ttf" // Removed: File missing, causing crash
                 >
                     TÜTÜN
                     <meshStandardMaterial color="#ecfccb" emissive="#3f6212" emissiveIntensity={2} toneMapped={false} />
