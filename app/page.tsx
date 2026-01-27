@@ -8,7 +8,7 @@ import { CompactHero } from "@/components/home/compact-hero";
 import { CategoryStories } from "@/components/home/category-stories";
 import { ScienceStories } from "@/components/science-cards/science-stories";
 import { WebGPUHero } from "@/components/home/webgpu-hero";
-import { GetWellOverlay } from "@/components/special/get-well-overlay";
+
 
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
@@ -122,7 +122,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
-      <GetWellOverlay />
+
       <BackgroundWrapper />
 
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-16 lg:pt-20">
