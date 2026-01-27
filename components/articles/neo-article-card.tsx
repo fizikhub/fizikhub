@@ -1,6 +1,5 @@
-"use client";
-
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -111,7 +110,7 @@ export function NeoArticleCard({
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
 
     return (
-        <Link href={`/blog/${article.slug}`} className="block group h-full">
+        <ViewTransitionLink href={`/blog/${article.slug}`} className="block group h-full">
             <article
                 className={cn(
                     "flex flex-col h-full relative overflow-hidden",
@@ -208,11 +207,11 @@ export function NeoArticleCard({
                             </button>
 
                             {/* Comment */}
-                            <Link href={`/blog/${article.slug}#comments`}
+                            <ViewTransitionLink href={`/blog/${article.slug}#comments`}
                                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000]"
                             >
                                 <MessageCircle className="w-5 h-5 stroke-[2.5px] stroke-current" />
-                            </Link>
+                            </ViewTransitionLink>
 
                             {/* Share */}
                             <button
@@ -238,6 +237,6 @@ export function NeoArticleCard({
                     </div>
                 </div>
             </article>
-        </Link>
+        </ViewTransitionLink>
     );
 }

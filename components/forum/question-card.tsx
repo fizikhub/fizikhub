@@ -12,6 +12,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>?/g, '');
 
@@ -36,9 +37,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const [isVoting, setIsVoting] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const handleCardClick = () => {
-        router.push(`/forum/${question.id}`);
-    };
+    // Removed handleCardClick in favor of Link
 
     const handleVote = async (e: React.MouseEvent, type: 1 | -1) => {
         e.preventDefault();
@@ -95,8 +94,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             transition={{ duration: 0.2 }}
             className="w-full h-full"
         >
-            <div
-                onClick={handleCardClick}
+            <ViewTransitionLink
+                href={`/forum/${question.id}`}
                 className={cn(
                     "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[8px]",
                     // CONTAINER STYLE (MATCHING TERM CARD)
@@ -154,6 +153,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         {question.content?.length > 160 && !isExpanded && (
                             <button
                                 onClick={(e) => {
+                                    e.preventDefault(); // Prevent link nav
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
@@ -166,6 +166,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         {isExpanded && (
                             <button
                                 onClick={(e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
                                     setIsExpanded(false);
                                 }}
@@ -182,7 +183,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2 z-20" onClick={(e) => e.stopPropagation()}>
-                        <Link href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
+                        <ViewTransitionLink href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
                             <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 {question.profiles?.avatar_url ? (
                                     <img src={question.profiles.avatar_url} alt="A" className="w-full h-full object-cover" />
@@ -193,7 +194,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400 group-hover/author:text-[#FFBD2E] transition-colors">
                                 {question.full_name || question.profiles?.username}
                             </span>
-                        </Link>
+                        </ViewTransitionLink>
                     </div>
 
                     {/* Actions (Right) */}
@@ -222,7 +223,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         </div>
                     </div>
                 </div>
-            </div>
+            </ViewTransitionLink>
         </motion.div>
     );
 });

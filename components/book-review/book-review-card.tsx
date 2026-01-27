@@ -1,6 +1,5 @@
-"use client";
-
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -47,7 +46,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     const authorName = article.author?.full_name || article.author?.username || "Anonim";
 
     return (
-        <Link href={`/makale/${article.slug}`} className="block group font-sans h-full">
+        <ViewTransitionLink href={`/makale/${article.slug}`} className="block group font-sans h-full">
             <article className={cn(
                 "relative flex flex-row h-full overflow-hidden transition-all duration-300",
                 // NEO-BRUTALIST V9 CONTAINER
@@ -130,6 +129,6 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                     </div>
                 </div>
             </article>
-        </Link>
+        </ViewTransitionLink>
     );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -19,7 +20,7 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
     const href = `/deney/${article.slug}`;
 
     return (
-        <Link href={href} className="block group">
+        <ViewTransitionLink href={href} className="block group">
             <article
                 className={cn(
                     "relative flex flex-row overflow-hidden rounded-2xl transition-all duration-300",
@@ -108,6 +109,6 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                     </div>
                 </div>
             </article>
-        </Link>
+        </ViewTransitionLink>
     );
 }

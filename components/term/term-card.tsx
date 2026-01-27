@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { motion } from "framer-motion";
 
 interface TermCardProps {
@@ -32,7 +33,7 @@ export function TermCard({ article, index }: TermCardProps) {
             transition={{ duration: 0.4, delay: index * 0.05 }}
             className="h-full"
         >
-            <Link href={`/makale/${article.slug}`} className="block h-full group">
+            <ViewTransitionLink href={`/makale/${article.slug}`} className="block h-full group">
                 <article
                     className={cn(
                         "flex flex-col h-full relative overflow-hidden",
@@ -99,7 +100,7 @@ export function TermCard({ article, index }: TermCardProps) {
                         </span>
                     </div>
                 </article>
-            </Link>
+            </ViewTransitionLink>
         </motion.div>
     );
 }
