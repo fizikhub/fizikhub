@@ -200,7 +200,7 @@ export function MemeCorner() {
 
                     {/* RIGHT: DeLorean (Popping Out) */}
                     <motion.div
-                        className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[-10%] sm:top-[-15%] md:top-[-20%] w-[50%] h-[140%] z-50 pointer-events-none"
+                        className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[5%] sm:top-[-15%] md:top-[-20%] w-[60%] sm:w-[50%] h-[120%] sm:h-[140%] z-50 pointer-events-none mix-blend-screen"
                         style={{ x: carX, y: carY, translateZ: "80px" }}
                         initial={{ opacity: 0, x: 100 }}
                         animate={{ opacity: 1, x: 0 }}
