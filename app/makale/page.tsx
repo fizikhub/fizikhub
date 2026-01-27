@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
-import { MagazineHero } from "@/components/articles/magazine-hero";
-import { SocialArticleCard } from "@/components/articles/social-article-card";
+import { NeoMagazineHero } from "@/components/articles/neo-magazine-hero";
+import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { SearchInput } from "@/components/blog/search-input";
 import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { Search, TrendingUp, Tag, Telescope, Flame, Clock, Sparkles } from "lucide-react";
@@ -142,59 +142,64 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const uniqueAuthors = new Set((allCategoriesData || []).map((a: any) => a.author_id)).size; // simplified approximation
 
     return (
-        <div className="min-h-screen pb-20 bg-background">
-            <div className="container mx-auto max-w-7xl px-2 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="min-h-screen pb-20 bg-[#f0f0f0] dark:bg-[#0a0a0a]"> {/* Lighter bg for contrast */}
+            <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-8 sm:py-12 md:py-16">
 
-                {/* Header */}
-                <header className="mb-4 sm:mb-6">
+                {/* Header - Neo Brutalist */}
+                <header className="mb-8 sm:mb-12 border-b-[4px] border-black pb-6">
                     <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                         <div>
-                            <div className="inline-flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-widest mb-3">
-                                <Telescope className="w-4 h-4" />
-                                Fizikhub Bilim Sosyal
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest mb-3 transform -rotate-1 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]">
+                                <Telescope className="w-4 h-4 text-[#FFC800]" />
+                                Fizikhub Arşiv
                             </div>
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white leading-[0.9] mb-3">
-                                Bilim <span className="text-amber-400">Arşivi</span>
+                            <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-black dark:text-white leading-[0.8] mb-0 uppercase stroke-text">
+                                BİLİM<span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFC800] to-[#FF8800]" style={{ WebkitTextStroke: '2px black' }}>ARŞİVİ</span>
                             </h1>
                         </div>
 
                         {/* Search */}
-                        <SearchInput />
+                        <div className="w-full max-w-md">
+                            <SearchInput />
+                        </div>
                     </div>
                 </header>
 
-                {/* Hero only shows on initial 'All' view to avoid clustering? Or always? Always is nice. */}
-                <MagazineHero articles={featuredArticles} />
+                {/* Neo Hero Section */}
+                {!searchParam && !categoryParam && sortParam === 'latest' && (
+                    <NeoMagazineHero articles={featuredArticles} />
+                )}
 
-                {/* Category Tabs - Brutalist Style */}
-                <div className="sticky top-0 z-30 bg-background py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-y-4 border-black dark:border-white">
-                    <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
+                {/* Category Tabs - Neo Brutalist Style */}
+                <div className="sticky top-14 z-30 bg-[#f0f0f0] dark:bg-[#0a0a0a] py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[4px] border-black">
+                    <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
                         <Link
-                            href="/blog"
-                            className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors border-r-2 border-black dark:border-white ${!categoryParam && sortParam === 'latest'
-                                ? 'bg-black dark:bg-white text-white dark:text-black'
-                                : 'bg-transparent hover:bg-accent'
+                            href="/makale"
+                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${!categoryParam && sortParam === 'latest'
+                                ? 'bg-[#FFC800] text-black'
+                                : 'bg-white text-black hover:bg-neutral-100'
                                 }`}
                         >
                             Tümü
                         </Link>
                         <Link
-                            href="/blog?sort=popular"
-                            className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors border-r-2 border-black dark:border-white ${sortParam === 'popular'
-                                ? 'bg-black dark:bg-white text-white dark:text-black'
-                                : 'bg-transparent hover:bg-accent'
+                            href="/makale?sort=popular"
+                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-2 ${sortParam === 'popular'
+                                ? 'bg-[#FF5500] text-white'
+                                : 'bg-white text-black hover:bg-neutral-100'
                                 }`}
                         >
+                            <Flame className="w-3 h-3 filled" />
                             Popüler
                         </Link>
 
                         {categories.map((cat, index) => (
                             <Link
                                 key={cat}
-                                href={`/blog?category=${encodeURIComponent(cat)}`}
-                                className={`px-4 py-2 text-xs font-black uppercase tracking-wider whitespace-nowrap transition-colors ${index < categories.length - 1 ? 'border-r-2 border-black dark:border-white' : ''} ${categoryParam === cat
-                                    ? 'bg-black dark:bg-white text-white dark:text-black'
-                                    : 'bg-transparent hover:bg-accent'
+                                href={`/makale?category=${encodeURIComponent(cat)}`}
+                                className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${categoryParam === cat
+                                    ? 'bg-cyan-400 text-black'
+                                    : 'bg-white text-black hover:bg-neutral-100'
                                     }`}
                             >
                                 {cat}
@@ -206,68 +211,85 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
                     {/* Main Content - Social Feed */}
                     <div className="lg:col-span-8">
-                        <div className="space-y-6">
+                        {/* Feed Layout: Changed to Grid for Neo Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {feedArticles.map((article, index) => (
-                                <div key={article.id}>
-                                    <SocialArticleCard
+                                <div key={article.id} className={index % 3 === 0 ? "md:col-span-2" : ""}>
+                                    <NeoArticleCard
                                         article={article}
-                                        index={index}
                                         initialLikes={article.likes_count}
                                         initialComments={article.comments_count}
                                         initialIsLiked={article.is_liked}
                                         initialIsBookmarked={article.is_bookmarked}
+                                        className="h-full"
                                     />
-                                    {index === 2 && <ForumTeaserCard />}
+                                    {index === 4 && (
+                                        <div className="my-8 md:col-span-2">
+                                            <ForumTeaserCard />
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
 
                         {feedArticles.length === 0 && (
-                            <div className="text-center py-24 text-white/40 bg-white/[0.02] border border-white/10 rounded-xl">
-                                <Telescope className="w-12 h-12 mx-auto mb-4 text-white/20" />
-                                <p className="text-xl font-medium">Bu kategoride henüz paylaşım yok.</p>
-                                <Link href="/blog" className="text-amber-400 text-sm mt-2 hover:underline">Tümünü Göster</Link>
+                            <div className="text-center py-24 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-xl">
+                                <Telescope className="w-16 h-16 mx-auto mb-4 text-black" />
+                                <p className="text-2xl font-black uppercase text-black mb-2">HİÇBİR ŞEY YOK MU?</p>
+                                <p className="text-sm font-bold text-neutral-500 mb-6">Bu kategoride henüz bir makale paylaşılmamış.</p>
+                                <Link href="/makale" className="inline-block px-6 py-3 bg-[#FFC800] border-2 border-black font-black uppercase shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all text-black">
+                                    Tüm Makalelere Dön
+                                </Link>
                             </div>
                         )}
                     </div>
 
                     {/* Sidebar */}
-                    <aside className="hidden lg:block lg:col-span-4 space-y-6">
-                        {/* Trending Section */}
-                        <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/10">
-                            <h3 className="text-base font-bold mb-4 flex items-center gap-2 text-white">
-                                <TrendingUp className="w-5 h-5 text-amber-400" />
-                                Gündemde
-                            </h3>
-                            <div className="space-y-3">
+                    <aside className="hidden lg:block lg:col-span-4 space-y-8 sticky top-32 h-fit">
+                        {/* Trending Section - Neo Style */}
+                        <div className="bg-white dark:bg-zinc-900 border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-0 overflow-hidden">
+                            <div className="bg-black p-3 flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-[#FFC800]" />
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest">
+                                    Gündemdekiler
+                                </h3>
+                            </div>
+                            <div className="divide-y-2 divide-black">
                                 {allArticles.slice(0, 5).map((article, i) => (
                                     <Link
                                         key={article.id}
                                         href={`/blog/${article.slug}`}
-                                        className="block group p-3 -mx-2 rounded-xl hover:bg-white/5 transition-colors"
+                                        className="block group p-4 hover:bg-[#FFC800]/10 transition-colors"
                                     >
-                                        <div className="text-xs text-white/40 mb-1">
-                                            {article.category} · Gündem #{i + 1}
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-3xl font-black text-black/10 group-hover:text-[#FFC800] transition-colors leading-none">
+                                                {i + 1}
+                                            </span>
+                                            <div>
+                                                <div className="text-[10px] font-bold text-neutral-500 uppercase mb-1">
+                                                    {article.category}
+                                                </div>
+                                                <h4 className="font-bold text-base text-black dark:text-white group-hover:underline decoration-2 decoration-black leading-snug">
+                                                    {article.title}
+                                                </h4>
+                                            </div>
                                         </div>
-                                        <h4 className="font-semibold text-sm text-white/90 group-hover:text-amber-400 transition-colors line-clamp-2 leading-snug">
-                                            {article.title}
-                                        </h4>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        {/* CTA */}
-                        <div className="bg-white/[0.03] rounded-2xl p-5 border border-white/10 text-center">
-                            <h3 className="text-lg font-bold text-white mb-2">Sen de Yaz!</h3>
-                            <p className="text-sm text-white/40 mb-4">
-                                Bilim topluluğuna katıl, makalelerini paylaş.
+                        {/* Writer CTA - Neo Style */}
+                        <div className="bg-[#FF8800] border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-6 text-center transform rotate-1 hover:rotate-0 transition-transform">
+                            <h3 className="text-2xl font-black text-white uppercase drop-shadow-[2px_2px_0px_black] mb-2 leading-none">YAZAR OLMAK İSTER MİSİN?</h3>
+                            <p className="text-xs font-bold text-white/90 mb-5 max-w-[200px] mx-auto border-b-2 border-black/10 pb-2">
+                                Kendi bilimsel makalelerini yayınla, topluluğa katkı sağla.
                             </p>
                             <Link
                                 href="/yazar"
-                                className="inline-flex items-center justify-center w-full py-3 bg-amber-500 rounded-full text-black font-bold text-sm hover:bg-amber-400 transition-colors"
+                                className="inline-flex w-full items-center justify-center py-3 bg-white border-2 border-black text-black font-black text-sm uppercase tracking-widest shadow-[3px_3px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_#000] transition-all"
                             >
-                                Yazar Ol
+                                Başvuru Yap
                             </Link>
                         </div>
                     </aside>

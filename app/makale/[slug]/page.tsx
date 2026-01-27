@@ -3,7 +3,7 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
-import { ArticleHero } from "@/components/articles/article-hero";
+import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
@@ -236,8 +236,8 @@ export default async function ArticlePage({ params }: PageProps) {
                     />
                 ) : (
                     <>
-                        {/* Immersive Hero */}
-                        <ArticleHero article={article} readingTime={formattedReadingTime} />
+                        {/* Immersive Neo Hero */}
+                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
 
                         {/* State-managed Article Reader */}
                         <ArticleReader
