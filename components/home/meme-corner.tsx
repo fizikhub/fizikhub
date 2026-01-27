@@ -198,30 +198,30 @@ export function MemeCorner() {
                         </div>
                     </motion.div>
 
-                    {/* RIGHT: DeLorean (Popping Out) */}
-                    <motion.div
-                        className="absolute right-[-15%] sm:right-[-2%] md:right-[2%] top-[10%] sm:top-[-15%] md:top-[-20%] w-[55%] sm:w-[50%] h-[120%] sm:h-[140%] z-50 pointer-events-none"
-                        style={{ x: carX, y: carY, translateZ: "80px" }}
-                        initial={{ opacity: 0, x: 100 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
-                    >
-                        {/* The Image Itself */}
-                        <div className="relative w-full h-full">
-                            <Image
-                                src="/assets/delorean-popout.png"
-                                alt="DeLorean Time Machine"
-                                fill
-                                className="object-contain drop-shadow-[0_20px_50px_rgba(0,100,255,0.4)] mix-blend-screen"
-                                style={{ mixBlendMode: 'screen' }}
-                                priority
-                            />
-
-                            {/* Extra Engine Glow Pulse */}
-                            <div className="absolute  right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse mix-blend-screen" />
-                            <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75 mix-blend-screen" />
-                        </div>
-                    </motion.div>
+                    {/* RIGHT: DeLorean (Popping Out) - FLATTENED 3D FOR BLEND MODE FIX */}
+                    <div className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[15%] sm:top-[-10%] md:top-[-15%] w-[45%] sm:w-[50%] h-[100%] sm:h-[130%] z-50 pointer-events-none mix-blend-screen">
+                        <motion.div
+                            className="w-full h-full"
+                            style={{ x: carX, y: carY, scale: 1.1 }} // Flattened (no translateZ) to ensure blend mode works
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
+                        >
+                            {/* The Image Itself - with Radial Mask to kill edges */}
+                            <div className="relative w-full h-full" style={{ maskImage: "radial-gradient(circle at center, black 60%, transparent 95%)", WebkitMaskImage: "radial-gradient(circle at center, black 60%, transparent 95%)" }}>
+                                <Image
+                                    src="/assets/delorean-popout.png"
+                                    alt="DeLorean Time Machine"
+                                    fill
+                                    className="object-contain drop-shadow-[0_20px_50px_rgba(0,100,255,0.4)]"
+                                    priority
+                                />
+                                {/* Engine Glow */}
+                                <div className="absolute right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse" />
+                                <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75" />
+                            </div>
+                        </motion.div>
+                    </div>
 
                 </div>
 
