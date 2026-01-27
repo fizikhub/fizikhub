@@ -11,7 +11,6 @@ import { Metadata } from "next";
 import { ArticleReader } from "@/components/blog/article-reader";
 import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
-import { TobaccoScrolly } from "@/components/articles/special/tobacco-scrolly";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -235,8 +234,6 @@ export default async function ArticlePage({ params }: PageProps) {
                         initialLiked={!!userLike}
                         initialBookmarked={!!userBookmark}
                     />
-                ) : (article.slug.includes("tutun") || article.title.includes("Tütün")) ? (
-                    <TobaccoScrolly article={article} readingTime={formattedReadingTime} />
                 ) : (
                     <>
                         {/* Immersive Neo Hero */}
