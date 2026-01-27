@@ -182,7 +182,7 @@ function Points({ count, radius, color }: { count: number, radius: number, color
     return (
         <points>
             <bufferGeometry>
-                <bufferAttribute attach="attributes-position" count={count} array={points} itemSize={3} />
+                <bufferAttribute attach="attributes-position" args={[points, 3]} />
             </bufferGeometry>
             <pointsMaterial size={0.3} color={color} sizeAttenuation transparent opacity={0.8} />
         </points>
