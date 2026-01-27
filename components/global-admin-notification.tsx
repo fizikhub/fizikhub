@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function GlobalAdminNotification() {
+export default function GlobalAdminNotification() {
     const [adminNotification, setAdminNotification] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
     const { width, height } = useWindowSize();

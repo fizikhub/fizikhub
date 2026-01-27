@@ -15,7 +15,7 @@ const Footer = dynamic(
 );
 
 const GlobalAdminNotification = dynamic(
-    () => import("@/components/global-admin-notification").then(mod => mod.GlobalAdminNotification),
+    () => import("@/components/global-admin-notification"),
     { ssr: false }
 );
 
