@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { ScrollControls, useScroll, Text, Float, Stars, Sparkles, Cloud, Scroll } from "@react-three/drei";
-import { useMemo, useRef, Component, ReactNode } from "react";
+import { useMemo, useRef, Component, ReactNode, Suspense } from "react";
 import * as THREE from "three";
 import { Skull, Wind, FlaskConical } from "lucide-react";
 import Link from "next/link";
@@ -47,8 +47,8 @@ function FallbackUI() {
             <p className="text-xl text-green-300 mb-8 text-center max-w-xl">
                 Tanrıların dumanından, sanayi devriminin bacalarına...
             </p>
-            <p className="text-sm text-gray-400 mb-8">
-                (3D deneyim yüklenemedi - cihazınız WebGL desteklemiyor olabilir)
+            <p className="text-sm text-gray-400 mb-8 max-w-md text-center">
+                (3D deneyim şu an yüklenemiyor. Ancak makaleyi okumaya devam edebilirsiniz.)
             </p>
             <Link
                 href="/blog"
@@ -234,15 +234,26 @@ function ChemistryScene() {
 
 function Scene3D() {
     return (
-        <Canvas shadows camera={{ position: [0, 0, 5], fov: 75 }}>
+        <Canvas
+            shadows
+            dpr={[1, 2]}
+            gl={{
+                preserveDrawingBuffer: true,
+                powerPreference: "high-performance",
+                antialias: true
+            }}
+            camera={{ position: [0, 0, 5], fov: 75 }}
+        >
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} intensity={1} />
             <spotLight position={[-10, -10, -10]} intensity={0.5} color="blue" />
 
             <ScrollControls pages={4} damping={0.2}>
-                <AztecScene />
-                <VoyageScene />
-                <ChemistryScene />
+                <Suspense fallback={null}>
+                    <AztecScene />
+                    <VoyageScene />
+                    <ChemistryScene />
+                </Suspense>
 
                 <Scroll html style={{ width: '100vw', height: '100vh' }}>
                     {/* SCENE 1: TITLE */}
