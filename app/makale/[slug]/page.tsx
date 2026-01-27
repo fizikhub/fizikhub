@@ -235,7 +235,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         initialLiked={!!userLike}
                         initialBookmarked={!!userBookmark}
                     />
-                ) : article.title.includes("Tütün") ? (
+                ) : (article.slug.includes("tutun") || article.title.includes("Tütün")) ? (
                     <TobaccoScrolly article={article} readingTime={formattedReadingTime} />
                 ) : (
                     <>
