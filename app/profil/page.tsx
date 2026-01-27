@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { CompactProfileView } from "@/components/profile/compact-profile-view";
+import { NeoProfileView } from "@/components/profile/neo-profile-view";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -22,7 +22,9 @@ export default async function ProfilePage() {
         { data: userBadges },
         followStats,
         { data: drafts },
-        unreadMessagesCount
+        unreadMessagesCount,
+        { data: bookmarkedArticles },
+        { data: bookmarkedQuestions }
     ] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).single(),
         supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
@@ -31,7 +33,9 @@ export default async function ProfilePage() {
         supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
         getFollowStats(user.id),
         supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, status').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }),
-        getTotalUnreadCount()
+        getTotalUnreadCount(),
+        supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, category)').eq('user_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('question_bookmarks').select('created_at, questions(id, title, slug, category)').eq('user_id', user.id).order('created_at', { ascending: false })
     ]);
 
     const stats = {
@@ -44,15 +48,18 @@ export default async function ProfilePage() {
     };
 
     return (
-        <CompactProfileView
+        <NeoProfileView
             profile={profile}
             isOwnProfile={true}
             stats={stats}
             userBadges={userBadges || []}
             articles={articles || []}
             questions={questions || []}
+            answers={answers || []}
             drafts={drafts || []}
             unreadCount={unreadMessagesCount}
+            bookmarkedArticles={bookmarkedArticles || []}
+            bookmarkedQuestions={bookmarkedQuestions || []}
         />
     );
 }
