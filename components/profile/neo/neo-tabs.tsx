@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 interface Tab {
     id: string;
     label: string;
-    icon?: React.ElementType;
+    icon?: any;
     count?: number;
 }
 
