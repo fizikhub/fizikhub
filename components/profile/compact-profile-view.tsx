@@ -90,86 +90,85 @@ export function CompactProfileView({
     return (
         <div className="min-h-screen bg-background pb-20 font-sans">
 
-            {/* 1. COMPACT HEADER */}
+            {/* 1. COMPACT HEADER - Proportional Design */}
             <div className="relative">
-                {/* Cover - INCREASED HEIGHT */}
-                <div className="h-64 w-full bg-zinc-900 overflow-hidden relative">
+                {/* Cover - Viewport Proportional (35% of screen height) */}
+                <div className="h-[35vh] min-h-[260px] max-h-[400px] w-full bg-zinc-900 overflow-hidden relative">
                     {profile?.cover_url && (
                         <img src={profile.cover_url} alt="" className="w-full h-full object-cover" />
                     )}
-                    {/* Stronger Gradient for Readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                    {/* Cinematic Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
+                    <div className="absolute inset-0 bg-black/20" /> {/* Dimmer */}
 
                     {/* Top Actions */}
                     <div className="absolute top-2 right-2 flex gap-2 z-20">
                         {isOwnProfile ? (
                             <Link href="/ayarlar">
-                                <Button size="icon" variant="ghost" className="h-9 w-9 bg-black/40 text-white rounded-full backdrop-blur-md hover:bg-black/60 ring-1 ring-white/10">
+                                <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/20 text-white rounded-full backdrop-blur-md hover:bg-black/40 ring-1 ring-white/10 transition-all">
                                     <Settings className="w-5 h-5" />
                                 </Button>
                             </Link>
                         ) : (
-                            <Button size="icon" variant="ghost" className="h-9 w-9 bg-black/40 text-white rounded-full backdrop-blur-md">
+                            <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/20 text-white rounded-full backdrop-blur-md hover:bg-black/40 ring-1 ring-white/10">
                                 <MoreHorizontal className="w-5 h-5" />
                             </Button>
                         )}
                     </div>
                 </div>
 
-                {/* Identity Row - Refined Layout */}
-                <div className="px-5 -mt-16 flex flex-col relative z-10 w-full mb-6">
-                    <div className="flex justify-between items-end w-full">
-                        {/* Larger Avatar */}
-                        <div className="w-32 h-32 rounded-2xl border-[4px] border-background bg-zinc-800 overflow-hidden shadow-2xl">
+                {/* Identity Row - Perfectly Centered Overlap */}
+                <div className="px-5 relative z-10 w-full mb-6 -mt-[72px]">
+                    <div className="flex flex-col items-center text-center">
+                        {/* Avatar */}
+                        <div className="w-36 h-36 rounded-3xl border-[4px] border-background bg-zinc-800 overflow-hidden shadow-2xl relative group">
                             <Avatar className="w-full h-full rounded-none">
                                 <AvatarImage src={profile?.avatar_url} className="object-cover" />
-                                <AvatarFallback className="bg-primary text-black text-4xl font-black rounded-none">
+                                <AvatarFallback className="bg-primary text-black text-5xl font-black rounded-none">
                                     {profile?.full_name?.[0]}
                                 </AvatarFallback>
                             </Avatar>
+                            {/* Verified Badge inside Avatar if desired, or kept outside */}
                         </div>
 
-                        {/* Action Button - Better positioning */}
-                        <div className="mb-2">
-                            {isOwnProfile ? (
-                                <Link href="/profil/duzenle">
-                                    <Button size="sm" className="h-10 px-6 rounded-xl border border-white/10 bg-white/5 text-white backdrop-blur-md font-bold text-xs hover:bg-white/10 shadow-lg">
-                                        <Edit className="w-4 h-4 mr-2" />
-                                        Düzenle
-                                    </Button>
-                                </Link>
-                            ) : (
-                                <Button size="sm" className="h-10 px-8 rounded-xl bg-primary text-black font-black text-xs hover:bg-primary/90 shadow-lg shadow-primary/20">
-                                    Takip Et
-                                </Button>
-                            )}
+                        {/* Name & Badge */}
+                        <div className="mt-4 flex flex-col items-center">
+                            <h1 className="text-3xl font-black text-foreground leading-tight flex items-center justify-center gap-2">
+                                {profile?.full_name}
+                                {userBadges?.some((b: any) => b.badges?.category === 'verified') && (
+                                    <Zap className="w-6 h-6 text-primary fill-primary" />
+                                )}
+                            </h1>
+                            <p className="text-zinc-500 font-medium text-base mt-1">@{profile?.username}</p>
                         </div>
-                    </div>
 
-                    <div className="mt-4">
-                        <h1 className="text-3xl font-black text-foreground leading-none flex items-center gap-2 mb-1">
-                            {profile?.full_name}
-                            {userBadges?.some((b: any) => b.badges?.category === 'verified') && (
-                                <Zap className="w-6 h-6 text-primary fill-primary" />
-                            )}
-                        </h1>
-                        <p className="text-zinc-500 font-medium text-base mb-3">@{profile?.username}</p>
-
+                        {/* Bio */}
                         {profile?.bio && (
-                            <p className="text-zinc-300 text-sm leading-relaxed line-clamp-3 max-w-[90%]">
+                            <p className="text-zinc-300 text-sm leading-relaxed line-clamp-3 mt-3 max-w-[90%] font-medium opacity-90">
                                 {profile.bio}
                             </p>
                         )}
 
-                        <div className="flex items-center gap-4 mt-4 text-xs text-zinc-500 font-medium uppercase tracking-wide">
-                            <span className="flex items-center gap-1.5">
-                                <Calendar className="w-4 h-4 text-zinc-600" />
-                                {format(new Date(profile?.created_at || Date.now()), 'MMMM yyyy', { locale: tr })}
-                            </span>
+                        {/* Actions Row - Centered */}
+                        <div className="flex items-center gap-3 mt-5 w-full justify-center">
+                            {isOwnProfile ? (
+                                <Link href="/profil/duzenle" className="w-full max-w-[200px]">
+                                    <Button className="w-full h-11 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors shadow-lg shadow-white/5">
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Profili Düzenle
+                                    </Button>
+                                </Link>
+                            ) : (
+                                <Button className="w-full max-w-[200px] h-11 rounded-xl bg-primary text-black font-bold hover:bg-primary/90 shadow-lg shadow-primary/20">
+                                    Takip Et
+                                </Button>
+                            )}
+
                             {profile?.website && (
-                                <a href={profile.website} target="_blank" className="flex items-center gap-1.5 text-primary hover:underline">
-                                    <LinkIcon className="w-4 h-4" />
-                                    Web
+                                <a href={profile.website} target="_blank">
+                                    <Button size="icon" variant="outline" className="h-11 w-11 rounded-xl border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-white hover:border-zinc-700">
+                                        <LinkIcon className="w-5 h-5" />
+                                    </Button>
                                 </a>
                             )}
                         </div>
@@ -177,24 +176,22 @@ export function CompactProfileView({
                 </div>
             </div>
 
-            {/* 2. STATS - Premium Dashboard Look */}
-            <div className="mx-4 bg-zinc-900/50 rounded-2xl border border-white/5 p-4 mb-2 overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-
-                <div className="flex items-center justify-between">
-                    <div className="flex flex-col gap-0.5">
+            {/* 2. STATS - Balanced Grid */}
+            <div className="px-4 mb-6">
+                <div className="grid grid-cols-3 gap-2 bg-zinc-900/40 rounded-2xl border border-white/5 p-4 backdrop-blur-sm">
+                    <div className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-default">
                         <span className="text-2xl font-black text-primary font-mono tracking-tight">{formatNumber(stats.reputation)}</span>
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Repütasyon</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Puan</span>
                     </div>
-                    <div className="w-[1px] h-10 bg-white/10" />
-                    <div className="flex flex-col gap-0.5 text-center px-4">
-                        <span className="text-lg font-bold text-white font-mono">{formatNumber(stats.followersCount)}</span>
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Takipçi</span>
+
+                    <div className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer border-x border-white/5">
+                        <span className="text-xl font-bold text-white font-mono">{formatNumber(stats.followersCount)}</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Takipçi</span>
                     </div>
-                    <div className="w-[1px] h-10 bg-white/10" />
-                    <div className="flex flex-col gap-0.5 text-right">
-                        <span className="text-lg font-bold text-white font-mono">{formatNumber(stats.followingCount)}</span>
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Takip</span>
+
+                    <div className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
+                        <span className="text-xl font-bold text-white font-mono">{formatNumber(stats.followingCount)}</span>
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Takip</span>
                     </div>
                 </div>
             </div>
