@@ -200,7 +200,7 @@ export function MemeCorner() {
 
                     {/* RIGHT: DeLorean (Popping Out) */}
                     <motion.div
-                        className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[5%] sm:top-[-15%] md:top-[-20%] w-[60%] sm:w-[50%] h-[120%] sm:h-[140%] z-50 pointer-events-none mix-blend-screen"
+                        className="absolute right-[-15%] sm:right-[-2%] md:right-[2%] top-[10%] sm:top-[-15%] md:top-[-20%] w-[55%] sm:w-[50%] h-[120%] sm:h-[140%] z-50 pointer-events-none"
                         style={{ x: carX, y: carY, translateZ: "80px" }}
                         initial={{ opacity: 0, x: 100 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -212,13 +212,14 @@ export function MemeCorner() {
                                 src="/assets/delorean-popout.png"
                                 alt="DeLorean Time Machine"
                                 fill
-                                className="object-contain drop-shadow-[0_20px_50px_rgba(0,100,255,0.4)]"
+                                className="object-contain drop-shadow-[0_20px_50px_rgba(0,100,255,0.4)] mix-blend-screen"
+                                style={{ mixBlendMode: 'screen' }}
                                 priority
                             />
 
                             {/* Extra Engine Glow Pulse */}
-                            <div className="absolute  right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse" />
-                            <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75" />
+                            <div className="absolute  right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse mix-blend-screen" />
+                            <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75 mix-blend-screen" />
                         </div>
                     </motion.div>
 
