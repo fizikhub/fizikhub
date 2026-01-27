@@ -198,8 +198,8 @@ export function MemeCorner() {
                         </div>
                     </motion.div>
 
-                    {/* RIGHT: DeLorean (Popping Out) - WITH AGGRESSIVE BG REMOVAL */}
-                    <div className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[15%] sm:top-[-10%] md:top-[-15%] w-[45%] sm:w-[50%] h-[100%] sm:h-[130%] z-50 pointer-events-none mix-blend-color-dodge">
+                    {/* RIGHT: DeLorean (Popping Out) - Clean PNG */}
+                    <div className="absolute right-[-10%] sm:right-[-2%] md:right-[2%] top-[15%] sm:top-[-10%] md:top-[-15%] w-[45%] sm:w-[50%] h-[100%] sm:h-[130%] z-50 pointer-events-none">
                         <motion.div
                             className="w-full h-full"
                             style={{ x: carX, y: carY, scale: 1.1 }}
@@ -207,18 +207,19 @@ export function MemeCorner() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
                         >
-                            {/* Filter: Crush blacks to 0. Blend mode: Color Dodge (drops blacks completely) */}
-                            <div className="relative w-full h-full" style={{ filter: "brightness(0.9) contrast(1.5)" }}>
+                            {/* Filter: Normal visibility */}
+                            <div className="relative w-full h-full">
                                 <Image
-                                    src="/assets/delorean-popout.png"
+                                    src="https://freepngimg.com/thumb/car/31969-3-delorean-transparent-background.png"
                                     alt="DeLorean Time Machine"
                                     fill
-                                    className="object-contain"
+                                    className="object-contain drop-shadow-2xl"
                                     priority
+                                    unoptimized
                                 />
                                 {/* Engine Glow */}
-                                <div className="absolute right-[35%] bottom-[35%] w-10 h-10 bg-blue-500/50 blur-xl animate-pulse mix-blend-normal" />
-                                <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-400/40 blur-xl animate-pulse delay-75 mix-blend-normal" />
+                                <div className="absolute right-[35%] bottom-[35%] w-10 h-10 bg-cyan-500/50 blur-xl animate-pulse mix-blend-screen" />
+                                <div className="absolute left-[25%] bottom-[25%] w-12 h-12 bg-blue-500/40 blur-xl animate-pulse delay-75 mix-blend-screen" />
                             </div>
                         </motion.div>
                     </div>
