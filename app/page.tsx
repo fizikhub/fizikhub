@@ -8,6 +8,8 @@ import { CompactHero } from "@/components/home/compact-hero";
 import { CategoryStories } from "@/components/home/category-stories";
 import { ScienceStories } from "@/components/science-cards/science-stories";
 import { WebGPUHero } from "@/components/home/webgpu-hero";
+import { GetWellOverlay } from "@/components/special/get-well-overlay";
+import { createClient as createServerClient } from "@/lib/supabase-server";
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -67,6 +69,29 @@ const getCachedFeedData = unstable_cache(
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
+  // Check for special users
+  // Note: We use the server client here to access cookies/auth context
+  const supabase = createServerClient();
+  let showGetWell = false;
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      if (profile && ['silginim', 'baranbozkurt'].includes(profile.username)) {
+        showGetWell = true;
+      }
+    }
+  } catch (error) {
+    console.error("Error checking user for special card:", error);
+  }
+
+
 
 
   // Process and Merge Data
@@ -122,6 +147,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      <GetWellOverlay shouldShow={showGetWell} />
       <BackgroundWrapper />
 
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-16 lg:pt-20">
