@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Feather } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -62,7 +63,7 @@ export function BottomNav() {
                     const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
 
                     return (
-                        <Link
+                        <ViewTransitionLink
                             key={link.href}
                             href={link.href}
                             prefetch={true}
@@ -80,7 +81,7 @@ export function BottomNav() {
                                     isActive ? "stroke-[3px]" : "stroke-[2.5px]"
                                 )}
                             />
-                        </Link>
+                        </ViewTransitionLink>
                     );
                 })}
             </nav>

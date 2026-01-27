@@ -2,6 +2,7 @@
 
 import { TrendingUp, UserPlus, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -23,11 +24,11 @@ export function FeedSidebar() {
                 <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
                     Kendi makalelerini yaz, sorular sor ve bilim topluluğunun bir parçası ol.
                 </p>
-                <Link href="/yazar">
+                <ViewTransitionLink href="/yazar">
                     <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold border-0 shadow-lg shadow-amber-900/20">
                         İçerik Üretmeye Başla
                     </Button>
-                </Link>
+                </ViewTransitionLink>
 
                 {/* Rapid Science Button - For Writers */}
                 <Button
@@ -86,9 +87,9 @@ export function FeedSidebar() {
 
             {/* Footer Links */}
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground px-2">
-                <Link href="/hakkimizda" className="hover:underline">Hakkımızda</Link>
-                <Link href="/gizlilik-politikasi" className="hover:underline">Gizlilik</Link>
-                <Link href="/iletisim" className="hover:underline">İletişim</Link>
+                <ViewTransitionLink href="/hakkimizda" className="hover:underline">Hakkımızda</ViewTransitionLink>
+                <ViewTransitionLink href="/gizlilik-politikasi" className="hover:underline">Gizlilik</ViewTransitionLink>
+                <ViewTransitionLink href="/iletisim" className="hover:underline">İletişim</ViewTransitionLink>
                 <span>© 2024 FizikHub</span>
             </div>
         </div>
