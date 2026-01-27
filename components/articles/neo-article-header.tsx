@@ -72,7 +72,7 @@ export function NeoArticleHeader() {
                                             color: '#FFC800',
                                             WebkitTextStroke: '0px',
                                             scale: 1.1
-                                        }}
+                                        } as any}
                                     >
                                         {char}
                                     </motion.span>
