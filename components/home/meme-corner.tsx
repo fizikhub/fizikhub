@@ -207,10 +207,11 @@ export function MemeCorner() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2, type: "spring", stiffness: 50 }}
                         >
-                            {/* Filter: Normal visibility with Linear Mask to hide right-side checkerboard */}
+                            {/* Filter: Normal visibility with Aggressive Radial Mask */}
                             <div className="relative w-full h-full" style={{
-                                maskImage: "linear-gradient(to right, black 0%, black 60%, transparent 90%)",
-                                WebkitMaskImage: "linear-gradient(to right, black 0%, black 60%, transparent 90%)"
+                                maskImage: "radial-gradient(ellipse at center, black 40%, transparent 70%)",
+                                WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 70%)",
+                                filter: "contrast(1.1) brightness(0.9)"
                             }}>
                                 <Image
                                     src="/assets/delorean-popout.png"
