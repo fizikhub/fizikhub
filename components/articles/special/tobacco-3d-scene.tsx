@@ -59,8 +59,8 @@ function AztecScene() {
     return (
         <group ref={groupRef}>
             {/* Volumetric Fog / Clouds */}
-            <Cloud opacity={0.5} speed={0.4} width={10} depth={1.5} segments={20} position={[0, -2, -5]} color="#064e3b" />
-            <Cloud opacity={0.3} speed={0.2} width={10} depth={1.5} segments={20} position={[0, 2, -8]} color="#10b981" />
+            <Cloud opacity={0.5} speed={0.4} bounds={[10, 2, 10]} position={[0, -2, -5]} color="#064e3b" />
+            <Cloud opacity={0.3} speed={0.2} bounds={[10, 2, 10]} position={[0, 2, -8]} color="#10b981" />
 
             {/* Fireflies */}
             <Sparkles count={100} scale={12} size={4} speed={0.4} opacity={0.8} color="#fef08a" />
