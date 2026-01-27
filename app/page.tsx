@@ -136,9 +136,6 @@ export default async function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
 
 
-          <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
-            <WebGPUHero />
-          </div>
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
