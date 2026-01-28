@@ -165,23 +165,25 @@ export function ModernProfileHeader({
                     </div>
                 </div>
 
-                {/* COOL STATS GRID */}
-                <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-md px-2">
-                    <StatCard
+                {/* COOL POP STATS */}
+                <div className="mt-8 flex justify-center gap-4 w-full max-w-md px-2">
+                    <PopStat
                         value={stats.followersCount}
-                        label="Takipçi"
-                        icon={<div className="w-1 h-1 rounded-full bg-blue-500 mb-1" />}
+                        label="Gözlemci"
+                        emoji="👀"
+                        color="bg-[#A0E7E5] dark:bg-[#A0E7E5]" // Pastel Cyan
                     />
-                    <StatCard
+                    <PopStat
                         value={stats.followingCount}
                         label="Takip"
-                        icon={<div className="w-1 h-1 rounded-full bg-purple-500 mb-1" />}
+                        emoji="🛸"
+                        color="bg-[#B4F8C8] dark:bg-[#B4F8C8]" // Pastel Green
                     />
-                    <StatCard
+                    <PopStat
                         value={stats.reputation}
-                        label="Puan"
-                        highlighted
-                        icon={<div className="w-1 h-1 rounded-full bg-amber-500 mb-1" />}
+                        label="Beyin Gücü"
+                        emoji="🧠"
+                        color="bg-[#FBE7C6] dark:bg-[#FBE7C6]" // Pastel Yellow
                     />
                 </div>
 
@@ -198,7 +200,7 @@ export function ModernProfileHeader({
                             currentSocialLinks={profile?.social_links}
                             userEmail={user?.email}
                             trigger={
-                                <button className="w-full py-3 rounded-2xl font-black text-sm border-2 border-black dark:border-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
+                                <button className="w-full py-3 rounded-xl font-black text-sm border-[3px] border-black dark:border-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]">
                                     <Edit3 className="w-4 h-4" />
                                     DÜZENLE
                                 </button>
@@ -214,7 +216,7 @@ export function ModernProfileHeader({
                                     variant="modern"
                                 />
                             </div>
-                            <button className="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                            <button className="w-12 h-12 flex items-center justify-center rounded-xl border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                                 <Mail className="w-5 h-5" />
                             </button>
                         </div>
@@ -226,37 +228,17 @@ export function ModernProfileHeader({
     );
 }
 
-function StatCard({ value, label, highlighted = false, icon }: { value: number, label: string, highlighted?: boolean, icon?: React.ReactNode }) {
+function PopStat({ value, label, emoji, color }: { value: number, label: string, emoji: string, color: string }) {
     return (
         <div className={cn(
-            "relative group overflow-hidden flex flex-col items-center justify-center py-4 px-2 rounded-2xl transition-all duration-300",
-            // Glassmorphism background
-            "bg-gradient-to-br from-white/50 to-white/10 dark:from-black/50 dark:to-black/10 backdrop-blur-md",
-            // Border
-            "border border-white/20 dark:border-white/10",
-            // Shadow
-            "shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)]",
-            // Hover effect
-            "hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1",
-            highlighted && "ring-1 ring-amber-500/30 bg-amber-500/5"
+            "flex-1 flex flex-col items-center justify-center py-3 rounded-xl border-[3px] border-black transition-all hover:-translate-y-1 hover:rotate-3 cursor-default shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+            color
         )}>
-            {/* Subtle glow on hover */}
-            <div className={cn(
-                "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                highlighted ? "bg-gradient-to-tr from-amber-500/10 to-transparent" : "bg-gradient-to-tr from-primary/5 to-transparent"
-            )} />
-
-            {icon}
-
-            <span className={cn(
-                "text-2xl sm:text-3xl font-black tabular-nums tracking-tight z-10",
-                highlighted ? "text-amber-500 dark:text-amber-400" : "text-foreground"
-            )}>
+            <div className="text-2xl mb-1 filter drop-shadow-md animate-bounce-slow" style={{ animationDuration: '3s' }}>{emoji}</div>
+            <span className="text-xl sm:text-2xl font-black text-black leading-none tabular-nums">
                 {value >= 1000 ? (value / 1000).toFixed(1) + 'K' : value}
             </span>
-            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.2em] z-10 mt-1">
-                {label}
-            </span>
+            <span className="text-[10px] font-black text-black/70 uppercase tracking-widest mt-1">{label}</span>
         </div>
     );
 }
