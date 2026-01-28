@@ -11,22 +11,23 @@ export function GetWellSoonOverlay() {
 
   useEffect(() => {
     setMounted(true);
-    // Cat GIFs
-    const catGifs = [
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDl5bjM1ZHZ5a3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/mL9C8UcdV0EnT0pjsm/giphy.gif", // Cute walking cat
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExazF6b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/JIX9t2j0ZTN9S/giphy.gif", // Pusheen
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/3oriO0OEd9QIDdllqo/giphy.gif", // Nyan cat style
-      "https://media.giphy.com/media/GeimqsH0TLDt4tScGw/giphy.gif", // Excited cat
-      "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" // Bongo cat
+    // Reliable static cat images
+    const catImages = [
+      "https://cataas.com/cat/cute?width=100",
+      "https://cataas.com/cat/funny?width=100",
+      "https://cataas.com/cat?width=100&type=square",
+      "https://placekitten.com/100/100",
+      "https://placekitten.com/102/102",
+      "https://placekitten.com/101/101"
     ];
 
     // Generate rain cats
     const newCats = Array.from({ length: 20 }).map((_, i) => ({
       id: i,
       left: Math.random() * 100, // Random horizontal position 0-100%
-      duration: 4 + Math.random() * 5, // Random duration 4-9s (slower for gifs)
+      duration: 4 + Math.random() * 5, // Random duration 4-9s
       delay: Math.random() * 5, // Random delay
-      img: catGifs[Math.floor(Math.random() * catGifs.length)],
+      img: catImages[i % catImages.length], // Cycle through images
     }));
     setCats(newCats);
   }, []);
@@ -66,7 +67,7 @@ export function GetWellSoonOverlay() {
               left: `${cat.left}%`,
               animationDuration: `${cat.duration}s`,
               animationDelay: `${cat.delay}s`,
-              width: '80px', // Fixed width for gifs
+              width: '60px',
               height: 'auto'
             }}
           >
@@ -74,7 +75,7 @@ export function GetWellSoonOverlay() {
             <img
               src={cat.img}
               alt="raining cat"
-              className="w-full h-auto object-contain drop-shadow-lg"
+              className="w-full h-auto object-cover rounded-full drop-shadow-lg"
             />
           </div>
         ))}
@@ -104,7 +105,7 @@ export function GetWellSoonOverlay() {
           <div className="w-32 h-32 mx-auto relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5/mlvseq9yvZhba/giphy.gif"
+              src="https://cataas.com/cat?type=square&width=200"
               alt="Cute cat"
               className="w-full h-full object-cover rounded-full border-4 border-pink-100 shadow-md"
             />
@@ -115,7 +116,7 @@ export function GetWellSoonOverlay() {
               Geçmiş Olsun
             </h2>
             <p className="text-pink-400 font-medium text-lg leading-relaxed px-2">
-              Silginim hanım, umarım en kısa sürede iyileşirsin ve dünyayı yok edersin! 😈💖
+              Silginim hanım, umarım en kısa sürede iyileşirsin ve dünyayı yok edersin!
             </p>
           </div>
 
