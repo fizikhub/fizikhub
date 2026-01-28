@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Atom } from "lucide-react";
 
 interface DankLogoProps {
     className?: string;
@@ -9,52 +10,28 @@ interface DankLogoProps {
 
 export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className={cn("flex flex-col select-none relative group cursor-pointer", className)}>
-            {/* 
-        V23 LOGO: MOSKO SCIENCE (Restored)
-        - Mobile: text-2xl
-        - Desktop: text-4xl
-        - Style: Blocky Yellow Text with Thick Black Stroke
-      */}
-            <div className="relative z-10">
-                <motion.h1
-                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
-                    style={{
-                        WebkitTextStroke: "1.5px black",
-                        fontFamily: "var(--font-heading)",
-                        filter: "drop-shadow(3px 3px 0px #000)"
-                    }}
-                    whileHover={{
-                        scale: 1.05,
-                        filter: "drop-shadow(5px 5px 0px #000)"
-                    }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                >
-                    FIZIKHUB
-                </motion.h1>
+        <div className={cn("flex items-center gap-2 select-none relative group cursor-pointer", className)}>
 
-                {/* Retro Star Accent */}
-                <motion.div
-                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
-                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
-                    </svg>
-                </motion.div>
+            {/* LOGO ICON (Sticker Style) */}
+            <motion.div
+                className="relative w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#FFC800] rounded-xl border-[3px] border-black shadow-[3px_3px_0px_0px_#000]"
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+            >
+                <div className="absolute inset-0 bg-white opacity-20 rounded-xl" /> {/* Glare */}
+                <Atom className="w-6 h-6 sm:w-7 sm:h-7 text-black stroke-[2.5px] animate-[spin_10s_linear_infinite]" />
+            </motion.div>
+
+            {/* LOGO TEXT (Stacked & Tight) */}
+            <div className="flex flex-col leading-[0.85]">
+                <span className="text-lg sm:text-xl font-black tracking-tighter text-black">
+                    FIZIK<span className="text-[#3B82F6]">HUB</span>
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-widest uppercase bg-black text-white px-1.5 py-0.5 rounded-md inline-block transform -rotate-2 group-hover:rotate-0 transition-transform w-fit">
+                    BİLİM APP
+                </span>
             </div>
 
-            {/* Slogan */}
-            <motion.div
-                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
-                initial={{ rotate: -3 }}
-                whileHover={{ rotate: 3 }}
-            >
-                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
-                    BİLİM PLATFORMU
-                </span>
-            </motion.div>
         </div>
     );
 }
