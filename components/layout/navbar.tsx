@@ -3,18 +3,19 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, FlaskConical, Globe, BookOpen, User, ArrowRight } from "lucide-react";
+import { Search, Menu, X, ArrowUpRight } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
-const MARQUEE_TEXT = [
-    "EVRENİN SIRLARI ÇÖZÜLÜYOR", "KUANTUM DOLANIKLIK", "YENİ MAKALE YAYINDA",
-    "BİLİM İÇİN TIKLA", "KAOS TEORİSİ", "FIZIKHUB v3.1"
+const NAV_LINKS = [
+    { href: "/makale", label: "MAKALE" },
+    { href: "/siralamalar", label: "LİDERLİK" },
+    { href: "/ozel", label: "LABORATUVAR" },
 ];
 
 export function Navbar() {
@@ -28,135 +29,117 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V31: RETRO-FUTURE LAB NAVBAR
-                Style: "Science Zine", Warm Paper, Thick Ink, Pastel Accents
+                V40: SWISS BRUTALIST SCIENCE NAVBAR
+                Style: "Museum of Science", High-End, Structural, Clean
+                Colors: White, Black, Signal Yellow (#FAFF00)
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 font-sans pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 p-4 sm:p-6 pointer-events-none font-sans">
 
-                {/* 1. TOP MARQUEE (Science News Ticker) */}
-                <div className="h-8 bg-black text-[#FFFBF0] overflow-hidden border-b-2 border-black flex items-center relative z-50 pointer-events-auto">
-                    <motion.div
-                        className="flex gap-8 whitespace-nowrap text-xs font-bold tracking-widest uppercase"
-                        animate={{ x: ["0%", "-50%"] }}
-                        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                    >
-                        {[...MARQUEE_TEXT, ...MARQUEE_TEXT, ...MARQUEE_TEXT].map((text, i) => (
-                            <span key={i} className="flex items-center gap-2">
-                                <span className="text-[#FFC800]">★</span> {text}
-                            </span>
-                        ))}
-                    </motion.div>
-                </div>
+                {/* FLOATING STRUCTURAL BEAM */}
+                <div className={cn(
+                    "pointer-events-auto mx-auto max-w-screen-xl relative",
+                    "h-16 sm:h-20 bg-white border-[3px] border-black",
+                    "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]", // Bold Hard Shadow
+                    "flex items-center justify-between px-6 sm:px-8",
+                    "transition-transform duration-300 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]"
+                )}>
 
-                {/* 2. MAIN NAV BAR */}
-                <div className="h-16 sm:h-20 bg-[#FFFBF0] border-b-[3px] border-black flex items-center justify-between px-4 sm:px-6 pointer-events-auto relative shadow-sm">
-
-                    {/* LEFT: BRAND */}
-                    <div className="flex items-center">
-                        <ViewTransitionLink href="/" className="group">
+                    {/* 1. BRAND (Left) */}
+                    <div className="flex-shrink-0">
+                        <ViewTransitionLink href="/" className="block">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
-                    {/* CENTER: DESKTOP LINKS (Retro Tabs) */}
-                    <nav className="hidden md:flex items-center h-full">
-                        {[
-                            { href: "/", label: "ANA SAYFA", color: "hover:bg-green-300" },
-                            { href: "/makale", label: "MAKALE", color: "hover:bg-blue-300" },
-                            { href: "/siralamalar", label: "SIRALAMA", color: "hover:bg-pink-300" },
-                        ].map((item) => (
+                    {/* 2. NAVIGATION (Center - Desktop) */}
+                    <nav className="hidden md:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-full">
+                        {NAV_LINKS.map((link) => (
                             <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
+                                key={link.href}
+                                href={link.href}
                                 className={cn(
-                                    "relative h-full px-8 flex items-center justify-center border-x-[1.5px] border-black -ml-[1.5px] transition-colors",
-                                    "text-sm font-black tracking-tight uppercase",
-                                    item.color,
-                                    pathname === item.href && "bg-black text-white hover:bg-black hover:text-white"
+                                    "relative h-[70%] px-6 flex items-center justify-center",
+                                    "text-sm font-black tracking-wide uppercase text-black transition-all",
+                                    "hover:bg-black hover:text-[#FAFF00]",
+                                    pathname === link.href && "bg-black text-white"
                                 )}
                             >
-                                {item.label}
-                                {pathname === item.href && (
-                                    <motion.div
-                                        layoutId="nav-underline"
-                                        className="absolute bottom-0 left-0 right-0 h-1.5 bg-[#FFC800]"
-                                    />
+                                {link.label}
+                                {/* Active Indicator Dot */}
+                                {pathname === link.href && (
+                                    <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FAFF00] rounded-full" />
                                 )}
                             </ViewTransitionLink>
                         ))}
                     </nav>
 
-                    {/* RIGHT: CONTROLS */}
-                    <div className="flex items-center gap-3">
+                    {/* 3. ACTIONS (Right) */}
+                    <div className="flex items-center gap-4">
 
                         {/* SEARCH */}
                         <button
                             onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 flex items-center justify-center border-[2px] border-black rounded-lg bg-white hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+                            className="group flex items-center justify-center w-10 h-10 border-[2px] border-black bg-neutral-100 hover:bg-[#FAFF00] transition-colors"
                         >
-                            <Search className="w-5 h-5" />
+                            <Search className="w-5 h-5 stroke-[2.5px] group-hover:scale-110 transition-transform" />
                         </button>
 
-                        {/* MOBILE MENU BTN */}
+                        {/* AUTH (Desktop) */}
+                        <div className="hidden md:block">
+                            <AuthButton />
+                        </div>
+
+                        {/* MOBILE HAMBURGER */}
                         <div className="md:hidden">
                             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                                 <SheetTrigger asChild>
-                                    <button className="w-10 h-10 flex items-center justify-center bg-[#FFC800] border-[2px] border-black rounded-lg hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all">
-                                        <Menu className="w-6 h-6" />
+                                    <button className="w-12 h-10 bg-black text-white flex items-center justify-center hover:bg-[#FAFF00] hover:text-black transition-colors border-[2px] border-black">
+                                        <Menu className="w-6 h-6 stroke-[2.5px]" />
                                     </button>
                                 </SheetTrigger>
-                                <SheetContent side="right" className="w-[85vw] bg-[#FFFBF0] border-l-[3px] border-black p-0 sm:max-w-md">
-                                    <div className="h-full flex flex-col">
-                                        {/* HEADER */}
-                                        <div className="h-20 flex items-center justify-between px-6 border-b-[3px] border-black bg-[#FFDA47]">
-                                            <span className="text-xl font-black italic tracking-tighter">MENÜ</span>
-                                            <button onClick={() => setIsMenuOpen(false)}>
-                                                <X className="w-8 h-8 stroke-[3px]" />
-                                            </button>
+                                <SheetContent side="top" className="h-[100dvh] w-full bg-[#FAFF00] p-0 border-none">
+                                    <div className="flex flex-col h-full relative">
+
+                                        {/* CLOSE BTN */}
+                                        <button
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="absolute top-6 right-6 w-12 h-12 bg-black text-white flex items-center justify-center border-[2px] border-transparent hover:scale-110 transition-transform"
+                                        >
+                                            <X className="w-6 h-6" />
+                                        </button>
+
+                                        {/* BRAND MOBILE */}
+                                        <div className="absolute top-8 left-8">
+                                            <DankLogo className="scale-125 origin-left" />
                                         </div>
 
-                                        {/* LINKS */}
-                                        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+                                        {/* GIANT LINKS */}
+                                        <div className="flex-1 flex flex-col justify-center px-8 gap-4">
                                             {[
-                                                { href: "/", label: "ANA SAYFA", bg: "bg-white" },
-                                                { href: "/makale", label: "MAKALE", bg: "bg-blue-200" },
-                                                { href: "/siralamalar", label: "LİG", bg: "bg-pink-200" },
-                                                { href: "/ozel", label: "LABORATUVAR", bg: "bg-green-200" }
-                                            ].map((link) => (
+                                                { href: "/", label: "ANA SAYFA" },
+                                                ...NAV_LINKS
+                                            ].map((link, i) => (
                                                 <ViewTransitionLink
-                                                    key={link.href}
+                                                    key={i}
                                                     href={link.href}
                                                     onClick={() => setIsMenuOpen(false)}
-                                                    className={cn(
-                                                        "group flex items-center justify-between p-5 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all",
-                                                        link.bg
-                                                    )}
+                                                    className="group flex items-center justify-between text-5xl sm:text-7xl font-black tracking-tighter text-black border-b-[3px] border-black pb-4 hover:pl-4 transition-all"
                                                 >
-                                                    <span className="text-xl font-black tracking-tight">{link.label}</span>
-                                                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                                                    <span>{link.label}</span>
+                                                    <ArrowUpRight className="w-8 h-8 sm:w-16 sm:h-16 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 </ViewTransitionLink>
                                             ))}
 
-                                            <div className="mt-8 border-[3px] border-black rounded-xl p-4 bg-white border-dashed">
+                                            <div className="mt-8">
                                                 <AuthButton />
                                             </div>
-                                        </div>
-
-                                        {/* FOOTER */}
-                                        <div className="p-4 border-t-[3px] border-black text-center bg-black text-[#FFFBF0]">
-                                            <p className="text-xs font-mono">BİLİMİ Tİ YE ALIYORUZ</p>
                                         </div>
                                     </div>
                                 </SheetContent>
                             </Sheet>
                         </div>
-
-                        {/* DESKTOP AUTH */}
-                        <div className="hidden md:block">
-                            <AuthButton />
-                        </div>
-
                     </div>
+
                 </div>
             </header>
 
