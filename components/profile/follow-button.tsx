@@ -10,9 +10,10 @@ interface FollowButtonProps {
     targetUserId: string;
     initialIsFollowing: boolean;
     targetUsername?: string;
+    variant?: string;
 }
 
-export function FollowButton({ targetUserId, initialIsFollowing, targetUsername }: FollowButtonProps) {
+export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant }: FollowButtonProps) {
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isPending, startTransition] = useTransition();
 
