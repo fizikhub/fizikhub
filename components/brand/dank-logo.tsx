@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
 
 interface DankLogoProps {
     className?: string;
@@ -8,27 +10,18 @@ interface DankLogoProps {
 
 export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className={cn("select-none cursor-pointer group", className)}>
+        <div className={cn("flex items-center gap-1 select-none cursor-pointer group", className)}>
 
-            <div className="flex flex-col border-[1px] border-black bg-black text-white hover:bg-[#0033FF] transition-colors">
+            {/* ICON: SPARKLE BUTTON */}
+            <div className="w-9 h-9 bg-[#A388EE] border-2 border-black rounded-lg flex items-center justify-center shadow-[3px_3px_0px_0px_#000] group-hover:translate-y-0.5 group-hover:shadow-[1px_1px_0px_0px_#000] transition-all">
+                <Sparkles className="w-5 h-5 text-white fill-current" />
+            </div>
 
-                {/* TOP ROW */}
-                <div className="flex items-center justify-between px-2 pt-1 border-b border-white/20">
-                    <span className="text-[10px] font-mono tracking-widest opacity-70">REF.01</span>
-                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                </div>
-
-                {/* MAIN TEXT */}
-                <div className="px-2 pb-1 relative overflow-hidden">
-                    <h1 className="text-3xl font-black tracking-tighter leading-none -ml-0.5">
-                        FIZIK
-                    </h1>
-                    <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold tracking-tight opacity-70">HUB</span>
-                        <span className="text-[8px] font-mono border border-white px-1 ml-2">INTL.</span>
-                    </div>
-                </div>
-
+            {/* TEXT: CHUNKY */}
+            <div className="flex flex-col leading-none ml-1">
+                <span className="text-xl px-1 font-[900] tracking-tighter text-black bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000]">
+                    FIZIK<span className="text-[#A388EE]">HUB</span>
+                </span>
             </div>
 
         </div>
