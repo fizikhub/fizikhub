@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Zap } from "lucide-react";
 
 interface DankLogoProps {
     className?: string;
@@ -10,24 +8,27 @@ interface DankLogoProps {
 
 export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className={cn("flex items-center gap-2 select-none cursor-pointer group font-mono", className)}>
+        <div className={cn("select-none cursor-pointer group", className)}>
 
-            {/* ICON: WARNING PLATE */}
-            <div className="w-10 h-10 bg-[#FF4D00] border-2 border-black flex items-center justify-center relative shadow-[2px_2px_0px_0px_#000]">
-                <Zap className="w-6 h-6 text-black fill-black" />
-                {/* Bolt heads */}
-                <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-black rounded-full" />
-                <div className="absolute bottom-0.5 right-0.5 w-1 h-1 bg-black rounded-full" />
-            </div>
+            <div className="flex flex-col border-[1px] border-black bg-black text-white hover:bg-[#0033FF] transition-colors">
 
-            {/* TEXT: STENCIL */}
-            <div className="flex flex-col leading-none">
-                <span className="text-2xl font-black tracking-tighter text-black uppercase" style={{ textShadow: "1px 1px 0px rgba(0,0,0,0.1)" }}>
-                    FIZIK_HUB
-                </span>
-                <span className="text-[10px] font-bold text-[#FF4D00] bg-black px-1 self-start tracking-widest">
-                    EST. 2024
-                </span>
+                {/* TOP ROW */}
+                <div className="flex items-center justify-between px-2 pt-1 border-b border-white/20">
+                    <span className="text-[10px] font-mono tracking-widest opacity-70">REF.01</span>
+                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                </div>
+
+                {/* MAIN TEXT */}
+                <div className="px-2 pb-1 relative overflow-hidden">
+                    <h1 className="text-3xl font-black tracking-tighter leading-none -ml-0.5">
+                        FIZIK
+                    </h1>
+                    <div className="flex items-center justify-between">
+                        <span className="text-xl font-bold tracking-tight opacity-70">HUB</span>
+                        <span className="text-[8px] font-mono border border-white px-1 ml-2">INTL.</span>
+                    </div>
+                </div>
+
             </div>
 
         </div>
