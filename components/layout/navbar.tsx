@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, Atom, Zap, BookOpen, Trophy } from "lucide-react";
+import { Search, Menu, X, Atom, Zap, BookOpen, Trophy, Home } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
@@ -122,7 +122,7 @@ export function Navbar() {
                                         {/* MOBILE MENU ITEMS */}
                                         <div className="p-6 flex flex-col gap-4">
                                             {[
-                                                { href: "/", label: "ANA SAYFA", color: "bg-white" },
+                                                { href: "/", label: "ANA SAYFA", color: "bg-white", icon: Home },
                                                 ...NAV_ITEMS
                                             ].map((item, i) => (
                                                 <ViewTransitionLink
