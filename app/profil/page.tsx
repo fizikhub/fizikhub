@@ -3,7 +3,8 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { SocialProfileView } from "@/components/profile/social-profile-view";
+import { ModernProfileHeader } from "@/components/profile/modern/modern-profile-header";
+import { ModernProfileFeed } from "@/components/profile/modern/modern-profile-feed";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,19 +48,35 @@ export default async function ProfilePage() {
         answersCount: answers?.length || 0,
     };
 
+    // Fix for BadgeDisplay type mismatch
+    const formattedBadges = userBadges?.map((ub: any) => ({
+        awarded_at: ub.awarded_at,
+        badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
+    }))?.filter(ub => ub.badges) || [];
+
     return (
-        <SocialProfileView
-            profile={profile}
-            isOwnProfile={true}
-            stats={stats}
-            userBadges={userBadges || []}
-            articles={articles || []}
-            questions={questions || []}
-            answers={answers || []}
-            drafts={drafts || []}
-            unreadCount={unreadMessagesCount}
-            bookmarkedArticles={bookmarkedArticles || []}
-            bookmarkedQuestions={bookmarkedQuestions || []}
-        />
+        <div className="min-h-screen bg-background border-x border-border max-w-[600px] mx-auto pb-32">
+            <ModernProfileHeader
+                profile={profile}
+                user={user}
+                isOwnProfile={true}
+                // isFollowing is likely not needed on own profile, but we can pass false
+                isFollowing={false}
+                stats={stats}
+                userBadges={formattedBadges}
+                unreadCount={unreadMessagesCount}
+            />
+
+            <div className="border-t border-border mt-4">
+                <ModernProfileFeed
+                    articles={articles || []}
+                    questions={questions || []}
+                    answers={answers || []}
+                    bookmarkedArticles={bookmarkedArticles || []}
+                    bookmarkedQuestions={bookmarkedQuestions || []}
+                    isOwnProfile={true}
+                />
+            </div>
+        </div>
     );
 }
