@@ -3,155 +3,153 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, Home, BookOpen, Trophy, Atom, User, Sparkles } from "lucide-react";
+import { Search, Menu, X, Home, BookOpen, Trophy, Atom, ArrowRight } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
 const NAV_ITEMS = [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/makale", label: "Read", icon: BookOpen },
-    { href: "/siralamalar", label: "Rank", icon: Trophy },
-    { href: "/ozel", label: "Lab", icon: Atom },
+    { href: "/makale", label: "MAKALE", color: "hover:bg-[#FF90E8]" }, // Pink
+    { href: "/siralamalar", label: "SIRALAMA", color: "hover:bg-[#FFC900]" }, // Yellow
+    { href: "/ozel", label: "LABORATUVAR", color: "hover:bg-[#23A094] hover:text-white" }, // Teal
 ];
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
-
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
 
     return (
         <>
             {/* 
-                V80: UNIVERSAL SOFT APP
-                Style: "Clean Book App", Soft Rounded, Floating Elements
+                V90: DEFINITIVE NEO-BRUTALISM
+                Style: "The Gumroad Look", Hard Edges, Pop Colors, Unapologetic.
             */}
 
-            {/* --- DESKTOP HEADER (Floating Island) --- */}
-            <header className="hidden md:flex fixed top-6 left-0 right-0 z-50 justify-center pointer-events-none">
-                <motion.div
-                    initial={{ y: -100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className={cn(
-                        "pointer-events-auto",
-                        "h-16 px-2 pr-4 bg-white/95 backdrop-blur-xl",
-                        "border border-neutral-200/60 shadow-lg shadow-neutral-200/20",
-                        "rounded-full flex items-center gap-4 transition-all duration-300",
-                        scrolled ? "w-[50rem]" : "w-[60rem]"
-                    )}
-                >
-                    {/* Brand */}
-                    <div className="pl-4">
-                        <ViewTransitionLink href="/">
-                            <DankLogo />
-                        </ViewTransitionLink>
-                    </div>
+            <header className="fixed top-0 left-0 right-0 z-50 p-4 pointer-events-none font-sans">
 
-                    {/* Divider */}
-                    <div className="w-[1px] h-6 bg-neutral-200" />
+                {/* FLOATING BRUTALIST CONTAINER */}
+                <div className="pointer-events-auto mx-auto max-w-7xl">
+                    <div className={cn(
+                        "bg-white border-[3px] border-black rounded-xl",
+                        "shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]", // The signature shadow
+                        "flex flex-col overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-[7px_7px_0px_0px_#000]"
+                    )}>
 
-                    {/* Nav Pills */}
-                    <nav className="flex-1 flex items-center gap-1">
-                        {NAV_ITEMS.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <ViewTransitionLink
-                                    key={item.href}
-                                    href={item.href}
-                                    className={cn(
-                                        "relative px-5 py-2 rounded-full text-sm font-semibold transition-all hover:bg-neutral-100",
-                                        isActive ? "text-slate-900" : "text-neutral-500"
-                                    )}
-                                >
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="desktop-nav"
-                                            className="absolute inset-0 bg-neutral-100 rounded-full"
-                                            style={{ borderRadius: 999 }}
-                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                        />
-                                    )}
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        <item.icon className={cn("w-4 h-4", isActive ? "stroke-[2.5px]" : "stroke-2")} />
-                                        {item.label}
-                                    </span>
+                        {/* 1. TOP MARQUEE (Optional Vibe) */}
+                        <div className="bg-[#FF90E8] border-b-[3px] border-black py-1 overflow-hidden flex justify-center">
+                            <div className="text-xs font-black uppercase tracking-widest flex gap-8 animate-marquee whitespace-nowrap">
+                                {Array(10).fill("★ FİZİK ARTIK SIKICI DEĞİL").map((text, i) => (
+                                    <span key={i}>{text}</span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 2. MAIN NAV BAR */}
+                        <div className="h-16 px-4 sm:px-6 flex items-center justify-between">
+
+                            {/* BRAND */}
+                            <div className="flex-shrink-0">
+                                <ViewTransitionLink href="/" className="block transform hover:scale-105 transition-transform">
+                                    <DankLogo />
                                 </ViewTransitionLink>
-                            )
-                        })}
-                    </nav>
+                            </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 rounded-full flex items-center justify-center text-neutral-500 hover:bg-neutral-100 transition-colors"
-                        >
-                            <Search className="w-5 h-5" />
-                        </button>
-                        <AuthButton />
-                    </div>
-                </motion.div>
-            </header>
-
-            {/* --- MOBILE HEADER (Minimal) --- */}
-            <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-100 h-14 px-4 flex items-center justify-between">
-                <ViewTransitionLink href="/">
-                    <DankLogo className="scale-90 origin-left" />
-                </ViewTransitionLink>
-                <div className="flex items-center gap-3">
-                    <button onClick={() => setIsSearchOpen(true)}>
-                        <Search className="w-6 h-6 text-neutral-800" />
-                    </button>
-                    <AuthButton />
-                </div>
-            </header>
-
-            {/* --- MOBILE BOTTOM NAV (Floating Dock) --- */}
-            <nav className="md:hidden fixed bottom-6 left-4 right-4 z-50">
-                <div className="bg-slate-900 rounded-[2rem] shadow-2xl shadow-slate-900/20 px-6 py-4 flex items-center justify-between">
-                    {NAV_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
-                        return (
-                            <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
-                                className="relative flex flex-col items-center justify-center gap-1"
-                            >
-                                <div className={cn(
-                                    "p-2 rounded-2xl transition-all duration-300",
-                                    isActive ? "bg-white text-slate-900 -translate-y-4 shadow-lg shadow-black/10 scale-110" : "text-slate-400"
-                                )}>
-                                    <item.icon className="w-6 h-6 stroke-[2.5px]" />
-                                </div>
-                                {isActive && (
-                                    <motion.span
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="absolute -bottom-2 text-[10px] font-bold text-white tracking-wide"
+                            {/* DESKTOP NAV items */}
+                            <nav className="hidden md:flex items-center gap-2 h-full">
+                                {NAV_ITEMS.map((item) => (
+                                    <ViewTransitionLink
+                                        key={item.href}
+                                        href={item.href}
+                                        className={cn(
+                                            "h-10 px-6 flex items-center justify-center rounded-lg border-[2px] border-transparent font-bold tracking-tight transition-all",
+                                            "hover:border-black hover:shadow-[3px_3px_0px_0px_#000]",
+                                            item.color,
+                                            pathname === item.href && "bg-black text-white shadow-[3px_3px_0px_0px_#888]"
+                                        )}
                                     >
                                         {item.label}
-                                    </motion.span>
-                                )}
-                            </ViewTransitionLink>
-                        )
-                    })}
-                </div>
-            </nav>
+                                    </ViewTransitionLink>
+                                ))}
+                            </nav>
 
-            {/* --- SPACERS --- */}
-            <div className="hidden md:block h-32" /> {/* Desktop Spacer */}
-            <div className="md:hidden h-20" /> {/* Mobile Top Spacer */}
-            <div className="md:hidden h-28" /> {/* Mobile Bottom Spacer */}
+                            {/* RIGHT ACTIONS */}
+                            <div className="flex items-center gap-3">
+
+                                {/* SEARCH */}
+                                <button
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="w-10 h-10 flex items-center justify-center border-[2px] border-black rounded-lg bg-white hover:bg-[#23A094] hover:text-white transition-colors shadow-[3px_3px_0px_0px_#000] active:translate-y-1 active:shadow-none"
+                                >
+                                    <Search className="w-5 h-5 stroke-[3px]" />
+                                </button>
+
+                                {/* MOBILE HAMBURGER */}
+                                <div className="md:hidden">
+                                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                                        <SheetTrigger asChild>
+                                            <button className="w-10 h-10 flex items-center justify-center bg-[#FFC900] border-[2px] border-black rounded-lg shadow-[3px_3px_0px_0px_#000] active:translate-y-1 active:shadow-none transition-all">
+                                                <Menu className="w-6 h-6 stroke-[3px]" />
+                                            </button>
+                                        </SheetTrigger>
+                                        <SheetContent side="right" className="w-full sm:max-w-md bg-white border-l-[3px] border-black p-0">
+                                            <div className="flex flex-col h-full">
+
+                                                {/* SHEET HEADER */}
+                                                <div className="h-20 bg-[#FFC900] border-b-[3px] border-black flex items-center justify-between px-6">
+                                                    <span className="text-xl font-black uppercase">Menü</span>
+                                                    <button onClick={() => setIsMenuOpen(false)} className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000] active:translate-y-1 active:shadow-none">
+                                                        <X className="w-6 h-6 stroke-[3px]" />
+                                                    </button>
+                                                </div>
+
+                                                {/* SHEET LINKS */}
+                                                <div className="flex-1 p-6 flex flex-col gap-4">
+                                                    {[
+                                                        { href: "/", label: "ANA SAYFA", bg: "bg-white" },
+                                                        ...NAV_ITEMS.map(i => ({ href: i.href, label: i.label, bg: "bg-white" }))
+                                                    ].map((item, i) => (
+                                                        <ViewTransitionLink
+                                                            key={i}
+                                                            href={item.href}
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                            className={cn(
+                                                                "group flex items-center justify-between p-4 border-[3px] border-black bg-white shadow-[5px_5px_0px_0px_#000] hover:translate-x-1 hover:shadow-[7px_7px_0px_0px_#000] transition-all"
+                                                            )}
+                                                        >
+                                                            <span className="text-lg font-black">{item.label}</span>
+                                                            <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-full">
+                                                                <ArrowRight className="w-4 h-4" />
+                                                            </div>
+                                                        </ViewTransitionLink>
+                                                    ))}
+
+                                                    <div className="mt-8 p-4 bg-neutral-100 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                                                        <AuthButton />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </SheetContent>
+                                    </Sheet>
+                                </div>
+
+                                {/* DESKTOP AUTH */}
+                                <div className="hidden md:block">
+                                    <AuthButton />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* SPACER */}
+            <div className="h-32" />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
