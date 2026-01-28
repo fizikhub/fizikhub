@@ -115,7 +115,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 userBadges={formattedBadges}
             />
 
-            <div className="border-t border-border mt-4">
+            <div className="border-t border-border mt-8">
                 <ModernProfileFeed
                     articles={articles || []}
                     questions={questions || []}
