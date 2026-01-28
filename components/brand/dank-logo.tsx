@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Zap } from "lucide-react";
 
 interface DankLogoProps {
     className?: string;
@@ -9,16 +10,24 @@ interface DankLogoProps {
 
 export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className={cn("flex items-center gap-0.5 select-none cursor-pointer group", className)}>
+        <div className={cn("flex items-center gap-2 select-none cursor-pointer group font-mono", className)}>
 
-            {/* BOX 1: BLACK */}
-            <div className="bg-black text-white px-3 py-1 border-[3px] border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] transition-all">
-                <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none">FIZIK</span>
+            {/* ICON: WARNING PLATE */}
+            <div className="w-10 h-10 bg-[#FF4D00] border-2 border-black flex items-center justify-center relative shadow-[2px_2px_0px_0px_#000]">
+                <Zap className="w-6 h-6 text-black fill-black" />
+                {/* Bolt heads */}
+                <div className="absolute top-0.5 left-0.5 w-1 h-1 bg-black rounded-full" />
+                <div className="absolute bottom-0.5 right-0.5 w-1 h-1 bg-black rounded-full" />
             </div>
 
-            {/* BOX 2: YELLOW */}
-            <div className="bg-[#FFC900] text-black px-2 py-1 border-[3px] border-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000] group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none transition-all">
-                <span className="text-xl sm:text-2xl font-black tracking-tighter leading-none italic">HUB</span>
+            {/* TEXT: STENCIL */}
+            <div className="flex flex-col leading-none">
+                <span className="text-2xl font-black tracking-tighter text-black uppercase" style={{ textShadow: "1px 1px 0px rgba(0,0,0,0.1)" }}>
+                    FIZIK_HUB
+                </span>
+                <span className="text-[10px] font-bold text-[#FF4D00] bg-black px-1 self-start tracking-widest">
+                    EST. 2024
+                </span>
             </div>
 
         </div>
