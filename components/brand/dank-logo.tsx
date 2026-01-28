@@ -3,9 +3,13 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-export function DankLogo() {
+interface DankLogoProps {
+    className?: string;
+}
+
+export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer">
+        <div className={cn("flex flex-col select-none relative group cursor-pointer", className)}>
             {/* 
         V23 LOGO: MOSKO SCIENCE (Restored)
         - Mobile: text-2xl
