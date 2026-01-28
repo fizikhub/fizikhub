@@ -11,14 +11,13 @@ export function GetWellSoonOverlay() {
 
   useEffect(() => {
     setMounted(true);
-    // Reliable static cat images
+    // Reliable static cat images (Wikimedia Commons & PlaceCats)
     const catImages = [
-      "https://cataas.com/cat/cute?width=100",
-      "https://cataas.com/cat/funny?width=100",
-      "https://cataas.com/cat?width=100&type=square",
-      "https://placekitten.com/100/100",
-      "https://placekitten.com/102/102",
-      "https://placekitten.com/101/101"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/240px-Cat03.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cat_November_2010-1a.jpg/240px-Cat_November_2010-1a.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Kittyply_edit1.jpg/240px-Kittyply_edit1.jpg",
+      "https://placecats.com/300/300",
+      "https://placecats.com/g/300/300"
     ];
 
     // Generate rain cats
@@ -105,7 +104,7 @@ export function GetWellSoonOverlay() {
           <div className="w-32 h-32 mx-auto relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://cataas.com/cat?type=square&width=200"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Feral_cat_Virginia_crop.jpg/240px-Feral_cat_Virginia_crop.jpg"
               alt="Cute cat"
               className="w-full h-full object-cover rounded-full border-4 border-pink-100 shadow-md"
             />
