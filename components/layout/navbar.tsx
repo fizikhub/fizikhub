@@ -3,151 +3,183 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Home, BookOpen, Trophy, Atom, Menu, X, Sparkles } from "lucide-react";
+import { Search, Menu, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
-const NAV_ITEMS = [
-    { href: "/", label: "Home", icon: Home, color: "hover:bg-[#A388EE]" }, // Violet
-    { href: "/makale", label: "Read", icon: BookOpen, color: "hover:bg-[#FABE28]" }, // Yellow
-    { href: "/siralamalar", label: "Rank", icon: Trophy, color: "hover:bg-[#88EEA3]" }, // Mint
-    { href: "/ozel", label: "Lab", icon: Atom, color: "hover:bg-[#EE8888]" }, // Salmon
+const clickVariant = {
+    tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
+    hover: { y: -2, x: -2, boxShadow: "3px 3px 0px 0px #000" }
+};
+
+const physicsTicker = [
+    "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
+    "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 299,792,458 m/s"
 ];
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
-    // Hide top navbar on mobile since we have bottom tabs, but show a minimal brand header
+    useEffect(() => setMounted(true), []);
+
+    const navItems = [
+        { href: "/", label: "Ana" },
+        { href: "/makale", label: "Keşfet" },
+        { href: "/siralamalar", label: "Lig" },
+    ];
+
     return (
         <>
             {/* 
-                V120: NEO-BRUTALIST APP
-                Style: "Trendy Mobile App", Bottom Tabs, Floating Dock, Squircles
+                V23: CLEAN SCIENCE CONSOLE (RESTORED)
+                - Height: h-14 (56px)
+                - Blue Base, Thick Borders, Physics Echo
             */}
-
-            {/* --- MOBILE TOP HEADER (Brand Only) --- */}
-            <header className="md:hidden fixed top-0 left-0 right-0 z-40 px-4 py-3 bg-white/90 backdrop-blur-md border-b-2 border-black flex items-center justify-between">
-                <ViewTransitionLink href="/">
-                    <DankLogo className="scale-90 origin-left" />
-                </ViewTransitionLink>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsSearchOpen(true)}
-                        className="w-10 h-10 bg-[#FABE28] border-2 border-black rounded-lg flex items-center justify-center shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 active:shadow-none transition-all"
-                    >
-                        <Search className="w-5 h-5" />
-                    </button>
-                    <div className="scale-90 origin-right">
-                        <AuthButton />
-                    </div>
-                </div>
-            </header>
-
-            {/* --- MOBILE BOTTOM TAB BAR (True App Experience) --- */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-black pb-safe">
-                <div className="grid grid-cols-4 h-16">
-                    {NAV_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
-                        // Map nav item color to active background for mobile
-                        const activeBg = isActive && item.href === "/" ? "bg-[#A388EE]" :
-                            isActive && item.href === "/makale" ? "bg-[#FABE28]" :
-                                isActive && item.href === "/siralamalar" ? "bg-[#88EEA3]" :
-                                    isActive && item.href === "/ozel" ? "bg-[#EE8888]" : "";
-
-                        return (
-                            <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
-                                className="relative flex flex-col items-center justify-center gap-1 touch-manipulation group"
-                            >
-                                <div className={cn(
-                                    "p-1.5 rounded-xl border-2 border-transparent transition-all duration-300",
-                                    isActive ? cn("border-black -translate-y-4 shadow-[3px_3px_0px_0px_#000]", activeBg) : "text-neutral-400 group-active:scale-95"
-                                )}>
-                                    <item.icon className={cn("w-6 h-6 stroke-[2.5px]", isActive ? "text-black" : "text-neutral-400")} />
-                                </div>
-                                {isActive && (
-                                    <motion.span
-                                        initial={{ opacity: 0, scale: 0.5 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="absolute bottom-1 text-[10px] font-black tracking-wide text-black"
-                                    >
-                                        {item.label}
-                                    </motion.span>
-                                )}
-                            </ViewTransitionLink>
-                        )
-                    })}
-                </div>
-            </nav>
-
-            {/* --- DESKTOP FLOATING DOCK --- */}
-            <header className="hidden md:flex fixed top-6 left-0 right-0 z-50 justify-center pointer-events-none">
-                <motion.div
-                    initial={{ y: -100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="pointer-events-auto bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] px-6 py-3 flex items-center gap-6"
+            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
+                <div
+                    className={cn(
+                        "pointer-events-auto h-full",
+                        "flex items-center justify-between px-3 sm:px-4",
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
+                        "w-full relative overflow-hidden"
+                    )}
                 >
-                    {/* Brand */}
-                    <div className="pr-4 border-r-2 border-neutral-200">
-                        <ViewTransitionLink href="/" className="hover:scale-110 transition-transform block">
+                    {/* PHYSICS TICKER BACKGROUND */}
+                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
+                        <motion.div
+                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                        >
+                            {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
+                                <span key={i} className="inline-block">{eq}</span>
+                            ))}
+                        </motion.div>
+                    </div>
+
+                    {/* RULER TICKS */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
+                    </div>
+
+
+
+
+                    {/* LEFT: BRAND */}
+                    <div className="relative z-10 flex-shrink-0 pt-0.5">
+                        <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
-                    {/* Nav Items */}
-                    <nav className="flex items-center gap-3">
-                        {NAV_ITEMS.map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
+                    {/* RIGHT: COMPACT CONTROLS */}
+                    <div className="relative z-10 flex items-center gap-2">
+
+                        {/* Desktop Links */}
+                        <div className="hidden md:flex items-center gap-1 mr-4">
+                            {navItems.map((item) => (
                                 <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "relative px-4 py-2 rounded-lg border-2 font-bold text-sm transition-all",
-                                        "hover:-translate-y-1 hover:shadow-[3px_3px_0px_0px_#000] hover:border-black",
-                                        item.color, // Hover color
-                                        isActive
-                                            ? "bg-black text-white border-black shadow-[3px_3px_0px_0px_#888] pointer-events-none"
-                                            : "bg-transparent border-transparent text-neutral-600"
+                                        "px-3 py-1 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        pathname === item.href && "bg-[#FFC800]"
                                     )}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <item.icon className="w-4 h-4 stroke-[3px]" />
-                                        <span>{item.label}</span>
-                                    </div>
+                                    {item.label}
                                 </ViewTransitionLink>
-                            )
-                        })}
-                    </nav>
+                            ))}
+                        </div>
 
-                    {/* Actions Spacer */}
-                    <div className="w-[1px] h-8 bg-neutral-200" />
-
-                    {/* Right Actions */}
-                    <div className="flex items-center gap-3">
-                        <button
+                        {/* 1. SEARCH */}
+                        <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 rounded-lg border-2 border-black bg-neutral-100 flex items-center justify-center hover:bg-[#FABE28] hover:-translate-y-1 hover:shadow-[3px_3px_0px_0px_#000] transition-all"
+                            variants={clickVariant}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-5 h-5 stroke-[3px]" />
-                        </button>
-                        <AuthButton />
-                    </div>
+                            <Search className="w-4 h-4 stroke-[2.5px]" />
+                        </motion.button>
 
-                </motion.div>
+                        {/* 2. ZAP */}
+                        <ViewTransitionLink href="/ozel" className="md:hidden">
+                            <motion.div
+                                variants={clickVariant}
+                                whileTap="tap"
+                                whileHover="hover"
+                                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            >
+                                <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
+                            </motion.div>
+                        </ViewTransitionLink>
+
+                        {/* 3. MENU */}
+                        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                            <SheetTrigger asChild>
+                                <motion.button
+                                    variants={clickVariant}
+                                    whileTap="tap"
+                                    whileHover="hover"
+                                    className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
+                                >
+                                    <Menu className="w-4 h-4 stroke-[2.5px]" />
+                                </motion.button>
+                            </SheetTrigger>
+                            <SheetContent side="top" className="w-full min-h-[50vh] bg-[#3B82F6] border-b-[4px] border-black p-0 overflow-hidden">
+                                <div className="absolute inset-0 opacity-20"
+                                    style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '32px 32px' }}
+                                />
+                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 pt-12 gap-6">
+                                    <div className="scale-125">
+                                        <DankLogo />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+                                        {[
+                                            { href: "/", label: "ANA SAYFA", bg: "bg-white" },
+                                            { href: "/makale", label: "KEŞFET", bg: "bg-[#FFC800]" },
+                                            { href: "/blog", label: "BLOG", bg: "bg-cyan-300" },
+                                            { href: "/profil", label: "PROFİL", bg: "bg-[#F472B6]" },
+                                        ].map((link, i) => (
+                                            <ViewTransitionLink
+                                                key={link.href}
+                                                href={link.href}
+                                                onClick={() => setIsMenuOpen(false)}
+                                                className={cn(
+                                                    "group relative h-16 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all",
+                                                    link.bg
+                                                )}
+                                            >
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className="font-black text-sm sm:text-base text-black tracking-wider uppercase drop-shadow-sm">
+                                                        {link.label}
+                                                    </span>
+                                                </div>
+                                            </ViewTransitionLink>
+                                        ))}
+                                    </div>
+                                    <div className="w-full max-w-[200px]">
+                                        <AuthButton />
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                </div>
             </header>
 
-            {/* --- SPACERS --- */}
-            <div className="hidden md:block h-32" /> {/* Desktop Spacer */}
-            <div className="md:hidden h-20" /> {/* Mobile Top Spacer */}
-            <div className="md:hidden h-24" /> {/* Mobile Bottom Spacer */}
-
+            <div className="h-[56px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
