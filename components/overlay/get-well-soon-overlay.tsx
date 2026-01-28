@@ -1,4 +1,3 @@
-```
 "use client";
 
 import { useEffect, useState } from "react";
@@ -42,28 +41,28 @@ export function GetWellSoonOverlay({ user }: GetWellSoonOverlayProps) {
 
   // Ideally check for username here if profile data was passed, 
   // but for now we show it based on the requirement to ensure they see it.
-  
+
   return createPortal(
-    <div 
-      className={`fixed inset - 0 z - [99999] flex items - center justify - center bg - black / 80 backdrop - blur - sm p - 4 transition - opacity duration - 500 ${ isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none' } `}
+    <div
+      className={`fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
-      
+
       {/* CSS Styles for Rain */}
       <style jsx global>{`
-@keyframes rain {
-  0 % { transform: translateY(-100px) rotate(0deg); opacity: 0; }
-  10 % { opacity: 1; }
-  90 % { opacity: 1; }
-  100 % { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-}
-        .cat - rain {
-  position: absolute;
-  top: -100px;
-  animation - name: rain;
-  animation - timing - function: linear;
-  animation - iteration - count: infinite;
-}
-`}</style>
+        @keyframes rain {
+          0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+        .cat-rain {
+          position: absolute;
+          top: -100px;
+          animation-name: rain;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+      `}</style>
 
       {/* Raining Cats Container */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -72,17 +71,17 @@ export function GetWellSoonOverlay({ user }: GetWellSoonOverlayProps) {
             key={cat.id}
             className="cat-rain"
             style={{
-              left: `${ cat.left }% `,
-              animationDuration: `${ cat.duration } s`,
-              animationDelay: `${ cat.delay } s`,
-              width: '80px', 
+              left: `${cat.left}%`,
+              animationDuration: `${cat.duration}s`,
+              animationDelay: `${cat.delay}s`,
+              width: '80px',
               height: 'auto'
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src={cat.img} 
-              alt="raining cat" 
+            <img
+              src={cat.img}
+              alt="raining cat"
               className="w-full h-auto object-cover rounded-full drop-shadow-2xl border-2 border-white/20"
             />
           </div>
@@ -90,8 +89,8 @@ export function GetWellSoonOverlay({ user }: GetWellSoonOverlayProps) {
       </div>
 
       {/* Card */}
-      <div 
-        className={`relative w - full max - w - md bg - zinc - 900 / 90 border border - zinc - 800 rounded - 3xl shadow - 2xl overflow - hidden flex flex - col items - center justify - center text - center p - 8 transition - transform duration - 500 ${ isVisible ? 'scale-100' : 'scale-90' } `}
+      <div
+        className={`relative w-full max-w-md bg-zinc-900/90 border border-zinc-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col items-center justify-center text-center p-8 transition-transform duration-500 ${isVisible ? 'scale-100' : 'scale-90'}`}
         style={{
           boxShadow: "0 0 50px -12px rgba(236, 72, 153, 0.3)", // Subtle pink glow
         }}
@@ -108,15 +107,15 @@ export function GetWellSoonOverlay({ user }: GetWellSoonOverlayProps) {
         <div className="relative z-10 space-y-8">
           {/* Center Image - Nanao/Banana Cat */}
           <div className="w-48 h-48 mx-auto relative group">
-             <div className="absolute inset-0 bg-pink-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
+            <div className="absolute inset-0 bg-pink-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/cats/banana_cat.png"
               alt="Banana Cat"
               className="w-full h-full object-cover rounded-full border-4 border-zinc-800 shadow-2xl relative z-10"
             />
           </div>
-          
+
           <div className="space-y-4">
             <h2 className="text-4xl font-black text-white tracking-tight font-outfit">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">
@@ -129,12 +128,12 @@ export function GetWellSoonOverlay({ user }: GetWellSoonOverlayProps) {
           </div>
 
           <div className="pt-2">
-             <button
+            <button
               onClick={() => setIsVisible(false)}
               className="px-8 py-3 bg-white text-black hover:bg-zinc-200 rounded-full font-bold shadow-lg transition-all font-outfit hover:scale-105 active:scale-95 uppercase tracking-wide text-sm"
-             >
-               Teşekkürler
-             </button>
+            >
+              Teşekkürler
+            </button>
           </div>
         </div>
       </div>
