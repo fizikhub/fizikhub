@@ -170,26 +170,22 @@ export function ModernProfileHeader({
                     </div>
                 </div>
 
-                {/* CYBER-GLASS ANIMATED STATS */}
+                {/* SWISS LAB MINIMAL STATS */}
                 <div className="mt-8 flex justify-center gap-4 w-full max-w-md px-2">
-                    <CyberStat
+                    <SwissStat
                         value={stats.followersCount}
-                        label="Takipçi"
-                        icon={<Users className="w-5 h-5" />}
-                        color="cyan"
+                        label="Gözlemci"
+                        icon={<Users className="w-5 h-5 stroke-[1.5]" />}
                     />
-                    <CyberStat
+                    <SwissStat
                         value={stats.followingCount}
                         label="Takip"
-                        icon={<UserPlus className="w-5 h-5" />}
-                        color="green"
+                        icon={<UserPlus className="w-5 h-5 stroke-[1.5]" />}
                     />
-                    <CyberStat
+                    <SwissStat
                         value={stats.reputation}
-                        label="Güç"
-                        icon={<Zap className="w-5 h-5 fill-current" />}
-                        color="amber"
-                        highlighted
+                        label="Puan"
+                        icon={<Zap className="w-5 h-5 stroke-[1.5]" />}
                     />
                 </div>
 
@@ -206,7 +202,7 @@ export function ModernProfileHeader({
                             currentSocialLinks={profile?.social_links}
                             userEmail={user?.email}
                             trigger={
-                                <button className="w-full py-3 rounded-xl font-black text-sm border-2 border-foreground bg-foreground text-background hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                <button className="w-full py-3 rounded-xl font-black text-sm border-2 border-foreground bg-foreground text-background hover:bg-background hover:text-foreground transition-all flex items-center justify-center gap-2">
                                     <Edit3 className="w-4 h-4" />
                                     DÜZENLE
                                 </button>
@@ -222,7 +218,7 @@ export function ModernProfileHeader({
                                     variant="modern"
                                 />
                             </div>
-                            <button className="w-12 h-12 flex items-center justify-center rounded-xl border-2 border-foreground hover:bg-muted transition-colors">
+                            <button className="w-12 h-12 flex items-center justify-center rounded-xl border-2 border-foreground hover:bg-foreground hover:text-background transition-all">
                                 <Mail className="w-5 h-5" />
                             </button>
                         </div>
@@ -234,59 +230,35 @@ export function ModernProfileHeader({
     );
 }
 
-function CyberStat({ value, label, icon, color, highlighted = false }: { value: number, label: string, icon: any, color: 'cyan' | 'green' | 'amber', highlighted?: boolean }) {
-    const ref = useRef<HTMLSpanElement>(null);
+function SwissStat({ value, label, icon }: { value: number, label: string, icon: any }) {
     const motionValue = useMotionValue(0);
     const rounded = useTransform(motionValue, (latest) => Math.floor(latest));
 
     useEffect(() => {
         const controls = animate(motionValue, value, {
-            duration: 1.5,
-            ease: "easeOut",
+            duration: 0.8,
+            ease: "circOut",
         });
         return controls.stop;
     }, [value, motionValue]);
 
-    const colorClasses = {
-        cyan: "text-cyan-500 shadow-cyan-500/20 border-cyan-500/20",
-        green: "text-emerald-500 shadow-emerald-500/20 border-emerald-500/20",
-        amber: "text-amber-500 shadow-amber-500/20 border-amber-500/20"
-    };
-
-    const gradientClasses = {
-        cyan: "from-cyan-500/10 to-transparent",
-        green: "from-emerald-500/10 to-transparent",
-        amber: "from-amber-500/10 to-transparent"
-    };
-
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className={cn(
-                "flex-1 relative flex flex-col items-center justify-center py-4 rounded-2xl border backdrop-blur-md overflow-hidden transition-all group",
-                "bg-white/5 dark:bg-black/5 hover:bg-white/10 dark:hover:bg-white/5",
-                colorClasses[color],
-                highlighted ? "shadow-[0_0_30px_-10px_var(--tw-shadow-color)]" : "shadow-sm hover:shadow-md"
-            )}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="flex-1 group relative flex flex-col items-center justify-center py-5 px-2 rounded-xl border-2 border-foreground bg-background hover:bg-foreground hover:text-background transition-colors duration-300 cursor-default"
         >
-            {/* Gradient Shine */}
-            <div className={cn(
-                "absolute inset-0 bg-gradient-to-tr opacity-20 group-hover:opacity-40 transition-opacity",
-                gradientClasses[color]
-            )} />
-
-            <div className={cn("mb-2 p-2 rounded-full bg-white/10 backdrop-blur-sm", colorClasses[color].split(" ")[0])}>
+            <div className="mb-2 p-2 rounded-lg border border-foreground/30 group-hover:border-background/30 transition-colors">
                 {icon}
             </div>
 
-            <motion.span className={cn("text-2xl sm:text-3xl font-black tracking-tight tabular-nums relative z-10", colorClasses[color].split(" ")[0])}>
+            <span className="text-2xl sm:text-3xl font-bold tracking-tighter tabular-nums">
                 <motion.span>{rounded}</motion.span>
                 {value >= 1000 && <span>+</span>}
-            </motion.span>
+            </span>
 
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mt-1 relative z-10">{label}</span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.2em] opacity-60 mt-1">{label}</span>
         </motion.div>
     );
 }
