@@ -185,7 +185,8 @@ export function ModernProfileHeader({
                     <SwissStat
                         value={stats.reputation}
                         label="Puan"
-                        icon={<Zap className="w-5 h-5 stroke-[1.5]" />}
+                        icon={<Zap className="w-5 h-5 stroke-[1.5] fill-current" />}
+                        variant="fire"
                     />
                 </div>
 
@@ -230,7 +231,7 @@ export function ModernProfileHeader({
     );
 }
 
-function SwissStat({ value, label, icon }: { value: number, label: string, icon: any }) {
+function SwissStat({ value, label, icon, variant = 'default' }: { value: number, label: string, icon: any, variant?: 'default' | 'fire' }) {
     const motionValue = useMotionValue(0);
     const rounded = useTransform(motionValue, (latest) => Math.floor(latest));
 
@@ -242,23 +243,38 @@ function SwissStat({ value, label, icon }: { value: number, label: string, icon:
         return controls.stop;
     }, [value, motionValue]);
 
+    const isFire = variant === 'fire';
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="flex-1 group relative flex flex-col items-center justify-center py-5 px-2 rounded-xl border-2 border-foreground bg-background hover:bg-foreground hover:text-background transition-colors duration-300 cursor-default"
+            className={cn(
+                "flex-1 group relative flex flex-col items-center justify-center py-3 px-2 rounded-xl border-2 transition-all duration-300 cursor-default overflow-hidden",
+                isFire ? "border-orange-600 bg-orange-50 dark:bg-orange-950/20 text-orange-600 hover:border-orange-500 hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.5)]" : "border-foreground bg-background hover:bg-foreground hover:text-background"
+            )}
         >
-            <div className="mb-2 p-2 rounded-lg border border-foreground/30 group-hover:border-background/30 transition-colors">
+            {isFire && (
+                <div className="absolute inset-0 bg-gradient-to-t from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            )}
+
+            <div className={cn(
+                "mb-1 p-1.5 rounded-lg border transition-colors relative z-10",
+                isFire ? "border-orange-600/30 bg-orange-100 dark:bg-orange-900/30 group-hover:scale-110 duration-300" : "border-foreground/30 group-hover:border-background/30"
+            )}>
                 {icon}
             </div>
 
-            <span className="text-2xl sm:text-3xl font-bold tracking-tighter tabular-nums">
+            <span className="text-2xl sm:text-3xl font-bold tracking-tighter tabular-nums relative z-10">
                 <motion.span>{rounded}</motion.span>
                 {value >= 1000 && <span>+</span>}
             </span>
 
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] opacity-60 mt-1">{label}</span>
+            <span className={cn(
+                "text-[10px] uppercase font-bold tracking-[0.2em] mt-0.5 relative z-10",
+                isFire ? "opacity-80" : "opacity-60"
+            )}>{label}</span>
         </motion.div>
     );
 }
