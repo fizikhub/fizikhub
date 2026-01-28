@@ -9,24 +9,30 @@ interface DankLogoProps {
 
 export function DankLogo({ className }: DankLogoProps) {
     return (
-        <div className={cn("select-none cursor-pointer flex items-center overflow-hidden", className)}>
+        <div className={cn("flex items-center gap-3 select-none cursor-pointer group", className)}>
 
-            <motion.div
-                className="relative flex flex-col items-start leading-[0.8]"
-                whileHover={{ y: -25 }}
-            >
-                {/* STATE 1: NORMAL */}
-                <div className="h-6 flex items-center gap-0.5">
-                    <span className="text-2xl font-black tracking-tighter text-white">FIZIK</span>
-                    <span className="text-2xl font-black tracking-tighter text-[#00FF99]">HUB</span>
+            {/* ICON: CYCLOPS BOX */}
+            <div className="relative w-12 h-12 bg-[#B8FF21] border-[3px] border-black rounded-lg shadow-[4px_4px_0px_0px_#000] flex items-center justify-center group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none transition-all">
+                {/* The Eye */}
+                <div className="w-8 h-8 bg-white border-[3px] border-black rounded-full flex items-center justify-center overflow-hidden">
+                    <motion.div
+                        className="w-3 h-3 bg-black rounded-full"
+                        animate={{ x: [0, 2, -2, 0], y: [0, 1, -1, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    <div className="absolute top-1 right-2 w-1.5 h-1.5 bg-white rounded-full z-10" />
                 </div>
+            </div>
 
-                {/* STATE 2: HOVER (REVEAL) */}
-                <div className="h-6 flex items-center gap-0.5 absolute top-full mt-1">
-                    <span className="text-2xl font-black tracking-tighter text-white italic">FIZIK</span>
-                    <span className="text-2xl font-black tracking-tighter text-[#00FF99]">APP</span>
-                </div>
-            </motion.div>
+            {/* TEXT: STACKED BLOCK */}
+            <div className="flex flex-col leading-none">
+                <span className="text-2xl font-black tracking-tighter text-black">
+                    FIZIK
+                </span>
+                <span className="text-sm font-bold bg-black text-[#B8FF21] px-1 -ml-0.5 transform -rotate-2">
+                    HUB
+                </span>
+            </div>
 
         </div>
     );

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Menu, X, Home, BookOpen, Trophy, Atom, User } from "lucide-react";
+import { Search, Menu, X, Zap, Skull, Radiation, Orbit } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
@@ -13,127 +13,158 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 
 const NAV_ITEMS = [
-    { href: "/", label: "ANA SAYFA", icon: Home },
-    { href: "/makale", label: "MAKALE", icon: BookOpen },
-    { href: "/siralamalar", label: "LİG", icon: Trophy },
-    { href: "/ozel", label: "LAB", icon: Atom },
+    { href: "/makale", label: "MAKALE", icon: Skull, color: "bg-[#FF6B6B]" },
+    { href: "/siralamalar", label: "LİG", icon: Zap, color: "bg-[#4ECDC4]" },
+    { href: "/ozel", label: "LAB", icon: Radiation, color: "bg-[#FFE66D]" },
 ];
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
 
-    useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    // Wiggle animation
+    const wiggle = {
+        hover: { rotate: [0, -2, 2, -2, 2, 0], transition: { duration: 0.4 } }
+    };
 
     return (
         <>
             {/* 
-                V60: DARK NEO-BRUTALIST APP
-                Style: "The Monolith", Void Black, Stark White, Bottom Nav
+                V70: ALIEN SCIENCE NEO-BRUTALISM
+                Style: "Alien Cafe", Neon Lime, Cartoonish, Thick Borders
             */}
 
-            {/* --- DESKTOP TOP BAR --- */}
-            <header className={cn(
-                "hidden md:flex fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                scrolled ? "bg-black/80 backdrop-blur-md border-b border-white/20" : "bg-transparent"
-            )}>
-                <div className="max-w-7xl mx-auto w-full h-20 px-6 flex items-center justify-between">
+            <header className="fixed top-0 left-0 right-0 z-50 p-3 sm:p-5 pointer-events-none font-sans">
 
-                    {/* LOGO */}
-                    <ViewTransitionLink href="/" className="group flex items-center gap-2">
-                        <DankLogo />
-                    </ViewTransitionLink>
+                {/* CONTAINER */}
+                <div className="pointer-events-auto mx-auto max-w-7xl">
+                    <div className={cn(
+                        "relative bg-white border-[3px] border-black rounded-3xl",
+                        "shadow-[6px_6px_0px_0px_#000]", // Hard Shadow
+                        "flex flex-col overflow-hidden"
+                    )}>
 
-                    {/* DESKTOP NAV */}
-                    <nav className="flex items-center gap-1 bg-black border border-white p-1 rounded-full">
-                        {NAV_ITEMS.map((item) => (
-                            <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "px-6 py-2 rounded-full text-sm font-bold tracking-widest transition-all",
-                                    pathname === item.href
-                                        ? "bg-white text-black shadow-[0px_0px_15px_rgba(255,255,255,0.5)]"
-                                        : "text-white hover:bg-neutral-900"
-                                )}
-                            >
-                                {item.label}
-                            </ViewTransitionLink>
-                        ))}
-                    </nav>
+                        {/* TOP STRIP: ALIEN GREEN */}
+                        <div className="h-2 bg-[#B8FF21] border-b-[3px] border-black flex items-center justify-center overflow-hidden">
+                            <div className="flex gap-4 animate-marquee whitespace-nowrap text-[10px] font-black uppercase text-black tracking-widest">
+                                {Array(20).fill("👽 BİLİM İSTİLASI BAŞLADI 🛸").map((t, i) => (
+                                    <span key={i}>{t}</span>
+                                ))}
+                            </div>
+                        </div>
 
-                    {/* ACTIONS */}
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => setIsSearchOpen(true)}
-                            className="w-10 h-10 rounded-full border border-white text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors"
-                        >
-                            <Search className="w-5 h-5" />
-                        </button>
-                        <AuthButton />
-                    </div>
+                        {/* MAIN BAR */}
+                        <div className="h-16 sm:h-20 px-4 sm:px-6 flex items-center justify-between bg-white">
 
-                </div>
-            </header>
+                            {/* BRAND */}
+                            <motion.div whileHover="hover" variants={wiggle}>
+                                <ViewTransitionLink href="/" className="block">
+                                    <DankLogo />
+                                </ViewTransitionLink>
+                            </motion.div>
 
-            {/* --- MOBILE TOP BAR --- */}
-            <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-white/20 h-16 px-4 flex items-center justify-between">
-                <ViewTransitionLink href="/">
-                    <DankLogo className="scale-75 origin-left" />
-                </ViewTransitionLink>
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setIsSearchOpen(true)}
-                        className="w-9 h-9 border border-white/30 rounded-lg flex items-center justify-center text-white"
-                    >
-                        <Search className="w-4 h-4" />
-                    </button>
-                    <div className="scale-90 origin-right">
-                        <AuthButton />
-                    </div>
-                </div>
-            </header>
+                            {/* DESKTOP NAV */}
+                            <nav className="hidden md:flex items-center gap-4">
+                                {NAV_ITEMS.map((item) => (
+                                    <ViewTransitionLink
+                                        key={item.href}
+                                        href={item.href}
+                                        className={cn(
+                                            "relative px-6 py-2 rounded-xl border-[3px] border-black font-black text-sm tracking-tight transition-all",
+                                            "hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000]",
+                                            pathname === item.href
+                                                ? cn("text-black -translate-y-1 shadow-[4px_4px_0px_0px_#000]", item.color)
+                                                : "bg-white text-black hover:bg-neutral-100"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <item.icon className="w-4 h-4 stroke-[3px]" />
+                                            {item.label}
+                                        </div>
+                                    </ViewTransitionLink>
+                                ))}
+                            </nav>
 
-            {/* --- MOBILE BOTTOM TAB BAR (THE APP FEEL) --- */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/20 pb-safe">
-                <div className="grid grid-cols-4 h-16">
-                    {NAV_ITEMS.map((item) => {
-                        const isActive = pathname === item.href;
-                        return (
-                            <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
-                                className="flex flex-col items-center justify-center gap-1 touch-manipulation group"
-                            >
-                                <div className={cn(
-                                    "p-1.5 rounded-lg transition-all",
-                                    isActive ? "bg-white text-black" : "text-neutral-400 group-active:scale-90"
-                                )}>
-                                    <item.icon className="w-5 h-5 stroke-[2.5px]" />
+                            {/* ACTIONS */}
+                            <div className="flex items-center gap-3">
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#1A1A1A] text-white rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#888] hover:shadow-[4px_4px_0px_0px_#B8FF21] transition-shadow"
+                                >
+                                    <Search className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />
+                                </motion.button>
+
+                                {/* MOBILE MENU */}
+                                <div className="md:hidden">
+                                    <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                                        <SheetTrigger asChild>
+                                            <motion.button
+                                                whileTap={{ scale: 0.9 }}
+                                                className="w-12 h-12 flex items-center justify-center bg-[#B8FF21] rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000]"
+                                            >
+                                                <Menu className="w-7 h-7 stroke-[3px]" />
+                                            </motion.button>
+                                        </SheetTrigger>
+                                        <SheetContent side="right" className="w-full bg-[#B8FF21] border-l-[4px] border-black p-0">
+                                            <div className="h-full flex flex-col relative overflow-hidden">
+
+                                                {/* CLOSE */}
+                                                <button
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                    className="absolute top-6 right-6 w-12 h-12 bg-white flex items-center justify-center rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] z-20"
+                                                >
+                                                    <X className="w-7 h-7 stroke-[3px]" />
+                                                </button>
+
+                                                {/* GIANT LINKS */}
+                                                <div className="flex-1 flex flex-col justify-center px-10 gap-6 relative z-10">
+                                                    {[
+                                                        { href: "/", label: "ANA SAYFA", bg: "bg-white", color: undefined },
+                                                        ...NAV_ITEMS.map(item => ({ ...item, bg: undefined }))
+                                                    ].map((item, i) => (
+                                                        <ViewTransitionLink
+                                                            key={i}
+                                                            href={item.href}
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                            className={cn(
+                                                                "group relative p-6 rounded-2xl border-[4px] border-black shadow-[8px_8px_0px_0px_#000] active:translate-y-2 active:shadow-none transition-all",
+                                                                item.bg || item.color || "bg-white"
+                                                            )}
+                                                        >
+                                                            <span className="text-3xl font-black uppercase tracking-tighter">{item.label}</span>
+                                                            <div className="absolute top-1/2 right-6 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <Orbit className="w-8 h-8 stroke-[3px] animate-spin" />
+                                                            </div>
+                                                        </ViewTransitionLink>
+                                                    ))}
+
+                                                    <div className="mt-8 p-4 bg-white border-[4px] border-black rounded-2xl shadow-[8px_8px_0px_0px_#000]">
+                                                        <AuthButton />
+                                                    </div>
+                                                </div>
+
+                                                {/* DECORATION */}
+                                                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#FFE66D] rounded-full border-[4px] border-black z-0" />
+                                                <div className="absolute top-20 -left-10 w-32 h-32 bg-[#FF6B6B] rounded-full border-[4px] border-black z-0" />
+
+                                            </div>
+                                        </SheetContent>
+                                    </Sheet>
                                 </div>
-                                <span className={cn(
-                                    "text-[10px] font-bold tracking-wide",
-                                    isActive ? "text-white" : "text-neutral-500"
-                                )}>
-                                    {item.label}
-                                </span>
-                            </ViewTransitionLink>
-                        )
-                    })}
-                </div>
-            </nav>
 
-            {/* --- SPACERS --- */}
-            {/* Desktop spacer */}
-            <div className="hidden md:block h-20" />
-            {/* Mobile spacer (Top + Bottom) */}
-            <div className="md:hidden h-16" />
-            <div className="md:hidden h-16" /> {/* For bottom bar */}
+                                <div className="hidden md:block">
+                                    <AuthButton />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* SPACER */}
+            <div className="h-28 sm:h-32" />
 
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
