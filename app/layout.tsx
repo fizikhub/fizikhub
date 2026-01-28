@@ -241,7 +241,7 @@ export default async function RootLayout({
         >
           <FramerMotionProvider>
             <TimeLimitProvider>
-              <GetWellSoonOverlay />
+              <GetWellSoonOverlay user={user} />
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
