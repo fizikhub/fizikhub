@@ -2,8 +2,8 @@ import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { getFollowStatus, getFollowStats } from "@/app/profil/actions";
 import { Metadata } from "next";
-import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
-import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
+import { ModernProfileHeader } from "@/components/profile/modern/modern-profile-header";
+import { ModernProfileFeed } from "@/components/profile/modern/modern-profile-feed";
 
 interface PageProps {
     params: Promise<{ username: string }>;
@@ -100,21 +100,23 @@ export default async function PublicProfilePage({ params }: PageProps) {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-background py-4 sm:py-8 pb-32">
-            <div className="container max-w-[600px] lg:max-w-[700px] mx-auto px-4">
+        <div className="min-h-screen bg-background border-x border-border max-w-[600px] mx-auto pb-32">
+            {/* 
+                We remove the 'container' and 'px' constraints to allow full-bleed cover image 
+                and max-width mimics the Twitter timeline width.
+             */}
 
-                {/* NEO-BRUTALIST HEADER */}
-                <NeoProfileHeader
-                    profile={profile}
-                    user={user || { created_at: profile.created_at }}
-                    isOwnProfile={isOwnProfile}
-                    isFollowing={isFollowing}
-                    stats={stats}
-                    userBadges={formattedBadges}
-                />
+            <ModernProfileHeader
+                profile={profile}
+                user={user || { created_at: profile.created_at }}
+                isOwnProfile={isOwnProfile}
+                isFollowing={isFollowing}
+                stats={stats}
+                userBadges={formattedBadges}
+            />
 
-                {/* NEO-BRUTALIST FEED */}
-                <NeoProfileFeed
+            <div className="border-t border-border mt-4">
+                <ModernProfileFeed
                     articles={articles || []}
                     questions={questions || []}
                     answers={answers || []}
@@ -122,7 +124,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     bookmarkedQuestions={[]}
                     isOwnProfile={isOwnProfile}
                 />
-
             </div>
         </div>
     );
