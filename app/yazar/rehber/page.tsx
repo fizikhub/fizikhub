@@ -35,7 +35,7 @@ export default function GuideRedirectPage() {
 
     const handleDontShow = async (uid: string) => {
         // Here you would implement logic to save this preference
-        console.log("Don't show for user:", uid);
+
     };
 
     // If we want to show it even without user ID (demo mode), passed "guest"

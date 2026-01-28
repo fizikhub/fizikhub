@@ -21,7 +21,7 @@ export default async function ConversationPage({
     const { id: conversationId } = await params;
 
     if (process.env.NODE_ENV === 'development') {
-        console.log("Conversation Page: Fetching data for conversation", conversationId);
+
     }
 
     let messages: Message[] = [];

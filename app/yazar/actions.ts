@@ -143,7 +143,7 @@ export async function uploadArticleImage(file: File | Blob) {
         fileName = `${user.id}/${Date.now()}.webp`;
     }
 
-    console.log(`[Upload] Uploading ${fileName}, size: ${(file.size / 1024).toFixed(2)}KB`);
+
 
     const { error: uploadError, data } = await supabase.storage
         .from("article-images")
@@ -162,6 +162,6 @@ export async function uploadArticleImage(file: File | Blob) {
         .from("article-images")
         .getPublicUrl(fileName);
 
-    console.log(`[Upload] Success! URL: ${publicUrl}`);
+
     return { success: true, url: publicUrl };
 }
