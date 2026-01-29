@@ -135,8 +135,8 @@ function StarField({ count = 40000 }) {
     );
 }
 
-// --- VOLUMETRIC NEBULA ---
-function NebulaClouds({ count = 5000 }) {
+// --- VOLUMETRIC NEBULA (INTENSE) ---
+function NebulaClouds({ count = 8000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -194,13 +194,13 @@ function NebulaClouds({ count = 5000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={0.8} // Big clouds
+                size={1.5} // Massive clouds
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.15} // Very subtle
+                opacity={0.35} // Visible!
             />
         </points>
     );
@@ -219,7 +219,7 @@ export function MemeCorner() {
                     "rounded-xl",
                     "border border-white/5",
                     "aspect-[3/1] sm:aspect-[4/1]",
-                    "bg-[#020010]", // Deep Purple/Black Background
+                    "bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#1a0b2e] via-[#090415] to-black",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
@@ -233,8 +233,8 @@ export function MemeCorner() {
                         }}
                         dpr={[1, 2]}
                     >
-                        {/* Deep Space Background */}
-                        <color attach="background" args={["#030008"]} />
+                        {/* Slightly Lighter Background for 'Deep Space' feel */}
+                        <color attach="background" args={["#05020a"]} />
 
                         <group>
                             <StarField />
