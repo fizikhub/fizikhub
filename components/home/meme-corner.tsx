@@ -2,42 +2,6 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Stars } from "lucide-react";
-
-// Simplified Cosmic Background
-function DeepSpaceBackground() {
-    return (
-        <div className="absolute inset-0 overflow-hidden bg-[#050510]">
-            {/* Nebula Gradient */}
-            <div
-                className="absolute inset-0 opacity-40"
-                style={{
-                    background: "radial-gradient(circle at 70% 30%, #4f46e5 0%, transparent 50%), radial-gradient(circle at 20% 80%, #ec4899 0%, transparent 50%)",
-                    filter: "blur(40px)"
-                }}
-            />
-
-            {/* Stars Layer 1 (Static for performance) */}
-            <div
-                className="absolute inset-0 opacity-70"
-                style={{
-                    backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
-                    backgroundSize: '50px 50px',
-                    backgroundPosition: '0 0'
-                }}
-            />
-            {/* Stars Layer 2 (Offset) */}
-            <div
-                className="absolute inset-0 opacity-40"
-                style={{
-                    backgroundImage: 'radial-gradient(white 1.5px, transparent 1.5px)',
-                    backgroundSize: '90px 90px',
-                    backgroundPosition: '25px 25px'
-                }}
-            />
-        </div>
-    );
-}
 
 export function MemeCorner() {
     return (
@@ -45,49 +9,101 @@ export function MemeCorner() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className={cn(
                     "relative w-full overflow-hidden",
-                    "rounded-xl border border-white/10",
-                    "shadow-[0_0_30px_-10px_rgba(79,70,229,0.3)]",
-                    "aspect-[3/1] sm:aspect-[4/1]", // Compact Ratio
-                    "flex items-center justify-center sm:justify-start",
-                    "px-6 sm:px-10"
+                    "rounded-xl",
+                    "aspect-[3/1] sm:aspect-[4/1]", // Ultra-widescreen cinematic ratio
+                    "flex flex-col justify-center",
+                    "px-6 sm:px-12"
                 )}
             >
-                {/* 1. Deep Space Background */}
-                <DeepSpaceBackground />
+                {/* --- CINEMATIC BACKGROUND LAYERS --- */}
 
-                {/* 2. Shine/Glass Effect Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent pointer-events-none" />
+                {/* 1. The Void (Deepest Black) */}
+                <div className="absolute inset-0 bg-[#020205] z-0" />
 
-                {/* 3. Content */}
-                <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left">
-                    <motion.div
-                        initial={{ y: 10, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="flex flex-col"
-                    >
-                        <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">
-                            BILIMI Ti'YE ALIYORUZ
-                        </h2>
-                        <div className="flex items-center justify-center sm:justify-start gap-2 mt-1 sm:mt-2">
-                            <div className="h-[1px] w-8 sm:w-12 bg-indigo-400/50" />
-                            <span className="text-xs sm:text-sm font-medium text-indigo-200 tracking-[0.2em] uppercase">
-                                Ama Ciddili Şekilde
-                            </span>
-                            <Stars className="w-3 h-3 text-indigo-300" />
+                {/* 2. The Event Horizon (Subtle Edge Glows) */}
+                <div
+                    className="absolute inset-0 z-0 opacity-60"
+                    style={{
+                        background: `
+                            radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
+                            radial-gradient(circle at 0% 0%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)
+                        `
+                    }}
+                />
+
+                {/* 3. Starfield (Parallax/Slow Move) */}
+                <motion.div
+                    className="absolute inset-[-50%] z-0 opacity-80 mix-blend-screen"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 240, repeat: Infinity, ease: "linear" }}
+                    style={{
+                        backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
+                        backgroundSize: '80px 80px'
+                    }}
+                />
+
+                {/* 4. Film Grain (Texture) */}
+                <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noise\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noise)\" opacity=\"1\"/%3E%3C/svg%3E')" }} />
+
+                {/* --- CONTENT --- */}
+                <div className="relative z-10 flex flex-col items-start space-y-2 select-none mix-blend-screen">
+
+                    {/* Upper Tagline - The "Whisper" */}
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 0.8 }}
+                            className="h-[1px] w-8 bg-white/40"
+                        />
+                        <motion.span
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 0.7 }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                            className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-white uppercase"
+                        >
+                            FizikHub Originals
+                        </motion.span>
+                    </div>
+
+                    {/* MAIN HERO TEXT - The "Impact" */}
+                    <div className="flex flex-col leading-[0.85]">
+                        <motion.h2
+                            initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
+                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                            transition={{ delay: 0.1, duration: 0.8 }}
+                            className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                        >
+                            BİLİMİ
+                        </motion.h2>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                            <motion.h2
+                                initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
+                                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                                transition={{ delay: 0.2, duration: 0.8 }}
+                                className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white/90"
+                            >
+                                Tİ'YE ALIYORUZ
+                            </motion.h2>
                         </div>
+                    </div>
+
+                    {/* Subtitle - The "Punchline" */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8, duration: 1 }}
+                        className="mt-2 pl-1"
+                    >
+                        <span className="text-xs sm:text-sm font-medium text-indigo-200/80 tracking-widest uppercase border-b border-indigo-500/30 pb-0.5">
+                            Ama Ciddili Şekilde
+                        </span>
                     </motion.div>
-                </div>
 
-                {/* 4. Decorative Planet/Orb (Right Side - Visual Balance) */}
-                <div className="absolute -right-8 -top-8 w-32 h-32 sm:w-48 sm:h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute right-0 bottom-0 opacity-20 hidden sm:block">
-                    {/* Abstract Geometry or Icon if needed, kept clean for now */}
                 </div>
-
             </motion.div>
         </div>
     );
