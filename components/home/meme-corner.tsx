@@ -1,9 +1,96 @@
 "use client";
 
+import { useMemo, useRef, useState, useEffect } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { motion } from "framer-motion";
+import * as THREE from "three";
 import { cn } from "@/lib/utils";
 
+// --- GALAXY COMPONENT ---
+function Galaxy({ count = 8000 }) { // 8k stars for mobile safety
+    const pointsRef = useRef<THREE.Points>(null!);
+
+    // Galaxy Parameters
+    const parameters = {
+        count: count,
+        size: 0.015,
+        radius: 5,
+        branches: 3,
+        spin: 1,
+        randomness: 0.2, // Reduced randomness for tighter arms
+        randomnessPower: 3,
+        insideColor: '#ff6030',
+        outsideColor: '#1b3984',
+    };
+
+    const geometry = useMemo(() => {
+        const positions = new Float32Array(parameters.count * 3);
+        const colors = new Float32Array(parameters.count * 3);
+
+        const colorInside = new THREE.Color(parameters.insideColor);
+        const colorOutside = new THREE.Color(parameters.outsideColor);
+
+        for (let i = 0; i < parameters.count; i++) {
+            const i3 = i * 3;
+
+            // Position
+            const radius = Math.random() * parameters.radius;
+            const spinAngle = radius * parameters.spin;
+            const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
+
+            const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+            const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+            const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+
+            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+            positions[i3 + 1] = randomY * 0.5; // Flatten the galaxy on Y axis
+            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+            // Color
+            const mixedColor = colorInside.clone();
+            mixedColor.lerp(colorOutside, radius / parameters.radius);
+
+            colors[i3] = mixedColor.r;
+            colors[i3 + 1] = mixedColor.g;
+            colors[i3 + 2] = mixedColor.b;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        return geo;
+    }, [parameters.count]);
+
+    // Animation
+    useFrame((state, delta) => {
+        if (!pointsRef.current) return;
+        pointsRef.current.rotation.y += delta * 0.05; // Slow rotation
+        pointsRef.current.rotation.z += delta * 0.005; // Subtle tilt drift
+    });
+
+    return (
+        <points ref={pointsRef}>
+            <primitive object={geometry} />
+            <pointsMaterial
+                size={parameters.size}
+                sizeAttenuation={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                vertexColors={true}
+            />
+        </points>
+    );
+}
+
+// --- MAIN COMPONENT ---
 export function MemeCorner() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     return (
         <div className="w-full relative group">
             <motion.div
@@ -13,95 +100,76 @@ export function MemeCorner() {
                 className={cn(
                     "relative w-full overflow-hidden",
                     "rounded-xl",
+                    "border border-white/5",
                     "aspect-[3/1] sm:aspect-[4/1]", // Ultra-widescreen cinematic ratio
-                    "flex flex-col justify-center",
-                    "px-6 sm:px-12"
+                    "bg-[#020205]", // Deep black fallback
                 )}
             >
-                {/* --- CINEMATIC BACKGROUND LAYERS --- */}
+                {/* 1. 3D Galaxy Canvas */}
+                {mounted && (
+                    <div className="absolute inset-0 z-0">
+                        <Canvas
+                            camera={{ position: [0, 3, 5], fov: 50 }}
+                            gl={{ antialias: false, powerPreference: "high-performance" }} // Perf opts
+                            dpr={[1, 2]} // Clamp pixel ratio
+                        >
+                            <color attach="background" args={["#020205"]} />
+                            <Galaxy />
+                            <EffectComposer disableNormalPass>
+                                <Bloom
+                                    luminanceThreshold={0.2}
+                                    mipmapBlur
+                                    intensity={0.8}
+                                    radius={0.5}
+                                />
+                            </EffectComposer>
+                        </Canvas>
+                    </div>
+                )}
 
-                {/* 1. The Void (Deepest Black) */}
-                <div className="absolute inset-0 bg-[#020205] z-0" />
+                {/* 2. Cinematic Vignette & Grain */}
+                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+                <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-                {/* 2. The Event Horizon (Subtle Edge Glows) */}
-                <div
-                    className="absolute inset-0 z-0 opacity-60"
-                    style={{
-                        background: `
-                            radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.15) 0%, transparent 50%),
-                            radial-gradient(circle at 0% 0%, rgba(236, 72, 153, 0.1) 0%, transparent 50%)
-                        `
-                    }}
-                />
 
-                {/* 3. Starfield (Parallax/Slow Move) */}
-                <motion.div
-                    className="absolute inset-[-50%] z-0 opacity-80 mix-blend-screen"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 240, repeat: Infinity, ease: "linear" }}
-                    style={{
-                        backgroundImage: 'radial-gradient(white 1px, transparent 1px)',
-                        backgroundSize: '80px 80px'
-                    }}
-                />
+                {/* 3. UI Content (Overlay) */}
+                <div className="absolute inset-0 z-20 flex flex-col justify-center px-6 sm:px-12 select-none">
 
-                {/* 4. Film Grain (Texture) */}
-                <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noise\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noise)\" opacity=\"1\"/%3E%3C/svg%3E')" }} />
-
-                {/* --- CONTENT --- */}
-                <div className="relative z-10 flex flex-col items-start space-y-2 select-none mix-blend-screen">
-
-                    {/* Upper Tagline - The "Whisper" */}
-                    <div className="flex items-center gap-3 overflow-hidden">
+                    {/* Upper Tagline */}
+                    <div className="flex items-center gap-3 overflow-hidden mb-2">
                         <motion.div
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.3, duration: 0.8 }}
-                            className="h-[1px] w-8 bg-white/40"
+                            initial={{ width: 0 }}
+                            animate={{ width: 32 }}
+                            transition={{ delay: 0.5, duration: 0.8 }}
+                            className="h-[1px] bg-white/40"
                         />
                         <motion.span
-                            initial={{ y: 10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 0.7 }}
-                            transition={{ delay: 0.4, duration: 0.8 }}
+                            initial={{ x: -10, opacity: 0 }}
+                            animate={{ x: 0, opacity: 0.8 }}
+                            transition={{ delay: 0.6, duration: 0.8 }}
                             className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-white uppercase"
                         >
                             FizikHub Originals
                         </motion.span>
                     </div>
 
-                    {/* MAIN HERO TEXT - The "Impact" */}
+                    {/* HERO TEXT */}
                     <div className="flex flex-col leading-[0.85]">
-                        <motion.h2
-                            initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
-                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                            transition={{ delay: 0.1, duration: 0.8 }}
-                            className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/50 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                        >
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                             BİLİMİ
-                        </motion.h2>
-                        <div className="flex items-center gap-3 sm:gap-4">
-                            <motion.h2
-                                initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
-                                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                                transition={{ delay: 0.2, duration: 0.8 }}
-                                className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white/90"
-                            >
-                                Tİ'YE ALIYORUZ
-                            </motion.h2>
-                        </div>
+                        </h2>
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white mix-blend-overlay">
+                            Tİ'YE ALIYORUZ
+                        </h2>
                     </div>
 
-                    {/* Subtitle - The "Punchline" */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.8, duration: 1 }}
-                        className="mt-2 pl-1"
-                    >
-                        <span className="text-xs sm:text-sm font-medium text-indigo-200/80 tracking-widest uppercase border-b border-indigo-500/30 pb-0.5">
+                    {/* Subtitle */}
+                    <div className="mt-4 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
+                        <span className="text-[10px] sm:text-xs font-medium text-emerald-300 tracking-widest uppercase">
                             Ama Ciddili Şekilde
                         </span>
-                    </motion.div>
+                    </div>
 
                 </div>
             </motion.div>
