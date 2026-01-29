@@ -123,13 +123,67 @@ export function ModernForumHeader() {
                 "min-h-[140px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all",
                 "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#1a1a1a]"
             )}>
-                {/* Chalkboard Texture */}
-                <div className="absolute inset-0 opacity-40 pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')]" />
-                <div className="absolute inset-0 opacity-10 pointer-events-none bg-noise" />
+                {/* Custom SVG Chalkboard Background */}
+                <div className="absolute inset-0 bg-[#2A3335] pointer-events-none" />
 
-                {/* Eraser Smudges (Static) */}
-                <div className="absolute top-10 left-20 w-40 h-20 bg-white/5 blur-3xl rounded-full rotate-12 pointer-events-none" />
-                <div className="absolute bottom-10 right-20 w-32 h-16 bg-white/5 blur-2xl rounded-full -rotate-6 pointer-events-none" />
+                {/* Chalk Dust Texture */}
+                <div className="absolute inset-0 opacity-30 pointer-events-none"
+                    style={{
+                        backgroundImage: `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 60%), 
+                                           url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E")`
+                    }}
+                />
+
+                {/* Handwritten Formulas SVG */}
+                <div className="absolute inset-0 opacity-20 pointer-events-none select-none overflow-hidden">
+                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <filter id="chalk-stroke">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="1" result="noise" />
+                                <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+                            </filter>
+                        </defs>
+                        <g stroke="white" strokeWidth="2" fill="none" style={{ filter: "url(#chalk-stroke)" }}>
+                            {/* E = mc^2 */}
+                            <path d="M50,40 L70,40 M50,50 L65,50 M50,60 L70,60 M50,40 L50,60" />
+                            <path d="M80,55 L90,55 M80,45 L90,45" />
+                            <text x="100" y="60" fill="white" fontSize="24" fontFamily="monospace" stroke="none">mc²</text>
+
+                            {/* Integral */}
+                            <path d="M40,100 Q30,100 30,110 V140 Q30,150 40,150" />
+                            <text x="50" y="135" fill="white" fontSize="20" fontFamily="monospace" stroke="none">f(x)dx</text>
+
+                            {/* Triangle */}
+                            <path d="M300,50 L270,100 L330,100 Z" />
+                            <circle cx="300" cy="80" r="10" />
+
+                            {/* F = ma */}
+                            <text x="250" y="150" fill="white" fontSize="24" fontFamily="monospace" stroke="none">F = ma</text>
+
+                            {/* Sigma */}
+                            <path d="M600,40 L650,40 L620,70 L650,100 L600,100" />
+
+                            {/* Circuit Resistor */}
+                            <path d="M500,120 L520,120 L525,110 L535,130 L545,110 L555,130 L560,120 L580,120" />
+
+                            {/* Schrodinger Psi */}
+                            <path d="M800,50 V90 M790,60 Q800,80 810,60" />
+
+                            {/* Random Strokes / Eraser marks */}
+                            <path d="M100,200 Q200,180 300,210" opacity="0.5" strokeWidth="10" stroke="rgba(255,255,255,0.1)" />
+                            <path d="M600,150 Q700,170 800,140" opacity="0.5" strokeWidth="20" stroke="rgba(255,255,255,0.05)" />
+                        </g>
+
+                        {/* Scattered Numbers */}
+                        <g fill="white" opacity="0.15" fontSize="14" fontFamily="monospace" style={{ filter: "url(#chalk-stroke)" }}>
+                            <text x="10%" y="20%">3.14</text>
+                            <text x="80%" y="80%">e^iπ</text>
+                            <text x="90%" y="30%">∞</text>
+                            <text x="20%" y="90%">∂</text>
+                            <text x="50%" y="50%">∫</text>
+                        </g>
+                    </svg>
+                </div>
 
                 {/* Content Container */}
                 <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-6">
