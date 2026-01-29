@@ -28,14 +28,7 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Carter_One } from "next/font/google";
 
-const carter = Carter_One({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-carter",
-  display: "swap",
-});
 
 export const viewport = {
   width: 'device-width',
@@ -251,7 +244,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} ${carter.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
         <UserActivityTracker />
         <ThemeProvider
