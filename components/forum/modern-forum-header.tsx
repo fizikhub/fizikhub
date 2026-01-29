@@ -200,7 +200,7 @@ export function ModernForumHeader() {
                         {/* Define SVG Filter for Chalk Distortion */}
                         <svg className="absolute w-0 h-0">
                             <filter id="chalk-distortion">
-                                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+                                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" result="noise" />
                                 <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
                             </filter>
                         </svg>
@@ -223,7 +223,8 @@ export function ModernForumHeader() {
                                             ease: "easeOut"
                                         }}
                                         className="inline-block relative"
-                                        style={{ filter: "url(#chalk-distortion)" }}
+                                        // Removed expensive filter during animation for mobile performance
+                                        style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.5)" }}
                                     >
                                         {char}
                                         {/* Realistic Chalk Dust - Bursting Effect */}
@@ -257,7 +258,8 @@ export function ModernForumHeader() {
                                             "inline-block relative",
                                             char === " " ? "min-w-[1ch]" : ""
                                         )}
-                                        style={{ filter: "url(#chalk-distortion)" }}
+                                        // Removed expensive filter here too
+                                        style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.5)" }}
                                     >
                                         {char}
                                         {char !== " " && (

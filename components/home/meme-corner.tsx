@@ -176,13 +176,13 @@ export function MemeCorner() {
                     >
                         {/* 'BILIMI' - Skewed & Gradient */}
                         <div className="transform -skew-x-[12deg] origin-bottom-left">
-                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.85] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]">
-                                <span className="bttf-gradient-text block" data-text="BİLİMİ">
+                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]">
+                                <span className="bttf-gradient-text block py-1" data-text="BİLİMİ">
                                     BİLİMİ
                                 </span>
                             </h2>
-                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.85] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)] ml-4">
-                                <span className="bttf-gradient-text block" data-text="Tİ'YE ALIYORUZ">
+                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)] ml-4">
+                                <span className="bttf-gradient-text block py-1" data-text="Tİ'YE ALIYORUZ">
                                     Tİ'YE ALIYORUZ
                                 </span>
                             </h2>

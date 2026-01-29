@@ -76,7 +76,7 @@ export function Navbar() {
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute top-0 font-mono font-bold text-black/40 whitespace-nowrap"
+                                className="absolute top-0 font-mono font-bold text-black/40 whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${10 * drop.scale}px` // Scale text size directly
