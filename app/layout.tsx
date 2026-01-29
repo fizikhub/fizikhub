@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Russo_One } from "next/font/google";
+import { Share_Tech_Mono } from "next/font/google";
 
-const russo = Russo_One({
+const shareTech = Share_Tech_Mono({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-russo",
+  variable: "--font-share-tech",
   display: "swap",
 });
+
+
 
 
 
@@ -265,7 +267,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${russo.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${shareTech.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
