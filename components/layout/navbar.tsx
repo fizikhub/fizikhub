@@ -43,11 +43,11 @@ export function Navbar() {
             const dropCount = isMobile ? 15 : 40; // Reduce on mobile
 
             const drops = Array.from({ length: dropCount }).map(() => ({
-                left: Math.random() * 100,
-                duration: 3 + Math.random() * 5, // 3s to 8s
-                delay: Math.random() * 10,       // 0s to 10s
+                left: 30 + Math.random() * 40,   // Constrain to center 40% (30% to 70%)
+                duration: 4 + Math.random() * 6, // Slower, smoother flow (4s-10s)
+                delay: Math.random() * 10,
                 formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-                scale: 0.8 + Math.random() * 0.4 // 0.8 to 1.2 scale
+                scale: 0.7 + Math.random() * 0.4 // Slightly smaller for elegance
             }));
             setRaindrops(drops);
         };
@@ -84,19 +84,18 @@ export function Navbar() {
                     )}
                 >
                     {/* PHYSICS TICKER BACKGROUND */}
-                    {/* PHYSICS RAIN BACKGROUND */}
-                    {/* PHYSICS RAIN BACKGROUND */}
+                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute top-0 font-mono font-bold text-black/40 whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute font-mono font-bold text-black/40 whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
-                                    fontSize: `${10 * drop.scale}px` // Scale text size directly
+                                    fontSize: `${10 * drop.scale}px`
                                 }}
-                                initial={{ y: -50, opacity: 0 }}
-                                animate={{ y: 200, opacity: [0, 1, 0] }} // Higher fall distance to ensure it clears
+                                initial={{ y: 60, opacity: 0 }} // Start below
+                                animate={{ y: -20, opacity: [0, 1, 0] }} // Flow up
                                 transition={{
                                     duration: drop.duration,
                                     repeat: Infinity,
