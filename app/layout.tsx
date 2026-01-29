@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Fredoka } from "next/font/google";
+import { Bangers } from "next/font/google";
 
-const fredoka = Fredoka({
-  weight: ["300", "400", "500", "600"],
+const bangers = Bangers({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-fredoka",
+  variable: "--font-bangers",
   display: "swap",
 });
+
+
 
 
 
@@ -275,7 +277,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${fredoka.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${bangers.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
