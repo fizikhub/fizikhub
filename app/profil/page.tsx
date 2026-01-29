@@ -67,6 +67,7 @@ export default async function ProfilePage() {
                         user={user}
                         isOwnProfile={true}
                         isFollowing={false}
+                        stats={stats}
                     />
                 </div>
 
