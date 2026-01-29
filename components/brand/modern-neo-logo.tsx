@@ -1,32 +1,33 @@
 "use client";
 
-import { motion } from "framer-motion";
-
 export function ModernNeoLogo() {
     return (
-        <div className="flex flex-col items-start select-none">
-            {/* MAIN BRAND: FIZIKHUB */}
-            <div className="relative z-10">
-                {/* Visual Echo/Shadow for depth */}
-                <h1 className="absolute top-[2px] left-[2px] text-l font-black tracking-tighter text-black/20 italic transform skew-x-[-10deg]">
-                    FIZIKHUB
-                </h1>
+        <div className="flex flex-col select-none group">
+            {/* MAIN BRAND ROW */}
+            <div className="flex items-center leading-none tracking-tighter">
+                {/* FIZIK: Outlined/Stroke Effect */}
+                <span className="text-3xl sm:text-4xl font-[900] text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 [webkit-text-stroke:1.5px_black] dark:[webkit-text-stroke:1.5px_white] dark:from-white dark:to-neutral-300 relative z-10 transition-transform duration-300 group-hover:-translate-x-1">
+                    FIZIK
+                </span>
 
-                <h1 className="relative text-2xl sm:text-3xl font-[900] tracking-tighter leading-none italic transform skew-x-[-10deg]">
-                    <span className="text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] paint-order-stroke stroke-black stroke-[1.5px]">
-                        FIZIK
-                    </span>
-                    <span className="text-[#FFC800] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] paint-order-stroke stroke-black stroke-[1.5px]">
+                {/* HUB: Solid Box Effect */}
+                <div className="relative ml-1">
+                    {/* Shadow Layer */}
+                    <div className="absolute inset-0 bg-black translate-x-[3px] translate-y-[3px] rounded-sm" />
+                    {/* Main Box */}
+                    <span className="relative block bg-[#FFC800] text-black text-3xl sm:text-4xl font-[900] px-2 rounded-sm border-2 border-black transform transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-0">
                         HUB
                     </span>
-                </h1>
+                </div>
             </div>
 
-            {/* SUB BRAND: BILIM PLATFORMU */}
-            <div className="relative mt-[2px] ml-[2px]">
-                <div className="bg-black text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] px-1.5 py-0.5 border border-white/20 shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] transform -rotate-1">
+            {/* SUBTITLE: Precision Typography */}
+            <div className="flex items-center justify-between w-full mt-1.5 pl-1">
+                <span className="h-[2px] flex-1 bg-current opacity-20 mr-2 rounded-full"></span>
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-foreground/80">
                     BİLİM PLATFORMU
-                </div>
+                </span>
+                <span className="h-[2px] w-[12px] bg-[#FFC800] border border-black ml-2 rounded-full"></span>
             </div>
         </div>
     );

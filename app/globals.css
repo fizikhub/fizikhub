@@ -38,8 +38,8 @@
   }
 
   .dark {
-    --background: 344 53% 53%;
-    /* Adobe RGB (199, 73, 106) -> #C7496A */
+    --background: 0 0% 14%;
+    /* RGB(36,36,36) - Requested Adobe RGB Gray */
     --foreground: 0 0% 98%;
 
     --card: 240 10% 4%;
