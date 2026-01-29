@@ -220,7 +220,7 @@ export function MemeCorner() {
                     "border border-white/5",
                     "aspect-[3/1] sm:aspect-[4/1]",
                     "aspect-[3/1] sm:aspect-[4/1]",
-                    "bg-[radial-gradient(circle_at_bottom,_var(--tw-gradient-stops))] from-[#2e1065] via-[#0f0518] to-black",
+                    "bg-[radial-gradient(120%_120%_at_50%_50%,_#1e0b36_0%,_#0a051d_50%,_#000000_100%)]",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
