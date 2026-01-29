@@ -7,56 +7,48 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               V14: THE LAB TAPE
-               - Font: Chakra Petch (Technical/Futuristic)
-               - Concept: Dymo Labeling Tape
-               - Style: Overlapping Stips, Jagged Edges, Technical Vibe
+               V15: THE BRUTALIST SLAB
+               - Font: Zilla Slab (700 Bold) - Industrial / Editorial
+               - Concept: Manifesto Header / Metal Plate
+               - Style: Solid Black Block with yellow accent text
             */}
 
             <motion.div
-                className="relative flex flex-col items-center justify-center"
-                whileHover={{ scale: 1.05 }}
+                className="relative flex items-center bg-black px-4 py-1 sm:py-2 border-[2px] border-black shadow-[4px_4px_0px_#FACC15]" // Yellow shadow
+                whileHover={{ scale: 1.05, boxShadow: "6px 6px 0px #FACC15" }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* TAPE 1: FIZIK (Yellow) */}
-                <div
-                    className="relative z-10 -mb-2 rotate-[-2deg] bg-[#FACC15] px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
-                    style={{
-                        clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)', // Slight tear simulation
-                    }}
-                >
+                {/* TEXT CONTAINER */}
+                <div className="flex items-baseline gap-1">
                     <h1
-                        className="text-2xl sm:text-3xl font-bold tracking-tight text-black"
-                        style={{ fontFamily: 'var(--font-chakra)' }}
+                        className="text-2xl sm:text-4xl leading-none text-[#FACC15]" // Yellow
+                        style={{ fontFamily: 'var(--font-zilla)' }}
                     >
                         FIZIK
                     </h1>
-                </div>
-
-                {/* TAPE 2: HUB (Black) */}
-                <div
-                    className="relative z-0 rotate-[1deg] bg-black px-4 py-1 pb-2 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
-                    style={{
-                        clipPath: 'polygon(0% 0%, 100% 0%, 97% 100%, 3% 100%)',
-                    }}
-                >
                     <h1
-                        className="text-2xl sm:text-3xl font-bold tracking-tight text-white"
-                        style={{ fontFamily: 'var(--font-chakra)' }}
+                        className="text-2xl sm:text-4xl leading-none text-white"
+                        style={{ fontFamily: 'var(--font-zilla)' }}
                     >
                         HUB
                     </h1>
                 </div>
 
-                {/* QC STICKER: BILLIM PLATFORMU */}
-                <div className="absolute -bottom-1 -right-4 rotate-[-10deg] opacity-90">
-                    <div className="border border-black bg-white px-1 shadow-sm">
-                        <span className="text-[7px] font-bold text-black"
-                            style={{ fontFamily: 'var(--font-chakra)' }}>
-                            QC:PASSED
-                        </span>
-                    </div>
+                {/* VERTICAL TAGLINE (Barcode style) */}
+                <div className="ml-3 h-full flex flex-col justify-between border-l border-white/30 pl-1.5 py-0.5">
+                    <span
+                        className="text-[6px] sm:text-[8px] font-mono font-bold text-white/70 uppercase tracking-widest"
+                        style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+                    >
+                        BİLİM PLATFORMU
+                    </span>
                 </div>
+
+                {/* DECORATIVE CORNER SCREWS */}
+                <div className="absolute top-1 left-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
+                <div className="absolute top-1 right-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
+                <div className="absolute bottom-1 left-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
+                <div className="absolute bottom-1 right-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
 
             </motion.div>
 

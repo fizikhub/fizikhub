@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Chakra_Petch } from "next/font/google";
+import { Zilla_Slab } from "next/font/google";
 
-const chakra = Chakra_Petch({
-  weight: ["400", "700"], // Regular and Bold
+const zilla = Zilla_Slab({
+  weight: "700",
   subsets: ["latin"],
-  variable: "--font-chakra",
+  variable: "--font-zilla",
   display: "swap",
 });
+
+
 
 
 
@@ -253,7 +255,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${chakra.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${zilla.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
