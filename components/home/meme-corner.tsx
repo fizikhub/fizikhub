@@ -209,12 +209,12 @@ export function MemeCorner() {
                         >
                             {/* Filter: Normal visibility with Aggressive Radial Mask */}
                             <div className="relative w-full h-full" style={{
-                                maskImage: "radial-gradient(ellipse at center, black 40%, transparent 70%)",
-                                WebkitMaskImage: "radial-gradient(ellipse at center, black 40%, transparent 70%)",
+                                maskImage: "radial-gradient(ellipse at center, black 60%, transparent 90%)",
+                                WebkitMaskImage: "radial-gradient(ellipse at center, black 60%, transparent 90%)",
                                 filter: "contrast(1.1) brightness(0.9)"
                             }}>
                                 <Image
-                                    src="/assets/delorean-popout.png"
+                                    src="/assets/images/delorean-transformed.png"
                                     alt="DeLorean Time Machine"
                                     fill
                                     className="object-contain drop-shadow-2xl"

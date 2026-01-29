@@ -19,7 +19,11 @@ const clickVariant = {
 
 const physicsTicker = [
     "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
-    "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 299,792,458 m/s"
+    "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 3×10⁸",
+    "e^(iπ) + 1 = 0", "∇×B = μ₀J + μ₀ε₀∂E/∂t", "H = -Σ pᵢ log pᵢ",
+    "ΔxΔp ≥ ℏ/2", "R_uv - 1/2Rg_uv = 8πGT_uv", "KE = 1/2mv²",
+    "F = G(m₁m₂)/r²", "L = T - V", "ds² = -(1-2M/r)dt² + ...",
+    "Q = mcΔT", "U = 3/2nRT", "P = IV", "V = IR"
 ];
 
 export function Navbar() {
@@ -28,15 +32,16 @@ export function Navbar() {
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
-    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string }[]>([]);
+    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number }[]>([]);
 
     useEffect(() => {
         setMounted(true);
-        const drops = Array.from({ length: 20 }).map(() => ({
+        const drops = Array.from({ length: 40 }).map(() => ({
             left: Math.random() * 100,
-            duration: 2 + Math.random() * 4,
-            delay: Math.random() * 5,
-            formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)]
+            duration: 3 + Math.random() * 5, // 3s to 8s
+            delay: Math.random() * 10,       // 0s to 10s
+            formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
+            scale: 0.8 + Math.random() * 0.4 // 0.8 to 1.2 scale
         }));
         setRaindrops(drops);
     }, []);
@@ -71,10 +76,13 @@ export function Navbar() {
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute top-0 text-[10px] sm:text-xs font-mono font-bold text-black/20 whitespace-nowrap"
-                                style={{ left: `${drop.left}%` }}
+                                className="absolute top-0 font-mono font-bold text-black/40 whitespace-nowrap"
+                                style={{
+                                    left: `${drop.left}%`,
+                                    fontSize: `${10 * drop.scale}px` // Scale text size directly
+                                }}
                                 initial={{ y: -50, opacity: 0 }}
-                                animate={{ y: 100, opacity: [0, 1, 0] }}
+                                animate={{ y: 200, opacity: [0, 1, 0] }} // Higher fall distance to ensure it clears
                                 transition={{
                                     duration: drop.duration,
                                     repeat: Infinity,
