@@ -7,42 +7,48 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center">
 
             {/* 
-               V20: THE INTEGRATED MODULE
-               - Font: Space Grotesk (System)
-               - Concept: UI Control Module / CPU
-               - Style: Clean, Boxed, System-Compatible
+               V21: THE SOVIET SPACE BADGE
+               - Font: Russo One (Google Font)
+               - Concept: Constructivist / Space Race / Heavy Industry
+               - Style: Geometric, Blocky, High-Contrast
             */}
 
             <motion.div
-                className="flex items-center gap-1.5 bg-white px-3 py-1 sm:py-1.5 border-[2px] border-black shadow-[2px_2px_0px_#000]"
-                whileHover={{ y: -1, boxShadow: "4px 4px 0px #000" }}
-                whileTap={{ y: 1, boxShadow: "0px 0px 0px #000" }}
+                className="flex items-center"
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* ICON / INDICATOR */}
-                <div className="h-2.5 w-2.5 bg-[#FACC15] border-[1.5px] border-black" />
-
-                {/* TEXT */}
-                <div className="flex items-baseline gap-0.5">
-                    <h1
-                        className="text-lg sm:text-2xl font-bold tracking-tight text-black leading-none"
-                        style={{ fontFamily: 'var(--font-space)' }}
-                    >
-                        FIZIK
-                    </h1>
-                    <h1
-                        className="text-lg sm:text-2xl font-medium tracking-tight text-black leading-none"
-                        style={{ fontFamily: 'var(--font-space)' }}
-                    >
-                        HUB
-                    </h1>
+                {/* ICON: RED STAR / GEOMETRY */}
+                <div className="mr-2 flex items-center justify-center h-8 w-8 bg-black clip-path-polygon-[10%_0%,_100%_0%,_90%_100%,_0%_100%]">
+                    <div className="h-3 w-3 bg-[#FACC15] rotate-45" />
                 </div>
 
-                {/* TAGLINE (Integrated) */}
-                <div className="hidden sm:flex border-l-[1.5px] border-black/20 ml-2 pl-2">
-                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
-                        PLATFORM
-                    </span>
+                {/* TEXT LOCKUP */}
+                <div className="flex flex-col -space-y-1">
+                    <div className="flex items-baseline leading-none">
+                        <h1
+                            className="text-2xl sm:text-3xl text-black tracking-normal uppercase"
+                            style={{ fontFamily: 'var(--font-russo)' }}
+                        >
+                            FIZIK
+                        </h1>
+                        <h1
+                            className="text-2xl sm:text-3xl text-[#FACC15] tracking-normal uppercase"
+                            style={{
+                                fontFamily: 'var(--font-russo)',
+                                textShadow: '1px 1px 0px #000'
+                            }}
+                        >
+                            HUB
+                        </h1>
+                    </div>
+
+                    {/* SUBTITLE BAR */}
+                    <div className="flex items-center justify-between w-full border-t-[2px] border-black pt-[2px]">
+                        <span className="text-[9px] font-bold text-black uppercase tracking-widest leading-none">
+                            BILIM. PLATFORMU.
+                        </span>
+                    </div>
                 </div>
 
             </motion.div>
