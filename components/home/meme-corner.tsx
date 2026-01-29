@@ -125,7 +125,7 @@ function GalaxyDust({ count = 30000 }) {
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.5}
+                opacity={0.6}
             />
         </points>
     );
@@ -220,7 +220,7 @@ function MainStars({ count = 10000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={0.3} // Larger, distinct stars
+                size={0.35} // Larger, distinct stars
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
@@ -429,9 +429,9 @@ export function MemeCorner() {
                     />
                 </div>
 
-                {/* VISUAL NOISE */}
+                {/* VISUAL NOISE - Reduced to 5% for clarity */}
                 <div
-                    className="absolute inset-0 z-[1] opacity-20 pointer-events-none mix-blend-overlay"
+                    className="absolute inset-0 z-[1] opacity-5 pointer-events-none mix-blend-overlay"
                     style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                     }}
@@ -457,10 +457,10 @@ export function MemeCorner() {
 
                         <EffectComposer enableNormalPass={false}>
                             <Bloom
-                                luminanceThreshold={0.2}
+                                luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
                                 mipmapBlur
                                 intensity={1.1}
-                                radius={0.5}
+                                radius={0.4} // Sharper glow
                             />
                         </EffectComposer>
                     </Canvas>
