@@ -51,8 +51,8 @@ function CosmicSwirl() {
                 }}
             />
 
-            {/* Stars */}
-            {Array.from({ length: 50 }).map((_, i) => (
+            {/* Stars - Reduced count for performance */}
+            {Array.from({ length: 20 }).map((_, i) => (
                 <motion.div
                     key={i}
                     className="absolute rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.9)]"

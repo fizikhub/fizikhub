@@ -78,7 +78,7 @@
     "zsa-react": "^0.2.3"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.1.1",
+    "@next/bundle-analyzer": "^16.1.6",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -221,10 +221,20 @@ export default async function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href="https://fizikhub.com" />
+        {/* KaTeX CSS - Using preload hint for faster loading */}
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+          as="style"
+          crossOrigin="anonymous"
+        />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
           crossOrigin="anonymous"
+          media="print"
+          // @ts-expect-error - onLoad is valid HTML but not typed in React
+          onLoad="this.media='all'"
         />
         <script
           type="application/ld+json"

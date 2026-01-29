@@ -36,14 +36,28 @@ export function Navbar() {
 
     useEffect(() => {
         setMounted(true);
-        const drops = Array.from({ length: 40 }).map(() => ({
-            left: Math.random() * 100,
-            duration: 3 + Math.random() * 5, // 3s to 8s
-            delay: Math.random() * 10,       // 0s to 10s
-            formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-            scale: 0.8 + Math.random() * 0.4 // 0.8 to 1.2 scale
-        }));
-        setRaindrops(drops);
+
+        // Defer rain generation until browser is idle for better initial load
+        const generateRain = () => {
+            const isMobile = window.innerWidth < 768;
+            const dropCount = isMobile ? 15 : 40; // Reduce on mobile
+
+            const drops = Array.from({ length: dropCount }).map(() => ({
+                left: Math.random() * 100,
+                duration: 3 + Math.random() * 5, // 3s to 8s
+                delay: Math.random() * 10,       // 0s to 10s
+                formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
+                scale: 0.8 + Math.random() * 0.4 // 0.8 to 1.2 scale
+            }));
+            setRaindrops(drops);
+        };
+
+        // Use requestIdleCallback if available, otherwise setTimeout
+        if ('requestIdleCallback' in window) {
+            (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(generateRain);
+        } else {
+            setTimeout(generateRain, 100);
+        }
     }, []);
 
     const navItems = [
