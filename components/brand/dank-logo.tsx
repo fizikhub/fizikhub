@@ -4,65 +4,44 @@ import { motion } from "framer-motion";
 
 export function DankLogo() {
     return (
-        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
+        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center">
 
             {/* 
-               V19: THE PUNK STICKER
-               - Font: Permanent Marker (Google Font)
-               - Concept: Garage Science / DIY
-               - Style: Masking Tape with Sharpie
+               V20: THE INTEGRATED MODULE
+               - Font: Space Grotesk (System)
+               - Concept: UI Control Module / CPU
+               - Style: Clean, Boxed, System-Compatible
             */}
 
             <motion.div
-                className="relative"
-                initial={{ rotate: -2 }}
-                whileHover={{ rotate: 1, scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300, damping: 12 }}
+                className="flex items-center gap-1.5 bg-white px-3 py-1 sm:py-1.5 border-[2px] border-black shadow-[2px_2px_0px_#000]"
+                whileHover={{ y: -1, boxShadow: "4px 4px 0px #000" }}
+                whileTap={{ y: 1, boxShadow: "0px 0px 0px #000" }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* MASKING TAPE BACKGROUND */}
-                <div
-                    className="absolute inset-0 -mx-3 -my-1 bg-[#FEF08A] shadow-md transform skew-x-[-10deg] rotate-1" // Pale Yellow Tape
-                    style={{
-                        clipPath: 'polygon(2% 4%, 100% 0%, 98% 95%, 0% 100%)', // Rough edges
-                        borderTopLeftRadius: '2px',
-                        borderBottomRightRadius: '3px'
-                    }}
-                />
+                {/* ICON / INDICATOR */}
+                <div className="h-2.5 w-2.5 bg-[#FACC15] border-[1.5px] border-black" />
 
-                {/* TORN TAPE ENDS (Visual Details) */}
-                <div
-                    className="absolute -left-4 top-0 bottom-0 w-4 bg-[#FEF08A] opacity-90"
-                    style={{ clipPath: 'polygon(100% 0, 0% 15%, 100% 30%, 10% 50%, 100% 65%, 0% 85%, 100% 100%)' }} // Jagged left
-                />
-                <div
-                    className="absolute -right-4 top-0 bottom-0 w-4 bg-[#FEF08A] opacity-90"
-                    style={{ clipPath: 'polygon(0% 0%, 100% 15%, 0% 30%, 90% 50%, 0% 65%, 100% 85%, 0% 100%)' }} // Jagged right
-                />
-
-                {/* SHARPIE TEXT */}
-                <div className="relative z-10 flex flex-col items-center">
+                {/* TEXT */}
+                <div className="flex items-baseline gap-0.5">
                     <h1
-                        className="text-2xl sm:text-3xl text-[#101010] leading-none"
-                        style={{
-                            fontFamily: 'var(--font-permanent)',
-                            transform: 'rotate(-1deg)',
-                            textShadow: '1px 1px 0px rgba(0,0,0,0.1)'
-                        }}
+                        className="text-lg sm:text-2xl font-bold tracking-tight text-black leading-none"
+                        style={{ fontFamily: 'var(--font-space)' }}
                     >
-                        FIZIKHUB
+                        FIZIK
                     </h1>
-
-                    {/* SCRAWLED UNDERLINE */}
-                    <svg width="100%" height="6" viewBox="0 0 100 6" fill="none" className="mt-0.5 opacity-80">
-                        <path d="M2 3C20 3 40 2 98 4" stroke="#101010" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-
-                    {/* TINY TAGLINE SCRAWL */}
-                    <span
-                        className="absolute -bottom-3 -right-2 text-[8px] font-bold text-black rotate-[-5deg] bg-white px-0.5 shadow-sm border border-black/20"
-                        style={{ fontFamily: 'var(--font-permanent)' }}
+                    <h1
+                        className="text-lg sm:text-2xl font-medium tracking-tight text-black leading-none"
+                        style={{ fontFamily: 'var(--font-space)' }}
                     >
-                        bilim platformu
+                        HUB
+                    </h1>
+                </div>
+
+                {/* TAGLINE (Integrated) */}
+                <div className="hidden sm:flex border-l-[1.5px] border-black/20 ml-2 pl-2">
+                    <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
+                        PLATFORM
                     </span>
                 </div>
 
