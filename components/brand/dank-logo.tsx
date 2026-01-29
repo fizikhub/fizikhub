@@ -7,65 +7,56 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               V13: THE KINETIC STICKER
-               - Font: Outfit Black (Geometric)
-               - Concept: Die-Cut Sticker
-               - Style: Thick White Outline + Hard Shadow + Rotation
+               V14: THE LAB TAPE
+               - Font: Chakra Petch (Technical/Futuristic)
+               - Concept: Dymo Labeling Tape
+               - Style: Overlapping Stips, Jagged Edges, Technical Vibe
             */}
 
             <motion.div
-                className="relative"
-                initial={{ rotate: -3 }}
-                whileHover={{ rotate: 0, scale: 1.1 }}
+                className="relative flex flex-col items-center justify-center"
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* LAYER 1: HARD DROP SHADOW (The distance from surface) */}
-                <div className="absolute inset-0 translate-x-[4px] translate-y-[4px] opacity-100">
-                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-black"
-                        style={{
-                            fontFamily: 'var(--font-heading)',
-                            WebkitTextStroke: '6px black'
-                        }}>
-                        FIZIKHUB
-                    </span>
-                </div>
-
-                {/* LAYER 2: STICKER PAPER (The White Outline) */}
-                <div className="absolute inset-0 z-10">
-                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-white"
-                        style={{
-                            fontFamily: 'var(--font-heading)',
-                            WebkitTextStroke: '6px white', // Thick sticker edge
-                            paintOrder: 'stroke fill'
-                        }}>
-                        FIZIKHUB
-                    </span>
-                </div>
-
-                {/* LAYER 3: CONTENT (The Ink) */}
-                <div className="relative z-20 flex">
-                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-black"
-                        style={{ fontFamily: 'var(--font-heading)' }}>
-                        FIZIK
-                    </span>
-                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-[#FACC15]" // Yellow
-                        style={{ fontFamily: 'var(--font-heading)' }}>
-                        HUB
-                    </span>
-                </div>
-
-                {/* TAGLINE STICKER (Slapped over) */}
-                <motion.div
-                    className="absolute -bottom-2 right-0 z-30"
-                    initial={{ rotate: 5 }}
+                {/* TAPE 1: FIZIK (Yellow) */}
+                <div
+                    className="relative z-10 -mb-2 rotate-[-2deg] bg-[#FACC15] px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                    style={{
+                        clipPath: 'polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%)', // Slight tear simulation
+                    }}
                 >
-                    <div className="border-[1.5px] border-black bg-white px-1 shadow-[2px_2px_0px_0px_#000]">
-                        <span className="text-[8px] font-black uppercase tracking-widest text-black"
-                            style={{ fontFamily: 'var(--font-heading)' }}>
-                            BİLİM PLATFORMU
+                    <h1
+                        className="text-2xl sm:text-3xl font-bold tracking-tight text-black"
+                        style={{ fontFamily: 'var(--font-chakra)' }}
+                    >
+                        FIZIK
+                    </h1>
+                </div>
+
+                {/* TAPE 2: HUB (Black) */}
+                <div
+                    className="relative z-0 rotate-[1deg] bg-black px-4 py-1 pb-2 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]"
+                    style={{
+                        clipPath: 'polygon(0% 0%, 100% 0%, 97% 100%, 3% 100%)',
+                    }}
+                >
+                    <h1
+                        className="text-2xl sm:text-3xl font-bold tracking-tight text-white"
+                        style={{ fontFamily: 'var(--font-chakra)' }}
+                    >
+                        HUB
+                    </h1>
+                </div>
+
+                {/* QC STICKER: BILLIM PLATFORMU */}
+                <div className="absolute -bottom-1 -right-4 rotate-[-10deg] opacity-90">
+                    <div className="border border-black bg-white px-1 shadow-sm">
+                        <span className="text-[7px] font-bold text-black"
+                            style={{ fontFamily: 'var(--font-chakra)' }}>
+                            QC:PASSED
                         </span>
                     </div>
-                </motion.div>
+                </div>
 
             </motion.div>
 

@@ -16,15 +16,20 @@ const inter = Inter({
   fallback: ['system-ui', 'arial'],
 });
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
-});
+
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space",
+  display: "swap",
+});
+
+import { Chakra_Petch } from "next/font/google";
+
+const chakra = Chakra_Petch({
+  weight: ["400", "700"], // Regular and Bold
+  subsets: ["latin"],
+  variable: "--font-chakra",
   display: "swap",
 });
 
@@ -248,7 +253,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${chakra.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
