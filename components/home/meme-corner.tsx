@@ -57,8 +57,82 @@ function getNebulaTexture() {
     return texture;
 }
 
-// --- STAR FIELD ---
-function StarField({ count = 40000 }) {
+// --- GALAXY DUST ( The Haze ) ---
+function GalaxyDust({ count = 30000 }) {
+    const pointsRef = useRef<THREE.Points>(null!);
+    const texture = useMemo(() => getStarTexture(), []); // Use same texture, just smaller
+
+    const geometry = useMemo(() => {
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
+
+        const c_Inner = new THREE.Color('#66aaff'); // Dusty Blue
+        const c_Outer = new THREE.Color('#3355aa'); // Deep Dust
+
+        const arms = 2;
+        const spin = 3.5;
+
+        for (let i = 0; i < count; i++) {
+            const i3 = i * 3;
+            // Dust is mostly in the arms
+            const rRandom = Math.pow(Math.random(), 1.5);
+            const radius = 1.0 + rRandom * 10;
+
+            const branchAngle = ((i % arms) / arms) * Math.PI * 2;
+            const spinAngle = radius * 0.6 * spin;
+
+            // More scatter for dust = "Cloud/Haze" effect
+            const scatterBase = 0.4 + (radius * 0.15);
+            const randomX = (Math.random() - 0.5) * scatterBase * 2;
+            const randomY = (Math.random() - 0.5) * (0.1 + radius * 0.02); // Flat
+            const randomZ = (Math.random() - 0.5) * scatterBase * 2;
+
+            const finalAngle = branchAngle + spinAngle;
+            const x = Math.cos(finalAngle) * radius + randomX;
+            const z = Math.sin(finalAngle) * radius + randomZ;
+
+            positions[i3] = x;
+            positions[i3 + 1] = randomY;
+            positions[i3 + 2] = z;
+
+            const color = new THREE.Color();
+            color.copy(c_Inner).lerp(c_Outer, radius / 10);
+            color.multiplyScalar(0.6); // Dimmer than stars
+
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        return geo;
+    }, [count]);
+
+    useFrame((state, delta) => {
+        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.05;
+    });
+
+    return (
+        <points ref={pointsRef}>
+            <primitive object={geometry} />
+            <pointsMaterial
+                map={texture}
+                size={0.12} // Very small points
+                sizeAttenuation={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                vertexColors
+                transparent
+                opacity={0.5}
+            />
+        </points>
+    );
+}
+
+// --- MAIN STARS ( Bright & Distinct ) ---
+function MainStars({ count = 10000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -66,28 +140,26 @@ function StarField({ count = 40000 }) {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        const c_Core = new THREE.Color('#fffae0');    // Warm White (Bulge)
-        const c_Inner = new THREE.Color('#bae6ff');   // Pale Blue (Inner Arm)
-        const c_Outer = new THREE.Color('#3388ff');   // Deep Blue (Outer Arm)
+        const c_Core = new THREE.Color('#fff5c2');    // Golden Core
+        const c_Inner = new THREE.Color('#d4f1ff');   // White-Blue
+        const c_Outer = new THREE.Color('#5599ff');   // Electric Blue
 
         const arms = 2;
         const spin = 3.5;
-        const bulgeCount = 8000; // Count of stars in the central sphere
+        const bulgeCount = 4000;
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             const color = new THREE.Color();
 
             if (i < bulgeCount) {
-                // --- BULGE GENERATION (Spherical, Solid) ---
-                // Random position in a sphere at center
-                const r = Math.pow(Math.random(), 3) * 2.5;
+                // Bulge
+                const r = Math.pow(Math.random(), 3) * 3.0;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
 
                 const x = r * Math.sin(phi) * Math.cos(theta);
-                // Flatten bulge slightly on Y axis
-                const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.6;
+                const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.7;
                 const z = r * Math.cos(phi);
 
                 positions[i3] = x;
@@ -95,19 +167,19 @@ function StarField({ count = 40000 }) {
                 positions[i3 + 2] = z;
 
                 color.copy(c_Core);
-                // Make some core stars extra bright
-                if (Math.random() > 0.8) color.multiplyScalar(1.5);
+                // Core brilliance
+                if (Math.random() > 0.7) color.multiplyScalar(1.5);
 
             } else {
-                // --- DISK GENERATION (Spiral Arms) ---
+                // Arms
                 const rRandom = Math.pow(Math.random(), 1.5);
-                // Start arms OUTSIDE the core radius (e.g., > 2.0)
-                const radius = 2.0 + rRandom * 8;
+                const radius = 2.5 + rRandom * 8;
 
                 const branchAngle = ((i % arms) / arms) * Math.PI * 2;
                 const spinAngle = radius * 0.6 * spin;
 
-                const scatterBase = 0.2 + (radius * 0.08);
+                // Tighter scatter for main stars = "Structure"
+                const scatterBase = 0.15 + (radius * 0.05);
                 const randomX = (Math.random() - 0.5) * scatterBase * 2;
                 const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.05);
                 const randomZ = (Math.random() - 0.5) * scatterBase * 2;
@@ -120,9 +192,12 @@ function StarField({ count = 40000 }) {
                 positions[i3 + 1] = randomY;
                 positions[i3 + 2] = z;
 
-                // Color gradient from inner arm to outer arm
-                color.copy(c_Inner).lerp(c_Outer, (radius - 2.0) / 6);
-                if (Math.random() > 0.9) color.set('#ffffff');
+                color.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
+
+                // Occasional Red Giants / Bright Stars
+                const rand = Math.random();
+                if (rand > 0.95) color.set('#ffffff').multiplyScalar(2.0); // Super bright
+                else if (rand > 0.90) color.set('#ffccaa'); // Red/Orange giant
             }
 
             colors[i3] = color.r;
@@ -145,13 +220,13 @@ function StarField({ count = 40000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={0.25}
+                size={0.3} // Larger, distinct stars
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.9}
+                opacity={1.0}
             />
         </points>
     );
