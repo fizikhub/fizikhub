@@ -203,6 +203,67 @@ function NebulaClouds({ count = 8000 }) {
     );
 }
 
+// --- DISTANT BACKGROUND STARS ---
+function BackgroundStars({ count = 2000 }) {
+    const pointsRef = useRef<THREE.Points>(null!);
+    const texture = useMemo(() => getStarTexture(), []);
+
+    const geometry = useMemo(() => {
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
+        const c_White = new THREE.Color('#ffffff');
+        const c_Blue = new THREE.Color('#aaaaff');
+
+        for (let i = 0; i < count; i++) {
+            const i3 = i * 3;
+            // Distant Sphere
+            const r = 20 + Math.random() * 20;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            positions[i3] = x;
+            positions[i3 + 1] = y;
+            positions[i3 + 2] = z;
+
+            const color = new THREE.Color();
+            color.copy(Math.random() > 0.5 ? c_White : c_Blue);
+
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        return geo;
+    }, [count]);
+
+    useFrame((state, delta) => {
+        if (pointsRef.current) pointsRef.current.rotation.y -= delta * 0.005; // Very slow counter-rotation
+    });
+
+    return (
+        <points ref={pointsRef}>
+            <primitive object={geometry} />
+            <pointsMaterial
+                map={texture}
+                size={0.15} // Tiny distant dots
+                sizeAttenuation={true}
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                vertexColors
+                transparent
+                opacity={0.6} // Faint
+            />
+        </points>
+    );
+}
+
 // --- MAIN COMPONENT ---
 export function MemeCorner() {
     return (
@@ -220,6 +281,14 @@ export function MemeCorner() {
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
+                {/* NOISE VISUAL TEXTURE (Film Grain) */}
+                <div
+                    className="absolute inset-0 z-[1] opacity-20 pointer-events-none mix-blend-overlay"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                    }}
+                />
+
                 {/* 1. 3D Galaxy Canvas */}
                 <div className="absolute inset-0 z-0">
                     <Canvas
@@ -234,6 +303,7 @@ export function MemeCorner() {
                         {/* No background color, transparency is key */}
 
                         <group>
+                            <BackgroundStars />
                             <StarField />
                             <NebulaClouds />
                         </group>
