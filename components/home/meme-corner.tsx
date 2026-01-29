@@ -365,35 +365,80 @@ function BackgroundStars({ count = 2000 }) {
 export function MemeCorner() {
     return (
         <div className="w-full relative group">
+            {/* GLOBAL STYLES for animations */}
+            <style jsx global>{`
+                @keyframes gradient-flow {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+                @keyframes shimmer {
+                    0% { transform: translateX(-100%) rotate(25deg); }
+                    100% { transform: translateX(200%) rotate(25deg); }
+                }
+                @keyframes badge-wiggle {
+                    0%, 100% { transform: rotate(-3deg); }
+                    50% { transform: rotate(1deg); }
+                }
+                @keyframes pulse-glow {
+                    0%, 100% { opacity: 0.3; }
+                    50% { opacity: 0.7; }
+                }
+            `}</style>
+
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                whileHover={{ scale: 1.01 }}
                 className={cn(
-                    "relative w-full overflow-hidden",
-                    // NEO-BRUTALIST TOKENS (Matching neo-article-card.tsx)
+                    "relative w-full overflow-hidden cursor-pointer",
+                    // NEO-BRUTALIST TOKENS
                     "rounded-[8px]",
                     "border-[3px] border-black",
                     "shadow-[4px_4px_0px_0px_#000]",
+                    "transition-shadow duration-200 hover:shadow-[6px_6px_0px_0px_#000]",
                     // Size & Background
                     "h-[180px] sm:h-[240px]",
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
-                {/* 1. TOP LEFT BADGE (Matching Category Label) */}
-                <div className="absolute top-3 left-3 z-30 perspective-500">
-                    <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                {/* 1. TOP LEFT BADGE - Animated Wiggle */}
+                <motion.div
+                    className="absolute top-3 left-3 z-30"
+                    animate={{ rotate: [-3, 1, -3] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                    <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] hover:scale-110 transition-transform">
                         AMA CİDDİLİ ŞEKİLDE
                     </span>
-                </div>
+                </motion.div>
 
-                {/* HUD CORNERS (Re-added subtly for Sci-Fi feel per user preference for 'cool', but kept clean) */}
-                <svg className="absolute top-2 right-2 w-5 h-5 text-white/20 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {/* HUD CORNERS - Enhanced with Glow */}
+                <svg className="absolute top-2 right-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M23 9V1H15" />
                 </svg>
-                <svg className="absolute bottom-2 left-2 w-5 h-5 text-white/20 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg className="absolute bottom-2 left-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_0.5s]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M1 15V23H9" />
                 </svg>
+                <svg className="absolute bottom-2 right-2 w-6 h-6 text-purple-400/30 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_1s]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 15V23H15" />
+                </svg>
+
+                {/* SCANLINES - Retro Effect */}
+                <div
+                    className="absolute inset-0 z-[2] pointer-events-none opacity-[0.03]"
+                    style={{
+                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)`
+                    }}
+                />
+
+                {/* SHIMMER EFFECT */}
+                <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none">
+                    <div
+                        className="absolute inset-0 w-[50%] h-[200%] bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_4s_ease-in-out_infinite]"
+                        style={{ top: '-50%' }}
+                    />
+                </div>
 
                 {/* VISUAL NOISE */}
                 <div
@@ -438,15 +483,25 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
 
-                    {/* Main Title - Cinematic & Neo-Brutalist Font */}
-                    <div className="flex flex-col items-center justify-center drop-shadow-2xl">
+                    {/* Main Title */}
+                    <div className="flex flex-col items-center justify-center">
                         {/* Top: Spaced Out */}
-                        <h2 className="font-[family-name:var(--font-outfit)] text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-100/90 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
+                        <h2 className="font-[family-name:var(--font-outfit)] text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
                             BİLİMİ
                         </h2>
 
-                        {/* Bottom: Massive & Condensed */}
-                        <h2 className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-blue-100 to-blue-400 leading-[0.85] pb-2 drop-shadow-[0_4px_0px_#000]">
+                        {/* Bottom: Animated Gradient Text */}
+                        <h2
+                            className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter leading-[0.85] pb-2"
+                            style={{
+                                background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
+                                backgroundSize: '200% auto',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                animation: 'gradient-flow 4s ease infinite',
+                                textShadow: '0 4px 8px rgba(0,0,0,0.5)',
+                            }}
+                        >
                             Tİ'YE ALIYORUZ
                         </h2>
                     </div>
