@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Righteous } from "next/font/google";
+import { Press_Start_2P } from "next/font/google";
 
-const righteous = Righteous({
+const pressStart = Press_Start_2P({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-righteous",
+  variable: "--font-press-start",
   display: "swap",
 });
+
+
 
 
 
@@ -269,7 +271,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${righteous.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${pressStart.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
