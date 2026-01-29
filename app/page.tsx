@@ -125,10 +125,10 @@ export default async function Home() {
 
       <BackgroundWrapper />
 
-      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-14 lg:pt-20">
+      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-[52px] lg:pt-20">
 
         {/* Story-style Categories */}
-        <div className="pt-1 pb-0">
+        <div className="pb-0">
           <CategoryStories />
         </div>
 
