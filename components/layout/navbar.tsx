@@ -28,7 +28,18 @@ export function Navbar() {
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
-    useEffect(() => setMounted(true), []);
+    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string }[]>([]);
+
+    useEffect(() => {
+        setMounted(true);
+        const drops = Array.from({ length: 20 }).map(() => ({
+            left: Math.random() * 100,
+            duration: 2 + Math.random() * 4,
+            delay: Math.random() * 5,
+            formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)]
+        }));
+        setRaindrops(drops);
+    }, []);
 
     const navItems = [
         { href: "/", label: "Ana" },
@@ -54,16 +65,26 @@ export function Navbar() {
                     )}
                 >
                     {/* PHYSICS TICKER BACKGROUND */}
-                    <div className="absolute inset-0 flex items-center opacity-15 overflow-hidden pointer-events-none select-none">
-                        <motion.div
-                            className="flex gap-8 whitespace-nowrap text-[10px] sm:text-xs font-mono font-bold text-black"
-                            animate={{ x: ["0%", "-50%"] }}
-                            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                        >
-                            {[...physicsTicker, ...physicsTicker, ...physicsTicker, ...physicsTicker].map((eq, i) => (
-                                <span key={i} className="inline-block">{eq}</span>
-                            ))}
-                        </motion.div>
+                    {/* PHYSICS RAIN BACKGROUND */}
+                    {/* PHYSICS RAIN BACKGROUND */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+                        {raindrops.map((drop, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute top-0 text-[10px] sm:text-xs font-mono font-bold text-black/20 whitespace-nowrap"
+                                style={{ left: `${drop.left}%` }}
+                                initial={{ y: -50, opacity: 0 }}
+                                animate={{ y: 100, opacity: [0, 1, 0] }}
+                                transition={{
+                                    duration: drop.duration,
+                                    repeat: Infinity,
+                                    delay: drop.delay,
+                                    ease: "linear"
+                                }}
+                            >
+                                {drop.formula}
+                            </motion.div>
+                        ))}
                     </div>
 
                     {/* RULER TICKS */}
