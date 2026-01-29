@@ -139,7 +139,7 @@ export default async function Home() {
 
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-4 lg:mt-0 sm:px-0">
+          <div className="lg:col-span-12 mt-2 lg:mt-0 sm:px-0">
             <CompactHero />
           </div>
 
