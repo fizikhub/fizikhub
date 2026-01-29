@@ -1,67 +1,102 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="group relative flex cursor-pointer flex-col select-none items-start">
+        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               LAYER 1: FIZIKHUB MAIN TEXT 
-               - Font: Outfit (Heading)
-               - Style: Massive, Heavy, Sticker-like
+               CONCEPT: THE SCIENTIFIC GLITCH
+               - Font: Space Grotesk (Tech/Brutalist)
+               - No boxes, just raw layered text
             */}
-            <div className="relative z-10">
-                <motion.div
-                    className="relative"
-                    whileHover={{ scale: 1.05, rotate: -2 }}
-                    whileTap={{ scale: 0.95 }}
+
+            <div className="relative">
+                {/* Layer 1: The Shadow (Deep Void) */}
+                <span className="absolute left-[3px] top-[3px] font-black tracking-tighter text-black opacity-100 sm:left-[5px] sm:top-[5px] text-3xl sm:text-5xl"
+                    style={{ fontFamily: 'var(--font-space)' }}>
+                    FIZIKHUB
+                </span>
+
+                {/* Layer 2: The Glitch (Cyan Offset) */}
+                {/* Only visible on hover or slight permanent offset */}
+                <motion.span
+                    className="absolute left-[-2px] top-[-2px] -z-10 font-black tracking-tighter text-[#00FFFF] opacity-0 mix-blend-multiply group-hover:opacity-100 text-3xl sm:text-5xl"
+                    style={{ fontFamily: 'var(--font-space)' }}
+                    animate={{ x: [0, -2, 2, 0], y: [0, 1, -1, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.2, repeatDelay: 3 }}
                 >
-                    {/* Shadow Layer (Hard Drop) */}
-                    <span className="absolute left-[3px] top-[3px] select-none text-2xl font-black italic tracking-tighter text-black sm:left-[4px] sm:top-[4px] sm:text-4xl"
-                        style={{ fontFamily: "var(--font-heading)", WebkitTextStroke: "2px black" }}>
-                        FIZIKHUB
-                    </span>
+                    FIZIKHUB
+                </motion.span>
 
-                    {/* Stroke Layer (The Outline) */}
-                    <span className="absolute left-0 top-0 select-none text-2xl font-black italic tracking-tighter text-black sm:text-4xl"
-                        style={{ fontFamily: "var(--font-heading)", WebkitTextStroke: "4px black" }}>
-                        FIZIKHUB
-                    </span>
+                {/* Layer 3: The Glitch (Magenta Offset) */}
+                <motion.span
+                    className="absolute left-[2px] top-[2px] -z-10 font-black tracking-tighter text-[#FF00FF] opacity-0 mix-blend-multiply group-hover:opacity-100 text-3xl sm:text-5xl"
+                    style={{ fontFamily: 'var(--font-space)' }}
+                    animate={{ x: [0, 2, -2, 0], y: [0, -1, 1, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.25, repeatDelay: 3 }}
+                >
+                    FIZIKHUB
+                </motion.span>
 
-                    {/* Main Text Layer (The Color) */}
-                    <h1
-                        className="relative z-10 text-2xl font-black italic tracking-tighter text-[#FFC800] sm:text-4xl"
-                        style={{ fontFamily: "var(--font-heading)" }}
-                    >
+                {/* Layer 4: The Main Hull (White with Heavy Strokes) */}
+                <motion.div
+                    className="relative z-10"
+                    whileHover={{ scale: 1.05, rotate: -2 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                >
+                    <h1 className="text-3xl font-black italic tracking-tighter text-[#FFC800] sm:text-5xl"
+                        style={{
+                            fontFamily: 'var(--font-space)',
+                            WebkitTextStroke: '2px black', // Thicker Stroke
+                            textShadow: '4px 4px 0px #000000' // Hard Shadow built-in
+                        }}>
                         FIZIKHUB
                     </h1>
 
-                    {/* Star Accent (Animated) */}
-                    <motion.div
-                        className="absolute -right-3 -top-3 z-20 text-black drop-shadow-sm sm:-right-5 sm:-top-4"
-                        animate={{ rotate: [0, 15, -15, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#8b5cf6" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-8 sm:h-8 stroke-black stroke-[1.5px]">
-                            <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
-                        </svg>
-                    </motion.div>
+                    {/* Inner White Fill for maximum contrast if needed, but #FFC800 is requested. 
+                        Let's stick to the high contrast yellow/black.
+                    */}
+                </motion.div>
+
+                {/* DECORTATION: CHAOS STARS */}
+                <motion.div
+                    className="absolute -right-4 -top-4 z-20 text-[#FF00FF]"
+                    animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="black" strokeWidth="2">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
+                    </svg>
+                </motion.div>
+
+                <motion.div
+                    className="absolute -left-2 -bottom-2 z-20 text-[#00FFFF]"
+                    animate={{ rotate: -360, scale: [1, 1.5, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="black" strokeWidth="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
                 </motion.div>
             </div>
 
             {/* 
-               LAYER 2: BİLİM PLATFORMU
-               - Style: Badge/Capsule, Rotated, Contrasting Color
+               SUB-ELEMENT: BİLİM PLATFORMU
+               - Style: Rotated Tape / Sticker
+               - Position: Overlapping slightly
             */}
             <motion.div
-                className="relative z-20 -mt-1 ml-1 sm:-mt-2 sm:ml-2"
-                initial={{ rotate: 2 }}
-                whileHover={{ rotate: 0, scale: 1.1 }}
+                className="absolute -bottom-3 -right-2 z-30 sm:-bottom-4 sm:-right-8"
+                initial={{ rotate: -5 }}
+                whileHover={{ rotate: 5, scale: 1.1 }}
             >
-                <div className="flex items-center justify-center rounded-sm bg-white border-[1.5px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] px-1 py-0.5 sm:px-2 sm:py-0.5">
-                    <span className="text-[9px] font-black uppercase text-black sm:text-[11px]" style={{ fontFamily: "var(--font-heading)" }}>
-                        BİLİM PLATFORMU
+                <div className="flex -skew-x-12 items-center justify-center border-2 border-black bg-[#F472B6] px-2 py-0.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <span className="text-[10px] font-bold leading-none tracking-widest text-black sm:text-xs"
+                        style={{ fontFamily: 'var(--font-space)' }}>
+                        BİLİM_PLATFORMU
                     </span>
                 </div>
             </motion.div>
