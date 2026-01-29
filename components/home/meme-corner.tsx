@@ -393,29 +393,45 @@ export function MemeCorner() {
                 className={cn(
                     "relative w-full overflow-hidden cursor-pointer",
                     // NEO-BRUTALIST TOKENS
-                    "rounded-xl", // Match other cards
+                    "rounded-[8px]",
                     "border-[3px] border-black",
-                    "shadow-[4px_4px_0px_0px_#86efac]", // Neon Green Shadow matching the theme
-                    "transition-all duration-300 hover:shadow-[0px_0px_20px_rgba(134,239,172,0.4)] hover:translate-y-[-2px]",
+                    "shadow-[4px_4px_0px_0px_#000]",
+                    "transition-shadow duration-200 hover:shadow-[6px_6px_0px_0px_#000]",
                     // Size & Background
                     "h-[180px] sm:h-[240px]",
-                    "bg-[radial-gradient(circle_at_50%_50%,#2a0a45_0%,#000000_100%)]", // Darker base for stars
+                    "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
                 {/* HUD CORNERS - Enhanced with Glow */}
-                <svg className="absolute top-2 right-2 w-6 h-6 text-[#86efac]/60 z-20 animate-[pulse-glow_3s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg className="absolute top-2 right-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M23 9V1H15" />
                 </svg>
-                <svg className="absolute bottom-2 left-2 w-6 h-6 text-[#86efac]/60 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_0.5s]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg className="absolute bottom-2 left-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_0.5s]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M1 15V23H9" />
                 </svg>
+                <svg className="absolute bottom-2 right-2 w-6 h-6 text-purple-400/30 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_1s]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 15V23H15" />
+                </svg>
 
-                {/* HOLOGRAPHIC OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#86efac]/10 to-transparent pointer-events-none z-10 mix-blend-overlay" />
-
-                {/* VISUAL NOISE */}
+                {/* SCANLINES - Retro Effect */}
                 <div
-                    className="absolute inset-0 z-[1] opacity-10 pointer-events-none mix-blend-overlay"
+                    className="absolute inset-0 z-[2] pointer-events-none opacity-[0.03]"
+                    style={{
+                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px)`
+                    }}
+                />
+
+                {/* SHIMMER EFFECT */}
+                <div className="absolute inset-0 z-[3] overflow-hidden pointer-events-none">
+                    <div
+                        className="absolute inset-0 w-[50%] h-[200%] bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_4s_ease-in-out_infinite]"
+                        style={{ top: '-50%' }}
+                    />
+                </div>
+
+                {/* VISUAL NOISE - Reduced to 5% for clarity */}
+                <div
+                    className="absolute inset-0 z-[1] opacity-5 pointer-events-none mix-blend-overlay"
                     style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                     }}
@@ -459,8 +475,7 @@ export function MemeCorner() {
                     {/* Main Title */}
                     <div className="flex flex-col items-center justify-center">
                         {/* Top: Spaced Out */}
-                        {/* Top: Spaced Out */}
-                        <h2 className="font-[family-name:var(--font-outfit)] text-sm sm:text-lg font-bold tracking-[0.6em] text-[#86efac]/90 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-md">
+                        <h2 className="font-[family-name:var(--font-outfit)] text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
                             BİLİMİ
                         </h2>
 
@@ -468,12 +483,12 @@ export function MemeCorner() {
                         <h2
                             className="font-[family-name:var(--font-outfit)] text-4xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap"
                             style={{
-                                background: 'linear-gradient(90deg, #fff, #86efac, #a855f7, #fff)', // Green/Purple mix
+                                background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
                                 backgroundSize: '200% auto',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 animation: 'gradient-flow 4s ease infinite',
-                                textShadow: '0 4px 20px rgba(134,239,172,0.3)',
+                                textShadow: '0 4px 8px rgba(0,0,0,0.5)',
                             }}
                         >
                             Tİ'YE ALIYORUZ
@@ -485,7 +500,7 @@ export function MemeCorner() {
                             animate={{ rotate: [-2, 2, -2] }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                         >
-                            <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_rgba(134,239,172,0.8)] hover:scale-110 transition-transform">
+                            <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] hover:scale-110 transition-transform">
                                 AMA CİDDİLİ ŞEKİLDE
                             </span>
                         </motion.div>

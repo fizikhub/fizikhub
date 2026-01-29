@@ -78,26 +78,17 @@ export function Navbar() {
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-black border-b-[3px] border-black", // Dark Base
-                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]",
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* HOLOGRAPHIC BACKGROUND - Refined for Top Nav (Cyan/Blue/Black) */}
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,#86efac_0%,#3b82f6_30%,#000000_80%)] opacity-90" />
-
-                    {/* GRID & NOISE TEXTURE */}
-                    <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 mix-blend-overlay bg-repeat" />
-                    <div className="absolute inset-0 opacity-15 mix-blend-screen pointer-events-none"
-                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-                    />
-
-                    {/* PHYSICS RAIN - ADAPTED TO HOLOGRAM (White/Green) */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-40 mix-blend-screen">
+                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-60">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute font-mono font-bold text-[#86efac] whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute font-mono font-bold text-black/30 whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${10 * drop.scale}px`
@@ -116,10 +107,10 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - Inverted for Dark Mode */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-30">
+                    {/* RULER TICKS - SHARPER */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
                         {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
                         ))}
                     </div>
 
