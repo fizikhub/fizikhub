@@ -7,65 +7,62 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-1">
 
             {/* 
-               V8: THE BUNGEE SIGN (Urban/Street)
-               - Font: Bungee (Vertical/Urban)
-               - Style: High Contrast (White Text / Black Stroke / Magenta Shadow)
+               V9: THE INDUSTRIAL HAZARD LABEL
+               - Font: Space Grotesk (Technical/Scientific)
+               - Style: Yellow Box, Thick Black Border, Technical Markings
+               - Vibe: Nuclear Warning Sign / Off-White Label
             */}
 
-            <div className="relative flex flex-col items-center">
+            <motion.div
+                className="relative bg-[#FACC15] border-[3px] border-black px-2 py-1 sm:px-3 sm:py-1.5 shadow-[4px_4px_0px_0px_#000]"
+                whileHover={{
+                    x: -2,
+                    y: -2,
+                    boxShadow: "6px 6px 0px 0px #000"
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+                {/* TECHNICAL MARKINGS: CORNER CROSSHAIRS */}
+                <div className="absolute left-0.5 top-0.5 h-2 w-2 border-l-[1.5px] border-t-[1.5px] border-black" />
+                <div className="absolute right-0.5 top-0.5 h-2 w-2 border-r-[1.5px] border-t-[1.5px] border-black" />
+                <div className="absolute bottom-0.5 left-0.5 h-2 w-2 border-b-[1.5px] border-l-[1.5px] border-black" />
+                <div className="absolute bottom-0.5 right-0.5 h-2 w-2 border-b-[1.5px] border-r-[1.5px] border-black" />
 
-                {/* HEADLINE: FIZIKHUB */}
-                <div className="relative">
-                    {/* Hard Neon Shadow Layer */}
+                <div className="flex flex-col items-center leading-none">
+                    {/* TINY LABEL TEXT */}
+                    <div className="flex w-full justify-between px-0.5 pb-0.5">
+                        <span className="text-[6px] font-bold uppercase tracking-tighter text-black" style={{ fontFamily: 'var(--font-space)' }}>
+                            REF: 2026
+                        </span>
+                        <span className="text-[6px] font-bold uppercase tracking-tighter text-black" style={{ fontFamily: 'var(--font-space)' }}>
+                            [TR]
+                        </span>
+                    </div>
+
+                    {/* MAIN TEXT */}
                     <h1
-                        className="absolute left-[3px] top-[3px] z-0 select-none text-3xl sm:text-5xl text-[#d946ef]" // Fuchsia-500
-                        style={{
-                            fontFamily: 'var(--font-bungee)',
-                            WebkitTextStroke: '2px black', // Thick stroke on shadow too
-                        }}
-                        aria-hidden="true"
+                        className="text-2xl sm:text-4xl font-black tracking-tighter text-black uppercase mb-0.5"
+                        style={{ fontFamily: 'var(--font-space)' }}
                     >
                         FIZIKHUB
                     </h1>
 
-                    {/* Main Text (White with Black Outline) */}
-                    <motion.h1
-                        className="relative z-10 select-none text-3xl sm:text-5xl text-white"
-                        style={{
-                            fontFamily: 'var(--font-bungee)',
-                            WebkitTextStroke: '2px black',
-                            filter: 'drop-shadow(0px 0px 0px black)'
-                        }}
-                        whileHover={{
-                            x: -2,
-                            y: -2,
-                            filter: 'drop-shadow(2px 2px 0px black)' // Double depth on hover
-                        }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    >
-                        FIZIKHUB
-                    </motion.h1>
-                </div>
+                    {/* SEPARATOR LINE */}
+                    <div className="h-[1.5px] w-full bg-black my-0.5" />
 
-                {/* SUB-ELEMENT: BILIM PLATFORMU (Caution Tape) */}
-                <motion.div
-                    className="relative z-20 -mt-2 sm:-mt-3"
-                    initial={{ rotate: 2 }}
-                    whileHover={{ rotate: -2, scale: 1.1 }}
-                >
-                    <div className="flex items-center justify-center border-[2px] border-black bg-[#d946ef] px-4 py-0.5 shadow-[2px_2px_0px_0px_#000]">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white sm:text-[12px]"
-                            style={{ fontFamily: 'var(--font-heading)' }}>
+                    {/* TAGLINE */}
+                    <div className="flex w-full items-center justify-between">
+                        <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-black"
+                            style={{ fontFamily: 'var(--font-space)' }}>
                             BİLİM PLATFORMU
                         </span>
+                        {/* HAZARD ICON (Simplified) */}
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="black" className="ml-1">
+                            <path d="M12 2L2 22H22L12 2ZM12 6L19 20H5L12 6ZM11 10H13V15H11V10ZM11 17H13V19H11V17Z" />
+                        </svg>
                     </div>
-                </motion.div>
-
-            </div>
-
-            {/* DECORATION: BOLTS */}
-            <div className="absolute left-0 top-1/2 h-1.5 w-1.5 rounded-full border border-black bg-white" />
-            <div className="absolute right-0 top-1/2 h-1.5 w-1.5 rounded-full border border-black bg-white" />
+                </div>
+            </motion.div>
 
         </div>
     );
