@@ -116,10 +116,10 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - Inverted for Dark Mode */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-30">
+                    {/* RULER TICKS - Black for Blue Bg */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-20 mix-blend-overlay">
                         {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
                         ))}
                     </div>
 

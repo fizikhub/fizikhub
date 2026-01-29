@@ -150,17 +150,17 @@ export function NeoArticleCard({
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-4 sm:p-5 gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-1.5 sm:mb-2">
                         <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
-                    <p className="font-[family-name:var(--font-inter)] text-xs sm:text-sm font-semibold text-neutral-600 dark:text-zinc-300 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
+                    <p className="font-[family-name:var(--font-inter)] text-sm sm:text-[15px] font-medium text-neutral-600 dark:text-zinc-300 line-clamp-3 sm:line-clamp-4 leading-loose tracking-normal">
                         {previewText}
                     </p>
 
