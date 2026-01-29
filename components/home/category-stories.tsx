@@ -44,7 +44,7 @@ export function CategoryStories() {
                 - Border: Thicker, Brutalist.
             */}
 
-            <div className="flex overflow-x-auto pb-2 gap-2.5 snap-x snap-mandatory px-3 sm:px-0 scrollbar-hide">
+            <div className="flex overflow-x-auto pb-2 gap-3 snap-x snap-mandatory px-4 sm:px-0 scrollbar-hide items-center">
                 {categories.map((cat, index) => (
                     <Link
                         href={cat.href}
@@ -52,23 +52,23 @@ export function CategoryStories() {
                         className="flex-shrink-0 snap-start"
                     >
                         <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.03 }}
-                            whileTap={{ scale: 0.9 }}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05, ease: "easeOut" }}
+                            whileTap={{ scale: 0.95 }}
                         >
                             <div
                                 className={cn(
-                                    "flex items-center gap-1.5 px-3 py-1.5",
-                                    "bg-[#111] border-[2px] border-[#333]", // Base dark
-                                    "text-gray-300",
-                                    "rounded-lg", // Slightly rect for brutalism
-                                    "hover:bg-[#FFC800] hover:text-black hover:border-black hover:shadow-[3px_3px_0px_0px_#000]", // Interaction Pop
-                                    "transition-all duration-200"
+                                    "flex items-center gap-2 px-4 py-2",
+                                    "bg-zinc-900/50 backdrop-blur-sm border border-black/10 dark:border-white/10", // Glassy Base
+                                    "text-zinc-500 dark:text-zinc-400",
+                                    "rounded-full", // Pill shape for modern feel
+                                    "hover:bg-[#FFC800] hover:text-black hover:border-black hover:shadow-[0px_4px_12px_rgba(255,200,0,0.3)]", // Glowy Pop
+                                    "transition-all duration-300 group"
                                 )}
                             >
-                                <cat.icon className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase tracking-wider">
+                                <cat.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                <span className="text-[11px] font-black uppercase tracking-widest">
                                     {cat.name}
                                 </span>
                             </div>

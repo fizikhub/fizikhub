@@ -77,7 +77,7 @@ export function ScienceStories() {
                 <span className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-medium border border-border px-2 py-0.5 rounded-full">Snack Content</span>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory pt-2 custom-scrollbar px-1 no-scrollbar">
+            <div className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory pt-2 custom-scrollbar px-4 sm:px-0 no-scrollbar items-center">
                 {isLoading ? (
                     // Skeleton Loading
                     [1, 2, 3].map(i => (
@@ -107,44 +107,47 @@ export function ScienceStories() {
 function FeatureCard({ story, onClick }: { story: any, onClick: () => void }) {
     return (
         <motion.div
-            className="snap-start shrink-0 w-[140px] h-[220px] md:w-[160px] md:h-[240px] relative rounded-xl overflow-hidden group cursor-pointer border border-white/10 shadow-md bg-zinc-900"
+            className="snap-center shrink-0 w-[140px] h-[220px] md:w-[160px] md:h-[240px] relative rounded-2xl overflow-hidden group cursor-pointer bg-zinc-900"
             whileHover={{ scale: 0.98, y: -2 }}
             transition={{ duration: 0.2 }}
             onClick={onClick}
         >
-            {/* Image */}
-            <NextImage
-                src={story.image_url}
-                alt={story.title}
-                fill
-                sizes="(max-width: 768px) 140px, 160px"
-                className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-            />
+            {/* GRADIENT RING - INSTAGRAM STYLE BUT SCI-FI */}
+            <div className="absolute inset-0 p-[2px] rounded-2xl bg-gradient-to-tr from-[#FFC800] via-[#ff0080] to-[#7928ca] z-0 opacity-80 group-hover:opacity-100 transition-opacity" />
 
-            {/* Gradient Overlay - Subtle & Premium */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${story.color || 'from-amber-900/80 to-transparent'} opacity-40 mix-blend-multiply transition-opacity`} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+            {/* INNER CONTENT CONTAINER */}
+            <div className="absolute inset-[2px] rounded-[14px] overflow-hidden bg-zinc-900 z-10 relative">
+                {/* Image */}
+                <NextImage
+                    src={story.image_url}
+                    alt={story.title}
+                    fill
+                    sizes="(max-width: 768px) 140px, 160px"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                />
 
-            {/* Top Writer Badge */}
-            <div className="absolute top-2 left-2 z-20 flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full border border-white/20 overflow-hidden relative shadow-sm">
-                    <NextImage
-                        src={story.author?.avatar_url || "/images/default-avatar.png"}
-                        alt="Author"
-                        fill
-                        className="object-cover"
-                    />
+                {/* Gradient Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-t ${story.color || 'from-amber-900/80 to-transparent'} opacity-30 mix-blend-overlay transition-opacity`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-transparent opacity-90" />
+
+                {/* Top Writer Badge */}
+                <div className="absolute top-2 left-2 z-20 flex items-center gap-1.5">
+                    <div className="w-6 h-6 rounded-full border-[1.5px] border-white/50 overflow-hidden relative shadow-sm ring-2 ring-black/20">
+                        <NextImage
+                            src={story.author?.avatar_url || "/images/default-avatar.png"}
+                            alt="Author"
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
                 </div>
-                <span className="text-[10px] font-bold text-white/90 drop-shadow-md truncate max-w-[80px]">
-                    {story.author?.username}
-                </span>
-            </div>
 
-            {/* Content Area */}
-            <div className="absolute bottom-0 left-0 w-full p-3 z-20">
-                <h3 className="text-sm font-bold text-white leading-tight line-clamp-3 mb-1 drop-shadow-md">
-                    {story.title}
-                </h3>
+                {/* Content Area */}
+                <div className="absolute bottom-0 left-0 w-full p-3 z-20">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-[13px] font-bold text-white leading-[1.2] line-clamp-3 mb-1 drop-shadow-md">
+                        {story.title}
+                    </h3>
+                </div>
             </div>
         </motion.div>
     );
