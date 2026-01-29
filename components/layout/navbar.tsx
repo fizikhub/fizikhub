@@ -10,7 +10,7 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { DankLogo } from "@/components/brand/dank-logo";
+import { ModernNeoLogo } from "@/components/brand/modern-neo-logo";
 
 const clickVariant = {
     tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
@@ -121,7 +121,7 @@ export function Navbar() {
                     {/* LEFT: BRAND */}
                     <div className="relative z-10 flex-shrink-0 pt-0.5">
                         <ViewTransitionLink href="/">
-                            <DankLogo />
+                            <ModernNeoLogo />
                         </ViewTransitionLink>
                     </div>
 
@@ -185,7 +185,7 @@ export function Navbar() {
                                 />
                                 <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 pt-12 gap-6">
                                     <div className="scale-125">
-                                        <DankLogo />
+                                        <ModernNeoLogo />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
                                         {[
