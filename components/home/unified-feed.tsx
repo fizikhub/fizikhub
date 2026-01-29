@@ -28,7 +28,7 @@ interface UnifiedFeedProps {
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3 sm:gap-6">
             {/* Feed Container - Clean cards with subtle shadows */}
             <div className="flex flex-col gap-6">
                 {items.map((item, index) => (

@@ -36,7 +36,7 @@ export function CategoryStories() {
     ];
 
     return (
-        <div className="w-full pt-0 pb-2 px-0 overflow-hidden">
+        <div className="w-full pt-0 pb-0 px-0 overflow-hidden">
             {/* 
                 V16 NEO-TAGS
                 - "Kötü olmuş" fix: Moving away from generic pills to "Interactive Tags".
@@ -44,7 +44,7 @@ export function CategoryStories() {
                 - Border: Thicker, Brutalist.
             */}
 
-            <div className="flex overflow-x-auto pb-4 gap-2.5 snap-x snap-mandatory px-3 sm:px-0 scrollbar-hide">
+            <div className="flex overflow-x-auto pb-2 gap-2.5 snap-x snap-mandatory px-3 sm:px-0 scrollbar-hide">
                 {categories.map((cat, index) => (
                     <Link
                         href={cat.href}
