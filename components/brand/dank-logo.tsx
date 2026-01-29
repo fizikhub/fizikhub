@@ -29,16 +29,14 @@ export function DankLogo() {
                     FIZIKHUB
                 </motion.h1>
 
-                {/* Rotating Globe Accent */}
+                {/* Retro Star Accent */}
                 <motion.div
-                    className="absolute -top-3 -right-4 text-[#3B82F6] drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000] bg-white rounded-full border border-black z-0"
+                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-7 sm:h-7 p-0.5">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                        <path d="M2 12h20" />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
                     </svg>
                 </motion.div>
             </div>
