@@ -114,15 +114,11 @@ function Galaxy() {
                 <bufferGeometry>
                     <bufferAttribute
                         attach="attributes-position"
-                        count={starsData.positions.length / 3}
-                        array={starsData.positions}
-                        itemSize={3}
+                        args={[starsData.positions, 3]}
                     />
                     <bufferAttribute
                         attach="attributes-color"
-                        count={starsData.colors.length / 3}
-                        array={starsData.colors}
-                        itemSize={3}
+                        args={[starsData.colors, 3]}
                     />
                 </bufferGeometry>
                 <pointsMaterial
@@ -142,15 +138,11 @@ function Galaxy() {
                 <bufferGeometry>
                     <bufferAttribute
                         attach="attributes-position"
-                        count={nebulaData.positions.length / 3}
-                        array={nebulaData.positions}
-                        itemSize={3}
+                        args={[nebulaData.positions, 3]}
                     />
                     <bufferAttribute
                         attach="attributes-color"
-                        count={nebulaData.colors.length / 3}
-                        array={nebulaData.colors}
-                        itemSize={3}
+                        args={[nebulaData.colors, 3]}
                     />
                 </bufferGeometry>
                 <pointsMaterial
