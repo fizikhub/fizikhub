@@ -7,37 +7,55 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center">
 
             {/* 
-               V28: THE PERIODIC BLOCK
-               - Font: Rubik Mono One (Google Font)
-               - Concept: Periodic Table / LEGO / Building Blocks
-               - Style: Heavy, Interlocking, High Contrast
+               V29: THE QUANTUM SLICE (INNOVATION)
+               - Font: Anton (Google Font)
+               - Concept: Glitch in Reality / Sliced Atom
+               - Technique: CSS clip-path masking
             */}
 
             <motion.div
-                className="flex items-center"
+                className="relative flex flex-col leading-none"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* BLOCK 1: FIZIK (Yellow) */}
-                <div className="flex items-center justify-center bg-[#FACC15] border-[2px] border-black px-2 py-1 shadow-[2px_2px_0px_#000] z-10 -mr-1">
-                    <h1
-                        className="text-xs sm:text-sm text-black uppercase leading-none"
-                        style={{ fontFamily: 'var(--font-rubik)' }}
-                    >
-                        FIZIK
-                    </h1>
-                </div>
+                {/* 
+                    LAYER 1: TOP HALF
+                    - Color: Black
+                    - Clip: Top 52%
+                 */}
+                <h1
+                    className="text-4xl text-black tracking-wider relative z-20"
+                    style={{
+                        fontFamily: 'var(--font-anton)',
+                        clipPath: 'polygon(0 0, 100% 0, 100% 52%, 0 52%)'
+                    }}
+                >
+                    FIZIKHUB
+                </h1>
 
-                {/* BLOCK 2: HUB (Black) */}
-                <div className="flex items-center justify-center bg-black border-[2px] border-black px-2 py-1 shadow-[2px_2px_0px_#000] relative top-1">
-                    <h1
-                        className="text-xs sm:text-sm text-white uppercase leading-none"
-                        style={{ fontFamily: 'var(--font-rubik)' }}
-                    >
-                        HUB
-                    </h1>
-                </div>
+                {/* 
+                    LAYER 2: BOTTOM HALF (The Glitch)
+                    - Color: Yellow (#FACC15) with Black Stroke
+                    - Clip: Bottom 48%
+                    - Position: Absolute, slightly shifted X and Y
+                 */}
+                <h1
+                    className="text-4xl text-[#FACC15] tracking-wider absolute top-0 left-0 z-10"
+                    style={{
+                        fontFamily: 'var(--font-anton)',
+                        clipPath: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)',
+                        WebkitTextStroke: '1px black',
+                        transform: 'translate(4px, 2px)'
+                    }}
+                >
+                    FIZIKHUB
+                </h1>
+
+                {/* DECORATIVE LINE (The "Cut") */}
+                <div
+                    className="absolute top-[52%] left-[-10%] w-[120%] h-[1px] bg-black z-30 opacity-0 group-hover:opacity-100 transition-opacity"
+                />
 
             </motion.div>
 
