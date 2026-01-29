@@ -36,7 +36,7 @@ export function CategoryStories() {
     ];
 
     return (
-        <div className="w-full py-2 px-0 overflow-hidden">
+        <div className="w-full pt-0 pb-2 px-0 overflow-hidden">
             {/* 
                 V16 NEO-TAGS
                 - "Kötü olmuş" fix: Moving away from generic pills to "Interactive Tags".
