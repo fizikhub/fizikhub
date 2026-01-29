@@ -115,7 +115,7 @@ export function MemeCorner() {
                         >
                             <color attach="background" args={["#020205"]} />
                             <Galaxy />
-                            <EffectComposer disableNormalPass>
+                            <EffectComposer enableNormalPass={false}>
                                 <Bloom
                                     luminanceThreshold={0.2}
                                     mipmapBlur
