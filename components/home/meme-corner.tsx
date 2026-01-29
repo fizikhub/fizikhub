@@ -402,17 +402,6 @@ export function MemeCorner() {
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
-                {/* 1. TOP LEFT BADGE - Animated Wiggle */}
-                <motion.div
-                    className="absolute top-3 left-3 z-30"
-                    animate={{ rotate: [-3, 1, -3] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                >
-                    <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] hover:scale-110 transition-transform">
-                        AMA CİDDİLİ ŞEKİLDE
-                    </span>
-                </motion.div>
-
                 {/* HUD CORNERS - Enhanced with Glow */}
                 <svg className="absolute top-2 right-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M23 9V1H15" />
@@ -481,7 +470,7 @@ export function MemeCorner() {
                 <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
                 {/* TEXT OVERLAY */}
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12">
 
                     {/* Main Title */}
                     <div className="flex flex-col items-center justify-center">
@@ -492,7 +481,7 @@ export function MemeCorner() {
 
                         {/* Bottom: Animated Gradient Text */}
                         <h2
-                            className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter leading-[0.85] pb-2"
+                            className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2"
                             style={{
                                 background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
                                 backgroundSize: '200% auto',
@@ -504,6 +493,17 @@ export function MemeCorner() {
                         >
                             Tİ'YE ALIYORUZ
                         </h2>
+
+                        {/* BADGE - Mood below text */}
+                        <motion.div
+                            className="mt-2 sm:mt-3 transform origin-center"
+                            animate={{ rotate: [-2, 2, -2] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                            <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] hover:scale-110 transition-transform">
+                                AMA CİDDİLİ ŞEKİLDE
+                            </span>
+                        </motion.div>
                     </div>
 
                 </div>
