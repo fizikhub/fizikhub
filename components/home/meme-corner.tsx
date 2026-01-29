@@ -481,7 +481,7 @@ export function MemeCorner() {
 
                         {/* Bottom: Animated Gradient Text */}
                         <h2
-                            className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2"
+                            className="font-[family-name:var(--font-outfit)] text-4xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap"
                             style={{
                                 background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
                                 backgroundSize: '200% auto',
