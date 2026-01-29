@@ -135,7 +135,7 @@ function StarField({ count = 40000 }) {
     );
 }
 
-// --- VOLUMETRIC NEBULA (INTENSE) ---
+// --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
 function NebulaClouds({ count = 8000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
@@ -194,13 +194,13 @@ function NebulaClouds({ count = 8000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={1.5} // Massive clouds
+                size={3.0} // HUUUGE clouds
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.35} // Visible!
+                opacity={0.5} // High visibility
             />
         </points>
     );
@@ -219,7 +219,8 @@ export function MemeCorner() {
                     "rounded-xl",
                     "border border-white/5",
                     "aspect-[3/1] sm:aspect-[4/1]",
-                    "bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#1a0b2e] via-[#090415] to-black",
+                    "aspect-[3/1] sm:aspect-[4/1]",
+                    "bg-[radial-gradient(circle_at_bottom,_var(--tw-gradient-stops))] from-[#2e1065] via-[#0f0518] to-black",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
@@ -229,12 +230,11 @@ export function MemeCorner() {
                         gl={{
                             antialias: false,
                             powerPreference: "high-performance",
-                            alpha: false
+                            alpha: true // CRITICAL: Allows CSS background to show through!
                         }}
                         dpr={[1, 2]}
                     >
-                        {/* Slightly Lighter Background for 'Deep Space' feel */}
-                        <color attach="background" args={["#05020a"]} />
+                        {/* No background color here - letting CSS handle it */}
 
                         <group>
                             <StarField />
