@@ -128,7 +128,7 @@ export default async function Home() {
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
 
         {/* Story-style Categories */}
-        <div className="pb-0">
+        <div className="pb-0 pt-4 lg:pt-0">
           <CategoryStories />
         </div>
 
@@ -139,7 +139,7 @@ export default async function Home() {
 
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-0 px-4 sm:px-0">
+          <div className="lg:col-span-12 mt-4 lg:mt-0 sm:px-0">
             <CompactHero />
           </div>
 

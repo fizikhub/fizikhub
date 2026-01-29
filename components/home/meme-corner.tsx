@@ -1,213 +1,105 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-
-// --- SUB-COMPONENTS ---
-
-// 1. Floating Physics Equations (Background Ambience)
-const equationConfigs = [
-    { text: "E = mc²", top: "10%", left: "10%", delay: 0, rotate: -15, scale: 1.2 },
-    { text: "F = ma", top: "20%", left: "80%", delay: 2, rotate: 10, scale: 0.9 },
-    { text: "∇·E = ρ/ε₀", top: "70%", left: "15%", delay: 4, rotate: 5, scale: 0.8 },
-    { text: "iℏ∂ψ/∂t = Ĥψ", top: "80%", left: "75%", delay: 1, rotate: -5, scale: 1.0 },
-    { text: "S = k ln Ω", top: "40%", left: "50%", delay: 3, rotate: 20, scale: 0.7 },
-];
-
-function FloatingEquation({ text, top, left, delay, rotate, scale }: { text: string; top: string; left: string; delay: number; rotate: number; scale: number; }) {
-    return (
-        <motion.div
-            className="absolute font-mono text-white/20 select-none pointer-events-none z-0"
-            style={{ top, left, fontSize: `${scale}rem` }}
-            animate={{
-                y: [0, -20, 0],
-                rotate: [rotate, rotate + 5, rotate],
-                opacity: [0.1, 0.3, 0.1]
-            }}
-            transition={{
-                duration: 5 + Math.random() * 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: delay
-            }}
-        >
-            {text}
-        </motion.div>
-    );
-}
-
-// 2. Cosmic Background (The swirl/vortex feel)
-function CosmicSwirl() {
-    return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none bg-black">
-            {/* Nebula Gradient Layer */}
-            <div className="absolute inset-[-50%] w-[200%] h-[200%] animate-[spin_60s_linear_infinite]"
-                style={{
-                    background: "conic-gradient(from 0deg at 50% 50%, #000 0%, #080214 20%, #1a0033 40%, #001a33 60%, #0a0a0a 80%, #000 100%)",
-                    filter: "blur(50px)",
-                    opacity: 0.9
-                }}
-            />
-
-            {/* Stars - Reduced count for performance */}
-            {Array.from({ length: 20 }).map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.9)]"
-                    style={{
-                        top: `${Math.random() * 100}%`,
-                        left: `${Math.random() * 100}%`,
-                        width: Math.random() < 0.2 ? '3px' : '1px',
-                        height: Math.random() < 0.2 ? '3px' : '1px',
-                    }}
-                    animate={{ opacity: [0.1, 1, 0.1], scale: [0.5, 1.5, 0.5] }}
-                    transition={{
-                        duration: 1 + Math.random() * 4,
-                        repeat: Infinity,
-                        delay: Math.random() * 3
-                    }}
-                />
-            ))}
-        </div>
-    );
-}
+import { Quote, Sparkles, Brain, FlaskConical, Atom } from "lucide-react";
 
 export function MemeCorner() {
-    // --- PARALLAX LOGIC ---
-    const ref = useRef<HTMLDivElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-    const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
-
-    // Parallax layers movement
-    const bgX = useTransform(mouseXSpring, [-0.5, 0.5], ["-3%", "3%"]);
-    const bgY = useTransform(mouseYSpring, [-0.5, 0.5], ["-3%", "3%"]);
-    const carX = useTransform(mouseXSpring, [-0.5, 0.5], ["-10px", "10px"]);
-    const carY = useTransform(mouseYSpring, [-0.5, 0.5], ["-10px", "10px"]);
-    const textZ = useTransform(mouseXSpring, [-0.5, 0.5], ["20px", "40px"]);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!ref.current) return;
-        const rect = ref.current.getBoundingClientRect();
-        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
-        x.set(xPct);
-        y.set(yPct);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
     return (
-        <div className="w-full relative py-4 perspective-1000 group">
-            {/* Global Styles for Custom Gradients/Text */}
-            <style jsx global>{`
-                .bttf-gradient-text {
-                    background: linear-gradient(to bottom, #FFF33B 0%, #FFC800 40%, #FF5A00 55%, #CF0000 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    filter: drop-shadow(4px 4px 0px #000);
-                }
-                .bttf-stroke {
-                    position: relative;
-                }
-                .bttf-stroke::before {
-                    content: attr(data-text);
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    z-index: -1;
-                    width: 100%;
-                    height: 100%;
-                    -webkit-text-stroke: 8px #2A68CC; /* Blue outline */
-                    background: linear-gradient(to bottom, #2A68CC, #1D4E9E);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    transform: translateY(2px);
-                }
-            `}</style>
-
+        <div className="w-full relative group perspective-1000">
             <motion.div
-                ref={ref}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                    rotateX,
-                    rotateY,
-                    transformStyle: "preserve-3d",
-                }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
                 className={cn(
-                    "relative w-full aspect-[21/9] sm:aspect-[3/1] md:aspect-[3.5/1]",
-                    "bg-black rounded-xl overflow-visible", // Overflow visible for pop-out
-                    "border-[3px] border-[#FF8800] shadow-[0_0_40px_-5px_#FF5500]",
-                    "cursor-pointer select-none"
+                    "relative w-full overflow-hidden",
+                    "bg-[#FFC800] border-[3px] border-black shadow-[4px_4px_0px_0px_#000]",
+                    "rounded-xl",
+                    "flex flex-col sm:flex-row items-center justify-between",
+                    "px-6 py-8 sm:py-10 gap-6 sm:gap-0",
+                    "cursor-default select-none"
                 )}
             >
-                {/* 1. Background (Cropped inside card) */}
-                <div className="absolute inset-0 overflow-hidden rounded-xl bg-black">
-                    <motion.div className="absolute inset-[-10%]" style={{ x: bgX, y: bgY }}>
-                        <CosmicSwirl />
-                    </motion.div>
+                {/* Background Pattern - Subtle scientific grid */}
+                <div
+                    className="absolute inset-0 pointer-events-none opacity-10"
+                    style={{
+                        backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
+                        backgroundSize: '20px 20px'
+                    }}
+                />
 
-                    {/* Floating Equations */}
-                    <div className="absolute inset-0 pointer-events-none">
-                        {equationConfigs.map((config, i) => (
-                            <FloatingEquation key={i} {...config} />
-                        ))}
+                {/* Left: Branding & Message */}
+                <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left space-y-2 max-w-lg">
+                    {/* Top Label */}
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="px-2 py-0.5 bg-black text-white text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest rounded-sm">
+                            FZH-LABS-v2.0
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+                            <span className="text-[10px] font-bold text-black/60 uppercase tracking-wilder">Canlı Yayın</span>
+                        </div>
+                    </div>
+
+                    {/* Main Title */}
+                    <div className="flex flex-col">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] tracking-tighter text-black">
+                            BİLİMİ
+                        </h2>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-[0.9] tracking-tighter text-black relative inline-block">
+                            Tİ'YE ALIYORUZ
+                            {/* Underline decoration */}
+                            <svg className="absolute -bottom-2 left-0 w-full h-3 text-black" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+                            </svg>
+                        </h2>
+                    </div>
+
+                    {/* Ciddili Şekilde Badge */}
+                    <div className="mt-4 transform -rotate-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] transform transition-transform group-hover:scale-105 group-hover:rotate-0">
+                            <span className="text-sm sm:text-base font-black text-black tracking-tight uppercase">
+                                AMA CİDDİLİ ŞEKİLDE
+                            </span>
+                            <Sparkles className="w-4 h-4 text-black fill-black" />
+                        </div>
                     </div>
                 </div>
 
-                {/* 2. Content Container (Z-Index Layers) */}
-                <div className="absolute inset-0 z-20 flex items-center justify-between px-6 sm:px-10 md:px-16 pointer-events-none">
+                {/* Right: Icon Visualization - Abstract Representation of "Serious Fun" */}
+                <div className="relative z-10 flex items-center justify-center shrink-0">
+                    <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-black border-[3px] border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] rounded-full flex items-center justify-center overflow-hidden">
+                        {/* Spinning Atom/Brain Composite */}
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                            className="absolute inset-0 opacity-20"
+                            style={{
+                                background: 'conic-gradient(from 0deg, transparent 0%, #FFF 50%, transparent 100%)'
+                            }}
+                        />
 
-                    {/* LEFT: Typography (BTTF Style) */}
-                    <motion.div
-                        className="flex flex-col z-30 transform-gpu"
-                        style={{ translateZ: textZ }}
-                    >
-                        {/* 'BILIMI' - Skewed & Gradient */}
-                        <div className="transform -skew-x-[12deg] origin-bottom-left">
-                            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]">
-                                <span className="bttf-gradient-text block py-1" data-text="BİLİMİ">
-                                    BİLİMİ
-                                </span>
-                            </h2>
-                            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter filter drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)] ml-4">
-                                <span className="bttf-gradient-text block py-1" data-text="Tİ'YE ALIYORUZ">
-                                    Tİ'YE ALIYORUZ
-                                </span>
-                            </h2>
+                        <div className="relative z-10 text-white">
+                            {/* Alternating Icon */}
+                            <Atom className="w-12 h-12 sm:w-16 sm:h-16 stroke-[1.5px]" />
                         </div>
 
-                        {/* Subtitle Badge */}
-                        <div className="mt-4 ml-2 transform -skew-x-[12deg]">
-                            <div className="bg-black/40 backdrop-blur border border-cyan-400/50 px-3 py-1 inline-block rounded skew-x-[12deg] shadow-[0_0_15px_rgba(0,255,255,0.4)]">
-                                <span className="text-[10px] sm:text-xs font-mono text-cyan-300 tracking-[0.3em] font-bold uppercase drop-shadow-[0_0_5px_cyan]">
-                                    Ama Ciddili Şekilde
-                                </span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-
-
+                        {/* "Approved" Stamp Effect */}
+                        <motion.div
+                            initial={{ scale: 2, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                            className="absolute -bottom-2 -right-2 bg-white text-black text-[10px] font-bold px-2 py-0.5 border-2 border-black rotate-[-15deg] shadow-sm"
+                        >
+                            %100 ONAYLI
+                        </motion.div>
+                    </div>
                 </div>
 
-                {/* Overlays (Scanlines, Vignette) */}
-                <div className="absolute inset-0 rounded-xl pointer-events-none overflow-hidden z-40">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)]" />
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
-                    <div className="absolute inset-0 border-t border-white/5 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
-                </div>
+                {/* Decorative Corners */}
+                <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-black opacity-50" />
+                <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-black opacity-50" />
 
             </motion.div>
         </div>
