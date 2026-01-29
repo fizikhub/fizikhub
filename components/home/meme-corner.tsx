@@ -326,7 +326,8 @@ export function MemeCorner() {
 
                         <group>
                             <BackgroundStars />
-                            <StarField />
+                            <GalaxyDust />
+                            <MainStars />
                             <NebulaClouds />
                         </group>
 
