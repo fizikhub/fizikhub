@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Saira_Stencil_One } from "next/font/google";
+import { Unbounded } from "next/font/google";
 
-const stencil = Saira_Stencil_One({
-  weight: "400",
+const unbounded = Unbounded({
+  weight: ["400", "900"], // Regular and Black
   subsets: ["latin"],
-  variable: "--font-stencil",
+  variable: "--font-unbounded",
   display: "swap",
 });
+
+
 
 
 
@@ -257,7 +259,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${stencil.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${unbounded.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
