@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Share_Tech_Mono } from "next/font/google";
+import { Righteous } from "next/font/google";
 
-const shareTech = Share_Tech_Mono({
+const righteous = Righteous({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-share-tech",
+  variable: "--font-righteous",
   display: "swap",
 });
+
+
 
 
 
@@ -267,7 +269,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${shareTech.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${righteous.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
