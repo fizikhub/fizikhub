@@ -4,114 +4,85 @@ import { motion } from "framer-motion";
 
 export function DankLogo() {
     return (
-        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center">
+        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
+
             {/* 
-               V5: "THE SCIENTIFIC BADGE" (SVG LOGO)
-               - Concept: A physical sticker/badge made of pure SVG.
-               - Shape: Jagged Star / Sawblade (Energy/Impact).
-               - Color: Neo-Yellow Burst + Lime Green Accent + Purple Tag.
+               V6: THE CHOMIY REPLICA (PATTERN FILL)
+               - Font: Carter One (Rounded Cartoon)
+               - Technique: background-clip: text with CSS Gradient Stripes
+            */}
+
+            <div className="relative">
+                {/* 
+                   LAYER 1: DEEP EXTRUSION (Dark Green)
+                   The physical block behind the text.
+                */}
+                <h1
+                    className="absolute left-[4px] top-[4px] z-0 select-none text-4xl sm:left-[6px] sm:top-[6px] sm:text-6xl text-[#15803d]" // green-700
+                    style={{
+                        fontFamily: 'var(--font-carter)',
+                        WebkitTextStroke: '2.5px black',
+                    }}
+                >
+                    FIZIKHUB
+                </h1>
+
+                {/* 
+                   LAYER 2: MAIN TEXT (Pattern Fill)
+                   Yellow base with horizontal green stripes.
+                   Using background-clip: text.
+                */}
+                <motion.h1
+                    className="relative z-10 select-none text-4xl sm:text-6xl text-transparent"
+                    style={{
+                        fontFamily: 'var(--font-carter)',
+                        WebkitTextStroke: '2.5px black',
+                        backgroundImage: `repeating-linear-gradient(
+                            180deg,
+                            #FFD700 0%,      /* Stripe 1: Gold */
+                            #FFD700 40%,
+                            #4ade80 40%,     /* Stripe 2: Green */
+                            #4ade80 60%,
+                            #FFD700 60%,     /* Back to Gold */
+                            #FFD700 100%
+                        )`,
+                        WebkitBackgroundClip: 'text',
+                        backgroundClip: 'text',
+                        filter: 'drop-shadow(0px 0px 0px black)' // Ensure stroke is distinct
+                    }}
+                    whileHover={{
+                        scale: 1.05,
+                        filter: 'drop-shadow(2px 2px 0px black)'
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 10 }}
+                >
+                    FIZIKHUB
+                </motion.h1>
+
+                {/* DECORATION: SHINIES (White Glints) */}
+                <div className="absolute left-2 top-2 z-20 h-2 w-2 rounded-full bg-white opacity-80 sm:h-3 sm:w-3" />
+                <div className="absolute right-8 top-3 z-20 h-1.5 w-1.5 rounded-full bg-white opacity-80 sm:h-2 sm:w-2" />
+            </div>
+
+            {/* 
+               BILIM PLATFORMU: TOASTER TICKET
             */}
             <motion.div
-                whileHover={{ scale: 1.05, rotate: 2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="relative"
+                className="absolute -bottom-1 -right-4 z-30 sm:-bottom-3 sm:-right-8"
+                initial={{ rotate: -8 }}
+                whileHover={{ rotate: 8, scale: 1.1 }}
             >
-                <svg
-                    width="240"
-                    height="80"
-                    viewBox="0 0 240 80"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-[140px] sm:w-[180px] md:w-[220px] h-auto drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]"
-                >
-                    {/* LAYER 1: THE BURST (JAGGED SHAPE) */}
-                    {/* A chaotic polygon simulating a collision/explosion */}
-                    <path
-                        d="M20 40 L5 25 L30 15 L35 0 L60 15 L80 5 L95 25 L120 10 L135 30 L160 20 L165 40 L190 35 L180 55 L205 65 L180 75 L160 65 L140 80 L115 65 L90 75 L70 60 L45 70 L35 50 L10 60 L20 40Z"
-                        fill="#FFC800"
-                        stroke="black"
-                        strokeWidth="3"
-                        strokeLinejoin="round"
-                    />
+                <div className="relative flex items-center justify-center border-2 border-black bg-[#FF6B6B] px-3 py-1 shadow-[2px_2px_0px_0px_#000]">
+                    {/* Inner Dashed Line for Ticket Look */}
+                    <div className="absolute inset-0.5 border border-dashed border-white/50" />
 
-                    {/* LAYER 2: THE "LIME" ACCENT (OFFSET) */}
-                    <path
-                        d="M30 40 L25 30 L40 25 L45 15 L60 25 L160 30 L155 50 L30 40Z"
-                        fill="#84CC16"
-                        stroke="none"
-                        className="opacity-100 mix-blend-multiply"
-                    />
-
-                    {/* LAYER 3: FIZIKHUB TEXT (Curved/Warped look via standard SVG text) */}
-                    {/* Shadow Layer for Depth */}
-                    <text
-                        x="52%"
-                        y="52%"
-                        dominantBaseline="middle"
-                        textAnchor="middle"
-                        fontFamily="var(--font-heading)"
-                        fontWeight="900"
-                        fontStyle="italic"
-                        fontSize="42"
-                        fill="black"
-                        className="translate-y-[2px] translate-x-[2px]"
-                    >
-                        FIZIKHUB
-                    </text>
-
-                    {/* Main White Text with Thick Stroke */}
-                    <text
-                        x="50%"
-                        y="50%"
-                        dominantBaseline="middle"
-                        textAnchor="middle"
-                        fontFamily="var(--font-heading)"
-                        fontWeight="900"
-                        fontStyle="italic"
-                        fontSize="42"
-                        fill="white"
-                        stroke="black"
-                        strokeWidth="2.5"
-                        paintOrder="stroke"
-                    >
-                        FIZIKHUB
-                    </text>
-
-                    {/* LAYER 4: BİLİM PLATFORMU TAG (Sticker on top) */}
-                    <g transform="translate(130, 50) rotate(-6)">
-                        {/* Tag Background */}
-                        <rect
-                            x="0"
-                            y="0"
-                            width="100"
-                            height="20"
-                            fill="#8B5CF6"
-                            stroke="black"
-                            strokeWidth="2"
-                            rx="4"
-                        />
-                        {/* Tag Text */}
-                        <text
-                            x="50"
-                            y="14"
-                            dominantBaseline="middle"
-                            textAnchor="middle"
-                            fontFamily="var(--font-heading)"
-                            fontWeight="800"
-                            fontSize="10"
-                            fill="white"
-                            letterSpacing="1"
-                        >
-                            BİLİM PLATFORMU
-                        </text>
-                    </g>
-
-                    {/* DECORATION: SPARKS */}
-                    <circle cx="210" cy="20" r="6" fill="#00FFFF" stroke="black" strokeWidth="2" />
-                    <path d="M210 10 L210 30 M200 20 L220 20" stroke="black" strokeWidth="2" />
-                </svg>
+                    <span className="relative z-10 text-[9px] font-black uppercase tracking-widest text-white sm:text-[11px]"
+                        style={{ fontFamily: 'var(--font-outfit)' }}>
+                        BİLİM PLATFORMU
+                    </span>
+                </div>
             </motion.div>
+
         </div>
     );
 }
