@@ -28,6 +28,15 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
+import { Passion_One } from "next/font/google";
+
+const passion = Passion_One({
+  weight: "900",
+  subsets: ["latin"],
+  variable: "--font-passion",
+  display: "swap",
+});
+
 
 
 
@@ -246,7 +255,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${outfit.variable} ${spaceGrotesk.variable} ${passion.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
