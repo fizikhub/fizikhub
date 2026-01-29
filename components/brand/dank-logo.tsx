@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { EarthIcon } from "./earth-icon";
 
 export function DankLogo() {
     return (
@@ -29,15 +30,14 @@ export function DankLogo() {
                     FIZIKHUB
                 </motion.h1>
 
-                {/* Retro Star Accent */}
+                {/* 3D Realistic Earth Icon */}
                 <motion.div
-                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-4 -right-5 w-10 h-10 sm:w-12 sm:h-12 z-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
                 >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
-                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
-                    </svg>
+                    <EarthIcon className="w-full h-full" />
                 </motion.div>
             </div>
 
