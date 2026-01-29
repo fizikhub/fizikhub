@@ -4,53 +4,68 @@ import { motion } from "framer-motion";
 
 export function DankLogo() {
     return (
-        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-1">
+        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               V12: THE PHYSICS TOGGLE
+               V13: THE KINETIC STICKER
                - Font: Outfit Black (Geometric)
-               - Concept: Toggle Switch / Pill UI
-               - Active State: FIZIK (Yellow)
-               - Base State: HUB (Black)
+               - Concept: Die-Cut Sticker
+               - Style: Thick White Outline + Hard Shadow + Rotation
             */}
 
             <motion.div
-                className="relative flex items-center bg-black rounded-full p-1 border-[2.5px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)]"
-                whileHover={{ scale: 1.05 }}
+                className="relative"
+                initial={{ rotate: -3 }}
+                whileHover={{ rotate: 0, scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* ACTIVE KNOB: FIZIK */}
-                <motion.div
-                    className="flex items-center justify-center bg-[#FACC15] rounded-full px-3 py-1 mr-[-10px] z-10 border-[1.5px] border-black shadow-[-1px_0px_2px_rgba(0,0,0,0.2)]"
-                    whileHover={{ x: 2 }} // Small toggle movement
-                >
-                    <h1
-                        className="text-xl sm:text-2xl font-black italic tracking-tighter text-black"
-                        style={{ fontFamily: 'var(--font-heading)' }}
-                    >
-                        FIZiK
-                    </h1>
-                </motion.div>
-
-                {/* TRACK: HUB */}
-                <div className="flex items-center justify-center px-4 py-1 pl-5 bg-black rounded-r-full">
-                    <h1
-                        className="text-xl sm:text-2xl font-black italic tracking-tighter text-white"
-                        style={{ fontFamily: 'var(--font-heading)' }}
-                    >
-                        HUB
-                    </h1>
+                {/* LAYER 1: HARD DROP SHADOW (The distance from surface) */}
+                <div className="absolute inset-0 translate-x-[4px] translate-y-[4px] opacity-100">
+                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-black"
+                        style={{
+                            fontFamily: 'var(--font-heading)',
+                            WebkitTextStroke: '6px black'
+                        }}>
+                        FIZIKHUB
+                    </span>
                 </div>
 
-                {/* LABEL: BILIM PLATFORMU */}
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <div className="flex items-center justify-center border border-black bg-white px-1.5 rounded-[2px] shadow-[1px_1px_0px_0px_#000]">
-                        <span className="text-[7px] font-black uppercase tracking-widest text-black"
+                {/* LAYER 2: STICKER PAPER (The White Outline) */}
+                <div className="absolute inset-0 z-10">
+                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-white"
+                        style={{
+                            fontFamily: 'var(--font-heading)',
+                            WebkitTextStroke: '6px white', // Thick sticker edge
+                            paintOrder: 'stroke fill'
+                        }}>
+                        FIZIKHUB
+                    </span>
+                </div>
+
+                {/* LAYER 3: CONTENT (The Ink) */}
+                <div className="relative z-20 flex">
+                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-black"
+                        style={{ fontFamily: 'var(--font-heading)' }}>
+                        FIZIK
+                    </span>
+                    <span className="text-3xl sm:text-5xl font-black italic tracking-tighter text-[#FACC15]" // Yellow
+                        style={{ fontFamily: 'var(--font-heading)' }}>
+                        HUB
+                    </span>
+                </div>
+
+                {/* TAGLINE STICKER (Slapped over) */}
+                <motion.div
+                    className="absolute -bottom-2 right-0 z-30"
+                    initial={{ rotate: 5 }}
+                >
+                    <div className="border-[1.5px] border-black bg-white px-1 shadow-[2px_2px_0px_0px_#000]">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-black"
                             style={{ fontFamily: 'var(--font-heading)' }}>
                             BİLİM PLATFORMU
                         </span>
                     </div>
-                </div>
+                </motion.div>
 
             </motion.div>
 
