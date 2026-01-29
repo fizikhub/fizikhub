@@ -372,9 +372,9 @@ export function MemeCorner() {
                 className={cn(
                     "relative w-full overflow-hidden",
                     "rounded-xl",
-                    "border border-white/5",
-                    "aspect-[3/1] sm:aspect-[4/1]",
-                    // Rich Radial Gradient: Deep Purple Center -> Dark Navy -> Black
+                    "border-2 border-white/10", // Neo-Brutalist Hard Border
+                    "h-[180px] sm:h-[240px]",    // Fixed, reduced height for mobile
+                    // Rich Radial Gradient
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
@@ -393,12 +393,10 @@ export function MemeCorner() {
                         gl={{
                             antialias: false,
                             powerPreference: "high-performance",
-                            alpha: true // Transparency enabled for CSS gradient
+                            alpha: true
                         }}
                         dpr={[1, 2]}
                     >
-                        {/* No background color, transparency is key */}
-
                         <group>
                             <BackgroundStars />
                             <GalaxyDust />
@@ -418,28 +416,30 @@ export function MemeCorner() {
                 </div>
 
                 {/* 2. Vignette */}
-                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.5)_100%)]" />
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
                 {/* 3. Text Overlay */}
-                <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 sm:px-12 select-none pointer-events-none">
-                    <div className="flex items-center gap-2 mb-2 opacity-80 mix-blend-screen">
-                        <div className="w-0.5 h-4 bg-gradient-to-b from-white to-transparent" />
-                        <span className="text-[10px] sm:text-xs font-mono tracking-[0.4em] text-white/70 uppercase">
-                            Cosmos Simulation
-                        </span>
-                    </div>
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
 
-                    <div className="flex flex-col drop-shadow-2xl">
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white">
+                    {/* Main Title - Stacked & Tight */}
+                    <div className="flex flex-col items-center leading-[0.9] drop-shadow-2xl">
+                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white">
                             BİLİMİ
                         </h2>
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-white to-blue-200">
+                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-blue-100 to-blue-400">
                             Tİ'YE ALIYORUZ
                         </h2>
                     </div>
 
-                    <div className="mt-4 flex items-center gap-3">
-                        <span className="text-[10px] sm:text-xs font-bold text-blue-100 tracking-widest uppercase opacity-80">
+                    {/* Subtitle - Neo-Brutalist Sticker */}
+                    <div className="mt-4 transform -rotate-2">
+                        <span className={cn(
+                            "bg-[#ffbd2e] text-black", // Yellow Highlights
+                            "text-[10px] sm:text-sm font-bold tracking-wider uppercase",
+                            "px-3 py-1",
+                            "border-2 border-black box-decoration-clone",
+                            "shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]" // Hard Shadow
+                        )}>
                             Ama Ciddili Şekilde
                         </span>
                     </div>
