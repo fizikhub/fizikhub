@@ -9,17 +9,19 @@ interface NeoProfileFeedProps {
     articles: any[];
     questions: any[];
     answers: any[];
+    drafts?: any[];
     bookmarkedArticles?: any[];
     bookmarkedQuestions?: any[];
     isOwnProfile: boolean;
 }
 
-type TabType = 'posts' | 'replies' | 'likes' | 'media';
+type TabType = 'posts' | 'replies' | 'likes' | 'drafts' | 'media';
 
 export function NeoProfileFeed({
     articles = [],
     questions = [],
     answers = [],
+    drafts = [],
     bookmarkedArticles = [],
     bookmarkedQuestions = [],
     isOwnProfile
@@ -50,6 +52,13 @@ export function NeoProfileFeed({
                         isActive={activeTab === 'likes'}
                         onClick={() => setActiveTab('likes')}
                     />
+                    {isOwnProfile && drafts.length > 0 && (
+                        <NeoTabButton
+                            label={`TASLAKLAR (${drafts.length})`}
+                            isActive={activeTab === 'drafts'}
+                            onClick={() => setActiveTab('drafts')}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -121,6 +130,24 @@ export function NeoProfileFeed({
                             </>
                         ) : (
                             <NeoEmptyState label="VERİTABANI BOŞ" subLabel="Kaydedilen içerik bulunmuyor." />
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'drafts' && (
+                    <div className="flex flex-col gap-6">
+                        {drafts.length > 0 ? (
+                            drafts.map((draft) => (
+                                <div key={draft.id} className="relative group opacity-80 hover:opacity-100 transition-opacity">
+                                    <div className="absolute -left-2 top-0 bottom-0 w-[2px] bg-red-500/50 group-hover:bg-red-500" />
+                                    <div className="pl-4">
+                                        {/* Mocking article structure for card if needed or using same card */}
+                                        <NeoArticleCard article={{ ...draft, type: 'article', title: `[TASLAK] ${draft.title}` }} />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <NeoEmptyState label="TASLAK YOK" subLabel="Kaydedilmiş bir taslak bulunmuyor." />
                         )}
                     </div>
                 )}
