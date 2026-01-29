@@ -1,35 +1,78 @@
 "use client";
 
+import { useMemo, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import * as THREE from "three";
 import { cn } from "@/lib/utils";
-import { AvatarUpload } from "@/components/profile/avatar-upload";
-import { EditableCover } from "@/components/profile/editable-cover";
-import { BadgeDisplay } from "@/components/badge-display";
-import { FollowButton } from "@/components/profile/follow-button";
-import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
-import {
-    Calendar,
-    Link as LinkIcon,
-    Share2,
-    Twitter,
-    Github,
-    Instagram,
-    Linkedin,
-    BadgeCheck,
-    PenLine,
-    Mail,
-    Edit3,
-    Settings
-} from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
+import {
+    Calendar,
+    Link as LinkIcon,
+    Edit3,
+    CheckCircle2,
+    MoreHorizontal,
+    Share2,
+    Mail
+} from "lucide-react";
+import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
+import { FollowButton } from "@/components/profile/follow-button";
 
-const GRADIENTS = [
-    "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
-    "bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-500",
-    "bg-gradient-to-br from-purple-400 via-pink-500 to-rose-500",
-    "bg-gradient-to-br from-blue-400 via-indigo-500 to-purple-500",
-];
+// --- REUSED GALAXY COMPONENTS (From MemeCorner) ---
+// Simplified slightly for header performance (fewer stars)
+
+function getStarTexture() {
+    if (typeof document === 'undefined') return new THREE.Texture();
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return new THREE.Texture();
+    const center = 16;
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, 15);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.4)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.premultiplyAlpha = true;
+    return texture;
+}
+
+function MainStars({ count = 2000 }) { // Fewer than MemeCorner
+    const pointsRef = useRef<THREE.Points>(null!);
+    const texture = useMemo(() => getStarTexture(), []);
+    const geometry = useMemo(() => {
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3); // White/Blue theme
+        for (let i = 0; i < count; i++) {
+            const r = 4 + Math.pow(Math.random(), 1.5) * 10;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.2; // Flattened
+            const z = r * Math.cos(phi);
+            positions[i * 3] = x;
+            positions[i * 3 + 1] = y;
+            positions[i * 3 + 2] = z;
+            colors[i * 3] = 1; colors[i * 3 + 1] = 1; colors[i * 3 + 2] = 1; // All white/bright
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        return geo;
+    }, [count]);
+    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.02; });
+    return (
+        <points ref={pointsRef}>
+            <primitive object={geometry} />
+            <pointsMaterial map={texture} size={0.15} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.8} />
+        </points>
+    );
+}
 
 interface NeoProfileHeaderProps {
     profile: any;
@@ -57,208 +100,161 @@ export function NeoProfileHeader({
     userBadges = [],
     unreadCount = 0
 }: NeoProfileHeaderProps) {
-    const gradientIndex = profile?.id ?
-        profile.id.charCodeAt(0) % GRADIENTS.length : 0;
-    const gradient = GRADIENTS[gradientIndex];
 
-    const isAdmin = profile?.is_admin;
-    const isWriter = profile?.is_writer;
-    const isVerified = profile?.is_verified;
+    const formatNumber = (num: number) => {
+        return new Intl.NumberFormat('en-US', {
+            notation: "compact",
+            maximumFractionDigits: 1
+        }).format(num);
+    };
 
     return (
-        <div className="w-full flex flex-col gap-6 relative">
-            {/* === MODULAR BLOCK 1: MAIN PROFILE CARD === */}
-            <div className="flex flex-col rounded-[32px] bg-card border-[3px] border-black dark:border-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.8)] overflow-hidden">
-                {/* Cover & Avatar Header Section */}
-                <div className="relative">
-                    <div className="h-40 sm:h-52 overflow-hidden">
-                        {/* Display Only Cover - Editing is now in Settings */}
-                        <div className={cn("w-full h-full", !profile?.cover_url && gradient)}>
-                            {profile?.cover_url && (
-                                <img src={profile.cover_url} alt="Cover" className="w-full h-full object-cover" />
-                            )}
-                        </div>
-                    </div>
+        <div className="w-full flex flex-col bg-background text-foreground animate-in fade-in duration-700 relative overflow-hidden">
 
-                    {/* Avatar - Positioned to peek over cover */}
-                    <div className="absolute -bottom-16 left-8">
-                        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-[6px] border-card bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] overflow-hidden p-1">
-                            {/* Display Only Avatar - Editing is now in Settings */}
-                            <div className="w-full h-full rounded-full overflow-hidden relative">
-                                {profile?.avatar_url ? (
-                                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-muted flex items-center justify-center text-4xl font-black text-muted-foreground">
-                                        {profile?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "U"}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+            {/* === 1. CAPTAIN'S LOG BACKGROUND (Galaxy Header) === */}
+            <div className="relative w-full h-[280px] sm:h-[320px] bg-black border-b-[3px] border-black overflow-hidden group">
 
-                    {/* Action Bar Overlay on Cover (Top Right) */}
-                    <div className="absolute top-6 right-6 flex gap-2">
-                        {isOwnProfile ? (
-                            <>
-                                <Link
-                                    href="/mesajlar"
-                                    className={cn(
-                                        "neo-button-sm border-2 border-black flex items-center justify-center relative",
-                                        unreadCount > 0 ? "bg-[#FFC800] text-black" : "bg-white text-black"
-                                    )}
-                                >
-                                    <Mail className="w-4 h-4" />
-                                    {unreadCount > 0 && (
-                                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-black">
-                                            {unreadCount}
-                                        </span>
-                                    )}
-                                </Link>
-                                <ProfileSettingsDialog
-                                    currentUsername={profile?.username}
-                                    currentFullName={profile?.full_name}
-                                    currentBio={profile?.bio}
-                                    currentAvatarUrl={profile?.avatar_url}
-                                    currentCoverUrl={profile?.cover_url}
-                                    currentWebsite={profile?.website}
-                                    currentSocialLinks={profile?.social_links}
-                                    userEmail={user?.email}
-                                    trigger={
-                                        <button className="neo-button-sm bg-white border-2 border-black flex items-center justify-center">
-                                            <Settings className="w-4 h-4" />
-                                        </button>
-                                    }
-                                />
-                            </>
-                        ) : (
-                            <button className="neo-button-sm bg-white border-2 border-black">
-                                <Mail className="w-4 h-4" />
-                            </button>
-                        )}
-                        <button
-                            onClick={() => navigator.clipboard.writeText(window.location.href)}
-                            className="neo-button-sm bg-primary border-2 border-black"
-                        >
-                            <Share2 className="w-4 h-4" />
-                        </button>
-                    </div>
+                {/* 3D Galaxy Canvas */}
+                <div className="absolute inset-0 z-0 opacity-80">
+                    <Canvas camera={{ position: [0, 5, 5], fov: 60 }} gl={{ antialias: false, alpha: true }}>
+                        <MainStars />
+                        <EffectComposer enableNormalPass={false}>
+                            <Bloom luminanceThreshold={0.5} intensity={1.5} radius={0.5} mipmapBlur />
+                        </EffectComposer>
+                    </Canvas>
                 </div>
 
-                {/* Content Area - Padded top for Avatar overlap */}
-                <div className="px-8 pt-20 pb-8">
-                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <h1 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase italic leading-none">
-                                    {profile?.full_name || "BİLİNİP DURULMAMIŞ"}
-                                </h1>
-                                {isVerified && <BadgeCheck className="w-8 h-8 text-primary" />}
-                            </div>
+                {/* Overlay Gradients */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90 z-10" />
 
-                            <div className="flex items-center gap-3">
-                                <p className="font-mono text-lg font-black text-muted-foreground opacity-60">
-                                    @{profile?.username || "yok"}
-                                </p>
-                                {isAdmin && <span className="px-3 py-1 bg-black text-white text-[10px] font-black rounded-full uppercase tracking-widest">SİSTEM ADMİNİ</span>}
-                                {isWriter && !isAdmin && <span className="px-3 py-1 bg-emerald-400 text-black text-[10px] font-black rounded-full uppercase tracking-widest">YAZAR</span>}
-                            </div>
-                        </div>
+                {/* Scanlines */}
+                <div className="absolute inset-0 z-[2] pointer-events-none opacity-[0.05]"
+                    style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px)` }} />
 
-                        {!isOwnProfile && (
-                            <div className="shrink-0 scale-110 origin-right">
-                                <FollowButton
-                                    targetUserId={profile?.id}
-                                    initialIsFollowing={isFollowing}
-                                    targetUsername={profile?.username}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Bio & Social Details Container */}
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                        <div className="space-y-4">
-                            {profile?.bio && (
-                                <p className="text-lg font-bold leading-[1.3] text-foreground/80 font-heading">
-                                    {profile.bio}
-                                </p>
+                {/* Top Actions */}
+                <div className="absolute top-4 right-4 z-50 flex gap-2">
+                    <button
+                        onClick={() => navigator.clipboard.writeText(window.location.href)}
+                        className="p-2 bg-black border border-white/20 hover:bg-white/10 text-white transition-all rounded-none transform skew-x-[-10deg]"
+                    >
+                        <Share2 className="w-4 h-4 transform skew-x-[10deg]" />
+                    </button>
+                    {isOwnProfile && (
+                        <Link href="/mesajlar" className="relative p-2 bg-black border border-white/20 hover:bg-white/10 text-white transition-all rounded-none transform skew-x-[-10deg]">
+                            <Mail className="w-4 h-4 transform skew-x-[10deg]" />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#FF0000] border border-black transform skew-x-[10deg]" />
                             )}
-                            <div className="flex items-center gap-5 text-sm font-black text-muted-foreground italic">
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4" />
-                                    <span>{format(new Date(user?.created_at || Date.now()), 'd MMMM yyyy', { locale: tr })}</span>
-                                </div>
-                                {profile?.website && (
-                                    <a href={profile.website} target="_blank" className="flex items-center gap-2 text-primary">
-                                        <LinkIcon className="w-4 h-4" />
-                                        <span>WEBSITE</span>
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Social Icons Card */}
-                        <div className="flex items-center gap-4 justify-start md:justify-end">
-                            {profile.social_links?.twitter && <SocialIcon icon={Twitter} />}
-                            {profile.social_links?.github && <SocialIcon icon={Github} />}
-                            {profile.social_links?.instagram && <SocialIcon icon={Instagram} />}
-                            {profile.social_links?.linkedin && <SocialIcon icon={Linkedin} />}
-                        </div>
-                    </div>
-                </div>
-
-                {/* === STATS SECTION (MODULAR) === */}
-                <div className="grid grid-cols-3 border-t-[4px] border-black dark:border-white">
-                    <StatBox value={stats.reputation} label="REPÜTASYON" color="bg-primary" border />
-                    <StatBox value={stats.followersCount} label="TAKİPÇİ" border />
-                    <StatBox value={stats.followingCount} label="TAKİP" />
-
-                    <StatBox value={stats.articlesCount} label="MAKALE" topBorder border />
-                    <StatBox value={stats.questionsCount} label="SORU" topBorder border />
-                    <StatBox value={stats.answersCount} label="CEVAP" topBorder />
+                        </Link>
+                    )}
                 </div>
             </div>
 
-            {/* === MODULAR BLOCK 2: STICKER COLLECTION === */}
-            {userBadges && userBadges.length > 0 && (
-                <div className="bg-card border-[3px] border-black dark:border-white rounded-[32px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.8)] p-6">
-                    <div className="flex items-center justify-between mb-6 px-4">
-                        <h2 className="text-2xl font-black italic uppercase tracking-tighter">STICKER Koleksiyonun</h2>
-                        <div className="h-[2px] flex-1 mx-6 bg-black/10 dark:bg-white/10" />
-                        <span className="font-mono font-black text-muted-foreground opacity-50">{userBadges.length} ADET</span>
+            {/* === 2. IDENTITY HUD === */}
+            <div className="container max-w-4xl mx-auto px-4 relative z-20 -mt-[100px] sm:-mt-[120px]">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6 mb-6">
+
+                    {/* AVATAR: Hard Border, Square-ish */}
+                    <div className="relative group">
+                        <div className="w-32 h-32 sm:w-40 sm:h-40 bg-black border-[4px] border-white/10 shadow-[8px_8px_0px_#000] overflow-hidden relative">
+                            {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                            ) : (
+                                <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-4xl font-mono text-neutral-500">
+                                    {profile?.full_name?.charAt(0) || "U"}
+                                </div>
+                            )}
+                        </div>
+                        {profile?.is_verified && (
+                            <div className="absolute -top-2 -right-2 bg-cyan-500 text-black p-1 border-[2px] border-black shadow-[2px_2px_0px_#000]">
+                                <CheckCircle2 className="w-4 h-4" />
+                            </div>
+                        )}
                     </div>
-                    <div className="flex justify-center">
-                        <BadgeDisplay userBadges={userBadges} size="md" maxDisplay={6} />
+
+                    {/* NAME & BIO */}
+                    <div className="flex-1 text-center sm:text-left text-white drop-shadow-md">
+                        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight font-[family-name:var(--font-outfit)]">
+                            {profile?.full_name || "İsimsiz"}
+                        </h1>
+                        <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
+                            <span className="bg-[#FFC800] text-black px-2 py-0.5 text-xs font-bold uppercase border border-black transform -skew-x-12">
+                                @{profile?.username}
+                            </span>
+                            <span className="text-xs font-mono text-white/60 uppercase tracking-widest">
+                                CMD_ID: {profile?.id?.slice(0, 8)}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* ACTIONS */}
+                    <div className="flex gap-3">
+                        {isOwnProfile ? (
+                            <ProfileSettingsDialog
+                                currentUsername={profile?.username}
+                                currentFullName={profile?.full_name}
+                                currentBio={profile?.bio}
+                                currentAvatarUrl={profile?.avatar_url}
+                                currentCoverUrl={profile?.cover_url}
+                                currentWebsite={profile?.website}
+                                currentSocialLinks={profile?.social_links}
+                                userEmail={user?.email}
+                                trigger={
+                                    <button className="px-6 py-2 bg-white text-black font-bold uppercase border-[2px] border-transparent hover:border-white hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_rgba(255,255,255,0.2)]">
+                                        EDIT SYSTEM
+                                    </button>
+                                }
+                            />
+                        ) : (
+                            <FollowButton
+                                targetUserId={profile?.id}
+                                initialIsFollowing={isFollowing}
+                                targetUsername={profile?.username}
+                                variant="modern" // Need to check if we can style this brutalist
+                            />
+                        )}
                     </div>
                 </div>
-            )}
-        </div>
-    );
-}
 
-function StatBox({ value, label, color = "", border = false, topBorder = false }: any) {
-    return (
-        <div className={cn(
-            "flex flex-col items-center justify-center py-8 transition-colors hover:bg-muted/30",
-            color,
-            border && "border-r-[4px] border-black dark:border-white",
-            topBorder && "border-t-[4px] border-black dark:border-white",
-            (color === "bg-primary") && "dark:text-black"
-        )}>
-            <span className="text-3xl sm:text-5xl font-black tracking-tighter tabular-nums leading-none mb-2">
-                {value.toLocaleString('tr-TR')}
-            </span>
-            <span className="text-[10px] sm:text-xs font-black tracking-[0.3em] uppercase opacity-60">
-                {label}
-            </span>
-        </div>
-    );
-}
+                {/* === 3. STATS GRID (HUD STYLE) === */}
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-8 font-mono text-xs sm:text-sm">
+                    {/* Stat Item Helper */}
+                    {[
+                        { label: "TAKİPÇİ", value: stats.followersCount, color: "border-cyan-500/50" },
+                        { label: "TAKİP", value: stats.followingCount, color: "border-purple-500/50" },
+                        { label: "PUAN", value: stats.reputation, color: "border-yellow-500/50" },
+                        { label: "MAKALELER", value: stats.articlesCount, color: "border-white/20" },
+                        { label: "SORULAR", value: stats.questionsCount, color: "border-white/20" },
+                        { label: "CEVAPLAR", value: stats.answersCount, color: "border-white/20" },
+                    ].map((stat, i) => (
+                        <div key={i} className={`flex flex-col items-center justify-center p-2 bg-black/40 border ${stat.color} backdrop-blur-sm group hover:bg-white/5 transition-colors cursor-default`}>
+                            <span className="font-bold text-lg sm:text-xl text-white">{formatNumber(stat.value)}</span>
+                            <span className="text-[10px] text-white/50 uppercase tracking-wider">{stat.label}</span>
+                        </div>
+                    ))}
+                </div>
 
-function SocialIcon({ icon: Icon }: any) {
-    return (
-        <div className="w-12 h-12 flex items-center justify-center bg-card border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all cursor-pointer">
-            <Icon className="w-5 h-5" />
+                {/* BIO TEXT */}
+                {profile?.bio && (
+                    <div className="bg-neutral-900/50 border-l-[4px] border-[#FFC800] p-4 text-sm text-neutral-300 font-mono leading-relaxed mb-6">
+                        {profile.bio}
+
+                        {/* Metadata Row */}
+                        <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-neutral-500 font-bold uppercase">
+                            {profile?.website && (
+                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-white transition-colors">
+                                    <LinkIcon className="w-3 h-3" />
+                                    <span>LINK_UPLINK</span>
+                                </a>
+                            )}
+                            <div className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                <span>INIT: {format(new Date(user?.created_at || Date.now()), 'yyyy.MM')}</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

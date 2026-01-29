@@ -1,10 +1,9 @@
-
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { ModernProfileHeader } from "@/components/profile/modern/modern-profile-header";
-import { ModernProfileFeed } from "@/components/profile/modern/modern-profile-feed";
+import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
+import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -55,8 +54,8 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-background border-x border-border max-w-[600px] mx-auto pb-32">
-            <ModernProfileHeader
+        <div className="min-h-screen bg-black text-white pb-32">
+            <NeoProfileHeader
                 profile={profile}
                 user={user}
                 isOwnProfile={true}
@@ -67,8 +66,8 @@ export default async function ProfilePage() {
                 unreadCount={unreadMessagesCount}
             />
 
-            <div className="border-t border-border mt-8">
-                <ModernProfileFeed
+            <div className="container max-w-4xl mx-auto px-0 sm:px-4">
+                <NeoProfileFeed
                     articles={articles || []}
                     questions={questions || []}
                     answers={answers || []}
