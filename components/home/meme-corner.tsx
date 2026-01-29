@@ -7,84 +7,97 @@ import { motion } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 
-// --- FINAL GALAXY IMPLEMENTATION (IMAGE 2 MATCH) ---
-function Galaxy({ count = 20000 }) { // 20k stars for density matching photo 2
+// --- TEXTURE GENERATOR ---
+// Generates a soft glow texture on the fly to avoid 'square stars'
+function getStarTexture() {
+    if (typeof document === 'undefined') return new THREE.Texture();
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return new THREE.Texture();
+
+    // Radial gradient for soft star look
+    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.premultiplyAlpha = true; // Fix black artifacts
+    return texture;
+}
+
+// --- REFINED GALAXY IMPLEMENTATION ---
+function Galaxy({ count = 15000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
 
-    // Exact Palette from Image 2
-    // Core: Very bright White/Yellow (#FFFDE7)
-    // Inner Ring: Golden/Cream (#FFE082)
-    // Arms: Gradient from Cyan (#4FC3F7) to Deep Blue (#0288D1)
-    // Background dust: Very subtle Indigo (#1A237E)
+    // Lazy load texture
+    const texture = useMemo(() => getStarTexture(), []);
 
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
+        const sizes = new Float32Array(count); // Per-particle size randomizer
 
-        const colorCore = new THREE.Color('#fffbe6');     // Hot White
-        const colorInner = new THREE.Color('#f9ca24');    // Golden Yellow
+        const colorCore = new THREE.Color('#ffffff');     // Pure White Core
+        const colorInner = new THREE.Color('#ffeaa7');    // Soft Warmth
         const colorArmStart = new THREE.Color('#48dbfb'); // Cyan
-        const colorArmEnd = new THREE.Color('#0abde3');   // Blue
+        const colorArmEnd = new THREE.Color('#5f27cd');   // Deep Violet/Blue (More contrast)
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-
-            // Distribution: 
-            // 30% Core (Dense ball)
-            // 70% Spiral Arms (Classic Spiral)
-
             const rand = Math.random();
             let x, y, z;
             let color = new THREE.Color();
+            let size = 1;
 
-            if (rand < 0.25) {
-                // --- CORE (The Bright Yellow Ball) ---
-                // Gaussian distribution for density
-                const r = Math.pow(Math.random(), 2) * 2;
+            if (rand < 0.15) {
+                // --- CORE (Smaller, Denser, Brighter) ---
+                const r = Math.pow(Math.random(), 3) * 1.5;
                 const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos(2 * Math.random() - 1); // Sphere
+                const phi = Math.acos(2 * Math.random() - 1);
 
-                // Elliptical core (flattened slightly)
                 x = r * Math.sin(phi) * Math.cos(theta);
-                y = (r * Math.sin(phi) * Math.sin(theta)) * 0.4;
-                z = r * Math.cos(phi) * 0.8;
+                y = (r * Math.sin(phi) * Math.sin(theta)) * 0.3; // Very flat
+                z = r * Math.cos(phi) * 0.6;
 
-                // Color: White in dead center, Yellow edges
                 color.copy(colorCore);
-                if (r > 1) color.lerp(colorInner, 0.8);
+                if (r > 0.8) color.lerp(colorInner, 0.5);
+                size = 1.5 + Math.random(); // Bigger core stars
 
             } else {
-                // --- SPIRAL ARMS (The Blue Swirls) ---
-                // Logarithmic Spiral: r = a * e^(b*theta)
-
-                const armCount = 2; // 2 Major arms typically
+                // --- SPIRAL ARMS (Clean & Tighter) ---
+                const armCount = 2;
                 const branchAngle = ((i % armCount) / armCount) * Math.PI * 2;
 
-                // Radius: Starts further out
-                const radius = 2 + Math.random() * 7;
+                // Radius distribution: focused mid-range
+                const radius = 1.5 + Math.pow(Math.random(), 0.8) * 8;
 
-                // Spin multiplier (tightness)
-                const spinStrength = 4;
-                const spinAngle = radius * spinStrength; // Tighter spiral
+                // Spin: Tighter winding
+                const spinStrength = 5;
+                const spinAngle = radius * spinStrength * 0.15; // Adjusted spin calc
 
-                // Randomness / Thickness
-                const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8 * radius;
-                const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.2; // Tighter vertical
-                const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.8 * radius;
+                // Randomness: Much lower for defined arms
+                // Gaussian-like falloff for better arm definition
+                const randomX = Math.pow(Math.random(), 4) * (Math.random() < 0.5 ? 1 : -1) * 0.5 * radius;
+                const randomZ = Math.pow(Math.random(), 4) * (Math.random() < 0.5 ? 1 : -1) * 0.5 * radius;
+                const randomY = Math.pow(Math.random(), 4) * (Math.random() < 0.5 ? 1 : -1) * 0.5; // Very flat disc
 
                 x = Math.cos(branchAngle + spinAngle) * radius + randomX;
                 z = Math.sin(branchAngle + spinAngle) * radius + randomZ;
                 y = randomY;
 
-                // Color Gradient based on radius
-                // Close to center -> Cyan/White. Far -> Deep Blue.
+                // Color Gradient
                 color.copy(colorArmStart);
-                color.lerp(colorArmEnd, radius / 9);
+                color.lerp(colorArmEnd, radius / 8); // Darker blue at edges
 
-                // Occasional bright blue young star clusters
-                if (Math.random() < 0.05) {
-                    color.set('#dff9fb'); // White-blue bright star
-                }
+                // Size variation
+                size = 0.5 + Math.random() * 0.8;
             }
 
             positions[i3] = x;
@@ -94,31 +107,36 @@ function Galaxy({ count = 20000 }) { // 20k stars for density matching photo 2
             colors[i3] = color.r;
             colors[i3 + 1] = color.g;
             colors[i3 + 2] = color.b;
+
+            sizes[i] = size;
         }
 
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        // geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1)); // Used if shader, here standard materal uses uniform size mostly or sizeAtt gives effect.
+        // We stick to standard PointMaterial for simplicity and use randomness in loop 
         return geo;
     }, [count]);
 
     useFrame((state, delta) => {
         if (!pointsRef.current) return;
-        // Consistent slow rotation
-        pointsRef.current.rotation.y += delta * 0.04;
+        pointsRef.current.rotation.y += delta * 0.05;
     });
 
     return (
         <points ref={pointsRef}>
             <primitive object={geometry} />
             <pointsMaterial
-                size={0.03}
+                map={texture} // Soft star texture!
+                size={0.15}   // Visually larger due to transparency, but softer
                 sizeAttenuation={true}
                 depthWrite={false}
-                blending={THREE.AdditiveBlending}
                 vertexColors={true}
                 transparent={true}
-                opacity={0.9}
+                opacity={0.8}
+                alphaMap={texture} // Ensure transparency shape
+                alphaTest={0.01}
             />
         </points>
     );
@@ -126,12 +144,6 @@ function Galaxy({ count = 20000 }) { // 20k stars for density matching photo 2
 
 // --- MAIN COMPONENT ---
 export function MemeCorner() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     return (
         <div className="w-full relative group">
             <motion.div
@@ -142,65 +154,57 @@ export function MemeCorner() {
                     "relative w-full overflow-hidden",
                     "rounded-xl",
                     "border border-white/5",
-                    "aspect-[3/1] sm:aspect-[4/1]", // Cinematic wide
-                    "bg-[#000000]",
+                    "aspect-[3/1] sm:aspect-[4/1]",
+                    "bg-black",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
-                {mounted && (
-                    <div className="absolute inset-0 z-0 scale-125">
-                        <Canvas
-                            camera={{ position: [0, 9, 7], fov: 40 }} // Tilted viewing angle matching photo 2
-                            gl={{ antialias: false, powerPreference: "high-performance" }}
-                            dpr={[1, 1.5]} // Performance optimization
-                        >
-                            <color attach="background" args={["#000000"]} />
-                            <Galaxy />
-                            {/* Intense Bloom for the Core */}
-                            <EffectComposer enableNormalPass={false}>
-                                <Bloom
-                                    luminanceThreshold={0.2}
-                                    mipmapBlur
-                                    intensity={1.5} // High intensity for glowing core
-                                    radius={0.6}
-                                />
-                            </EffectComposer>
-                        </Canvas>
-                    </div>
-                )}
+                <div className="absolute inset-0 z-0 scale-110">
+                    <Canvas
+                        camera={{ position: [0, 8, 8], fov: 35 }}
+                        gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
+                        dpr={[1, 2]}
+                    >
+                        <color attach="background" args={["#000000"]} />
+                        <Galaxy />
+                        <EffectComposer enableNormalPass={false}>
+                            <Bloom
+                                luminanceThreshold={0.3} // Higher threshold = less blowout
+                                mipmapBlur
+                                intensity={1.2}
+                                radius={0.5}
+                            />
+                        </EffectComposer>
+                    </Canvas>
+                </div>
 
-                {/* 2. Space Dust Overlay (Subtle) */}
-                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.8)_100%)]" />
+                {/* 2. Overlays */}
+                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
-                {/* 3. Text Content - Keeping it clean as requested */}
+                {/* 3. Text Content */}
                 <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 sm:px-12 select-none pointer-events-none">
-
-                    {/* FZH Originals */}
-                    <div className="flex items-center gap-3 overflow-hidden mb-1">
-                        <div className="h-[1px] w-6 bg-white/50" />
-                        <span className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-white/70 uppercase">
+                    <div className="flex items-center gap-2 mb-1 opacity-60">
+                        <div className="h-[1px] w-4 bg-white" />
+                        <span className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-white uppercase">
                             FizikHub Originals
                         </span>
                     </div>
 
-                    {/* HERO */}
                     <div className="flex flex-col">
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]">
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white drop-shadow-2xl">
                             BİLİMİ
                         </h2>
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-white/50 drop-shadow-md">
+                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-100 to-white/60">
                             Tİ'YE ALIYORUZ
                         </h2>
                     </div>
 
-                    {/* Subtitle */}
                     <div className="mt-3 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_10px_#60a5fa]" />
-                        <span className="text-[10px] sm:text-xs font-bold text-blue-200 tracking-widest uppercase">
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_cyan]" />
+                        <span className="text-[10px] sm:text-xs font-bold text-cyan-200 tracking-widest uppercase opacity-80">
                             Ama Ciddili Şekilde
                         </span>
                     </div>
-
                 </div>
             </motion.div>
         </div>
