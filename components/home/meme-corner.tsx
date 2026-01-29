@@ -468,4 +468,3 @@ export function MemeCorner() {
         </div>
     );
 }
-```
