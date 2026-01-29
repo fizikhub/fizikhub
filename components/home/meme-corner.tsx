@@ -66,40 +66,62 @@ function StarField({ count = 40000 }) {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        const c_Core = new THREE.Color('#fffae0');    // Warm White
-        const c_Inner = new THREE.Color('#bae6ff');   // Pale Blue
-        const c_Outer = new THREE.Color('#3388ff');   // Deep Blue
+        const c_Core = new THREE.Color('#fffae0');    // Warm White (Bulge)
+        const c_Inner = new THREE.Color('#bae6ff');   // Pale Blue (Inner Arm)
+        const c_Outer = new THREE.Color('#3388ff');   // Deep Blue (Outer Arm)
 
         const arms = 2;
         const spin = 3.5;
+        const bulgeCount = 8000; // Count of stars in the central sphere
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-            const rRandom = Math.pow(Math.random(), 1.5);
-            const radius = 0.5 + rRandom * 8;
-
-            const branchAngle = ((i % arms) / arms) * Math.PI * 2;
-            const spinAngle = radius * 0.6 * spin;
-
-            const scatterBase = 0.2 + (radius * 0.08);
-            const randomX = (Math.random() - 0.5) * scatterBase * 2;
-            const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.05);
-            const randomZ = (Math.random() - 0.5) * scatterBase * 2;
-
-            const finalAngle = branchAngle + spinAngle;
-            const x = Math.cos(finalAngle) * radius + randomX;
-            const z = Math.sin(finalAngle) * radius + randomZ;
-
-            positions[i3] = x;
-            positions[i3 + 1] = randomY;
-            positions[i3 + 2] = z;
-
             const color = new THREE.Color();
-            if (radius < 2.5) {
+
+            if (i < bulgeCount) {
+                // --- BULGE GENERATION (Spherical, Solid) ---
+                // Random position in a sphere at center
+                const r = Math.pow(Math.random(), 3) * 2.5;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                // Flatten bulge slightly on Y axis
+                const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.6;
+                const z = r * Math.cos(phi);
+
+                positions[i3] = x;
+                positions[i3 + 1] = y;
+                positions[i3 + 2] = z;
+
                 color.copy(c_Core);
+                // Make some core stars extra bright
+                if (Math.random() > 0.8) color.multiplyScalar(1.5);
+
             } else {
-                color.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
-                // Random bright blue stars
+                // --- DISK GENERATION (Spiral Arms) ---
+                const rRandom = Math.pow(Math.random(), 1.5);
+                // Start arms OUTSIDE the core radius (e.g., > 2.0)
+                const radius = 2.0 + rRandom * 8;
+
+                const branchAngle = ((i % arms) / arms) * Math.PI * 2;
+                const spinAngle = radius * 0.6 * spin;
+
+                const scatterBase = 0.2 + (radius * 0.08);
+                const randomX = (Math.random() - 0.5) * scatterBase * 2;
+                const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.05);
+                const randomZ = (Math.random() - 0.5) * scatterBase * 2;
+
+                const finalAngle = branchAngle + spinAngle;
+                const x = Math.cos(finalAngle) * radius + randomX;
+                const z = Math.sin(finalAngle) * radius + randomZ;
+
+                positions[i3] = x;
+                positions[i3 + 1] = randomY;
+                positions[i3 + 2] = z;
+
+                // Color gradient from inner arm to outer arm
+                color.copy(c_Inner).lerp(c_Outer, (radius - 2.0) / 6);
                 if (Math.random() > 0.9) color.set('#ffffff');
             }
 
@@ -144,7 +166,7 @@ function NebulaClouds({ count = 8000 }) {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        // Deep Navy & Purple Theme (Users Request)
+        // Deep Navy & Purple Theme
         const c_Pink = new THREE.Color('#aa00ff');   // Violet highlights
         const c_Purple = new THREE.Color('#4400ff'); // Deep Indigo
         const c_Blue = new THREE.Color('#001155');   // Very Dark Navy
@@ -168,7 +190,7 @@ function NebulaClouds({ count = 8000 }) {
             else if (mix < 0.66) color.copy(c_Purple);
             else color.copy(c_Blue);
 
-            // Boost brightness slightly so they glow against the deep background
+            // Boost brightness
             color.multiplyScalar(1.2);
 
             colors[i3] = color.r;
