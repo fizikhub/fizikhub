@@ -48,16 +48,29 @@ export function BottomNav() {
                 - Style: Flat Yellow Bar with Top Border
                 - Removed: Floating margins, rounded corners
             */}
+            {/* 
+                V29 BOTTOM NAV: TEXTURED PREMIUM BAR
+                - Position: Fixed Bottom
+                - Texture: Noise Pattern on Yellow
+                - Shadow: Sharp top shadow
+            */}
             <nav className="
                 w-full
                 bg-[#F2C32E] 
                 border-t-[3px] border-black 
-                shadow-[0px_-4px_10px_rgba(0,0,0,0.1)]
-                h-14
+                shadow-[0px_-4px_0px_rgba(0,0,0,1)]
+                h-[60px]
                 flex items-center justify-between
-                px-4
+                px-6
                 pb-safe
+                relative
+                overflow-hidden
             ">
+                {/* Noise Texture */}
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0 mix-blend-multiply"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                />
+
                 {links.map((link) => {
                     const Icon = link.icon;
                     const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
@@ -68,19 +81,22 @@ export function BottomNav() {
                             href={link.href}
                             prefetch={true}
                             className={cn(
-                                "flex flex-col items-center justify-center w-10 h-10 rounded-lg transition-all duration-200",
-                                // Active: Black Box
+                                "flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all duration-300 relative z-10 group",
+                                // Active: Black Box with Lift
                                 isActive
-                                    ? "bg-black text-white shadow-none"
+                                    ? "bg-black text-[#FFC800] shadow-[2px_2px_0px_rgba(255,255,255,0.3)] -translate-y-1"
                                     : "text-black hover:bg-black/10 active:scale-95"
                             )}
                         >
                             <Icon
                                 className={cn(
-                                    "w-5 h-5",
-                                    isActive ? "stroke-[3px]" : "stroke-[2.5px]"
+                                    "w-5 h-5 transition-transform duration-300",
+                                    isActive ? "stroke-[3px] scale-110" : "stroke-[2.5px] group-hover:scale-110"
                                 )}
                             />
+                            {isActive && (
+                                <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-black md:hidden" />
+                            )}
                         </ViewTransitionLink>
                     );
                 })}

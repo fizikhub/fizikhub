@@ -5,70 +5,52 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <motion.div
-            className="group flex items-center gap-3 select-none cursor-pointer"
-            initial="idle"
-            whileHover="hover"
-            whileTap="tap"
-        >
-            {/* 1. APP ICON: THE "TARGET" */}
-            <div className="relative">
-                {/* Shadow Box */}
-                <div className="absolute inset-0 bg-black translate-x-[4px] translate-y-[4px] transition-transform duration-200 group-hover:translate-x-[2px] group-hover:translate-y-[2px]" />
-
-                {/* Main Container */}
-                <div
-                    className={cn(
-                        "relative w-11 h-11 sm:w-12 sm:h-12",
-                        "bg-[#FFC800] border-[3px] border-black",
-                        "flex items-center justify-center overflow-hidden",
-                        "transition-transform duration-200 group-hover:translate-x-[2px] group-hover:translate-y-[2px]"
-                    )}
+        <div className="flex flex-col select-none relative group cursor-pointer">
+            {/* 
+        V23 LOGO: MOSKO SCIENCE (Restored)
+        - Mobile: text-2xl
+        - Desktop: text-4xl
+        - Style: Blocky Yellow Text with Thick Black Stroke
+      */}
+            <div className="relative z-10">
+                <motion.h1
+                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
+                    style={{
+                        WebkitTextStroke: "1.5px black",
+                        fontFamily: "var(--font-heading)",
+                        filter: "drop-shadow(3px 3px 0px #000)"
+                    }}
+                    whileHover={{
+                        scale: 1.05,
+                        filter: "drop-shadow(5px 5px 0px #000)"
+                    }}
+                    transition={{ type: "spring", stiffness: 400 }}
                 >
-                    {/* CUSTOM SYMBOL: Abstract Physics Target / Scope */}
-                    <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 stroke-black stroke-[3]">
-                        {/* Outer Circle */}
-                        <circle cx="12" cy="12" r="9" />
-                        {/* Crosshairs */}
-                        <path d="M12 2v20" />
-                        <path d="M2 12h20" />
-                        {/* Center Dot */}
-                        <circle cx="12" cy="12" r="2" className="fill-black stroke-none" />
+                    FIZIKHUB
+                </motion.h1>
+
+                {/* Retro Star Accent */}
+                <motion.div
+                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
                     </svg>
-
-                    {/* Corner Accents */}
-                    <div className="absolute top-0 left-0 w-1.5 h-1.5 bg-black" />
-                    <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-black" />
-                </div>
+                </motion.div>
             </div>
 
-            {/* 2. TYPOGRAPHY LOCKUP */}
-            <div className="flex flex-col justify-center gap-0.5">
-                {/* HEADING */}
-                <div className="relative overflow-hidden">
-                    <h1
-                        className="text-[26px] leading-[0.8] font-black text-black tracking-tighter"
-                        style={{ fontFamily: 'var(--font-space)' }}
-                    >
-                        FIZIKHUB
-                    </h1>
-                </div>
-
-                {/* SUBTITLE STRIP */}
-                <div className="flex items-center">
-                    <motion.div
-                        className="bg-black px-1.5 py-[2px] transform origin-left"
-                        variants={{
-                            hover: { rotate: -2, scale: 1.05 },
-                            tap: { rotate: 0, scale: 0.95 }
-                        }}
-                    >
-                        <span className="block text-[8px] sm:text-[9px] font-bold text-white tracking-[0.25em] leading-none uppercase">
-                            BİLİM PLATFORMU
-                        </span>
-                    </motion.div>
-                </div>
-            </div>
-        </motion.div>
+            {/* Slogan */}
+            <motion.div
+                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
+                initial={{ rotate: -3 }}
+                whileHover={{ rotate: 3 }}
+            >
+                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
+                    BİLİM PLATFORMU
+                </span>
+            </motion.div>
+        </div>
     );
 }

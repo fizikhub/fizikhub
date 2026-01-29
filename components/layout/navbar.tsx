@@ -69,33 +69,32 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V23: CLEAN SCIENCE CONSOLE (RESTORED)
-                - Height: h-14 (56px)
-                - Blue Base, Thick Borders, Physics Echo
+                V29: PREMIUM SCIENCE HUD
+                - Height: h-14 (56px) - Optimized for Mobile
+                - Style: Sharp Neo-Brutalist, Blue Base
             */}
             <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
-                        "flex items-center justify-between px-3 sm:px-4",
+                        "flex items-center justify-between px-4 sm:px-6",
                         "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]",
+                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS TICKER BACKGROUND */}
-                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-60">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute font-mono font-bold text-black/40 whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute font-mono font-bold text-black/30 whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${10 * drop.scale}px`
                                 }}
-                                initial={{ y: 60, opacity: 0 }} // Start below
-                                animate={{ y: -20, opacity: [0, 1, 0] }} // Flow up
+                                initial={{ y: 60, opacity: 0 }}
+                                animate={{ y: -20, opacity: [0, 1, 0] }}
                                 transition={{
                                     duration: drop.duration,
                                     repeat: Infinity,
@@ -108,35 +107,33 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1 flex justify-between px-1 pointer-events-none opacity-30">
+                    {/* RULER TICKS - SHARPER */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
                         {[...Array(60)].map((_, i) => (
                             <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
                         ))}
                     </div>
 
-
-
-
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-0.5">
+                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-2">
+                    <div className="relative z-10 flex items-center gap-2.5">
 
                         {/* Desktop Links */}
-                        <div className="hidden md:flex items-center gap-1 mr-4">
+                        <div className="hidden md:flex items-center gap-2 mr-6">
                             {navItems.map((item) => (
                                 <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-3 py-1 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
-                                        pathname === item.href && "bg-[#FFC800]"
+                                        "px-4 py-1.5 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
+                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
                                     )}
                                 >
                                     {item.label}
