@@ -51,7 +51,10 @@ export function ImageCropperDialog({ open, onOpenChange, imageSrc, aspectRatio, 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-xl bg-zinc-950 border-zinc-800 text-white p-0 overflow-hidden gap-0">
+            <DialogContent
+                className="sm:max-w-xl bg-zinc-950 border-zinc-800 text-white p-0 overflow-hidden gap-0 fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]"
+                style={{ transform: "translate(-50%, -50%)" }}
+            >
                 <DialogHeader className="p-4 border-b border-zinc-800 bg-zinc-950 z-10">
                     <DialogTitle>Medyayı Düzenle</DialogTitle>
                 </DialogHeader>
