@@ -4,63 +4,65 @@ import { motion } from "framer-motion";
 
 export function DankLogo() {
     return (
-        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
+        <div className="group relative z-50 flex cursor-pointer select-none flex-col items-center justify-center p-2">
 
             {/* 
-               V17: THE UNBOUNDED FUTURE
-               - Font: Unbounded (Google Font)
-               - Concept: Kinetic Typography / Web3 / Modern Science
-               - Style: Pure Text, High Contrast, No Containers
+               V18: THE QUANTUM SCALE
+               - Font: Syncopate (Google Font) - Wide, Futuristic, Premium
+               - Concept: Precision Measurement / Scientific Scale
+               - Style: High-End Tech, Minimalist, Detail-Oriented
             */}
 
             <motion.div
-                className="relative flex items-baseline gap-0.5"
+                className="relative flex flex-col items-center"
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* PART 1: FIZIK (Solid Black) */}
-                <h1
-                    className="text-2xl sm:text-4xl font-black text-black tracking-tighter"
-                    style={{ fontFamily: 'var(--font-unbounded)' }}
-                >
-                    FIZIK
-                </h1>
-
-                {/* PART 2: HUB (Outlined / Stroke) */}
-                <h1
-                    className="text-2xl sm:text-4xl font-black text-transparent tracking-tighter relative"
-                    style={{
-                        fontFamily: 'var(--font-unbounded)',
-                        WebkitTextStroke: '1.5px black',
-                    }}
-                >
-                    HUB
-                    {/* Hover Fill Effect */}
-                    <motion.span
-                        className="absolute inset-0 text-[#FACC15] opacity-0"
-                        style={{ WebkitTextStroke: '0px' }}
-                        whileHover={{ opacity: 1 }}
+                {/* 1. TYPOGRAPHY ROW */}
+                <div className="flex items-baseline gap-1 sm:gap-2">
+                    <h1
+                        className="text-xl sm:text-3xl font-bold uppercase tracking-widest text-black"
+                        style={{ fontFamily: 'var(--font-syncopate)' }}
+                    >
+                        FIZIK
+                    </h1>
+                    <h1
+                        className="text-xl sm:text-3xl font-normal uppercase tracking-widest text-black/80"
+                        style={{ fontFamily: 'var(--font-syncopate)' }}
                     >
                         HUB
-                    </motion.span>
-                </h1>
+                    </h1>
+                </div>
 
-                {/* TAGLINE: Floating Orbit */}
-                <motion.div
-                    className="absolute -bottom-2 right-0 hidden sm:block"
-                    initial={{ x: 10, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                >
-                    <span className="text-[8px] font-bold text-black uppercase tracking-[0.2em] bg-[#FACC15] px-1"
-                        style={{ fontFamily: 'var(--font-unbounded)' }}>
-                        BİLİM PLATFORMU
-                    </span>
-                </motion.div>
+                {/* 2. THE SCALE (Ruler) */}
+                <div className="mt-1 w-full flex items-end justify-between border-b-[2px] border-black pb-1 relative">
+                    {/* Ticks */}
+                    {[...Array(15)].map((_, i) => (
+                        <div
+                            key={i}
+                            className={`w-[1px] bg-black ${i % 5 === 0 ? 'h-2' : 'h-1'}`}
+                        />
+                    ))}
 
-                {/* MOBILE TAGLINE (Simpler) */}
-                <div className="absolute -bottom-1.5 left-0 right-0 sm:hidden flex justify-center">
-                    <div className="h-[2px] w-full bg-black rounded-full" />
+                    {/* The "Current Value" Indicator */}
+                    <motion.div
+                        className="absolute bottom-[-4px] h-3 w-[2px] bg-[#FACC15] z-10" // Yellow Indicator
+                        initial={{ left: "10%" }}
+                        animate={{ left: ["10%", "80%", "45%"] }} // Random scanning movement
+                        transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            repeatType: "mirror"
+                        }}
+                    />
+                </div>
+
+                {/* 3. TAGLINE */}
+                <div className="mt-1 w-full flex justify-between px-0.5">
+                    <span className="text-[6px] font-mono text-black/60">BİLİM</span>
+                    <span className="text-[6px] font-mono text-black/60">PLATFORMU</span>
+                    <span className="text-[6px] font-mono text-[#FACC15]">v18.0</span>
                 </div>
 
             </motion.div>

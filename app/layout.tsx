@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Unbounded } from "next/font/google";
+import { Syncopate } from "next/font/google";
 
-const unbounded = Unbounded({
-  weight: ["400", "900"], // Regular and Black
+const syncopate = Syncopate({
+  weight: ["400", "700"], // Regular and Bold
   subsets: ["latin"],
-  variable: "--font-unbounded",
+  variable: "--font-syncopate",
   display: "swap",
 });
+
+
 
 
 
@@ -259,7 +261,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${unbounded.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${syncopate.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
