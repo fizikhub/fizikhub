@@ -371,12 +371,30 @@ export function MemeCorner() {
                 transition={{ duration: 1 }}
                 className={cn(
                     "relative w-full overflow-hidden",
-                    "rounded-xl",
-                    "border border-white/10",
+                    // NEO-BRUTALIST TOKENS (Matching neo-article-card.tsx)
+                    "rounded-[8px]",
+                    "border-[3px] border-black",
+                    "shadow-[4px_4px_0px_0px_#000]",
+                    // Size & Background
                     "h-[180px] sm:h-[240px]",
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
+                {/* 1. TOP LEFT BADGE (Matching Category Label) */}
+                <div className="absolute top-3 left-3 z-30 perspective-500">
+                    <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                        AMA CİDDİLİ ŞEKİLDE
+                    </span>
+                </div>
+
+                {/* HUD CORNERS (Re-added subtly for Sci-Fi feel per user preference for 'cool', but kept clean) */}
+                <svg className="absolute top-2 right-2 w-5 h-5 text-white/20 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M23 9V1H15" />
+                </svg>
+                <svg className="absolute bottom-2 left-2 w-5 h-5 text-white/20 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M1 15V23H9" />
+                </svg>
+
                 {/* VISUAL NOISE */}
                 <div
                     className="absolute inset-0 z-[1] opacity-20 pointer-events-none mix-blend-overlay"
@@ -420,34 +438,19 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
 
-                    {/* Main Title - Cinematic Stack */}
+                    {/* Main Title - Cinematic & Neo-Brutalist Font */}
                     <div className="flex flex-col items-center justify-center drop-shadow-2xl">
                         {/* Top: Spaced Out */}
-                        <h2 className="text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-100/90 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
+                        <h2 className="font-[family-name:var(--font-outfit)] text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-100/90 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
                             BİLİMİ
                         </h2>
 
                         {/* Bottom: Massive & Condensed */}
-                        <h2 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-blue-100 to-blue-400 leading-[0.85] pb-2 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+                        <h2 className="font-[family-name:var(--font-outfit)] text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-blue-100 to-blue-400 leading-[0.85] pb-2 drop-shadow-[0_4px_0px_#000]">
                             Tİ'YE ALIYORUZ
                         </h2>
                     </div>
 
-                    {/* Subtitle - Refined Badge */}
-                    <motion.div
-                        className="mt-3 sm:mt-5 transform -rotate-3 origin-center"
-                        whileHover={{ scale: 1.05, rotate: 0 }}
-                    >
-                        <span className={cn(
-                            "bg-[#ffbd2e] text-black", // Brand Yellow
-                            "text-[10px] sm:text-xs font-extrabold tracking-widest uppercase",
-                            "px-3 py-1 sm:px-4 sm:py-1.5",
-                            "border border-black box-decoration-clone shadow-xl",
-                            "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]" // Tight sharp shadow
-                        )}>
-                            Ama Ciddili Şekilde
-                        </span>
-                    </motion.div>
                 </div>
             </motion.div>
         </div>
