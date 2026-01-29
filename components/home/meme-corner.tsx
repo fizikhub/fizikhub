@@ -420,34 +420,34 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
 
-                    {/* GLASS CARD CONTAINER */}
-                    <div className="relative backdrop-blur-sm bg-black/20 border border-white/10 rounded-2xl px-6 py-4 sm:px-10 sm:py-6 shadow-2xl flex flex-col items-center transform transition-transform group-hover:scale-[1.02]">
+                    {/* Main Title - Cinematic Stack */}
+                    <div className="flex flex-col items-center justify-center drop-shadow-2xl">
+                        {/* Top: Spaced Out */}
+                        <h2 className="text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-100/90 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
+                            BİLİMİ
+                        </h2>
 
-                        {/* Shimmer Effect on Border */}
-                        <div className="absolute inset-0 rounded-2xl border border-white/5 pointer-events-none" />
-
-                        {/* Main Title */}
-                        <div className="flex flex-col items-center justify-center">
-                            <h2 className="text-xs sm:text-base font-bold tracking-[0.5em] text-blue-200/80 uppercase mb-1">
-                                Bilimi
-                            </h2>
-
-                            <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(0,255,255,0.5)]">
-                                Tİ'YE ALIYORUZ
-                            </h2>
-                        </div>
-
-                        {/* FLOATING BADGE (Breaking the bottom) */}
-                        <motion.div
-                            className="absolute -bottom-4 sm:-bottom-5 bg-[#ffbd2e] text-black px-4 py-1 sm:px-6 sm:py-1.5 transform -rotate-2 border-2 border-black/90 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                            whileHover={{ scale: 1.1, rotate: 1 }}
-                        >
-                            <span className="text-[10px] sm:text-xs font-extrabold tracking-widest uppercase">
-                                Ama Ciddili Şekilde
-                            </span>
-                        </motion.div>
+                        {/* Bottom: Massive & Condensed */}
+                        <h2 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-blue-100 to-blue-400 leading-[0.85] pb-2 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+                            Tİ'YE ALIYORUZ
+                        </h2>
                     </div>
 
+                    {/* Subtitle - Refined Badge */}
+                    <motion.div
+                        className="mt-3 sm:mt-5 transform -rotate-3 origin-center"
+                        whileHover={{ scale: 1.05, rotate: 0 }}
+                    >
+                        <span className={cn(
+                            "bg-[#ffbd2e] text-black", // Brand Yellow
+                            "text-[10px] sm:text-xs font-extrabold tracking-widest uppercase",
+                            "px-3 py-1 sm:px-4 sm:py-1.5",
+                            "border border-black box-decoration-clone shadow-xl",
+                            "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]" // Tight sharp shadow
+                        )}>
+                            Ama Ciddili Şekilde
+                        </span>
+                    </motion.div>
                 </div>
             </motion.div>
         </div>
