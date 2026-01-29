@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { NeoProfileHeader } from "@/components/profile/neo/neo-profile-header";
-import { NeoProfileFeed } from "@/components/profile/neo/neo-profile-feed";
+import { ProfilePageClient } from "@/components/profile/neo/profile-page-client";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,35 +46,26 @@ export default async function ProfilePage() {
         answersCount: answers?.length || 0,
     };
 
-    // Fix for BadgeDisplay type mismatch
     const formattedBadges = userBadges?.map((ub: any) => ({
         awarded_at: ub.awarded_at,
         badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-black text-white pb-32">
-            <NeoProfileHeader
-                profile={profile}
-                user={user}
-                isOwnProfile={true}
-                // isFollowing is likely not needed on own profile, but we can pass false
-                isFollowing={false}
-                stats={stats}
-                userBadges={formattedBadges}
-                unreadCount={unreadMessagesCount}
-            />
-
-            <div className="container max-w-4xl mx-auto px-0 sm:px-4">
-                <NeoProfileFeed
-                    articles={articles || []}
-                    questions={questions || []}
-                    answers={answers || []}
-                    bookmarkedArticles={bookmarkedArticles || []}
-                    bookmarkedQuestions={bookmarkedQuestions || []}
-                    isOwnProfile={true}
-                />
-            </div>
-        </div>
+        <ProfilePageClient
+            profile={profile}
+            user={user}
+            isOwnProfile={true}
+            isFollowing={false}
+            stats={stats}
+            userBadges={formattedBadges}
+            articles={articles || []}
+            questions={questions || []}
+            answers={answers || []}
+            drafts={drafts || []}
+            bookmarkedArticles={bookmarkedArticles || []}
+            bookmarkedQuestions={bookmarkedQuestions || []}
+            unreadCount={unreadMessagesCount}
+        />
     );
 }
