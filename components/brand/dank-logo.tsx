@@ -7,54 +7,42 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center">
 
             {/* 
-               V29: THE QUANTUM SLICE (INNOVATION)
-               - Font: Anton (Google Font)
-               - Concept: Glitch in Reality / Sliced Atom
-               - Technique: CSS clip-path masking
+               V30: THE DIGITAL GLITCH
+               - Font: Rubik Glitch (Google Font)
+               - Concept: System Error / Static Noise / Entrophy
+               - Style: Raw text, high contrast, blinking cursor
             */}
 
             <motion.div
-                className="relative flex flex-col leading-none"
+                className="flex items-center leading-none tracking-widest"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* 
-                    LAYER 1: TOP HALF
-                    - Color: Black
-                    - Clip: Top 52%
-                 */}
+                {/* BLACK PART */}
                 <h1
-                    className="text-4xl text-black tracking-wider relative z-20"
-                    style={{
-                        fontFamily: 'var(--font-anton)',
-                        clipPath: 'polygon(0 0, 100% 0, 100% 52%, 0 52%)'
-                    }}
+                    className="text-2xl sm:text-3xl text-black"
+                    style={{ fontFamily: 'var(--font-rubik-glitch)' }}
                 >
-                    FIZIKHUB
+                    FIZIK
                 </h1>
 
-                {/* 
-                    LAYER 2: BOTTOM HALF (The Glitch)
-                    - Color: Yellow (#FACC15) with Black Stroke
-                    - Clip: Bottom 48%
-                    - Position: Absolute, slightly shifted X and Y
-                 */}
+                {/* YELLOW PART */}
                 <h1
-                    className="text-4xl text-[#FACC15] tracking-wider absolute top-0 left-0 z-10"
+                    className="text-2xl sm:text-3xl text-[#FACC15] ml-1"
                     style={{
-                        fontFamily: 'var(--font-anton)',
-                        clipPath: 'polygon(0 52%, 100% 52%, 100% 100%, 0 100%)',
-                        WebkitTextStroke: '1px black',
-                        transform: 'translate(4px, 2px)'
+                        fontFamily: 'var(--font-rubik-glitch)',
+                        textShadow: '1px 1px 0px black'
                     }}
                 >
-                    FIZIKHUB
+                    HUB
                 </h1>
 
-                {/* DECORATIVE LINE (The "Cut") */}
-                <div
-                    className="absolute top-[52%] left-[-10%] w-[120%] h-[1px] bg-black z-30 opacity-0 group-hover:opacity-100 transition-opacity"
+                {/* BLINKING CURSOR */}
+                <motion.div
+                    className="w-2 h-[3px] bg-black ml-1 self-end mb-1.5"
+                    animate={{ opacity: [1, 0, 1] }}
+                    transition={{ repeat: Infinity, duration: 0.8 }}
                 />
 
             </motion.div>

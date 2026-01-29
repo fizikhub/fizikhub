@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Anton } from "next/font/google";
+import { Rubik_Glitch } from "next/font/google";
 
-const anton = Anton({
+const rubikGlitch = Rubik_Glitch({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-anton",
+  variable: "--font-rubik-glitch",
   display: "swap",
 });
+
+
 
 
 
@@ -281,7 +283,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${anton.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
