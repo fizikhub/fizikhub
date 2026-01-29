@@ -1,56 +1,71 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer">
-            {/* 
-        V23 LOGO: MOSKO SCIENCE (Restored)
-        - Mobile: text-2xl
-        - Desktop: text-4xl
-        - Style: Blocky Yellow Text with Thick Black Stroke
-      */}
-            <div className="relative z-10">
-                <motion.h1
-                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
-                    style={{
-                        WebkitTextStroke: "1.5px black",
-                        fontFamily: "var(--font-heading)",
-                        filter: "drop-shadow(3px 3px 0px #000)"
-                    }}
-                    whileHover={{
-                        scale: 1.05,
-                        filter: "drop-shadow(5px 5px 0px #000)"
-                    }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                >
-                    FIZIKHUB
-                </motion.h1>
+        <div className="group relative flex cursor-pointer flex-col select-none items-start">
 
-                {/* Retro Star Accent */}
+            {/* 
+               LAYER 1: FIZIKHUB MAIN TEXT 
+               - Font: Outfit (Heading)
+               - Style: Massive, Heavy, Sticker-like
+            */}
+            <div className="relative z-10">
                 <motion.div
-                    className="absolute -top-2 -right-3 text-white drop-shadow-[1px_1px_0_#000] sm:drop-shadow-[2px_2px_0_#000]"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                    className="relative"
+                    whileHover={{ scale: 1.05, rotate: -2 }}
+                    whileTap={{ scale: 0.95 }}
                 >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="sm:w-6 sm:h-6">
-                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" />
-                    </svg>
+                    {/* Shadow Layer (Hard Drop) */}
+                    <span className="absolute left-[3px] top-[3px] select-none text-2xl font-black italic tracking-tighter text-black sm:left-[4px] sm:top-[4px] sm:text-4xl"
+                        style={{ fontFamily: "var(--font-heading)", WebkitTextStroke: "2px black" }}>
+                        FIZIKHUB
+                    </span>
+
+                    {/* Stroke Layer (The Outline) */}
+                    <span className="absolute left-0 top-0 select-none text-2xl font-black italic tracking-tighter text-black sm:text-4xl"
+                        style={{ fontFamily: "var(--font-heading)", WebkitTextStroke: "4px black" }}>
+                        FIZIKHUB
+                    </span>
+
+                    {/* Main Text Layer (The Color) */}
+                    <h1
+                        className="relative z-10 text-2xl font-black italic tracking-tighter text-[#FFC800] sm:text-4xl"
+                        style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                        FIZIKHUB
+                    </h1>
+
+                    {/* Star Accent (Animated) */}
+                    <motion.div
+                        className="absolute -right-3 -top-3 z-20 text-black drop-shadow-sm sm:-right-5 sm:-top-4"
+                        animate={{ rotate: [0, 15, -15, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#8b5cf6" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 sm:w-8 sm:h-8 stroke-black stroke-[1.5px]">
+                            <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+                        </svg>
+                    </motion.div>
                 </motion.div>
             </div>
 
-            {/* Slogan */}
+            {/* 
+               LAYER 2: BİLİM PLATFORMU
+               - Style: Badge/Capsule, Rotated, Contrasting Color
+            */}
             <motion.div
-                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
-                initial={{ rotate: -3 }}
-                whileHover={{ rotate: 3 }}
+                className="relative z-20 -mt-1 ml-1 sm:-mt-2 sm:ml-2"
+                initial={{ rotate: 2 }}
+                whileHover={{ rotate: 0, scale: 1.1 }}
             >
-                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
-                    BİLİM PLATFORMU
-                </span>
+                <div className="flex items-center justify-center rounded-sm bg-white border-[1.5px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] px-1 py-0.5 sm:px-2 sm:py-0.5">
+                    <span className="text-[9px] font-black uppercase text-black sm:text-[11px]" style={{ fontFamily: "var(--font-heading)" }}>
+                        BİLİM PLATFORMU
+                    </span>
+                </div>
             </motion.div>
+
         </div>
     );
 }
