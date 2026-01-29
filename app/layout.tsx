@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Chakra_Petch } from "next/font/google";
+import { Fredoka } from "next/font/google";
 
-const chakraPetch = Chakra_Petch({
-  weight: ["400", "500", "600", "700"],
+const fredoka = Fredoka({
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
-  variable: "--font-chakra",
+  variable: "--font-fredoka",
   display: "swap",
 });
+
+
 
 
 
@@ -273,7 +275,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${chakraPetch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${fredoka.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
