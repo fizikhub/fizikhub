@@ -377,25 +377,11 @@ export function MemeCorner() {
                     "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
-                {/* HUD CORNERS (DECORATIVE) */}
-                <svg className="absolute top-2 left-2 w-4 h-4 text-white/40 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 9V1H9" />
-                </svg>
-                <svg className="absolute top-2 right-2 w-4 h-4 text-white/40 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 9V1H15" />
-                </svg>
-                <svg className="absolute bottom-2 left-2 w-4 h-4 text-white/40 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M1 15V23H9" />
-                </svg>
-                <svg className="absolute bottom-2 right-2 w-4 h-4 text-white/40 z-20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 15V23H15" />
-                </svg>
-
                 {/* VISUAL NOISE */}
                 <div
                     className="absolute inset-0 z-[1] opacity-20 pointer-events-none mix-blend-overlay"
                     style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3Cfilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                     }}
                 />
 
@@ -434,31 +420,28 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4">
 
-                    {/* Main Title - Stacked & Mixed Style */}
-                    <div className="flex flex-col items-center leading-[0.85] drop-shadow-2xl">
-                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white">
+                    {/* Main Title - Stacked & SOLID */}
+                    <div className="flex flex-col items-center leading-[0.9] drop-shadow-2xl filter">
+                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
                             BİLİMİ
                         </h2>
-                        {/* OUTLINE TEXT: Shows stars through the letters */}
-                        <h2
-                            className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent"
-                            style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}
-                        >
+                        {/* Solid Gradient Text - High Contrast */}
+                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-blue-100 via-cyan-200 to-blue-500 pb-2">
                             Tİ'YE ALIYORUZ
                         </h2>
                     </div>
 
                     {/* Subtitle - Animated Neo-Badge */}
                     <motion.div
-                        className="mt-4 transform -rotate-2"
+                        className="mt-2 transform -rotate-2 origin-center"
                         whileHover={{ scale: 1.05, rotate: 0 }}
                     >
                         <span className={cn(
                             "bg-[#ffbd2e] text-black", // Yellow Highlights
                             "text-[10px] sm:text-sm font-bold tracking-wider uppercase",
-                            "px-3 py-1",
+                            "px-4 py-1.5",
                             "border-2 border-black box-decoration-clone",
-                            "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" // Solid Black Shadow for Contrast
+                            "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]" // Solid Black Shadow
                         )}>
                             Ama Ciddili Şekilde
                         </span>
