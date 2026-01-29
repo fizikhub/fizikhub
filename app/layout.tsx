@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Bangers } from "next/font/google";
+import { Rubik_Mono_One } from "next/font/google";
 
-const bangers = Bangers({
+const rubikMono = Rubik_Mono_One({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-bangers",
+  variable: "--font-rubik",
   display: "swap",
 });
+
+
 
 
 
@@ -277,7 +279,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${bangers.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${rubikMono.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
