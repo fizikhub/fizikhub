@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Syncopate } from "next/font/google";
+import { Permanent_Marker } from "next/font/google";
 
-const syncopate = Syncopate({
-  weight: ["400", "700"], // Regular and Bold
+const permanent = Permanent_Marker({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-syncopate",
+  variable: "--font-permanent",
   display: "swap",
 });
+
+
 
 
 
@@ -261,7 +263,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${syncopate.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${permanent.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />

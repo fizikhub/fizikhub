@@ -4,65 +4,66 @@ import { motion } from "framer-motion";
 
 export function DankLogo() {
     return (
-        <div className="group relative z-50 flex cursor-pointer select-none flex-col items-center justify-center p-2">
+        <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               V18: THE QUANTUM SCALE
-               - Font: Syncopate (Google Font) - Wide, Futuristic, Premium
-               - Concept: Precision Measurement / Scientific Scale
-               - Style: High-End Tech, Minimalist, Detail-Oriented
+               V19: THE PUNK STICKER
+               - Font: Permanent Marker (Google Font)
+               - Concept: Garage Science / DIY
+               - Style: Masking Tape with Sharpie
             */}
 
             <motion.div
-                className="relative flex flex-col items-center"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="relative"
+                initial={{ rotate: -2 }}
+                whileHover={{ rotate: 1, scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300, damping: 12 }}
             >
-                {/* 1. TYPOGRAPHY ROW */}
-                <div className="flex items-baseline gap-1 sm:gap-2">
-                    <h1
-                        className="text-xl sm:text-3xl font-bold uppercase tracking-widest text-black"
-                        style={{ fontFamily: 'var(--font-syncopate)' }}
-                    >
-                        FIZIK
-                    </h1>
-                    <h1
-                        className="text-xl sm:text-3xl font-normal uppercase tracking-widest text-black/80"
-                        style={{ fontFamily: 'var(--font-syncopate)' }}
-                    >
-                        HUB
-                    </h1>
-                </div>
+                {/* MASKING TAPE BACKGROUND */}
+                <div
+                    className="absolute inset-0 -mx-3 -my-1 bg-[#FEF08A] shadow-md transform skew-x-[-10deg] rotate-1" // Pale Yellow Tape
+                    style={{
+                        clipPath: 'polygon(2% 4%, 100% 0%, 98% 95%, 0% 100%)', // Rough edges
+                        borderTopLeftRadius: '2px',
+                        borderBottomRightRadius: '3px'
+                    }}
+                />
 
-                {/* 2. THE SCALE (Ruler) */}
-                <div className="mt-1 w-full flex items-end justify-between border-b-[2px] border-black pb-1 relative">
-                    {/* Ticks */}
-                    {[...Array(15)].map((_, i) => (
-                        <div
-                            key={i}
-                            className={`w-[1px] bg-black ${i % 5 === 0 ? 'h-2' : 'h-1'}`}
-                        />
-                    ))}
+                {/* TORN TAPE ENDS (Visual Details) */}
+                <div
+                    className="absolute -left-4 top-0 bottom-0 w-4 bg-[#FEF08A] opacity-90"
+                    style={{ clipPath: 'polygon(100% 0, 0% 15%, 100% 30%, 10% 50%, 100% 65%, 0% 85%, 100% 100%)' }} // Jagged left
+                />
+                <div
+                    className="absolute -right-4 top-0 bottom-0 w-4 bg-[#FEF08A] opacity-90"
+                    style={{ clipPath: 'polygon(0% 0%, 100% 15%, 0% 30%, 90% 50%, 0% 65%, 100% 85%, 0% 100%)' }} // Jagged right
+                />
 
-                    {/* The "Current Value" Indicator */}
-                    <motion.div
-                        className="absolute bottom-[-4px] h-3 w-[2px] bg-[#FACC15] z-10" // Yellow Indicator
-                        initial={{ left: "10%" }}
-                        animate={{ left: ["10%", "80%", "45%"] }} // Random scanning movement
-                        transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            repeatType: "mirror"
+                {/* SHARPIE TEXT */}
+                <div className="relative z-10 flex flex-col items-center">
+                    <h1
+                        className="text-2xl sm:text-3xl text-[#101010] leading-none"
+                        style={{
+                            fontFamily: 'var(--font-permanent)',
+                            transform: 'rotate(-1deg)',
+                            textShadow: '1px 1px 0px rgba(0,0,0,0.1)'
                         }}
-                    />
-                </div>
+                    >
+                        FIZIKHUB
+                    </h1>
 
-                {/* 3. TAGLINE */}
-                <div className="mt-1 w-full flex justify-between px-0.5">
-                    <span className="text-[6px] font-mono text-black/60">BİLİM</span>
-                    <span className="text-[6px] font-mono text-black/60">PLATFORMU</span>
-                    <span className="text-[6px] font-mono text-[#FACC15]">v18.0</span>
+                    {/* SCRAWLED UNDERLINE */}
+                    <svg width="100%" height="6" viewBox="0 0 100 6" fill="none" className="mt-0.5 opacity-80">
+                        <path d="M2 3C20 3 40 2 98 4" stroke="#101010" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+
+                    {/* TINY TAGLINE SCRAWL */}
+                    <span
+                        className="absolute -bottom-3 -right-2 text-[8px] font-bold text-black rotate-[-5deg] bg-white px-0.5 shadow-sm border border-black/20"
+                        style={{ fontFamily: 'var(--font-permanent)' }}
+                    >
+                        bilim platformu
+                    </span>
                 </div>
 
             </motion.div>
