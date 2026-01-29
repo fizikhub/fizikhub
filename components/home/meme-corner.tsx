@@ -7,77 +7,127 @@ import { motion } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 
-// --- GALAXY COMPONENT ---
-function Galaxy({ count = 8000 }) { // 8k stars for mobile safety
+// --- PHOTO-REALISTIC GALAXY COMPONENT ---
+function Galaxy({ count = 12000 }) { // Increased count for density
     const pointsRef = useRef<THREE.Points>(null!);
 
-    // Galaxy Parameters
-    const parameters = {
-        count: count,
-        size: 0.015,
-        radius: 5,
-        branches: 3,
-        spin: 1,
-        randomness: 0.2, // Reduced randomness for tighter arms
-        randomnessPower: 3,
-        insideColor: '#ff6030',
-        outsideColor: '#1b3984',
-    };
+    // Reference Image Palette
+    // Core: #FDB813 (Warm/Yellow/White)
+    // Inner Arms: #C0C0C0 (Dusty White)
+    // Outer Arms: #4B0082 to #00BFFF (Deep Purple to Azure)
+    // HII Regions (Star Formation): #FF69B4 (Hot Pink)
 
     const geometry = useMemo(() => {
-        const positions = new Float32Array(parameters.count * 3);
-        const colors = new Float32Array(parameters.count * 3);
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
 
-        const colorInside = new THREE.Color(parameters.insideColor);
-        const colorOutside = new THREE.Color(parameters.outsideColor);
+        const colorInside = new THREE.Color('#ffeaa7'); // Warm white/yellow core
+        const colorOutside = new THREE.Color('#74b9ff'); // Cool blue outer arms
+        const colorHII = new THREE.Color('#ff7675'); // Pinkish star formation regions
 
-        for (let i = 0; i < parameters.count; i++) {
+        for (let i = 0; i < count; i++) {
             const i3 = i * 3;
 
-            // Position
-            const radius = Math.random() * parameters.radius;
-            const spinAngle = radius * parameters.spin;
-            const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
+            // --- BARRED SPIRAL ALGORITHM ---
 
-            const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-            const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
-            const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+            // We divide particles into: Core (20%), Bar (15%), Arms (65%)
+            const rand = Math.random();
+            let x, y, z;
+            let color = new THREE.Color();
 
-            positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-            positions[i3 + 1] = randomY * 0.5; // Flatten the galaxy on Y axis
-            positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+            if (rand < 0.20) {
+                // --- 1. CORE / BULGE (Dense Sphere) ---
+                const r = Math.pow(Math.random(), 3) * 1.5; // Dense center
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
 
-            // Color
-            const mixedColor = colorInside.clone();
-            mixedColor.lerp(colorOutside, radius / parameters.radius);
+                x = r * Math.sin(phi) * Math.cos(theta);
+                y = (r * Math.sin(phi) * Math.sin(theta)) * 0.6; // Flattened sphere
+                z = r * Math.cos(phi) * 0.5;
 
-            colors[i3] = mixedColor.r;
-            colors[i3 + 1] = mixedColor.g;
-            colors[i3 + 2] = mixedColor.b;
+                color.set('#fffce6'); // Extremely bright core
+                color.lerp(new THREE.Color('#fab1a0'), Math.random() * 0.5); // Add some orange tint
+
+            } else if (rand < 0.35) {
+                // --- 2. THE BAR (Elongated Structure) ---
+                // Linear distribution along X axis with some width
+                const len = (Math.random() - 0.5) * 4; // Length of bar
+                const width = Math.random() * 0.6; // Thickness of bar
+                const height = Math.random() * 0.2; // Vertical thickness (flat)
+
+                // Rotate bar slightly to match image aesthetics if needed, keeping it horizontal for now
+                x = len;
+                y = (Math.random() - 0.5) * width; // Bar width
+                z = (Math.random() - 0.5) * height;
+
+                color.set('#ffeaa7');
+                color.lerp(new THREE.Color('#fdcb6e'), Math.random()); // Golden bar
+
+            } else {
+                // --- 3. SPIRAL ARMS (Starting from Bar ends) ---
+                // Arms start at x = +/- 2
+                const armOffset = Math.random() < 0.5 ? 0 : Math.PI; // Two arms
+                const branchAngle = armOffset; // Start angle
+
+                // Radius from center (starts at bar end ~2 units, goes out to ~7 units)
+                const r = 2 + Math.pow(Math.random(), 1.5) * 5;
+
+                // Logarithmic spiral equation adjustment
+                // As r increases, angle increases. 
+                const spin = 3; // How much it winds
+                const spiralAngle = branchAngle + (r - 2) * 0.5 * spin;
+
+                // Add Randomness (scatter)
+                const randomX = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5 * r;
+                const randomY = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
+                const randomZ = Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.5;
+
+                x = Math.cos(spiralAngle) * r + randomX;
+                z = Math.sin(spiralAngle) * r + randomZ;
+                y = randomY; // Flattened disc
+
+                // Coloring based on distance
+                // Inner arms: Dusty/White. Outer arms: Blue. Random: Pink/Red.
+                color.copy(colorInside);
+                color.lerp(colorOutside, (r / 7));
+
+                // Add HII Regions (Star formation clumps in arms)
+                if (Math.random() < 0.15) {
+                    color.lerp(colorHII, 0.8);
+                }
+            }
+
+            positions[i3] = x;
+            positions[i3 + 1] = y;
+            positions[i3 + 2] = z;
+
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
         }
 
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         return geo;
-    }, [parameters.count]);
+    }, [count]);
 
-    // Animation
     useFrame((state, delta) => {
         if (!pointsRef.current) return;
-        pointsRef.current.rotation.y += delta * 0.05; // Slow rotation
-        pointsRef.current.rotation.z += delta * 0.005; // Subtle tilt drift
+        pointsRef.current.rotation.y -= delta * 0.03; // Rotate clockwise matches image flow usually
     });
 
     return (
         <points ref={pointsRef}>
             <primitive object={geometry} />
             <pointsMaterial
-                size={parameters.size}
+                size={0.025} // Slightly larger for "photo" feel
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors={true}
+                transparent={true}
+                opacity={0.8}
             />
         </points>
     );
@@ -100,78 +150,67 @@ export function MemeCorner() {
                 className={cn(
                     "relative w-full overflow-hidden",
                     "rounded-xl",
-                    "border border-white/5",
-                    "aspect-[3/1] sm:aspect-[4/1]", // Ultra-widescreen cinematic ratio
-                    "bg-[#020205]", // Deep black fallback
+                    "border border-white/10",
+                    "aspect-[3/1] sm:aspect-[4/1]", // Cinematic wide
+                    "bg-[#020205]",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
                 {mounted && (
-                    <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 z-0 scale-110">
                         <Canvas
-                            camera={{ position: [0, 3, 5], fov: 50 }}
-                            gl={{ antialias: false, powerPreference: "high-performance" }} // Perf opts
-                            dpr={[1, 2]} // Clamp pixel ratio
+                            camera={{ position: [0, 8, 8], fov: 45 }} // Higher angle for "Satellite View"
+                            gl={{ antialias: false, powerPreference: "high-performance" }}
+                            dpr={[1, 2]}
                         >
-                            <color attach="background" args={["#020205"]} />
+                            <color attach="background" args={["#000000"]} />
                             <Galaxy />
                             <EffectComposer enableNormalPass={false}>
                                 <Bloom
-                                    luminanceThreshold={0.2}
+                                    luminanceThreshold={0.15} // Lower threshold to make arms glow too
                                     mipmapBlur
-                                    intensity={0.8}
-                                    radius={0.5}
+                                    intensity={1.2} // High intensity for photo-real exposure
+                                    radius={0.4}
                                 />
                             </EffectComposer>
                         </Canvas>
                     </div>
                 )}
 
-                {/* 2. Cinematic Vignette & Grain */}
-                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
-                <div className="absolute inset-0 z-10 pointer-events-none opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+                {/* 2. Dust/Grain Overlay */}
+                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.5)_100%)]" />
 
-
-                {/* 3. UI Content (Overlay) */}
-                <div className="absolute inset-0 z-20 flex flex-col justify-center px-6 sm:px-12 select-none">
-
-                    {/* Upper Tagline */}
-                    <div className="flex items-center gap-3 overflow-hidden mb-2">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: 32 }}
-                            transition={{ delay: 0.5, duration: 0.8 }}
-                            className="h-[1px] bg-white/40"
-                        />
-                        <motion.span
-                            initial={{ x: -10, opacity: 0 }}
-                            animate={{ x: 0, opacity: 0.8 }}
-                            transition={{ delay: 0.6, duration: 0.8 }}
-                            className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-white uppercase"
-                        >
-                            FizikHub Originals
-                        </motion.span>
-                    </div>
-
-                    {/* HERO TEXT */}
-                    <div className="flex flex-col leading-[0.85]">
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-white/60 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
-                            BİLİMİ
-                        </h2>
-                        <h2 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tighter text-white mix-blend-overlay">
-                            Tİ'YE ALIYORUZ
-                        </h2>
-                    </div>
-
-                    {/* Subtitle */}
-                    <div className="mt-4 flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]" />
-                        <span className="text-[10px] sm:text-xs font-medium text-emerald-300 tracking-widest uppercase">
-                            Ama Ciddili Şekilde
+                {/* 3. Minimalist UI (Bottom Left) */}
+                <div className="absolute bottom-4 left-6 sm:bottom-6 sm:left-10 z-20 flex flex-col items-start select-none mix-blend-screen">
+                    {/* Tiny Label */}
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-1 h-1 bg-white rounded-full" />
+                        <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.2em] text-white/60 uppercase">
+                            NGC-7482 Simulation
                         </span>
                     </div>
 
+                    {/* Main Text */}
+                    <div className="flex flex-col">
+                        <h2 className="text-3xl sm:text-5xl font-bold tracking-tighter text-white drop-shadow-lg">
+                            BİLİMİ Tİ'YE
+                        </h2>
+                        <h2 className="text-3xl sm:text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-white drop-shadow-lg">
+                            ALIYORUZ.
+                        </h2>
+                    </div>
                 </div>
+
+                {/* 4. Secondary UI (Top Right) - "Ama Ciddili" */}
+                <div className="absolute top-4 right-6 sm:top-6 sm:right-10 z-20 select-none">
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                        <span className="text-[10px] font-bold text-white/90 tracking-wide uppercase">
+                            Ama Ciddili Şekilde
+                        </span>
+                    </div>
+                </div>
+
             </motion.div>
         </div>
     );
