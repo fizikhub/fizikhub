@@ -136,7 +136,6 @@ import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { CompactDock } from "@/components/mobile/compact-dock";
-import { GetWellSoonOverlay } from "@/components/overlay/get-well-soon-overlay";
 
 export default async function RootLayout({
   children,
@@ -251,7 +250,6 @@ export default async function RootLayout({
         >
           <FramerMotionProvider>
             <TimeLimitProvider>
-              <GetWellSoonOverlay user={user} />
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
