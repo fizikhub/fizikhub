@@ -59,7 +59,7 @@ export function NeoProfileFeedWrapper({
         <div className="space-y-6">
 
             {/* --- TABS --- */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-white/10">
+            <div className="flex items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] pb-1 border-b border-white/10 sticky top-[60px] z-30 bg-background/95 backdrop-blur-sm pt-2">
                 <TabButton
                     label="GÖNDERİLER"
                     icon={FileText}
