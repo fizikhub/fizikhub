@@ -24,14 +24,16 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-import { Zilla_Slab } from "next/font/google";
+import { Saira_Stencil_One } from "next/font/google";
 
-const zilla = Zilla_Slab({
-  weight: "700",
+const stencil = Saira_Stencil_One({
+  weight: "400",
   subsets: ["latin"],
-  variable: "--font-zilla",
+  variable: "--font-stencil",
   display: "swap",
 });
+
+
 
 
 
@@ -255,7 +257,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${zilla.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${stencil.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />

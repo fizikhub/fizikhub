@@ -7,48 +7,56 @@ export function DankLogo() {
         <div className="group relative z-50 flex cursor-pointer select-none items-center justify-center p-2">
 
             {/* 
-               V15: THE BRUTALIST SLAB
-               - Font: Zilla Slab (700 Bold) - Industrial / Editorial
-               - Concept: Manifesto Header / Metal Plate
-               - Style: Solid Black Block with yellow accent text
+               V16: THE INDUSTRIAL STENCIL
+               - Font: Saira Stencil One (Google Font)
+               - Concept: Industrial Crate / Hazard Label
+               - Style: Warning Stripes Background + Heavy Black Box
             */}
 
             <motion.div
-                className="relative flex items-center bg-black px-4 py-1 sm:py-2 border-[2px] border-black shadow-[4px_4px_0px_#FACC15]" // Yellow shadow
-                whileHover={{ scale: 1.05, boxShadow: "6px 6px 0px #FACC15" }}
+                className="relative overflow-hidden border-[2px] border-black bg-[#FACC15] shadow-[3px_3px_0px_#000]"
+                whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
             >
-                {/* TEXT CONTAINER */}
-                <div className="flex items-baseline gap-1">
-                    <h1
-                        className="text-2xl sm:text-4xl leading-none text-[#FACC15]" // Yellow
-                        style={{ fontFamily: 'var(--font-zilla)' }}
-                    >
-                        FIZIK
-                    </h1>
-                    <h1
-                        className="text-2xl sm:text-4xl leading-none text-white"
-                        style={{ fontFamily: 'var(--font-zilla)' }}
-                    >
-                        HUB
-                    </h1>
+                {/* HAZARD STRIPES BACKGROUND */}
+                <div
+                    className="absolute inset-0 opacity-40"
+                    style={{
+                        backgroundImage: `repeating-linear-gradient(
+                            -45deg,
+                            #000,
+                            #000 5px,
+                            transparent 5px,
+                            transparent 10px
+                        )`
+                    }}
+                />
+
+                {/* INNER CONTENT BOX */}
+                <div className="relative z-10 m-1 flex flex-col items-center bg-black px-3 py-1">
+                    {/* STENCIL TITLE */}
+                    <div className="flex items-center gap-1">
+                        <h1
+                            className="text-2xl sm:text-3xl font-normal leading-none text-white tracking-tight"
+                            style={{ fontFamily: 'var(--font-stencil)' }}
+                        >
+                            FIZIKHUB
+                        </h1>
+                    </div>
+
+                    {/* CAUTION LABEL */}
+                    <div className="mt-0.5 w-full border-t border-dashed border-[#FACC15]/50 pt-0.5 text-center">
+                        <span className="text-[7px] font-bold text-[#FACC15] uppercase tracking-[0.2em]">
+                            DİKKAT: BİLİM
+                        </span>
+                    </div>
                 </div>
 
-                {/* VERTICAL TAGLINE (Barcode style) */}
-                <div className="ml-3 h-full flex flex-col justify-between border-l border-white/30 pl-1.5 py-0.5">
-                    <span
-                        className="text-[6px] sm:text-[8px] font-mono font-bold text-white/70 uppercase tracking-widest"
-                        style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-                    >
-                        BİLİM PLATFORMU
-                    </span>
-                </div>
-
-                {/* DECORATIVE CORNER SCREWS */}
-                <div className="absolute top-1 left-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
-                <div className="absolute top-1 right-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
-                <div className="absolute bottom-1 left-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
-                <div className="absolute bottom-1 right-1 w-0.5 h-0.5 bg-white/50 rounded-full" />
+                {/* CORNER BRACKETS */}
+                <div className="absolute top-0 left-0 h-1.5 w-1.5 border-b border-r border-black bg-[#FACC15] z-20" />
+                <div className="absolute top-0 right-0 h-1.5 w-1.5 border-b border-l border-black bg-[#FACC15] z-20" />
+                <div className="absolute bottom-0 left-0 h-1.5 w-1.5 border-t border-r border-black bg-[#FACC15] z-20" />
+                <div className="absolute bottom-0 right-0 h-1.5 w-1.5 border-t border-l border-black bg-[#FACC15] z-20" />
 
             </motion.div>
 
