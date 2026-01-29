@@ -1,61 +1,57 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="group flex items-center gap-3 select-none cursor-pointer p-1">
-            {/* 1. THE MARK: "ENERGY BOX" */}
+        <motion.div
+            className="group flex items-center gap-2.5 select-none cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+        >
+            {/* MONOGRAM: The "F" Mark */}
             <div className="relative">
-                {/* Back Shadow Layer */}
-                <div className="absolute inset-0 translate-x-1 translate-y-1 bg-black rounded-none" />
+                {/* Hard Shadow */}
+                <div className="absolute inset-0 translate-x-[3px] translate-y-[3px] bg-black" />
 
-                {/* Main Yellow Box */}
-                <motion.div
-                    whileHover={{ x: 2, y: 2 }}
-                    whileTap={{ x: 4, y: 4 }}
+                {/* Main Badge */}
+                <div
                     className={cn(
-                        "relative w-11 h-11",
+                        "relative w-10 h-10 sm:w-11 sm:h-11",
                         "bg-[#FFC800] border-[3px] border-black",
                         "flex items-center justify-center",
-                        "transition-all duration-100 ease-out"
+                        "group-hover:translate-x-[2px] group-hover:translate-y-[2px]",
+                        "transition-transform duration-150"
                     )}
                 >
-                    {/* Icon: Brutalist Bolt */}
-                    <Zap className="w-7 h-7 fill-black stroke-black stroke-[1.5]" />
-
-                    {/* Corner Accents for "Tech" feel */}
-                    <div className="absolute top-1 right-1 w-1 h-1 bg-black" />
-                    <div className="absolute bottom-1 left-1 w-1 h-1 bg-black" />
-                </motion.div>
-            </div>
-
-            {/* 2. THE TYPE: STACKED & BRANDED */}
-            <div className="flex flex-col justify-center h-full gap-[2px]">
-                {/* MAIN HEADLINE */}
-                <div className="relative overflow-hidden">
-                    <h1
-                        className="text-[26px] leading-[0.8] font-black text-black tracking-tighter"
+                    <span
+                        className="text-2xl sm:text-3xl font-black text-black leading-none"
                         style={{ fontFamily: 'var(--font-space)' }}
                     >
-                        FIZIKHUB
-                    </h1>
-                </div>
-
-                {/* SUBTITLE: THE "WARNING TAPE" */}
-                <div className="flex">
-                    <motion.div
-                        className="bg-black px-1.5 py-[1px] border border-black transform origin-left"
-                        whileHover={{ rotate: -2, scale: 1.05 }}
-                    >
-                        <span className="block text-[9px] font-bold text-[#FFC800] tracking-[0.2em] leading-none uppercase font-mono">
-                            BİLİM PLATFORMU
-                        </span>
-                    </motion.div>
+                        F
+                    </span>
                 </div>
             </div>
-        </div>
+
+            {/* WORDMARK */}
+            <div className="flex flex-col justify-center leading-none">
+                {/* Primary: FIZIKHUB */}
+                <span
+                    className="text-xl sm:text-2xl font-black text-black tracking-tight"
+                    style={{ fontFamily: 'var(--font-space)' }}
+                >
+                    FİZİKHUB
+                </span>
+
+                {/* Secondary: BILIM PLATFORMU */}
+                <span
+                    className="text-[9px] sm:text-[10px] font-bold text-black/70 tracking-[0.15em] uppercase mt-[2px]"
+                    style={{ fontFamily: 'var(--font-space)' }}
+                >
+                    BİLİM PLATFORMU
+                </span>
+            </div>
+        </motion.div>
     );
 }
