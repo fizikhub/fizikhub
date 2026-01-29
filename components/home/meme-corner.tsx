@@ -144,34 +144,32 @@ function NebulaClouds({ count = 8000 }) {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        const c_Pink = new THREE.Color('#ff0066');
-        const c_Purple = new THREE.Color('#5500aa');
-        const c_Blue = new THREE.Color('#0044ff');
+        // Deep Navy & Purple Theme (Users Request)
+        const c_Pink = new THREE.Color('#aa00ff');   // Violet highlights
+        const c_Purple = new THREE.Color('#4400ff'); // Deep Indigo
+        const c_Blue = new THREE.Color('#001155');   // Very Dark Navy
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-            const radius = 2 + Math.random() * 7; // Only in arms
+            const radius = 1 + Math.random() * 10;
             const angle = Math.random() * Math.PI * 2;
 
-            // Random scatter but following general galaxy shape loosely
-            // More vertical scatter for volume
             const x = Math.cos(angle) * radius;
             const z = Math.sin(angle) * radius;
-            const y = (Math.random() - 0.5) * 1.5;
+            const y = (Math.random() - 0.5) * 3.0; // Volume
 
             positions[i3] = x;
             positions[i3 + 1] = y;
             positions[i3 + 2] = z;
 
-            // Nebula Colors
             const color = new THREE.Color();
             const mix = Math.random();
             if (mix < 0.33) color.copy(c_Pink);
             else if (mix < 0.66) color.copy(c_Purple);
             else color.copy(c_Blue);
 
-            // Darken them for that 'dust' look
-            color.multiplyScalar(0.8);
+            // Boost brightness slightly so they glow against the deep background
+            color.multiplyScalar(1.2);
 
             colors[i3] = color.r;
             colors[i3 + 1] = color.g;
@@ -185,8 +183,7 @@ function NebulaClouds({ count = 8000 }) {
     }, [count]);
 
     useFrame((state, delta) => {
-        // Slightly slower rotation for parallax
-        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.03;
+        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.02;
     });
 
     return (
@@ -194,13 +191,13 @@ function NebulaClouds({ count = 8000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={3.0} // HUUUGE clouds
+                size={3.0} // Large volumetric look
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.5} // High visibility
+                opacity={0.5}
             />
         </points>
     );
@@ -219,8 +216,8 @@ export function MemeCorner() {
                     "rounded-xl",
                     "border border-white/5",
                     "aspect-[3/1] sm:aspect-[4/1]",
-                    "aspect-[3/1] sm:aspect-[4/1]",
-                    "bg-[radial-gradient(120%_120%_at_50%_50%,_#1e0b36_0%,_#0a051d_50%,_#000000_100%)]",
+                    // Rich Radial Gradient: Deep Purple Center -> Dark Navy -> Black
+                    "bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 )}
             >
                 {/* 1. 3D Galaxy Canvas */}
@@ -230,23 +227,22 @@ export function MemeCorner() {
                         gl={{
                             antialias: false,
                             powerPreference: "high-performance",
-                            alpha: true // CRITICAL: Allows CSS background to show through!
+                            alpha: true // Transparency enabled for CSS gradient
                         }}
                         dpr={[1, 2]}
                     >
-                        {/* No background color here - letting CSS handle it */}
+                        {/* No background color, transparency is key */}
 
                         <group>
                             <StarField />
                             <NebulaClouds />
                         </group>
 
-                        {/* Bloom */}
                         <EffectComposer enableNormalPass={false}>
                             <Bloom
                                 luminanceThreshold={0.2}
                                 mipmapBlur
-                                intensity={1.1} // Balanced intensity
+                                intensity={1.1}
                                 radius={0.5}
                             />
                         </EffectComposer>
