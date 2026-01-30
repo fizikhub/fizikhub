@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, ArrowRight, Home, Zap, BookOpen, FlaskConical, Award, Github, Twitter, Instagram } from "lucide-react";
+import { Menu, X, ArrowRight, Home, Zap, BookOpen, FlaskConical, Award, Github, Twitter, Instagram, ExternalLink } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
@@ -20,122 +19,116 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "Ana Sayfa", icon: Home, color: "group-hover:text-white", hoverBg: "group-hover:bg-white/10", borderColor: "group-hover:border-white" },
-        { href: "/makale", label: "Keşfet", icon: Zap, color: "group-hover:text-[#FFC800]", hoverBg: "group-hover:bg-[#FFC800]/10", borderColor: "group-hover:border-[#FFC800]" },
-        { href: "/blog", label: "Blog", icon: BookOpen, color: "group-hover:text-cyan-400", hoverBg: "group-hover:bg-cyan-400/10", borderColor: "group-hover:border-cyan-400" },
-        { href: "/testler", label: "Testler", icon: FlaskConical, color: "group-hover:text-purple-400", hoverBg: "group-hover:bg-purple-400/10", borderColor: "group-hover:border-purple-400" },
-        { href: "/siralamalar", label: "Sıralamalar", icon: Award, color: "group-hover:text-pink-400", hoverBg: "group-hover:bg-pink-400/10", borderColor: "group-hover:border-pink-400" },
+        { href: "/", label: "Ana Sayfa", icon: Home, bg: "bg-white", activeBg: "bg-black", activeText: "text-white" },
+        { href: "/makale", label: "Keşfet", icon: Zap, bg: "bg-[#FFC800]", activeBg: "bg-[#e5b300]", activeText: "text-black" },
+        { href: "/blog", label: "Blog", icon: BookOpen, bg: "bg-[#3B82F6]", activeBg: "bg-[#2563eb]", activeText: "text-white" },
+        { href: "/testler", label: "Testler", icon: FlaskConical, bg: "bg-[#A855F7]", activeBg: "bg-[#9333ea]", activeText: "text-white" },
+        { href: "/siralamalar", label: "Lig", icon: Award, bg: "bg-[#EC4899]", activeBg: "bg-[#db2777]", activeText: "text-white" },
     ];
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <button className="flex items-center justify-center w-[40px] h-[40px] bg-[#111] border-[2px] border-white/20 active:scale-95 transition-transform rounded-md group hover:border-[#FFC800]">
-                    <Menu className="w-5 h-5 text-white group-hover:text-[#FFC800] transition-colors" />
+                <button
+                    className={cn(
+                        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10",
+                        "bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
+                        "text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    )}
+                >
+                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 
-            {/* DARK PREMIUM RIGHT SHEET */}
-            <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 border-l border-white/10 bg-black overflow-hidden">
+            {/* INTEGRATED NEO-BRUTALIST SHEET */}
+            <SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0 border-l-[3px] border-black bg-[#F8F8F8] overflow-hidden">
                 <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
 
-                <div className="flex flex-col h-full bg-black">
-                    {/* 1. HEADER */}
-                    <div className="p-6 pt-8 pb-4 flex items-center justify-between">
-                        {/* Logo Scale Fix */}
-                        <div className="scale-90 origin-left invert brightness-0 grayscale-0 filter-none">
+                <div className="flex flex-col h-full">
+                    {/* 1. COMPACT HEADER */}
+                    <div className="h-14 sm:h-16 border-b-[3px] border-black bg-[#3B82F6] flex items-center justify-between px-4">
+                        <div className="scale-90 origin-left">
                             <DankLogo />
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-[#111] border border-white/10 hover:bg-white/10 hover:border-white/50 transition-all group"
-                        >
-                            <X className="w-5 h-5 text-white/50 group-hover:text-white transition-colors" />
-                        </button>
+                        <SheetClose className="w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+                            <X className="w-4 h-4 text-black stroke-[3px]" />
+                        </SheetClose>
                     </div>
 
-                    {/* 2. MENU LIST */}
-                    <div className="flex-1 overflow-y-auto px-6 py-2 space-y-3">
-                        {menuItems.map((item, i) => {
+                    {/* 2. DENSE MENU LIST */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                        {menuItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
                                 <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "block group relative overflow-hidden",
-                                        "bg-[#111] border border-white/10 rounded-xl",
-                                        "transition-all duration-300",
-                                        isActive ? "border-[#FFC800] bg-[#FFC800]/5" : "hover:border-white/30"
+                                        "flex items-center justify-between px-4 h-12 w-full",
+                                        "border-[2px] border-black transition-all group",
+                                        isActive
+                                            ? "bg-black text-white shadow-none translate-x-[1px] translate-y-[1px]"
+                                            : "bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#000]"
                                     )}
                                 >
-                                    <div className="p-5 flex items-center justify-between relative z-10">
-                                        <div className="flex items-center gap-4">
-                                            <div className={cn(
-                                                "w-10 h-10 rounded-lg flex items-center justify-center bg-black border border-white/5 transition-colors duration-300",
-                                                isActive ? "text-[#FFC800] border-[#FFC800]/30" : "text-white/40",
-                                                item.color,
-                                                item.borderColor
-                                            )}>
-                                                <item.icon className="w-5 h-5" />
-                                            </div>
-                                            <span className={cn(
-                                                "text-lg font-bold tracking-wide uppercase transition-colors duration-300",
-                                                isActive ? "text-white" : "text-white/60 group-hover:text-white"
-                                            )}>
-                                                {item.label}
-                                            </span>
-                                        </div>
-
-                                        {/* Arrow */}
-                                        <ArrowRight className={cn(
-                                            "w-5 h-5 text-white/20 transition-all duration-300 -translate-x-2 opacity-0",
-                                            "group-hover:translate-x-0 group-hover:opacity-100",
-                                            isActive && "opacity-100 translate-x-0 text-[#FFC800]"
+                                    <div className="flex items-center gap-3">
+                                        <item.icon className={cn(
+                                            "w-4 h-4 stroke-[2.5px]",
+                                            isActive ? "text-[#FFC800]" : "text-black group-hover:text-black"
                                         )} />
+                                        <span className="font-black text-sm uppercase tracking-wide">
+                                            {item.label}
+                                        </span>
                                     </div>
 
-                                    {/* Hover Glow Background */}
-                                    <div className={cn(
-                                        "absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none",
-                                        item.hoverBg?.replace("group-hover:", "")
-                                    )} />
+                                    {isActive && <div className="w-1.5 h-1.5 bg-[#FFC800] rounded-full animate-pulse" />}
                                 </ViewTransitionLink>
                             );
                         })}
+
+                        {/* SEPARATOR */}
+                        <div className="h-px w-full bg-black/10 my-2" />
+
+                        {/* EXTRA LINKS */}
+                        <ViewTransitionLink
+                            href="/ozel"
+                            className="flex items-center justify-between px-4 h-10 w-full border-[2px] border-black bg-[#FFC800] text-black shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all"
+                        >
+                            <span className="font-black text-xs uppercase tracking-wide flex items-center gap-2">
+                                <Zap className="w-3.5 h-3.5 fill-black" />
+                                Özel İçerik
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5 stroke-[3px]" />
+                        </ViewTransitionLink>
                     </div>
 
                     {/* 3. FOOTER */}
-                    <div className="p-6 border-t border-white/10 bg-[#050505]">
-                        <div className="mb-6">
+                    <div className="p-4 border-t-[3px] border-black bg-white">
+                        <div className="mb-4">
                             <AuthButton />
                         </div>
 
-                        {/* Social Grid */}
-                        <div className="grid grid-cols-3 gap-2">
+                        {/* Social Mini-Grid */}
+                        <div className="flex items-center justify-center gap-3 pt-2">
                             {[
-                                { icon: Twitter, href: "#", bg: "hover:bg-blue-500/20 hover:text-blue-400" },
-                                { icon: Github, href: "https://github.com/fizikhub", bg: "hover:bg-white/10 hover:text-white" },
-                                { icon: Instagram, href: "#", bg: "hover:bg-pink-500/20 hover:text-pink-400" },
+                                { icon: Github, href: "https://github.com/fizikhub" },
+                                { icon: Twitter, href: "#" },
+                                { icon: Instagram, href: "#" },
                             ].map((social, i) => (
                                 <a
                                     key={i}
                                     href={social.href}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className={cn(
-                                        "h-12 flex items-center justify-center rounded-lg bg-[#111] border border-white/5 text-white/40 transition-all",
-                                        social.bg
-                                    )}
+                                    className="w-8 h-8 flex items-center justify-center border-[2px] border-black bg-white shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all hover:bg-neutral-100"
                                 >
-                                    <social.icon className="w-5 h-5" />
+                                    <social.icon className="w-4 h-4 text-black stroke-[2px]" />
                                 </a>
                             ))}
                         </div>
 
-                        <div className="mt-6 flex justify-between items-center text-[10px] font-mono text-white/20 uppercase">
-                            <span>© 2026 FizikHub</span>
-                            <span>v2.2.0-DARK</span>
+                        <div className="mt-4 text-center">
+                            <span className="text-[10px] font-black uppercase text-neutral-400">v2.3.0 • FIZIKHUB</span>
                         </div>
                     </div>
                 </div>
