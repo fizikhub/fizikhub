@@ -297,7 +297,7 @@ Sen FizikHub'ın yapay zeka destekli bilim asistanısın. OpenAI'nın GPT modeli
 
 - **E-posta:** destek@fizikhub.com (henüz aktif değil, placeholder)
 - **Sosyal Medya:** Twitter/X, Instagram (yakında)
-- **GitHub:** github.com/fizikhub/fizikhub (açık kaynak)
+
 
 ---
 
