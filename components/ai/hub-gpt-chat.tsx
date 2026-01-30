@@ -59,8 +59,8 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-[#FFC800] border-b-[3px] border-black text-black">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black text-[#FFC800] flex items-center justify-center rounded-lg border-[2px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
-                        <Bot className="w-6 h-6" />
+                    <div className="w-10 h-10 bg-black flex items-center justify-center rounded-lg border-[2px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] overflow-hidden">
+                        <img src="/hubgpt-logo.png" alt="HubGPT" className="w-8 h-8 object-contain" />
                     </div>
                     <div>
                         <h3 className="font-black text-lg leading-none uppercase tracking-wide">HubGPT</h3>
