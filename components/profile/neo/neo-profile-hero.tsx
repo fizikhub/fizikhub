@@ -333,6 +333,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </motion.div>
 
                     {/* Actions */}
+                    {/* Actions */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -340,28 +341,40 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         className="flex flex-col gap-2 shrink-0 mb-2"
                     >
                         {isOwnProfile ? (
-                            <ProfileSettingsDialog
-                                currentUsername={profile?.username}
-                                currentFullName={profile?.full_name}
-                                currentBio={profile?.bio}
-                                currentAvatarUrl={profile?.avatar_url}
-                                currentCoverUrl={profile?.cover_url}
-                                currentWebsite={profile?.website}
-                                currentSocialLinks={profile?.social_links}
-                                userEmail={user?.email}
-                                trigger={
-                                    <button className="px-6 py-2.5 bg-[#FFC800] text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000]">
-                                        PROFİLİ DÜZENLE
-                                    </button>
-                                }
-                            />
+                            <div className="flex flex-col gap-2">
+                                <ProfileSettingsDialog
+                                    currentUsername={profile?.username}
+                                    currentFullName={profile?.full_name}
+                                    currentBio={profile?.bio}
+                                    currentAvatarUrl={profile?.avatar_url}
+                                    currentCoverUrl={profile?.cover_url}
+                                    currentWebsite={profile?.website}
+                                    currentSocialLinks={profile?.social_links}
+                                    userEmail={user?.email}
+                                    trigger={
+                                        <button className="w-full px-6 py-2.5 bg-[#FFC800] text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000]">
+                                            PROFİLİ DÜZENLE
+                                        </button>
+                                    }
+                                />
+                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-neutral-900 text-white font-black uppercase tracking-wider text-xs border-[2px] border-neutral-700 hover:bg-neutral-800 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000] flex items-center justify-center gap-2">
+                                    <Mail className="w-3.5 h-3.5" />
+                                    MESAJLARIM
+                                </Link>
+                            </div>
                         ) : (
-                            <FollowButton
-                                targetUserId={profile?.id}
-                                initialIsFollowing={isFollowing}
-                                targetUsername={profile?.username}
-                                variant="modern"
-                            />
+                            <div className="flex flex-col gap-2">
+                                <FollowButton
+                                    targetUserId={profile?.id}
+                                    initialIsFollowing={isFollowing}
+                                    targetUsername={profile?.username}
+                                    variant="modern"
+                                />
+                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-white text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:bg-neutral-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000] flex items-center justify-center gap-2">
+                                    <Mail className="w-3.5 h-3.5" />
+                                    MESAJ GÖNDER
+                                </Link>
+                            </div>
                         )}
                     </motion.div>
                 </div>
@@ -406,28 +419,38 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     {/* Mobile Actions (Top Right) */}
                     <div className="flex gap-2">
                         {isOwnProfile ? (
-                            <ProfileSettingsDialog
-                                currentUsername={profile?.username}
-                                currentFullName={profile?.full_name}
-                                currentBio={profile?.bio}
-                                currentAvatarUrl={profile?.avatar_url}
-                                currentCoverUrl={profile?.cover_url}
-                                currentWebsite={profile?.website}
-                                currentSocialLinks={profile?.social_links}
-                                userEmail={user?.email}
-                                trigger={
-                                    <button className="px-3 py-1.5 bg-[#FFC800] text-black font-bold uppercase text-[10px] border-[2px] border-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all shadow-[2px_2px_0px_0px_#000]">
-                                        DÜZENLE
-                                    </button>
-                                }
-                            />
+                            <>
+                                <Link href="/mesajlar" className="w-8 h-8 flex items-center justify-center bg-neutral-900 border-[2px] border-neutral-700 rounded-md text-white shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+                                    <Mail className="w-4 h-4" />
+                                </Link>
+                                <ProfileSettingsDialog
+                                    currentUsername={profile?.username}
+                                    currentFullName={profile?.full_name}
+                                    currentBio={profile?.bio}
+                                    currentAvatarUrl={profile?.avatar_url}
+                                    currentCoverUrl={profile?.cover_url}
+                                    currentWebsite={profile?.website}
+                                    currentSocialLinks={profile?.social_links}
+                                    userEmail={user?.email}
+                                    trigger={
+                                        <button className="px-3 py-1.5 bg-[#FFC800] text-black font-bold uppercase text-[10px] border-[2px] border-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all shadow-[2px_2px_0px_0px_#000]">
+                                            DÜZENLE
+                                        </button>
+                                    }
+                                />
+                            </>
                         ) : (
-                            <FollowButton
-                                targetUserId={profile?.id}
-                                initialIsFollowing={isFollowing}
-                                targetUsername={profile?.username}
-                                variant="modern"
-                            />
+                            <>
+                                <Link href="/mesajlar" className="w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black rounded-md text-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+                                    <Mail className="w-4 h-4" />
+                                </Link>
+                                <FollowButton
+                                    targetUserId={profile?.id}
+                                    initialIsFollowing={isFollowing}
+                                    targetUsername={profile?.username}
+                                    variant="modern"
+                                />
+                            </>
                         )}
                     </div>
                 </div>
