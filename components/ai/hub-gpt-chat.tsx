@@ -15,7 +15,7 @@ const WELCOME_MESSAGE = {
 
 export function HubGPTChat({ onClose }: { onClose?: () => void }) {
     const [input, setInput] = useState("");
-    const { messages, status, stop, setMessages, sendMessage } = useChat({
+    const { messages, status, stop, setMessages, sendMessage, error } = useChat({
         id: "hubgpt-chat",
     });
 
@@ -132,6 +132,17 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                         </div>
                         <div className="p-3 bg-[#222] border-[2px] border-white/20 rounded-xl text-white/50 text-sm animate-pulse">
                             Düşünüyor...
+                        </div>
+                    </div>
+                )}
+                {error && (
+                    <div className="flex gap-3 mr-auto max-w-[80%]">
+                        <div className="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border-[2px] border-black bg-red-500 text-white">
+                            <Bot className="w-5 h-5" />
+                        </div>
+                        <div className="p-3 bg-red-500/10 border-[2px] border-red-500 rounded-xl text-red-500 text-sm">
+                            <p className="font-bold">Bir hata oluştu!</p>
+                            <p className="opacity-80 text-xs mt-1">Lütfen API anahtarınızı kontrol edin veya daha sonra tekrar deneyin.</p>
                         </div>
                     </div>
                 )}
