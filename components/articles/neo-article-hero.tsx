@@ -18,7 +18,6 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
     const authorAvatar = article.author?.avatar_url || "/images/default-avatar.png";
 
     return (
-    return (
         <div className="w-full mb-8 sm:mb-16 relative">
             {/* Background Texture/Gradient */}
             <div className="absolute inset-0 -z-10 bg-grid-black/[0.05] dark:bg-grid-white/[0.05] mask-gradient-to-b" />
