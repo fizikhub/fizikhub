@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award } from "lucide-react";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
 export function MobileMenu() {
@@ -38,61 +38,102 @@ export function MobileMenu() {
                 </button>
             </SheetTrigger>
 
-            {/* TRUE NEO-BRUTALIST SIDE DRAWER */}
+            {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}
             <SheetContent
                 side="right"
-                className="w-[280px] p-0 border-l-[4px] border-black bg-white overflow-hidden"
+                className="w-[280px] sm:w-[320px] p-0 border-l-[3px] border-black bg-white overflow-hidden"
             >
                 <SheetTitle className="sr-only">Menü</SheetTitle>
 
-                <div className="flex flex-col h-full">
-                    {/* HEADER - Matches Navbar Blue */}
-                    <div className="h-14 flex items-center justify-between px-4 bg-[#3B82F6] border-b-[3px] border-black">
-                        <span className="font-black text-xs text-white uppercase tracking-widest">MENÜ</span>
-                        <SheetClose className="w-8 h-8 flex items-center justify-center bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
-                            <X className="w-4 h-4 text-black stroke-[3px]" />
-                        </SheetClose>
+                <div className="flex flex-col h-full bg-[#F3F4F6]">
+                    {/* PRIMARY ACTION - Top Banner Style */}
+                    <div className="p-3 pb-0">
+                        <ViewTransitionLink
+                            href="/ozel"
+                            className={cn(
+                                "flex items-center justify-between w-full p-4 mb-2",
+                                "bg-[#FFC800] border-[2px] border-black shadow-[3px_3px_0px_0px_#000]",
+                                "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                            )}
+                        >
+                            <div className="flex items-center gap-2">
+                                <Crown className="w-5 h-5 fill-black" />
+                                <span className="font-black text-sm uppercase tracking-wide text-black">Özel İçerik</span>
+                            </div>
+                            <ChevronRight className="w-5 h-5" />
+                        </ViewTransitionLink>
                     </div>
 
-                    {/* MENU ITEMS - Matches Navbar Buttons */}
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-neutral-100">
-                        {menuItems.map((item) => {
+                    {/* LIST MENU ITEMS - Compact & Clean */}
+                    <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+                        {menuItems.map((item, index) => {
                             const isActive = pathname === item.href;
+
+                            // Visual separation for groups if needed
+                            const isFirst = index === 0;
+
                             return (
                                 <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "flex items-center gap-3 px-4 h-11 w-full",
-                                        "border-[2px] border-black transition-all",
-                                        "font-black text-xs uppercase tracking-wide",
+                                        "flex items-center justify-between px-3 h-12 w-full",
+                                        "bg-white border-[2px] border-black",
+                                        "transition-all duration-200",
                                         isActive
-                                            ? "bg-[#FFC800] text-black shadow-[2px_2px_0px_0px_#000] translate-x-[1px] translate-y-[1px]"
-                                            : "bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#000]"
+                                            ? "border-l-[6px] border-l-[#3B82F6]"
+                                            : "hover:pl-4",
+                                        // Specific compact styling
+                                        "shadow-none active:bg-neutral-100"
                                     )}
                                 >
-                                    <item.icon className="w-4 h-4 stroke-[2.5px]" />
-                                    <span>{item.label}</span>
+                                    <div className="flex items-center gap-3">
+                                        <item.icon className={cn(
+                                            "w-4 h-4 stroke-[2px]",
+                                            isActive ? "text-[#3B82F6]" : "text-neutral-500"
+                                        )} />
+                                        <span className={cn(
+                                            "font-bold text-sm tracking-tight",
+                                            isActive ? "text-black" : "text-neutral-700"
+                                        )}>{item.label}</span>
+                                    </div>
+
+                                    {isActive && <div className="w-2 h-2 rounded-full bg-[#3B82F6]" />}
                                 </ViewTransitionLink>
                             );
                         })}
+                    </div>
 
-                        {/* SPECIAL LINK */}
-                        <div className="pt-2">
+                    {/* BOTTOM ACTIONS */}
+                    <div className="p-3 border-t-[2px] border-black bg-white mt-auto">
+                        <div className="grid grid-cols-2 gap-2 mb-3">
                             <ViewTransitionLink
-                                href="/ozel"
-                                className="flex items-center justify-center gap-2 px-4 h-11 w-full bg-black text-white border-[2px] border-black shadow-[3px_3px_0px_0px_#FFC800] font-black text-xs uppercase tracking-wide active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                                href="/profil"
+                                className="flex flex-col items-center justify-center p-2 border-[2px] border-black bg-white hover:bg-neutral-50 transition-colors"
                             >
-                                <Zap className="w-4 h-4 fill-[#FFC800] text-[#FFC800]" />
-                                <span>Özel İçerik</span>
+                                <User className="w-5 h-5 mb-1" />
+                                <span className="text-[10px] font-bold uppercase">Hesabım</span>
                             </ViewTransitionLink>
+                            <ViewTransitionLink
+                                href="/ayarlar"
+                                className="flex flex-col items-center justify-center p-2 border-[2px] border-black bg-white hover:bg-neutral-50 transition-colors"
+                            >
+                                <Settings className="w-5 h-5 mb-1" />
+                                <span className="text-[10px] font-bold uppercase">Ayarlar</span>
+                            </ViewTransitionLink>
+                        </div>
+
+                        <div className="pt-1">
+                            <AuthButton />
                         </div>
                     </div>
 
-                    {/* FOOTER */}
-                    <div className="p-4 border-t-[3px] border-black bg-white">
-                        <AuthButton />
-                    </div>
+                    {/* CLOSE BUTTON - Absolute Positioned or Integrated */}
+                    <SheetClose className="absolute top-2 right-2 z-50">
+                        <div className="flex items-center justify-center w-8 h-8 bg-black text-white rounded-full shadow-lg active:scale-95 transition-transform">
+                            <X className="w-4 h-4 text-white stroke-[3px]" />
+                        </div>
+                    </SheetClose>
                 </div>
             </SheetContent>
         </Sheet>
