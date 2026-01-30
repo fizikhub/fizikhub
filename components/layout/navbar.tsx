@@ -161,17 +161,16 @@ export function Navbar() {
                             <Search className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 2. ZAP */}
-                        <ViewTransitionLink href="/ozel" className="md:hidden">
-                            <motion.div
-                                variants={clickVariant}
-                                whileTap="tap"
-                                whileHover="hover"
-                                className="flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
-                            >
-                                <Zap className="w-4 h-4 sm:w-4 sm:h-4 fill-black stroke-[2.5px]" />
-                            </motion.div>
-                        </ViewTransitionLink>
+                        {/* 2. ZAP - Mobile Only */}
+                        <motion.button
+                            onClick={() => window.location.href = '/ozel'}
+                            variants={clickVariant}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="flex md:hidden items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                        >
+                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
+                        </motion.button>
 
                         {/* 3. MENU */}
                         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
