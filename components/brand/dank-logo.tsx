@@ -1,8 +1,12 @@
-"use client";
-
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { EarthIcon } from "./earth-icon";
+import dynamic from "next/dynamic";
+
+// Dynamically import EarthIcon to disable SSR for 3D content
+const EarthIcon = dynamic(() => import("./earth-icon").then((mod) => mod.EarthIcon), {
+    ssr: false,
+    loading: () => <div className="w-full h-full rounded-full bg-blue-500/20" /> // Placeholder
+});
 
 export function DankLogo() {
     return (

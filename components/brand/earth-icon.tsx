@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, Suspense } from "react";
 import * as THREE from "three";
 import { useTexture } from "@react-three/drei";
 
@@ -30,6 +30,15 @@ function Earth() {
     );
 }
 
+function Loader() {
+    return (
+        <mesh>
+            <sphereGeometry args={[1, 16, 16]} />
+            <meshBasicMaterial color="#3B82F6" wireframe opacity={0.3} transparent />
+        </mesh>
+    );
+}
+
 export function EarthIcon({ className }: { className?: string }) {
     return (
         <div className={className}>
@@ -40,7 +49,9 @@ export function EarthIcon({ className }: { className?: string }) {
             >
                 <ambientLight intensity={1.5} />
                 <directionalLight position={[2, 2, 5]} intensity={1.5} />
-                <Earth />
+                <Suspense fallback={<Loader />}>
+                    <Earth />
+                </Suspense>
             </Canvas>
         </div>
     );
