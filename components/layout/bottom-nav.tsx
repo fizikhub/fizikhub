@@ -39,7 +39,7 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[100] md:hidden transition-transform duration-300 ease-in-out",
+            "fixed bottom-0 left-0 right-0 z-[30] md:hidden transition-transform duration-300 ease-in-out",
             isVisible ? "translate-y-0" : "translate-y-full"
         )}>
             {/* 

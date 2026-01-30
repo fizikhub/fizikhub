@@ -160,7 +160,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 "border-[3px] border-white", // White Border
                 "shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]", // White/Glass Shadow
                 "w-full mb-6",
-                isOpen ? "z-[1000]" : "z-[20]", // Z-Index fix - Much higher to overlay all
+                isOpen ? "z-[5000]" : "z-[20]", // Z-Index fix - Much higher to overlay all
                 "sm:-mt-4" // Move up slightly on desktop/mobile if needed
             )}
         >

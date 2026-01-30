@@ -80,7 +80,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Sharp Neo-Brutalist, Blue Base
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
