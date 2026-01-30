@@ -185,7 +185,7 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass, id }: { l
         <button
             onClick={onClick}
             className={cn(
-                "relative flex items-center gap-2 px-6 py-3 rounded-t-lg text-xs font-black tracking-wider transition-all uppercase outline-none",
+                "relative flex shrink-0 whitespace-nowrap items-center gap-2 px-5 py-3 rounded-t-lg text-xs font-black tracking-wider transition-all uppercase outline-none select-none",
                 isActive ? "text-black" : "text-neutral-500 hover:text-white hover:bg-white/5",
                 colorClass && !isActive && colorClass
             )}
