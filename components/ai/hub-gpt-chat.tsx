@@ -10,7 +10,7 @@ import Markdown from "react-markdown";
 const WELCOME_MESSAGE = {
     id: "welcome",
     role: "assistant" as const,
-    content: "Selam şef! Ben HubGPT. Fizik, evren veya kodlama... Aklına ne takıldıysa sor, parçalayalım!"
+    content: "Selam hocam! Ben HubGPT. Fizik, evren... Aklına ne takıldıysa sor, parçalayalım."
 };
 
 export function HubGPTChat({ onClose }: { onClose?: () => void }) {
@@ -64,7 +64,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                     </div>
                     <div>
                         <h3 className="font-black text-lg leading-none uppercase tracking-wide">HubGPT</h3>
-                        <p className="text-xs font-bold opacity-70">Gemini-Powered Asistan</p>
+                        <p className="text-xs font-bold opacity-70">FizikHub Stupid AI</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
