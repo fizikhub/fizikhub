@@ -9,12 +9,12 @@ function Earth() {
     const meshRef = useRef<THREE.Mesh>(null!);
     const atmosphereRef = useRef<THREE.Mesh>(null!);
 
-    // Using local texture for stability
-    const texture = useTexture("/img/earth.jpg");
+    // Using Day Map for clearer landmasses and high contrast
+    const texture = useTexture("/img/earth-day.jpg");
 
     useFrame((state, delta) => {
         if (meshRef.current) {
-            meshRef.current.rotation.y += delta * 0.8; // Faster, more lively rotation
+            meshRef.current.rotation.y += delta * 0.8; // Faster rotation
         }
         if (atmosphereRef.current) {
             atmosphereRef.current.rotation.y += delta * 0.8;
@@ -25,13 +25,13 @@ function Earth() {
         <group>
             {/* Main Earth Sphere */}
             <mesh ref={meshRef}>
-                <sphereGeometry args={[1, 64, 64]} /> {/* Smoother circle */}
+                <sphereGeometry args={[1, 64, 64]} />
                 <meshStandardMaterial
                     map={texture}
-                    roughness={0.4}
-                    metalness={0.2}
+                    roughness={0.3} // Shinier ocean for vibrancy
+                    metalness={0.1}
                     emissive="#112244"
-                    emissiveIntensity={0.2}
+                    emissiveIntensity={0.5} // Increased self-glow
                 />
             </mesh>
 
@@ -39,7 +39,7 @@ function Earth() {
             <mesh ref={atmosphereRef} scale={[1.15, 1.15, 1.15]}>
                 <sphereGeometry args={[1, 64, 64]} />
                 <meshBasicMaterial
-                    color="#4fa1ff"
+                    color="#00ffff" // Cyan glow for high energy
                     transparent
                     opacity={0.15}
                     side={THREE.BackSide}
@@ -66,9 +66,9 @@ export function EarthIcon({ className }: { className?: string }) {
                 gl={{ alpha: true, antialias: true, failIfMajorPerformanceCaveat: false }}
                 dpr={[1, 2]}
             >
-                <ambientLight intensity={2.5} /> {/* Much brighter */}
-                <directionalLight position={[5, 3, 5]} intensity={3.0} />
-                <pointLight position={[-2, -2, 2]} intensity={1.0} color="#4fa1ff" />
+                <ambientLight intensity={3.5} /> {/* High Ambient Light for brightness */}
+                <directionalLight position={[5, 3, 5]} intensity={4.0} />
+                <pointLight position={[-2, -2, 2]} intensity={2.0} color="#00ffff" />
 
                 <Suspense fallback={<Loader />}>
                     <Earth />

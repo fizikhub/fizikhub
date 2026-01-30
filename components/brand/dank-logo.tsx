@@ -36,7 +36,7 @@ export function DankLogo() {
 
                 {/* 3D Realistic Earth Icon */}
                 <motion.div
-                    className="absolute -top-3 -right-4 w-8 h-8 sm:w-10 sm:h-10 z-0"
+                    className="absolute -top-3 -right-4 w-[28px] h-[28px] sm:w-[36px] sm:h-[36px] z-0"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
