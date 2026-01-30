@@ -54,7 +54,7 @@ export function Navbar() {
                     delay: Math.random() * 15, // Spread out start times
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
                     scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
-                    opacity: 0.2 + Math.random() * 0.3
+                    opacity: 0.5 + Math.random() * 0.4
                 };
             });
             setRaindrops(drops);
@@ -91,14 +91,14 @@ export function Navbar() {
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-60">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
-                                    fontSize: `${10 * drop.scale}px`,
+                                    fontSize: `${13 * drop.scale}px`,
                                     color: `rgba(0,0,0,${drop.opacity || 0.3})`,
                                     filter: 'blur(0.3px)'
                                 }}
