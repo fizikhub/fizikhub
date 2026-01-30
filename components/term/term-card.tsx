@@ -2,8 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
+import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { motion } from "framer-motion";
+import { Volume2, Copy } from "lucide-react";
 
 interface TermCardProps {
     article: any;
@@ -19,7 +20,7 @@ export function TermCard({ article, index }: TermCardProps) {
     const termName = metadata.termName || article.title;
     const relatedField = metadata.relatedField || "Genel";
 
-    // Clean content for V9 Preview (Simple text stripping)
+    // Clean content for V9 Preview
     let cleanContent = article.content.replace(/<!--meta .*? -->/, "");
     cleanContent = cleanContent.replace(/<[^>]*>?/gm, " ");
     cleanContent = cleanContent.trim();
@@ -33,71 +34,67 @@ export function TermCard({ article, index }: TermCardProps) {
             transition={{ duration: 0.4, delay: index * 0.05 }}
             className="h-full"
         >
-            <ViewTransitionLink href={`/makale/${article.slug}`} className="block h-full group">
+            <ViewTransitionLink href={`/makale/${article.slug}`} className="block h-full group perspective-1000">
                 <article
                     className={cn(
-                        "flex flex-col h-full relative overflow-hidden",
-                        // CONTAINER STYLE (V9 Standard)
-                        "bg-white dark:bg-[#27272a]",
-                        "border-[3px] border-black rounded-[8px]",
-                        "shadow-[4px_4px_0px_0px_#000]",
+                        "flex flex-col h-full relative overflow-hidden transition-all duration-300",
+                        // CONTAINER STYLE - Cyber Dictionary
+                        "bg-[#f0f0f0] dark:bg-[#18181b]",
+                        "border-[3px] border-black rounded-[4px]",
+                        "shadow-[5px_5px_0px_0px_#000]",
                         // HOVER
-                        "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                        "group-hover:translate-x-[2px] group-hover:translate-y-[2px] group-hover:shadow-[2px_2px_0px_0px_#000]"
                     )}
                 >
-                    {/* NOISE TEXTURE */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
-                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-                    />
+                    {/* DECORATIVE: Left Stripe */}
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-black z-10" />
 
-                    {/* HEADER: Term Type / Category - NEO BLUE (#23A9FA) UPDATE */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#23A9FA] z-10 relative">
-                        <span className="font-black text-xs uppercase tracking-widest text-black">
-                            {relatedField}
+                    {/* HEADER: Technical Metadata */}
+                    <div className="flex items-center justify-between pl-5 pr-4 py-3 border-b-[3px] border-black bg-white dark:bg-black z-10 relative">
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                            ID: {article.id?.toString().padStart(4, '0')} // <span className="text-[#23A9FA]">{relatedField}</span>
                         </span>
-                        <div className="bg-black text-[#23A9FA] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
-                            TERİM
+                        <div className="flex gap-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                            <div className="w-2 h-2 rounded-full bg-green-500" />
                         </div>
                     </div>
 
                     {/* CONTENT BODY */}
-                    <div className="flex-1 p-5 flex flex-col gap-4 z-10 relative">
+                    <div className="flex-1 pl-6 pr-5 py-6 flex flex-col gap-3 z-10 relative bg-[#f8f9fa] dark:bg-[#202022]">
 
-                        {/* Term Name - Huge Type */}
+                        {/* Term Name & Phonetics */}
                         <div>
-                            <h3 className="font-[family-name:var(--font-outfit)] text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 select-all hover:bg-[#23A9FA] hover:text-black inline-block transition-colors">
-                                {termName}
-                            </h3>
-                            <div className="flex items-center gap-2 text-neutral-500 dark:text-zinc-500 text-xs font-mono font-bold mt-1">
-                                <span>[ isim ]</span>
-                                <span className="w-1 h-1 rounded-full bg-current" />
-                                <span>/{termName.toLowerCase().replace(/\s/g, '-')}/</span>
+                            <div className="flex items-baseline flex-wrap gap-x-3 gap-y-1 mb-1">
+                                <h3 className="font-[family-name:var(--font-outfit)] text-4xl font-black text-black dark:text-white leading-none tracking-tight group-hover:bg-[#23A9FA] group-hover:text-black transition-colors px-1 -ml-1">
+                                    {termName}
+                                </h3>
+                                <span className="font-mono text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                                    /{termName.toLowerCase().replace(/\s/g, '-')}/
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-black/60 dark:text-white/60 mb-3 border-b border-black/10 pb-3 border-dashed">
+                                <span className="bg-black/5 px-1.5 py-0.5 rounded text-black dark:text-white dark:bg-white/10">isim</span>
+                                <span>•</span>
+                                <span>{relatedField}</span>
                             </div>
                         </div>
 
                         {/* Definition Text */}
-                        <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent">
+                        <p className="font-serif text-lg leading-relaxed text-neutral-800 dark:text-neutral-200 line-clamp-4 italic">
                             {definition}
                         </p>
                     </div>
 
-                    {/* FOOTER - Simple */}
-                    <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
+                    {/* FOOTER - Action Bar */}
+                    <div className="mt-auto pl-6 pr-5 py-3 border-t-[3px] border-black bg-white dark:bg-black flex items-center justify-between z-10 relative group-hover:bg-[#23A9FA] transition-colors duration-300">
                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white">
-                                {article.author?.avatar_url ? (
-                                    <img src={article.author.avatar_url} alt="A" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-black" />
-                                )}
-                            </div>
-                            <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400">
-                                {article.author?.full_name || "Sözlük"}
+                            <span className="text-[10px] font-mono font-bold uppercase text-neutral-500 group-hover:text-black transition-colors">
+                                SÖZLÜK GİRDİSİ
                             </span>
                         </div>
-                        <span className="text-xs font-black text-black dark:text-zinc-500 group-hover:translate-x-1 transition-transform">
-                            →
-                        </span>
+                        <Volume2 className="w-4 h-4 text-black opacity-50 group-hover:opacity-100 transition-opacity" />
                     </div>
                 </article>
             </ViewTransitionLink>
