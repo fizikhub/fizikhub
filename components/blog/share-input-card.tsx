@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, MessageCircle, LibraryBig, Atom, Zap, X, ChevronRight } from "lucide-react";
+import { PenTool, MessageCircle, LibraryBig, Atom, Zap, X, Send } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -24,58 +24,32 @@ const CATEGORIES = [
     "Elektromanyetizma", "Optik", "Nükleer Fizik", "Astrofizik", "Diğer"
 ];
 
-const ACTION_BUTTONS = [
-    {
-        label: "MAKALE YAZ",
-        sub: "Bilgini Paylaş",
-        icon: PenTool,
-        href: "/makale/yeni",
-        color: "bg-[#FFC800]",
-        hover: "hover:bg-[#FFD633]"
-    },
-    {
-        label: "SORU SOR",
-        sub: "Topluluğa Danış",
-        icon: MessageCircle,
-        action: "question",
-        color: "bg-[#38bdf8]",
-        hover: "hover:bg-[#7dd3fc]"
-    },
-    {
-        label: "KİTAP İNCELE",
-        sub: "Kütüphaneye Ekle",
-        icon: LibraryBig,
-        href: "/kitap-inceleme/yeni",
-        color: "bg-[#f472b6]",
-        hover: "hover:bg-[#f9a8d4]"
-    },
-    {
-        label: "DENEY PAYLAŞ",
-        sub: "Sonuçları Göster",
-        icon: Atom,
-        href: "/makale/yeni?type=experiment",
-        color: "bg-[#4ade80]",
-        hover: "hover:bg-[#86efac]"
-    }
+// Compact action buttons configuration
+const ACTIONS = [
+    { icon: PenTool, label: "Makale", href: "/makale/yeni", color: "hover:text-[#FFC800]" },
+    { icon: LibraryBig, label: "Kitap", href: "/kitap-inceleme/yeni", color: "hover:text-[#f472b6]" },
+    { icon: Atom, label: "Deney", href: "/makale/yeni?type=experiment", color: "hover:text-[#4ade80]" }
 ];
 
 export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const [user, setUser] = useState(initialUser);
     const [supabase] = useState(() => createClient());
-    const [isQuestionMode, setIsQuestionMode] = useState(false);
 
-    // Question Form State
+    // States
+    const [isExpanded, setIsExpanded] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [category, setCategory] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const router = useRouter();
+    const avatarUrl = user?.avatar_url || "";
+    const nameInitial = user?.full_name?.charAt(0) || "?";
 
     useEffect(() => {
         const fetchUser = async () => {
             const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (authUser) {
+            if (authUser && !user) {
                 const { data: profile } = await supabase
                     .from("profiles")
                     .select("*")
@@ -84,10 +58,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 if (profile) setUser(profile);
             }
         };
-        if (!initialUser) fetchUser();
-    }, [initialUser, supabase]);
+        fetchUser();
+    }, [initialUser, supabase, user]);
 
-    const submitQuestion = async (status: 'published' | 'draft') => {
+    const submitQuestion = async () => {
         if (!title.trim() || !content.trim() || !category) {
             toast.error("Lütfen tüm alanları doldurun.");
             return;
@@ -95,14 +69,14 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
         setIsSubmitting(true);
         try {
-            const result = await createQuestion({ title, content, category, status });
+            const result = await createQuestion({ title, content, category, status: 'published' });
             if (result.success) {
-                toast.success(status === 'published' ? "Sorunuz yayınlandı! 🚀" : "Taslak kaydedildi. 📝");
+                toast.success("Sorun topluluğa iletildi! 🚀");
                 setTitle("");
                 setContent("");
                 setCategory("");
-                setIsQuestionMode(false);
-                if (status === 'published') router.push('/forum');
+                setIsExpanded(false);
+                router.push('/forum');
             } else {
                 toast.error(result.error);
             }
@@ -113,179 +87,146 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         }
     };
 
-    const handleAction = (action: string) => {
-        if (action === "question") {
-            setIsQuestionMode(true);
-        }
-    };
-
     return (
-        <div className="w-full relative mb-8 group z-[50]">
-            {/* BACKGROUND DECORATION */}
-            <div className="absolute inset-0 bg-black translate-x-2 translate-y-2 rounded-xl" />
-
-            {/* MAIN CARD CONTAINER */}
-            <div className="relative bg-white border-[3px] border-black rounded-xl overflow-hidden flex flex-col md:flex-row">
-
-                {/* LEFT: USER IDENTITY (Desktop) / TOP (Mobile) */}
-                <div className="md:w-64 bg-neutral-100 border-b-[3px] md:border-b-0 md:border-r-[3px] border-black p-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-
-                    <div className="relative z-10">
-                        <div className="w-20 h-20 bg-white border-[3px] border-black rounded-lg mb-3 mx-auto overflow-hidden shadow-[4px_4px_0px_0px_#000]">
-                            <Avatar className="w-full h-full rounded-none">
-                                <AvatarImage src={user?.avatar_url || ""} className="object-cover" />
-                                <AvatarFallback className="bg-[#FFC800] text-black font-black text-2xl rounded-none">
-                                    {user?.full_name?.charAt(0) || "?"}
+        <div className="w-full relative mb-10 z-[50]">
+            <motion.div
+                layout
+                className={cn(
+                    "bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] rounded-xl overflow-hidden transition-all",
+                    isExpanded ? "p-0" : "p-2"
+                )}
+            >
+                {!isExpanded ? (
+                    // --- COMPACT VIEW ---
+                    <div className="flex items-center gap-3">
+                        {/* Avatar Trigger */}
+                        <div className="shrink-0 pl-1">
+                            <Avatar className="w-10 h-10 border-[2px] border-black rounded-lg shadow-sm">
+                                <AvatarImage src={avatarUrl} className="object-cover" />
+                                <AvatarFallback className="bg-[#FFC800] text-black font-black rounded-lg">
+                                    {nameInitial}
                                 </AvatarFallback>
                             </Avatar>
                         </div>
-                        <h3 className="font-black text-lg leading-tight uppercase">
-                            {user?.full_name || "MİSAFİR"}
-                        </h3>
-                        <p className="text-xs font-bold text-neutral-500 font-mono mt-1 mb-4">
-                            @{user?.username || "ziyaretci"}
-                        </p>
 
-                        <div className="inline-block px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                            PAYLAŞIM MERKEZİ
+                        {/* Fake Input */}
+                        <div
+                            onClick={() => setIsExpanded(true)}
+                            className="flex-1 bg-neutral-100 border-[2px] border-transparent hover:border-black/10 hover:bg-neutral-200 rounded-lg px-4 py-2.5 cursor-pointer group transition-all"
+                        >
+                            <span className="text-sm font-bold text-neutral-400 group-hover:text-neutral-600 transition-colors">
+                                Hızlıca bir soru sor veya tartışma başlat...
+                            </span>
+                        </div>
+
+                        {/* Quick Actions (Desktop only mostly, or squeeze on mobile) */}
+                        <div className="hidden sm:flex items-center gap-1 pr-1">
+                            {ACTIONS.map((action, i) => (
+                                <Link
+                                    key={i}
+                                    href={action.href}
+                                    className={cn("p-2.5 rounded-lg text-neutral-400 hover:bg-black hover:text-white transition-all", action.color)}
+                                    title={action.label}
+                                >
+                                    <action.icon className="w-5 h-5" strokeWidth={2.5} />
+                                </Link>
+                            ))}
+                            <button
+                                onClick={() => setIsExpanded(true)}
+                                className="p-2.5 rounded-lg text-black bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all ml-1"
+                            >
+                                <Zap className="w-5 h-5 fill-black" />
+                            </button>
+                        </div>
+                        {/* Mobile Action (Just the main trigger) */}
+                        <button
+                            onClick={() => setIsExpanded(true)}
+                            className="p-2 sm:hidden rounded-lg text-black bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_#000]"
+                        >
+                            <Zap className="w-5 h-5 fill-black" />
+                        </button>
+                    </div>
+                ) : (
+                    // --- EXPANDED FORM VIEW ---
+                    <div className="flex flex-col">
+                        {/* Header */}
+                        <div className="flex items-center justify-between px-4 py-3 border-b-[2px] border-black bg-neutral-50">
+                            <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-[#FFC800] border-[2px] border-black rounded-md">
+                                    <MessageCircle className="w-4 h-4 text-black" />
+                                </div>
+                                <span className="font-black uppercase text-sm tracking-wide">Hızlı Soru Oluştur</span>
+                            </div>
+                            <button
+                                onClick={() => setIsExpanded(false)}
+                                className="p-1.5 hover:bg-black hover:text-white rounded-md transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <div className="p-4 space-y-4">
+                            <div>
+                                <input
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="Sorunun başlığı ne olsun?"
+                                    className="w-full text-lg font-black placeholder:text-neutral-300 outline-none"
+                                    autoFocus
+                                />
+                            </div>
+                            <div>
+                                <textarea
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    placeholder="Detayları buraya yazabilirsin..."
+                                    className="w-full min-h-[100px] text-sm font-medium text-neutral-600 placeholder:text-neutral-300 outline-none resize-none"
+                                />
+                            </div>
+
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2 pt-2 border-t-[2px] border-dashed border-neutral-200">
+                                {CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setCategory(cat)}
+                                        className={cn(
+                                            "px-3 py-1 text-[10px] font-bold border-[2px] rounded-md transition-all uppercase",
+                                            category === cat
+                                                ? "bg-black text-white border-black shadow-[2px_2px_0px_#00000030]"
+                                                : "bg-white text-neutral-400 border-neutral-200 hover:border-black hover:text-black"
+                                        )}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Footer Actions */}
+                        <div className="px-4 py-3 bg-neutral-50 border-t-[2px] border-black flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-xs font-bold text-neutral-400 hidden sm:flex">
+                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                Topluluk anında görecek
+                            </div>
+                            <div className="flex items-center gap-2 w-full sm:w-auto">
+                                <Link href="/makale/yeni" className="text-xs font-bold text-neutral-500 hover:text-black underline decoration-2 decoration-[#FFC800] underline-offset-4 mr-2">
+                                    Makale mi yazacaksın?
+                                </Link>
+                                <button
+                                    onClick={submitQuestion}
+                                    disabled={isSubmitting}
+                                    className="flex-1 sm:flex-none px-6 py-2 bg-black text-white font-bold text-xs uppercase rounded-lg shadow-[3px_3px_0px_#FFC800] hover:shadow-[1px_1px_0px_#FFC800] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {isSubmitting ? "Gönderiliyor..." : "Yayınla"}
+                                    <Send className="w-3 h-3" />
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                {/* RIGHT: ACTIONS GRID */}
-                <div className="flex-1 p-6 relative bg-white">
-                    <AnimatePresence mode="wait">
-                        {isQuestionMode ? (
-                            <motion.div
-                                key="form"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="h-full flex flex-col"
-                            >
-                                <div className="flex items-center justify-between mb-4 pb-4 border-b-2 border-dashed border-neutral-200">
-                                    <h4 className="font-black text-xl uppercase flex items-center gap-2">
-                                        <MessageCircle className="w-6 h-6 fill-[#FFC800]" /> HIZLI SORU
-                                    </h4>
-                                    <button
-                                        onClick={() => setIsQuestionMode(false)}
-                                        className="p-2 hover:bg-neutral-100 rounded-lg transition-colors border-2 border-transparent hover:border-black"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                <div className="flex-1 space-y-4">
-                                    <input
-                                        value={title}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        placeholder="Sorunun başlığı nedir?"
-                                        className="w-full bg-neutral-50 border-[3px] border-neutral-200 focus:border-black rounded-lg px-4 py-3 font-bold text-lg outline-none transition-colors placeholder:text-neutral-300"
-                                        autoFocus
-                                    />
-                                    <textarea
-                                        value={content}
-                                        onChange={(e) => setContent(e.target.value)}
-                                        placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-neutral-50 border-[3px] border-neutral-200 focus:border-black rounded-lg px-4 py-3 font-medium min-h-[100px] outline-none transition-colors resize-none placeholder:text-neutral-300"
-                                    />
-
-                                    <div className="flex flex-wrap gap-2">
-                                        {CATEGORIES.map(cat => (
-                                            <button
-                                                key={cat}
-                                                onClick={() => setCategory(cat)}
-                                                className={cn(
-                                                    "px-3 py-1.5 text-xs font-bold border-[2px] rounded-md transition-all uppercase",
-                                                    category === cat
-                                                        ? "bg-black text-white border-black shadow-[2px_2px_0px_#00000030]"
-                                                        : "bg-white text-neutral-500 border-neutral-200 hover:border-black hover:text-black"
-                                                )}
-                                            >
-                                                {cat}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 flex items-center justify-end gap-3">
-                                    <button
-                                        onClick={() => setIsQuestionMode(false)}
-                                        className="px-5 py-2.5 font-bold text-neutral-500 hover:text-black hover:bg-neutral-100 rounded-lg transition-colors"
-                                    >
-                                        İptal
-                                    </button>
-                                    <button
-                                        onClick={() => submitQuestion('published')}
-                                        disabled={isSubmitting}
-                                        className="px-6 py-2.5 bg-[#FFC800] text-black font-black uppercase text-sm border-[3px] border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:bg-[#FFD633] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isSubmitting ? "Yayınlanıyor..." : "Yayınla"}
-                                        <Zap className="w-4 h-4 fill-black" />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="grid"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 20 }}
-                                className="h-full"
-                            >
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
-                                    {ACTION_BUTTONS.map((btn, idx) => {
-                                        const Wrapper = btn.href ? Link : 'button';
-                                        const props = btn.href ? { href: btn.href } : { onClick: () => handleAction(btn.action!) };
-
-                                        return (
-                                            <Wrapper
-                                                key={idx}
-                                                {...props as any}
-                                                className={cn(
-                                                    "group relative flex flex-col justify-center p-5 border-[3px] border-black rounded-xl transition-all h-28 sm:h-32",
-                                                    btn.color,
-                                                    "shadow-[4px_4px_0px_#000] hover:shadow-[2px_2px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
-                                                )}
-                                            >
-                                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <ChevronRight className="w-5 h-5 text-black" />
-                                                </div>
-                                                <div className="flex items-center gap-3 mb-1">
-                                                    <div className="p-2 bg-black/10 rounded-lg">
-                                                        <btn.icon className="w-5 h-5 text-black" strokeWidth={2.5} />
-                                                    </div>
-                                                </div>
-                                                <span className="font-black text-lg text-black leading-none mt-1">
-                                                    {btn.label}
-                                                </span>
-                                                <span className="text-xs font-bold text-black/60 font-mono mt-1">
-                                                    {btn.sub}
-                                                </span>
-                                            </Wrapper>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
-
-            {/* DECORATIVE SCREWS */}
-            <div className="absolute top-2 left-2 w-3 h-3 border-[2px] border-neutral-400 rounded-full bg-white flex items-center justify-center z-[60] pointer-events-none sm:block hidden">
-                <div className="w-full h-[2px] bg-neutral-400 rotate-45" />
-            </div>
-            <div className="absolute top-2 right-2 w-3 h-3 border-[2px] border-neutral-400 rounded-full bg-white flex items-center justify-center z-[60] pointer-events-none sm:block hidden">
-                <div className="w-full h-[2px] bg-neutral-400 rotate-45" />
-            </div>
-            <div className="absolute bottom-2 left-2 w-3 h-3 border-[2px] border-neutral-400 rounded-full bg-white flex items-center justify-center z-[60] pointer-events-none sm:block hidden">
-                <div className="w-full h-[2px] bg-neutral-400 rotate-45" />
-            </div>
-            <div className="absolute bottom-2 right-2 w-3 h-3 border-[2px] border-neutral-400 rounded-full bg-white flex items-center justify-center z-[60] pointer-events-none sm:block hidden">
-                <div className="w-full h-[2px] bg-neutral-400 rotate-45" />
-            </div>
+                )}
+            </motion.div>
         </div>
     );
 }
