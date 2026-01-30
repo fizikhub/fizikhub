@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Palette, LogOut, Camera, Twitter, Github, Linkedin, Instagram, Settings2, ShieldCheck, Sparkles } from "lucide-react";
+import { Camera, Twitter, Github, Linkedin, Instagram, Settings2, Save, X, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateProfile, updateUsername, uploadAvatar, uploadCover } from "@/app/profil/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ImageCropperDialog } from "@/components/profile/image-cropper-dialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
+
 
 interface ProfileSettingsDialogProps {
     currentUsername: string | null;
@@ -39,6 +41,7 @@ export function ProfileSettingsDialog({
     trigger
 }: ProfileSettingsDialogProps) {
     const [open, setOpen] = useState(false);
+    const isMobile = useMediaQuery("(max-width: 768px)");
     const [isLoading, setIsLoading] = useState(false);
 
     // Form States
@@ -107,7 +110,6 @@ export function ProfileSettingsDialog({
     const handleSaveProfile = async () => {
         setIsLoading(true);
         try {
-            // Update Username independent check
             if (username !== currentUsername) {
                 const usernameRes = await updateUsername(username);
                 if (!usernameRes.success) {
@@ -117,7 +119,6 @@ export function ProfileSettingsDialog({
                 }
             }
 
-            // Update Profile Info
             const res = await updateProfile({
                 full_name: fullName,
                 bio: bio,
@@ -138,238 +139,172 @@ export function ProfileSettingsDialog({
         }
     };
 
-    const NeoInput = ({ label, icon, ...props }: any) => (
-        <div className="space-y-1.5 group">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-1.5">
-                {icon && <span className="text-black/50 dark:text-white/50">{icon}</span>}
-                {label}
-            </Label>
-            <Input
-                {...props}
-                className={cn(
-                    "h-12 border-2 border-black/10 dark:border-white/10 rounded-xl bg-white dark:bg-black/20 transition-all duration-200 font-medium",
-                    "focus:border-black dark:focus:border-white focus:ring-0",
-                    "group-hover:border-black/30 dark:group-hover:border-white/30",
-                    "shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]",
-                    "focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
-                    "focus:translate-x-[-2px] focus:translate-y-[-2px]",
-                    props.className
-                )}
-            />
+    const SettingsForm = () => (
+        <div className="space-y-6 pb-24 md:pb-0">
+            {/* 1. VISUAL IDENTITY */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase text-muted-foreground tracking-wider mb-2">Görsel Kimlik</h3>
+
+                {/* Cover & Avatar Combo */}
+                <div className="relative group rounded-xl overflow-hidden border border-border">
+                    {/* Cover */}
+                    <div className="h-32 bg-muted relative">
+                        {tempCover ? (
+                            <img src={tempCover} className="w-full h-full object-cover" alt="Cover" />
+                        ) : (
+                            <div className="w-full h-full bg-neutral-100 dark:bg-neutral-900" />
+                        )}
+                        <button
+                            onClick={() => coverInputRef.current?.click()}
+                            className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                            <Camera className="text-white w-6 h-6 drop-shadow-md" />
+                        </button>
+                        <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, "cover")} />
+                    </div>
+
+                    {/* Avatar */}
+                    <div className="absolute -bottom-6 left-4">
+                        <div className="w-20 h-20 rounded-full border-[3px] border-background bg-background relative group/avatar cursor-pointer overflow-hidden" onClick={() => avatarInputRef.current?.click()}>
+                            <Avatar className="w-full h-full">
+                                <AvatarImage src={tempAvatar || ""} className="object-cover" />
+                                <AvatarFallback>{fullName?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                                <Camera className="text-white w-4 h-4" />
+                            </div>
+                            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, "avatar")} />
+                        </div>
+                    </div>
+
+                    <div className="h-8 bg-background" /> {/* Spacer for avatar overlap */}
+                </div>
+            </div>
+
+            {/* 2. PUBLIC INFO */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase text-muted-foreground tracking-wider mb-2">Genel Bilgiler</h3>
+                <div className="grid gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <Label>Ad Soyad</Label>
+                            <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ad Soyad" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label>Kullanıcı Adı</Label>
+                            <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="kullanici" />
+                        </div>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label>Biyografi</Label>
+                        <Textarea
+                            value={bio}
+                            onChange={(e) => setBio(e.target.value)}
+                            placeholder="Kendinden bahset..."
+                            className="min-h-[80px] resize-none"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label>Website</Label>
+                        <Input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://..." />
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. SOCIAL LINKS */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-black uppercase text-muted-foreground tracking-wider mb-2">Sosyal Medya</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="relative">
+                        <Twitter className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Input className="pl-9" value={socialLinks.twitter} onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })} placeholder="Twitter" />
+                    </div>
+                    <div className="relative">
+                        <Github className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Input className="pl-9" value={socialLinks.github} onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })} placeholder="GitHub" />
+                    </div>
+                    <div className="relative">
+                        <Instagram className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Input className="pl-9" value={socialLinks.instagram} onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })} placeholder="Instagram" />
+                    </div>
+                    <div className="relative">
+                        <Linkedin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                        <Input className="pl-9" value={socialLinks.linkedin} onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })} placeholder="LinkedIn" />
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. ACCOUNT & ACTIONS (Sticky on Mobile) */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/80 backdrop-blur-md md:static md:bg-transparent md:border-0 md:p-0 flex flex-col gap-3 z-50">
+                <Button onClick={handleSaveProfile} disabled={isLoading} className="w-full bg-[#FFC800] text-black hover:bg-[#FFC800]/90 font-bold h-12 rounded-xl text-base">
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                    Kaydet
+                </Button>
+
+                <div className="md:hidden">
+                    <SignOutButton />
+                </div>
+            </div>
+
+            <div className="hidden md:block pt-4 border-t">
+                <SignOutButton />
+            </div>
         </div>
     );
 
+    // --- RENDER ---
+    // Mobile: Sheet (Bottom Drawer style)
+    if (isMobile) {
+        return (
+            <>
+                <Sheet open={open} onOpenChange={setOpen}>
+                    <SheetTrigger asChild>
+                        {trigger || (
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Settings2 className="w-4 h-4" />
+                                <span>Düzenle</span>
+                            </Button>
+                        )}
+                    </SheetTrigger>
+                    <SheetContent side="bottom" className="h-[90vh] rounded-t-[20px] px-0 flex flex-col">
+                        <SheetHeader className="px-6 pb-4 border-b">
+                            <SheetTitle>Profili Düzenle</SheetTitle>
+                        </SheetHeader>
+                        <div className="flex-1 overflow-y-auto px-6 py-6">
+                            <SettingsForm />
+                        </div>
+                    </SheetContent>
+                </Sheet>
+                <ImageCropperDialog
+                    open={cropperOpen}
+                    onOpenChange={setCropperOpen}
+                    imageSrc={cropperImage}
+                    aspectRatio={cropperType === "avatar" ? 1 : 16 / 5}
+                    onCropComplete={handleCropComplete}
+                />
+            </>
+        );
+    }
+
+    // Desktop: Clean Dialog
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     {trigger || (
-                        <Button variant="outline" className="gap-2 rounded-full font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.8)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
+                        <Button variant="outline" className="gap-2">
                             <Settings2 className="w-4 h-4" />
                             <span>Ayarlar</span>
                         </Button>
                     )}
                 </DialogTrigger>
-                <DialogContent
-                    className="max-w-5xl bg-[#f8f8f8] dark:bg-[#050505] border-2 border-black dark:border-white p-0 overflow-hidden rounded-[32px] md:rounded-[32px] sm:rounded-none fixed left-[50%] top-[50%] z-50 w-[100vw] h-[100vh] md:w-[95vw] md:h-[800px] translate-x-[-50%] translate-y-[-50%] shadow-none md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:md:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
-                    style={{ transform: "translate(-50%, -50%)" }}
-                >
-                    <Tabs defaultValue="profile" className="flex flex-col md:flex-row h-full">
-
-                        {/* SIDEBAR / TOPBAR */}
-                        <div className="w-full md:w-72 bg-white dark:bg-zinc-950 border-b-2 md:border-b-0 md:border-r-2 border-black dark:border-white p-4 md:p-6 flex flex-col justify-between shrink-0 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-32 bg-[#FFC800]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-
-                            <div className="relative z-10 w-full">
-                                <DialogTitle className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4 md:mb-10 px-2 leading-none flex items-center justify-between">
-                                    <span>
-                                        Profil<br className="hidden md:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-black/20 to-black/10 dark:from-white/20 dark:to-white/10">Ayarları</span>
-                                    </span>
-                                </DialogTitle>
-
-                                <TabsList className="flex flex-row md:flex-col h-auto w-full gap-2 bg-transparent p-0 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                                    <TabsTrigger value="profile" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FFC800] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                        <User className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Kimlik</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="appearance" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF90E8] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                        <Palette className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Görünüm</span>
-                                    </TabsTrigger>
-                                    <TabsTrigger value="account" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF4D4D] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                        <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Hesap</span>
-                                    </TabsTrigger>
-                                </TabsList>
-                            </div>
-
-                            <div className="hidden md:block relative z-10">
-                                <div className="p-4 rounded-xl bg-muted/30 border-2 border-dashed border-black/10 dark:border-white/10 text-[10px] text-muted-foreground font-mono leading-relaxed">
-                                    <strong className="text-foreground">FizikHub</strong> v2.0<br />
-                                    Build: Neo-Genesis<br />
-                                    ID: {userEmail?.split('@')[0]}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* CONTENT AREA */}
-                        <div className="flex-1 bg-[#FAFAFA] dark:bg-[#09090b] overflow-y-auto relative p-4 md:p-10 pb-20 md:pb-10">
-
-                            <TabsContent value="profile" className="space-y-8 mt-0 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-                                {/* COVER & AVATAR EDIT */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2">
-                                            <Sparkles className="w-5 h-5 text-[#FFC800]" />
-                                            Görsel Kimlik
-                                        </h3>
-                                        <span className="text-xs font-bold bg-black/5 dark:bg-white/10 px-2 py-1 rounded text-muted-foreground">PREVIEW</span>
-                                    </div>
-
-                                    <div className="rounded-2xl overflow-hidden border-2 border-black dark:border-white bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                                        {/* Cover Area */}
-                                        <div className="h-40 w-full bg-muted relative group cursor-pointer overflow-hidden">
-                                            {tempCover ? (
-                                                <img src={tempCover} alt="Cover" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                                            ) : (
-                                                <div className="w-full h-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-xy" />
-                                            )}
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 gap-2 backdrop-blur-sm" onClick={() => coverInputRef.current?.click()}>
-                                                <Button variant="secondary" className="font-bold border-2 border-transparent hover:border-white shadow-xl">
-                                                    <Camera className="w-4 h-4 mr-2" /> Kapak Değiştir
-                                                </Button>
-                                            </div>
-                                            <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, "cover")} />
-                                        </div>
-
-                                        {/* Avatar Area */}
-                                        <div className="px-6 pb-6 relative">
-                                            <div className="absolute -top-12 left-6 w-24 h-24 rounded-2xl border-4 border-white dark:border-black bg-black shadow-lg overflow-hidden group/avatar cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
-                                                <Avatar className="w-full h-full rounded-none">
-                                                    <AvatarImage src={tempAvatar || ""} className="object-cover" />
-                                                    <AvatarFallback className="rounded-none text-2xl font-black bg-neutral-900 text-neutral-500">{fullName?.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-200">
-                                                    <Camera className="w-6 h-6 text-white" />
-                                                </div>
-                                                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e, "avatar")} />
-                                            </div>
-                                            <div className="ml-28 mt-2 space-y-1">
-                                                <h4 className="font-black text-lg leading-none">{fullName || "İsimsiz"}</h4>
-                                                <p className="text-sm text-muted-foreground font-mono">@{username || "kullanici"}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="h-px bg-black/10 dark:bg-white/10 border-t border-dashed border-black/10 dark:border-white/10" />
-
-                                {/* PUBLIC INFO FORM */}
-                                <div className="space-y-6">
-                                    <h3 className="text-xl font-black uppercase tracking-tight">Kişisel Bilgiler</h3>
-
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <NeoInput
-                                            label="Ad Soyad"
-                                            value={fullName}
-                                            onChange={(e: any) => setFullName(e.target.value)}
-                                            placeholder="Örn: Baran Bozkurt"
-                                        />
-                                        <NeoInput
-                                            label="Kullanıcı Adı"
-                                            value={username}
-                                            onChange={(e: any) => setUsername(e.target.value)}
-                                            placeholder="Örn: baranbozkurt"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-1.5">
-                                        <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Biyografi</Label>
-                                        <Textarea
-                                            value={bio}
-                                            onChange={(e) => setBio(e.target.value)}
-                                            placeholder="Kendinden bahset..."
-                                            className="min-h-[100px] border-2 border-black/10 dark:border-white/10 rounded-xl bg-white dark:bg-black/20 focus:border-black dark:focus:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all resize-none font-medium p-4"
-                                        />
-                                    </div>
-
-                                    <NeoInput
-                                        label="Website"
-                                        value={website}
-                                        onChange={(e: any) => setWebsite(e.target.value)}
-                                        placeholder="https://fizikhub.com"
-                                    />
-                                </div>
-
-                                <div className="h-px bg-black/10 dark:bg-white/10 border-t border-dashed border-black/10 dark:border-white/10" />
-
-                                {/* SOCIAL LINKS */}
-                                <div className="space-y-6">
-                                    <h3 className="text-xl font-black uppercase tracking-tight">Sosyal Medya</h3>
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <NeoInput
-                                            label="Twitter"
-                                            icon={<Twitter className="w-3 h-3" />}
-                                            value={socialLinks.twitter}
-                                            onChange={(e: any) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
-                                            placeholder="Kullanıcı adı"
-                                        />
-                                        <NeoInput
-                                            label="GitHub"
-                                            icon={<Github className="w-3 h-3" />}
-                                            value={socialLinks.github}
-                                            onChange={(e: any) => setSocialLinks({ ...socialLinks, github: e.target.value })}
-                                            placeholder="Kullanıcı adı"
-                                        />
-                                        <NeoInput
-                                            label="Instagram"
-                                            icon={<Instagram className="w-3 h-3" />}
-                                            value={socialLinks.instagram}
-                                            onChange={(e: any) => setSocialLinks({ ...socialLinks, instagram: e.target.value })}
-                                            placeholder="Kullanıcı adı"
-                                        />
-                                        <NeoInput
-                                            label="LinkedIn"
-                                            icon={<Linkedin className="w-3 h-3" />}
-                                            value={socialLinks.linkedin}
-                                            onChange={(e: any) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
-                                            placeholder="Kullanıcı adı"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 pb-10">
-                                    <Button onClick={handleSaveProfile} disabled={isLoading} className="w-full md:w-auto md:min-w-[200px] bg-[#FFC800] text-black font-black text-lg py-6 rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-none transition-all">
-                                        {isLoading && <span className="animate-spin mr-2">⏳</span>}
-                                        DEĞİŞİKLİKLERİ KAYDET
-                                    </Button>
-                                </div>
-
-                            </TabsContent>
-
-                            <TabsContent value="appearance" className="space-y-6 mt-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="flex flex-col items-center justify-center py-20 opacity-50 space-y-4">
-                                    <div className="w-20 h-20 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center">
-                                        <Palette className="w-10 h-10" />
-                                    </div>
-                                    <h3 className="text-xl font-bold">Tema Ayarları</h3>
-                                    <p className="max-w-xs text-center text-muted-foreground">Bu özellik çok yakında FizikHub v2.1 ile birlikte gelecek.</p>
-                                </div>
-                            </TabsContent>
-
-                            <TabsContent value="account" className="space-y-6 mt-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="bg-red-50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-900 rounded-2xl p-6 space-y-4">
-                                    <h3 className="text-lg font-bold text-red-600 dark:text-red-400">Hesap Güvenliği</h3>
-                                    <div className="space-y-1">
-                                        <Label className="text-xs uppercase font-bold text-red-400">Kayıtlı E-Posta</Label>
-                                        <div className="font-mono text-lg">{userEmail}</div>
-                                    </div>
-                                    <div className="pt-4">
-                                        <SignOutButton />
-                                    </div>
-                                </div>
-                            </TabsContent>
-
-                        </div>
-                    </Tabs>
+                <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl border-2 border-black">
+                    <div className="px-6 py-4 border-b bg-muted/30 flex items-center justify-between">
+                        <DialogTitle className="text-xl font-black uppercase">Profili Düzenle</DialogTitle>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-6">
+                        <SettingsForm />
+                    </div>
                 </DialogContent>
             </Dialog>
 

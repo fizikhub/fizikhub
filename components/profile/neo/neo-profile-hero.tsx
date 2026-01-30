@@ -376,7 +376,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         animate={{ scale: 1, opacity: 1 }}
                         className="relative"
                     >
-                        <div className="w-28 h-28 rounded-[12px] border-[4px] border-black bg-black overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.5)] animate-[pulse-glow_4s_ease-in-out_infinite]">
+                        <div className="w-28 h-28 rounded-[12px] border-[4px] border-black bg-black overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.5)]">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
