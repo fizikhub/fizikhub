@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText, convertToCoreMessages } from 'ai';
+import { streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -7,7 +7,11 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
     const { messages } = await req.json();
 
-    const coreMessages = convertToCoreMessages(messages);
+    // Manually convert to CoreMessage format to avoid import errors
+    const coreMessages = messages.map((m: any) => ({
+        role: m.role,
+        content: m.content,
+    }));
 
     const result = await streamText({
         model: google('gemini-1.5-pro'),
