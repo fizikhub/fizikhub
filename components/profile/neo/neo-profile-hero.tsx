@@ -287,7 +287,12 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 {/* DESKTOP CONTENT LAYOUT */}
                 <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-6 gap-6">
                     {/* Avatar */}
-                    <div className="relative shrink-0 group/avatar">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: "backOut" }}
+                        className="relative shrink-0 group/avatar"
+                    >
                         <div className="w-32 h-32 bg-black border-[3px] border-white/20 shadow-[4px_4px_0px_#000] overflow-hidden rounded-[4px] relative z-10">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover group-hover/avatar:scale-110 transition-transform duration-500" />
@@ -298,10 +303,15 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             )}
                         </div>
                         <div className="absolute inset-[-4px] border border-cyan-500/30 rounded-[6px] animate-[pulse-glow_2s_infinite]" />
-                    </div>
+                    </motion.div>
 
                     {/* Info */}
-                    <div className="flex-1 text-left mb-2">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="flex-1 text-left mb-2"
+                    >
                         <h1 className="text-5xl font-black tracking-tight text-white drop-shadow-md font-[family-name:var(--font-outfit)]">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
@@ -310,7 +320,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 @{profile?.username}
                             </span>
                             {profile?.is_verified && (
-                                <span className="bg-[#FFC800] text-black text-[10px] font-bold px-1.5 py-0.5 border border-black">
+                                <span className="bg-[#FFC800] text-black text-[10px] font-bold px-1.5 py-0.5 border border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
                                     VERIFIED
                                 </span>
                             )}
@@ -320,10 +330,15 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 {profile.bio}
                             </p>
                         )}
-                    </div>
+                    </motion.div>
 
                     {/* Actions */}
-                    <div className="flex flex-col gap-2 shrink-0 mb-2">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, delay: 0.4 }}
+                        className="flex flex-col gap-2 shrink-0 mb-2"
+                    >
                         {isOwnProfile ? (
                             <ProfileSettingsDialog
                                 currentUsername={profile?.username}
@@ -335,8 +350,74 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 currentSocialLinks={profile?.social_links}
                                 userEmail={user?.email}
                                 trigger={
-                                    <button className="px-6 py-2 bg-white text-black font-black uppercase tracking-wider text-xs border-[2px] border-transparent hover:bg-[#FFC800] hover:border-black transition-all shadow-lg">
+                                    <button className="px-6 py-2.5 bg-[#FFC800] text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000]">
                                         PROFİLİ DÜZENLE
+                                    </button>
+                                }
+                            />
+                        ) : (
+                            <FollowButton
+                                targetUserId={profile?.id}
+                                initialIsFollowing={isFollowing}
+                                targetUsername={profile?.username}
+                                variant="modern"
+                            />
+                        )}
+                    </motion.div>
+                </div>
+
+            </div>
+
+            {/* MOBILE FLOATING AVATAR */}
+            <div className="absolute top-[120px] left-4 z-30 sm:hidden">
+                <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className="w-24 h-24 rounded-[12px] border-[3px] border-black bg-black overflow-hidden shadow-[4px_4px_0px_#000000]"
+                >
+                    {profile?.avatar_url ? (
+                        <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-3xl font-black text-neutral-600">
+                            {profile?.full_name?.charAt(0) || "?"}
+                        </div>
+                    )}
+                </motion.div>
+            </div>
+
+            {/* MOBILE INFO SECTION */}
+            <div className="flex flex-col mt-[70px] sm:hidden px-2 mb-8">
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h1 className="text-2xl font-black text-foreground font-[family-name:var(--font-outfit)] leading-tight">
+                            {profile?.full_name || "İsimsiz"}
+                        </h1>
+                        <div className="flex items-center gap-2 text-xs text-neutral-500 font-bold font-mono mt-1">
+                            <span>@{profile?.username}</span>
+                            {profile?.is_verified && (
+                                <span className="text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-1 rounded-md">
+                                    <svg className="w-3 h-3 fill-current inline-block" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Mobile Actions (Top Right) */}
+                    <div className="flex gap-2">
+                        {isOwnProfile ? (
+                            <ProfileSettingsDialog
+                                currentUsername={profile?.username}
+                                currentFullName={profile?.full_name}
+                                currentBio={profile?.bio}
+                                currentAvatarUrl={profile?.avatar_url}
+                                currentCoverUrl={profile?.cover_url}
+                                currentWebsite={profile?.website}
+                                currentSocialLinks={profile?.social_links}
+                                userEmail={user?.email}
+                                trigger={
+                                    <button className="px-3 py-1.5 bg-[#FFC800] text-black font-bold uppercase text-[10px] border-[2px] border-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all shadow-[2px_2px_0px_0px_#000]">
+                                        DÜZENLE
                                     </button>
                                 }
                             />
@@ -351,103 +432,29 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </div>
                 </div>
 
-            </div>
-
-            {/* MOBILE FLOATING AVATAR */}
-            <div className="absolute top-[130px] left-1/2 -translate-x-1/2 z-30 sm:hidden">
-                <div className="w-28 h-28 rounded-full border-[4px] border-background bg-black overflow-hidden shadow-xl">
-                    {profile?.avatar_url ? (
-                        <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-3xl font-black text-neutral-600">
-                            {profile?.full_name?.charAt(0) || "?"}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* MOBILE INFO SECTION */}
-            <div className="flex flex-col items-center mt-24 sm:hidden px-4 text-center">
-                <h1 className="text-2xl font-black text-foreground font-[family-name:var(--font-outfit)]">
-                    {profile?.full_name || "İsimsiz"}
-                </h1>
-                <div className="flex items-center gap-2 text-sm text-neutral-500 font-medium mt-1">
-                    <span>@{profile?.username}</span>
-                    {profile?.is_verified && (
-                        <span className="text-blue-500">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
-                        </span>
-                    )}
-                </div>
-
                 {profile?.bio && (
-                    <p className="mt-3 text-neutral-600 dark:text-neutral-400 text-sm max-w-xs leading-relaxed">
+                    <p className="mt-4 text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed border-l-[3px] border-[#FFC800] pl-3 py-1">
                         {profile.bio}
                     </p>
                 )}
 
                 {/* Mobile Stats Row - Compact */}
                 {stats && (
-                    <div className="flex items-center gap-8 mt-4 pb-2 border-b border-foreground/5 w-full justify-center">
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold text-lg text-foreground">{formatNumber(stats.followersCount)}</span>
-                            <span className="text-xs text-neutral-500">Takipçi</span>
+                    <div className="grid grid-cols-3 gap-2 mt-6">
+                        <div className="bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200 dark:border-white/5 rounded-lg p-2 text-center">
+                            <span className="block font-black text-lg text-foreground">{formatNumber(stats.followersCount)}</span>
+                            <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">Takipçi</span>
                         </div>
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold text-lg text-foreground">{formatNumber(stats.followingCount)}</span>
-                            <span className="text-xs text-neutral-500">Takip</span>
+                        <div className="bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200 dark:border-white/5 rounded-lg p-2 text-center">
+                            <span className="block font-black text-lg text-foreground">{formatNumber(stats.followingCount)}</span>
+                            <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">Takip</span>
                         </div>
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold text-lg text-foreground">{formatNumber(stats.reputation)}</span>
-                            <span className="text-xs text-neutral-500">Puan</span>
+                        <div className="bg-neutral-100 dark:bg-neutral-900/50 border border-neutral-200 dark:border-white/5 rounded-lg p-2 text-center">
+                            <span className="block font-black text-lg text-foreground text-[#FFC800]">{formatNumber(stats.reputation)}</span>
+                            <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">Puan</span>
                         </div>
                     </div>
                 )}
-
-                {/* Mobile Actions */}
-                <div className="mt-4 flex gap-3 w-full">
-                    {isOwnProfile ? (
-                        <>
-                            <ProfileSettingsDialog
-                                currentUsername={profile?.username}
-                                currentFullName={profile?.full_name}
-                                currentBio={profile?.bio}
-                                currentAvatarUrl={profile?.avatar_url}
-                                currentCoverUrl={profile?.cover_url}
-                                currentWebsite={profile?.website}
-                                currentSocialLinks={profile?.social_links}
-                                userEmail={user?.email}
-                                trigger={
-                                    <button className="flex-1 py-2.5 bg-foreground text-background font-bold rounded-xl text-sm shadow-md active:scale-95 transition-transform">
-                                        Düzenle
-                                    </button>
-                                }
-                            />
-                            <Link href="/mesajlar" prefetch={false} className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-foreground font-bold rounded-xl text-sm shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                <Mail className="w-4 h-4" />
-                                Mesajlarım
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <div className="flex-1">
-                                <FollowButton
-                                    targetUserId={profile?.id}
-                                    initialIsFollowing={isFollowing}
-                                    targetUsername={profile?.username}
-                                    variant="modern"
-                                />
-                            </div>
-                            <button className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-foreground font-bold rounded-xl text-sm shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
-                                <Mail className="w-4 h-4" />
-                                Mesaj
-                            </button>
-                        </>
-                    )}
-                    <button className="px-3 py-2.5 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
-                        <MoreHorizontal className="w-5 h-5 text-foreground" />
-                    </button>
-                </div>
             </div>
         </div>
     );
