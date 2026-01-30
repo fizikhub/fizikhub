@@ -203,7 +203,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 </div>
             </div>
 
-            <div className="p-3 sm:p-5 relative z-10">
+            <div className="p-3 sm:p-5 relative z-[4000]">
                 <div className="flex gap-3 sm:gap-4 items-center">
                     {/* Avatar Area */}
                     <div className="shrink-0">
