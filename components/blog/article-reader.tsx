@@ -79,28 +79,26 @@ export function ArticleReader({
                             </div>
                         )}
 
-                        {/* Content - Evrim Ağacı Style: Clean, Readable */}
+                        {/* Content - Evrim Ağacı / Wired Style */}
                         <div className={cn(
-                            "prose prose-lg dark:prose-invert max-w-none",
-                            // Typography
-                            "prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-foreground",
-                            "prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4",
-                            "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3",
-                            // Paragraphs - clean reading
-                            "prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:mb-6",
-                            // Links
-                            "prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline",
-                            // Lists
-                            "prose-li:text-foreground/90 prose-li:leading-relaxed",
+                            "prose prose-lg dark:prose-invert max-w-none mb-20",
+                            // Headings
+                            "prose-headings:font-black prose-headings:tracking-tight prose-headings:text-foreground",
+                            "prose-h1:text-4xl prose-h1:mb-8",
+                            "prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-[6px] prose-h2:border-[#FFC800] prose-h2:pl-4",
+                            "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:font-bold",
+                            // Content
+                            "prose-p:text-foreground/90 prose-p:leading-[1.9] prose-p:mb-6 prose-p:font-medium",
+                            "prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#FFC800] transition-colors",
+                            "prose-li:text-foreground/90 prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black",
                             // Blockquotes
-                            "prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/50 prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:not-italic prose-blockquote:text-foreground/80",
+                            "prose-blockquote:border-l-[4px] prose-blockquote:border-black dark:prose-blockquote:border-white prose-blockquote:bg-neutral-100 dark:prose-blockquote:bg-neutral-900 prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:my-8 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-lg prose-blockquote:shadow-sm",
                             // Code
-                            "prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
-                            "prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl",
-                            // Images
-                            "prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8",
-                            // Strong
-                            "prose-strong:text-foreground prose-strong:font-semibold"
+                            "prose-code:bg-neutral-200 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#d63384] dark:prose-code:text-[#ff79c6] prose-code:font-mono prose-code:text-[0.9em] prose-code:font-bold prose-code:before:content-none prose-code:after:content-none",
+                            "prose-pre:bg-[#1e1e1e] prose-pre:border-[2px] prose-pre:border-black/20 dark:prose-pre:border-white/20 prose-pre:rounded-xl prose-pre:shadow-xl",
+                            // Images & Media
+                            "prose-img:rounded-xl prose-img:border-[2px] prose-img:border-black/10 dark:prose-img:border-white/10 prose-img:shadow-lg prose-img:my-10",
+                            "prose-strong:text-foreground prose-strong:font-black"
                         )}>
                             <MarkdownRenderer
                                 content={article.content || ""}
@@ -113,15 +111,18 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-16 space-y-12">
-                                {/* Action Bar */}
-                                <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-y border-border">
-                                    <div className="flex items-center gap-3">
-                                        <LikeButton
-                                            articleId={article.id}
-                                            initialLiked={initialLiked}
-                                            initialCount={likeCount || 0}
-                                        />
+                            <div className="mt-12 space-y-16">
+                                {/* Control Panel (Action Bar) */}
+                                <div className="p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[2px] border-black/10 dark:border-white/10 flex flex-wrap items-center justify-between gap-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-center p-1 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg shadow-sm">
+                                            <LikeButton
+                                                articleId={article.id}
+                                                initialLiked={initialLiked}
+                                                initialCount={likeCount || 0}
+                                            />
+                                        </div>
+                                        <div className="w-px h-8 bg-black/10 dark:bg-white/10" />
                                         <BookmarkButton
                                             type="article"
                                             itemId={article.id}
@@ -136,21 +137,29 @@ export function ArticleReader({
                                 </div>
 
                                 {/* Author */}
-                                <AuthorCard author={article.author || {}} />
+                                <div className="border-t-2 border-dashed border-black/10 dark:border-white/10 pt-12">
+                                    <AuthorCard author={article.author || {}} />
+                                </div>
 
                                 {/* Related Articles */}
                                 {relatedArticles.length > 0 && (
-                                    <div className="space-y-6">
-                                        <h3 className="text-xl font-bold text-foreground">Benzer Makaleler</h3>
+                                    <div className="space-y-8">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-8 bg-[#FFC800]" />
+                                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Benzer Makaleler</h3>
+                                        </div>
                                         <RelatedArticles articles={relatedArticles} />
                                     </div>
                                 )}
 
                                 {/* Comments */}
-                                <div className="space-y-6">
-                                    <h3 className="text-xl font-bold text-foreground">
-                                        Yorumlar {comments.length > 0 && `(${comments.length})`}
-                                    </h3>
+                                <div className="space-y-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-8 bg-black dark:bg-white" />
+                                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">
+                                            Yorumlar {comments.length > 0 && `(${comments.length})`}
+                                        </h3>
+                                    </div>
                                     <CommentSection
                                         articleId={article.id}
                                         comments={comments || []}
