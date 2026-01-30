@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     try {
         const result = await streamText({
-            model: google('gemma-2-27b-it'),
+            model: google('gemma-3-27b-it'),
             messages: coreMessages,
             system: `Sen HubGPT'sin. FizikHub platformunun resmi yapay zeka asistanısın.
 
