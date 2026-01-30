@@ -6,35 +6,39 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import Markdown from "react-markdown";
 
+// Welcome message shown before any API interaction
+const WELCOME_MESSAGE = {
+    id: "welcome",
+    role: "assistant" as const,
+    content: "Selam şef! Ben HubGPT. Fizik, evren veya kodlama... Aklına ne takıldıysa sor, parçalayalım!"
+};
+
 export function HubGPTChat({ onClose }: { onClose?: () => void }) {
-    // Manually managing input state to avoid hook compatibility issues
     const [input, setInput] = useState("");
     const { messages, status, stop, setMessages, sendMessage } = useChat({
         id: "hubgpt-chat",
-        initialMessages: [
-            {
-                id: "welcome",
-                role: "assistant",
-                content: "Selam şef! Ben HubGPT. Fizik, evren veya kodlama... Aklına ne takıldıysa sor, parçalayalım!"
-            }
-        ]
     });
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const isLoading = status === "streaming" || status === "submitted";
 
+    // Combine welcome message with actual messages
+    const displayMessages = messages.length === 0
+        ? [WELCOME_MESSAGE]
+        : messages;
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [displayMessages]);
 
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!input.trim() || isLoading) return;
 
         const userMessage = input.trim();
-        setInput(""); // Clear input immediately
+        setInput("");
 
         await sendMessage({
             role: "user",
@@ -42,7 +46,6 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
         });
     };
 
-    // Helper to get text content from message
     const getMessageContent = (m: any): string => {
         if (typeof m.content === 'string') return m.content;
         if (Array.isArray(m.parts)) {
@@ -88,7 +91,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
 
             {/* Messages Area */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-grid-white/[0.05]">
-                {messages.map((m) => (
+                {displayMessages.map((m) => (
                     <div
                         key={m.id}
                         className={cn(
