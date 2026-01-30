@@ -166,13 +166,13 @@ export function ModernExploreView({
     const emptyState = getEmptyStateContent();
 
     return (
-        <div className="min-h-screen bg-transparent pb-20 md:pb-0 overflow-x-hidden relative">
+        <div className="min-h-screen bg-transparent pb-20 md:pb-0 relative">
             {/* Removed SpaceBackground & UFO for flat Neo-Brutalist look */}
 
             <div className="w-full max-w-5xl mx-auto px-4 pt-4 pb-8">
                 {/* Intro Section - Hard Box */}
                 {/* Share Card - Moves to Top */}
-                <div className="relative mb-8 mt-0 z-[50]">
+                <div className="relative mb-8 mt-0 z-[1000]">
                     <ShareInputCard user={user} />
                 </div>
 
