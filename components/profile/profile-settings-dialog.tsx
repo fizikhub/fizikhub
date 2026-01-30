@@ -171,29 +171,31 @@ export function ProfileSettingsDialog({
                     )}
                 </DialogTrigger>
                 <DialogContent
-                    className="max-w-5xl bg-[#f8f8f8] dark:bg-[#050505] border-2 border-black dark:border-white p-0 overflow-hidden rounded-[32px] fixed left-[50%] top-[50%] z-50 w-[95vw] h-[90vh] md:h-[800px] translate-x-[-50%] translate-y-[-50%] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
+                    className="max-w-5xl bg-[#f8f8f8] dark:bg-[#050505] border-2 border-black dark:border-white p-0 overflow-hidden rounded-[32px] md:rounded-[32px] sm:rounded-none fixed left-[50%] top-[50%] z-50 w-[100vw] h-[100vh] md:w-[95vw] md:h-[800px] translate-x-[-50%] translate-y-[-50%] shadow-none md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:md:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
                     style={{ transform: "translate(-50%, -50%)" }}
                 >
                     <Tabs defaultValue="profile" className="flex flex-col md:flex-row h-full">
 
-                        {/* SIDEBAR */}
-                        <div className="w-full md:w-72 bg-white dark:bg-zinc-950 border-b-2 md:border-b-0 md:border-r-2 border-black dark:border-white p-6 flex flex-col justify-between shrink-0 relative overflow-hidden">
+                        {/* SIDEBAR / TOPBAR */}
+                        <div className="w-full md:w-72 bg-white dark:bg-zinc-950 border-b-2 md:border-b-0 md:border-r-2 border-black dark:border-white p-4 md:p-6 flex flex-col justify-between shrink-0 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-32 bg-[#FFC800]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
-                            <div className="relative z-10">
-                                <DialogTitle className="text-4xl font-black uppercase tracking-tighter mb-10 px-2 leading-none">
-                                    Profil<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-black/20 to-black/10 dark:from-white/20 dark:to-white/10">Ayarları</span>
+                            <div className="relative z-10 w-full">
+                                <DialogTitle className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4 md:mb-10 px-2 leading-none flex items-center justify-between">
+                                    <span>
+                                        Profil<br className="hidden md:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-black/20 to-black/10 dark:from-white/20 dark:to-white/10">Ayarları</span>
+                                    </span>
                                 </DialogTitle>
 
-                                <TabsList className="flex flex-col h-auto w-full gap-3 bg-transparent p-0">
-                                    <TabsTrigger value="profile" className="w-full justify-start gap-3 px-4 py-4 rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FFC800] data-[state=active]:text-black font-bold text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] data-[state=active]:hover:bg-[#FFC800] [&>svg]:data-[state=active]:stroke-[3px]">
-                                        <User className="w-5 h-5" /> Kimlik
+                                <TabsList className="flex flex-row md:flex-col h-auto w-full gap-2 bg-transparent p-0 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                                    <TabsTrigger value="profile" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FFC800] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                        <User className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Kimlik</span>
                                     </TabsTrigger>
-                                    <TabsTrigger value="appearance" className="w-full justify-start gap-3 px-4 py-4 rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF90E8] data-[state=active]:text-black font-bold text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] data-[state=active]:hover:bg-[#FF90E8] [&>svg]:data-[state=active]:stroke-[3px]">
-                                        <Palette className="w-5 h-5" /> Görünüm
+                                    <TabsTrigger value="appearance" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF90E8] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                        <Palette className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Görünüm</span>
                                     </TabsTrigger>
-                                    <TabsTrigger value="account" className="w-full justify-start gap-3 px-4 py-4 rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF4D4D] data-[state=active]:text-black font-bold text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] data-[state=active]:hover:bg-[#FF4D4D] [&>svg]:data-[state=active]:stroke-[3px]">
-                                        <ShieldCheck className="w-5 h-5" /> Hesap
+                                    <TabsTrigger value="account" className="flex-1 md:w-full justify-center md:justify-start gap-2 px-3 py-3 rounded-lg md:rounded-xl border-2 border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white data-[state=active]:bg-[#FF4D4D] data-[state=active]:text-black font-bold text-sm md:text-lg transition-all shadow-none hover:bg-black/5 dark:hover:bg-white/5 data-[state=active]:shadow-none md:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:dark:data-[state=active]:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                        <ShieldCheck className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Hesap</span>
                                     </TabsTrigger>
                                 </TabsList>
                             </div>
@@ -208,7 +210,7 @@ export function ProfileSettingsDialog({
                         </div>
 
                         {/* CONTENT AREA */}
-                        <div className="flex-1 bg-[#FAFAFA] dark:bg-[#09090b] overflow-y-auto relative p-6 md:p-10">
+                        <div className="flex-1 bg-[#FAFAFA] dark:bg-[#09090b] overflow-y-auto relative p-4 md:p-10 pb-20 md:pb-10">
 
                             <TabsContent value="profile" className="space-y-8 mt-0 max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
 

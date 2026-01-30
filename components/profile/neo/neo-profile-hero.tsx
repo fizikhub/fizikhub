@@ -8,6 +8,7 @@ import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
+import { Mail, MoreHorizontal } from "lucide-react";
 
 // --- TEXTURES (Reused from MemeCorner for consistency) ---
 function getStarTexture() {
@@ -363,7 +364,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
             </div>
 
             {/* MOBILE INFO SECTION */}
-            <div className="flex flex-col items-center mt-14 sm:hidden px-4 text-center">
+            <div className="flex flex-col items-center mt-10 sm:hidden px-4 text-center">
                 <h1 className="text-2xl font-black text-foreground font-[family-name:var(--font-outfit)]">
                     {profile?.full_name || "İsimsiz"}
                 </h1>
@@ -382,9 +383,9 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </p>
                 )}
 
-                {/* Mobile Stats Row */}
+                {/* Mobile Stats Row - Compact */}
                 {stats && (
-                    <div className="flex items-center gap-8 mt-5 pb-2 border-b border-foreground/5 w-full justify-center">
+                    <div className="flex items-center gap-8 mt-4 pb-2 border-b border-foreground/5 w-full justify-center">
                         <div className="flex flex-col items-center">
                             <span className="font-bold text-lg text-foreground">{formatNumber(stats.followersCount)}</span>
                             <span className="text-xs text-neutral-500">Takipçi</span>
@@ -419,17 +420,23 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             }
                         />
                     ) : (
-                        <div className="flex-1">
-                            <FollowButton
-                                targetUserId={profile?.id}
-                                initialIsFollowing={isFollowing}
-                                targetUsername={profile?.username}
-                                variant="modern"
-                            />
-                        </div>
+                        <>
+                            <div className="flex-1">
+                                <FollowButton
+                                    targetUserId={profile?.id}
+                                    initialIsFollowing={isFollowing}
+                                    targetUsername={profile?.username}
+                                    variant="modern"
+                                />
+                            </div>
+                            <button className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-foreground font-bold rounded-xl text-sm shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
+                                <Mail className="w-4 h-4" />
+                                Mesaj
+                            </button>
+                        </>
                     )}
-                    <button className="p-2.5 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
-                        <svg className="w-5 h-5 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
+                    <button className="px-3 py-2.5 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800">
+                        <MoreHorizontal className="w-5 h-5 text-foreground" />
                     </button>
                 </div>
             </div>

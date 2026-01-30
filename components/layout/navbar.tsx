@@ -32,27 +32,34 @@ export function Navbar() {
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
-    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number }[]>([]);
+    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
     useEffect(() => {
         setMounted(true);
 
-        // Defer rain generation until browser is idle for better initial load
         const generateRain = () => {
             const isMobile = window.innerWidth < 768;
-            const dropCount = isMobile ? 15 : 40; // Reduce on mobile
+            const laneCount = isMobile ? 8 : 20; // Distinct lanes to prevent overlap
+            const dropCount = isMobile ? 12 : 30;
 
-            const drops = Array.from({ length: dropCount }).map(() => ({
-                left: 30 + Math.random() * 40,   // Constrain to center 40% (30% to 70%)
-                duration: 4 + Math.random() * 6, // Slower, smoother flow (4s-10s)
-                delay: Math.random() * 10,
-                formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-                scale: 0.7 + Math.random() * 0.4 // Slightly smaller for elegance
-            }));
+            const drops = Array.from({ length: dropCount }).map((_, i) => {
+                // Assign to a random lane to prevent horizontal overlap
+                const lane = Math.floor(Math.random() * laneCount);
+                const laneWidth = 80 / laneCount; // Use inner 80% of screen
+                const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8)); // 10% padding on sides
+
+                return {
+                    left: left,
+                    duration: 5 + Math.random() * 8, // 5s-13s
+                    delay: Math.random() * 15, // Spread out start times
+                    formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
+                    scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
+                    opacity: 0.2 + Math.random() * 0.3
+                };
+            });
             setRaindrops(drops);
         };
 
-        // Use requestIdleCallback if available, otherwise setTimeout
         if ('requestIdleCallback' in window) {
             (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(generateRain);
         } else {
@@ -88,10 +95,12 @@ export function Navbar() {
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
-                                className="absolute font-mono font-bold text-black/30 whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
-                                    fontSize: `${10 * drop.scale}px`
+                                    fontSize: `${10 * drop.scale}px`,
+                                    color: `rgba(0,0,0,${drop.opacity || 0.3})`,
+                                    filter: 'blur(0.3px)'
                                 }}
                                 initial={{ y: 60, opacity: 0 }}
                                 animate={{ y: -20, opacity: [0, 1, 0] }}
@@ -216,7 +225,7 @@ export function Navbar() {
                         </Sheet>
                     </div>
                 </div>
-            </header>
+            </header >
 
             <div className="h-[56px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
