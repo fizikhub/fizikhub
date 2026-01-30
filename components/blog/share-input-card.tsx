@@ -137,12 +137,12 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const [stars, setStars] = useState<{ top: number; left: number; size: number; opacity: number }[]>([]);
 
     useEffect(() => {
-        const starCount = 12;
+        const starCount = 120;
         const newStars = Array.from({ length: starCount }).map(() => ({
             top: Math.random() * 100,
             left: Math.random() * 100,
-            size: 1 + Math.random() * 2,
-            opacity: 0.3 + Math.random() * 0.7
+            size: 0.5 + Math.random() * 2.5,
+            opacity: 0.2 + Math.random() * 0.8
         }));
         setStars(newStars);
     }, []);
@@ -156,7 +156,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-[#030303] text-white", // Darker Black Background
+                "bg-black text-white", // PURE BLACK
                 "border-[3px] border-white", // White Border
                 "shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]", // White/Glass Shadow
                 "w-full mb-6",
@@ -166,8 +166,8 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         >
             {/* DEEP SPACE BACKGROUND LAYERS */}
             <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none z-0">
-                {/* 1. Base Gradient */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#2E1065_0%,_#000000_100%)] opacity-80" />
+                {/* 1. Base - PURE BLACK */}
+                <div className="absolute inset-0 bg-black" />
 
                 {/* 2. Stars */}
                 {stars.map((star, i) => (
@@ -185,10 +185,8 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                     />
                 ))}
 
-                {/* 3. Nebula/Galaxy Effects */}
+                {/* 3. Subtle Noise */}
                 <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]" />
-                <div className="absolute top-10 right-10 w-32 h-32 bg-purple-600/30 blur-[60px] rounded-full mix-blend-screen" />
-                <div className="absolute bottom-10 left-10 w-40 h-40 bg-blue-600/20 blur-[60px] rounded-full mix-blend-screen" />
             </div>
 
             {/* HEADER */}
