@@ -5,7 +5,7 @@ import { BackgroundWrapper } from "@/components/home/background-wrapper";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
-import { CategoryStories } from "@/components/home/category-stories";
+
 import { ScienceStories } from "@/components/science-cards/science-stories";
 import { WebGPUHero } from "@/components/home/webgpu-hero";
 
@@ -127,19 +127,10 @@ export default async function Home() {
 
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
 
-        {/* Story-style Categories */}
-        <div className="pb-0 pt-4 lg:pt-0">
-          <CategoryStories />
-        </div>
-
-
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
-
-
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
           {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-2 lg:mt-0 sm:px-0">
+          <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
           </div>
 
