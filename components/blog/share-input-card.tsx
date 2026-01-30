@@ -185,8 +185,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                     />
                 ))}
 
-                {/* 3. Subtle Noise */}
-                <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]" />
+                {/* 3. Nebula/Galaxy Effects (Subtle Purple/Blue per request) */}
+                <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04]" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-purple-900/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-56 h-56 bg-blue-900/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none" />
             </div>
 
             {/* HEADER */}

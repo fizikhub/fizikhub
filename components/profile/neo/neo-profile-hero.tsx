@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
 import { Mail, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 // --- TEXTURES (Reused from MemeCorner for consistency) ---
 function getStarTexture() {
@@ -406,21 +407,27 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 {/* Mobile Actions */}
                 <div className="mt-4 flex gap-3 w-full">
                     {isOwnProfile ? (
-                        <ProfileSettingsDialog
-                            currentUsername={profile?.username}
-                            currentFullName={profile?.full_name}
-                            currentBio={profile?.bio}
-                            currentAvatarUrl={profile?.avatar_url}
-                            currentCoverUrl={profile?.cover_url}
-                            currentWebsite={profile?.website}
-                            currentSocialLinks={profile?.social_links}
-                            userEmail={user?.email}
-                            trigger={
-                                <button className="flex-1 py-2.5 bg-foreground text-background font-bold rounded-xl text-sm shadow-md active:scale-95 transition-transform">
-                                    Profili Düzenle
-                                </button>
-                            }
-                        />
+                        <>
+                            <ProfileSettingsDialog
+                                currentUsername={profile?.username}
+                                currentFullName={profile?.full_name}
+                                currentBio={profile?.bio}
+                                currentAvatarUrl={profile?.avatar_url}
+                                currentCoverUrl={profile?.cover_url}
+                                currentWebsite={profile?.website}
+                                currentSocialLinks={profile?.social_links}
+                                userEmail={user?.email}
+                                trigger={
+                                    <button className="flex-1 py-2.5 bg-foreground text-background font-bold rounded-xl text-sm shadow-md active:scale-95 transition-transform">
+                                        Düzenle
+                                    </button>
+                                }
+                            />
+                            <Link href="/mesajlar" prefetch={false} className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-foreground font-bold rounded-xl text-sm shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-2">
+                                <Mail className="w-4 h-4" />
+                                Mesajlarım
+                            </Link>
+                        </>
                     ) : (
                         <>
                             <div className="flex-1">
