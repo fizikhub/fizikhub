@@ -1,14 +1,16 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { useChat } from "@ai-sdk/react";
 import { Send, Sparkles, Bot, User, Trash2, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Markdown from "react-markdown";
 
 export function HubGPTChat({ onClose }: { onClose?: () => void }) {
-    const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
+    // Manually managing input state to avoid hook compatibility issues
+    const [input, setInput] = useState("");
+    const { messages, isLoading, stop, setMessages, append } = useChat({
         api: "/api/chat",
         initialMessages: [
             {
@@ -26,6 +28,19 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages]);
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!input.trim() || isLoading) return;
+
+        const userMessage = input.trim();
+        setInput(""); // Clear input immediately
+
+        await append({
+            role: "user",
+            content: userMessage
+        });
+    };
 
     return (
         <div className="flex flex-col h-full bg-[#111] text-white font-sans overflow-hidden border-[3px] border-black sm:rounded-xl">
@@ -111,11 +126,11 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
             </div>
 
             {/* Input Area */}
-            <form onSubmit={handleSubmit} className="p-4 bg-[#111] border-t-[3px] border-black">
+            <form onSubmit={handleFormSubmit} className="p-4 bg-[#111] border-t-[3px] border-black">
                 <div className="relative flex items-center">
                     <input
                         value={input}
-                        onChange={handleInputChange}
+                        onChange={(e) => setInput(e.target.value)}
                         placeholder="Bir şeyler sor... (Fizik, Evren, Hayat?)"
                         className="w-full pl-4 pr-12 py-3 bg-[#222] border-[2px] border-white/20 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC800] focus:ring-1 focus:ring-[#FFC800] transition-all font-medium"
                     />
