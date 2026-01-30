@@ -1,17 +1,16 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Send, Sparkles, Bot, User, Trash2, X } from "lucide-react";
+import { Send, Bot, User, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Markdown from "react-markdown";
 
 export function HubGPTChat({ onClose }: { onClose?: () => void }) {
     // Manually managing input state to avoid hook compatibility issues
     const [input, setInput] = useState("");
-    const { messages, isLoading, stop, setMessages, append } = useChat({
-        api: "/api/chat",
+    const { messages, status, stop, setMessages, sendMessage } = useChat({
+        id: "hubgpt-chat",
         initialMessages: [
             {
                 id: "welcome",
@@ -22,6 +21,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
     });
 
     const scrollRef = useRef<HTMLDivElement>(null);
+    const isLoading = status === "streaming" || status === "submitted";
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -36,10 +36,22 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
         const userMessage = input.trim();
         setInput(""); // Clear input immediately
 
-        await append({
+        await sendMessage({
             role: "user",
             content: userMessage
         });
+    };
+
+    // Helper to get text content from message
+    const getMessageContent = (m: any): string => {
+        if (typeof m.content === 'string') return m.content;
+        if (Array.isArray(m.parts)) {
+            return m.parts
+                .filter((p: any) => p.type === 'text')
+                .map((p: any) => p.text)
+                .join('');
+        }
+        return '';
     };
 
     return (
@@ -52,7 +64,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                     </div>
                     <div>
                         <h3 className="font-black text-lg leading-none uppercase tracking-wide">HubGPT</h3>
-                        <p className="text-xs font-bold opacity-70">Gemma-Powered Asistan</p>
+                        <p className="text-xs font-bold opacity-70">Gemini-Powered Asistan</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -105,10 +117,10 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                                         }
                                     }}
                                 >
-                                    {m.content}
+                                    {getMessageContent(m)}
                                 </Markdown>
                             ) : (
-                                m.content
+                                getMessageContent(m)
                             )}
                         </div>
                     </div>
