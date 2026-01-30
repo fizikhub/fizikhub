@@ -8,9 +8,8 @@ import { useTexture } from "@react-three/drei";
 function Earth() {
     const meshRef = useRef<THREE.Mesh>(null!);
 
-    // Using a high-quality standard earth map
-    // Fallback: If texture fails, it will be white/black, but we can set a color
-    const texture = useTexture("https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg");
+    // Using local texture for stability
+    const texture = useTexture("/img/earth.jpg");
 
     useFrame((state, delta) => {
         if (meshRef.current) {
