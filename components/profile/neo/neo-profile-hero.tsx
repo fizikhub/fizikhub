@@ -245,10 +245,14 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 Mobile: Curved Bottom, No Border
                 Desktop: Rounded Rectangle, Border
             */}
+            {/* HER0 BACKGROUND CONTAINER 
+                Mobile: Curved Bottom, No Border
+                Desktop: Rounded Rectangle, Border
+            */}
             <div className={cn(
                 "relative w-full overflow-hidden bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
                 // Mobile Styles
-                "h-[180px] rounded-b-[40%] sm:rounded-b-none border-b-[4px] border-b-cyan-500/30 sm:border-b-0",
+                "h-[180px] rounded-b-[25%] sm:rounded-b-none border-b-[4px] border-b-cyan-500/30 sm:border-b-0",
                 // Desktop Styles
                 "sm:h-[240px] sm:rounded-[8px] sm:border-[3px] sm:border-black sm:shadow-[4px_4px_0px_#000]"
             )}>
@@ -364,7 +368,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
             </div>
 
             {/* MOBILE INFO SECTION */}
-            <div className="flex flex-col items-center mt-10 sm:hidden px-4 text-center">
+            <div className="flex flex-col items-center mt-16 sm:hidden px-4 text-center">
                 <h1 className="text-2xl font-black text-foreground font-[family-name:var(--font-outfit)]">
                     {profile?.full_name || "İsimsiz"}
                 </h1>
