@@ -156,9 +156,9 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                            <Search className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 2. ZAP */}
@@ -167,9 +167,9 @@ export function Navbar() {
                                 variants={clickVariant}
                                 whileTap="tap"
                                 whileHover="hover"
-                                className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                                className="flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                             >
-                                <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-black stroke-[2.5px]" />
+                                <Zap className="w-4 h-4 sm:w-4 sm:h-4 fill-black stroke-[2.5px]" />
                             </motion.div>
                         </ViewTransitionLink>
 
@@ -180,9 +180,9 @@ export function Navbar() {
                                     variants={clickVariant}
                                     whileTap="tap"
                                     whileHover="hover"
-                                    className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
+                                    className="flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
                                 >
-                                    <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                                    <Menu className="w-4 h-4 sm:w-4 sm:h-4 stroke-[2.5px]" />
                                 </motion.button>
                             </SheetTrigger>
                             <SheetContent side="top" className="w-full min-h-[50vh] bg-[#3B82F6] border-b-[4px] border-black p-0 overflow-hidden">
