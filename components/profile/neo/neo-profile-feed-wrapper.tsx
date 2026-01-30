@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed } from "@/components/home/unified-feed";
 import { BookOpen, MessageCircle, Bookmark, FileText } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface NeoProfileFeedWrapperProps {
     articles: any[];
@@ -55,7 +56,7 @@ export function NeoProfileFeedWrapper({
     // Actually UnifiedFeed renders `FeedItem` components. We don't have an `AnswerCard` in UnifiedFeed yet.
     // Let's render answers manually if activeTab is replies, otherwise use UnifiedFeed.
 
-    import { AnimatePresence, motion } from "framer-motion";
+
 
     // ... existing code ...
 
