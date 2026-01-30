@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, Github, Twitter, LogOut } from "lucide-react";
+import { Menu, X, ArrowRight, Home, Zap, BookOpen, FlaskConical, Award } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
 export function MobileMenu() {
@@ -22,7 +22,7 @@ export function MobileMenu() {
         { href: "/makale", label: "Keşfet", icon: Zap },
         { href: "/blog", label: "Blog", icon: BookOpen },
         { href: "/testler", label: "Testler", icon: FlaskConical },
-        { href: "/siralamalar", label: "Sıralama", icon: Award },
+        { href: "/siralamalar", label: "Lig", icon: Award },
     ];
 
     return (
@@ -31,29 +31,30 @@ export function MobileMenu() {
                 <button
                     className={cn(
                         "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10",
-                        "bg-[#111] border-[1px] border-white/20 rounded-md",
-                        "text-white active:scale-95 transition-all"
+                        "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
+                        "text-black active:translate-y-[2px] active:shadow-none transition-all"
                     )}
                 >
-                    <Menu className="w-5 h-5" />
+                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 
-            {/* MICRO DRAWER: Fixed 240px, Dark Theme */}
-            <SheetContent side="right" className="w-[240px] !max-w-[240px] p-0 border-l border-white/10 bg-[#0A0A0A] overflow-hidden">
-                <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
-
-                <div className="flex flex-col h-full">
-                    {/* 1. COMPACT HEADER */}
-                    <div className="h-14 flex items-center justify-between px-4 border-b border-white/10">
-                        <span className="font-bold text-sm text-white tracking-widest uppercase">MENÜ</span>
-                        <SheetClose className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
-                            <X className="w-4 h-4 text-neutral-400" />
-                        </SheetClose>
+            {/* TOP STACK: Receipt Style Dropdown */}
+            <SheetContent side="top" className="w-full h-auto max-h-[70vh] p-0 border-b-[3px] border-black bg-white overflow-hidden">
+                <div className="flex flex-col">
+                    {/* Header with Close */}
+                    <div className="flex items-center justify-between px-4 h-14 border-b-[2px] border-black/10 bg-neutral-50/50">
+                        <span className="font-black text-xs uppercase tracking-widest text-neutral-400">MENÜ</span>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="w-8 h-8 flex items-center justify-center bg-black text-white hover:bg-[#FFC800] hover:text-black transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    {/* 2. MICRO MENU LIST */}
-                    <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+                    {/* Grid Layout for Items */}
+                    <div className="grid grid-cols-2 p-2 gap-2 bg-[#F0F0F0]">
                         {menuItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
@@ -61,53 +62,31 @@ export function MobileMenu() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "flex items-center gap-3 px-3 h-10 w-full rounded-md transition-all text-sm group",
+                                        "flex flex-col items-center justify-center gap-2 h-20 rounded-sm border-[2px] transition-all",
                                         isActive
-                                            ? "bg-white/10 text-[#FFC800] font-bold"
-                                            : "text-neutral-400 hover:text-white hover:bg-white/5"
+                                            ? "bg-[#FFC800] border-black shadow-[2px_2px_0px_0px_#000] translate-x-[1px] translate-y-[1px]"
+                                            : "bg-white border-transparent hover:border-black/10 shadow-sm"
                                     )}
                                 >
                                     <item.icon className={cn(
-                                        "w-4 h-4",
-                                        isActive ? "text-[#FFC800]" : "text-neutral-500 group-hover:text-white"
+                                        "w-5 h-5",
+                                        isActive ? "text-black fill-white/20" : "text-neutral-500"
                                     )} />
-                                    <span>{item.label}</span>
+                                    <span className={cn(
+                                        "font-black text-xs uppercase tracking-tight",
+                                        isActive ? "text-black" : "text-neutral-600"
+                                    )}>
+                                        {item.label}
+                                    </span>
                                 </ViewTransitionLink>
                             );
                         })}
 
-                        <div className="h-px bg-white/10 my-3 mx-2" />
-
-                        <ViewTransitionLink
-                            href="/ozel"
-                            className="flex items-center gap-3 px-3 h-10 w-full rounded-md text-sm text-[#FFC800] hover:bg-[#FFC800]/10 transition-all font-medium"
-                        >
-                            <Zap className="w-4 h-4 fill-[#FFC800]" />
-                            <span>Özel İçerik</span>
-                        </ViewTransitionLink>
-                    </div>
-
-                    {/* 3. FOOTER */}
-                    <div className="p-4 border-t border-white/10 space-y-4">
-                        <div className="flex justify-center gap-4">
-                            {[
-                                { icon: Github, href: "https://github.com/fizikhub" },
-                                { icon: Twitter, href: "#" },
-                            ].map((social, i) => (
-                                <a
-                                    key={i}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-neutral-500 hover:text-white transition-colors"
-                                >
-                                    <social.icon className="w-4 h-4" />
-                                </a>
-                            ))}
-                        </div>
-
-                        <div className="scale-90 origin-bottom">
-                            <AuthButton />
+                        {/* Auth Button takes remaining space or full row */}
+                        <div className="col-span-1 flex items-center justify-center h-20 bg-white border-[2px] border-transparent rounded-sm">
+                            <div className="scale-75 origin-center w-full flex justify-center">
+                                <AuthButton />
+                            </div>
                         </div>
                     </div>
                 </div>
