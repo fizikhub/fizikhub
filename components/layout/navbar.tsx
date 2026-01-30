@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { Search, Menu, Zap } from "lucide-react";
+import { Search, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+// Sheet imports removed
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
+import { MobileMenu } from "@/components/layout/mobile-menu";
 
 const clickVariant = {
     tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
@@ -28,7 +29,6 @@ const physicsTicker = [
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
@@ -172,56 +172,10 @@ export function Navbar() {
                             <Zap className="w-3.5 h-3.5 fill-black stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 3. MENU */}
-                        <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                            <SheetTrigger asChild>
-                                <motion.button
-                                    variants={clickVariant}
-                                    whileTap="tap"
-                                    whileHover="hover"
-                                    className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
-                                >
-                                    <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
-                                </motion.button>
-                            </SheetTrigger>
-                            <SheetContent side="top" className="w-full min-h-[50vh] bg-[#3B82F6] border-b-[4px] border-black p-0 overflow-hidden">
-                                <div className="absolute inset-0 opacity-20"
-                                    style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '32px 32px' }}
-                                />
-                                <div className="relative z-10 flex flex-col items-center justify-center h-full p-6 pt-12 gap-6">
-                                    <div className="scale-125">
-                                        <DankLogo />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
-                                        {[
-                                            { href: "/", label: "ANA SAYFA", bg: "bg-white" },
-                                            { href: "/makale", label: "KEŞFET", bg: "bg-[#FFC800]" },
-                                            { href: "/blog", label: "BLOG", bg: "bg-cyan-300" },
-                                            { href: "/profil", label: "PROFİL", bg: "bg-[#F472B6]" },
-                                        ].map((link, i) => (
-                                            <ViewTransitionLink
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => setIsMenuOpen(false)}
-                                                className={cn(
-                                                    "group relative h-16 border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all",
-                                                    link.bg
-                                                )}
-                                            >
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="font-black text-sm sm:text-base text-black tracking-wider uppercase drop-shadow-sm">
-                                                        {link.label}
-                                                    </span>
-                                                </div>
-                                            </ViewTransitionLink>
-                                        ))}
-                                    </div>
-                                    <div className="w-full max-w-[200px]">
-                                        <AuthButton />
-                                    </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
+                        {/* 3. MOBILE MENU (RIGHT SHEET) */}
+                        <div className="md:hidden">
+                            <MobileMenu />
+                        </div>
                     </div>
                 </div>
             </header >
