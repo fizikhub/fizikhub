@@ -41,5 +41,5 @@ export async function POST(req: Request) {
     Önemli: Cevapların çok uzun olmasın, mobil uyumlu ve okunabilir olsun.`,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
 }
