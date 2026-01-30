@@ -137,7 +137,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const [stars, setStars] = useState<{ top: number; left: number; size: number; opacity: number }[]>([]);
 
     useEffect(() => {
-        const starCount = 30;
+        const starCount = 12;
         const newStars = Array.from({ length: starCount }).map(() => ({
             top: Math.random() * 100,
             left: Math.random() * 100,
@@ -156,10 +156,11 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-[#050510] text-white", // Deep Space Background
+                "bg-[#030303] text-white", // Darker Black Background
                 "border-[3px] border-white", // White Border
                 "shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]", // White/Glass Shadow
-                "w-full mb-6 z-[20]",
+                "w-full mb-6",
+                isOpen ? "z-[50]" : "z-[20]", // Z-Index fix
                 "sm:-mt-4" // Move up slightly on desktop/mobile if needed
             )}
         >
@@ -197,8 +198,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border border-white/20 shadow-sm" />
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border border-white/20 shadow-sm" />
                 </div>
-                <div className="text-[10px] sm:text-xs font-black text-white/90 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <Atom className="w-3 h-3 text-purple-400" />
+                <div className="text-[10px] sm:text-xs font-black text-white/90 uppercase tracking-[0.2em]">
                     Paylaşım Merkezi
                 </div>
             </div>
@@ -375,7 +375,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                         <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">Soru</span>
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-white shadow-[0px_0px_10px_rgba(255,255,255,0.3)] hover:scale-105 transition-all cursor-pointer group shrink-0">
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#dc2626] text-white border-[2px] border-white shadow-[0px_0px_10px_rgba(255,255,255,0.3)] hover:scale-105 transition-all cursor-pointer group shrink-0">
                         <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Ekle</span>
                     </button>
