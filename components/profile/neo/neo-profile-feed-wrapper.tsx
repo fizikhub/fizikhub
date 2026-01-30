@@ -64,7 +64,7 @@ export function NeoProfileFeedWrapper({
         <div className="space-y-6">
 
             {/* --- TABS --- */}
-            <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] pb-1 border-b-[2px] border-neutral-800 sticky top-[60px] z-30 bg-background/95 backdrop-blur-sm pt-2">
+            <div className="flex items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] pb-2 sticky top-[60px] z-30 bg-background/95 backdrop-blur-sm pt-2">
                 <TabButton
                     label="GÖNDERİLER"
                     icon={FileText}
@@ -99,7 +99,7 @@ export function NeoProfileFeedWrapper({
             </div>
 
             {/* --- CONTENT --- */}
-            <div className="min-h-[500px] relative">
+            <div className="min-h-[500px]">
                 <AnimatePresence mode="wait">
                     {activeTab === 'posts' && (
                         <motion.div
@@ -112,7 +112,7 @@ export function NeoProfileFeedWrapper({
                             {postsItems.length > 0 ? (
                                 <UnifiedFeed items={postsItems} />
                             ) : (
-                                <EmptyState label="Henüz bir gönderi yok." icon={FileText} />
+                                <EmptyState label="Henüz gönderi yok" description="Bilimsel yolculuk boş bir sayfayla başlar." />
                             )}
                         </motion.div>
                     )}
@@ -128,7 +128,7 @@ export function NeoProfileFeedWrapper({
                             {savedItems.length > 0 ? (
                                 <UnifiedFeed items={savedItems} />
                             ) : (
-                                <EmptyState label="Kaydedilen içerik yok." icon={Bookmark} />
+                                <EmptyState label="Koleksiyon boş" description="Henüz bir şey kaydetmedin." icon={Bookmark} />
                             )}
                         </motion.div>
                     )}
@@ -156,21 +156,21 @@ export function NeoProfileFeedWrapper({
                         >
                             {answers.length > 0 ? (
                                 answers.map((answer) => (
-                                    <div key={answer.id} className="bg-[#0A0A0A] border-l-[3px] border-l-[#FFC800] border-y border-r border-white/10 rounded-r-xl p-6 hover:bg-neutral-900 transition-all group">
-                                        <div className="flex items-center gap-2 mb-3 text-xs text-neutral-500 font-bold uppercase tracking-wider">
+                                    <div key={answer.id} className="bg-card border-l-[3px] border-l-[#FFC800] border border-border/50 rounded-r-xl p-5 hover:bg-muted/30 transition-all group">
+                                        <div className="flex items-center gap-2 mb-2 text-[10px] text-muted-foreground font-black uppercase tracking-wider">
                                             <MessageCircle className="w-3 h-3 text-[#FFC800]" />
-                                            <span>YANITLADI:</span>
+                                            <span>YANITLADI</span>
                                         </div>
-                                        <h4 className="text-white font-bold mb-2 group-hover:text-[#FFC800] transition-colors line-clamp-1 text-lg">
+                                        <h4 className="text-foreground font-bold mb-2 group-hover:text-[#FFC800] transition-colors line-clamp-1 text-base">
                                             {answer.questions?.title}
                                         </h4>
-                                        <p className="text-neutral-400 text-sm leading-relaxed font-mono">
+                                        <p className="text-muted-foreground text-sm leading-relaxed font-mono line-clamp-3">
                                             {answer.content}
                                         </p>
                                     </div>
                                 ))
                             ) : (
-                                <EmptyState label="Henüz bir yanıt yok." icon={MessageCircle} />
+                                <EmptyState label="Sesiz.." description="Henüz bir tartışmaya katılmadın." icon={MessageCircle} />
                             )}
                         </motion.div>
                     )}
@@ -185,34 +185,27 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass, id }: { l
         <button
             onClick={onClick}
             className={cn(
-                "relative flex shrink-0 whitespace-nowrap items-center gap-2 px-5 py-3 rounded-t-lg text-xs font-black tracking-wider transition-all uppercase outline-none select-none",
-                isActive ? "text-black" : "text-neutral-500 hover:text-white hover:bg-white/5",
+                "relative flex shrink-0 items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-xs font-black tracking-wider transition-all uppercase outline-none select-none border-[2px]",
+                isActive
+                    ? "bg-[#FFC800] text-black border-black shadow-[3px_3px_0px_#000] translate-y-[-2px]"
+                    : "bg-background text-muted-foreground border-border/50 hover:bg-muted hover:border-black/50 hover:text-foreground",
                 colorClass && !isActive && colorClass
             )}
         >
-            {isActive && (
-                <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-[#FFC800] rounded-t-lg"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-            )}
-            <span className="relative z-10 flex items-center gap-2">
-                <Icon className={cn("w-4 h-4", isActive ? "text-black" : "opacity-70")} />
-                {label}
-            </span>
+            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-black" : "opacity-70")} />
+            {label}
         </button>
     );
 }
 
-function EmptyState({ label, icon: Icon }: { label: string, icon?: any }) {
+function EmptyState({ label, description, icon: Icon }: { label: string, description: string, icon?: any }) {
     return (
-        <div className="flex flex-col items-center justify-center py-24 text-center border-[2px] border-dashed border-neutral-800 rounded-xl bg-neutral-900/20">
-            <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center mb-4 border border-neutral-800">
-                {Icon ? <Icon className="w-8 h-8 text-neutral-600" /> : <BookOpen className="w-8 h-8 text-neutral-600" />}
+        <div className="flex flex-col items-center justify-center py-20 text-center border-[2px] border-dashed border-border/50 rounded-2xl bg-muted/10">
+            <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mb-4 border border-border/50">
+                {Icon ? <Icon className="w-6 h-6 text-muted-foreground" /> : <FileText className="w-6 h-6 text-muted-foreground" />}
             </div>
-            <p className="text-neutral-400 font-bold text-lg">{label}</p>
-            <p className="text-neutral-600 text-xs mt-1 font-mono">Burada görülecek bir şey yok... henüz.</p>
+            <p className="text-foreground font-black text-lg">{label}</p>
+            <p className="text-muted-foreground text-xs mt-1 font-mono max-w-[200px] leading-relaxed">{description}</p>
         </div>
     );
 }
