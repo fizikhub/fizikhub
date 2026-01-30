@@ -190,7 +190,7 @@ export function NeoArticleCard({
                             </span>
                             <span className="flex items-center gap-1 group/comment">
                                 <MessageCircle className="w-4 h-4 group-hover/comment:text-blue-500 transition-colors" />
-                                {article.comments_count || 0}
+                                {initialComments}
                             </span>
                         </div>
 
