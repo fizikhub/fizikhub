@@ -40,10 +40,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
         const userMessage = input.trim();
         setInput("");
 
-        await sendMessage({
-            role: "user",
-            content: userMessage
-        });
+        await sendMessage({ text: userMessage });
     };
 
     const getMessageContent = (m: any): string => {
