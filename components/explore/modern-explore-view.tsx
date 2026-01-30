@@ -192,10 +192,10 @@ export function ModernExploreView({
                                     key={cat}
                                     onClick={() => handleCategoryChange(cat)}
                                     className={cn(
-                                        "px-6 py-3 text-sm font-black uppercase tracking-wider cursor-pointer border-2 border-black transition-all whitespace-nowrap",
+                                        "px-4 py-2 text-xs font-black uppercase tracking-wider cursor-pointer border-[2px] border-black transition-all whitespace-nowrap rounded-md",
                                         isActuallyActive
-                                            ? "bg-[#FFC800] text-black shadow-[4px_4px_0px_0px_#000] -translate-y-1 transform rotate-1"
-                                            : "bg-white text-black hover:bg-zinc-100 hover:shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1"
+                                            ? "bg-[#FFC800] text-black shadow-[3px_3px_0px_0px_#000] -translate-y-[1px] transform"
+                                            : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-y-[1px]"
                                     )}
                                 >
                                     {cat}
