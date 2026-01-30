@@ -3,12 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"; // Ensure SheetTitle is imported for accessibility
-import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Atom, Zap, FlaskConical, BookOpen, User, Home, Award } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, ArrowRight, Home, Zap, BookOpen, FlaskConical, Award } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
@@ -22,114 +20,95 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "Ana Sayfa", icon: Home, color: "text-white" },
-        { href: "/makale", label: "Keşfet", icon: Zap, color: "text-[#FFC800]" },
-        { href: "/blog", label: "Blog", icon: BookOpen, color: "text-cyan-400" },
-        { href: "/testler", label: "Testler", icon: FlaskConical, color: "text-green-400" },
-        { href: "/siralamalar", label: "Sıralamalar", icon: Award, color: "text-purple-400" },
+        { href: "/", label: "Ana Sayfa", icon: Home, bg: "bg-white", activeBg: "bg-black", activeText: "text-white" },
+        { href: "/makale", label: "Keşfet", icon: Zap, bg: "bg-[#FFC800]", activeBg: "bg-[#e5b300]", activeText: "text-black" },
+        { href: "/blog", label: "Blog", icon: BookOpen, bg: "bg-[#3B82F6]", activeBg: "bg-[#2563eb]", activeText: "text-white" },
+        { href: "/testler", label: "Testler", icon: FlaskConical, bg: "bg-[#A855F7]", activeBg: "bg-[#9333ea]", activeText: "text-white" },
+        { href: "/siralamalar", label: "Sıralamalar", icon: Award, bg: "bg-[#EC4899]", activeBg: "bg-[#db2777]", activeText: "text-white" },
     ];
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <button className="flex items-center justify-center w-[36px] h-[36px] bg-[#111] border-[2px] border-white/20 shadow-[0px_0px_10px_rgba(0,0,0,0.5)] active:scale-95 transition-transform rounded-md group">
-                    <Menu className="w-5 h-5 text-white group-hover:first:text-[#FFC800] transition-colors" />
+                <button className="flex items-center justify-center w-[40px] h-[40px] bg-[#FFC800] border-[3px] border-black shadow-[3px_3px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-none group hover:bg-[#ffd633]">
+                    <Menu className="w-6 h-6 text-black stroke-[3px]" />
                 </button>
             </SheetTrigger>
 
-            {/* RIGHT SIDE SHEET */}
-            <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 border-l-[3px] border-white/20 bg-[#050505] overflow-hidden">
+            {/* RIGHT SIDE SHEET - CLEAN NEO-BRUTALIST */}
+            <SheetContent side="right" className="w-[85vw] sm:w-[380px] p-0 border-l-[4px] border-black bg-[#F0F0F0] overflow-hidden rounded-l-[0px]">
                 <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
 
-                {/* COSMIC BACKGROUND & GRID */}
-                <div className="absolute inset-0 z-0 pointer-events-none">
-                    {/* Base Gradient */}
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#1a1a2e_0%,_#000000_100%)]" />
-
-                    {/* Retro Grid */}
-                    <div
-                        className="absolute inset-0 opacity-10"
-                        style={{
-                            backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
-                            backgroundSize: '20px 20px'
-                        }}
-                    />
-
-                    {/* Glowing Orbs */}
-                    <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-blue-600/20 rounded-full blur-[100px]" />
-                    <div className="absolute bottom-[-10%] left-[-10%] w-[200px] h-[200px] bg-purple-600/10 rounded-full blur-[80px]" />
-                </div>
-
-                <div className="relative z-10 flex flex-col h-full">
-                    {/* HEADER: LOGO & STATUS */}
-                    <div className="p-6 border-b border-white/10 bg-black/20 backdrop-blur-md">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="scale-90 origin-left">
-                                <DankLogo />
-                            </div>
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-white/50 hover:text-white"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
+                <div className="flex flex-col h-full">
+                    {/* HEADER */}
+                    <div className="p-6 border-b-[4px] border-black bg-white flex items-center justify-between">
+                        <div className="scale-100">
+                            <DankLogo />
                         </div>
+                        <button
+                            onClick={() => setIsOpen(false)}
+                            className="w-10 h-10 flex items-center justify-center bg-[#FF4D4D] border-[3px] border-black shadow-[3px_3px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:bg-[#ff3333]"
+                        >
+                            <X className="w-6 h-6 text-black stroke-[3px]" />
+                        </button>
+                    </div>
 
-                        {/* SYSTEM STATUS BADGE */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full w-fit">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-[10px] font-mono font-bold text-green-400 tracking-widest uppercase">
-                                SYSTEM NOMINAL
-                            </span>
+                    {/* SCROLLABLE CONTENT */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-dots-pattern">
+                        {/* Menu Grid */}
+                        <div className="grid gap-4">
+                            {menuItems.map((item, i) => {
+                                const isActive = pathname === item.href;
+                                return (
+                                    <ViewTransitionLink
+                                        key={item.href}
+                                        href={item.href}
+                                        className={cn(
+                                            "flex items-center justify-between px-5 py-5 border-[3px] border-black shadow-[4px_4px_0px_#000] transition-all duration-200 group relative overflow-hidden",
+                                            isActive ? "translate-x-[2px] translate-y-[2px] shadow-none" : "hover:-translate-y-1 hover:shadow-[6px_6px_0px_#000]",
+                                            item.bg,
+                                            isActive && "bg-black"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-4 relative z-10">
+                                            <item.icon className={cn(
+                                                "w-6 h-6 stroke-[2.5px]",
+                                                isActive ? "text-white" : "text-black"
+                                            )} />
+                                            <span className={cn(
+                                                "text-lg font-black uppercase tracking-wide",
+                                                isActive ? "text-white" : "text-black"
+                                            )}>
+                                                {item.label}
+                                            </span>
+                                        </div>
+
+                                        <ArrowRight className={cn(
+                                            "w-6 h-6 stroke-[3px] transition-transform duration-300 group-hover:translate-x-1",
+                                            isActive ? "text-white" : "text-black"
+                                        )} />
+                                    </ViewTransitionLink>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    {/* MENU ITEMS: CONTROL PANEL STYLE */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                        {menuItems.map((item, i) => (
-                            <ViewTransitionLink
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center justify-between p-4 rounded-xl group relative overflow-hidden",
-                                    "bg-white/5 border border-white/5 hover:border-white/20 transition-all duration-300",
-                                    pathname === item.href ? "bg-white/10 border-white/30" : ""
-                                )}
-                            >
-                                <div className="flex items-center gap-4 relative z-10">
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-lg flex items-center justify-center bg-black/40 border border-white/10 group-hover:scale-110 transition-transform duration-300",
-                                        item.color
-                                    )}>
-                                        <item.icon className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className={cn(
-                                            "text-sm font-black uppercase tracking-wider text-white group-hover:translate-x-1 transition-transform",
-                                            pathname === item.href ? "text-[#FFC800]" : ""
-                                        )}>
-                                            {item.label}
-                                        </span>
-                                        <span className="text-[10px] font-mono text-white/30 group-hover:text-white/50">
-                                            MODULE_0{i + 1}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Hover Effect: Scanline */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out z-0" />
-                            </ViewTransitionLink>
-                        ))}
-                    </div>
-
-                    {/* FOOTER: AUTH & PROFILE */}
-                    <div className="p-6 border-t border-white/10 bg-black/40 backdrop-blur-xl">
-                        <div className="mb-4">
+                    {/* FOOTER */}
+                    <div className="p-6 border-t-[4px] border-black bg-white">
+                        <div className="mb-6">
                             <AuthButton />
                         </div>
-                        <div className="flex items-center justify-between text-[10px] font-mono text-white/20 uppercase tracking-widest">
-                            <span>FizikHub v2.0</span>
-                            <span>SEQ_ID: {Math.floor(Math.random() * 9999)}</span>
+
+                        {/* Social / Info */}
+                        <div className="grid grid-cols-2 gap-4 pt-4 border-t-[2px] border-black/10">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black uppercase text-neutral-400">Versiyon</span>
+                                <span className="text-xs font-bold font-mono">v2.1.0</span>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] font-black uppercase text-neutral-400">Tasarım</span>
+                                <span className="text-xs font-bold">NEO-BRUTAL</span>
+                            </div>
                         </div>
                     </div>
                 </div>
