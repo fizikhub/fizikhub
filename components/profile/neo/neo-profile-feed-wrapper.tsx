@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed } from "@/components/home/unified-feed";
-import { BookOpen, MessageCircle, Bookmark, FileText } from "lucide-react";
+import { BookOpen, MessageCircle, Bookmark, FileText, Inbox } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface NeoProfileFeedWrapperProps {
@@ -30,35 +30,21 @@ export function NeoProfileFeedWrapper({
     const [activeTab, setActiveTab] = useState<TabType>('posts');
 
     // --- PREPARE DATA FOR UNIFIED FEED ---
-    // UnifiedFeed expects items with { type, data, sortDate }
-
-    // 1. POSTS TAB
     const postsItems = [
         ...articles.map(a => ({ type: 'article' as const, data: a, sortDate: a.created_at })),
         ...questions.map(q => ({ type: 'question' as const, data: q, sortDate: q.created_at }))
     ].sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 
-    // 2. SAVED TAB
     const savedItems = [
         ...(bookmarkedArticles || []).map((bm: any) => ({ type: 'article' as const, data: bm.articles, sortDate: bm.created_at })),
         ...(bookmarkedQuestions || []).map((bm: any) => ({ type: 'question' as const, data: bm.questions, sortDate: bm.created_at }))
     ].sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 
-    // 3. DRAFTS TAB
     const draftsItems = (drafts || []).map(d => ({
         type: 'article' as const,
-        data: { ...d, title: `[TASLAK] ${d.title}` }, // Visual indicator
+        data: { ...d, title: `[TASLAK] ${d.title}` },
         sortDate: d.created_at
     })).sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
-
-    // 4. REPLIES TAB (UnifiedFeed usually doesn't handle pure answers nicely, so we might need custom render or mock it)
-    // For now, let's treat answers as a simple list or try to adapt content. 
-    // Actually UnifiedFeed renders `FeedItem` components. We don't have an `AnswerCard` in UnifiedFeed yet.
-    // Let's render answers manually if activeTab is replies, otherwise use UnifiedFeed.
-
-
-
-    // ... existing code ...
 
     return (
         <div className="space-y-6">
@@ -70,21 +56,18 @@ export function NeoProfileFeedWrapper({
                     icon={FileText}
                     isActive={activeTab === 'posts'}
                     onClick={() => setActiveTab('posts')}
-                    id="posts"
                 />
                 <TabButton
                     label="YANITLAR"
                     icon={MessageCircle}
                     isActive={activeTab === 'replies'}
                     onClick={() => setActiveTab('replies')}
-                    id="replies"
                 />
                 <TabButton
                     label="KAYDEDİLENLER"
                     icon={Bookmark}
                     isActive={activeTab === 'saved'}
                     onClick={() => setActiveTab('saved')}
-                    id="saved"
                 />
                 {isOwnProfile && drafts.length > 0 && (
                     <TabButton
@@ -92,7 +75,6 @@ export function NeoProfileFeedWrapper({
                         icon={BookOpen}
                         isActive={activeTab === 'drafts'}
                         onClick={() => setActiveTab('drafts')}
-                        id="drafts"
                         colorClass="text-red-500"
                     />
                 )}
@@ -156,7 +138,7 @@ export function NeoProfileFeedWrapper({
                         >
                             {answers.length > 0 ? (
                                 answers.map((answer) => (
-                                    <div key={answer.id} className="bg-card border-l-[3px] border-l-[#FFC800] border border-border/50 rounded-r-xl p-5 hover:bg-muted/30 transition-all group">
+                                    <div key={answer.id} className="bg-card border-l-[3px] border-l-[#FFC800] border border-border/50 rounded-r-xl p-5 hover:bg-muted/30 transition-all group shadow-sm hover:shadow-md">
                                         <div className="flex items-center gap-2 mb-2 text-[10px] text-muted-foreground font-black uppercase tracking-wider">
                                             <MessageCircle className="w-3 h-3 text-[#FFC800]" />
                                             <span>YANITLADI</span>
@@ -170,7 +152,7 @@ export function NeoProfileFeedWrapper({
                                     </div>
                                 ))
                             ) : (
-                                <EmptyState label="Sesiz.." description="Henüz bir tartışmaya katılmadın." icon={MessageCircle} />
+                                <EmptyState label="Sessiz.." description="Henüz bir tartışmaya katılmadın." icon={MessageCircle} />
                             )}
                         </motion.div>
                     )}
@@ -180,19 +162,19 @@ export function NeoProfileFeedWrapper({
     );
 }
 
-function TabButton({ label, icon: Icon, isActive, onClick, colorClass, id }: { label: string, icon: any, isActive: boolean, onClick: () => void, colorClass?: string, id: string }) {
+function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label: string, icon: any, isActive: boolean, onClick: () => void, colorClass?: string }) {
     return (
         <button
             onClick={onClick}
             className={cn(
-                "relative flex shrink-0 items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-xs font-black tracking-wider transition-all uppercase outline-none select-none border-[2px]",
+                "relative flex shrink-0 items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-black tracking-wider transition-all uppercase outline-none select-none border-[2px]",
                 isActive
-                    ? "bg-[#FFC800] text-black border-black shadow-[3px_3px_0px_#000] translate-y-[-2px]"
-                    : "bg-background text-muted-foreground border-border/50 hover:bg-muted hover:border-black/50 hover:text-foreground",
+                    ? "bg-[#FFC800] text-black border-black shadow-[3px_3px_0px_#000] -translate-y-[2px]"
+                    : "bg-background text-muted-foreground border-transparent hover:bg-muted hover:text-foreground",
                 colorClass && !isActive && colorClass
             )}
         >
-            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-black" : "opacity-70")} />
+            <Icon className={cn("w-4 h-4", isActive ? "text-black" : "opacity-70")} />
             {label}
         </button>
     );
@@ -200,12 +182,12 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass, id }: { l
 
 function EmptyState({ label, description, icon: Icon }: { label: string, description: string, icon?: any }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-[2px] border-dashed border-border/50 rounded-2xl bg-muted/10">
-            <div className="w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center mb-4 border border-border/50">
-                {Icon ? <Icon className="w-6 h-6 text-muted-foreground" /> : <FileText className="w-6 h-6 text-muted-foreground" />}
+        <div className="flex flex-col items-center justify-center py-20 text-center border-[2px] border-dashed border-border/50 rounded-2xl bg-muted/10 group hover:bg-muted/20 transition-colors">
+            <div className="w-20 h-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 border border-border/50 group-hover:scale-110 transition-transform duration-300">
+                {Icon ? <Icon className="w-8 h-8 text-muted-foreground" /> : <Inbox className="w-8 h-8 text-muted-foreground" />}
             </div>
-            <p className="text-foreground font-black text-lg">{label}</p>
-            <p className="text-muted-foreground text-xs mt-1 font-mono max-w-[200px] leading-relaxed">{description}</p>
+            <p className="text-foreground font-black text-xl mb-2">{label}</p>
+            <p className="text-muted-foreground text-sm font-mono max-w-[250px] leading-relaxed mx-auto">{description}</p>
         </div>
     );
 }

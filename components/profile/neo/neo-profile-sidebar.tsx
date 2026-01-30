@@ -34,7 +34,10 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                 <div className="absolute top-0 right-0 w-16 h-16 border-t-[3px] border-r-[3px] border-white/10 rounded-tr-xl pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-16 h-16 border-b-[3px] border-l-[3px] border-white/10 rounded-bl-xl pointer-events-none" />
 
-                <div className="p-4 border-b-[3px] border-neutral-800 bg-neutral-900/50 flex items-center justify-between group-hover:border-[#FFC800] transition-colors">
+                {/* Scanline Effect */}
+                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-[5] bg-[length:100%_2px,3px_100%] pointer-events-none" />
+
+                <div className="p-4 border-b-[3px] border-neutral-800 bg-neutral-900/50 flex items-center justify-between group-hover:border-[#FFC800] transition-colors relative z-10">
                     <h3 className="font-black text-white flex items-center gap-2 tracking-wider">
                         <Zap className="w-5 h-5 text-[#FFC800]" />
                         İSTATİSTİKLER
@@ -44,7 +47,7 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-[2px] bg-neutral-800 border-b-[2px] border-neutral-800">
+                <div className="grid grid-cols-2 gap-[2px] bg-neutral-800 border-b-[2px] border-neutral-800 relative z-10">
                     {[
                         { label: "Puan", value: stats.reputation, icon: Zap, color: "text-[#FFC800]", bg: "hover:bg-[#FFC800]/10" },
                         { label: "Takipçi", value: stats.followersCount, icon: Users, color: "text-cyan-400", bg: "hover:bg-cyan-400/10" },
@@ -63,7 +66,7 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                 </div>
 
                 {/* Footer Deco */}
-                <div className="bg-black p-2 flex justify-between items-center text-[9px] text-neutral-600 font-mono uppercase tracking-widest px-4">
+                <div className="bg-black p-2 flex justify-between items-center text-[9px] text-neutral-600 font-mono uppercase tracking-widest px-4 relative z-10">
                     <span>SYS_READY</span>
                     <span className="animate-pulse text-green-500">● ONLINE</span>
                 </div>
@@ -114,7 +117,7 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                             const badge = badgeItem.badges;
                             return (
                                 <div key={i} className="group relative aspect-square">
-                                    <div className="w-full h-full bg-neutral-900 border border-neutral-700 rounded-lg flex items-center justify-center text-2xl hover:border-purple-500 hover:bg-purple-500/10 hover:scale-105 transition-all cursor-help hover:shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+                                    <div className="w-full h-full bg-neutral-900 border border-neutral-700 rounded-lg flex items-center justify-center text-2xl hover:border-purple-500 hover:bg-purple-500/10 hover:scale-105 transition-all cursor-help hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] z-0 hover:z-10">
                                         {badge.icon || "🏆"}
                                     </div>
                                     {/* Tooltip */}

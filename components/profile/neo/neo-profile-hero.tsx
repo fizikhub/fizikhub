@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, MoreHorizontal } from "lucide-react";
+import { Mail, MoreHorizontal, Copy, Check } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 // --- TEXTURES (Reused from MemeCorner for consistency) ---
 function getStarTexture() {
@@ -229,9 +230,18 @@ interface NeoProfileHeroProps {
 }
 
 export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = false, stats }: NeoProfileHeroProps) {
+    const [isCopied, setIsCopied] = useState(false);
 
     const formatNumber = (num: number) =>
         new Intl.NumberFormat('tr-TR', { notation: "compact", maximumFractionDigits: 1 }).format(num);
+
+    const handleCopyUsername = () => {
+        if (!profile?.username) return;
+        navigator.clipboard.writeText(`@${profile.username}`);
+        setIsCopied(true);
+        toast.success("Kullanıcı adı kopyalandı!");
+        setTimeout(() => setIsCopied(false), 2000);
+    };
 
     return (
         <div className="w-full relative group mb-8 sm:mb-0">
@@ -240,6 +250,17 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 @keyframes gradient-flow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
                 @keyframes shimmer { 0% { transform: translateX(-100%) rotate(25deg); } 100% { transform: translateX(200%) rotate(25deg); } }
                 @keyframes pulse-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+                @keyframes glitch {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-2px, 2px); }
+                    40% { transform: translate(-2px, -2px); }
+                    60% { transform: translate(2px, 2px); }
+                    80% { transform: translate(2px, -2px); }
+                    100% { transform: translate(0); }
+                }
+                .glitch-text:hover {
+                    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+                }
             `}</style>
 
             {/* HERO BACKGROUND */}
@@ -281,9 +302,9 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-6 gap-6">
                     {/* ... (Desktop Layout implementation remains same as reference for desktop) ... */}
                     <div className="relative shrink-0 group/avatar">
-                        <div className="w-32 h-32 bg-black border-[3px] border-white/20 shadow-[4px_4px_0px_#000] overflow-hidden rounded-[4px] relative z-10">
+                        <div className="w-32 h-32 bg-black border-[3px] border-white/20 shadow-[4px_4px_0px_#000] overflow-hidden rounded-[4px] relative z-10 transition-transform duration-500 group-hover/avatar:scale-105">
                             {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover group-hover/avatar:scale-110 transition-transform duration-500" />
+                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-3xl font-black text-neutral-600">
                                     {profile?.full_name?.charAt(0) || "?"}
@@ -293,13 +314,17 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </div>
 
                     <div className="flex-1 text-left mb-2">
-                        <h1 className="text-5xl font-black tracking-tight text-white drop-shadow-md font-[family-name:var(--font-outfit)]">
+                        <h1 className="text-5xl font-black tracking-tight text-white drop-shadow-md font-[family-name:var(--font-outfit)] glitch-text cursor-default">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
                         <div className="flex items-center justify-start gap-3 mt-1">
-                            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">
+                            <button
+                                onClick={handleCopyUsername}
+                                className="flex items-center gap-1.5 text-cyan-400 font-mono text-sm tracking-widest uppercase hover:text-cyan-300 transition-colors group/copy"
+                            >
                                 @{profile?.username}
-                            </span>
+                                {isCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity" />}
+                            </button>
                             {profile?.is_verified && <span className="bg-[#FFC800] text-black text-[10px] font-bold px-1.5 py-0.5 border border-black">VERIFIED</span>}
                         </div>
                         {profile?.bio && <p className="mt-3 text-neutral-300/80 text-sm max-w-lg leading-relaxed line-clamp-2 font-mono">{profile.bio}</p>}
@@ -351,7 +376,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         animate={{ scale: 1, opacity: 1 }}
                         className="relative"
                     >
-                        <div className="w-28 h-28 rounded-[12px] border-[4px] border-black bg-black overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.5)]">
+                        <div className="w-28 h-28 rounded-[12px] border-[4px] border-black bg-black overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.5)] animate-[pulse-glow_4s_ease-in-out_infinite]">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
@@ -367,15 +392,18 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         )}
                     </motion.div>
 
-                    {/* Quick Stats - Right of Avatar */}
-                    <div className="flex gap-4 pb-1 pl-4 flex-1 justify-end">
-                        <div className="text-center">
-                            <span className="block font-black text-lg text-white drop-shadow-md">{formatNumber(stats?.followersCount || 0)}</span>
-                            <span className="text-[9px] text-white/80 font-bold uppercase tracking-wider shadow-black drop-shadow-sm">Takipçi</span>
-                        </div>
-                        <div className="text-center">
-                            <span className="block font-black text-lg text-white drop-shadow-md">{formatNumber(stats?.followingCount || 0)}</span>
-                            <span className="text-[9px] text-white/80 font-bold uppercase tracking-wider shadow-black drop-shadow-sm">Takip</span>
+                    {/* Quick Stats - Glassmorphic Container for clearer reading */}
+                    <div className="flex gap-2 pb-1 pl-2 flex-1 justify-end">
+                        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md rounded-xl p-2 border border-white/10 shadow-sm">
+                            <div className="text-center px-1">
+                                <span className="block font-black text-lg text-white drop-shadow-md leading-none">{formatNumber(stats?.followersCount || 0)}</span>
+                                <span className="text-[9px] text-white/70 font-bold uppercase tracking-wider">Takipçi</span>
+                            </div>
+                            <div className="w-px h-6 bg-white/20"></div>
+                            <div className="text-center px-1">
+                                <span className="block font-black text-lg text-white drop-shadow-md leading-none">{formatNumber(stats?.followingCount || 0)}</span>
+                                <span className="text-[9px] text-white/70 font-bold uppercase tracking-wider">Takip</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -383,10 +411,16 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 {/* Name & Bio & Actions Block */}
                 <div className="mt-4 space-y-4">
                     <div>
-                        <h1 className="text-3xl font-black text-foreground font-[family-name:var(--font-outfit)] leading-none tracking-tight">
+                        <h1 className="text-3xl font-black text-foreground font-[family-name:var(--font-outfit)] leading-none tracking-tight glitch-text w-fit">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
-                        <p className="text-sm font-bold text-neutral-500 font-mono tracking-wide mt-1">@{profile?.username}</p>
+                        <button
+                            onClick={handleCopyUsername}
+                            className="text-sm font-bold text-neutral-500 font-mono tracking-wide mt-1 flex items-center gap-1.5 active:text-foreground transition-colors"
+                        >
+                            @{profile?.username}
+                            {isCopied && <Check className="w-3 h-3 text-green-500" />}
+                        </button>
                     </div>
 
                     {profile?.bio && (
@@ -398,7 +432,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     {/* NEW: Reputation & Actions Row */}
                     <div className="flex items-center justify-between gap-3 pt-2">
                         {/* Reputation Badge */}
-                        <div className="flex items-center gap-2 pl-3 pr-4 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-full">
+                        <div className="flex items-center gap-2 pl-3 pr-4 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-full shadow-sm">
                             <div className="w-2 h-2 rounded-full bg-[#FFC800] animate-pulse" />
                             <span className="text-xs font-black text-foreground">{formatNumber(stats?.reputation || 0)} <span className="text-neutral-400 font-normal">Puan</span></span>
                         </div>
@@ -407,7 +441,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         <div className="flex items-center gap-2">
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-all">
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-all shadow-sm">
                                         <Mail className="w-4 h-4" />
                                     </Link>
                                     <ProfileSettingsDialog
@@ -420,15 +454,15 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         currentSocialLinks={profile?.social_links}
                                         userEmail={user?.email}
                                         trigger={
-                                            <button className="h-9 px-4 bg-[#000] text-white font-bold text-xs rounded-lg border border-transparent shadow-lg hover:bg-neutral-800 transition-all">
-                                                Profili Düzenle
+                                            <button className="h-9 px-4 bg-[#000] text-white font-bold text-xs rounded-lg border border-transparent shadow-[2px_2px_0px_#333] active:translate-y-[1px] active:shadow-none hover:bg-neutral-800 transition-all uppercase tracking-wide">
+                                                DÜZENLE
                                             </button>
                                         }
                                     />
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700">
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-all shadow-sm">
                                         <Mail className="w-4 h-4" />
                                     </Link>
                                     <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
@@ -442,4 +476,3 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
         </div>
     );
 }
-
