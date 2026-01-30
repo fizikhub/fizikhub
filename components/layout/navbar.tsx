@@ -156,7 +156,7 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
                             <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                         </motion.button>
@@ -167,7 +167,7 @@ export function Navbar() {
                                 variants={clickVariant}
                                 whileTap="tap"
                                 whileHover="hover"
-                                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                                className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                             >
                                 <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-black stroke-[2.5px]" />
                             </motion.div>
@@ -180,7 +180,7 @@ export function Navbar() {
                                     variants={clickVariant}
                                     whileTap="tap"
                                     whileHover="hover"
-                                    className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
+                                    className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-white"
                                 >
                                     <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
                                 </motion.button>
