@@ -116,14 +116,14 @@ export function NeoArticleCard({
             <article
                 className={cn(
                     "flex flex-col h-full relative overflow-hidden",
-                    // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
-                    "bg-white dark:bg-[#27272a]",
-                    // BORDER: Pure Black (rgb(0,0,0)) ALWAYS
-                    "border-[3px] border-black rounded-[8px]",
-                    // SHADOW: Standardized Neo Token
-                    "shadow-neo border-black",
+                    // COLOR PALETTE: Dark Mode = #18181b (Zinc 900) - Darker
+                    "bg-white dark:bg-[#18181b]",
+                    // BORDER: Thicker Pure Black
+                    "border-[3px] border-black rounded-xl",
+                    // SHADOW: Bolder, deeper shadow
+                    "shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] hover:-translate-y-1",
                     // HOVER
-                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
+                    "transition-all duration-300 ease-out",
                     className
                 )}
             >
@@ -133,107 +133,91 @@ export function NeoArticleCard({
                 />
 
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black bg-[#FFC800] z-10">
+                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black bg-neutral-900 z-10 overflow-hidden">
                     <Image
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
 
-                    {/* Category Label */}
-                    <div className="absolute top-3 left-3 z-20 perspective-500">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                    {/* Dark Overlay on Hover */}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+
+                    {/* Category Label - Absolute Cyber Badge */}
+                    <div className="absolute top-0 left-0 z-20">
+                        <div className="bg-[#FFC800] border-r-[3px] border-b-[3px] border-black text-black px-4 py-1.5 font-black text-xs uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
                             {article.category || "GENEL"}
-                        </span>
+                        </div>
                     </div>
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-5 gap-4 z-10 relative">
 
-                    {/* Title - High Contrast White in Dark Mode */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">
-                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
+                    {/* Date/Author Meta Strip */}
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-500">
+                        <span>{formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}</span>
+                        <div className="w-1 h-1 bg-black rounded-full" />
+                        <span className="text-black dark:text-neutral-300">{authorName}</span>
+                    </div>
+
+                    {/* Title - Massive & Bold */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-white leading-[1.0] uppercase tracking-tighter mb-1">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800] group-hover:to-[#FFC800] transition-all duration-300 box-decoration-clone px-0 group-hover:px-1 -ml-0 group-hover:-ml-1 text-inherit">
                             {article.title}
                         </span>
                     </h3>
 
-                    {/* Preview Text - Lighter Grey for Contrast */}
-                    <p className="font-[family-name:var(--font-inter)] text-xs sm:text-sm font-semibold text-neutral-600 dark:text-zinc-300 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
+                    {/* Preview Text */}
+                    <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-600 dark:text-neutral-400 line-clamp-3 leading-relaxed">
                         {previewText}
                     </p>
 
                     {/* Spacer */}
                     <div className="mt-auto"></div>
 
-                    {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
+                    {/* SEPARATOR - Dashed Line */}
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/20 dark:border-white/20 my-2" />
 
-                    {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between pt-1 sm:pt-2">
-
-                        {/* Author */}
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
-                                <Image
-                                    src={authorAvatar}
-                                    alt={authorName}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
-                                    {authorName}
-                                </span>
-                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
-                                    {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
-                                </span>
-                            </div>
+                    {/* 3. ACTIONS FOOTER - Cyber Buttons */}
+                    <div className="flex items-center justify-between pt-1">
+                        {/* Stats (Read Only) */}
+                        <div className="flex items-center gap-4 text-xs font-bold text-neutral-500">
+                            <span className="flex items-center gap-1 group/like">
+                                <Heart className={cn("w-4 h-4 transition-colors", isLiked ? "fill-red-500 text-red-500" : "group-hover/like:text-red-500")} />
+                                {likeCount}
+                            </span>
+                            <span className="flex items-center gap-1 group/comment">
+                                <MessageCircle className="w-4 h-4 group-hover/comment:text-blue-500 transition-colors" />
+                                {article.comments_count || 0}
+                            </span>
                         </div>
 
-                        {/* Actions Code - Pure Black Borders */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 flex-shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
-                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isLiked ? "bg-[#FFC800] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
+                                    "w-8 h-8 flex items-center justify-center rounded border-2 border-black transition-all",
+                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
+                                    isLiked ? "bg-red-500 text-white" : "bg-white hover:bg-neutral-100 text-black"
                                 )}
                             >
-                                <Heart className={cn("w-5 h-5 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-current")} />
-                            </button>
-
-                            {/* Comment */}
-                            <ViewTransitionLink href={`/blog/${article.slug}#comments`}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
-                            >
-                                <MessageCircle className="w-5 h-5 stroke-[2.5px] stroke-current" />
-                            </ViewTransitionLink>
-
-                            {/* Share */}
-                            <button
-                                onClick={handleShare}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
-                            >
-                                <Share2 className="w-5 h-5 stroke-[2.5px] stroke-current" />
+                                <Heart className={cn("w-4 h-4 stroke-[3px]", isLiked ? "fill-current stroke-current" : "stroke-current")} />
                             </button>
 
                             {/* Bookmark */}
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
-                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"
+                                    "w-8 h-8 flex items-center justify-center rounded border-2 border-black transition-all",
+                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
+                                    isBookmarked ? "bg-black text-white" : "bg-white hover:bg-neutral-100 text-black"
                                 )}
                             >
-                                <Bookmark className={cn("w-5 h-5 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-current")} />
+                                <Bookmark className={cn("w-4 h-4 stroke-[3px]", isBookmarked ? "fill-current" : "stroke-current")} />
                             </button>
                         </div>
                     </div>

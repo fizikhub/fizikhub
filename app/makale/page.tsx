@@ -128,12 +128,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 <NeoArticleHeader />
 
                 {/* Filters / Tabs */}
-                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[2px] border-black/10 dark:border-white/10">
-                    <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
+                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-6 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[2px] border-black/10 dark:border-white/10">
+                    <div className="flex items-center gap-4 overflow-x-auto scrollbar-hide pb-2">
                         <Link
                             href="/makale"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${!categoryParam && sortParam === 'latest'
-                                ? 'bg-[#FFC800] text-black'
+                            className={`px-6 py-2.5 text-xs sm:text-sm font-black uppercase tracking-widest whitespace-nowrap border-[2px] border-black rounded-lg shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ${!categoryParam && sortParam === 'latest'
+                                ? 'bg-[#FFC800] text-black ring-2 ring-black ring-offset-2'
                                 : 'bg-white text-black hover:bg-neutral-100'
                                 }`}
                         >
@@ -141,12 +141,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         </Link>
                         <Link
                             href="/makale?sort=popular"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-2 ${sortParam === 'popular'
-                                ? 'bg-[#FF5500] text-white'
+                            className={`px-6 py-2.5 text-xs sm:text-sm font-black uppercase tracking-widest whitespace-nowrap border-[2px] border-black rounded-lg shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex items-center gap-2 ${sortParam === 'popular'
+                                ? 'bg-[#FF5500] text-white ring-2 ring-black ring-offset-2'
                                 : 'bg-white text-black hover:bg-neutral-100'
                                 }`}
                         >
-                            <Flame className="w-3 h-3 filled" />
+                            <Flame className="w-3.5 h-3.5 filled" />
                             Popüler
                         </Link>
 
@@ -154,8 +154,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             <Link
                                 key={cat}
                                 href={`/makale?category=${encodeURIComponent(cat)}`}
-                                className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${categoryParam === cat
-                                    ? 'bg-cyan-400 text-black'
+                                className={`px-6 py-2.5 text-xs sm:text-sm font-black uppercase tracking-widest whitespace-nowrap border-[2px] border-black rounded-lg shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all ${categoryParam === cat
+                                    ? 'bg-cyan-400 text-black ring-2 ring-black ring-offset-2'
                                     : 'bg-white text-black hover:bg-neutral-100'
                                     }`}
                             >
@@ -165,11 +165,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
                     {/* Main Content - Social Feed */}
                     <div className="lg:col-span-8">
                         {/* Feed Layout: Grid for Neo Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             {feedArticles.map((article, index) => (
                                 <div key={article.id} className={index % 3 === 0 ? "md:col-span-2" : ""}>
                                     <NeoArticleCard
@@ -181,7 +181,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                         className="h-full"
                                     />
                                     {index === 4 && (
-                                        <div className="my-8 md:col-span-2">
+                                        <div className="my-12 md:col-span-2">
                                             <ForumTeaserCard />
                                         </div>
                                     )}
@@ -190,12 +190,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                         </div>
 
                         {feedArticles.length === 0 && (
-                            <div className="text-center py-24 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-xl">
-                                <Telescope className="w-16 h-16 mx-auto mb-4 text-black" />
-                                <p className="text-2xl font-black uppercase text-black mb-2">HİÇBİR ŞEY YOK MU?</p>
-                                <p className="text-sm font-bold text-neutral-500 mb-6">Bu kategoride henüz bir makale paylaşılmamış.</p>
-                                <Link href="/makale" className="inline-block px-6 py-3 bg-[#FFC800] border-2 border-black font-black uppercase shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all text-black">
-                                    Tüm Makalelere Dön
+                            <div className="text-center py-32 bg-neutral-100 dark:bg-neutral-900 border-[3px] border-black border-dashed rounded-2xl">
+                                <Telescope className="w-20 h-20 mx-auto mb-6 text-neutral-400" />
+                                <h3 className="text-3xl font-black uppercase text-black dark:text-white mb-2 tracking-tight">VERİ BULUNAMADI</h3>
+                                <p className="text-base font-bold text-neutral-500 mb-8 max-w-sm mx-auto">
+                                    Aradığın kriterlere uygun makale şu an sistemlerimizde tespit edilemedi.
+                                </p>
+                                <Link href="/makale" className="inline-flex px-8 py-3 bg-[#FFC800] border-[3px] border-black rounded-lg font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all text-black">
+                                    ARŞİVE DÖN
                                 </Link>
                             </div>
                         )}
