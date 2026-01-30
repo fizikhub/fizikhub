@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord } from "lucide-react";
+import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Zap } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect } from "react";
@@ -133,6 +133,20 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         }
     };
 
+    // --- STAR GENERATION (Simple CSS/SVG approach for performance) ---
+    const [stars, setStars] = useState<{ top: number; left: number; size: number; opacity: number }[]>([]);
+
+    useEffect(() => {
+        const starCount = 30;
+        const newStars = Array.from({ length: starCount }).map(() => ({
+            top: Math.random() * 100,
+            left: Math.random() * 100,
+            size: 1 + Math.random() * 2,
+            opacity: 0.3 + Math.random() * 0.7
+        }));
+        setStars(newStars);
+    }, []);
+
     return (
         <motion.div
             layout
@@ -142,31 +156,60 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
                 "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-white text-black", // Force White BG, Black Text (Pop Style)
-                "border-[3px] border-black", // Hard Black Border
-                "shadow-[6px_6px_0px_0px_#000]", // Hard Black Shadow
-                "w-[calc(100%+12px)] -ml-[6px] sm:w-full sm:ml-0 mb-6 z-[20]" // Slightly wider on mobile
+                "bg-[#050510] text-white", // Deep Space Background
+                "border-[3px] border-white", // White Border
+                "shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]", // White/Glass Shadow
+                "w-full mb-6 z-[20]",
+                "sm:-mt-4" // Move up slightly on desktop/mobile if needed
             )}
         >
-            <div className="relative h-9 sm:h-10 border-b-[3px] border-black bg-zinc-50 flex items-center justify-center select-none rounded-t-xl overflow-hidden">
-                {/* Subtle Pattern */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
+            {/* DEEP SPACE BACKGROUND LAYERS */}
+            <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none z-0">
+                {/* 1. Base Gradient */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#2E1065_0%,_#000000_100%)] opacity-80" />
 
-                <div className="absolute left-3 sm:left-5 flex gap-1.5 sm:gap-2 z-10">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border-[1.5px] border-black shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                </div>
-                <div className="text-[10px] sm:text-xs font-black text-black/70 uppercase tracking-[0.2em] z-10">Paylaşım Merkezi</div>
+                {/* 2. Stars */}
+                {stars.map((star, i) => (
+                    <div
+                        key={i}
+                        className="absolute rounded-full bg-white animate-pulse"
+                        style={{
+                            top: `${star.top}%`,
+                            left: `${star.left}%`,
+                            width: `${star.size}px`,
+                            height: `${star.size}px`,
+                            opacity: star.opacity,
+                            animationDuration: `${2 + Math.random() * 3}s`
+                        }}
+                    />
+                ))}
+
+                {/* 3. Nebula/Galaxy Effects */}
+                <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]" />
+                <div className="absolute top-10 right-10 w-32 h-32 bg-purple-600/30 blur-[60px] rounded-full mix-blend-screen" />
+                <div className="absolute bottom-10 left-10 w-40 h-40 bg-blue-600/20 blur-[60px] rounded-full mix-blend-screen" />
             </div>
 
-            <div className="p-3 sm:p-5">
+            {/* HEADER */}
+            <div className="relative h-9 sm:h-10 border-b-[3px] border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center select-none rounded-t-xl overflow-hidden z-10">
+                <div className="absolute left-3 sm:left-5 flex gap-1.5 sm:gap-2 z-10">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border border-white/20 shadow-sm" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border border-white/20 shadow-sm" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border border-white/20 shadow-sm" />
+                </div>
+                <div className="text-[10px] sm:text-xs font-black text-white/90 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <Atom className="w-3 h-3 text-purple-400" />
+                    Paylaşım Merkezi
+                </div>
+            </div>
+
+            <div className="p-3 sm:p-5 relative z-10">
                 <div className="flex gap-3 sm:gap-4 items-center">
                     {/* Avatar Area */}
                     <div className="shrink-0">
-                        <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-[3px] border-black shadow-[2px_2px_0px_0px_#000] rounded-xl">
+                        <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-[2px] border-white shadow-[0px_0px_15px_rgba(255,255,255,0.2)] rounded-xl">
                             <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-neo-yellow text-black font-black text-base sm:text-lg rounded-xl">
+                            <AvatarFallback className="bg-black text-white font-black text-base sm:text-lg rounded-xl border border-white/20">
                                 {displayName?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
@@ -182,13 +225,23 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="w-full bg-white rounded-xl p-4 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] space-y-3"
+                                    className="w-full bg-white/10 backdrop-blur-xl rounded-xl p-4 border-[2px] border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] space-y-3 relative overflow-hidden"
                                 >
+                                    {/* CLOSE BUTTON */}
+                                    <button
+                                        onClick={handleClose}
+                                        className="absolute top-2 right-2 p-1.5 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+
+                                    <div className="text-xs font-bold text-white/50 uppercase tracking-wider mb-2">Hızlı Soru Sor</div>
+
                                     <input
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         placeholder="Sorunun başlığı ne olsun?"
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-black/40 text-black"
+                                        className="w-full bg-transparent border-b-[2px] border-white/30 px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-white/30 text-white focus:border-white transition-colors"
                                         autoFocus
                                     />
 
@@ -196,7 +249,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
                                         placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-transparent border-b-[3px] border-black px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-black/40 text-black"
+                                        className="w-full bg-transparent border-b-[2px] border-white/30 px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-white/30 text-white focus:border-white transition-colors"
                                     />
 
                                     <div className="flex flex-wrap gap-2 pt-1">
@@ -205,10 +258,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 key={cat}
                                                 onClick={() => setCategory(cat)}
                                                 className={cn(
-                                                    "px-3 py-1 rounded-lg text-[10px] font-black border-[2px] border-black transition-all",
+                                                    "px-3 py-1 rounded-lg text-[10px] font-bold border border-white/20 transition-all",
                                                     category === cat
-                                                        ? "bg-neo-yellow text-black shadow-[2px_2px_0px_0px_#000]"
-                                                        : "bg-white text-black hover:bg-black hover:text-white"
+                                                        ? "bg-white text-black shadow-[0px_0px_10px_rgba(255,255,255,0.4)] border-white"
+                                                        : "bg-transparent text-white/70 hover:bg-white/10"
                                                 )}
                                             >
                                                 {cat}
@@ -218,18 +271,11 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
                                     <div className="flex items-center justify-end gap-2 pt-2">
                                         <button
-                                            onClick={() => submitQuestion('draft')}
-                                            disabled={isSubmitting}
-                                            className="px-4 py-2 rounded-lg text-xs font-bold text-black border-[2px] border-black hover:bg-black hover:text-white transition-colors"
-                                        >
-                                            Taslak
-                                        </button>
-                                        <button
                                             onClick={() => submitQuestion('published')}
                                             disabled={isSubmitting}
-                                            className="px-6 py-2 rounded-lg text-xs font-black bg-neo-green text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all disabled:opacity-50"
+                                            className="px-6 py-2 rounded-lg text-xs font-black bg-[#FFC800] text-black border-[2px] border-white shadow-[2px_2px_0px_0px_#fff] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all disabled:opacity-50 flex items-center gap-2"
                                         >
-                                            {isSubmitting ? "..." : "Yayınla"}
+                                            {isSubmitting ? "..." : "Yayınla"} <Zap className="w-3 h-3 fill-black" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -238,28 +284,28 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     ref={triggerRef}
                                     onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                                     className={cn(
-                                        "w-full h-11 sm:h-14 text-left px-3 sm:px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                        "bg-white text-black",
-                                        "border-[3px] border-black",
+                                        "w-full h-10 sm:h-14 text-left px-3 sm:px-5 flex items-center justify-between transition-all duration-200 group/input relative",
+                                        "bg-white/5 backdrop-blur-md", // Translucent
+                                        "border-[2px] border-white/50 hover:border-white",
                                         "rounded-xl",
-                                        "shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]",
-                                        isOpen && "bg-neo-yellow"
+                                        "shadow-none hover:bg-white/10",
+                                        isOpen && "bg-white text-black border-white"
                                     )}
                                 >
-                                    <span className="text-black font-bold text-xs sm:text-base truncate mr-2 flex-1 block">
+                                    <span className={cn("font-bold text-xs sm:text-base truncate mr-2 flex-1 block transition-colors", isOpen ? "text-black" : "text-white")}>
                                         {isOpen ? (
                                             "Kapat"
                                         ) : (
                                             <span className="flex items-center gap-1 overflow-hidden">
-                                                <span className="truncate shrink min-w-0 sm:hidden">Ne düşünüyorsun,</span>
-                                                <span className="truncate shrink min-w-0 hidden sm:inline">Ne düşünüyorsun,</span>
-                                                <span className="font-black shrink-0 uppercase">{firstName}?</span>
+                                                <span className="truncate shrink min-w-0 sm:hidden opacity-80">Paylaşmak ister misin,</span>
+                                                <span className="truncate shrink min-w-0 hidden sm:inline opacity-80 text-sm">Aklında ne var,</span>
+                                                <span className="font-black shrink-0 uppercase tracking-wide">{firstName}?</span>
                                             </span>
                                         )}
                                     </span>
                                     <div className={cn(
-                                        "w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-[2px] border-black flex items-center justify-center transition-all duration-300 shrink-0",
-                                        isOpen ? "bg-black text-white rotate-45" : "bg-neo-yellow text-black"
+                                        "w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-[2px] flex items-center justify-center transition-all duration-300 shrink-0",
+                                        isOpen ? "border-black bg-black text-white rotate-45" : "border-white/50 bg-white/10 text-white"
                                     )}>
                                         <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                                     </div>
@@ -276,17 +322,17 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000] z-[100] overflow-hidden rounded-xl"
+                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-[#0a0a0a] border-[2px] border-white shadow-[0px_10px_40px_rgba(0,0,0,0.5)] z-[100] overflow-hidden rounded-xl"
                                 >
-                                    <div className="p-2 space-y-2">
-                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-black/50 ml-1">Seçenekler</div>
+                                    <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
+                                    <div className="p-2 space-y-1 relative z-10">
+                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-white/40 ml-1">Seçenekler</div>
 
-                                        {/* Items with thick borders on hover */}
                                         {[
-                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-neo-pink" },
-                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-neo-blue" },
-                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-neo-purple" },
-                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-neo-green" }
+                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-red-500", border: "border-red-500" },
+                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-yellow-400", border: "border-yellow-400" },
+                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-blue-500", border: "border-blue-500" },
+                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-green-500", border: "border-green-500" }
                                         ].map((item, idx) => {
                                             const Comp = item.href ? Link : 'button';
                                             const props = item.href ? { href: item.href } : { onClick: item.action };
@@ -294,14 +340,14 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 <Comp
                                                     key={idx}
                                                     {...props as any}
-                                                    className="w-full flex items-center gap-3 p-3 hover:bg-black hover:text-white transition-all group rounded-lg border-[2px] border-transparent hover:border-black"
+                                                    className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-all group rounded-lg border border-transparent hover:border-white/20"
                                                 >
-                                                    <div className={`relative w-10 h-10 ${item.color} border-[2px] border-black flex items-center justify-center text-black rounded-lg shadow-[2px_2px_0px_0px_#000] group-hover:shadow-none group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all`}>
+                                                    <div className={`relative w-10 h-10 ${item.color} flex items-center justify-center text-black rounded-lg shadow-[0px_0px_10px_rgba(0,0,0,0.3)] group-hover:scale-110 transition-transform`}>
                                                         <item.icon className="w-5 h-5 stroke-[2.5px]" />
                                                     </div>
                                                     <div className="flex-1 min-w-0 text-left">
-                                                        <h4 className="font-black text-sm transition-colors truncate">{item.label}</h4>
-                                                        <p className="text-[10px] opacity-70 leading-tight truncate font-bold">{item.sub}</p>
+                                                        <h4 className="font-bold text-sm text-white transition-colors truncate">{item.label}</h4>
+                                                        <p className="text-[10px] text-white/50 leading-tight truncate font-medium">{item.sub}</p>
                                                     </div>
                                                 </Comp>
                                             )
@@ -315,22 +361,21 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             </div>
 
             {/* Bottom Actions Bar - Neo Style */}
-            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[3px] border-black bg-white flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl scrollbar-hide relative group/bar">
+            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[2px] border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl relative z-10">
 
-                {/* Centered Group - Buttons with Hard Shadows */}
                 <div className="flex items-center gap-2 sm:gap-4 w-full justify-center">
 
-                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Blog</span>
+                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-transparent text-white border-[2px] border-white/30 hover:bg-white hover:text-black hover:border-white transition-all cursor-pointer group shrink-0">
+                        <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2px]" />
+                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">Blog</span>
                     </Link>
 
-                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
-                        <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Soru</span>
+                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-transparent text-white border-[2px] border-white/30 hover:bg-white hover:text-black hover:border-white transition-all cursor-pointer group shrink-0">
+                        <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2px]" />
+                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">Soru</span>
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#FF4433] text-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer group shrink-0">
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-white text-black border-[2px] border-white shadow-[0px_0px_10px_rgba(255,255,255,0.3)] hover:scale-105 transition-all cursor-pointer group shrink-0">
                         <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Ekle</span>
                     </button>
