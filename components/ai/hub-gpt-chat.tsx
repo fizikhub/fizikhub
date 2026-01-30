@@ -142,7 +142,9 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                         </div>
                         <div className="p-3 bg-red-500/10 border-[2px] border-red-500 rounded-xl text-red-500 text-sm">
                             <p className="font-bold">Bir hata oluştu!</p>
-                            <p className="opacity-80 text-xs mt-1">Lütfen API anahtarınızı kontrol edin veya daha sonra tekrar deneyin.</p>
+                            <p className="opacity-80 text-xs mt-1 break-words">
+                                {error.message || "Lütfen API anahtarınızı kontrol edin veya daha sonra tekrar deneyin."}
+                            </p>
                         </div>
                     </div>
                 )}

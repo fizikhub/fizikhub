@@ -51,6 +51,7 @@ export async function POST(req: Request) {
         return result.toUIMessageStreamResponse();
     } catch (error) {
         console.error("❌ HubGPT Stream Error:", error);
-        return new Response("An error occurred while generating the response.", { status: 500 });
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return new Response(`Error: ${errorMessage}`, { status: 500 });
     }
 }
