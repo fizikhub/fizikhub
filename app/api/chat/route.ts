@@ -1,107 +1,41 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
-import { FIZIKHUB_KNOWLEDGE_BASE } from "@/lib/ai-knowledge-base";
-import { getSiteContext } from "@/lib/get-site-context";
-import { createClient } from "@/lib/supabase-server"; // Ensure server client usage
+import { google } from '@ai-sdk/google';
+import { streamText, convertToCoreMessages } from 'ai';
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
-    try {
-        const { messages, userProfile } = await req.json();
-        const apiKey = process.env.GOOGLE_API_KEY;
+    const { messages } = await req.json();
 
-        if (!apiKey) {
-            return NextResponse.json(
-                { error: "API key not configured" },
-                { status: 500 }
-            );
-        }
+    const coreMessages = convertToCoreMessages(messages);
 
-        // Initialize Supabase to fetch context
-        const supabase = await createClient();
-        const dynamicSiteContext = await getSiteContext(supabase);
+    const result = await streamText({
+        model: google('gemini-1.5-pro'),
+        messages: coreMessages,
+        system: `Sen HubGPT'sin. FizikHub platformunun resmi yapay zeka asistanısın.
+    
+    Kişiliğin:
+    - Zeki, esprili ve bilimsel bir dil kullanırsın.
+    - Fizik, matematik ve genel bilim konularında uzmansın.
+    - Karmaşık konuları "Feynman Tekniği" ile basite indirgeyerek anlatmayı seversin.
+    - Kullanıcıya her zaman yardımsever ve nazik davranırsın ama arada sırada şakacı, nerd bir üslup kullanırsın (Rick and Morty referansları yapabilirsin ama abartmadan).
+    - Asla yanlış bilgi vermemeye çalışırsın, emin olmadığın yerde "Bu konuda tam emin değilim ama..." diye belirtirsin.
+    - Türkçe konuşursun.
+    - Markdown formatını aktif kullanırsın (Matematik formülleri, kod blokları vb. için).
 
-        const genAI = new GoogleGenerativeAI(apiKey);
+    Görevin:
+    - Kullanıcıların fizik sorularını yanıtlamak.
+    - FizikHub hakkında bilgi vermek.
+    - Bilimsel tartışmalara katılmak.
+    - Kodlama veya matematik problemlerinde yardımcı olmak.
 
-        // List of models to try in order of preference (Free tier friendly first)
-        // BASED ON DEBUG RESULTS: Only 2.5 models are available for this key.
-        const modelsToTry = [
-            "gemini-2.5-flash-lite", // Priority: Efficiency & Quota
-            "gemini-2.5-flash",      // Backup: Powerful
-            "gemini-2.0-flash-exp"   // Fallback: Experimental
-        ];
+    Örnek Cümleler:
+    - "Bak şimdi, kuantum dolanıklığını şöyle düşünebilirsin..."
+    - "Einstein olsa buna bayılırdı!"
+    - "Termodinamik yasaları buna izin vermez şef!"
+    
+    Önemli: Cevapların çok uzun olmasın, mobil uyumlu ve okunabilir olsun.`,
+    });
 
-        const userName = userProfile?.full_name || userProfile?.username || "Ziyaretçi";
-        const userContext = userProfile ? `KONUŞTUĞUN KİŞİ: ${userName} (Kullanıcı Adı: ${userProfile.username}). Ona ismiyle hitap et.` : "";
-
-        const systemPrompt = `Sen HubGPT'sin.
-
-        AŞAĞIDAKİ "PERSONA KURALLARI", "SİTE İÇERİKLERİ" VE "BİLGİ BANKASI" SENİN TEK GERÇEĞİNDİR.
-        BUNLARIN DIŞINA ÇIKMA. YAPAY ZEKA GİBİ KONUŞMA.
-        
-        ${userContext}
-        
-        ${dynamicSiteContext}
-        
-        ${FIZIKHUB_KNOWLEDGE_BASE}
-        
-        Kısa, net ve "bizden biri" gibi cevap ver.`;
-
-        const history = [
-            {
-                role: "user",
-                parts: [{ text: systemPrompt }]
-            },
-            {
-                role: "model",
-                parts: [{ text: "Anlaşıldı. HubGPT moduna geçiyorum. Sistem hazır. Sorularını bekliyorum." }]
-            },
-            ...messages.slice(0, -1).map((msg: any) => ({
-                role: msg.role === "user" ? "user" : "model",
-                parts: [{ text: msg.content }],
-            }))
-        ];
-
-        const lastMessage = messages[messages.length - 1].content;
-
-        let lastError = null;
-
-        // Try models sequentially
-        for (const modelName of modelsToTry) {
-            try {
-                console.log(`Attempting model: ${modelName}`);
-                const model = genAI.getGenerativeModel({ model: modelName });
-
-                const chat = model.startChat({
-                    history: history,
-                    generationConfig: {
-                        maxOutputTokens: 1000,
-                    },
-                });
-
-                const result = await chat.sendMessage(lastMessage);
-                const response = await result.response;
-                const text = response.text();
-
-                return NextResponse.json({ role: 'ai', content: text });
-            } catch (error: any) {
-                console.error(`Model ${modelName} failed:`, error.message);
-                lastError = error;
-                // Continue if 404/not found, otherwise try next
-                continue;
-            }
-        }
-
-        // If we get here, all models failed
-        throw lastError;
-
-    } catch (error: any) {
-        console.error("Chat API Error (All models failed):", error);
-        return NextResponse.json(
-            {
-                error: `Tüm modeller denendi ve başarısız oldu. Son hata: ${error.message || "Unknown Error"}`,
-                details: error.toString()
-            },
-            { status: 500 }
-        );
-    }
+    return result.toDataStreamResponse();
 }

@@ -33,6 +33,11 @@ const FloatingActionButton = dynamic(
     { ssr: false }
 );
 
+const HubGPTButton = dynamic(
+    () => import("@/components/ai/hub-gpt-button").then(mod => mod.HubGPTButton),
+    { ssr: false }
+);
+
 export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
     const pathname = usePathname();
     // Hide navigation on onboarding and auth pages (login, verify) for a cleaner focus
@@ -52,6 +57,7 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             {children}
             <Footer />
             <BottomNav />
+            <HubGPTButton />
             <FloatingActionButton />
         </>
     );
