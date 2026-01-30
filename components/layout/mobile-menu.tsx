@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, ArrowRight, Home, Zap, BookOpen, FlaskConical, Award, Github, Twitter, Instagram } from "lucide-react";
-import { DankLogo } from "@/components/brand/dank-logo";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, Github, Twitter, LogOut } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
 export function MobileMenu() {
@@ -23,7 +22,7 @@ export function MobileMenu() {
         { href: "/makale", label: "Keşfet", icon: Zap },
         { href: "/blog", label: "Blog", icon: BookOpen },
         { href: "/testler", label: "Testler", icon: FlaskConical },
-        { href: "/siralamalar", label: "Lig", icon: Award },
+        { href: "/siralamalar", label: "Sıralama", icon: Award },
     ];
 
     return (
@@ -32,34 +31,29 @@ export function MobileMenu() {
                 <button
                     className={cn(
                         "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10",
-                        "bg-[#111] border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
-                        "text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                        "bg-[#111] border-[1px] border-white/20 rounded-md",
+                        "text-white active:scale-95 transition-all"
                     )}
                 >
-                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
+                    <Menu className="w-5 h-5" />
                 </button>
             </SheetTrigger>
 
-            {/* COMPACT YELLOW SHEET */}
-            <SheetContent side="right" className="w-[80vw] sm:w-[320px] p-0 border-l-[4px] border-black bg-[#FFC800] overflow-hidden">
+            {/* MICRO DRAWER: Fixed 240px, Dark Theme */}
+            <SheetContent side="right" className="w-[240px] !max-w-[240px] p-0 border-l border-white/10 bg-[#0A0A0A] overflow-hidden">
                 <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
 
                 <div className="flex flex-col h-full">
-                    {/* 1. HEADER (Minimal) */}
-                    <div className="h-16 flex items-center justify-between px-5 pt-4">
-                        <div className="scale-90 origin-left">
-                            {/* Logo logic: DankLogo usually has white text, might need wrapping or specific usage */}
-                            <div className="bg-white px-2 py-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-                                <span className="font-black text-lg tracking-tighter">FIZIKHUB</span>
-                            </div>
-                        </div>
-                        <SheetClose className="w-10 h-10 flex items-center justify-center bg-black text-white border-[2px] border-black shadow-[3px_3px_0px_0px_white] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
-                            <X className="w-5 h-5 stroke-[3px]" />
+                    {/* 1. COMPACT HEADER */}
+                    <div className="h-14 flex items-center justify-between px-4 border-b border-white/10">
+                        <span className="font-bold text-sm text-white tracking-widest uppercase">MENÜ</span>
+                        <SheetClose className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                            <X className="w-4 h-4 text-neutral-400" />
                         </SheetClose>
                     </div>
 
-                    {/* 2. MENU LIST (High Contrast) */}
-                    <div className="flex-1 overflow-y-auto px-5 py-6 space-y-3">
+                    {/* 2. MICRO MENU LIST */}
+                    <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
                         {menuItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
@@ -67,67 +61,53 @@ export function MobileMenu() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "flex items-center justify-between px-4 h-14 w-full",
-                                        "border-[3px] border-black transition-all group",
+                                        "flex items-center gap-3 px-3 h-10 w-full rounded-md transition-all text-sm group",
                                         isActive
-                                            ? "bg-black text-[#FFC800] shadow-none translate-x-[2px] translate-y-[2px]"
-                                            : "bg-white text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                                            ? "bg-white/10 text-[#FFC800] font-bold"
+                                            : "text-neutral-400 hover:text-white hover:bg-white/5"
                                     )}
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <item.icon className={cn(
-                                            "w-5 h-5 stroke-[2.5px]",
-                                            isActive ? "text-[#FFC800]" : "text-black"
-                                        )} />
-                                        <span className="font-black text-base uppercase tracking-wide">
-                                            {item.label}
-                                        </span>
-                                    </div>
-
-                                    {isActive && <ArrowRight className="w-5 h-5" />}
+                                    <item.icon className={cn(
+                                        "w-4 h-4",
+                                        isActive ? "text-[#FFC800]" : "text-neutral-500 group-hover:text-white"
+                                    )} />
+                                    <span>{item.label}</span>
                                 </ViewTransitionLink>
                             );
                         })}
 
-                        {/* SEPARATOR */}
-                        <div className="h-[3px] w-full bg-black my-4 opacity-20" />
+                        <div className="h-px bg-white/10 my-3 mx-2" />
 
-                        {/* EXTRA */}
                         <ViewTransitionLink
                             href="/ozel"
-                            className="flex items-center justify-between px-4 h-12 w-full border-[3px] border-black bg-black text-white shadow-[4px_4px_0px_0px_white] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
+                            className="flex items-center gap-3 px-3 h-10 w-full rounded-md text-sm text-[#FFC800] hover:bg-[#FFC800]/10 transition-all font-medium"
                         >
-                            <span className="font-black text-sm uppercase tracking-wide flex items-center gap-2">
-                                <Zap className="w-4 h-4 fill-[#FFC800] text-[#FFC800]" />
-                                Özel İçerik
-                            </span>
+                            <Zap className="w-4 h-4 fill-[#FFC800]" />
+                            <span>Özel İçerik</span>
                         </ViewTransitionLink>
                     </div>
 
-                    {/* 3. FOOTER (Integrated) */}
-                    <div className="p-5 pb-8 border-t-[4px] border-black bg-white">
-                        <div className="mb-5">
-                            <AuthButton />
+                    {/* 3. FOOTER */}
+                    <div className="p-4 border-t border-white/10 space-y-4">
+                        <div className="flex justify-center gap-4">
+                            {[
+                                { icon: Github, href: "https://github.com/fizikhub" },
+                                { icon: Twitter, href: "#" },
+                            ].map((social, i) => (
+                                <a
+                                    key={i}
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-neutral-500 hover:text-white transition-colors"
+                                >
+                                    <social.icon className="w-4 h-4" />
+                                </a>
+                            ))}
                         </div>
 
-                        <div className="flex justify-between items-end">
-                            <div className="flex gap-2">
-                                {[
-                                    { icon: Github, href: "https://github.com/fizikhub" },
-                                    { icon: Twitter, href: "#" },
-                                ].map((social, i) => (
-                                    <a
-                                        key={i}
-                                        href={social.href}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="w-10 h-10 flex items-center justify-center border-[2px] border-black bg-[#FFC800] hover:bg-black hover:text-white transition-colors"
-                                    >
-                                        <social.icon className="w-5 h-5 stroke-[2px]" />
-                                    </a>
-                                ))}
-                            </div>
-                            <span className="text-xs font-black rotate-[-2deg] bg-black text-white px-2 py-1">v2.4</span>
+                        <div className="scale-90 origin-bottom">
+                            <AuthButton />
                         </div>
                     </div>
                 </div>
