@@ -28,11 +28,11 @@ Başlık: {noteTitle}
 
 // Define a list of models to try in order of preference
 const PREFERRED_MODELS = [
-    "gemini-2.5-flash",
+    "gemini-2.5-flash-native-audio-preview-09-2025",
     "gemini-2.0-flash",
-    "gemini-1.5-flash-8b",
     "gemini-1.5-pro",
-    "gemini-1.5-flash"
+    "gemini-1.5-flash-8b",
+    "gemini-2.5-flash"
 ];
 
 async function tryGenerateContent(requestId: string, modelName: string, parts: any[]) {
