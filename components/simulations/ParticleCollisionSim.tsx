@@ -1,346 +1,258 @@
 "use client";
 
-import { useCallback, useState, useRef, useEffect } from "react";
-import { P5Wrapper } from "./P5Wrapper";
-import p5 from "p5";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface ParticleCollisionSimProps {
     className?: string;
 }
 
-interface Particle {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    mass: number;
-    radius: number;
-    color: string;
-    id: number;
-}
-
 export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimProps) {
-    const [particleCount, setParticleCount] = useState(6);
-    const [showMomentum, setShowMomentum] = useState(true);
-    const [showTrails, setShowTrails] = useState(true);
-    const [elasticity, setElasticity] = useState(1.0);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [mass1, setMass1] = useState(2);
+    const [mass2, setMass2] = useState(2);
+    const [isRunning, setIsRunning] = useState(false);
+    const [challenge, setChallenge] = useState(0);
+    const [result, setResult] = useState<{ before: number; after: number } | null>(null);
 
-    const [stats, setStats] = useState({ momentum: { x: 0, y: 0 }, ke: 0, collisions: 0 });
-    const statsRef = useRef(stats);
-    statsRef.current = stats;
+    // Particles
+    const p1Ref = useRef({ x: 100, y: 150, vx: 3, vy: 0 });
+    const p2Ref = useRef({ x: 300, y: 150, vx: -2, vy: 0 });
 
-    const sketch = useCallback((p: p5, parentRef: HTMLDivElement) => {
-        let particles: Particle[] = [];
-        let trails: Map<number, { x: number; y: number }[]> = new Map();
-        let collisionCount = 0;
-        let lastCollisionTime = 0;
+    const challenges = [
+        { question: "Çarpışmadan önce ve sonra toplam momentumu karşılaştır!", hint: "p = m×v, Σp değişmemeli" },
+        { question: "Kütleleri eşit yap - çarpışmadan sonra ne olur?", hint: "m₁ = m₂ = 2 kg" },
+        { question: "Ağır top hafif topa çarparsa ne olur?", hint: "m₁ = 4, m₂ = 1" },
+    ];
 
-        const colors = ['#FFC800', '#3B82F6', '#EF4444', '#22C55E', '#A855F7', '#F97316', '#EC4899', '#14B8A6'];
+    const reset = () => {
+        p1Ref.current = { x: 100, y: 150, vx: 3, vy: 0 };
+        p2Ref.current = { x: 300, y: 150, vx: -2, vy: 0 };
+        setIsRunning(false);
+        setResult(null);
+    };
 
-        const createParticles = () => {
-            particles = [];
-            trails.clear();
-            collisionCount = 0;
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-            for (let i = 0; i < particleCount; i++) {
-                const radius = 20 + Math.random() * 20;
-                const particle: Particle = {
-                    x: p.random(radius + 50, p.width - radius - 50),
-                    y: p.random(radius + 50, p.height - radius - 50),
-                    vx: p.random(-4, 4),
-                    vy: p.random(-4, 4),
-                    mass: radius * 0.5,
-                    radius: radius,
-                    color: colors[i % colors.length],
-                    id: i
-                };
-                particles.push(particle);
-                trails.set(i, []);
-            }
-        };
+        let animationId: number;
+        let hasCollided = false;
 
-        p.setup = () => {
-            const canvas = p.createCanvas(parentRef.clientWidth, 400);
-            canvas.parent(parentRef);
-            createParticles();
-        };
+        const draw = () => {
+            const width = canvas.width;
+            const height = canvas.height;
+            const p1 = p1Ref.current;
+            const p2 = p2Ref.current;
 
-        const checkCollision = (p1: Particle, p2: Particle): boolean => {
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            return Math.sqrt(dx * dx + dy * dy) < p1.radius + p2.radius;
-        };
+            // Calculate momentum
+            const mom1 = mass1 * p1.vx;
+            const mom2 = mass2 * p2.vx;
+            const totalMom = mom1 + mom2;
 
-        const resolveCollision = (p1: Particle, p2: Particle) => {
-            const dx = p2.x - p1.x;
-            const dy = p2.y - p1.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist === 0) return;
+            // Clear
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(0, 0, width, height);
 
-            const nx = dx / dist;
-            const ny = dy / dist;
+            // Track line
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, 150);
+            ctx.lineTo(width - 50, 150);
+            ctx.stroke();
 
-            const dvx = p1.vx - p2.vx;
-            const dvy = p1.vy - p2.vy;
-            const dvn = dvx * nx + dvy * ny;
+            // Physics
+            if (isRunning) {
+                p1.x += p1.vx;
+                p2.x += p2.vx;
 
-            if (dvn > 0) return;
+                // Collision detection
+                const r1 = 20 + mass1 * 5;
+                const r2 = 20 + mass2 * 5;
+                const dist = Math.abs(p2.x - p1.x);
 
-            const j = -(1 + elasticity) * dvn / (1 / p1.mass + 1 / p2.mass);
+                if (dist < r1 + r2 && !hasCollided) {
+                    hasCollided = true;
+                    const beforeMom = totalMom;
 
-            p1.vx += (j / p1.mass) * nx;
-            p1.vy += (j / p1.mass) * ny;
-            p2.vx -= (j / p2.mass) * nx;
-            p2.vy -= (j / p2.mass) * ny;
+                    // Elastic collision
+                    const v1 = ((mass1 - mass2) * p1.vx + 2 * mass2 * p2.vx) / (mass1 + mass2);
+                    const v2 = ((mass2 - mass1) * p2.vx + 2 * mass1 * p1.vx) / (mass1 + mass2);
+                    p1.vx = v1;
+                    p2.vx = v2;
 
-            const overlap = (p1.radius + p2.radius - dist) / 2 + 1;
-            p1.x -= overlap * nx;
-            p1.y -= overlap * ny;
-            p2.x += overlap * nx;
-            p2.y += overlap * ny;
+                    // Separate
+                    const overlap = (r1 + r2 - dist) / 2;
+                    p1.x -= overlap + 1;
+                    p2.x += overlap + 1;
 
-            if (p.millis() - lastCollisionTime > 100) {
-                collisionCount++;
-                lastCollisionTime = p.millis();
-            }
-        };
-
-        p.draw = () => {
-            p.background(15, 15, 20);
-
-            // Grid
-            p.stroke(30, 30, 40);
-            p.strokeWeight(1);
-            for (let x = 0; x < p.width; x += 50) p.line(x, 0, x, p.height);
-            for (let y = 0; y < p.height; y += 50) p.line(0, y, p.width, y);
-
-            // Border box
-            p.noFill();
-            p.stroke(60, 60, 80);
-            p.strokeWeight(4);
-            p.rect(2, 2, p.width - 4, p.height - 4);
-
-            // Calculate totals
-            let totalMomentumX = 0;
-            let totalMomentumY = 0;
-            let totalKE = 0;
-
-            // Update particles
-            for (const particle of particles) {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-
-                // Wall collisions
-                if (particle.x - particle.radius < 0) {
-                    particle.x = particle.radius;
-                    particle.vx *= -elasticity;
-                }
-                if (particle.x + particle.radius > p.width) {
-                    particle.x = p.width - particle.radius;
-                    particle.vx *= -elasticity;
-                }
-                if (particle.y - particle.radius < 0) {
-                    particle.y = particle.radius;
-                    particle.vy *= -elasticity;
-                }
-                if (particle.y + particle.radius > p.height) {
-                    particle.y = p.height - particle.radius;
-                    particle.vy *= -elasticity;
+                    setTimeout(() => {
+                        const afterMom = mass1 * p1.vx + mass2 * p2.vx;
+                        setResult({ before: beforeMom, after: afterMom });
+                    }, 500);
                 }
 
-                // Add to trail
-                if (showTrails) {
-                    const trail = trails.get(particle.id) || [];
-                    trail.push({ x: particle.x, y: particle.y });
-                    if (trail.length > 30) trail.shift();
-                    trails.set(particle.id, trail);
-                }
-
-                // Calculate momentum and KE
-                totalMomentumX += particle.mass * particle.vx;
-                totalMomentumY += particle.mass * particle.vy;
-                const speed = Math.sqrt(particle.vx ** 2 + particle.vy ** 2);
-                totalKE += 0.5 * particle.mass * speed ** 2;
-            }
-
-            // Particle-particle collisions
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    if (checkCollision(particles[i], particles[j])) {
-                        resolveCollision(particles[i], particles[j]);
-                    }
-                }
-            }
-
-            // Draw trails
-            if (showTrails) {
-                for (const particle of particles) {
-                    const trail = trails.get(particle.id) || [];
-                    if (trail.length > 1) {
-                        p.noFill();
-                        for (let i = 1; i < trail.length; i++) {
-                            const alpha = (i / trail.length) * 100;
-                            p.stroke(particle.color + Math.floor(alpha).toString(16).padStart(2, '0'));
-                            p.strokeWeight(particle.radius * 0.3 * (i / trail.length));
-                            p.line(trail[i - 1].x, trail[i - 1].y, trail[i].x, trail[i].y);
-                        }
-                    }
-                }
+                // Wall bounce
+                if (p1.x < r1 + 50) { p1.x = r1 + 50; p1.vx *= -0.8; }
+                if (p1.x > width - r1 - 50) { p1.x = width - r1 - 50; p1.vx *= -0.8; }
+                if (p2.x < r2 + 50) { p2.x = r2 + 50; p2.vx *= -0.8; }
+                if (p2.x > width - r2 - 50) { p2.x = width - r2 - 50; p2.vx *= -0.8; }
             }
 
             // Draw particles
-            for (const particle of particles) {
-                // Shadow
-                p.noStroke();
-                p.fill(0, 0, 0, 50);
-                p.ellipse(particle.x + 4, particle.y + 4, particle.radius * 2, particle.radius * 2);
+            const drawParticle = (p: typeof p1, m: number, color: string, label: string) => {
+                const r = 20 + m * 5;
 
-                // Particle with gradient
-                const gradient = p.drawingContext as CanvasRenderingContext2D;
-                const grad = gradient.createRadialGradient(
-                    particle.x - particle.radius / 3, particle.y - particle.radius / 3, 0,
-                    particle.x, particle.y, particle.radius
-                );
+                ctx.fillStyle = color;
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
 
-                const baseColor = p.color(particle.color);
-                grad.addColorStop(0, `rgba(255,255,255,0.8)`);
-                grad.addColorStop(0.3, particle.color);
-                grad.addColorStop(1, p.lerpColor(baseColor, p.color(0), 0.3).toString());
-
-                gradient.fillStyle = grad;
-                p.stroke(0);
-                p.strokeWeight(2);
-                p.ellipse(particle.x, particle.y, particle.radius * 2, particle.radius * 2);
-
-                // Mass label
-                p.fill(255);
-                p.noStroke();
-                p.textAlign(p.CENTER, p.CENTER);
-                p.textSize(10);
-                p.text(`${particle.mass.toFixed(0)}`, particle.x, particle.y);
-
-                // Velocity vector
-                if (showMomentum) {
-                    const velScale = 8;
-                    p.stroke(255, 255, 255, 180);
-                    p.strokeWeight(2);
-                    p.line(particle.x, particle.y,
-                        particle.x + particle.vx * velScale,
-                        particle.y + particle.vy * velScale);
+                // Velocity arrow
+                if (Math.abs(p.vx) > 0.1) {
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + p.vx * 15, p.y);
+                    ctx.stroke();
 
                     // Arrow head
-                    p.push();
-                    p.translate(particle.x + particle.vx * velScale, particle.y + particle.vy * velScale);
-                    p.rotate(Math.atan2(particle.vy, particle.vx));
-                    p.fill(255);
-                    p.noStroke();
-                    p.triangle(0, 0, -6, -3, -6, 3);
-                    p.pop();
+                    ctx.fillStyle = "#fff";
+                    ctx.beginPath();
+                    const dir = p.vx > 0 ? 1 : -1;
+                    ctx.moveTo(p.x + p.vx * 15, p.y);
+                    ctx.lineTo(p.x + p.vx * 15 - dir * 8, p.y - 5);
+                    ctx.lineTo(p.x + p.vx * 15 - dir * 8, p.y + 5);
+                    ctx.fill();
                 }
-            }
 
-            p.textAlign(p.LEFT, p.BASELINE);
+                // Label
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(`${m}kg`, p.x, p.y + 5);
+                ctx.fillText(label, p.x, p.y + r + 20);
+            };
 
-            // Info panel
-            p.fill(20, 20, 30, 240);
-            p.stroke(60, 60, 80);
-            p.strokeWeight(2);
-            p.rect(15, 15, 280, 130, 8);
+            drawParticle(p1, mass1, "#3B82F6", `v₁=${p1.vx.toFixed(1)}`);
+            drawParticle(p2, mass2, "#EF4444", `v₂=${p2.vx.toFixed(1)}`);
 
-            p.fill(247, 151, 22);
-            p.noStroke();
-            p.textSize(14);
-            p.text('⚛️ MOMENTUM KORUNUMU', 25, 38);
+            // Momentum display
+            ctx.fillStyle = "#fff";
+            ctx.font = "12px monospace";
+            ctx.textAlign = "left";
+            ctx.fillText(`p₁ = m₁v₁ = ${mass1}×${p1.vx.toFixed(1)} = ${mom1.toFixed(1)}`, 20, 30);
+            ctx.fillText(`p₂ = m₂v₂ = ${mass2}×${p2.vx.toFixed(1)} = ${mom2.toFixed(1)}`, 20, 50);
+            ctx.fillStyle = "#4ADE80";
+            ctx.fillText(`Σp = ${totalMom.toFixed(1)} kg·m/s`, 20, 70);
 
-            p.textSize(11);
-            p.fill(255);
-            p.text(`Σp = m₁v₁ + m₂v₂ + ...`, 25, 58);
-
-            p.fill(100, 200, 255);
-            p.text(`Σpₓ = ${totalMomentumX.toFixed(1)} kg·m/s`, 25, 80);
-            p.text(`Σpᵧ = ${totalMomentumY.toFixed(1)} kg·m/s`, 25, 98);
-
-            p.fill(100, 255, 150);
-            p.text(`KE = Σ½mv² = ${totalKE.toFixed(1)} J`, 25, 118);
-
-            p.fill(255, 200, 0);
-            p.text(`Çarpışma sayısı: ${collisionCount}`, 25, 138);
-
-            // Momentum conservation indicator
-            const totalMomentum = Math.sqrt(totalMomentumX ** 2 + totalMomentumY ** 2);
-            p.fill(totalMomentum < 100 ? p.color(100, 255, 100) : p.color(255, 200, 100));
-            p.textSize(10);
-            p.text(`|Σp| = ${totalMomentum.toFixed(1)} (korunmalı!)`, 150, 80);
+            animationId = requestAnimationFrame(draw);
         };
 
-        p.mousePressed = () => {
-            if (p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
-                createParticles();
-            }
-        };
-
-        p.windowResized = () => {
-            p.resizeCanvas(parentRef.clientWidth, 400);
-        };
-    }, [particleCount, showMomentum, showTrails, elasticity]);
+        draw();
+        return () => cancelAnimationFrame(animationId);
+    }, [mass1, mass2, isRunning]);
 
     return (
-        <div className={className}>
-            <P5Wrapper sketch={sketch} className="w-full h-[400px] rounded-none border-b-[3px] border-black" />
-
-            <div className="p-4 bg-gradient-to-b from-neutral-800 to-neutral-900 space-y-4">
-                <div className="bg-neutral-900 border-2 border-orange-400/30 rounded-lg p-3">
-                    <p className="text-orange-400 font-mono text-sm font-bold mb-2">⚛️ Korunum Yasaları</p>
-                    <div className="text-xs font-mono space-y-1">
-                        <p className="text-white">Σp<sub>önce</sub> = Σp<sub>sonra</sub> (Momentum)</p>
-                        <p className="text-neutral-400">Esnek çarpışma: KE korunur</p>
-                    </div>
+        <div className={cn("bg-neutral-900", className)}>
+            {/* Challenge */}
+            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">🎯</span>
+                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
                 </div>
+                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
+                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
+            </div>
 
-                <div className="space-y-3">
+            {/* Canvas */}
+            <canvas ref={canvasRef} width={400} height={220} className="w-full" />
+
+            {/* Result */}
+            {result && (
+                <div className="bg-green-500/20 border-y border-green-500/50 p-3">
+                    <p className="text-green-400 text-sm font-bold text-center">
+                        ✓ Önce: Σp = {result.before.toFixed(1)} → Sonra: Σp = {result.after.toFixed(1)}
+                        {Math.abs(result.before - result.after) < 0.1 && " (Korundu! ✨)"}
+                    </p>
+                </div>
+            )}
+
+            {/* Formula Box */}
+            <div className="bg-black/50 p-3 border-y border-neutral-700">
+                <p className="text-orange-400 font-mono text-sm font-bold text-center">
+                    Σp<sub>önce</sub> = Σp<sub>sonra</sub> (Momentum Korunumu)
+                </p>
+            </div>
+
+            {/* Controls */}
+            <div className="p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <div className="flex justify-between text-white text-xs font-bold uppercase mb-1">
-                            <span>Parçacık Sayısı</span>
-                            <span className="text-orange-400">{particleCount}</span>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-blue-400 font-bold text-sm">Kütle 1</span>
+                            <span className="text-blue-400 font-mono text-sm">{mass1} kg</span>
                         </div>
                         <input
-                            type="range" min="2" max="12" value={particleCount}
-                            onChange={(e) => setParticleCount(Number(e.target.value))}
-                            className="w-full accent-orange-400"
+                            type="range" min="1" max="5" value={mass1}
+                            onChange={(e) => { setMass1(Number(e.target.value)); reset(); }}
+                            className="w-full h-2 rounded-lg accent-blue-400"
                         />
                     </div>
                     <div>
-                        <div className="flex justify-between text-white text-xs font-bold uppercase mb-1">
-                            <span>Esneklik Katsayısı (e)</span>
-                            <span className="text-orange-400">{elasticity.toFixed(2)}</span>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-red-400 font-bold text-sm">Kütle 2</span>
+                            <span className="text-red-400 font-mono text-sm">{mass2} kg</span>
                         </div>
                         <input
-                            type="range" min="0.5" max="1" step="0.05" value={elasticity}
-                            onChange={(e) => setElasticity(Number(e.target.value))}
-                            className="w-full accent-orange-400"
+                            type="range" min="1" max="5" value={mass2}
+                            onChange={(e) => { setMass2(Number(e.target.value)); reset(); }}
+                            className="w-full h-2 rounded-lg accent-red-400"
                         />
-                        <div className="flex justify-between text-neutral-500 text-[10px] mt-1">
-                            <span>Esnek olmayan (0.5)</span>
-                            <span>Tam esnek (1.0)</span>
-                        </div>
                     </div>
                 </div>
 
-                <div className="flex gap-4 flex-wrap">
-                    <label className="flex items-center gap-2 text-white text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showMomentum} onChange={(e) => setShowMomentum(e.target.checked)} className="accent-yellow-500" />
-                        Hız Vektörleri
-                    </label>
-                    <label className="flex items-center gap-2 text-white text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showTrails} onChange={(e) => setShowTrails(e.target.checked)} className="accent-purple-500" />
-                        İzler
-                    </label>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setIsRunning(!isRunning)}
+                        className={cn(
+                            "flex-1 py-2 font-bold text-sm border-2 border-black",
+                            isRunning ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                        )}
+                    >
+                        {isRunning ? "Durdur" : "Başlat"}
+                    </button>
+                    <button onClick={reset} className="flex-1 py-2 font-bold text-sm border-2 border-black bg-neutral-700 text-white">
+                        Sıfırla
+                    </button>
+                </div>
+
+                <div className="flex gap-2">
+                    {challenges.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => { setChallenge(i); reset(); }}
+                            className={cn(
+                                "flex-1 py-1 text-xs font-bold border-2 border-black",
+                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                            )}
+                        >
+                            Görev {i + 1}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
                     <p className="text-green-400 text-xs">
-                        💡 <strong>Gözlem:</strong> Toplam momentum (Σp) hep sabit kalır! Esnek çarpışmada kinetik enerji de korunur.
-                        e&lt;1 ise enerji kaybı olur.
+                        ✨ <strong>Keşif:</strong> Toplam momentum (Σp) her zaman korunur!
+                        Ağır cisim hafif cisme çarpınca, hafif cisim hızla fırlar.
                     </p>
                 </div>
             </div>

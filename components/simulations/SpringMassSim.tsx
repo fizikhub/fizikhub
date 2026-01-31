@@ -1,326 +1,222 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { P5Wrapper } from "./P5Wrapper";
-import p5 from "p5";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface SpringMassSimProps {
     className?: string;
 }
 
 export function SpringMassSim({ className = "" }: SpringMassSimProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [springK, setSpringK] = useState(50);
     const [mass, setMass] = useState(2);
-    const [damping, setDamping] = useState(0.995);
-    const [showForces, setShowForces] = useState(true);
+    const [isRunning, setIsRunning] = useState(true);
+    const [challenge, setChallenge] = useState(0);
 
-    // Calculated values
-    const angularFreq = Math.sqrt(springK / mass);
-    const period = 2 * Math.PI / angularFreq;
+    // Physics state
+    const posRef = useRef(60);
+    const velRef = useRef(0);
+
+    // Formulas
+    const omega = Math.sqrt(springK / mass);
+    const period = (2 * Math.PI) / omega;
     const frequency = 1 / period;
 
-    const sketch = useCallback((p: p5, parentRef: HTMLDivElement) => {
-        let yPos = 80;
-        let velocity = 0;
-        const restLength = 120;
-        const anchorY = 40;
-        let positionHistory: number[] = [];
-        let time = 0;
+    const challenges = [
+        { question: "Yay sabitini artırınca frekans ne olur?", hint: "k değerini 50'den 100'e çıkar" },
+        { question: "Kütleyi artırınca periyot ne olur?", hint: "m değerini 2'den 4'e çıkar" },
+        { question: "1 Hz frekans elde et!", hint: "ω = √(k/m), f = ω/2π" },
+    ];
 
-        p.setup = () => {
-            const canvas = p.createCanvas(parentRef.clientWidth, 450);
-            canvas.parent(parentRef);
-        };
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-        p.draw = () => {
-            p.background(15, 15, 20);
+        let animationId: number;
+        const damping = 0.998;
+        const restY = 80;
 
-            // Grid
-            p.stroke(40, 40, 50);
-            p.strokeWeight(1);
-            for (let x = 0; x < p.width; x += 40) p.line(x, 0, x, p.height);
-            for (let y = 0; y < p.height; y += 40) p.line(0, y, p.width, y);
+        const draw = () => {
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
 
-            const anchorX = p.width * 0.35;
-            const massY = anchorY + restLength + yPos;
+            // Clear
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(0, 0, width, height);
 
-            // Physics (Hooke's Law: F = -kx)
-            const displacement = yPos;
-            const springForce = -(springK / 100) * displacement;
-            const acceleration = springForce / mass;
-            velocity += acceleration;
-            velocity *= damping;
-            yPos += velocity;
-            time += 0.016;
-
-            // Position history for graph
-            positionHistory.push(yPos);
-            if (positionHistory.length > 200) positionHistory.shift();
-
-            // Draw anchor
-            p.fill(80, 80, 100);
-            p.stroke(60, 60, 80);
-            p.strokeWeight(3);
-            p.rect(anchorX - 50, anchorY - 20, 100, 25, 5);
-
-            // Wall pattern
-            for (let i = 0; i < 5; i++) {
-                p.stroke(100, 100, 120);
-                p.line(anchorX - 45 + i * 20, anchorY - 20, anchorX - 55 + i * 20, anchorY + 5);
+            // Physics (Hooke's Law)
+            if (isRunning) {
+                const force = -(springK / 100) * posRef.current;
+                const acc = force / mass;
+                velRef.current += acc;
+                velRef.current *= damping;
+                posRef.current += velRef.current;
             }
 
-            // Draw spring (realistic coil)
-            const springLen = restLength + yPos;
-            const coils = 12;
-            const coilHeight = springLen / coils;
-            const coilWidth = 25;
+            const massY = restY + 80 + posRef.current;
 
-            p.noFill();
-            p.strokeWeight(4);
+            // Draw ceiling
+            ctx.fillStyle = "#444";
+            ctx.fillRect(centerX - 50, 20, 100, 15);
 
-            // Spring color based on compression/extension
-            if (yPos > 0) {
-                p.stroke(255, 150, 50); // Extended - orange
-            } else if (yPos < 0) {
-                p.stroke(100, 200, 255); // Compressed - blue
-            } else {
-                p.stroke(200, 200, 200); // Equilibrium - white
-            }
+            // Draw spring (zigzag)
+            ctx.strokeStyle = posRef.current > 0 ? "#FF6B6B" : "#4ECDC4";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, 35);
 
-            p.beginShape();
-            p.vertex(anchorX, anchorY);
+            const coils = 8;
+            const springLength = 80 + posRef.current;
+            const coilH = springLength / coils;
+
             for (let i = 0; i < coils; i++) {
-                const y1 = anchorY + (i + 0.25) * coilHeight;
-                const y2 = anchorY + (i + 0.75) * coilHeight;
+                const y = 35 + (i + 0.5) * coilH;
                 const dir = i % 2 === 0 ? 1 : -1;
-                p.vertex(anchorX + dir * coilWidth, y1);
-                p.vertex(anchorX - dir * coilWidth, y2);
+                ctx.lineTo(centerX + dir * 20, y);
             }
-            p.vertex(anchorX, massY - 30);
-            p.endShape();
+            ctx.lineTo(centerX, massY - 25);
+            ctx.stroke();
 
-            // Force vectors
-            if (showForces) {
-                // Spring force (blue when pulling up, red when pushing down)
-                const forceScale = 2;
-                const springForceVis = springForce * forceScale * 50;
-
-                if (Math.abs(springForceVis) > 5) {
-                    p.strokeWeight(4);
-                    p.stroke(springForce > 0 ? p.color(100, 200, 255) : p.color(255, 100, 100));
-                    p.line(anchorX + 50, massY, anchorX + 50, massY - springForceVis);
-
-                    p.push();
-                    p.translate(anchorX + 50, massY - springForceVis);
-                    p.fill(springForce > 0 ? p.color(100, 200, 255) : p.color(255, 100, 100));
-                    p.noStroke();
-                    if (springForce > 0) {
-                        p.triangle(0, 0, -6, 10, 6, 10);
-                    } else {
-                        p.triangle(0, 0, -6, -10, 6, -10);
-                    }
-                    p.pop();
-
-                    p.fill(255);
-                    p.noStroke();
-                    p.textSize(10);
-                    p.text('F = -kx', anchorX + 60, massY - springForceVis / 2);
-                }
-
-                // Weight force
-                const weightForce = mass * 30;
-                p.stroke(255, 200, 0);
-                p.strokeWeight(3);
-                p.line(anchorX - 50, massY, anchorX - 50, massY + weightForce);
-
-                p.push();
-                p.translate(anchorX - 50, massY + weightForce);
-                p.fill(255, 200, 0);
-                p.noStroke();
-                p.triangle(0, 0, -5, -10, 5, -10);
-                p.pop();
-
-                p.fill(255, 200, 0);
-                p.textSize(10);
-                p.text('W = mg', anchorX - 75, massY + weightForce / 2);
-            }
-
-            // Mass block with 3D effect
-            p.rectMode(p.CENTER);
-            const massSize = 50 + mass * 5;
-
-            // Shadow
-            p.noStroke();
-            p.fill(0, 0, 0, 80);
-            p.rect(anchorX + 5, massY + 5, massSize, massSize, 5);
-
-            // Main block
-            const gradient = p.drawingContext as CanvasRenderingContext2D;
-            const blockGrad = gradient.createLinearGradient(anchorX - massSize / 2, massY, anchorX + massSize / 2, massY);
-            blockGrad.addColorStop(0, '#3B82F6');
-            blockGrad.addColorStop(0.5, '#60A5FA');
-            blockGrad.addColorStop(1, '#2563EB');
-            gradient.fillStyle = blockGrad;
-            p.stroke(30, 60, 120);
-            p.strokeWeight(3);
-            p.rect(anchorX, massY, massSize, massSize, 5);
+            // Draw mass
+            ctx.fillStyle = "#3B82F6";
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 3;
+            ctx.fillRect(centerX - 30, massY - 25, 60, 50);
+            ctx.strokeRect(centerX - 30, massY - 25, 60, 50);
 
             // Mass label
-            p.fill(255);
-            p.noStroke();
-            p.textSize(14);
-            p.textAlign(p.CENTER, p.CENTER);
-            p.text(`${mass} kg`, anchorX, massY);
-            p.textAlign(p.LEFT, p.BASELINE);
-            p.rectMode(p.CORNER);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 14px monospace";
+            ctx.textAlign = "center";
+            ctx.fillText(`${mass} kg`, centerX, massY + 5);
 
             // Equilibrium line
-            p.stroke(100, 255, 100, 100);
-            p.strokeWeight(2);
-            const ctx = p.drawingContext as CanvasRenderingContext2D;
-            ctx.setLineDash([8, 8]);
-            p.line(anchorX - 80, anchorY + restLength, anchorX + 80, anchorY + restLength);
+            ctx.strokeStyle = "#4ADE80";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX - 60, restY + 80);
+            ctx.lineTo(centerX + 60, restY + 80);
+            ctx.stroke();
             ctx.setLineDash([]);
 
-            p.fill(100, 255, 100);
-            p.textSize(10);
-            p.text('x = 0 (Denge)', anchorX - 80, anchorY + restLength - 10);
+            // x label
+            ctx.fillStyle = "#4ADE80";
+            ctx.font = "12px sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText("x = 0", centerX + 65, restY + 84);
 
-            // Position-Time Graph
-            const graphX = p.width * 0.6;
-            const graphY = 60;
-            const graphW = p.width * 0.35;
-            const graphH = 150;
+            // Current displacement
+            ctx.fillStyle = "#fff";
+            ctx.font = "12px monospace";
+            ctx.fillText(`x = ${(posRef.current / 100).toFixed(2)} m`, 20, 50);
 
-            p.fill(20, 20, 30, 230);
-            p.stroke(60, 60, 80);
-            p.strokeWeight(2);
-            p.rect(graphX, graphY, graphW, graphH, 5);
-
-            // Graph title
-            p.fill(255, 200, 0);
-            p.noStroke();
-            p.textSize(11);
-            p.text('📈 Konum-Zaman Grafiği', graphX + 10, graphY + 18);
-
-            // Axes
-            p.stroke(100, 100, 120);
-            p.strokeWeight(1);
-            p.line(graphX + 30, graphY + graphH / 2, graphX + graphW - 10, graphY + graphH / 2);
-            p.line(graphX + 30, graphY + 25, graphX + 30, graphY + graphH - 10);
-
-            // Plot
-            p.noFill();
-            p.stroke(255, 200, 0);
-            p.strokeWeight(2);
-            p.beginShape();
-            for (let i = 0; i < positionHistory.length; i++) {
-                const x = graphX + 35 + (i / 200) * (graphW - 50);
-                const y = graphY + graphH / 2 - positionHistory[i] * 0.8;
-                p.vertex(x, p.constrain(y, graphY + 25, graphY + graphH - 10));
-            }
-            p.endShape();
-
-            // Axis labels
-            p.fill(150);
-            p.textSize(9);
-            p.text('x', graphX + graphW - 20, graphY + graphH / 2 - 5);
-            p.text('t', graphX + 35, graphY + graphH - 5);
-
-            // Formula panel
-            p.fill(20, 20, 30, 240);
-            p.stroke(60, 60, 80);
-            p.strokeWeight(2);
-            p.rect(graphX, graphY + graphH + 20, graphW, 140, 5);
-
-            p.fill(59, 130, 246);
-            p.noStroke();
-            p.textSize(13);
-            p.text('🔗 HOOKE YASASI', graphX + 10, graphY + graphH + 40);
-
-            p.fill(255);
-            p.textSize(11);
-            p.text(`F = -kx = -${springK} × ${(displacement / 100).toFixed(3)}`, graphX + 10, graphY + graphH + 60);
-            p.text(`F = ${(springForce * mass).toFixed(2)} N`, graphX + 10, graphY + graphH + 80);
-            p.text(`ω = √(k/m) = ${angularFreq.toFixed(2)} rad/s`, graphX + 10, graphY + graphH + 100);
-            p.text(`T = 2π/ω = ${period.toFixed(3)} s`, graphX + 10, graphY + graphH + 120);
-            p.text(`f = 1/T = ${frequency.toFixed(2)} Hz`, graphX + 10, graphY + graphH + 140);
+            animationId = requestAnimationFrame(draw);
         };
 
-        p.mousePressed = () => {
-            if (p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
-                yPos = 80;
-                velocity = 0;
-                positionHistory = [];
-            }
-        };
+        draw();
+        return () => cancelAnimationFrame(animationId);
+    }, [springK, mass, isRunning]);
 
-        p.windowResized = () => {
-            p.resizeCanvas(parentRef.clientWidth, 450);
-        };
-    }, [springK, mass, damping, showForces, angularFreq, period, frequency]);
+    const reset = () => {
+        posRef.current = 60;
+        velRef.current = 0;
+    };
 
     return (
-        <div className={className}>
-            <P5Wrapper sketch={sketch} className="w-full h-[450px] rounded-none border-b-[3px] border-black" />
-
-            <div className="p-4 bg-gradient-to-b from-neutral-800 to-neutral-900 space-y-4">
-                <div className="bg-neutral-900 border-2 border-blue-400/30 rounded-lg p-3">
-                    <p className="text-blue-400 font-mono text-sm font-bold mb-2">📊 Hesaplanan Değerler</p>
-                    <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                        <div className="text-neutral-400">Açısal Frekans (ω):</div>
-                        <div className="text-white">{angularFreq.toFixed(2)} rad/s</div>
-                        <div className="text-neutral-400">Periyot (T):</div>
-                        <div className="text-white">{period.toFixed(3)} s</div>
-                    </div>
+        <div className={cn("bg-neutral-900", className)}>
+            {/* Challenge */}
+            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">🎯</span>
+                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
                 </div>
+                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
+                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
+            </div>
 
-                <div className="space-y-3">
+            {/* Canvas */}
+            <div className="relative">
+                <canvas ref={canvasRef} width={400} height={280} className="w-full" onClick={reset} />
+
+                {/* Formula */}
+                <div className="absolute top-4 right-4 bg-black/80 rounded-lg p-3 text-right">
+                    <p className="text-cyan-400 font-mono text-xs">F = -kx (Hooke)</p>
+                    <p className="text-yellow-400 font-mono text-sm font-bold mt-1">ω = √(k/m)</p>
+                    <p className="text-white font-mono text-lg">
+                        f = <span className="text-green-400">{frequency.toFixed(2)}</span> Hz
+                    </p>
+                    <p className="text-white font-mono text-sm">
+                        T = <span className="text-green-400">{period.toFixed(2)}</span> s
+                    </p>
+                </div>
+            </div>
+
+            {/* Controls */}
+            <div className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <div className="flex justify-between text-white text-xs font-bold uppercase mb-1">
-                            <span>Yay Sabiti (k)</span>
-                            <span className="text-blue-400">{springK} N/m</span>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-white font-bold text-sm">Yay Sabiti (k)</span>
+                            <span className="text-cyan-400 font-mono text-sm">{springK} N/m</span>
                         </div>
                         <input
-                            type="range"
-                            min="10"
-                            max="150"
-                            value={springK}
+                            type="range" min="20" max="150" value={springK}
                             onChange={(e) => setSpringK(Number(e.target.value))}
-                            className="w-full accent-blue-400"
+                            className="w-full h-2 rounded-lg accent-cyan-400"
                         />
                     </div>
                     <div>
-                        <div className="flex justify-between text-white text-xs font-bold uppercase mb-1">
-                            <span>Kütle (m)</span>
-                            <span className="text-blue-400">{mass} kg</span>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-white font-bold text-sm">Kütle (m)</span>
+                            <span className="text-blue-400 font-mono text-sm">{mass} kg</span>
                         </div>
                         <input
-                            type="range"
-                            min="1"
-                            max="5"
-                            step="0.5"
-                            value={mass}
+                            type="range" min="1" max="5" step="0.5" value={mass}
                             onChange={(e) => setMass(Number(e.target.value))}
-                            className="w-full accent-blue-400"
+                            className="w-full h-2 rounded-lg accent-blue-400"
                         />
                     </div>
                 </div>
 
-                <label className="flex items-center gap-2 text-white text-xs font-bold uppercase cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={showForces}
-                        onChange={(e) => setShowForces(e.target.checked)}
-                        className="accent-green-500"
-                    />
-                    Kuvvet Vektörleri
-                </label>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setIsRunning(!isRunning)}
+                        className={cn(
+                            "flex-1 py-2 font-bold text-sm border-2 border-black",
+                            isRunning ? "bg-red-500 text-white" : "bg-green-500 text-white"
+                        )}
+                    >
+                        {isRunning ? "Durdur" : "Başlat"}
+                    </button>
+                    <button onClick={reset} className="flex-1 py-2 font-bold text-sm border-2 border-black bg-neutral-700 text-white">
+                        Sıfırla
+                    </button>
+                </div>
+
+                <div className="flex gap-2">
+                    {challenges.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setChallenge(i)}
+                            className={cn(
+                                "flex-1 py-1 text-xs font-bold border-2 border-black",
+                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                            )}
+                        >
+                            Görev {i + 1}
+                        </button>
+                    ))}
+                </div>
 
                 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
                     <p className="text-green-400 text-xs">
-                        💡 <strong>Keşfet:</strong> k değerini artırınca periyot azalır, m değerini artırınca periyot artar.
-                        ω = √(k/m) formülünü kontrol edin!
+                        ✨ <strong>Keşif:</strong> k artınca → frekans artar (daha hızlı salınım).
+                        m artınca → frekans azalır (daha yavaş).
                     </p>
                 </div>
             </div>

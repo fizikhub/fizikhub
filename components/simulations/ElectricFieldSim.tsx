@@ -1,328 +1,276 @@
 "use client";
 
-import { useCallback, useState, useRef } from "react";
-import { P5Wrapper } from "./P5Wrapper";
-import p5 from "p5";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface ElectricFieldSimProps {
     className?: string;
 }
 
-interface Charge {
-    x: number;
-    y: number;
-    q: number;
-}
-
 export function ElectricFieldSim({ className = "" }: ElectricFieldSimProps) {
-    const [chargesState, setChargesState] = useState<Charge[]>([
-        { x: 200, y: 200, q: 2 },
-        { x: 400, y: 200, q: -2 }
-    ]);
-    const [showFieldLines, setShowFieldLines] = useState(true);
-    const [showPotential, setShowPotential] = useState(false);
-    const chargesRef = useRef(chargesState);
-    chargesRef.current = chargesState;
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [charge1, setCharge1] = useState({ x: 150, y: 150, q: 1 });
+    const [charge2, setCharge2] = useState({ x: 300, y: 150, q: -1 });
+    const [showField, setShowField] = useState(true);
+    const [challenge, setChallenge] = useState(0);
 
-    const k = 8.99e9; // Coulomb constant
+    const draggingRef = useRef<number | null>(null);
 
-    const sketch = useCallback((p: p5, parentRef: HTMLDivElement) => {
-        let dragging: number | null = null;
+    // Distance and force
+    const dx = charge2.x - charge1.x;
+    const dy = charge2.y - charge1.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distanceM = distance / 50; // 50px = 1m
+    const k = 8.99e9;
+    const force = (k * Math.abs(charge1.q * charge2.q)) / (distanceM * distanceM);
+    const forceType = charge1.q * charge2.q > 0 ? "İtme" : "Çekme";
 
-        p.setup = () => {
-            const canvas = p.createCanvas(parentRef.clientWidth, 400);
-            canvas.parent(parentRef);
-        };
+    const challenges = [
+        { question: "Yükleri birbirine yaklaştırınca kuvvet ne olur?", hint: "Mesafeyi yarıya indir" },
+        { question: "Aynı işaretli iki yük koy - ne olur?", hint: "Her iki yükü de pozitif yap" },
+        { question: "Kuvveti 4 kat artır!", hint: "F ∝ 1/r² - mesafeyi yarıya indir" },
+    ];
 
-        const calculateField = (px: number, py: number): { ex: number; ey: number; magnitude: number } => {
-            let ex = 0;
-            let ey = 0;
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
 
-            for (const charge of chargesRef.current) {
-                const dx = px - charge.x;
-                const dy = py - charge.y;
-                const r = Math.sqrt(dx * dx + dy * dy);
-                if (r < 25) continue;
+        const draw = () => {
+            const width = canvas.width;
+            const height = canvas.height;
 
-                const magnitude = 5000 * Math.abs(charge.q) / (r * r);
-                const angle = Math.atan2(dy, dx);
+            // Clear
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(0, 0, width, height);
 
-                if (charge.q > 0) {
-                    ex += magnitude * Math.cos(angle);
-                    ey += magnitude * Math.sin(angle);
-                } else {
-                    ex -= magnitude * Math.cos(angle);
-                    ey -= magnitude * Math.sin(angle);
-                }
-            }
+            // Field lines (simple arrows)
+            if (showField) {
+                const gridSize = 40;
+                for (let x = gridSize; x < width; x += gridSize) {
+                    for (let y = gridSize; y < height; y += gridSize) {
+                        // Skip near charges
+                        const d1 = Math.sqrt((x - charge1.x) ** 2 + (y - charge1.y) ** 2);
+                        const d2 = Math.sqrt((x - charge2.x) ** 2 + (y - charge2.y) ** 2);
+                        if (d1 < 40 || d2 < 40) continue;
 
-            return { ex, ey, magnitude: Math.sqrt(ex * ex + ey * ey) };
-        };
+                        // Calculate field from both charges
+                        let ex = 0, ey = 0;
 
-        const calculatePotential = (px: number, py: number): number => {
-            let V = 0;
-            for (const charge of chargesRef.current) {
-                const dx = px - charge.x;
-                const dy = py - charge.y;
-                const r = Math.sqrt(dx * dx + dy * dy);
-                if (r < 25) continue;
-                V += charge.q / r * 100;
-            }
-            return V;
-        };
+                        // From charge 1
+                        const dx1 = x - charge1.x;
+                        const dy1 = y - charge1.y;
+                        const r1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+                        const e1 = 1000 * Math.abs(charge1.q) / (r1 * r1);
+                        const dir1 = charge1.q > 0 ? 1 : -1;
+                        ex += dir1 * e1 * dx1 / r1;
+                        ey += dir1 * e1 * dy1 / r1;
 
-        p.draw = () => {
-            p.background(15, 15, 20);
+                        // From charge 2
+                        const dx2 = x - charge2.x;
+                        const dy2 = y - charge2.y;
+                        const r2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                        const e2 = 1000 * Math.abs(charge2.q) / (r2 * r2);
+                        const dir2 = charge2.q > 0 ? 1 : -1;
+                        ex += dir2 * e2 * dx2 / r2;
+                        ey += dir2 * e2 * dy2 / r2;
 
-            // Potential field (heat map)
-            if (showPotential) {
-                p.loadPixels();
-                for (let x = 0; x < p.width; x += 4) {
-                    for (let y = 0; y < p.height; y += 4) {
-                        const V = calculatePotential(x, y);
-                        const normalizedV = p.constrain(V / 10, -1, 1);
+                        const mag = Math.sqrt(ex * ex + ey * ey);
+                        if (mag < 1) continue;
 
-                        let r, g, b;
-                        if (normalizedV > 0) {
-                            r = 255 * normalizedV;
-                            g = 50 * normalizedV;
-                            b = 50 * normalizedV;
-                        } else {
-                            r = 50 * (-normalizedV);
-                            g = 50 * (-normalizedV);
-                            b = 255 * (-normalizedV);
-                        }
+                        const len = Math.min(15, mag * 2);
+                        const nx = ex / mag;
+                        const ny = ey / mag;
 
-                        p.noStroke();
-                        p.fill(r, g, b, 80);
-                        p.rect(x, y, 4, 4);
+                        ctx.strokeStyle = `rgba(255, 200, 0, ${Math.min(0.8, mag * 0.3)})`;
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x + nx * len, y + ny * len);
+                        ctx.stroke();
                     }
                 }
             }
 
-            // Field lines (vector field)
-            if (showFieldLines) {
-                const gridSize = 30;
-                for (let x = gridSize; x < p.width; x += gridSize) {
-                    for (let y = gridSize; y < p.height; y += gridSize) {
-                        const field = calculateField(x, y);
-                        if (field.magnitude > 0.5) {
-                            const len = p.constrain(field.magnitude * 0.5, 5, 20);
-                            const nx = field.ex / field.magnitude;
-                            const ny = field.ey / field.magnitude;
-
-                            // Color based on magnitude
-                            const intensity = p.constrain(field.magnitude * 5, 50, 255);
-                            p.stroke(intensity, intensity * 0.8, 100, 180);
-                            p.strokeWeight(2);
-                            p.line(x, y, x + nx * len, y + ny * len);
-
-                            // Arrow head
-                            p.push();
-                            p.translate(x + nx * len, y + ny * len);
-                            p.rotate(Math.atan2(ny, nx));
-                            p.fill(intensity, intensity * 0.8, 100);
-                            p.noStroke();
-                            p.triangle(0, 0, -6, -3, -6, 3);
-                            p.pop();
-                        }
-                    }
-                }
-            }
-
-            // Field lines emanating from charges (streamlines)
-            if (showFieldLines) {
-                for (const charge of chargesRef.current) {
-                    if (charge.q > 0) {
-                        // Draw streamlines from positive charges
-                        for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
-                            let lx = charge.x + 30 * Math.cos(a);
-                            let ly = charge.y + 30 * Math.sin(a);
-
-                            p.noFill();
-                            p.stroke(255, 100, 100, 100);
-                            p.strokeWeight(1);
-                            p.beginShape();
-
-                            for (let step = 0; step < 100; step++) {
-                                const field = calculateField(lx, ly);
-                                if (field.magnitude < 0.1) break;
-                                if (lx < 0 || lx > p.width || ly < 0 || ly > p.height) break;
-
-                                p.vertex(lx, ly);
-                                lx += field.ex / field.magnitude * 5;
-                                ly += field.ey / field.magnitude * 5;
-                            }
-                            p.endShape();
-                        }
-                    }
-                }
-            }
+            // Force line between charges
+            ctx.strokeStyle = forceType === "Çekme" ? "#4ADE80" : "#EF4444";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            ctx.moveTo(charge1.x, charge1.y);
+            ctx.lineTo(charge2.x, charge2.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
 
             // Draw charges
-            for (let i = 0; i < chargesRef.current.length; i++) {
-                const charge = chargesRef.current[i];
-                const size = 40 + Math.abs(charge.q) * 8;
-
-                // Glow effect
-                for (let r = size + 20; r > size; r -= 5) {
-                    const alpha = (size + 20 - r) * 8;
-                    if (charge.q > 0) {
-                        p.fill(255, 100, 100, alpha);
-                    } else {
-                        p.fill(100, 100, 255, alpha);
-                    }
-                    p.noStroke();
-                    p.ellipse(charge.x, charge.y, r * 2, r * 2);
-                }
-
-                // Main circle with gradient
-                const gradient = p.drawingContext as CanvasRenderingContext2D;
-                const grad = gradient.createRadialGradient(
-                    charge.x - size / 3, charge.y - size / 3, 0,
-                    charge.x, charge.y, size
-                );
-
-                if (charge.q > 0) {
-                    grad.addColorStop(0, '#FF8888');
-                    grad.addColorStop(0.5, '#FF4444');
-                    grad.addColorStop(1, '#CC0000');
-                } else {
-                    grad.addColorStop(0, '#8888FF');
-                    grad.addColorStop(0.5, '#4444FF');
-                    grad.addColorStop(1, '#0000CC');
-                }
-
-                gradient.fillStyle = grad;
-                p.stroke(charge.q > 0 ? '#880000' : '#000088');
-                p.strokeWeight(3);
-                p.ellipse(charge.x, charge.y, size, size);
+            const drawCharge = (x: number, y: number, q: number) => {
+                ctx.fillStyle = q > 0 ? "#EF4444" : "#3B82F6";
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
 
                 // +/- symbol
-                p.stroke(255);
-                p.strokeWeight(4);
-                if (charge.q > 0) {
-                    p.line(charge.x - 12, charge.y, charge.x + 12, charge.y);
-                    p.line(charge.x, charge.y - 12, charge.x, charge.y + 12);
-                } else {
-                    p.line(charge.x - 12, charge.y, charge.x + 12, charge.y);
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x - 10, y);
+                ctx.lineTo(x + 10, y);
+                ctx.stroke();
+                if (q > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y - 10);
+                    ctx.lineTo(x, y + 10);
+                    ctx.stroke();
                 }
 
-                // Charge value
-                p.fill(255);
-                p.noStroke();
-                p.textSize(10);
-                p.textAlign(p.CENTER);
-                p.text(`${charge.q > 0 ? '+' : ''}${charge.q}C`, charge.x, charge.y + size / 2 + 15);
-                p.textAlign(p.LEFT);
-            }
+                // Label
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(q > 0 ? "+1C" : "-1C", x, y + 45);
+            };
 
-            // Calculate force between charges (if 2 charges)
-            if (chargesRef.current.length >= 2) {
-                const c1 = chargesRef.current[0];
-                const c2 = chargesRef.current[1];
-                const dx = c2.x - c1.x;
-                const dy = c2.y - c1.y;
-                const r = Math.sqrt(dx * dx + dy * dy);
-                const rMeters = r / 50; // Scale: 50px = 1m
-                const F = (k * Math.abs(c1.q * c2.q)) / (rMeters * rMeters);
-                const forceType = c1.q * c2.q > 0 ? "İtme" : "Çekme";
+            drawCharge(charge1.x, charge1.y, charge1.q);
+            drawCharge(charge2.x, charge2.y, charge2.q);
 
-                // Info panel
-                p.fill(20, 20, 30, 240);
-                p.stroke(60, 60, 80);
-                p.strokeWeight(2);
-                p.rect(15, 15, 280, 120, 8);
-
-                p.fill(167, 139, 250);
-                p.noStroke();
-                p.textSize(14);
-                p.textAlign(p.LEFT);
-                p.text('⚡ COULOMB YASASI', 25, 38);
-
-                p.fill(255);
-                p.textSize(11);
-                p.text(`F = k·|q₁·q₂|/r²`, 25, 58);
-                p.text(`k = 8.99×10⁹ N·m²/C²`, 25, 78);
-                p.text(`r = ${rMeters.toFixed(2)} m`, 25, 98);
-
-                p.fill(c1.q * c2.q > 0 ? p.color(255, 150, 150) : p.color(150, 255, 150));
-                p.text(`F = ${F.toExponential(2)} N (${forceType})`, 25, 118);
-            }
-
-            // Instructions
-            p.fill(150);
-            p.textSize(10);
-            p.textAlign(p.LEFT);
-            p.text('Yükleri sürükle • Tıkla = yeni yük', 15, p.height - 15);
+            // Distance label
+            ctx.fillStyle = "#888";
+            ctx.font = "12px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`r = ${distanceM.toFixed(2)}m`, (charge1.x + charge2.x) / 2, (charge1.y + charge2.y) / 2 - 15);
         };
 
-        p.mousePressed = () => {
-            if (p.mouseX < 0 || p.mouseX > p.width || p.mouseY < 0 || p.mouseY > p.height) return;
+        draw();
+    }, [charge1, charge2, showField, distanceM, forceType]);
 
-            for (let i = 0; i < chargesRef.current.length; i++) {
-                const d = p.dist(p.mouseX, p.mouseY, chargesRef.current[i].x, chargesRef.current[i].y);
-                if (d < 30) {
-                    dragging = i;
-                    return;
-                }
-            }
+    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-            // Add new charge
-            const newQ = chargesRef.current.length % 2 === 0 ? 1 : -1;
-            setChargesState([...chargesRef.current, { x: p.mouseX, y: p.mouseY, q: newQ }]);
-        };
+        const d1 = Math.sqrt((x - charge1.x) ** 2 + (y - charge1.y) ** 2);
+        const d2 = Math.sqrt((x - charge2.x) ** 2 + (y - charge2.y) ** 2);
 
-        p.mouseDragged = () => {
-            if (dragging !== null && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
-                const newCharges = [...chargesRef.current];
-                newCharges[dragging] = { ...newCharges[dragging], x: p.mouseX, y: p.mouseY };
-                setChargesState(newCharges);
-            }
-        };
+        if (d1 < 30) draggingRef.current = 1;
+        else if (d2 < 30) draggingRef.current = 2;
+    };
 
-        p.mouseReleased = () => {
-            dragging = null;
-        };
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (draggingRef.current === null) return;
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        const x = Math.max(30, Math.min(canvasRef.current!.width - 30, e.clientX - rect.left));
+        const y = Math.max(30, Math.min(canvasRef.current!.height - 30, e.clientY - rect.top));
 
-        p.windowResized = () => {
-            p.resizeCanvas(parentRef.clientWidth, 400);
-        };
-    }, [showFieldLines, showPotential]);
+        if (draggingRef.current === 1) setCharge1({ ...charge1, x, y });
+        else if (draggingRef.current === 2) setCharge2({ ...charge2, x, y });
+    };
+
+    const handleMouseUp = () => {
+        draggingRef.current = null;
+    };
 
     return (
-        <div className={className}>
-            <P5Wrapper sketch={sketch} className="w-full h-[400px] rounded-none border-b-[3px] border-black" />
+        <div className={cn("bg-neutral-900", className)}>
+            {/* Challenge */}
+            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">🎯</span>
+                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
+                </div>
+                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
+                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
+            </div>
 
-            <div className="p-4 bg-gradient-to-b from-neutral-800 to-neutral-900 space-y-4">
-                <div className="bg-neutral-900 border-2 border-purple-400/30 rounded-lg p-3">
-                    <p className="text-purple-400 font-mono text-sm font-bold mb-2">⚡ Coulomb Yasası</p>
-                    <p className="text-white font-mono text-xs">F = k · |q₁ · q₂| / r²</p>
-                    <p className="text-neutral-400 text-xs mt-1">k = 8.99 × 10⁹ N·m²/C²</p>
+            {/* Canvas */}
+            <canvas
+                ref={canvasRef}
+                width={400}
+                height={260}
+                className="w-full cursor-grab active:cursor-grabbing"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+            />
+
+            {/* Formula Box */}
+            <div className="bg-black/50 p-3 border-y border-neutral-700">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-purple-400 font-mono text-sm font-bold">F = k·|q₁·q₂|/r²</p>
+                        <p className="text-neutral-400 text-xs">k = 8.99×10⁹ N·m²/C²</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-white font-mono">
+                            F = <span className={forceType === "Çekme" ? "text-green-400" : "text-red-400"}>{force.toExponential(2)}</span> N
+                        </p>
+                        <p className={cn("text-sm font-bold", forceType === "Çekme" ? "text-green-400" : "text-red-400")}>
+                            ({forceType})
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Controls */}
+            <div className="p-4 space-y-3">
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setCharge1({ ...charge1, q: charge1.q > 0 ? -1 : 1 })}
+                        className={cn(
+                            "flex-1 py-2 font-bold text-sm border-2 border-black",
+                            charge1.q > 0 ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+                        )}
+                    >
+                        Yük 1: {charge1.q > 0 ? "+1C" : "-1C"}
+                    </button>
+                    <button
+                        onClick={() => setCharge2({ ...charge2, q: charge2.q > 0 ? -1 : 1 })}
+                        className={cn(
+                            "flex-1 py-2 font-bold text-sm border-2 border-black",
+                            charge2.q > 0 ? "bg-red-500 text-white" : "bg-blue-500 text-white"
+                        )}
+                    >
+                        Yük 2: {charge2.q > 0 ? "+1C" : "-1C"}
+                    </button>
                 </div>
 
-                <div className="flex gap-4 flex-wrap">
-                    <label className="flex items-center gap-2 text-white text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showFieldLines} onChange={(e) => setShowFieldLines(e.target.checked)} className="accent-yellow-500" />
-                        Alan Çizgileri
-                    </label>
-                    <label className="flex items-center gap-2 text-white text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showPotential} onChange={(e) => setShowPotential(e.target.checked)} className="accent-purple-500" />
-                        Potansiyel Haritası
-                    </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showField}
+                        onChange={(e) => setShowField(e.target.checked)}
+                        className="w-4 h-4 accent-yellow-400"
+                    />
+                    <span className="text-white text-sm font-bold">Alan Çizgileri</span>
+                </label>
+
+                <p className="text-neutral-400 text-xs text-center">💡 Yükleri sürükleyerek hareket ettir</p>
+
+                <div className="flex gap-2">
+                    {challenges.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setChallenge(i)}
+                            className={cn(
+                                "flex-1 py-1 text-xs font-bold border-2 border-black",
+                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                            )}
+                        >
+                            Görev {i + 1}
+                        </button>
+                    ))}
                 </div>
 
-                <button
-                    onClick={() => setChargesState([{ x: 200, y: 200, q: 2 }, { x: 400, y: 200, q: -2 }])}
-                    className="px-4 py-2 bg-purple-500 text-white font-bold text-xs uppercase border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                >
-                    Sıfırla
-                </button>
-
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
-                    <p className="text-blue-400 text-xs">
-                        💡 <strong>İpucu:</strong> Aynı işaretli yükler iter, zıt işaretli yükler çeker.
-                        Mesafe arttıkça kuvvet r² ile azalır!
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                    <p className="text-green-400 text-xs">
+                        ✨ <strong>Keşif:</strong> Aynı işaretli yükler iter, zıt işaretliler çeker!
+                        Mesafe yarıya inince kuvvet 4 katına çıkar (F ∝ 1/r²).
                     </p>
                 </div>
             </div>

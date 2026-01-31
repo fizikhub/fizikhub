@@ -1,283 +1,248 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { P5Wrapper } from "./P5Wrapper";
-import p5 from "p5";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 interface WaveSimProps {
     className?: string;
 }
 
 export function WaveSim({ className = "" }: WaveSimProps) {
-    const [frequency1, setFrequency1] = useState(1);
-    const [frequency2, setFrequency2] = useState(1.2);
-    const [amplitude1, setAmplitude1] = useState(40);
-    const [amplitude2, setAmplitude2] = useState(40);
-    const [showWave1, setShowWave1] = useState(true);
-    const [showWave2, setShowWave2] = useState(true);
-    const [showSum, setShowSum] = useState(true);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [frequency, setFrequency] = useState(1);
+    const [amplitude, setAmplitude] = useState(40);
+    const [showSecondWave, setShowSecondWave] = useState(false);
+    const [freq2, setFreq2] = useState(1.2);
+    const [challenge, setChallenge] = useState(0);
 
-    // Beat frequency
-    const beatFreq = Math.abs(frequency1 - frequency2);
-    const wavelength1 = 100 / frequency1;
-    const wavelength2 = 100 / frequency2;
+    const timeRef = useRef(0);
 
-    const sketch = useCallback((p: p5, parentRef: HTMLDivElement) => {
-        let time = 0;
+    const wavelength = 200 / frequency;
+    const beatFreq = Math.abs(frequency - freq2);
 
-        p.setup = () => {
-            const canvas = p.createCanvas(parentRef.clientWidth, 400);
-            canvas.parent(parentRef);
-        };
+    const challenges = [
+        { question: "Frekansı artırınca dalga boyuna ne olur?", hint: "f değerini 1'den 2'ye çıkar" },
+        { question: "Genliği değiştir, dalga boyunu gözle!", hint: "Genlik dalga boyunu etkiler mi?" },
+        { question: "İki dalga ekle ve vuru (beat) gözle!", hint: "2. dalgayı aç, frekansları farklı yap" },
+    ];
 
-        p.draw = () => {
-            p.background(15, 15, 20);
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let animationId: number;
+
+        const draw = () => {
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerY = height / 2;
+
+            // Clear
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(0, 0, width, height);
 
             // Grid
-            p.stroke(40, 40, 50);
-            p.strokeWeight(1);
-            for (let x = 0; x < p.width; x += 40) p.line(x, 0, x, p.height);
-            for (let y = 0; y < p.height; y += 40) p.line(0, y, p.width, y);
+            ctx.strokeStyle = "#333";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.stroke();
 
-            const centerY = 200;
-            const waveWidth = p.width - 40;
-            const startX = 20;
-
-            // Draw axis
-            p.stroke(100, 100, 120);
-            p.strokeWeight(2);
-            p.line(startX, centerY, startX + waveWidth, centerY);
-
-            // Axis arrow
-            p.fill(100, 100, 120);
-            p.noStroke();
-            p.triangle(startX + waveWidth, centerY, startX + waveWidth - 10, centerY - 5, startX + waveWidth - 10, centerY + 5);
-
-            // x label
-            p.textSize(12);
-            p.text('x', startX + waveWidth - 5, centerY + 20);
-
-            // Calculate waves
-            const wave1Points: number[] = [];
-            const wave2Points: number[] = [];
-            const sumPoints: number[] = [];
-
-            for (let x = 0; x < waveWidth; x++) {
-                const phase1 = (x * frequency1 * 0.05) - (time * frequency1 * 2);
-                const phase2 = (x * frequency2 * 0.05) - (time * frequency2 * 2);
-
-                const y1 = amplitude1 * Math.sin(phase1);
-                const y2 = amplitude2 * Math.sin(phase2);
-
-                wave1Points.push(y1);
-                wave2Points.push(y2);
-                sumPoints.push(y1 + y2);
+            // Wave 1 (main)
+            ctx.strokeStyle = "#3B82F6";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            for (let x = 0; x < width; x++) {
+                const y = centerY - amplitude * Math.sin((x * frequency * 0.02) - timeRef.current * frequency);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             }
+            ctx.stroke();
 
-            // Draw Wave 1 (blue)
-            if (showWave1) {
-                p.noFill();
-                p.stroke(59, 130, 246);
-                p.strokeWeight(3);
-                p.beginShape();
-                for (let x = 0; x < waveWidth; x++) {
-                    p.vertex(startX + x, centerY - wave1Points[x]);
+            // Wave 2 (optional)
+            if (showSecondWave) {
+                ctx.strokeStyle = "#FFC800";
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                for (let x = 0; x < width; x++) {
+                    const y = centerY - amplitude * Math.sin((x * freq2 * 0.02) - timeRef.current * freq2);
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
                 }
-                p.endShape();
-            }
+                ctx.stroke();
 
-            // Draw Wave 2 (yellow)
-            if (showWave2) {
-                p.noFill();
-                p.stroke(255, 200, 0);
-                p.strokeWeight(3);
-                p.beginShape();
-                for (let x = 0; x < waveWidth; x++) {
-                    p.vertex(startX + x, centerY - wave2Points[x]);
+                // Sum wave (interference)
+                ctx.strokeStyle = "#EF4444";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < width; x++) {
+                    const y1 = amplitude * Math.sin((x * frequency * 0.02) - timeRef.current * frequency);
+                    const y2 = amplitude * Math.sin((x * freq2 * 0.02) - timeRef.current * freq2);
+                    const y = centerY - (y1 + y2) * 0.5;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
                 }
-                p.endShape();
+                ctx.stroke();
             }
 
-            // Draw Sum (interference)
-            if (showSum) {
-                p.noFill();
-                p.stroke(255, 100, 150);
-                p.strokeWeight(4);
-                p.beginShape();
-                for (let x = 0; x < waveWidth; x++) {
-                    p.vertex(startX + x, centerY - sumPoints[x] * 0.5);
-                }
-                p.endShape();
-            }
+            // Wavelength indicator
+            ctx.strokeStyle = "#4ADE80";
+            ctx.lineWidth = 2;
+            const wlStart = 50;
+            ctx.beginPath();
+            ctx.moveTo(wlStart, centerY + 60);
+            ctx.lineTo(wlStart + wavelength, centerY + 60);
+            ctx.stroke();
 
-            // Amplitude guides
-            p.stroke(255, 255, 255, 30);
-            p.strokeWeight(1);
-            const ctx = p.drawingContext as CanvasRenderingContext2D;
-            ctx.setLineDash([5, 5]);
-            p.line(startX, centerY - amplitude1, startX + waveWidth, centerY - amplitude1);
-            p.line(startX, centerY + amplitude1, startX + waveWidth, centerY + amplitude1);
-            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(wlStart, centerY + 50);
+            ctx.lineTo(wlStart, centerY + 70);
+            ctx.stroke();
 
-            // Wavelength indicator for wave 1
-            if (showWave1) {
-                const wlStart = 50;
-                p.stroke(59, 130, 246);
-                p.strokeWeight(2);
-                p.line(startX + wlStart, centerY + 70, startX + wlStart + wavelength1, centerY + 70);
-                p.line(startX + wlStart, centerY + 60, startX + wlStart, centerY + 80);
-                p.line(startX + wlStart + wavelength1, centerY + 60, startX + wlStart + wavelength1, centerY + 80);
+            ctx.beginPath();
+            ctx.moveTo(wlStart + wavelength, centerY + 50);
+            ctx.lineTo(wlStart + wavelength, centerY + 70);
+            ctx.stroke();
 
-                p.fill(59, 130, 246);
-                p.noStroke();
-                p.textSize(10);
-                p.text(`λ₁ = ${wavelength1.toFixed(0)}`, startX + wlStart + wavelength1 / 2 - 15, centerY + 90);
-            }
+            ctx.fillStyle = "#4ADE80";
+            ctx.font = "12px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`λ = ${wavelength.toFixed(0)} px`, wlStart + wavelength / 2, centerY + 85);
 
-            time += 0.016;
-
-            // Info Panel
-            p.fill(20, 20, 30, 240);
-            p.stroke(60, 60, 80);
-            p.strokeWeight(2);
-            p.rect(15, 15, 280, 130, 8);
-
-            p.fill(255, 100, 150);
-            p.noStroke();
-            p.textSize(14);
-            p.text('🌊 DALGA GİRİŞİMİ', 25, 38);
-
-            p.textSize(11);
-
-            // Wave 1 info
-            p.fill(59, 130, 246);
-            p.rect(25, 48, 10, 10);
-            p.fill(255);
-            p.text(`Dalga 1: f₁ = ${frequency1.toFixed(1)} Hz, A₁ = ${amplitude1}`, 40, 57);
-
-            // Wave 2 info
-            p.fill(255, 200, 0);
-            p.rect(25, 68, 10, 10);
-            p.fill(255);
-            p.text(`Dalga 2: f₂ = ${frequency2.toFixed(1)} Hz, A₂ = ${amplitude2}`, 40, 77);
-
-            // Sum info
-            p.fill(255, 100, 150);
-            p.rect(25, 88, 10, 10);
-            p.fill(255);
-            p.text(`Süperpozisyon: y = y₁ + y₂`, 40, 97);
-
-            // Beat frequency
-            p.fill(100, 255, 200);
-            p.text(`Vuru Frekansı: |f₁-f₂| = ${beatFreq.toFixed(2)} Hz`, 25, 120);
-
-            // Interference type indicator
-            const interferenceType = beatFreq < 0.1 ?
-                (amplitude1 === amplitude2 ? "TAM YAPICI GİRİŞİM" : "YAPICI GİRİŞİM") :
-                "VURUŞUM (BEAT)";
-            p.fill(150, 255, 150);
-            p.text(`Durum: ${interferenceType}`, 25, 140);
+            timeRef.current += 0.05;
+            animationId = requestAnimationFrame(draw);
         };
 
-        p.windowResized = () => {
-            p.resizeCanvas(parentRef.clientWidth, 400);
-        };
-    }, [frequency1, frequency2, amplitude1, amplitude2, showWave1, showWave2, showSum, beatFreq, wavelength1, wavelength2]);
+        draw();
+        return () => cancelAnimationFrame(animationId);
+    }, [frequency, amplitude, showSecondWave, freq2, wavelength]);
 
     return (
-        <div className={className}>
-            <P5Wrapper sketch={sketch} className="w-full h-[400px] rounded-none border-b-[3px] border-black" />
+        <div className={cn("bg-neutral-900", className)}>
+            {/* Challenge */}
+            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">🎯</span>
+                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
+                </div>
+                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
+                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
+            </div>
 
-            <div className="p-4 bg-gradient-to-b from-neutral-800 to-neutral-900 space-y-4">
-                <div className="bg-neutral-900 border-2 border-pink-400/30 rounded-lg p-3">
-                    <p className="text-pink-400 font-mono text-sm font-bold mb-2">📊 Dalga Formülleri</p>
-                    <div className="text-xs font-mono space-y-1">
-                        <p className="text-blue-400">y₁ = {amplitude1}·sin(2π·{frequency1.toFixed(1)}·t)</p>
-                        <p className="text-yellow-400">y₂ = {amplitude2}·sin(2π·{frequency2.toFixed(1)}·t)</p>
-                        <p className="text-pink-400">y = y₁ + y₂ (Süperpozisyon)</p>
+            {/* Canvas */}
+            <div className="relative">
+                <canvas ref={canvasRef} width={400} height={200} className="w-full" />
+
+                {/* Legend */}
+                <div className="absolute top-2 right-2 bg-black/80 rounded-lg p-2 text-xs">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-4 h-1 bg-blue-500"></div>
+                        <span className="text-white">Dalga 1</span>
+                    </div>
+                    {showSecondWave && (
+                        <>
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="w-4 h-1 bg-yellow-400"></div>
+                                <span className="text-white">Dalga 2</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-4 h-1 bg-red-500"></div>
+                                <span className="text-white">Toplam</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Formula Box */}
+            <div className="bg-black/50 p-3 border-y border-neutral-700">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="text-yellow-400 font-mono text-sm">v = f × λ</p>
+                        <p className="text-neutral-400 text-xs">Dalga hızı = Frekans × Dalga boyu</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-white font-mono">f = <span className="text-blue-400">{frequency.toFixed(1)}</span> Hz</p>
+                        <p className="text-white font-mono">λ = <span className="text-green-400">{wavelength.toFixed(0)}</span> px</p>
+                        {showSecondWave && (
+                            <p className="text-white font-mono text-xs">Vuru = <span className="text-red-400">{beatFreq.toFixed(2)}</span> Hz</p>
+                        )}
                     </div>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <div className="flex justify-between text-blue-400 text-xs font-bold uppercase mb-1">
-                            <span>Frekans 1 (f₁)</span>
-                            <span>{frequency1.toFixed(1)} Hz</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="0.5"
-                            max="3"
-                            step="0.1"
-                            value={frequency1}
-                            onChange={(e) => setFrequency1(Number(e.target.value))}
-                            className="w-full accent-blue-500"
-                        />
+            {/* Controls */}
+            <div className="p-4 space-y-3">
+                <div>
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-white font-bold text-sm">Frekans (f)</span>
+                        <span className="text-blue-400 font-mono text-sm">{frequency.toFixed(1)} Hz</span>
                     </div>
-                    <div>
-                        <div className="flex justify-between text-yellow-400 text-xs font-bold uppercase mb-1">
-                            <span>Frekans 2 (f₂)</span>
-                            <span>{frequency2.toFixed(1)} Hz</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="0.5"
-                            max="3"
-                            step="0.1"
-                            value={frequency2}
-                            onChange={(e) => setFrequency2(Number(e.target.value))}
-                            className="w-full accent-yellow-400"
-                        />
-                    </div>
-                    <div>
-                        <div className="flex justify-between text-blue-400 text-xs font-bold uppercase mb-1">
-                            <span>Genlik 1 (A₁)</span>
-                            <span>{amplitude1}</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="10"
-                            max="60"
-                            value={amplitude1}
-                            onChange={(e) => setAmplitude1(Number(e.target.value))}
-                            className="w-full accent-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <div className="flex justify-between text-yellow-400 text-xs font-bold uppercase mb-1">
-                            <span>Genlik 2 (A₂)</span>
-                            <span>{amplitude2}</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="10"
-                            max="60"
-                            value={amplitude2}
-                            onChange={(e) => setAmplitude2(Number(e.target.value))}
-                            className="w-full accent-yellow-400"
-                        />
-                    </div>
+                    <input
+                        type="range" min="0.5" max="3" step="0.1" value={frequency}
+                        onChange={(e) => setFrequency(Number(e.target.value))}
+                        className="w-full h-2 rounded-lg accent-blue-400"
+                    />
                 </div>
 
-                <div className="flex gap-4 flex-wrap">
-                    <label className="flex items-center gap-2 text-blue-400 text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showWave1} onChange={(e) => setShowWave1(e.target.checked)} className="accent-blue-500" />
-                        Dalga 1
-                    </label>
-                    <label className="flex items-center gap-2 text-yellow-400 text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showWave2} onChange={(e) => setShowWave2(e.target.checked)} className="accent-yellow-400" />
-                        Dalga 2
-                    </label>
-                    <label className="flex items-center gap-2 text-pink-400 text-xs font-bold cursor-pointer">
-                        <input type="checkbox" checked={showSum} onChange={(e) => setShowSum(e.target.checked)} className="accent-pink-500" />
-                        Süperpozisyon
-                    </label>
+                <div>
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-white font-bold text-sm">Genlik (A)</span>
+                        <span className="text-purple-400 font-mono text-sm">{amplitude}</span>
+                    </div>
+                    <input
+                        type="range" min="10" max="60" value={amplitude}
+                        onChange={(e) => setAmplitude(Number(e.target.value))}
+                        className="w-full h-2 rounded-lg accent-purple-400"
+                    />
                 </div>
 
-                <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
-                    <p className="text-purple-400 text-xs">
-                        💡 <strong>Dene:</strong> İki frekansı birbirine eşitle ve yapıcı girişimi gör!
-                        Farklı frekanslarla vuru (beat) olayını gözlemle. Vuru frekansı = |f₁ - f₂|
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showSecondWave}
+                        onChange={(e) => setShowSecondWave(e.target.checked)}
+                        className="w-4 h-4 accent-yellow-400"
+                    />
+                    <span className="text-white text-sm font-bold">2. Dalga (Girişim)</span>
+                </label>
+
+                {showSecondWave && (
+                    <div>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-yellow-400 font-bold text-sm">Frekans 2</span>
+                            <span className="text-yellow-400 font-mono text-sm">{freq2.toFixed(1)} Hz</span>
+                        </div>
+                        <input
+                            type="range" min="0.5" max="3" step="0.1" value={freq2}
+                            onChange={(e) => setFreq2(Number(e.target.value))}
+                            className="w-full h-2 rounded-lg accent-yellow-400"
+                        />
+                    </div>
+                )}
+
+                <div className="flex gap-2">
+                    {challenges.map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setChallenge(i)}
+                            className={cn(
+                                "flex-1 py-1 text-xs font-bold border-2 border-black",
+                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                            )}
+                        >
+                            Görev {i + 1}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                    <p className="text-green-400 text-xs">
+                        ✨ <strong>Keşif:</strong> Frekans arttıkça dalga boyu kısalır!
+                        Genlik değişince dalga boyu değişmez - sadece yükseklik değişir.
                     </p>
                 </div>
             </div>
