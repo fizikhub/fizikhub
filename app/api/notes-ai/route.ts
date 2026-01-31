@@ -22,10 +22,9 @@ Title: {noteTitle}
 Content: {noteContent}`;
 
 const PREFERRED_MODELS = [
-    "gemini-2.5-flash-native-audio-preview-09-2025",
-    "gemini-2.0-flash",
-    "gemini-1.5-pro",
-    "gemini-1.5-flash-8b",
+    "gemma-3-4b-it",        // Primary for text (user requested)
+    "gemini-2.0-flash",     // Fallback
+    "gemini-1.5-flash-8b",  // Secondary fallback
 ];
 
 async function tryGenerateContent(requestId: string, modelName: string, parts: any[]) {
