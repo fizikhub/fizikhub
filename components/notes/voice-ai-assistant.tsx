@@ -55,6 +55,7 @@ export function VoiceAIAssistant({
     const [visualizerData, setVisualizerData] = useState<number[]>(new Array(20).fill(10));
     const [isMobile, setIsMobile] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [activeModel, setActiveModel] = useState<string>("Gemini AI");
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -208,6 +209,7 @@ export function VoiceAIAssistant({
 
                 const data = await response.json();
                 console.log("API Audio Response:", data);
+                if (data.debug?.model) setActiveModel(data.debug.model);
 
                 if (data.transcription) {
                     setMessages((prev) => [...prev, { role: "user", content: data.transcription, timestamp: Date.now() }]);
@@ -263,6 +265,7 @@ export function VoiceAIAssistant({
 
             const data = await response.json();
             console.log("API Text Response:", data);
+            if (data.debug?.model) setActiveModel(data.debug.model);
 
             if (data.response) {
                 setMessages((prev) => [...prev, { role: "assistant", content: data.response, timestamp: Date.now() }]);
@@ -376,7 +379,7 @@ export function VoiceAIAssistant({
                                     )}
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-white text-lg tracking-tight">Gemini AI Asistan</h3>
+                                    <h3 className="font-black text-white text-lg tracking-tight">{activeModel === "Gemini AI" ? "Gemini AI Asistan" : activeModel}</h3>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                                         <p className="text-[10px] font-bold uppercase text-purple-300 tracking-wider">Çevrimiçi</p>

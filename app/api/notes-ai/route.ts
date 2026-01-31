@@ -26,22 +26,18 @@ MEVCUT NOT BİLGİSİ:
 Başlık: {noteTitle}
 İçerik: {noteContent}`;
 
-export async function POST(request: NextRequest) {
-    const requestId = Math.random().toString(36).substring(7);
-    console.log(`[AI-API][${requestId}] Request received`);
+// Define a list of models to try in order of preference
+const PREFERRED_MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash-8b",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash"
+];
 
+async function tryGenerateContent(requestId: string, modelName: string, parts: any[]) {
+    console.log(`[AI-API][${requestId}] Attempting with model: ${modelName}`);
     try {
-        const body = await request.json();
-        const { type, message, audio, noteTitle, noteContent, history } = body;
-
-        console.log(`[AI-API][${requestId}] Type: ${type}, Message: ${message?.slice(0, 50)}`);
-        if (audio) console.log(`[AI-API][${requestId}] Audio data length: ${audio.length}`);
-
-        // Try gemini-2.0-flash-exp (experimental names often change, let's try the most common ones)
-        // Actually gemini-1.5-flash is very stable. Let's use it as main and fallback.
-        const modelName = "gemini-1.5-flash";
-        console.log(`[AI-API][${requestId}] Using model: ${modelName}`);
-
         const model = genAI.getGenerativeModel({
             model: modelName,
             generationConfig: {
@@ -51,60 +47,90 @@ export async function POST(request: NextRequest) {
             },
         });
 
+        // For audio, we use simpler approach if the specific model supports it
+        const result = await model.generateContent(parts);
+        const response = await result.response;
+        return response.text();
+    } catch (err: any) {
+        console.error(`[AI-API][${requestId}] Model ${modelName} failed:`, err.message);
+        throw err;
+    }
+}
+
+export async function POST(request: NextRequest) {
+    const requestId = Math.random().toString(36).substring(7);
+    console.log(`[AI-API][${requestId}] Request received`);
+
+    try {
+        const body = await request.json();
+        const { type, message, audio, noteTitle, noteContent, history } = body;
+
+        console.log(`[AI-API][${requestId}] Request Type: ${type}`);
+
         let userMessage = message;
         let transcription = "";
+        let audioData: any = null;
 
-        // Audio Handler
+        // If audio is provided, prepare it for the prompt
         if (type === "audio" && audio) {
-            console.log(`[AI-API][${requestId}] Processing audio...`);
-            try {
-                const audioModel = genAI.getGenerativeModel({ model: modelName });
-                const audioResult = await audioModel.generateContent([
-                    {
-                        inlineData: {
-                            mimeType: "audio/webm", // Standard fallback
-                            data: audio,
-                        },
-                    },
-                    { text: "Kullanıcının sesini dinle. Eğer bir komutsa eyleme dök ve cevap ver. Eğer normal konuşmaysa yazıya dök ve sohbeti devam ettir. Türkçe cevap ver." },
-                ]);
-
-                transcription = audioResult.response.text().trim();
-                console.log(`[AI-API][${requestId}] Transcription: ${transcription}`);
-                userMessage = transcription;
-            } catch (audioErr: any) {
-                console.error(`[AI-API][${requestId}] Audio process error:`, audioErr);
-                // If audio fails, maybe try to just let the chat handle it or return error
-                throw audioErr;
-            }
-        }
-
-        if (!userMessage && !audio) {
-            console.log(`[AI-API][${requestId}] Empty message and no audio.`);
-            return NextResponse.json({ success: false, error: "Mesaj boş" }, { status: 100 });
+            console.log(`[AI-API][${requestId}] Audio data received (length: ${audio.length})`);
+            audioData = {
+                inlineData: {
+                    mimeType: "audio/webm",
+                    data: audio,
+                },
+            };
         }
 
         const systemContext = SYSTEM_PROMPT
             .replace("{noteTitle}", noteTitle || "Başlıksız")
             .replace("{noteContent}", noteContent || "İçerik boş");
 
-        const chatHistory = (history || []).map((msg: { role: string; content: string }) => ({
-            role: msg.role === "user" ? "user" : "model",
-            parts: [{ text: msg.content }],
-        }));
+        // Build the prompt parts
+        const promptParts: any[] = [];
+        promptParts.push({ text: systemContext });
 
-        console.log(`[AI-API][${requestId}] Starting chat...`);
-        const chat = model.startChat({
-            history: [
-                { role: "user", parts: [{ text: systemContext }] },
-                { role: "model", parts: [{ text: "Merhaba! Ben Gemini 2.5 Flash Native Audio Dialog. FizikHub için notlarını düzenlemeye ve seninle bilim konuşmaya hazırım! 🎙️" }] },
-                ...chatHistory,
-            ],
+        // Add history
+        (history || []).forEach((msg: { role: string; content: string }) => {
+            promptParts.push({ text: `${msg.role === "user" ? "Kullanıcı" : "Asistan"}: ${msg.content}` });
         });
 
-        const result = await chat.sendMessage(userMessage || "Merhaba");
-        let responseText = result.response.text();
-        console.log(`[AI-API][${requestId}] AI Response received: ${responseText.slice(0, 50)}...`);
+        // Add current input
+        if (audioData) {
+            promptParts.push(audioData);
+            promptParts.push({ text: "Kullanıcının bu ses kaydını dinle ve Türkçe olarak yanıt ver. Eğer bir komutsa (not al vs.) eyleme dök." });
+        } else {
+            promptParts.push({ text: `Kullanıcı: ${userMessage || "Merhaba"}` });
+        }
+
+        // Try models in order
+        let responseText = "";
+        let successModel = "";
+        let lastError = null;
+
+        for (const modelName of PREFERRED_MODELS) {
+            try {
+                responseText = await tryGenerateContent(requestId, modelName, promptParts);
+                successModel = modelName;
+                break;
+            } catch (err) {
+                lastError = err;
+                continue;
+            }
+        }
+
+        if (!successModel) {
+            throw lastError || new Error("Hiçbir model yanıt vermedi");
+        }
+
+        console.log(`[AI-API][${requestId}] Success with ${successModel}`);
+
+        // Extract transcription if it was an audio request (Gemini returns the text as part of response usually)
+        if (type === "audio") {
+            // Simplified: we'll treat the response as both the transcription and the dialogue
+            // In a more complex setup, we could ask for both in one go.
+            transcription = "[Ses Kaydı İşlendi]";
+        }
 
         // Action Parsing
         let action = null;
@@ -133,11 +159,12 @@ export async function POST(request: NextRequest) {
             transcription: transcription || undefined,
             action,
             ...(actionData || {}),
+            debug: { model: successModel }
         });
     } catch (error: any) {
-        console.error(`[AI-API][${requestId}] Gemini AI Engine Error:`, error);
+        console.error(`[AI-API][${requestId}] Fatal Error:`, error);
         return NextResponse.json(
-            { success: false, error: error.message || "AI Engine Error" },
+            { success: false, error: error.message || "Bir hata oluştu", details: error.toString() },
             { status: 500 }
         );
     }
