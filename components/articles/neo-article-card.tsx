@@ -112,10 +112,10 @@ export function NeoArticleCard({
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
 
     return (
-        <ViewTransitionLink href={`/blog/${article.slug}`} className="block group h-full">
+        <ViewTransitionLink href={`/blog/${article.slug}`} className="block group">
             <article
                 className={cn(
-                    "flex flex-col h-full relative overflow-hidden",
+                    "flex flex-col relative overflow-hidden",
                     // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
                     "bg-white dark:bg-[#27272a]",
                     // BORDER: Pure Black (rgb(0,0,0)) ALWAYS
@@ -209,11 +209,23 @@ export function NeoArticleCard({
                             </button>
 
                             {/* Comment */}
-                            <ViewTransitionLink href={`/blog/${article.slug}#comments`}
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const url = `/blog/${article.slug}#comments`;
+                                    if (document.startViewTransition) {
+                                        document.startViewTransition(() => {
+                                            window.location.href = url;
+                                        });
+                                    } else {
+                                        window.location.href = url;
+                                    }
+                                }}
                                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <MessageCircle className="w-5 h-5 stroke-[2.5px] stroke-current" />
-                            </ViewTransitionLink>
+                            </button>
 
                             {/* Share */}
                             <button

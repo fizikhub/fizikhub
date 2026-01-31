@@ -182,8 +182,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
 
                     {/* Author (Left) */}
-                    <div className="flex items-center gap-2 z-20" onClick={(e) => e.stopPropagation()}>
-                        <ViewTransitionLink href={`/kullanici/${question.profiles?.username}`} className="flex items-center gap-2 group/author">
+                    <div className="flex items-center gap-2 z-20">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                router.push(`/kullanici/${question.profiles?.username}`);
+                            }}
+                            className="flex items-center gap-2 group/author cursor-pointer"
+                        >
                             <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 {question.profiles?.avatar_url ? (
                                     <img src={question.profiles.avatar_url} alt="A" className="w-full h-full object-cover" />
@@ -194,7 +201,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400 group-hover/author:text-[#FFBD2E] transition-colors">
                                 {question.full_name || question.profiles?.username}
                             </span>
-                        </ViewTransitionLink>
+                        </button>
                     </div>
 
                     {/* Actions (Right) */}

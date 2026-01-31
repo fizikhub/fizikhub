@@ -8,19 +8,20 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
 import dynamic from "next/dynamic";
 
-// Lazy load Footer for better initial page load performance
+// Lazy load components for better initial page load performance
 const Footer = dynamic(
     () => import("@/components/layout/footer").then(mod => mod.Footer),
     { ssr: false }
 );
 
 const GlobalAdminNotification = dynamic(
-    () => import("@/components/global-admin-notification"),
+    () => import("@/components/global-admin-notification").then(mod => mod.default),
     { ssr: false }
 );
 
 const GlobalEffects = dynamic(
     () => import("@/components/effects/global-effects").then(mod => mod.GlobalEffects),
+    { ssr: false }
 );
 
 const SlimeEffects = dynamic(
