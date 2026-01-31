@@ -23,6 +23,7 @@ import {
     Trash2,
     Languages,
     Zap,
+    AlertCircle,
 } from "lucide-react";
 
 interface VoiceAIAssistantProps {
@@ -53,6 +54,7 @@ export function VoiceAIAssistant({
     const [audioEnabled, setAudioEnabled] = useState(true);
     const [visualizerData, setVisualizerData] = useState<number[]>(new Array(20).fill(10));
     const [isMobile, setIsMobile] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -90,47 +92,66 @@ export function VoiceAIAssistant({
 
     // Handle visualizer
     const startVisualizer = (stream: MediaStream) => {
-        const audioContext = new AudioContext();
-        const source = audioContext.createMediaStreamSource(stream);
-        const analyzer = audioContext.createAnalyser();
-        analyzer.fftSize = 64;
-        source.connect(analyzer);
+        try {
+            const audioContext = new AudioContext();
+            const source = audioContext.createMediaStreamSource(stream);
+            const analyzer = audioContext.createAnalyser();
+            analyzer.fftSize = 64;
+            source.connect(analyzer);
 
-        audioContextRef.current = audioContext;
-        analyzerRef.current = analyzer;
+            audioContextRef.current = audioContext;
+            analyzerRef.current = analyzer;
 
-        const bufferLength = analyzer.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
+            const bufferLength = analyzer.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
 
-        const animate = () => {
-            analyzer.getByteFrequencyData(dataArray);
-            const values = Array.from(dataArray.slice(0, 20)).map(v => (v / 255) * 40 + 5);
-            setVisualizerData(values);
-            animationFrameRef.current = requestAnimationFrame(animate);
-        };
-        animate();
+            const animate = () => {
+                analyzer.getByteFrequencyData(dataArray);
+                const values = Array.from(dataArray.slice(0, 20)).map(v => (v / 255) * 40 + 5);
+                setVisualizerData(values);
+                animationFrameRef.current = requestAnimationFrame(animate);
+            };
+            animate();
+        } catch (err) {
+            console.error("Visualizer error:", err);
+        }
     };
 
     const stopVisualizer = () => {
         if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-        if (audioContextRef.current) audioContextRef.current.close();
+        if (audioContextRef.current) audioContextRef.current.close().catch(() => { });
         setVisualizerData(new Array(20).fill(5));
     };
 
     // Start recording
     const startRecording = useCallback(async () => {
+        setError(null);
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
+
+            // Detect supported mime type
+            const mimeTypes = [
+                'audio/webm',
+                'audio/ogg',
+                'audio/mp4',
+                'audio/aac',
+            ];
+            const supportedType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || '';
+            console.log("Using supported mime type:", supportedType);
+
+            const mediaRecorder = new MediaRecorder(stream, { mimeType: supportedType });
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
 
             mediaRecorder.ondataavailable = (event) => {
-                audioChunksRef.current.push(event.data);
+                if (event.data.size > 0) {
+                    audioChunksRef.current.push(event.data);
+                }
             };
 
             mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+                console.log("Recording stopped. Chunks count:", audioChunksRef.current.length);
+                const audioBlob = new Blob(audioChunksRef.current, { type: supportedType });
                 stream.getTracks().forEach((track) => track.stop());
                 stopVisualizer();
                 await processAudio(audioBlob);
@@ -142,9 +163,9 @@ export function VoiceAIAssistant({
 
             // Stop TTS if speaking
             if (synthRef.current?.speaking) synthRef.current.cancel();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Mikrofon erişimi başarısız:", error);
-            alert("Mikrofon erişimi için izin verin.");
+            setError("Mikrofon erişimi sağlanamadı.");
         }
     }, []);
 
@@ -159,7 +180,9 @@ export function VoiceAIAssistant({
     // Process audio with Gemini
     const processAudio = async (audioBlob: Blob) => {
         setIsProcessing(true);
+        setError(null);
         try {
+            console.log("Uploading audio blob of size:", audioBlob.size);
             const reader = new FileReader();
             reader.readAsDataURL(audioBlob);
 
@@ -178,7 +201,13 @@ export function VoiceAIAssistant({
                     }),
                 });
 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || "Sunucu hatası");
+                }
+
                 const data = await response.json();
+                console.log("API Audio Response:", data);
 
                 if (data.transcription) {
                     setMessages((prev) => [...prev, { role: "user", content: data.transcription, timestamp: Date.now() }]);
@@ -195,8 +224,9 @@ export function VoiceAIAssistant({
                     onInsertTitle(data.title);
                 }
             };
-        } catch (error) {
+        } catch (error: any) {
             console.error("Ses işleme hatası:", error);
+            setError(error.message || "Ses işlenirken bir hata oluştu.");
         } finally {
             setIsProcessing(false);
         }
@@ -208,10 +238,12 @@ export function VoiceAIAssistant({
         if (!messageText) return;
 
         setInputText("");
+        setError(null);
         setMessages((prev) => [...prev, { role: "user", content: messageText, timestamp: Date.now() }]);
         setIsProcessing(true);
 
         try {
+            console.log("Sending text message:", messageText);
             const response = await fetch("/api/notes-ai", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -224,7 +256,13 @@ export function VoiceAIAssistant({
                 }),
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Sunucu hatası");
+            }
+
             const data = await response.json();
+            console.log("API Text Response:", data);
 
             if (data.response) {
                 setMessages((prev) => [...prev, { role: "assistant", content: data.response, timestamp: Date.now() }]);
@@ -236,8 +274,9 @@ export function VoiceAIAssistant({
             } else if (data.action === "insert_title" && data.title) {
                 onInsertTitle(data.title);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Mesaj gönderme hatası:", error);
+            setError(error.message || "Mesaj gönderilirken bir hata oluştu.");
         } finally {
             setIsProcessing(false);
         }
@@ -337,10 +376,10 @@ export function VoiceAIAssistant({
                                     )}
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-white text-lg tracking-tight">Gemini Native Audio</h3>
+                                    <h3 className="font-black text-white text-lg tracking-tight">Gemini AI Asistan</h3>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                        <p className="text-[10px] font-bold uppercase text-purple-300 tracking-wider">AI Canlı Asistan</p>
+                                        <p className="text-[10px] font-bold uppercase text-purple-300 tracking-wider">Çevrimiçi</p>
                                     </div>
                                 </div>
                             </div>
@@ -369,6 +408,21 @@ export function VoiceAIAssistant({
                                 </button>
                             </div>
                         </div>
+
+                        {/* Error Alert */}
+                        {error && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                className="px-5 py-2 bg-red-500/20 border-b border-red-500/30 flex items-center gap-2 text-red-200 text-xs"
+                            >
+                                <AlertCircle className="w-4 h-4" />
+                                <span className="flex-1">{error}</span>
+                                <button onClick={() => setError(null)} className="p-1 hover:bg-white/10 rounded">
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </motion.div>
+                        )}
 
                         {/* Chat Area */}
                         <div className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin scrollbar-thumb-purple-500/20">
