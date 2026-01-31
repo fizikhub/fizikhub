@@ -175,7 +175,7 @@ import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
+
 import { CompactDock } from "@/components/mobile/compact-dock";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -296,7 +296,7 @@ export default async function RootLayout({
               <NavigationWrapper showOnboarding={showOnboarding}>
                 {children}
               </NavigationWrapper>
-              <InstallPrompt />
+
             </TimeLimitProvider>
           </FramerMotionProvider>
           <Toaster
