@@ -47,6 +47,7 @@ import {
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { VoiceAIAssistant } from "./voice-ai-assistant";
 
 interface NoteEditorProps {
     note: Note;
@@ -517,6 +518,20 @@ export function NoteEditor({
         `}</style>
                 <EditorContent editor={editor} />
             </div>
+
+            {/* Voice AI Assistant */}
+            <VoiceAIAssistant
+                noteTitle={note.title}
+                noteContent={note.content}
+                onInsertText={(text) => {
+                    if (editor) {
+                        editor.chain().focus().insertContent(text).run();
+                    }
+                }}
+                onInsertTitle={(title) => {
+                    onUpdateNote({ title });
+                }}
+            />
         </motion.div>
     );
 }
