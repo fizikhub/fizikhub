@@ -13,6 +13,8 @@ export interface Note {
     updatedAt: number;
     isDeleted: boolean;
     deletedAt?: number;
+    tags?: string[];
+    category?: string;
 }
 
 export type NoteColor = "default" | "red" | "orange" | "yellow" | "green" | "blue" | "purple";
