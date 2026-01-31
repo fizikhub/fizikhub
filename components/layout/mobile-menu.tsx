@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom } from "lucide-react";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 
 export function MobileMenu() {
@@ -20,6 +20,7 @@ export function MobileMenu() {
         { href: "/", label: "Ana Sayfa", icon: Home },
         { href: "/makale", label: "Keşfet", icon: Zap },
         { href: "/simulasyonlar", label: "Simülasyonlar", icon: Atom },
+        { href: "/notlar", label: "Notlarım", icon: StickyNote },
         { href: "/blog", label: "Blog", icon: BookOpen },
         { href: "/testler", label: "Testler", icon: FlaskConical },
         { href: "/siralamalar", label: "Lig", icon: Award },
