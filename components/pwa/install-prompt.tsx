@@ -1,15 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { X, Download, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+
+const STORAGE_KEY = "fizikhub_install_prompt_shown";
 
 export function InstallPrompt() {
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
     const [showPrompt, setShowPrompt] = useState(false);
 
+    const dismissPrompt = useCallback(() => {
+        setShowPrompt(false);
+        localStorage.setItem(STORAGE_KEY, "true");
+    }, []);
+
     useEffect(() => {
+        // Check if already shown
+        if (localStorage.getItem(STORAGE_KEY) === "true") {
+            return;
+        }
+
         const handler = (e: any) => {
             e.preventDefault();
             setDeferredPrompt(e);
@@ -22,6 +34,17 @@ export function InstallPrompt() {
             window.removeEventListener("beforeinstallprompt", handler);
         };
     }, []);
+
+    // Auto-dismiss after 11 seconds
+    useEffect(() => {
+        if (!showPrompt) return;
+
+        const timer = setTimeout(() => {
+            dismissPrompt();
+        }, 11000);
+
+        return () => clearTimeout(timer);
+    }, [showPrompt, dismissPrompt]);
 
     const handleInstall = async () => {
         if (!deferredPrompt) return;
@@ -46,7 +69,7 @@ export function InstallPrompt() {
                         <div className="absolute inset-0 bg-amber-500/5 z-0" />
 
                         <button
-                            onClick={() => setShowPrompt(false)}
+                            onClick={dismissPrompt}
                             className="absolute top-2 right-2 text-white/40 hover:text-white transition-colors z-10"
                         >
                             <X className="w-5 h-5" />
