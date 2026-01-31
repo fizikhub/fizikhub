@@ -59,13 +59,13 @@ export function NoteCard({
             whileTap={{ scale: 0.99 }}
             onClick={onClick}
             className={cn(
-                "relative p-3 cursor-pointer transition-all duration-200",
-                "border-[2px] shadow-[3px_3px_0px_0px_#000]",
+                "relative p-4 cursor-pointer transition-all duration-200 rounded-xl",
+                "border-[2px] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]",
                 colorConfig.bg,
                 colorConfig.border,
-                isActive && "ring-2 ring-blue-500 ring-offset-1",
-                "hover:shadow-[4px_4px_0px_0px_#000]",
-                "active:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px]"
+                isActive && "ring-2 ring-amber-500 ring-offset-2",
+                "hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5",
+                "active:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)] active:translate-x-[1px] active:translate-y-[1px]"
             )}
         >
             {/* Pin indicator */}

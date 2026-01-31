@@ -54,7 +54,7 @@ export function NotesPage() {
     return (
         <div
             className={cn(
-                "bg-white border-[3px] border-black shadow-[6px_6px_0px_0px_#000]",
+                "bg-[#FDF6E3] border-[3px] border-amber-400 shadow-[6px_6px_0px_0px_rgba(217,119,6,0.5)] rounded-2xl",
                 "h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)]",
                 "overflow-hidden"
             )}

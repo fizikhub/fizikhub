@@ -47,9 +47,9 @@ export function NotesList({
     const unpinnedNotes = notes.filter((n) => !n.isPinned);
 
     return (
-        <div className="flex flex-col h-full bg-[#F3F4F6]">
+        <div className="flex flex-col h-full bg-[#FDF6E3]">
             {/* Header */}
-            <div className="p-3 border-b-[2px] border-black bg-white">
+            <div className="p-3 border-b-[2px] border-black bg-[#FFFBEB]">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="font-black text-lg uppercase tracking-tight">
                         {showTrash ? "Çöp Kutusu" : "Notlarım"}
@@ -88,7 +88,7 @@ export function NotesList({
                                 <button
                                     onClick={onToggleTrash}
                                     className={cn(
-                                        "p-2 bg-white border-[2px] border-black",
+                                        "p-2 bg-neutral-800 text-white border-[2px] border-black",
                                         "shadow-[2px_2px_0px_0px_#000]",
                                         "active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
                                         "transition-all",
@@ -128,10 +128,10 @@ export function NotesList({
                             value={searchQuery}
                             onChange={(e) => onSearchChange(e.target.value)}
                             className={cn(
-                                "w-full pl-9 pr-3 py-2 text-sm",
-                                "border-[2px] border-black bg-white",
+                                "w-full pl-9 pr-3 py-2.5 text-sm rounded-lg",
+                                "border-[2px] border-amber-300 bg-white",
                                 "placeholder:text-neutral-400",
-                                "focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                "focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                             )}
                         />
                         {searchQuery && (
