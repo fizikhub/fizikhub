@@ -76,31 +76,30 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V29: PREMIUM SCIENCE HUD
-                - Height: h-14 (56px) - Optimized for Mobile
-                - Style: Sharp Neo-Brutalist, Blue Base
+                V30: FLOATING LAB CAPSULE
+                - Modern app-like floating container
+                - Segmented control navigation
             */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 flex justify-center p-3 sm:p-4 pointer-events-none">
                 <div
                     className={cn(
-                        "pointer-events-auto h-full",
-                        "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
-                        "w-full relative overflow-hidden"
+                        "pointer-events-auto h-14 sm:h-16",
+                        "flex items-center justify-between px-3 sm:px-5",
+                        "bg-[#3B82F6] border-[2.5px] border-black",
+                        "rounded-2xl sm:rounded-3xl shadow-[4px_4px_0px_0px_#000]",
+                        "w-full max-w-5xl relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
+                    {/* PHYSICS RAIN BACKGROUND - Subtler in capsule */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-40">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
-                                    fontSize: `${13 * drop.scale}px`,
+                                    fontSize: `${11 * drop.scale}px`,
                                     color: `rgba(0,0,0,${drop.opacity || 0.3})`,
-                                    filter: 'blur(0.3px)'
                                 }}
                                 initial={{ y: 60, opacity: 0 }}
                                 animate={{ y: -20, opacity: [0, 1, 0] }}
@@ -116,63 +115,64 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - SHARPER */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
-                    </div>
-
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-10 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
-                    {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-2.5">
-
-                        {/* Desktop Links */}
-                        <div className="hidden md:flex items-center gap-2 mr-6">
-                            {navItems.map((item) => (
+                    {/* CENTER: SEGMENTED CONTROL (Desktop) */}
+                    <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center gap-1 bg-black/10 p-1 rounded-xl border border-black/10 backdrop-blur-sm z-20">
+                        {navItems.map((item) => {
+                            const isActive = pathname === item.href;
+                            return (
                                 <ViewTransitionLink
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-1.5 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
-                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
-                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
+                                        "relative px-4 py-1.5 text-[10px] font-black uppercase tracking-wider transition-colors z-10",
+                                        isActive ? "text-black" : "text-black/60 hover:text-black"
                                     )}
                                 >
-                                    {item.label}
+                                    <span className="relative z-10">{item.label}</span>
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activeTab"
+                                            className="absolute inset-0 bg-white border border-black rounded-lg shadow-[1.5px_1.5px_0px_0px_#000] z-0"
+                                            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                        />
+                                    )}
                                 </ViewTransitionLink>
-                            ))}
-                        </div>
+                            );
+                        })}
+                    </nav>
 
-                        {/* 1. SEARCH */}
+                    {/* RIGHT: COMPACT CONTROLS */}
+                    <div className="relative z-10 flex items-center gap-2">
+                        {/* SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex items-center justify-center w-[34px] h-[34px] sm:w-10 sm:h-10 bg-white border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
                         </motion.button>
 
-                        {/* 2. ZAP - Mobile Only */}
+                        {/* ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex md:hidden items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex md:hidden items-center justify-center w-[34px] h-[34px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black rounded-xl shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Zap className="w-3.5 h-3.5 fill-black stroke-[2.5px]" />
+                            <Zap className="w-3.5 h-3.5 fill-black stroke-[3px]" />
                         </motion.button>
 
-                        {/* 3. MOBILE MENU (RIGHT SHEET) */}
+                        {/* MOBILE MENU */}
                         <div className="md:hidden">
                             <MobileMenu />
                         </div>
