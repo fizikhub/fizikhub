@@ -19,15 +19,15 @@ export function DankLogo() {
       */}
             <div className="relative z-10">
                 <motion.h1
-                    className="font-black text-xl sm:text-3xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
+                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
                     style={{
-                        WebkitTextStroke: "1px black",
+                        WebkitTextStroke: "1.5px black",
                         fontFamily: "var(--font-heading)",
-                        filter: "drop-shadow(2px 2px 0px #000)"
+                        filter: "drop-shadow(3px 3px 0px #000)"
                     }}
                     whileHover={{
                         scale: 1.05,
-                        filter: "drop-shadow(4px 4px 0px #000)"
+                        filter: "drop-shadow(5px 5px 0px #000)"
                     }}
                     transition={{ type: "spring", stiffness: 400 }}
                 >
@@ -36,7 +36,7 @@ export function DankLogo() {
 
                 {/* 3D Realistic Earth Icon */}
                 <motion.div
-                    className="absolute -top-2 -right-3 w-[22px] h-[22px] sm:w-[32px] sm:h-[32px] z-0"
+                    className="absolute -top-3 -right-4 w-[28px] h-[28px] sm:w-[36px] sm:h-[36px] z-0"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
