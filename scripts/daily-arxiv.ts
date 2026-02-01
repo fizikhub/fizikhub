@@ -99,26 +99,34 @@ async function transformToFizikHubStyle(arxivItem: ArxivItem): Promise<{
     console.log(`🧠 AI dönüşümü: "${arxivItem.title.substring(0, 50)}..."`);
 
     const prompt = `
-${FIZIKHUB_STYLE_GUIDE}
+Sen bir bilim çevirmenisin. Görevi aşağıdaki akademik makale özetini (abstract) TAMAMEN ve BİREBİR Türkçeye çevirmektir.
+
+KURALLAR:
+1. Orijinal metnin HER CÜMS ESINI çevir. Hiçbir bilgiyi atlama, özetleme veya kısaltma.
+2. Çevirirken FizikHub'ın samimi tarzını ekle: "Hocam", "Şefim", "Kral" gibi hitaplar, günlük hayattan örnekler.
+3. Makaleyi paragraf paragraf çevir. Her paragrafın karşılığı olmalı.
+4. Teknik terimleri (örn: "quantum entanglement") çevirdikten sonra parantez içinde orijinalini yaz: "kuantum dolanıklığı (quantum entanglement)".
+5. Formüller ve sayılar AYNEN kalsın.
+6. En az 500 kelime olmalı. Kısa özet ASLA kabul edilmez.
 
 ---
 
-Aşağıdaki ArXiv makalesini FizikHub tarzında Türkçeye çevir ve yeniden yaz:
+ORİJİNAL MAKALE BAŞLIĞI:
+${arxivItem.title}
 
-ORIJINAL BAŞLIK: ${arxivItem.title}
-
-ORIJINAL ÖZET (Abstract): ${arxivItem.description}
+ORİJİNAL ÖZET (BİREBİR ÇEVİR):
+${arxivItem.description}
 
 KAYNAK: ${arxivItem.link}
 
 ---
 
-Lütfen şu formatta cevap ver (JSON):
+JSON FORMATI (Türkçe karakterler kullanabilirsin):
 {
-    "title": "Türkçe, eğlenceli ve dikkat çekici başlık",
-    "slug": "url-uyumlu-slug-turkce-karaktersiz",
-    "excerpt": "2-3 cümlelik merak uyandırıcı özet",
-    "content": "Makalenin tam içeriği, en az 300 kelime, FizikHub tarzında",
+    "title": "Orijinal başlığın Türkçe çevirisi, samimi ve dikkat çekici",
+    "slug": "url-uyumlu-slug-turkce-karaktersiz-kisa",
+    "excerpt": "Makalenin ilk 2-3 cümlesinin özeti",
+    "content": "ORİJİNAL METNİN TAMAMI BİREBİR ÇEVRİLMİŞ HALİ - EN AZ 500 KELİME - FİZİKHUB TARZI İLE",
     "category": "Uzay veya Kuantum veya Teori veya Teknoloji veya Parçacık Fiziği"
 }
 `;
