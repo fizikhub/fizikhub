@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote, Twitter, Instagram, Github, Rocket } from "lucide-react";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Atom, StickyNote, Rocket, LogOut, Info } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -18,123 +18,120 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "#3B82F6", size: "col-span-2 row-span-1" },
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "#FFD200", size: "col-span-1 row-span-2" },
-        { href: "/simulasyonlar", label: "LAB", icon: FlaskConical, color: "#EF4444", size: "col-span-1 row-span-1" },
-        { href: "/testler", label: "SINAV", icon: Award, color: "#10B981", size: "col-span-1 row-span-1" },
-        { href: "/notlar", label: "NOTLAR", icon: StickyNote, color: "#8B5CF6", size: "col-span-1 row-span-1" },
-        { href: "/blog", label: "BLOG", icon: BookOpen, color: "#F97316", size: "col-span-2 row-span-1" },
+        { href: "/", label: "Ana Sayfa", icon: Home },
+        { href: "/makale", label: "Makaleler", icon: BookOpen },
+        { href: "/simulasyonlar", label: "Simülasyonlar", icon: Atom },
+        { href: "/testler", label: "Sınav Merkezi", icon: FlaskConical },
+        { href: "/notlar", label: "Ders Notları", icon: StickyNote },
+        { href: "/siralamalar", label: "Sıralama", icon: Award },
     ];
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <motion.button
-                    whileTap={{ scale: 0.85 }}
+                    whileTap={{ scale: 0.95 }}
                     className={cn(
-                        "flex items-center justify-center w-11 h-11",
-                        "bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000]",
-                        "text-black active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
+                        "flex items-center justify-center w-10 h-10 bg-white border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
                     )}
                 >
-                    <div className="flex flex-col gap-1.5 px-2">
-                        <div className="w-6 h-[3px] bg-black" />
-                        <div className="w-4 h-[3px] bg-black self-end" />
-                        <div className="w-6 h-[3px] bg-black" />
-                    </div>
+                    <Menu className="w-5 h-5 stroke-[2.5px]" />
                 </motion.button>
             </SheetTrigger>
 
             <SheetContent
-                side="bottom"
-                className="h-[100dvh] w-full p-0 border-t-[5px] border-black bg-black overflow-hidden"
+                side="right"
+                className="w-[300px] sm:w-[340px] p-0 border-l-[4px] border-black bg-white overflow-hidden"
             >
                 <SheetTitle className="sr-only">Navigasyon</SheetTitle>
 
-                <div className="flex flex-col h-full bg-white">
-                    {/* FULLSCREEN GRID LAYOUT */}
-                    <div className="flex-1 grid grid-cols-2 grid-rows-[repeat(4,1fr)] gap-0 border-b-[4px] border-black">
+                <div className="flex flex-col h-full">
+                    {/* BRAND HEADER - Sleek & High Contrast */}
+                    <div className="bg-black text-white p-6 pt-10 border-b-[4px] border-black h-[140px] flex flex-col justify-end">
+                        <div className="flex items-center gap-2 mb-1">
+                            <Rocket className="w-6 h-6 text-[#FFD200]" />
+                            <h2 className="font-black text-3xl tracking-tighter italic">FIZIKHUB</h2>
+                        </div>
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Digital Learning Ecosystem</p>
+                    </div>
+
+                    {/* MENU LIST */}
+                    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
                         {menuItems.map((item, index) => {
                             const isActive = pathname === item.href;
 
                             return (
                                 <motion.div
                                     key={item.href}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: index * 0.05, type: "spring", stiffness: 300 }}
-                                    className={cn(
-                                        "relative border-[2px] border-black flex flex-col items-center justify-center text-center p-4 group cursor-pointer overflow-hidden",
-                                        item.size,
-                                        isActive ? "z-10" : "z-0"
-                                    )}
-                                    style={{ backgroundColor: isActive ? item.color : 'white' }}
+                                    initial={{ x: 20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: index * 0.05 }}
                                 >
-                                    <ViewTransitionLink href={item.href} className="absolute inset-0 flex flex-col items-center justify-center">
-                                        <motion.div
-                                            whileHover={{ scale: 1.2, rotate: 10 }}
-                                            className={cn(
-                                                "mb-2 p-3 rounded-none border-[2px] border-black shadow-[3px_3px_0px_0px_#000]",
-                                                isActive ? "bg-white text-black" : "bg-black text-white"
-                                            )}
-                                            style={{ backgroundColor: !isActive ? item.color : 'white' }}
-                                        >
-                                            <item.icon className="w-8 h-8 stroke-[2.5px]" />
-                                        </motion.div>
-                                        <span className={cn(
-                                            "font-black text-xs sm:text-sm tracking-tighter uppercase",
-                                            isActive ? "text-black bg-white px-2" : "text-black"
-                                        )}>
-                                            {item.label}
-                                        </span>
+                                    <ViewTransitionLink
+                                        href={item.href}
+                                        className={cn(
+                                            "flex items-center justify-between px-4 h-14 w-full transition-all group",
+                                            "border-[2.5px] border-transparent",
+                                            isActive
+                                                ? "bg-[#FFD200] border-black shadow-[4px_4px_0px_0px_#000]"
+                                                : "hover:bg-neutral-50 hover:border-black/10"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <item.icon className={cn(
+                                                "w-5 h-5 transition-transform group-hover:scale-110",
+                                                isActive ? "stroke-[3px]" : "stroke-[2px] opacity-60"
+                                            )} />
+                                            <span className={cn(
+                                                "font-black text-sm tracking-tight",
+                                                isActive ? "text-black" : "text-neutral-700"
+                                            )}>
+                                                {item.label.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        {isActive && <ChevronRight className="w-4 h-4" />}
                                     </ViewTransitionLink>
-
-                                    {/* Deco Text */}
-                                    <div className="absolute top-1 right-1 opacity-10 font-black text-[30px] select-none pointer-events-none italic">
-                                        {index + 1}
-                                    </div>
                                 </motion.div>
                             );
                         })}
                     </div>
 
-                    {/* FOOTER AREA */}
-                    <div className="h-[180px] bg-[#FFD200] border-black flex flex-col p-4 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-black/10" />
-
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="flex flex-col font-black italic text-2xl leading-none">
-                                <span>FIZIK</span>
-                                <span className="text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">HUB</span>
-                            </div>
-                            <ViewTransitionLink href="/ozel" className="bg-black text-white px-4 py-2 font-black text-[10px] sm:text-xs uppercase border-[2px] border-black shadow-[3px_3px_0px_0px_#3B82F6] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
-                                <Crown className="inline w-3 h-3 mr-2 fill-white" />
-                                PREMİUM'A GEÇ
+                    {/* FOOTER SECTION - Compact Utility Panel */}
+                    <div className="p-4 bg-neutral-50 border-t-[4px] border-black space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                            <ViewTransitionLink
+                                href="/profil"
+                                className="flex items-center gap-2 justify-center py-3 border-[2px] border-black bg-white shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all"
+                            >
+                                <User className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase">Profil</span>
+                            </ViewTransitionLink>
+                            <ViewTransitionLink
+                                href="/ayarlar"
+                                className="flex items-center gap-2 justify-center py-3 border-[2px] border-black bg-white shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all"
+                            >
+                                <Settings className="w-4 h-4" />
+                                <span className="text-[10px] font-black uppercase">Ayarlar</span>
                             </ViewTransitionLink>
                         </div>
 
-                        <div className="flex items-center gap-4 mt-auto">
-                            <div className="flex-1">
-                                <AuthButton />
-                            </div>
-                            <div className="flex gap-2">
-                                <ViewTransitionLink href="/ayarlar" className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
-                                    <Settings className="w-5 h-5" />
-                                </ViewTransitionLink>
-                                <ViewTransitionLink href="/profil" className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
-                                    <User className="w-5 h-5" />
-                                </ViewTransitionLink>
-                            </div>
+                        <div className="pt-2">
+                            <AuthButton />
+                        </div>
+
+                        <div className="flex justify-center pt-2">
+                            <p className="text-[9px] font-bold text-neutral-400">© 2026 FIZIKHUB • v2.1.0</p>
                         </div>
                     </div>
 
-                    {/* CLOSE BUTTON - OVERLAY TOP */}
-                    <SheetClose className="absolute top-[2px] right-[2px] z-[100]">
+                    {/* CUSTOM CLOSE BUTTON */}
+                    <SheetClose className="absolute top-4 right-4 z-50">
                         <motion.div
-                            whileHover={{ rotate: 90 }}
-                            className="bg-black text-white p-3 border-l-[3px] border-b-[3px] border-white shadow-[-4px_4px_20px_rgba(0,0,0,0.5)]"
+                            whileHover={{ scale: 1.1, rotate: 90 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="w-10 h-10 flex items-center justify-center bg-white border-[2px] border-black text-black shadow-[3px_3px_0px_0px_#000]"
                         >
-                            <X className="w-8 h-8 stroke-[4px]" />
+                            <X className="w-6 h-6 stroke-[3px]" />
                         </motion.div>
                     </SheetClose>
                 </div>
