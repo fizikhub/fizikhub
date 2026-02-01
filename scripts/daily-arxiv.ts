@@ -100,7 +100,7 @@ KAYNAK: ${arxivItem.link}
 `;
 
     const { object } = await generateObject({
-        model: google('gemini-1.5-flash'),
+        model: google('gemini-2.5-flash'),
         schema: z.object({
             title: z.string().describe('Orijinal başlığın Türkçe çevirisi, samimi ve dikkat çekici'),
             slug: z.string().describe('url-uyumlu-slug-turkce-karaktersiz-kisa'),
