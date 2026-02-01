@@ -3,28 +3,26 @@
  * 
  * Bu script her gün çalışarak:
  * 1. ArXiv API üzerinden en son fizik makalelerini çeker (Hafta sonları da çalışır)
- * 2. Gemini Flash ile FizikHub tarzına çevirir
+ * 2. Gemini ile FizikHub tarzına çevirir
  * 3. Supabase'e otomatik yayınlar
  * 
  * Maliyet: 0 TL (Tamamen ücretsiz API'ler kullanılır)
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
 
 // ============= CONFIGURATION =============
-// ArXiv API (Search) üzerinden son fizik makalelerini çeker
 const ARXIV_API_URL = 'http://export.arxiv.org/api/query?search_query=cat:physics*+OR+cat:astro-ph*+OR+cat:quant-ph*&sortBy=submittedDate&sortOrder=descending';
-const MAX_ARTICLES_PER_DAY = 3; // Günde kaç makale çekilecek
-const BOT_AUTHOR_ID = process.env.ARXIV_BOT_AUTHOR_ID || null; // Supabase'deki bot kullanıcı ID'si
+const MAX_ARTICLES_PER_DAY = 3;
+const BOT_AUTHOR_ID = process.env.ARXIV_BOT_AUTHOR_ID || null;
 
 // ============= CLIENTS =============
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 
 // ============= STYLE GUIDE (FizikHub Tarzı) =============
 const FIZIKHUB_STYLE_GUIDE = `
@@ -63,7 +61,6 @@ async function fetchArxivPapers(): Promise<ArxivItem[]> {
     const response = await fetch(url);
     const xmlText = await response.text();
 
-    // Atom XML parsing (ArXiv API <entry> formatını kullanır)
     const items: ArxivItem[] = [];
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
     let match;
@@ -101,8 +98,6 @@ async function transformToFizikHubStyle(arxivItem: ArxivItem): Promise<{
 }> {
     console.log(`🧠 AI dönüşümü: "${arxivItem.title.substring(0, 50)}..."`);
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-05-20' });
-
     const prompt = `
 ${FIZIKHUB_STYLE_GUIDE}
 
@@ -128,8 +123,13 @@ Lütfen şu formatta cevap ver (JSON):
 }
 `;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // Using the same model as HubGPT (gemma-3-27b-it)
+    const result = await generateText({
+        model: google('gemma-3-27b-it'),
+        prompt: prompt,
+    });
+
+    const responseText = result.text;
 
     // JSON'u parse et
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -167,7 +167,7 @@ async function publishToSupabase(article: {
         content: article.content + `\n\n---\n\n*Bu makale [ArXiv](${sourceLink}) kaynağından otomatik olarak çevrilmiştir. Orijinal makaleyi okumak için [buraya tıklayın](${sourceLink}).*`,
         category: article.category,
         author_id: BOT_AUTHOR_ID,
-        status: 'published', // 'draft' yaparak admin onayı bekleyebilirsin
+        status: 'published',
         created_at: new Date().toISOString(),
     });
 
@@ -186,7 +186,6 @@ async function main() {
     console.log('-----------------------------------\n');
 
     try {
-        // 1. ArXiv'den makaleleri çek
         const arxivItems = await fetchArxivPapers();
 
         if (arxivItems.length === 0) {
@@ -198,26 +197,21 @@ async function main() {
 
         for (const item of arxivItems) {
             try {
-                // 2. AI ile dönüştür
                 const transformed = await transformToFizikHubStyle(item);
 
-                // 3. Daha önce yayınlanmış mı kontrol et
                 const exists = await checkIfAlreadyExists(transformed.slug);
                 if (exists) {
                     console.log(`⏭️ Atlandı (zaten mevcut): ${transformed.slug}`);
                     continue;
                 }
 
-                // 4. Yayınla
                 await publishToSupabase(transformed, item.link);
                 publishedCount++;
 
-                // Rate limiting için kısa bekleme
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
             } catch (itemError) {
                 console.error(`❌ Makale işlenirken hata:`, itemError);
-                // Bir makale hata verse bile diğerlerine devam et
             }
         }
 
@@ -230,5 +224,4 @@ async function main() {
     }
 }
 
-// Script'i çalıştır
 main();
