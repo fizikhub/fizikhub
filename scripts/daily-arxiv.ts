@@ -2,7 +2,7 @@
  * FizikHub Daily ArXiv Automation Script
  * 
  * Bu script her gün çalışarak:
- * 1. ArXiv'den en son fizik makalelerini çeker
+ * 1. ArXiv API üzerinden en son fizik makalelerini çeker (Hafta sonları da çalışır)
  * 2. Gemini Flash ile FizikHub tarzına çevirir
  * 3. Supabase'e otomatik yayınlar
  * 
@@ -13,7 +13,8 @@ import { createClient } from '@supabase/supabase-js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // ============= CONFIGURATION =============
-const ARXIV_RSS_URL = 'https://rss.arxiv.org/rss/physics';
+// ArXiv API (Search) üzerinden son fizik makalelerini çeker
+const ARXIV_API_URL = 'http://export.arxiv.org/api/query?search_query=cat:physics*+OR+cat:astro-ph*+OR+cat:quant-ph*&sortBy=submittedDate&sortOrder=descending';
 const MAX_ARTICLES_PER_DAY = 3; // Günde kaç makale çekilecek
 const BOT_AUTHOR_ID = process.env.ARXIV_BOT_AUTHOR_ID || null; // Supabase'deki bot kullanıcı ID'si
 
@@ -55,28 +56,35 @@ interface ArxivItem {
     creator: string;
 }
 
-async function fetchArxivRSS(): Promise<ArxivItem[]> {
-    console.log('📡 ArXiv RSS beslememesi çekiliyor...');
+async function fetchArxivPapers(): Promise<ArxivItem[]> {
+    console.log('📡 ArXiv API (Search) üzerinden makaleler çekiliyor...');
 
-    const response = await fetch(ARXIV_RSS_URL);
+    const url = `${ARXIV_API_URL}&max_results=${MAX_ARTICLES_PER_DAY}`;
+    const response = await fetch(url);
     const xmlText = await response.text();
 
-    // Basit XML parsing (regex ile)
+    // Atom XML parsing (ArXiv API <entry> formatını kullanır)
     const items: ArxivItem[] = [];
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
     let match;
 
-    while ((match = itemRegex.exec(xmlText)) !== null && items.length < MAX_ARTICLES_PER_DAY) {
-        const itemXml = match[1];
+    while ((match = entryRegex.exec(xmlText)) !== null && items.length < MAX_ARTICLES_PER_DAY) {
+        const entryXml = match[1];
 
-        const title = itemXml.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.trim() || '';
-        const link = itemXml.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() || '';
-        const description = itemXml.match(/<description>([\s\S]*?)<\/description>/)?.[1]?.trim() || '';
-        const pubDate = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() || '';
-        const creator = itemXml.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/)?.[1]?.trim() || 'ArXiv';
+        const title = entryXml.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/\s+/g, ' ').trim() || '';
+        const link = entryXml.match(/<id>([\s\S]*?)<\/id>/)?.[1]?.trim() || '';
+        const summary = entryXml.match(/<summary>([\s\S]*?)<\/summary>/)?.[1]?.replace(/\s+/g, ' ').trim() || '';
+        const published = entryXml.match(/<published>([\s\S]*?)<\/published>/)?.[1]?.trim() || '';
+        const author = entryXml.match(/<name>([\s\S]*?)<\/name>/)?.[1]?.trim() || 'ArXiv';
 
-        if (title && description) {
-            items.push({ title, link, description, pubDate, creator });
+        if (title && summary) {
+            items.push({
+                title,
+                link,
+                description: summary,
+                pubDate: published,
+                creator: author
+            });
         }
     }
 
@@ -179,7 +187,7 @@ async function main() {
 
     try {
         // 1. ArXiv'den makaleleri çek
-        const arxivItems = await fetchArxivRSS();
+        const arxivItems = await fetchArxivPapers();
 
         if (arxivItems.length === 0) {
             console.log('⚠️ Bugün yeni makale bulunamadı.');
