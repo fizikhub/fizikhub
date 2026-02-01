@@ -83,23 +83,27 @@ export function MobileMenu() {
                                             "flex items-center justify-between px-4 h-14 w-full",
                                             "bg-white border-[2.5px] border-black",
                                             "shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
-                                            "transition-all duration-200",
+                                            "transition-all duration-200 overflow-hidden",
                                             isActive && "scale-[1.02] border-r-[8px]"
                                         )}
-                                        style={{ borderRightColor: isActive ? item.color : 'black' }}
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div
-                                                className="w-8 h-8 flex items-center justify-center border-[1.5px] border-black shadow-[2px_2px_0px_0px_#000]"
-                                                style={{ backgroundColor: item.color }}
-                                            >
-                                                <item.icon className="w-4 h-4 text-black stroke-[2.5px]" />
+                                        <div
+                                            className="flex items-center justify-between w-full h-full"
+                                            style={{ borderRight: isActive ? `8px solid ${item.color}` : 'none', marginRight: isActive ? '-1rem' : '0', paddingRight: isActive ? '1rem' : '0' }}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div
+                                                    className="w-8 h-8 flex items-center justify-center border-[1.5px] border-black shadow-[2px_2px_0px_0px_#000]"
+                                                    style={{ backgroundColor: item.color }}
+                                                >
+                                                    <item.icon className="w-4 h-4 text-black stroke-[2.5px]" />
+                                                </div>
+                                                <span className="font-black text-sm tracking-tight text-black italic">
+                                                    {item.label}
+                                                </span>
                                             </div>
-                                            <span className="font-black text-sm tracking-tight text-black italic">
-                                                {item.label}
-                                            </span>
+                                            <ChevronRight className={cn("w-5 h-5 opacity-30", isActive && "opacity-100")} />
                                         </div>
-                                        <ChevronRight className={cn("w-5 h-5 opacity-30", isActive && "opacity-100")} />
                                     </ViewTransitionLink>
                                 </motion.div>
                             );
