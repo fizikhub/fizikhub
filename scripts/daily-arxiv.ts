@@ -3,15 +3,14 @@
  * 
  * Bu script her gün çalışarak:
  * 1. ArXiv API üzerinden en son fizik makalelerini çeker (Hafta sonları da çalışır)
- * 2. Gemini ile FizikHub tarzına çevirir
+ * 2. Arka planda HubGPT'nin zekasını (Gemma) kullanarak çevirir
  * 3. Supabase'e otomatik yayınlar
- * 
- * Maliyet: 0 TL (Tamamen ücretsiz API'ler kullanılır)
  */
 
 import { createClient } from '@supabase/supabase-js';
 import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { generateObject } from 'ai';
+import { z } from 'zod';
 
 // ============= CONFIGURATION =============
 const ARXIV_API_URL = 'http://export.arxiv.org/api/query?search_query=cat:physics*+OR+cat:astro-ph*+OR+cat:quant-ph*&sortBy=submittedDate&sortOrder=descending';
@@ -23,26 +22,6 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
-// ============= STYLE GUIDE (FizikHub Tarzı) =============
-const FIZIKHUB_STYLE_GUIDE = `
-Sen FizikHub'ın "Kozmik Haberci" botusun. Görevi, sıkıcı akademik makaleleri eğlenceli ve anlaşılır hale getirmek.
-
-ÜSLUP KURALLARI:
-1. "Hocam", "Şefim", "Kral" gibi samimi hitaplar kullan.
-2. Karmaşık terimleri günlük hayattan örneklerle açıkla (makarna, çay, halı saha gibi).
-3. Ara sıra espri yap ama bilimsel doğruluğu koru.
-4. "Beyin yandı mı?", "Hoppaaa", "İlginç değil mi?" gibi FizikHub kalıplarını kullan.
-5. Akademik jargondan kaçın, herkesin anlayacağı dilde yaz.
-6. Her makalenin sonunda okuyucuyu düşünmeye davet et.
-
-ÖRNEK ÜSLUP:
-- "Einstein görse gözleri yaşarırdı" 
-- "Amiyane tabirle, atomlar da sosyalleşmek istiyor"
-- "Bu noktada matematik 404 hatası aldı"
-
-ÖNEMLİ: Bilimsel gerçekleri (sayılar, formüller, isimler) değiştirme, sadece anlatım dilini FizikHub'a uyarla.
-`;
 
 // ============= HELPER FUNCTIONS =============
 
@@ -99,10 +78,10 @@ async function transformToFizikHubStyle(arxivItem: ArxivItem): Promise<{
     console.log(`🧠 AI dönüşümü: "${arxivItem.title.substring(0, 50)}..."`);
 
     const prompt = `
-Sen bir bilim çevirmenisin. Görevi aşağıdaki akademik makale özetini (abstract) TAMAMEN ve BİREBİR Türkçeye çevirmektir.
+Sen bir bilim çevirmenisin. Görevin aşağıdaki akademik makale özetini (abstract) TAMAMEN ve BİREBİR Türkçeye çevirmektir.
 
 KURALLAR:
-1. Orijinal metnin HER CÜMS ESINI çevir. Hiçbir bilgiyi atlama, özetleme veya kısaltma.
+1. Orijinal metnin HER CÜMLESİNİ çevir. Hiçbir bilgiyi atlama, özetleme veya kısaltma.
 2. Çevirirken FizikHub'ın samimi tarzını ekle: "Hocam", "Şefim", "Kral" gibi hitaplar, günlük hayattan örnekler.
 3. Makaleyi paragraf paragraf çevir. Her paragrafın karşılığı olmalı.
 4. Teknik terimleri (örn: "quantum entanglement") çevirdikten sonra parantez içinde orijinalini yaz: "kuantum dolanıklığı (quantum entanglement)".
@@ -118,35 +97,21 @@ ORİJİNAL ÖZET (BİREBİR ÇEVİR):
 ${arxivItem.description}
 
 KAYNAK: ${arxivItem.link}
-
----
-
-JSON FORMATI (Türkçe karakterler kullanabilirsin):
-{
-    "title": "Orijinal başlığın Türkçe çevirisi, samimi ve dikkat çekici",
-    "slug": "url-uyumlu-slug-turkce-karaktersiz-kisa",
-    "excerpt": "Makalenin ilk 2-3 cümlesinin özeti",
-    "content": "ORİJİNAL METNİN TAMAMI BİREBİR ÇEVRİLMİŞ HALİ - EN AZ 500 KELİME - FİZİKHUB TARZI İLE",
-    "category": "Uzay veya Kuantum veya Teori veya Teknoloji veya Parçacık Fiziği"
-}
 `;
 
-    // Using the same model as HubGPT (gemma-3-27b-it)
-    const result = await generateText({
+    const { object } = await generateObject({
         model: google('gemma-3-27b-it'),
+        schema: z.object({
+            title: z.string().describe('Orijinal başlığın Türkçe çevirisi, samimi ve dikkat çekici'),
+            slug: z.string().describe('url-uyumlu-slug-turkce-karaktersiz-kisa'),
+            excerpt: z.string().describe('Makalenin ilk 2-3 cümlesinin özeti'),
+            content: z.string().describe('ORİJİNAL METNİN TAMAMI BİREBİR ÇEVRİLMİŞ HALİ - EN AZ 500 KELİME - FİZİKHUB TARZI İLE'),
+            category: z.enum(['Uzay', 'Kuantum', 'Teori', 'Teknoloji', 'Parçacık Fiziği']),
+        }),
         prompt: prompt,
     });
 
-    const responseText = result.text;
-
-    // JSON'u parse et
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-        throw new Error('AI geçerli JSON üretmedi');
-    }
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    return parsed;
+    return object;
 }
 
 async function checkIfAlreadyExists(slug: string): Promise<boolean> {
@@ -186,8 +151,6 @@ async function publishToSupabase(article: {
     console.log(`✅ Yayınlandı: ${article.slug}`);
 }
 
-// ============= MAIN EXECUTION =============
-
 async function main() {
     console.log('\n🚀 FizikHub ArXiv Bot Başlatılıyor...\n');
     console.log(`📅 Tarih: ${new Date().toISOString()}`);
@@ -216,6 +179,7 @@ async function main() {
                 await publishToSupabase(transformed, item.link);
                 publishedCount++;
 
+                // Wait between articles to respect limits
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
             } catch (itemError) {
