@@ -1,0 +1,47 @@
+# FizikHub Daily ArXiv Automation
+# Her gün Türkiye saatiyle 06:00'da çalışır ve fizik haberlerini çeker
+
+name: Daily ArXiv Physics News
+
+on:
+  schedule:
+    # Her gün saat 03:00 UTC (Türkiye saatiyle 06:00)
+    - cron: '0 3 * * *'
+  
+  # Manuel tetikleme için (test amaçlı)
+  workflow_dispatch:
+
+jobs:
+  fetch-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔧 Install Additional Dependencies
+        run: npm install @google/generative-ai @supabase/supabase-js tsx
+
+      - name: 🚀 Run ArXiv Bot
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+          ARXIV_BOT_AUTHOR_ID: ${{ secrets.ARXIV_BOT_AUTHOR_ID }}
+        run: npx tsx scripts/daily-arxiv.ts
+
+      - name: 📊 Job Summary
+        run: |
+          echo "## 🎉 ArXiv Bot Çalıştırıldı" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 📅 Tarih: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ İşlem tamamlandı" >> $GITHUB_STEP_SUMMARY
