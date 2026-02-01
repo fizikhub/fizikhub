@@ -1,59 +1,57 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-
-// Dynamically import EarthIcon to disable SSR for 3D content
-const EarthIcon = dynamic(() => import("./earth-icon").then((mod) => mod.EarthIcon), {
-    ssr: false,
-    loading: () => <div className="w-full h-full rounded-full bg-blue-500/20" /> // Placeholder
-});
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer">
+        <div className="flex flex-col select-none relative group cursor-pointer items-start">
             {/* 
-        V23 LOGO: MOSKO SCIENCE (Restored)
-        - Mobile: text-2xl
-        - Desktop: text-4xl
-        - Style: Blocky Yellow Text with Thick Black Stroke
+        NEW LOGO: FizikHub (Perfect Recreation)
+        - Color: #FFD200 (Bright Yellow)
+        - 3D Shadow: Thick Solid Black
+        - Font: Heading Sans
       */}
-            <div className="relative z-10">
+            <div className="relative">
                 <motion.h1
-                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
+                    className="font-black text-3xl sm:text-[40px] tracking-tight leading-none text-[#FFD200] relative z-20"
                     style={{
-                        WebkitTextStroke: "1.5px black",
                         fontFamily: "var(--font-heading)",
-                        filter: "drop-shadow(3px 3px 0px #000)"
+                        textShadow: `
+                            1px 1px 0px #000,
+                            2px 2px 0px #000,
+                            3px 3px 0px #000,
+                            4px 4px 0px #000,
+                            5px 5px 0px #000,
+                            6px 6px 0px #000,
+                            7px 7px 0px #000
+                        `,
+                        transform: "rotate(-2deg)"
                     }}
                     whileHover={{
                         scale: 1.05,
-                        filter: "drop-shadow(5px 5px 0px #000)"
+                        rotate: "0deg",
+                        transition: { type: "spring", stiffness: 400 }
                     }}
-                    transition={{ type: "spring", stiffness: 400 }}
                 >
-                    FIZIKHUB
+                    FizikHub
                 </motion.h1>
-
-                {/* 3D Realistic Earth Icon */}
-                <motion.div
-                    className="absolute -top-3 -right-4 w-[28px] h-[28px] sm:w-[36px] sm:h-[36px] z-0"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <EarthIcon className="w-full h-full" />
-                </motion.div>
             </div>
 
-            {/* Slogan */}
+            {/* Slogan Banner */}
             <motion.div
-                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
-                initial={{ rotate: -3 }}
-                whileHover={{ rotate: 3 }}
+                className="mt-1 -ml-1 z-30"
+                initial={{ rotate: -2 }}
+                whileHover={{ rotate: 1, scale: 1.1 }}
+                style={{ transformOrigin: "left center" }}
             >
-                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
-                    BİLİM PLATFORMU
-                </span>
+                <div className="relative">
+                    {/* Banner Shadow/Background */}
+                    <div className="absolute inset-0 bg-black translate-x-[4px] translate-y-[4px]" />
+
+                    {/* Banner Main */}
+                    <span className="relative bg-white border-[2.5px] border-black text-black text-[10px] sm:text-[12px] font-black uppercase px-3 py-1 tracking-wider inline-block">
+                        BİLİM PLATFORMU
+                    </span>
+                </div>
             </motion.div>
         </div>
     );

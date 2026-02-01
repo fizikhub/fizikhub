@@ -124,7 +124,7 @@ export function Navbar() {
                     </div>
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-10 flex-shrink-0 pt-1">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
