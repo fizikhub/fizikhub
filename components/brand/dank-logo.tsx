@@ -3,16 +3,16 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="flex flex-col select-none relative group cursor-pointer items-start">
+        <div className="flex flex-col select-none relative group cursor-pointer items-start pt-2">
             {/* 
-        NEW LOGO: FizikHub (Perfect Recreation)
+        PIXEL PERFECT RECREATION: FizikHub
         - Color: #FFD200 (Bright Yellow)
-        - 3D Shadow: Thick Solid Black
-        - Font: Heading Sans
+        - 3D Shadow: 10px Solid Black (Aggressive)
+        - Rotation: -6deg
       */}
             <div className="relative">
                 <motion.h1
-                    className="font-black text-3xl sm:text-[40px] tracking-tight leading-none text-[#FFD200] relative z-20"
+                    className="font-black text-[32px] sm:text-[44px] tracking-tight leading-none text-[#FFD200] relative z-20"
                     style={{
                         fontFamily: "var(--font-heading)",
                         textShadow: `
@@ -22,13 +22,16 @@ export function DankLogo() {
                             4px 4px 0px #000,
                             5px 5px 0px #000,
                             6px 6px 0px #000,
-                            7px 7px 0px #000
+                            7px 7px 0px #000,
+                            8px 8px 0px #000,
+                            9px 9px 0px #000,
+                            10px 10px 0px #000
                         `,
-                        transform: "rotate(-2deg)"
+                        transform: "rotate(-6deg)"
                     }}
                     whileHover={{
                         scale: 1.05,
-                        rotate: "0deg",
+                        rotate: "-3deg",
                         transition: { type: "spring", stiffness: 400 }
                     }}
                 >
@@ -36,19 +39,19 @@ export function DankLogo() {
                 </motion.h1>
             </div>
 
-            {/* Slogan Banner */}
+            {/* Slogan Banner - Tightly Overlapping */}
             <motion.div
-                className="mt-1 -ml-1 z-30"
-                initial={{ rotate: -2 }}
-                whileHover={{ rotate: 1, scale: 1.1 }}
+                className="mt-[-8px] ml-[20px] sm:ml-[40px] z-30"
+                initial={{ rotate: -4 }}
+                whileHover={{ rotate: 0, scale: 1.1 }}
                 style={{ transformOrigin: "left center" }}
             >
                 <div className="relative">
-                    {/* Banner Shadow/Background */}
-                    <div className="absolute inset-0 bg-black translate-x-[4px] translate-y-[4px]" />
+                    {/* Banner Shadow */}
+                    <div className="absolute inset-0 bg-black translate-x-[5px] translate-y-[5px]" />
 
                     {/* Banner Main */}
-                    <span className="relative bg-white border-[2.5px] border-black text-black text-[10px] sm:text-[12px] font-black uppercase px-3 py-1 tracking-wider inline-block">
+                    <span className="relative bg-white border-[3px] border-black text-black text-[10px] sm:text-[13px] font-black uppercase px-4 py-1.5 tracking-tighter inline-block">
                         BİLİM PLATFORMU
                     </span>
                 </div>
