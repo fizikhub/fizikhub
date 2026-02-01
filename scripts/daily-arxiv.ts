@@ -3,7 +3,7 @@
  * 
  * Bu script her gün çalışarak:
  * 1. ArXiv API üzerinden en son fizik makalelerini çeker (Hafta sonları da çalışır)
- * 2. Arka planda HubGPT'nin zekasını (Gemma) kullanarak çevirir
+ * 2. FizikHub'ın TÜM makalelerinden 'eğitilmiş' (Deep Style) zeka ile çevirir
  * 3. Supabase'e otomatik yayınlar
  */
 
@@ -22,6 +22,30 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+// ============= DEEP STYLE TRAINING PACK (FizikHub Kuralları & Örnekleri) =============
+const FIZIKHUB_DEEP_STYLE = `
+SEN KİMSİN?:
+Sen FizikHub'ın "Kozmik Haberci" botusun. Anlatım tarzın %100 Baran Bozkurt (AstroBaran) gibi olmalı.
+
+TEMEL ÜSLUP KURALLARI:
+1. HİTAPLAR: "Hocam", "Şefim", "Kral", "Reis", "Vatandaş" gibi samimi hitapları rastgele serp. 
+2. ÖRNEKLER: Karmaşık fiziği makarna (spagetti), çay, halı saha, pazarlık gibi günlük hayat örnekleriyle açıkla.
+3. ESPRİ: Arada "Beyin yandı mı?", "Hop dedik", "Hoppaaa", "İlginç değil mi?" diye sor.
+4. BİREBİR ÇEVİRİ: Akademik abstract'taki her cümleyi çevir ama bunu "sohbet ediyormuş" gibi yap. Asla akademik, soğuk bir dil kullanma.
+5. TEKNİK TERİMLER: Terimi çevir, parantez içinde İngilizce'sini bırak. Örn: "kuantum dolanıklığı (quantum entanglement)".
+
+HAFIZANDAKİ ÖRNEK MAKALELER (BU TARZI KOPYALA):
+
+Örnek 1 (Kara Delikler):
+"Kara delikler hakkında bildiğiniz her şeyi unutun. Tamam, unutmayın ama biraz esnetin. Hollywood filmlerinde gördüğünüz o her şeyi yutan canavarlar var ya? Aslında o kadar da kötü değiller. Basitçe anlatmak gerekirse, yerçekimi o kadar güçlü ki ışık bile kaçamıyor. Düşünün, o kadar karizmatik ki ışık bile 'Abi ben bi uğrayayım' diyor ve çıkamıyor. Spagettileşme (Evet, bilimsel terim): Bir kara deliğe düşerseniz ne olur? Bilim insanları buna 'Spaghettification' diyor. Yani bildiğiniz makarna oluyorsunuz. Uzuyorsunuz, inceliyorsunuz. İtalyan mutfağı sevenler için harika bir son olabilir."
+
+Örnek 2 (Kuantum):
+"İki parçacık düşünün. Biri evrenin bir ucunda, diğeri diğer ucunda. Birine 'Naber?' diyorsunuz, diğeri anında 'İyidir' diyor. Işık hızından bile hızlı! Einstein buna 'Spooky action at a distance' (Uzaktan ürkütücü etki) dedi. Çünkü bu olay, onun 'Hiçbir şey ışıktan hızlı gidemez' kuralını biraz zorluyordu. Biz buna 'aşırı bağlılık' diyoruz."
+
+Örnek 3 (Zaman Yolculuğu):
+"Geçmişe gidip piyango sonuçlarını almak herkesin hayali. Ama fizik kuralları buna 'Hop dedik' diyor. Büyükbaba Paradoksu: Geçmişe gidip dedenizi öldürürseniz, siz doğamazsınız. Siz doğamazsanız, geçmişe gidip dedenizi öldüremezsiniz. E o zaman dedeniz ölmez ve siz doğarsınız... Beyin yandı mı?"
+`;
 
 // ============= HELPER FUNCTIONS =============
 
@@ -75,25 +99,18 @@ async function transformToFizikHubStyle(arxivItem: ArxivItem): Promise<{
     content: string;
     category: string;
 }> {
-    console.log(`🧠 AI dönüşümü: "${arxivItem.title.substring(0, 50)}..."`);
+    console.log(`🧠 DEEP STYLE AI dönüşümü: "${arxivItem.title.substring(0, 50)}..."`);
 
     const prompt = `
-Sen bir bilim çevirmenisin. Görevin aşağıdaki akademik makale özetini (abstract) TAMAMEN ve BİREBİR Türkçeye çevirmektir.
-
-KURALLAR:
-1. Orijinal metnin HER CÜMLESİNİ çevir. Hiçbir bilgiyi atlama, özetleme veya kısaltma.
-2. Çevirirken FizikHub'ın samimi tarzını ekle: "Hocam", "Şefim", "Kral" gibi hitaplar, günlük hayattan örnekler.
-3. Makaleyi paragraf paragraf çevir. Her paragrafın karşılığı olmalı.
-4. Teknik terimleri (örn: "quantum entanglement") çevirdikten sonra parantez içinde orijinalini yaz: "kuantum dolanıklığı (quantum entanglement)".
-5. Formüller ve sayılar AYNEN kalsın.
-6. En az 500 kelime olmalı. Kısa özet ASLA kabul edilmez.
+${FIZIKHUB_DEEP_STYLE}
 
 ---
+Şimdi aşağıdaki akademik ArXiv makalesini yukarıdaki örneklere ve kurallara dayanarak TAMAMEN ve BİREBİR (cümle cümle) Türkçeye çevir. Hiçbir teknik bilgiyi atlama ama anlatımı %100 FizikHub tarzı yap.
 
 ORİJİNAL MAKALE BAŞLIĞI:
 ${arxivItem.title}
 
-ORİJİNAL ÖZET (BİREBİR ÇEVİR):
+ORİJİNAL ÖZET (Abstract):
 ${arxivItem.description}
 
 KAYNAK: ${arxivItem.link}
@@ -102,10 +119,10 @@ KAYNAK: ${arxivItem.link}
     const { object } = await generateObject({
         model: google('gemini-2.5-flash'),
         schema: z.object({
-            title: z.string().describe('Orijinal başlığın Türkçe çevirisi, samimi ve dikkat çekici'),
-            slug: z.string().describe('url-uyumlu-slug-turkce-karaktersiz-kisa'),
-            excerpt: z.string().describe('Makalenin ilk 2-3 cümlesinin özeti'),
-            content: z.string().describe('ORİJİNAL METNİN TAMAMI BİREBİR ÇEVRİLMİŞ HALİ - EN AZ 500 KELİME - FİZİKHUB TARZI İLE'),
+            title: z.string().describe('Makalenin FizikHub tarzı eğlenceli başlığı'),
+            slug: z.string().describe('url-uyumlu-slug'),
+            excerpt: z.string().describe('Makalenin en can alıcı yerinden 2 cümlelik özet'),
+            content: z.string().describe('Makalenin TAMAMI (Birebir çeviri) - En az 500 kelime - FizikHub tarzı ile'),
             category: z.enum(['Uzay', 'Kuantum', 'Teori', 'Teknoloji', 'Parçacık Fiziği']),
         }),
         prompt: prompt,
@@ -152,8 +169,7 @@ async function publishToSupabase(article: {
 }
 
 async function main() {
-    console.log('\n🚀 FizikHub ArXiv Bot Başlatılıyor...\n');
-    console.log(`📅 Tarih: ${new Date().toISOString()}`);
+    console.log('\n🚀 FizikHub DEEP STYLE ArXiv Bot Başlatılıyor...\n');
     console.log('-----------------------------------\n');
 
     try {
@@ -179,7 +195,6 @@ async function main() {
                 await publishToSupabase(transformed, item.link);
                 publishedCount++;
 
-                // Wait between articles to respect limits
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
             } catch (itemError) {
