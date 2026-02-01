@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote, Twitter, Instagram, Github } from "lucide-react";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote, Twitter, Instagram, Github, Rocket } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,140 +18,123 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "#3B82F6" }, // Blue
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "#FFD200" }, // Yellow
-        { href: "/simulasyonlar", label: "DENEYLER", icon: Atom, color: "#EF4444" }, // Red
-        { href: "/notlar", label: "DERS NOTLARI", icon: StickyNote, color: "#10B981" }, // Green
-        { href: "/blog", label: "FIZIK BLOG", icon: BookOpen, color: "#8B5CF6" }, // Purple
-        { href: "/testler", label: "SINAVLAR", icon: FlaskConical, color: "#F97316" }, // Orange
-        { href: "/siralamalar", label: "LİG", icon: Award, color: "#EC4899" }, // Pink
+        { href: "/", label: "ANA SAYFA", icon: Home, color: "#3B82F6", size: "col-span-2 row-span-1" },
+        { href: "/makale", label: "KEŞFET", icon: Zap, color: "#FFD200", size: "col-span-1 row-span-2" },
+        { href: "/simulasyonlar", label: "LAB", icon: FlaskConical, color: "#EF4444", size: "col-span-1 row-span-1" },
+        { href: "/testler", label: "SINAV", icon: Award, color: "#10B981", size: "col-span-1 row-span-1" },
+        { href: "/notlar", label: "NOTLAR", icon: StickyNote, color: "#8B5CF6", size: "col-span-1 row-span-1" },
+        { href: "/blog", label: "BLOG", icon: BookOpen, color: "#F97316", size: "col-span-2 row-span-1" },
     ];
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <motion.button
-                    whileTap={{ scale: 0.9, rotate: -5 }}
+                    whileTap={{ scale: 0.85 }}
                     className={cn(
-                        "flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11",
-                        "bg-[#FFD200] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000]",
-                        "text-black transition-all"
+                        "flex items-center justify-center w-11 h-11",
+                        "bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000]",
+                        "text-black active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
                     )}
                 >
-                    <Menu className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3px]" />
+                    <div className="flex flex-col gap-1.5 px-2">
+                        <div className="w-6 h-[3px] bg-black" />
+                        <div className="w-4 h-[3px] bg-black self-end" />
+                        <div className="w-6 h-[3px] bg-black" />
+                    </div>
                 </motion.button>
             </SheetTrigger>
 
             <SheetContent
-                side="right"
-                className="w-full sm:w-[360px] p-0 border-l-[4px] border-black bg-[#F3F4F6] overflow-hidden"
+                side="bottom"
+                className="h-[100dvh] w-full p-0 border-t-[5px] border-black bg-black overflow-hidden"
             >
-                <SheetTitle className="sr-only">Navigasyon Menüsü</SheetTitle>
+                <SheetTitle className="sr-only">Navigasyon</SheetTitle>
 
-                <div className="flex flex-col h-full relative">
-                    {/* TOP HEADER STICKER */}
-                    <div className="bg-[#3B82F6] p-6 border-b-[4px] border-black">
-                        <motion.div
-                            initial={{ y: -20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            className="flex flex-col gap-1"
-                        >
-                            <span className="text-white font-black text-2xl tracking-tighter leading-none italic">
-                                FIZIKHUB
-                            </span>
-                            <span className="text-black/80 font-bold text-[10px] uppercase tracking-widest bg-white/30 px-2 py-0.5 self-start">
-                                Navigasyon Sistemi v2.0
-                            </span>
-                        </motion.div>
-                    </div>
-
-                    {/* MENU GRID - STICKER STYLE */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="flex flex-col h-full bg-white">
+                    {/* FULLSCREEN GRID LAYOUT */}
+                    <div className="flex-1 grid grid-cols-2 grid-rows-[repeat(4,1fr)] gap-0 border-b-[4px] border-black">
                         {menuItems.map((item, index) => {
                             const isActive = pathname === item.href;
 
                             return (
                                 <motion.div
                                     key={item.href}
-                                    initial={{ x: 50, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: index * 0.05 }}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.05, type: "spring", stiffness: 300 }}
+                                    className={cn(
+                                        "relative border-[2px] border-black flex flex-col items-center justify-center text-center p-4 group cursor-pointer overflow-hidden",
+                                        item.size,
+                                        isActive ? "z-10" : "z-0"
+                                    )}
+                                    style={{ backgroundColor: isActive ? item.color : 'white' }}
                                 >
-                                    <ViewTransitionLink
-                                        href={item.href}
-                                        className={cn(
-                                            "flex items-center justify-between px-4 h-14 w-full",
-                                            "bg-white border-[2.5px] border-black",
-                                            "shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
-                                            "transition-all duration-200 overflow-hidden",
-                                            isActive && "scale-[1.02] border-r-[8px]"
-                                        )}
-                                    >
-                                        <div
-                                            className="flex items-center justify-between w-full h-full"
-                                            style={{ borderRight: isActive ? `8px solid ${item.color}` : 'none', marginRight: isActive ? '-1rem' : '0', paddingRight: isActive ? '1rem' : '0' }}
+                                    <ViewTransitionLink href={item.href} className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <motion.div
+                                            whileHover={{ scale: 1.2, rotate: 10 }}
+                                            className={cn(
+                                                "mb-2 p-3 rounded-none border-[2px] border-black shadow-[3px_3px_0px_0px_#000]",
+                                                isActive ? "bg-white text-black" : "bg-black text-white"
+                                            )}
+                                            style={{ backgroundColor: !isActive ? item.color : 'white' }}
                                         >
-                                            <div className="flex items-center gap-4">
-                                                <div
-                                                    className="w-8 h-8 flex items-center justify-center border-[1.5px] border-black shadow-[2px_2px_0px_0px_#000]"
-                                                    style={{ backgroundColor: item.color }}
-                                                >
-                                                    <item.icon className="w-4 h-4 text-black stroke-[2.5px]" />
-                                                </div>
-                                                <span className="font-black text-sm tracking-tight text-black italic">
-                                                    {item.label}
-                                                </span>
-                                            </div>
-                                            <ChevronRight className={cn("w-5 h-5 opacity-30", isActive && "opacity-100")} />
-                                        </div>
+                                            <item.icon className="w-8 h-8 stroke-[2.5px]" />
+                                        </motion.div>
+                                        <span className={cn(
+                                            "font-black text-xs sm:text-sm tracking-tighter uppercase",
+                                            isActive ? "text-black bg-white px-2" : "text-black"
+                                        )}>
+                                            {item.label}
+                                        </span>
                                     </ViewTransitionLink>
+
+                                    {/* Deco Text */}
+                                    <div className="absolute top-1 right-1 opacity-10 font-black text-[30px] select-none pointer-events-none italic">
+                                        {index + 1}
+                                    </div>
                                 </motion.div>
                             );
                         })}
                     </div>
 
-                    {/* BOTTOM NAV BLOCKS */}
-                    <div className="p-4 bg-white border-t-[4px] border-black space-y-4">
-                        <div className="grid grid-cols-2 gap-3">
-                            <ViewTransitionLink
-                                href="/profil"
-                                className="flex flex-col items-center justify-center py-4 border-[2.5px] border-black bg-[#F3F4F6] hover:bg-[#FFD200] transition-colors shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
-                            >
-                                <User className="w-6 h-6 mb-1 stroke-[2.5px]" />
-                                <span className="text-[10px] font-black uppercase">PROFIL</span>
-                            </ViewTransitionLink>
-                            <ViewTransitionLink
-                                href="/ayarlar"
-                                className="flex flex-col items-center justify-center py-4 border-[2.5px] border-black bg-[#F3F4F6] hover:bg-[#FFD200] transition-colors shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
-                            >
-                                <Settings className="w-6 h-6 mb-1 stroke-[2.5px]" />
-                                <span className="text-[10px] font-black uppercase">AYARLAR</span>
+                    {/* FOOTER AREA */}
+                    <div className="h-[180px] bg-[#FFD200] border-black flex flex-col p-4 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-black/10" />
+
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex flex-col font-black italic text-2xl leading-none">
+                                <span>FIZIK</span>
+                                <span className="text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">HUB</span>
+                            </div>
+                            <ViewTransitionLink href="/ozel" className="bg-black text-white px-4 py-2 font-black text-[10px] sm:text-xs uppercase border-[2px] border-black shadow-[3px_3px_0px_0px_#3B82F6] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                                <Crown className="inline w-3 h-3 mr-2 fill-white" />
+                                PREMİUM'A GEÇ
                             </ViewTransitionLink>
                         </div>
 
-                        {/* SOCIALS & AUTH */}
-                        <div className="flex items-center justify-between gap-3 pt-2">
-                            <div className="flex gap-2">
-                                {[Twitter, Instagram, Github].map((Icon, i) => (
-                                    <button key={i} className="w-10 h-10 border-[2px] border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors">
-                                        <Icon className="w-4 h-4" />
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex-1 max-w-[140px]">
+                        <div className="flex items-center gap-4 mt-auto">
+                            <div className="flex-1">
                                 <AuthButton />
+                            </div>
+                            <div className="flex gap-2">
+                                <ViewTransitionLink href="/ayarlar" className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
+                                    <Settings className="w-5 h-5" />
+                                </ViewTransitionLink>
+                                <ViewTransitionLink href="/profil" className="w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
+                                    <User className="w-5 h-5" />
+                                </ViewTransitionLink>
                             </div>
                         </div>
                     </div>
 
-                    {/* CLOSE BUTTON - FLOATING CIRCLE */}
-                    <SheetClose className="absolute top-4 right-4 z-50">
+                    {/* CLOSE BUTTON - OVERLAY TOP */}
+                    <SheetClose className="absolute top-[2px] right-[2px] z-[100]">
                         <motion.div
-                            whileHover={{ scale: 1.1, rotate: 90 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-10 h-10 bg-black text-white border-[2px] border-white shadow-xl"
+                            whileHover={{ rotate: 90 }}
+                            className="bg-black text-white p-3 border-l-[3px] border-b-[3px] border-white shadow-[-4px_4px_20px_rgba(0,0,0,0.5)]"
                         >
-                            <X className="w-6 h-6 text-white stroke-[4px]" />
+                            <X className="w-8 h-8 stroke-[4px]" />
                         </motion.div>
                     </SheetClose>
                 </div>
