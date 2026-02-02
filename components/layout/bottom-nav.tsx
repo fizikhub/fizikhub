@@ -1,5 +1,6 @@
-"use client";
-
+import Link from "next/link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link";
+import { usePathname } from "next/navigation";
 import { Home, BookOpen, Feather, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
