@@ -118,12 +118,13 @@ export function NeoArticleCard({
                     "flex flex-col relative overflow-hidden",
                     // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
                     "bg-white dark:bg-[#27272a]",
-                    // BORDER: Pure Black (rgb(0,0,0)) ALWAYS
-                    "border-[3px] border-black rounded-[8px]",
-                    // SHADOW: Standardized Neo Token
-                    "shadow-neo border-black",
-                    // HOVER
-                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
+                    // BORDER: Edge-to-edge mobile (border-y only usually sufficient or border-b), Desktop card
+                    "border-y-[3px] border-x-0 sm:border-[3px] border-black sm:rounded-[8px]",
+                    "rounded-none", // Explicitly none on mobile
+                    // SHADOW: None on mobile (flat feed), Neo on desktop
+                    "sm:shadow-neo",
+                    // HOVER (Desktop Only)
+                    "transition-all duration-200 sm:hover:translate-x-[2px] sm:hover:translate-y-[2px] sm:hover:shadow-[2px_2px_0px_0px_#000]",
                     className
                 )}
             >
@@ -150,17 +151,17 @@ export function NeoArticleCard({
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-4 sm:p-5 gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-0.5 sm:mb-1">
                         <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
-                    <p className="font-[family-name:var(--font-inter)] text-xs sm:text-sm font-semibold text-neutral-600 dark:text-zinc-300 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
+                    <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-600 dark:text-zinc-300 line-clamp-3 leading-relaxed">
                         {previewText}
                     </p>
 
@@ -168,14 +169,14 @@ export function NeoArticleCard({
                     <div className="mt-auto"></div>
 
                     {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between pt-1 sm:pt-2">
+                    <div className="flex items-center justify-between pt-1">
 
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
+                            <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 <Image
                                     src={authorAvatar}
                                     alt={authorName}
@@ -184,23 +185,23 @@ export function NeoArticleCard({
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
+                                <span className="text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[100px] sm:max-w-none">
                                     {authorName}
                                 </span>
-                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
+                                <span className="text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
                         </div>
 
                         {/* Actions Code - Pure Black Borders */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
-                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "w-10 h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
+                                    "active:scale-90",
                                     "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
                                     isLiked ? "bg-[#FFC800] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
                                 )}
@@ -222,7 +223,7 @@ export function NeoArticleCard({
                                         window.location.href = url;
                                     }
                                 }}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:scale-90 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <MessageCircle className="w-5 h-5 stroke-[2.5px] stroke-current" />
                             </button>
@@ -230,7 +231,7 @@ export function NeoArticleCard({
                             {/* Share */}
                             <button
                                 onClick={handleShare}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-10 h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:scale-90 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <Share2 className="w-5 h-5 stroke-[2.5px] stroke-current" />
                             </button>
@@ -239,8 +240,8 @@ export function NeoArticleCard({
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
-                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "w-10 h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
+                                    "active:scale-90",
                                     "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
                                     isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"
                                 )}

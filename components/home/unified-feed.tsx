@@ -28,13 +28,17 @@ interface UnifiedFeedProps {
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
-        <div className="flex flex-col gap-3 sm:gap-6">
-            {/* Feed Container - Clean cards with subtle shadows */}
-            <div className="flex flex-col gap-5 sm:gap-6">
+        <div className="flex flex-col gap-0 sm:gap-6">
+            {/* STORIES SECTION - App-Like Top Bar */}
+            <div className="mb-4 sm:mb-0 -mx-4 sm:mx-0 pt-2 sm:pt-0 pb-2 border-b border-border/40 sm:border-none bg-background/80 backdrop-blur-sm sticky top-[56px] z-30 sm:static">
+                <ScienceStories />
+            </div>
+
+            {/* Feed Container - Edge-to-edge on mobile */}
+            <div className="flex flex-col gap-3 sm:gap-6">
                 {items.map((item, index) => (
                     <motion.div
                         key={`${item.type}-${item.data.id}`}
-
                         initial={index < 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                         whileInView={index < 3 ? undefined : { opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "100px" }}
@@ -82,7 +86,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-all">
+                            <div className="mx-0 sm:mx-0 rounded-none sm:rounded-2xl border-y sm:border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-all">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
@@ -91,28 +95,21 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {/* Injected Content - Soft styling */}
+                        {/* Injected Content */}
                         {index === 2 && (
-                            <div className="mt-6">
+                            <div className="mt-4 mb-4 sm:mt-6">
                                 <CommunityInviteBanner />
                             </div>
                         )}
 
                         {index === 5 && (
-                            <div className="mt-6 rounded-2xl overflow-hidden">
+                            <div className="mt-4 mb-4 sm:mt-6 rounded-none sm:rounded-2xl overflow-hidden">
                                 <ForumTeaserCard />
                             </div>
                         )}
 
-                        {/* Rapid Science Stories Injection - 7th position visually */}
-                        {index === 6 && (
-                            <div className="mt-8 mb-8 -mx-4 sm:mx-0">
-                                <ScienceStories />
-                            </div>
-                        )}
-
                         {index === 8 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
+                            <div className="mt-4 mb-4 sm:mt-6 rounded-none sm:rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border-y sm:border border-amber-500/10">
                                 <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
                                     Haftanın Sorusu
                                 </h3>
@@ -123,8 +120,8 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 ))}
             </div>
 
-            {/* Suggested Users Footer - Rounded and soft */}
-            <div className="mt-8 rounded-2xl bg-muted/30 border border-border/50 p-6">
+            {/* Suggested Users Footer */}
+            <div className="mt-8 rounded-none sm:rounded-2xl bg-muted/30 border-t sm:border border-border/50 p-6">
                 <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 text-center">
                     Önerilen Araştırmacılar
                 </h3>
