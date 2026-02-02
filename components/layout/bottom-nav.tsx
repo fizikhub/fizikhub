@@ -39,32 +39,26 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[30] md:hidden transition-transform duration-300 ease-in-out",
-            isVisible ? "translate-y-0" : "translate-y-full"
+            "fixed bottom-6 left-1/2 -translate-x-1/2 z-[30] md:hidden transition-all duration-300 ease-in-out w-[90%] max-w-[320px]",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-[100px] opacity-0"
         )}>
             {/* 
-                V31 BOTTOM NAV: RETURN TO CLASSIC + TWEAKS
-                - Icons: Classic set (Home, BookOpen, Feather, MessageCircle, User)
-                - Style: Border-t black, slightly transparent
+                V32 PREMIUM FLOATING DOCK
+                - Style: Neo-Brutalist Floating Capsule
+                - Color: White Base, Black Borders
             */}
             <nav className="
                 w-full
-                bg-[#F2C32E]/90
-                backdrop-blur-md
-                h-[52px]
+                bg-white
+                h-[56px]
                 flex items-center justify-between
-                px-6
-                pb-safe
+                px-5
+                rounded-2xl
+                border-2 border-black
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
                 relative
                 overflow-hidden
-                border-t border-black
-                shadow-[0px_-2px_10px_rgba(0,0,0,0.1)]
             ">
-                {/* Noise Texture */}
-                <div className="absolute inset-0 opacity-[0.05] pointer-events-none z-0 mix-blend-multiply"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-                />
-
                 {links.map((link) => {
                     const Icon = link.icon;
                     const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
@@ -77,14 +71,14 @@ export function BottomNav() {
                             className={cn(
                                 "flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 relative z-10 group",
                                 isActive
-                                    ? "text-black scale-110"
-                                    : "text-black/60 hover:text-black active:scale-95"
+                                    ? "text-black -translate-y-1"
+                                    : "text-neutral-400 hover:text-black active:scale-95"
                             )}
                         >
                             <Icon
                                 className={cn(
                                     "w-5 h-5 transition-all duration-300",
-                                    isActive ? "stroke-[2.5px] fill-black/10" : "stroke-[2px]"
+                                    isActive ? "stroke-[2.5px] fill-black" : "stroke-[2px]"
                                 )}
                             />
                             {isActive && (
