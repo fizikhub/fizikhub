@@ -131,7 +131,7 @@ export function Navbar() {
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-2.5">
+                    <div className="relative z-10 flex items-center gap-3 pb-1">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
