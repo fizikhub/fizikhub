@@ -4,26 +4,26 @@ import { cn } from "@/lib/utils";
 
 export function DankLogo() {
     return (
-        <div className="relative group cursor-pointer select-none">
+        <div className="relative group cursor-pointer select-none flex items-center justify-center">
             {/* 
-                MULTI-LAYER SVG FOR PERFECT REFERENCE MATCH 
-                Layer 1: Shadow (Solid Black Block)
-                Layer 2: Stroke (Thick Black Outline)
-                Layer 3: Fill (Yellow Text)
+                FIXED LOGO IMPLEMENTATION
+                - viewBox increased to prevent clipping of 'F' and 'b' (220x80)
+                - Mobile size reduced significantly (h-[32px])
+                - Overflow visible allowed to let the badge hang out if needed
             */}
             <div className="relative z-10 transform -rotate-2 group-hover:rotate-0 transition-transform duration-300">
                 <svg
-                    width="180"
-                    height="60"
-                    viewBox="0 0 180 60"
-                    className="w-[140px] h-[46px] sm:w-[180px] sm:h-[60px]"
+                    width="220"
+                    height="80"
+                    viewBox="0 0 220 80"
+                    className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
                     {/* 1. SHADOW LAYER (Offset) */}
                     <text
                         x="50%"
-                        y="65%"
+                        y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
                         className="font-black italic tracking-tighter"
@@ -45,7 +45,7 @@ export function DankLogo() {
                     {/* 2. STROKE LAYER (Thick Black Outline) */}
                     <text
                         x="50%"
-                        y="65%"
+                        y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
                         className="font-black italic tracking-tighter"
@@ -66,7 +66,7 @@ export function DankLogo() {
                     {/* 3. FILL LAYER (Yellow) */}
                     <text
                         x="50%"
-                        y="65%"
+                        y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
                         className="font-black italic tracking-tighter"
@@ -82,10 +82,10 @@ export function DankLogo() {
                     </text>
                 </svg>
 
-                {/* Subtitle Badge - Precise Positioning */}
-                <div className="absolute -bottom-1 right-2 sm:right-4 transform rotate-[-3deg]">
-                    <div className="bg-white border-[2px] border-black px-1.5 py-[1px] shadow-[3px_3px_0px_0px_#000]">
-                        <span className="block text-[8px] sm:text-[9px] font-black text-black leading-none uppercase tracking-widest whitespace-nowrap" style={{ fontFamily: "var(--font-outfit)" }}>
+                {/* Subtitle Badge - Tucked tighter and ensured visibility */}
+                <div className="absolute bottom-1 right-2 sm:right-6 transform rotate-[-3deg] z-20">
+                    <div className="bg-white border-[1.5px] sm:border-[2px] border-black px-1 py-[0.5px] shadow-[2px_2px_0px_0px_#000]">
+                        <span className="block text-[7px] sm:text-[9px] font-black text-black leading-none uppercase tracking-widest whitespace-nowrap" style={{ fontFamily: "var(--font-outfit)" }}>
                             BİLİM PLATFORMU
                         </span>
                     </div>
