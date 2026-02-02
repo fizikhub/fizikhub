@@ -156,7 +156,7 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-6 h-6 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex items-center justify-center w-6 h-6 !min-w-0 !min-h-0 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
                             <Search className="w-3 h-3 stroke-[2.5px]" />
                         </motion.button>
@@ -167,7 +167,7 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex md:hidden items-center justify-center w-6 h-6 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className="flex md:hidden items-center justify-center w-6 h-6 !min-w-0 !min-h-0 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
                             <Zap className="w-3 h-3 fill-black stroke-[2.5px]" />
                         </motion.button>

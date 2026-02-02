@@ -31,7 +31,7 @@ export function MobileMenu() {
             <SheetTrigger asChild>
                 <button
                     className={cn(
-                        "flex items-center justify-center w-6 h-6",
+                        "flex items-center justify-center w-6 h-6 !min-w-0 !min-h-0",
                         "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
                         "text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     )}
