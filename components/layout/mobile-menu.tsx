@@ -7,7 +7,7 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
 import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -28,7 +28,7 @@ export function MobileMenu() {
     ];
 
     // GLITCH REVEAL VARIANTS
-    const glitchContainer = {
+    const glitchContainer: Variants = {
         hidden: {
             clipPath: "inset(0 100% 0 0)",
             opacity: 0
