@@ -31,12 +31,12 @@ export function MobileMenu() {
             <SheetTrigger asChild>
                 <button
                     className={cn(
-                        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10",
+                        "flex items-center justify-center w-[28px] h-[28px] sm:w-10 sm:h-10",
                         "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
                         "text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     )}
                 >
-                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
+                    <Menu className="w-3.5 h-3.5 sm:w-5 sm:h-5 stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 
