@@ -8,131 +8,181 @@ import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 
-// RETRO-FUTURE HUD: Data Block Animations
-const hudVariant: Variants = {
-    tap: { scale: 0.95 },
-    hover: {
-        backgroundColor: "#FFC800",
-        color: "#000000",
-        textShadow: "0px 0px 8px rgba(255, 200, 0, 0.8)",
-        transition: { duration: 0.1 }
-    }
+const clickVariant = {
+    tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
+    hover: { y: -2, x: -2, boxShadow: "3px 3px 0px 0px #000" }
 };
+
+const physicsTicker = [
+    "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
+    "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 3×10⁸",
+    "e^(iπ) + 1 = 0", "∇×B = μ₀J + μ₀ε₀∂E/∂t", "H = -Σ pᵢ log pᵢ",
+    "ΔxΔp ≥ ℏ/2", "R_uv - 1/2Rg_uv = 8πGT_uv", "KE = 1/2mv²",
+    "F = G(m₁m₂)/r²", "L = T - V", "ds² = -(1-2M/r)dt² + ...",
+    "Q = mcΔT", "U = 3/2nRT", "P = IV", "V = IR"
+];
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
+    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
+
     useEffect(() => {
         setMounted(true);
+
+        const generateRain = () => {
+            // Rain enabled on both Mobile & Desktop, but optimized counts
+            const isMobile = window.innerWidth < 768;
+            const laneCount = isMobile ? 8 : 20;
+            const dropCount = isMobile ? 12 : 30;
+
+            const drops = Array.from({ length: dropCount }).map((_, i) => {
+                let left;
+                // SMART RAIN LOGIC: Avoid center 30% (35% - 65%)
+                const isLeft = Math.random() > 0.5;
+                if (isLeft) {
+                    // Left side: 0% to 32%
+                    left = Math.random() * 32;
+                } else {
+                    // Right side: 68% to 100%
+                    left = 68 + Math.random() * 32;
+                }
+
+                return {
+                    left: left,
+                    duration: 5 + Math.random() * 8,
+                    delay: Math.random() * 15,
+                    formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
+                    scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
+                    opacity: 0.5 + Math.random() * 0.4
+                };
+            });
+            setRaindrops(drops);
+        };
+
+        if ('requestIdleCallback' in window) {
+            (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(generateRain);
+        } else {
+            setTimeout(generateRain, 100);
+        }
     }, []);
 
     const navItems = [
-        { href: "/", label: "ANA_MODÜL" },
-        { href: "/makale", label: "VERİ_AKISI" },
-        { href: "/siralamalar", label: "LİDER_TABLOSU" },
+        { href: "/", label: "Ana" },
+        { href: "/makale", label: "Keşfet" },
+        { href: "/siralamalar", label: "Lig" },
     ];
 
-    // Square, precise, machine-like button style
     const buttonClass = cn(
-        "flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10",
-        "bg-white border-[2px] border-black", // Sharp edges, no rounded
-        "text-black transition-all font-mono", // Monospace for HUD feel
-        "hover:shadow-[0px_0px_10px_rgba(255,255,255,0.5)]" // Glow effect
+        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10", // 32px Mobile, 40px Desktop
+        "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
+        "text-black transition-all",
     );
 
     return (
         <>
             {/* 
-                V34: RETRO-FUTURE HUD NAVBAR
-                - Concept: Sci-Fi, Data-Driven, Cyber
-                - Background: Digital Grid + Scanline
-                - Interactive: Monospace Data Blocks
+                V32: CLEAN BRUTALISM V2
+                - Height: h-14 (56px)
+                - Rain: Smart (No Center Overlap)
+                - Icons: Bold & Heavy
             */}
             <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#0a0a0a] border-b-[2px] border-[#333]", // Darker tech background
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* HUD BACKGROUND: DIGITAL GRID & SCANLINE */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-                        {/* Static Grid */}
-                        <div className="absolute inset-0 bg-[linear-gradient(to_right,#444_1px,transparent_1px),linear-gradient(to_bottom,#444_1px,transparent_1px)] bg-[size:24px_24px]" />
+                    {/* PHYSICS RAIN BACKGROUND (SMART AVOIDANCE) */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
+                        {raindrops.map((drop, i) => (
+                            <motion.div
+                                key={i}
+                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
+                                style={{
+                                    left: `${drop.left}%`,
+                                    fontSize: `${13 * drop.scale}px`,
+                                    color: `rgba(0,0,0,${drop.opacity || 0.3})`,
+                                    filter: 'blur(0.3px)'
+                                }}
+                                initial={{ y: 60, opacity: 0 }}
+                                animate={{ y: -20, opacity: [0, 1, 0] }}
+                                transition={{
+                                    duration: drop.duration,
+                                    repeat: Infinity,
+                                    delay: drop.delay,
+                                    ease: "linear"
+                                }}
+                            >
+                                {drop.formula}
+                            </motion.div>
+                        ))}
+                    </div>
 
-                        {/* Moving Scanline */}
-                        <motion.div
-                            className="absolute inset-0 bg-gradient-to-b from-transparent via-[#FFC800] to-transparent opacity-10"
-                            animate={{ top: ["-100%", "200%"] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                            style={{ height: "50%", width: "100%" }}
-                        />
+                    {/* RULER TICKS - Kept as distinctive feature */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
                     </div>
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0">
+                    <div className="relative z-10 flex-shrink-0 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
-                            {/* In HUD mode, logo might need a tech filter or stick to brutalist */}
-                            <div className="filter contrast-125 brightness-110 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
-                                <DankLogo />
-                            </div>
+                            <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
-                    {/* RIGHT: HUD CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-3">
+                    {/* RIGHT: COMPACT CONTROLS */}
+                    <div className="relative z-10 flex items-center gap-2 sm:gap-3">
 
-                        {/* Desktop Links - Data Blocks */}
-                        <div className="hidden md:flex items-center gap-1 mr-4">
-                            {navItems.map((item) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <ViewTransitionLink
-                                        key={item.href}
-                                        href={item.href}
-                                        className={cn(
-                                            "relative px-4 py-2 text-[10px] font-mono font-bold tracking-widest uppercase border-[1px] border-transparent transition-all",
-                                            "text-white hover:text-[#FFC800] hover:border-[#FFC800] hover:bg-black/50",
-                                            isActive && "text-[#FFC800] border-[#FFC800] bg-black/50 shadow-[0_0_10px_rgba(255,200,0,0.3)]"
-                                        )}
-                                    >
-                                        {/* Brackets appearing on hover/active could be CSS based or part of text */}
-                                        <span className={isActive ? "block" : ""}>
-                                            {isActive ? `[ ${item.label} ]` : item.label}
-                                        </span>
-                                    </ViewTransitionLink>
-                                )
-                            })}
+                        {/* Desktop Links */}
+                        <div className="hidden md:flex items-center gap-2 mr-6">
+                            {navItems.map((item) => (
+                                <ViewTransitionLink
+                                    key={item.href}
+                                    href={item.href}
+                                    className={cn(
+                                        "px-4 py-2 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
+                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
+                                    )}
+                                >
+                                    {item.label}
+                                </ViewTransitionLink>
+                            ))}
                         </div>
 
-                        {/* 1. SEARCH - DATA BLOCK */}
+                        {/* 1. SEARCH - BOLD ICON */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            variants={hudVariant}
+                            variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className={cn(buttonClass, "border-white bg-black text-white hover:border-[#FFC800]")}
+                            className={buttonClass}
                         >
-                            <Search className="w-5 h-5 stroke-[2px]" />
+                            <Search className="w-5 h-5 sm:w-5 sm:h-5 stroke-[3px]" />
                         </motion.button>
 
-                        {/* 2. ZAP - DATA BLOCK */}
+                        {/* 2. ZAP - BOLD FILLED ICON */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            variants={hudVariant}
+                            variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className={cn(buttonClass, "md:hidden bg-[#FFC800] text-black border-[#FFC800]")}
+                            className={cn(buttonClass, "md:hidden bg-[#FFC800]")}
                         >
-                            <Zap className="w-5 h-5 fill-black stroke-[2px]" />
+                            <Zap className="w-5 h-5 fill-black stroke-[3px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU */}
