@@ -37,11 +37,10 @@ export function Navbar() {
         setMounted(true);
 
         const generateRain = () => {
-            // ONLY GENERATE RAIN ON DESKTOP
-            if (window.innerWidth < 768) return;
-
-            const laneCount = 20;
-            const dropCount = 30;
+            // Rain enabled on both Mobile & Desktop, but optimized counts
+            const isMobile = window.innerWidth < 768;
+            const laneCount = isMobile ? 8 : 20;
+            const dropCount = isMobile ? 12 : 30;
 
             const drops = Array.from({ length: dropCount }).map((_, i) => {
                 const lane = Math.floor(Math.random() * laneCount);
@@ -53,7 +52,7 @@ export function Navbar() {
                     duration: 5 + Math.random() * 8,
                     delay: Math.random() * 15,
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-                    scale: 0.7 + Math.random() * 0.4,
+                    scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
                     opacity: 0.5 + Math.random() * 0.4
                 };
             });
@@ -74,20 +73,20 @@ export function Navbar() {
     ];
 
     const buttonClass = cn(
-        "flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10",
+        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10", // 32px Mobile, 40px Desktop
         "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
         "text-black transition-all",
-        // Active/Hover states handled by framer-motion or CSS
     );
 
     return (
         <>
             {/* 
-                V30: CLEAN NEO-BRUTALIST NAVBAR
-                - Increased height slightly for better touch targets if needed, but keeping h-14 is standard.
-                - Removed mobile distractions.
+                V31: REFINED NEO-BRUTALIST NAVBAR
+                - Height: h-14 (56px) - Reverted to tighter height
+                - Rain: Enabled on Mobile
+                - Dots: Removed
             */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
@@ -97,8 +96,8 @@ export function Navbar() {
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* DESKTOP ONLY: PHYSICS RAIN BACKGROUND */}
-                    <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
+                    {/* PHYSICS RAIN BACKGROUND (VISIBLE ON MOBILE) */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
@@ -122,11 +121,6 @@ export function Navbar() {
                             </motion.div>
                         ))}
                     </div>
-
-                    {/* DECORATIVE: DOT GRID OVERLAY (SUBTLE TEXTURE) */}
-                    <div className="absolute inset-0 opacity-10 pointer-events-none"
-                        style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}
-                    />
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-10 flex-shrink-0 hover:scale-105 transition-transform duration-300">
@@ -155,7 +149,7 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH - Tactile Button */}
+                        {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             variants={clickVariant}
@@ -163,21 +157,21 @@ export function Navbar() {
                             whileHover="hover"
                             className={buttonClass}
                         >
-                            <Search className="w-5 h-5 sm:w-5 sm:h-5 stroke-[2.5px]" />
+                            <Search className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 2. ZAP - Mobile Only - Unified Style */}
+                        {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className={cn(buttonClass, "md:hidden bg-[#FFC800]")} // Yellow highlight for special content
+                            className={cn(buttonClass, "md:hidden bg-[#FFC800]")}
                         >
-                            <Zap className="w-5 h-5 fill-black stroke-[2.5px]" />
+                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 3. MOBILE MENU (RIGHT SHEET) */}
+                        {/* 3. MOBILE MENU */}
                         <div className="md:hidden">
                             <MobileMenu />
                         </div>
@@ -185,8 +179,8 @@ export function Navbar() {
                 </div>
             </header >
 
-            {/* Spacer for Fixed Header */}
-            <div className="h-[64px]" />
+            {/* Spacer */}
+            <div className="h-[56px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
