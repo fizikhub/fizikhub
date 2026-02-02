@@ -156,9 +156,10 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-6 h-6 !min-w-0 !min-h-0 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px', padding: 0 }}
+                            className="flex items-center justify-center bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Search className="w-3 h-3 stroke-[2.5px]" />
+                            <Search className="w-4 h-4 stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
@@ -167,9 +168,10 @@ export function Navbar() {
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex md:hidden items-center justify-center w-6 h-6 !min-w-0 !min-h-0 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px', padding: 0 }}
+                            className="flex md:hidden items-center justify-center bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
                         >
-                            <Zap className="w-3 h-3 fill-black stroke-[2.5px]" />
+                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
