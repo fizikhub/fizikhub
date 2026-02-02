@@ -5,11 +5,10 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
-// Sheet imports removed
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 
@@ -38,22 +37,23 @@ export function Navbar() {
         setMounted(true);
 
         const generateRain = () => {
-            const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 8 : 20; // Distinct lanes to prevent overlap
-            const dropCount = isMobile ? 12 : 30;
+            // ONLY GENERATE RAIN ON DESKTOP
+            if (window.innerWidth < 768) return;
+
+            const laneCount = 20;
+            const dropCount = 30;
 
             const drops = Array.from({ length: dropCount }).map((_, i) => {
-                // Assign to a random lane to prevent horizontal overlap
                 const lane = Math.floor(Math.random() * laneCount);
-                const laneWidth = 80 / laneCount; // Use inner 80% of screen
-                const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8)); // 10% padding on sides
+                const laneWidth = 80 / laneCount;
+                const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8));
 
                 return {
                     left: left,
-                    duration: 5 + Math.random() * 8, // 5s-13s
-                    delay: Math.random() * 15, // Spread out start times
+                    duration: 5 + Math.random() * 8,
+                    delay: Math.random() * 15,
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-                    scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
+                    scale: 0.7 + Math.random() * 0.4,
                     opacity: 0.5 + Math.random() * 0.4
                 };
             });
@@ -73,25 +73,32 @@ export function Navbar() {
         { href: "/siralamalar", label: "Lig" },
     ];
 
+    const buttonClass = cn(
+        "flex items-center justify-center w-[36px] h-[36px] sm:w-10 sm:h-10",
+        "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
+        "text-black transition-all",
+        // Active/Hover states handled by framer-motion or CSS
+    );
+
     return (
         <>
             {/* 
-                V29: PREMIUM SCIENCE HUD
-                - Height: h-14 (56px) - Optimized for Mobile
-                - Style: Sharp Neo-Brutalist, Blue Base
+                V30: CLEAN NEO-BRUTALIST NAVBAR
+                - Increased height slightly for better touch targets if needed, but keeping h-14 is standard.
+                - Removed mobile distractions.
             */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-40 h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
                         "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
+                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]",
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
+                    {/* DESKTOP ONLY: PHYSICS RAIN BACKGROUND */}
+                    <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
@@ -116,22 +123,20 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - SHARPER */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
-                    </div>
+                    {/* DECORATIVE: DOT GRID OVERLAY (SUBTLE TEXTURE) */}
+                    <div className="absolute inset-0 opacity-10 pointer-events-none"
+                        style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}
+                    />
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-10 flex-shrink-0 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-2.5">
+                    <div className="relative z-10 flex items-center gap-2 sm:gap-3">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
@@ -140,7 +145,7 @@ export function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-1.5 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        "px-4 py-2 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
                                         "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
                                         pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
                                     )}
@@ -150,26 +155,26 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH */}
+                        {/* 1. SEARCH - Tactile Button */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className={buttonClass}
                         >
-                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                            <Search className="w-5 h-5 sm:w-5 sm:h-5 stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 2. ZAP - Mobile Only */}
+                        {/* 2. ZAP - Mobile Only - Unified Style */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             variants={clickVariant}
                             whileTap="tap"
                             whileHover="hover"
-                            className="flex md:hidden items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            className={cn(buttonClass, "md:hidden bg-[#FFC800]")} // Yellow highlight for special content
                         >
-                            <Zap className="w-3.5 h-3.5 fill-black stroke-[2.5px]" />
+                            <Zap className="w-5 h-5 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
@@ -180,7 +185,8 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[56px] sm:h-[64px]" />
+            {/* Spacer for Fixed Header */}
+            <div className="h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
