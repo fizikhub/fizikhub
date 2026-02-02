@@ -29,17 +29,15 @@ export function MobileMenu() {
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <div className="relative w-[30px] h-[30px] !min-w-[30px] !min-h-[30px] flex-none">
-                    <button
-                        className={cn(
-                            "w-full h-full flex items-center justify-center p-0",
-                            "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
-                            "text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all overflow-hidden"
-                        )}
-                    >
-                        <Menu className="w-4 h-4 stroke-[2.5px]" />
-                    </button>
-                </div>
+                <button
+                    className={cn(
+                        "flex items-center justify-center w-8 h-8",
+                        "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
+                        "text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+                    )}
+                >
+                    <Menu className="w-4 h-4 stroke-[2.5px]" />
+                </button>
             </SheetTrigger>
 
             {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}

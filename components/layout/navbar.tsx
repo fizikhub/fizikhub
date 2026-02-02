@@ -151,30 +151,26 @@ export function Navbar() {
                         </div>
 
                         {/* 1. SEARCH */}
-                        <div className="relative w-[30px] h-[30px] !min-w-[30px] !min-h-[30px] flex-none">
-                            <motion.button
-                                onClick={() => setIsSearchOpen(true)}
-                                variants={clickVariant}
-                                whileTap="tap"
-                                whileHover="hover"
-                                className="w-full h-full flex items-center justify-center p-0 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black overflow-hidden"
-                            >
-                                <Search className="w-4 h-4 stroke-[2.5px]" />
-                            </motion.button>
-                        </div>
+                        <motion.button
+                            onClick={() => setIsSearchOpen(true)}
+                            variants={clickVariant}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="flex items-center justify-center w-8 h-8 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                        >
+                            <Search className="w-4 h-4 stroke-[2.5px]" />
+                        </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
-                        <div className="relative md:hidden w-[30px] h-[30px] !min-w-[30px] !min-h-[30px] flex-none">
-                            <motion.button
-                                onClick={() => window.location.href = '/ozel'}
-                                variants={clickVariant}
-                                whileTap="tap"
-                                whileHover="hover"
-                                className="w-full h-full flex items-center justify-center p-0 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black overflow-hidden"
-                            >
-                                <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
-                            </motion.button>
-                        </div>
+                        <motion.button
+                            onClick={() => window.location.href = '/ozel'}
+                            variants={clickVariant}
+                            whileTap="tap"
+                            whileHover="hover"
+                            className="md:hidden flex items-center justify-center w-8 h-8 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                        >
+                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
+                        </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
                         <div className="md:hidden">
