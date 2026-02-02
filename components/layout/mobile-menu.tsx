@@ -7,7 +7,6 @@ import { AuthButton } from "@/components/auth/auth-button";
 import { cn } from "@/lib/utils";
 import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, ChevronRight, Crown, Atom, StickyNote } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { motion, AnimatePresence, Variants } from "framer-motion";
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -27,34 +26,6 @@ export function MobileMenu() {
         { href: "/siralamalar", label: "Lig", icon: Award },
     ];
 
-    // GLITCH REVEAL VARIANTS (V2: Clean Brutalism)
-    const glitchContainer: Variants = {
-        hidden: {
-            clipPath: "inset(0 100% 0 0)",
-            opacity: 0
-        },
-        visible: {
-            clipPath: [
-                "inset(0 100% 0 0)",
-                "inset(0 40% 0 0)",
-                "inset(0 0 0 0)",
-                "inset(10% 0 20% 0)",
-                "inset(0 0 0 0)"
-            ],
-            opacity: 1,
-            transition: {
-                duration: 0.4,
-                times: [0, 0.2, 0.6, 0.8, 1],
-                ease: "easeInOut"
-            }
-        },
-        exit: {
-            clipPath: "inset(0 0 0 100%)",
-            opacity: 0,
-            transition: { duration: 0.2 }
-        }
-    };
-
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -65,25 +36,18 @@ export function MobileMenu() {
                         "text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                     )}
                 >
-                    <Menu className="w-5 h-5 stroke-[3px]" />
+                    <Menu className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 
             {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}
             <SheetContent
                 side="right"
-                className="w-[280px] sm:w-[320px] p-0 border-l-[3px] border-black bg-white overflow-hidden sm:max-w-none transition-none data-[state=open]:duration-0"
+                className="w-[280px] sm:w-[320px] p-0 border-l-[3px] border-black bg-white overflow-hidden"
             >
                 <SheetTitle className="sr-only">Menü</SheetTitle>
 
-                {/* ANIMATED GLITCH WRAPPER */}
-                <motion.div
-                    className="flex flex-col h-full bg-[#F3F4F6]"
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    variants={glitchContainer}
-                >
+                <div className="flex flex-col h-full bg-[#F3F4F6]">
                     {/* PRIMARY ACTION - Top Banner Style */}
                     <div className="p-3 pb-0">
                         <ViewTransitionLink
@@ -95,17 +59,20 @@ export function MobileMenu() {
                             )}
                         >
                             <div className="flex items-center gap-2">
-                                <Crown className="w-5 h-5 fill-black stroke-[2.5px]" />
+                                <Crown className="w-5 h-5 fill-black" />
                                 <span className="font-black text-sm uppercase tracking-wide text-black">Özel İçerik</span>
                             </div>
-                            <ChevronRight className="w-5 h-5 stroke-[3px]" />
+                            <ChevronRight className="w-5 h-5" />
                         </ViewTransitionLink>
                     </div>
 
-                    {/* LIST MENU ITEMS - Compact & Bold */}
+                    {/* LIST MENU ITEMS - Compact & Clean */}
                     <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
                         {menuItems.map((item, index) => {
                             const isActive = pathname === item.href;
+
+                            // Visual separation for groups if needed
+                            const isFirst = index === 0;
 
                             return (
                                 <ViewTransitionLink
@@ -118,17 +85,18 @@ export function MobileMenu() {
                                         isActive
                                             ? "border-l-[6px] border-l-[#3B82F6]"
                                             : "hover:pl-4",
+                                        // Specific compact styling
                                         "shadow-none active:bg-neutral-100"
                                     )}
                                 >
                                     <div className="flex items-center gap-3">
                                         <item.icon className={cn(
-                                            "w-5 h-5 stroke-[2.5px]",
-                                            isActive ? "text-[#3B82F6] fill-current" : "text-neutral-900"
+                                            "w-4 h-4 stroke-[2px]",
+                                            isActive ? "text-[#3B82F6]" : "text-neutral-500"
                                         )} />
                                         <span className={cn(
                                             "font-bold text-sm tracking-tight",
-                                            isActive ? "text-black" : "text-neutral-800"
+                                            isActive ? "text-black" : "text-neutral-700"
                                         )}>{item.label}</span>
                                     </div>
 
@@ -145,14 +113,14 @@ export function MobileMenu() {
                                 href="/profil"
                                 className="flex flex-col items-center justify-center p-2 border-[2px] border-black bg-white hover:bg-neutral-50 transition-colors"
                             >
-                                <User className="w-5 h-5 mb-1 stroke-[2.5px]" />
+                                <User className="w-5 h-5 mb-1" />
                                 <span className="text-[10px] font-bold uppercase">Hesabım</span>
                             </ViewTransitionLink>
                             <ViewTransitionLink
                                 href="/ayarlar"
                                 className="flex flex-col items-center justify-center p-2 border-[2px] border-black bg-white hover:bg-neutral-50 transition-colors"
                             >
-                                <Settings className="w-5 h-5 mb-1 stroke-[2.5px]" />
+                                <Settings className="w-5 h-5 mb-1" />
                                 <span className="text-[10px] font-bold uppercase">Ayarlar</span>
                             </ViewTransitionLink>
                         </div>
@@ -162,13 +130,13 @@ export function MobileMenu() {
                         </div>
                     </div>
 
-                    {/* CLOSE BUTTON */}
+                    {/* CLOSE BUTTON - Absolute Positioned or Integrated */}
                     <SheetClose className="absolute top-2 right-2 z-50">
-                        <div className="flex items-center justify-center w-8 h-8 bg-black text-white rounded-full shadow-lg active:scale-95 transition-transform hover:rotate-90">
+                        <div className="flex items-center justify-center w-8 h-8 bg-black text-white rounded-full shadow-lg active:scale-95 transition-transform">
                             <X className="w-4 h-4 text-white stroke-[3px]" />
                         </div>
                     </SheetClose>
-                </motion.div>
+                </div>
             </SheetContent>
         </Sheet>
     );
