@@ -1,9 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { usePathname } from "next/navigation";
-import { Home, BookOpenText, Feather, MessageSquareText, UserRound } from "lucide-react";
+import { Home, BookOpen, Feather, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -31,10 +28,10 @@ export function BottomNav() {
 
     const links = [
         { href: "/", label: "ANA SAYFA", icon: Home },
-        { href: "/makale", label: "MAKALE", icon: BookOpenText },
+        { href: "/makale", label: "MAKALE", icon: BookOpen },
         { href: "/blog", label: "BLOG", icon: Feather },
-        { href: "/forum", label: "FORUM", icon: MessageSquareText },
-        { href: "/profil", label: "PROFİL", icon: UserRound }
+        { href: "/forum", label: "FORUM", icon: MessageCircle },
+        { href: "/profil", label: "PROFİL", icon: User }
     ];
 
     return (
@@ -43,10 +40,9 @@ export function BottomNav() {
             isVisible ? "translate-y-0" : "translate-y-full"
         )}>
             {/* 
-                V33 PREMIUM FIXED NAV
-                - Style: Neo-Brutalist Fixed Bar
-                - Color: #F2C32E (Yellow)
-                - Detail: Border Top, Noise Texture, High Quality Icons
+                V34 CLASSIC RESTORED
+                - Style: Fixed Yellow Bar
+                - Icons: Classic Lucide set (No filled nonsense)
             */}
             <nav className="
                 w-full
@@ -82,8 +78,8 @@ export function BottomNav() {
                         >
                             <Icon
                                 className={cn(
-                                    "w-[22px] h-[22px] transition-all duration-300",
-                                    isActive ? "stroke-[2.5px] fill-black" : "stroke-[2.5px] fill-transparent"
+                                    "w-[24px] h-[24px] transition-all duration-300",
+                                    isActive ? "stroke-[2.5px]" : "stroke-[2px]"
                                 )}
                             />
                             {isActive && (
