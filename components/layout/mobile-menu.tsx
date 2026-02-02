@@ -30,13 +30,14 @@ export function MobileMenu() {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <button
+                    style={{ width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", padding: 0 }}
                     className={cn(
-                        "flex items-center justify-center w-8 h-8",
+                        "flex items-center justify-center !w-[32px] !h-[32px] !min-w-[32px] !min-h-[32px] !p-0",
                         "bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000]",
                         "text-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                     )}
                 >
-                    <Menu className="w-4 h-4 stroke-[2.5px]" />
+                    <Menu className="!w-4 !h-4 stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 

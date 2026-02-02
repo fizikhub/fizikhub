@@ -154,18 +154,20 @@ export function Navbar() {
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                            className="flex items-center justify-center w-8 h-8 bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
+                            style={{ width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", padding: 0 }}
+                            className="flex items-center justify-center !w-[32px] !h-[32px] !min-w-[32px] !min-h-[32px] !p-0 bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
-                            <Search className="w-4 h-4 stroke-[2.5px]" />
+                            <Search className="!w-4 !h-4 stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                            className="flex md:hidden items-center justify-center w-8 h-8 bg-[#FFC800] border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
+                            style={{ width: "32px", height: "32px", minWidth: "32px", minHeight: "32px", padding: 0 }}
+                            className="flex md:hidden items-center justify-center !w-[32px] !h-[32px] !min-w-[32px] !min-h-[32px] !p-0 bg-[#FFC800] border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
-                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
+                            <Zap className="!w-4 !h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
