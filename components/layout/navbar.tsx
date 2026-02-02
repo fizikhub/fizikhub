@@ -153,10 +153,8 @@ export function Navbar() {
                         {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            variants={clickVariant}
-                            whileTap="tap"
-                            whileHover="hover"
-                            className="flex items-center justify-center w-8 h-8 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
+                            className="flex items-center justify-center w-8 h-8 bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
                             <Search className="w-4 h-4 stroke-[2.5px]" />
                         </motion.button>
@@ -164,10 +162,8 @@ export function Navbar() {
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            variants={clickVariant}
-                            whileTap="tap"
-                            whileHover="hover"
-                            className="md:hidden flex items-center justify-center w-8 h-8 bg-[#FFC800] border-[2px] border-black shadow-[2px_2px_0px_0px_#000] text-black"
+                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
+                            className="flex md:hidden items-center justify-center w-8 h-8 bg-[#FFC800] border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
                             <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
