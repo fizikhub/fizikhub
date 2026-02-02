@@ -83,7 +83,7 @@ export function DankLogo() {
                 </svg>
 
                 {/* Subtitle Badge - Tucked tighter and ensured visibility */}
-                <div className="absolute bottom-1 right-2 sm:right-6 transform rotate-[-3deg] z-20">
+                <div className="absolute -bottom-1 right-1 sm:right-3 transform rotate-[-3deg] z-20">
                     <div className="bg-white border-[1.5px] sm:border-[2px] border-black px-1 py-[0.5px] shadow-[2px_2px_0px_0px_#000]">
                         <span className="block text-[7px] sm:text-[9px] font-black text-black leading-none uppercase tracking-widest whitespace-nowrap" style={{ fontFamily: "var(--font-outfit)" }}>
                             BİLİM PLATFORMU
