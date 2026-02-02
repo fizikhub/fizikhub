@@ -27,31 +27,29 @@ export function MobileMenu() {
         { href: "/siralamalar", label: "Lig", icon: Award },
     ];
 
-    // GLITCH REVEAL VARIANTS
-    const glitchContainer: Variants = {
+    // FLUID REVEAL VARIANTS (Living Lab)
+    const fluidContainer: Variants = {
         hidden: {
-            clipPath: "inset(0 100% 0 0)",
+            clipPath: "circle(0% at 100% 0)",
             opacity: 0
         },
         visible: {
-            clipPath: [
-                "inset(0 100% 0 0)",
-                "inset(0 40% 0 0)",
-                "inset(0 0 0 0)",
-                "inset(10% 0 20% 0)",
-                "inset(0 0 0 0)"
-            ],
+            clipPath: "circle(150% at 100% 0)",
             opacity: 1,
             transition: {
-                duration: 0.4,
-                times: [0, 0.2, 0.6, 0.8, 1],
-                ease: "easeInOut"
+                type: "spring",
+                stiffness: 40,
+                damping: 10
             }
         },
         exit: {
-            clipPath: "inset(0 0 0 100%)",
+            clipPath: "circle(0% at 100% 0)",
             opacity: 0,
-            transition: { duration: 0.2 }
+            transition: {
+                type: "spring",
+                stiffness: 40,
+                damping: 10
+            }
         }
     };
 
@@ -84,7 +82,7 @@ export function MobileMenu() {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    variants={glitchContainer}
+                    variants={fluidContainer}
                 >
                     {/* PRIMARY ACTION - Top Banner Style */}
                     <div className="p-3 pb-0">

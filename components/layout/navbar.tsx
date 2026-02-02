@@ -2,75 +2,67 @@
 
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useSpring, Variants } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 
-const clickVariant = {
-    tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
-    hover: { y: -2, x: -2, boxShadow: "3px 3px 0px 0px #000" }
+// LIVING LAB: Bouncy Spring Physics for buttons
+const bouncyVariant: Variants = {
+    tap: { scale: 0.85, rotate: -5 },
+    hover: {
+        scale: 1.1,
+        rotate: 5,
+        transition: { type: "spring", stiffness: 400, damping: 10 }
+    }
 };
-
-const physicsTicker = [
-    "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
-    "∇⋅E = ρ/ε₀", "pV = nRT", "λ = h/p", "S = k ln Ω", "c = 3×10⁸",
-    "e^(iπ) + 1 = 0", "∇×B = μ₀J + μ₀ε₀∂E/∂t", "H = -Σ pᵢ log pᵢ",
-    "ΔxΔp ≥ ℏ/2", "R_uv - 1/2Rg_uv = 8πGT_uv", "KE = 1/2mv²",
-    "F = G(m₁m₂)/r²", "L = T - V", "ds² = -(1-2M/r)dt² + ...",
-    "Q = mcΔT", "U = 3/2nRT", "P = IV", "V = IR"
-];
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
+    // MAGNETIC FIELD STATE
+    const [particles, setParticles] = useState<{ x: number; y: number; vx: number; vy: number; size: number }[]>([]);
 
     useEffect(() => {
         setMounted(true);
 
-        const generateRain = () => {
-            // Rain enabled on both Mobile & Desktop, but optimized counts
-            const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 8 : 20;
-            const dropCount = isMobile ? 12 : 30;
+        // Initialize "Magnetic Particles"
+        const particleCount = 20;
+        const newParticles = Array.from({ length: particleCount }).map(() => ({
+            x: Math.random() * 100,
+            y: Math.random() * 100,
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            size: 2 + Math.random() * 4
+        }));
+        setParticles(newParticles);
 
-            const drops = Array.from({ length: dropCount }).map((_, i) => {
-                let left;
-                // SMART RAIN LOGIC: Avoid center 30% (35% - 65%)
-                const isLeft = Math.random() > 0.5;
-                if (isLeft) {
-                    // Left side: 0% to 32%
-                    left = Math.random() * 32;
-                } else {
-                    // Right side: 68% to 100%
-                    left = 68 + Math.random() * 32;
-                }
+        // Animation Loop for drifting particles
+        let animationFrameId: number;
+        const animate = () => {
+            setParticles(prev => prev.map(p => {
+                let newX = p.x + p.vx;
+                let newY = p.y + p.vy;
 
-                return {
-                    left: left,
-                    duration: 5 + Math.random() * 8,
-                    delay: Math.random() * 15,
-                    formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
-                    scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
-                    opacity: 0.5 + Math.random() * 0.4
-                };
-            });
-            setRaindrops(drops);
+                // Bounce off edges
+                if (newX < 0 || newX > 100) p.vx *= -1;
+                if (newY < 0 || newY > 100) p.vy *= -1;
+
+                return { ...p, x: newX, y: newY };
+            }));
+            animationFrameId = requestAnimationFrame(animate);
         };
+        animate();
 
-        if ('requestIdleCallback' in window) {
-            (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(generateRain);
-        } else {
-            setTimeout(generateRain, 100);
-        }
+        return () => cancelAnimationFrame(animationFrameId);
     }, []);
 
     const navItems = [
@@ -80,21 +72,22 @@ export function Navbar() {
     ];
 
     const buttonClass = cn(
-        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10", // 32px Mobile, 40px Desktop
+        "flex items-center justify-center w-[32px] h-[32px] sm:w-10 sm:h-10",
         "bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000]",
-        "text-black transition-all",
+        "text-black transition-colors rounded-full", // Rounded full for "Lab/Bubble" feel
     );
 
     return (
         <>
             {/* 
-                V32: CLEAN BRUTALISM V2
-                - Height: h-14 (56px)
-                - Rain: Smart (No Center Overlap)
-                - Icons: Bold & Heavy
+                V33: LIVING LAB NAVBAR
+                - Concept: Organic, Fluid, Interactive
+                - Background: Magnetic Field Particles
+                - Interactive: Bouncy buttons
             */}
             <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
+                    ref={containerRef}
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
@@ -103,37 +96,22 @@ export function Navbar() {
                         "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS RAIN BACKGROUND (SMART AVOIDANCE) */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
-                        {raindrops.map((drop, i) => (
-                            <motion.div
+                    {/* LIVING LAB BACKGROUND: MAGNETIC PARTICLES */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-50">
+                        {particles.map((p, i) => (
+                            <div
                                 key={i}
-                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute rounded-full bg-black/20"
                                 style={{
-                                    left: `${drop.left}%`,
-                                    fontSize: `${13 * drop.scale}px`,
-                                    color: `rgba(0,0,0,${drop.opacity || 0.3})`,
-                                    filter: 'blur(0.3px)'
+                                    left: `${p.x}%`,
+                                    top: `${p.y}%`,
+                                    width: `${p.size}px`,
+                                    height: `${p.size}px`,
+                                    transform: 'translate(-50%, -50%)'
                                 }}
-                                initial={{ y: 60, opacity: 0 }}
-                                animate={{ y: -20, opacity: [0, 1, 0] }}
-                                transition={{
-                                    duration: drop.duration,
-                                    repeat: Infinity,
-                                    delay: drop.delay,
-                                    ease: "linear"
-                                }}
-                            >
-                                {drop.formula}
-                            </motion.div>
+                            />
                         ))}
-                    </div>
-
-                    {/* RULER TICKS - Kept as distinctive feature */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
+                        {/* Connecting Lines Filter (Optional specific CSS could go here for "gooey" effect) */}
                     </div>
 
                     {/* LEFT: BRAND */}
@@ -143,10 +121,10 @@ export function Navbar() {
                         </ViewTransitionLink>
                     </div>
 
-                    {/* RIGHT: COMPACT CONTROLS */}
+                    {/* RIGHT: INTERACTIVE CONTROLS */}
                     <div className="relative z-10 flex items-center gap-2 sm:gap-3">
 
-                        {/* Desktop Links */}
+                        {/* Desktop Links - Bubble Style */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
                             {navItems.map((item) => (
                                 <ViewTransitionLink
@@ -154,8 +132,8 @@ export function Navbar() {
                                     href={item.href}
                                     className={cn(
                                         "px-4 py-2 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
-                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
-                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
+                                        "shadow-[2px_2px_0px_0px_#000] rounded-full hover:shadow-none", // Bubble shape
+                                        pathname === item.href && "bg-[#FFC800] transform scale-105 shadow-inner"
                                     )}
                                 >
                                     {item.label}
@@ -163,26 +141,26 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH - BOLD ICON */}
+                        {/* 1. SEARCH - BOUNCY */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            variants={clickVariant}
+                            variants={bouncyVariant}
                             whileTap="tap"
                             whileHover="hover"
                             className={buttonClass}
                         >
-                            <Search className="w-5 h-5 sm:w-5 sm:h-5 stroke-[3px]" />
+                            <Search className="w-5 h-5 stroke-[2.5px]" />
                         </motion.button>
 
-                        {/* 2. ZAP - BOLD FILLED ICON */}
+                        {/* 2. ZAP - BOUNCY */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            variants={clickVariant}
+                            variants={bouncyVariant}
                             whileTap="tap"
                             whileHover="hover"
                             className={cn(buttonClass, "md:hidden bg-[#FFC800]")}
                         >
-                            <Zap className="w-5 h-5 fill-black stroke-[3px]" />
+                            <Zap className="w-5 h-5 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU */}
