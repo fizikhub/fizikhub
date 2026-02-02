@@ -1,77 +1,59 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { Sparkles } from "lucide-react";
 
-// Dynamically import EarthIcon to disable SSR for 3D content if needed later, 
-// but for this design we focus on the text sticker effect.
+// Dynamically import EarthIcon to disable SSR for 3D content
 const EarthIcon = dynamic(() => import("./earth-icon").then((mod) => mod.EarthIcon), {
     ssr: false,
-    loading: () => <div className="w-full h-full rounded-full bg-blue-500/20" />
+    loading: () => <div className="w-full h-full rounded-full bg-blue-500/20" /> // Placeholder
 });
 
 export function DankLogo() {
     return (
         <div className="flex flex-col select-none relative group cursor-pointer">
             {/* 
-                V30 LOGO: 3D STICKER EXTRUSION
-                - Concept: Layered shadows to create a thick physical sticker look.
-            */}
-            <div className="relative z-10 flex items-center">
-                <motion.div
-                    className="relative"
-                    whileHover={{ scale: 1.05, rotate: -2 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                >
-                    {/* HARD SHADOW LAYER */}
-                    <h1 className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-black absolute top-[3px] left-[3px] select-none z-0">
-                        FIZIKHUB
-                    </h1>
-
-                    {/* MAIN TEXT LAYER */}
-                    <h1
-                        className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-10 border-black"
-                        style={{
-                            WebkitTextStroke: "1.5px black", // Thick stroke
-                            // No drop-shadow here to keep it crisp against the hard shadow layer
-                        }}
-                    >
-                        FIZIKHUB
-                    </h1>
-
-                    {/* GLOSS HIGHLIGHT (Optional, subtle top sheen) */}
-                    <div className="absolute top-[2px] left-[2px] right-[2px] h-[40%] bg-gradient-to-b from-white/40 to-transparent rounded-sm pointer-events-none z-20 mix-blend-overlay" />
-                </motion.div>
-
-                {/* 3D Earth Icon - Kept effectively but integrated better */}
-                <motion.div
-                    className="absolute -top-4 -right-5 w-[32px] h-[32px] sm:w-[40px] sm:h-[40px] z-30 pointer-events-none"
-                    initial={{ rotate: 12 }}
-                    animate={{
-                        y: [0, -4, 0],
-                        rotate: [12, 16, 12]
+        V23 LOGO: MOSKO SCIENCE (Restored)
+        - Mobile: text-2xl
+        - Desktop: text-4xl
+        - Style: Blocky Yellow Text with Thick Black Stroke
+      */}
+            <div className="relative z-10">
+                <motion.h1
+                    className="font-black text-2xl sm:text-4xl italic tracking-tighter leading-none text-[#FFC800] relative z-20"
+                    style={{
+                        WebkitTextStroke: "1.5px black",
+                        fontFamily: "var(--font-heading)",
+                        filter: "drop-shadow(3px 3px 0px #000)"
                     }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
+                    whileHover={{
+                        scale: 1.05,
+                        filter: "drop-shadow(5px 5px 0px #000)"
                     }}
+                    transition={{ type: "spring", stiffness: 400 }}
                 >
-                    <div className="w-full h-full drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] filter">
-                        <EarthIcon className="w-full h-full scale-110" />
-                    </div>
+                    FIZIKHUB
+                </motion.h1>
+
+                {/* 3D Realistic Earth Icon */}
+                <motion.div
+                    className="absolute -top-3 -right-4 w-[28px] h-[28px] sm:w-[36px] sm:h-[36px] z-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <EarthIcon className="w-full h-full" />
                 </motion.div>
             </div>
 
-            {/* Slogan - Sticker Style */}
+            {/* Slogan */}
             <motion.div
-                className="self-start sm:self-end -mt-1 sm:-mr-2 z-20 relative"
-                initial={{ rotate: -2 }}
-                whileHover={{ rotate: 2, scale: 1.1 }}
+                className="self-start sm:self-end -mt-0.5 sm:-mr-1 z-20"
+                initial={{ rotate: -3 }}
+                whileHover={{ rotate: 3 }}
             >
-                <div className="bg-black text-white text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 shadow-[2px_2px_0px_0px_#FFC800] tracking-widest inline-block transform -skew-x-12 border border-white">
+                <span className="bg-white border-[1.5px] border-black text-black text-[8px] sm:text-[10px] font-black uppercase px-1.5 py-0.5 shadow-[2px_2px_0px_0px_#000] tracking-widest inline-block skew-x-[-10deg]">
                     BİLİM PLATFORMU
-                </div>
+                </span>
             </motion.div>
         </div>
     );
