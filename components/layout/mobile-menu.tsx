@@ -3,43 +3,49 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, Twitter, Github, Globe, Atom, StickyNote, ArrowRight } from "lucide-react";
+import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, Twitter, Github, Globe, Atom, StickyNote, ChevronRight } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { motion, AnimatePresence } from "framer-motion";
 
-// FULLSCREEN MENU VARIANTS
-const menuVariants = {
+// DRAWER ANIMATION VARIANTS
+const drawerVariants = {
     closed: {
-        opacity: 0,
-        y: "-100%",
+        x: "100%",
+        opacity: 0, // Slight fade for smoother exit
         transition: {
-            duration: 0.5,
-            ease: [0.76, 0, 0.24, 1], // Custom bezier for "Curtain" feel
-            when: "afterChildren"
+            type: "spring",
+            stiffness: 300,
+            damping: 30
         }
     },
     open: {
+        x: "0%",
         opacity: 1,
-        y: "0%",
         transition: {
-            duration: 0.5,
-            ease: [0.76, 0, 0.24, 1],
-            when: "beforeChildren",
-            staggerChildren: 0.1
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            staggerChildren: 0.05 // Stagger items on open
         }
     }
 } as const;
 
 const itemVariants = {
-    closed: { opacity: 0, y: 50, rotateX: 90 },
-    open: { opacity: 1, y: 0, rotateX: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+    closed: { x: 50, opacity: 0 },
+    open: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 24 } }
+} as const;
+
+// BACKDROP VARIANTS
+const backdropVariants = {
+    closed: { opacity: 0 },
+    open: { opacity: 1 }
 } as const;
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
 
-    // Lock body scroll when menu is open
+    // Lock body scroll
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -54,103 +60,146 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "text-blue-500" },
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "text-yellow-500" },
-        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, color: "text-purple-500" },
-        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, color: "text-green-500" },
-        { href: "/blog", label: "BLOG", icon: BookOpen, color: "text-pink-500" },
-        { href: "/testler", label: "TESTLER", icon: FlaskConical, color: "text-red-500" },
-        { href: "/siralamalar", label: "LİG", icon: Award, color: "text-orange-500" },
+        { href: "/", label: "ANA SAYFA", icon: Home, bg: "bg-blue-500", text: "text-white", border: "border-blue-700" },
+        { href: "/makale", label: "KEŞFET", icon: Zap, bg: "bg-[#FACC15]", text: "text-black", border: "border-yellow-600" },
+        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, bg: "bg-purple-500", text: "text-white", border: "border-purple-700" },
+        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, bg: "bg-green-500", text: "text-white", border: "border-green-700" },
+        { href: "/blog", label: "BLOG", icon: BookOpen, bg: "bg-pink-500", text: "text-white", border: "border-pink-700" },
+        { href: "/testler", label: "TESTLER", icon: FlaskConical, bg: "bg-red-500", text: "text-white", border: "border-red-700" },
+        { href: "/siralamalar", label: "LİG", icon: Award, bg: "bg-orange-500", text: "text-white", border: "border-orange-700" },
     ];
 
     return (
         <>
-            {/* TRIGGER - UPSCALE (30px) */}
+            {/* TRIGGER - 30px */}
             <div
                 onClick={() => setIsOpen(true)}
-                className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-white border border-black rounded-sm cursor-pointer hover:bg-[#FACC15] transition-colors z-50 relative"
+                className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-white border border-black rounded-sm cursor-pointer hover:bg-[#FACC15] transition-colors z-40 relative shadow-[2px_2px_0px_#000]"
             >
                 <Menu className="w-4 h-4 text-black stroke-[3px]" />
             </div>
 
-            {/* FULLSCREEN CURTAIN OVERLAY */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        initial="closed"
-                        animate="open"
-                        exit="closed"
-                        variants={menuVariants}
-                        className="fixed inset-0 w-screen h-[100dvh] bg-black z-[9999] flex flex-col justify-between overflow-hidden"
-                    >
-                        {/* 1. HEADER */}
-                        <div className="flex items-center justify-between p-6 border-b border-white/10 z-20">
-                            <span className="text-xl font-black italic tracking-tighter text-white">
-                                FIZIK<span className="text-[#FACC15]">HUB</span>
-                            </span>
-                            <motion.div
-                                onClick={() => setIsOpen(false)}
-                                whileHover={{ rotate: 90, scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className="w-10 h-10 flex items-center justify-center bg-white rounded-full cursor-pointer"
-                            >
-                                <X className="w-6 h-6 text-black stroke-[3px]" />
-                            </motion.div>
-                        </div>
-
-                        {/* 2. KINETIC NAV LIST */}
-                        <div className="flex-1 flex flex-col justify-center px-6 overflow-y-auto scrollbar-hide space-y-2">
-                            {menuItems.map((item, index) => {
-                                const isActive = pathname === item.href;
-                                return (
-                                    <motion.div key={item.href} variants={itemVariants} className="w-full">
-                                        <ViewTransitionLink
-                                            href={item.href}
-                                            className="group flex items-center justify-between w-full py-2 border-b border-white/10 hover:border-white transition-colors"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <span className={cn(
-                                                    "text-3xl font-black uppercase tracking-tighter transition-all duration-300",
-                                                    isActive ? "text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500 scale-105 origin-left" : "text-zinc-500 group-hover:text-white"
-                                                )}>
-                                                    {item.label}
-                                                </span>
-                                            </div>
-                                            <ArrowRight className={cn(
-                                                "w-6 h-6 transition-all duration-300 -translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100",
-                                                item.color
-                                            )} />
-                                        </ViewTransitionLink>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-
-                        {/* 3. FOOTER */}
+                    <>
+                        {/* BACKDROP */}
                         <motion.div
-                            variants={itemVariants}
-                            className="p-6 border-t border-white/10 bg-zinc-900"
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            variants={backdropVariants}
+                            onClick={() => setIsOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
+                        />
+
+                        {/* DRAWER CONTENT */}
+                        <motion.div
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            variants={drawerVariants}
+                            className={cn(
+                                "fixed top-0 right-0 h-[100dvh] w-[85vw] max-w-[320px] bg-[#FAFAFA] z-[9999]",
+                                "border-l-4 border-black",
+                                "shadow-[-10px_0px_20px_rgba(0,0,0,0.5)]", // Deep shadow
+                                "flex flex-col overflow-hidden"
+                            )}
                         >
-                            <div className="flex justify-between items-center mb-6">
-                                <ViewTransitionLink href="/profil" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors">
-                                    <User className="w-5 h-5" />
-                                    <span className="font-bold uppercase text-sm">Profil</span>
-                                </ViewTransitionLink>
-                                <ViewTransitionLink href="/ayarlar" className="flex items-center gap-2 text-white/50 hover:text-white transition-colors">
-                                    <Settings className="w-5 h-5" />
-                                    <span className="font-bold uppercase text-sm">Ayarlar</span>
-                                </ViewTransitionLink>
+                            {/* 1. HEADER */}
+                            <div className="flex items-center justify-between p-6 border-b-4 border-black bg-white">
+                                <span className="text-xl font-black italic tracking-tighter text-black select-none">
+                                    FIZIK<span className="text-[#FACC15] drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">HUB</span>
+                                </span>
+                                <motion.button
+                                    onClick={() => setIsOpen(false)}
+                                    whileHover={{ rotate: 90 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    className="flex items-center justify-center w-9 h-9 border-2 border-black bg-black text-white rounded-sm shadow-[3px_3px_0px_rgba(0,0,0,0.2)]"
+                                >
+                                    <X className="w-5 h-5 stroke-[3px]" />
+                                </motion.button>
                             </div>
 
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-zinc-600 font-mono">v3.5 KINETIC</span>
-                                <div className="flex gap-4">
-                                    <Twitter className="w-5 h-5 text-zinc-500 hover:text-white transition-colors" />
-                                    <Github className="w-5 h-5 text-zinc-500 hover:text-white transition-colors" />
+                            {/* 2. MENU ITEMS */}
+                            <div className="flex-1 overflow-y-auto p-5 scrollbar-hide bg-[#FAFAFA]">
+                                <div className="space-y-3">
+                                    {menuItems.map((item) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <motion.div key={item.href} variants={itemVariants}>
+                                                <ViewTransitionLink
+                                                    href={item.href}
+                                                    className={cn(
+                                                        "group relative flex items-center justify-between p-3.5 border-2 border-black rounded-lg bg-white shadow-[3px_3px_0px_#000]",
+                                                        "transition-all duration-200 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_#000]",
+                                                        isActive ? `ring-2 ring-black ring-offset-2 ${item.bg} border-black` : ""
+                                                    )}
+                                                >
+                                                    {/* Hover Fill Effect */}
+                                                    <div className={cn(
+                                                        "absolute inset-0 rounded-md opacity-0 group-hover:opacity-10 transition-opacity",
+                                                        item.bg
+                                                    )} />
+
+                                                    <div className="flex items-center gap-3 relative z-10">
+                                                        <div className={cn(
+                                                            "w-8 h-8 flex items-center justify-center rounded border-2 border-black transition-colors",
+                                                            isActive ? "bg-white text-black" : "bg-zinc-100 text-black group-hover:bg-white"
+                                                        )}>
+                                                            <item.icon className="w-4 h-4 stroke-[2.5px]" />
+                                                        </div>
+                                                        <span className={cn(
+                                                            "font-black uppercase tracking-tight text-sm",
+                                                            isActive ? (item.text === "text-white" ? "text-white" : "text-black") : "text-black"
+                                                        )}>
+                                                            {item.label}
+                                                        </span>
+                                                    </div>
+
+                                                    <ChevronRight className={cn(
+                                                        "w-5 h-5 stroke-[3px] transition-transform group-hover:translate-x-1 relative z-10",
+                                                        isActive ? (item.text === "text-white" ? "text-white" : "text-black") : "text-black/30 group-hover:text-black"
+                                                    )} />
+                                                </ViewTransitionLink>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             </div>
+
+                            {/* 3. FOOTER */}
+                            <motion.div
+                                variants={itemVariants}
+                                className="p-5 border-t-4 border-black bg-white"
+                            >
+                                <div className="grid grid-cols-2 gap-3 mb-5">
+                                    <ViewTransitionLink
+                                        href="/profil"
+                                        className="flex flex-col items-center justify-center gap-1 p-3 border-2 border-black rounded-lg bg-zinc-50 hover:bg-[#FACC15] shadow-[2px_2px_0px_#000] hover:shadow-[4px_4px_0px_#000] active:shadow-none transition-all group"
+                                    >
+                                        <User className="w-5 h-5 text-black stroke-[2.5px] group-hover:scale-110 transition-transform" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-wide">Hesabım</span>
+                                    </ViewTransitionLink>
+                                    <ViewTransitionLink
+                                        href="/ayarlar"
+                                        className="flex flex-col items-center justify-center gap-1 p-3 border-2 border-black rounded-lg bg-zinc-50 hover:bg-zinc-200 shadow-[2px_2px_0px_#000] hover:shadow-[4px_4px_0px_#000] active:shadow-none transition-all group"
+                                    >
+                                        <Settings className="w-5 h-5 text-black stroke-[2.5px] group-hover:rotate-90 transition-transform" />
+                                        <span className="text-[10px] font-black text-black uppercase tracking-wide">Ayarlar</span>
+                                    </ViewTransitionLink>
+                                </div>
+
+                                <div className="flex justify-between items-center mt-2 pt-3 border-t-2 border-black/5">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-[#FACC15] bg-black px-1.5 py-0.5">v4.1 POP</span>
+                                    <div className="flex gap-3">
+                                        <Twitter className="w-4 h-4 text-black hover:scale-110 transition-transform cursor-pointer" />
+                                        <Github className="w-4 h-4 text-black hover:scale-110 transition-transform cursor-pointer" />
+                                        <Globe className="w-4 h-4 text-black hover:scale-110 transition-transform cursor-pointer" />
+                                    </div>
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </>
