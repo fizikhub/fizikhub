@@ -7,11 +7,11 @@ import {
     FlaskConical,
     Library,
     FileText,
-    Sparkles,
     ArrowRight,
-    PenTool,
+    Atom,
     Plus,
-    Atom
+    Zap,
+    Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "framer-motion";
@@ -21,75 +21,81 @@ const container: Variants = {
     show: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2
+            staggerChildren: 0.05
         }
     }
 };
 
 const item: Variants = {
-    hidden: { y: 30, opacity: 0, scale: 0.95 },
+    hidden: { y: 20, opacity: 0 },
     show: {
         y: 0,
         opacity: 1,
-        scale: 1,
-        transition: { type: "spring", stiffness: 50 }
+        transition: {
+            type: "spring",
+            stiffness: 100,
+            damping: 15
+        }
     }
 };
 
-interface HubCardProps {
+interface FreshCardProps {
     title: string;
     description: string;
     href: string;
     icon: any;
-    color: string;
-    shadowColor: string;
+    color: string; // Tailwind bg class for the ICON container
+    accentColor: string; // Hex for hover shadow
+    pattern?: string;
     colSpan?: string;
 }
 
-function HubCard({ title, description, href, icon: Icon, color, shadowColor, colSpan = "col-span-1" }: HubCardProps) {
+function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1" }: FreshCardProps) {
     return (
         <motion.div
             variants={item}
-            className={cn("group relative", colSpan)}
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className={cn("relative group h-full", colSpan)}
         >
             <Link href={href} className="block h-full">
-                <div className={cn(
-                    "relative h-full overflow-hidden rounded-2xl bg-[#09090b]",
-                    "border-2 border-white/10 group-hover:border-white transition-colors duration-300",
-                    "flex flex-col justify-between p-6 md:p-8"
-                )}>
-                    {/* Hard Shadow Element (Absolute) */}
-                    <div className={cn(
-                        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
-                        "bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-from),transparent_70%)]",
-                        color
-                    )} />
+                <div className="
+                    relative h-full 
+                    bg-white 
+                    border-[3px] border-black 
+                    rounded-xl 
+                    shadow-[4px_4px_0px_0px_#000] 
+                    group-hover:-translate-y-1 group-hover:translate-x-1 
+                    group-hover:shadow-[8px_8px_0px_0px_#000] 
+                    transition-all duration-200 ease-out
+                    flex flex-col
+                    overflow-hidden
+                ">
+                    {/* Decorative top bar */}
+                    <div className={cn("h-3 w-full border-b-[3px] border-black", color)}></div>
 
-                    {/* Icon & Shine */}
-                    <div className="relative z-10 flex items-start justify-between">
-                        <div className={cn(
-                            "w-12 h-12 flex items-center justify-center rounded-xl border border-white/20 bg-white/5 backdrop-blur-md",
-                            "group-hover:scale-110 transition-transform duration-300",
-                            shadowColor
-                        )}>
-                            <Icon className="w-6 h-6 text-white stroke-[2px]" />
+                    <div className="p-6 flex flex-col justify-between h-full">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className={cn(
+                                "w-14 h-14 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_#000]",
+                                color
+                            )}>
+                                <Icon className="w-7 h-7 text-black stroke-[2.5px]" />
+                            </div>
+                            <div className="
+                                w-8 h-8 rounded-full border-[2px] border-black flex items-center justify-center
+                                bg-transparent group-hover:bg-black transition-colors duration-200
+                            ">
+                                <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
+                            </div>
                         </div>
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <ArrowRight className="w-6 h-6 -rotate-45 text-white" />
-                        </div>
-                    </div>
 
-                    {/* Text */}
-                    <div className="relative z-10 mt-8">
-                        <h3 className="text-2xl font-bold text-white mb-2 leading-tight tracking-tight group-hover:translate-x-1 transition-transform">
-                            {title}
-                        </h3>
-                        <p className="text-zinc-400 text-sm font-medium leading-relaxed group-hover:text-zinc-200 transition-colors">
-                            {description}
-                        </p>
+                        <div>
+                            <h3 className="text-2xl font-black text-black uppercase mb-2 leading-tight">
+                                {title}
+                            </h3>
+                            <p className="text-zinc-600 font-bold text-sm leading-relaxed">
+                                {description}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </Link>
@@ -99,30 +105,32 @@ function HubCard({ title, description, href, icon: Icon, color, shadowColor, col
 
 export default function PaylasPage() {
     return (
-        <div className="min-h-screen bg-[#000000] pb-32 pt-24 px-4 md:px-8 relative overflow-hidden font-sans">
-            {/* Background Effects */}
-            <div className="absolute inset-0 opacity-[0.07] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150"></div>
+        <div className="min-h-screen bg-[#E0E7FF] pb-32 pt-20 px-4 font-sans relative overflow-hidden">
+            {/* Background Pattern - Dot Grid */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none"
+                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+            </div>
 
-            {/* Top Gradient */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-yellow-900/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="max-w-[1000px] mx-auto relative z-10">
 
-            <div className="max-w-4xl mx-auto relative z-10">
                 {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12 text-center"
+                    className="mb-10"
                 >
-                    <div className="inline-flex items-center justify-center p-3 mb-6 rounded-2xl bg-[#FACC15] border-2 border-black shadow-[4px_4px_0px_#000]">
-                        <Plus className="w-8 h-8 text-black stroke-[3px]" />
+                    <div className="inline-block bg-black text-white px-4 py-1 font-black text-xs uppercase tracking-widest mb-3 transform -rotate-2">
+                        Topluluk Merkezi
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">
-                        PAYLAŞIM <span className="text-[#FACC15]">MERKEZİ</span>
-                    </h1>
-                    <p className="text-zinc-400 text-lg md:text-xl max-w-xl mx-auto font-medium">
-                        Bilim dünyasına katkı sağlamak için bir içerik türü seç. Topluluk senin fikrini bekliyor.
-                    </p>
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <h1 className="text-5xl md:text-7xl font-black text-black leading-[0.9] tracking-tighter">
+                            PAYLAŞIM<br />
+                            <span className="text-[#FACC15] text-stroke-black drop-shadow-[4px_4px_0px_#000]">MERKEZİ</span>
+                        </h1>
+                        <p className="text-black font-bold max-w-sm md:text-right">
+                            Bilim dünyasına katkı sağlamak için ne üretmek istersin?
+                        </p>
+                    </div>
                 </motion.div>
 
                 {/* Grid */}
@@ -130,61 +138,95 @@ export default function PaylasPage() {
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                    {/* 1. Article (Big) */}
-                    <HubCard
-                        title="Makale Yaz"
-                        description="Bilimsel bir konuyu derinlemesine incele ve yayınla."
+                    {/* 1. Article - Yellow */}
+                    <FreshCard
+                        title="MAKALE YAZ"
+                        description="Derinlemesine bilimsel içerik üret."
                         href="/makale/yeni"
                         icon={FileText}
-                        color="from-pink-600/20"
-                        shadowColor="shadow-[0px_0px_20px_rgba(236,72,153,0.3)]"
-                        colSpan="md:col-span-2 lg:col-span-2"
+                        color="bg-[#FACC15]"
+                        accentColor="#FACC15"
+                        colSpan="lg:col-span-2"
                     />
 
-                    {/* 2. Question */}
-                    <HubCard
-                        title="Soru Sor"
-                        description="Takıldığın yerleri topluluğa danış."
+                    {/* 2. Question - Pink */}
+                    <FreshCard
+                        title="SORU SOR"
+                        description="Takıldığın yeri sor."
                         href="/forum"
                         icon={MessageCircle}
-                        color="from-yellow-400/20"
-                        shadowColor="shadow-[0px_0px_20px_rgba(250,204,21,0.3)]"
+                        color="bg-[#FB7185]" // Rose-400
+                        accentColor="#FB7185"
                     />
 
-                    {/* 3. Experiment */}
-                    <HubCard
-                        title="Deney Paylaş"
-                        description="Laboratuvar sonuçlarını veya ev deneylerini aktar."
+                    {/* 3. Experiment - Green */}
+                    <FreshCard
+                        title="DENEYİ PAYLAŞ"
+                        description="Laboratuvar sonuçlarını aktar."
                         href="/deney/yeni"
                         icon={FlaskConical}
-                        color="from-green-500/20"
-                        shadowColor="shadow-[0px_0px_20px_rgba(34,197,94,0.3)]"
+                        color="bg-[#4ADE80]" // Green-400
+                        accentColor="#4ADE80"
                     />
 
-                    {/* 4. Book Review */}
-                    <HubCard
-                        title="Kitap İncele"
-                        description="Okuduğun bilimsel kitapları değerlendir."
+                    {/* 4. Book - Blue */}
+                    <FreshCard
+                        title="KİTAP İNCELE"
+                        description="Kütüphane notları."
                         href="/kitap-inceleme/yeni"
                         icon={Library}
-                        color="from-blue-500/20"
-                        shadowColor="shadow-[0px_0px_20px_rgba(59,130,246,0.3)]"
+                        color="bg-[#60A5FA]" // Blue-400
+                        accentColor="#60A5FA"
                     />
 
-                    {/* 5. Term */}
-                    <HubCard
-                        title="Terim Ekle"
-                        description="Fizik sözlüğüne yeni bir kavram kazandır."
+                    {/* 5. Term - Purple */}
+                    <FreshCard
+                        title="TERİM EKLE"
+                        description="Sözlüğe katkı sağla."
                         href="/sozluk"
                         icon={BookOpen}
-                        color="from-orange-500/20"
-                        shadowColor="shadow-[0px_0px_20px_rgba(249,115,22,0.3)]"
+                        color="bg-[#C084FC]" // Purple-400
+                        accentColor="#C084FC"
+                        colSpan="md:col-span-2 lg:col-span-1"
                     />
-
                 </motion.div>
+
+                {/* Footer / Search Link */}
+                <motion.div
+                    variants={item}
+                    initial="hidden"
+                    animate="show"
+                    className="mt-8"
+                >
+                    <Link href="/ara" className="block group">
+                        <div className="
+                            bg-black text-white 
+                            h-16 rounded-xl 
+                            flex items-center justify-between px-6 
+                            border-[3px] border-black
+                            hover:bg-[#1a1a1a] transition-colors
+                            shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]
+                         ">
+                            <span className="font-bold text-lg flex items-center gap-3">
+                                <Search className="w-5 h-5 text-gray-400" />
+                                <span className="text-gray-400">Daha fazlasını mı arıyorsun?</span>
+                            </span>
+                            <div className="bg-white text-black px-4 py-1 rounded font-bold text-sm">
+                                Arama Yap
+                            </div>
+                        </div>
+                    </Link>
+                </motion.div>
+
             </div>
+
+            <style jsx global>{`
+                .text-stroke-black {
+                    -webkit-text-stroke: 2px black;
+                }
+            `}</style>
         </div>
     );
 }
