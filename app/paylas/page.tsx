@@ -21,6 +21,7 @@ import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase-client";
+import { TiltCard } from "@/components/magicui/tilt-card";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -61,63 +62,65 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
     return (
         <motion.div
             variants={item}
-            className={cn("relative group h-full", colSpan)}
+            className={cn("relative group h-full perspective-1000", colSpan)}
             whileHover={{ y: -5, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
         >
             <Link href={href} className="block h-full">
-                <div className="
-                    relative h-full 
-                    bg-white 
-                    border-[3px] border-black 
-                    rounded-xl 
-                    shadow-[3px_3px_0px_0px_#000] 
-                    group-hover:shadow-[6px_6px_0px_0px_#000] 
-                    group-hover:-translate-y-0.5 group-hover:translate-x-0.5
-                    transition-all duration-200 ease-out
-                    flex flex-col
-                    overflow-hidden
-                ">
-                    {showBorderBeam && (
-                        <BorderBeam
-                            size={300}
-                            duration={8}
-                            delay={0}
-                            borderWidth={3}
-                            colorFrom="#FACC15"
-                            colorTo="#FB7185"
-                        />
-                    )}
+                <TiltCard className="h-full" rotationFactor={12}>
+                    <div className="
+                        relative h-full 
+                        bg-white 
+                        border-[3px] border-black 
+                        rounded-xl 
+                        shadow-[3px_3px_0px_0px_#000] 
+                        group-hover:shadow-[6px_6px_0px_0px_#000] 
+                        group-hover:-translate-y-0.5 group-hover:translate-x-0.5
+                        transition-all duration-200 ease-out
+                        flex flex-col
+                        overflow-hidden
+                    ">
+                        {showBorderBeam && (
+                            <BorderBeam
+                                size={300}
+                                duration={8}
+                                delay={0}
+                                borderWidth={3}
+                                colorFrom="#FACC15"
+                                colorTo="#FB7185"
+                            />
+                        )}
 
-                    {/* Decorative top bar */}
-                    <div className={cn("h-4 w-full border-b-[3px] border-black", color)}></div>
+                        {/* Decorative top bar */}
+                        <div className={cn("h-4 w-full border-b-[3px] border-black", color)}></div>
 
-                    <div className="px-5 py-5 flex flex-col justify-between h-full">
-                        <div className="flex items-start justify-between mb-3">
-                            <div className={cn(
-                                "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_#000]",
-                                color
-                            )}>
-                                <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
+                        <div className="px-5 py-5 flex flex-col justify-between h-full">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className={cn(
+                                    "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_#000]",
+                                    color
+                                )}>
+                                    <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
+                                </div>
+                                <div className="
+                                    w-7 h-7 rounded-full border-[2px] border-black flex items-center justify-center
+                                    bg-transparent group-hover:bg-black transition-colors duration-200
+                                ">
+                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
+                                </div>
                             </div>
-                            <div className="
-                                w-7 h-7 rounded-full border-[2px] border-black flex items-center justify-center
-                                bg-transparent group-hover:bg-black transition-colors duration-200
-                            ">
-                                <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
-                            </div>
-                        </div>
 
-                        <div>
-                            <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
-                                <GlitchText text={title} className="block" />
-                            </h3>
-                            <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
-                                {description}
-                            </p>
+                            <div>
+                                <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
+                                    <GlitchText text={title} className="block" />
+                                </h3>
+                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
+                                    {description}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </TiltCard>
             </Link>
         </motion.div>
     );
@@ -170,8 +173,6 @@ export default function PaylasPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8 md:mb-10 pt-4 relative"
                 >
-                    {/* Orbiting Circles Removed */}
-
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <div className="flex flex-col">
                             <h1 className="text-4xl md:text-6xl font-black text-foreground leading-[0.9] tracking-tighter uppercase">
