@@ -7,7 +7,6 @@ import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
 import { WriterApplicationCard } from "@/components/home/writer-application-card";
 import { motion } from "framer-motion";
-import { BorderBeam } from "@/components/magicui/border-beam";
 
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
@@ -113,9 +112,8 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {index === 8 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10 relative overflow-hidden">
-                                <BorderBeam size={300} duration={10} delay={0} colorFrom="#F59E0B" colorTo="#D97706" />
-                                <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center relative z-10">
+                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
+                                <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
                                     Haftanın Sorusu
                                 </h3>
                                 <QuestionOfTheWeek />

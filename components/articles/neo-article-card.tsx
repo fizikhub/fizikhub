@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ViewTransitionLink } from "@/components/ui/view-transition-link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { useHaptic } from "@/hooks/use-haptic";
 import { triggerSmallConfetti } from "@/lib/confetti";
-import { GlitchText } from "@/components/magicui/glitch-text";
 
 interface NeoArticleCardProps {
     article: Article;
@@ -155,7 +154,9 @@ export function NeoArticleCard({
 
                     {/* Title - High Contrast White in Dark Mode */}
                     <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">
-                        <GlitchText text={article.title} />
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
+                            {article.title}
+                        </span>
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
