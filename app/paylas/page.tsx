@@ -57,103 +57,68 @@ interface FreshCardProps {
     showBorderBeam?: boolean;
 }
 
-// Floating animation variant
-const float: Variants = {
-    initial: { y: 0 },
-    animate: {
-        y: [0, -10, 0],
-        transition: {
-            duration: 4,
-            ease: "easeInOut",
-            repeat: Infinity,
-            repeatType: "reverse"
-        }
-    }
-};
-
 function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", showBorderBeam }: FreshCardProps) {
-    // Random delay for floating to avoid robotic sync
-    const randomDelay = Math.random() * 2;
-
     return (
         <motion.div
             variants={item}
             className={cn("relative group h-full", colSpan)}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ y: -5, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
         >
-            {/* Floating Container */}
-            <motion.div
-                animate={{
-                    y: [0, -8, 0],
-                }}
-                transition={{
-                    duration: 3 + Math.random(), // Random duration between 3-4s
-                    ease: "easeInOut",
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    delay: Math.random() * 2 // Random start delay
-                }}
-                className="h-full"
-            >
-                <Link href={href} className="block h-full">
-                    <div className="
-                        relative h-full 
-                        bg-white/70 dark:bg-black/70 backdrop-blur-md
-                        border-[3px] border-black 
-                        rounded-xl 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,0.15)] 
-                        group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] 
-                        group-hover:-translate-y-1 group-hover:translate-x-1
-                        transition-all duration-300 ease-out
-                        flex flex-col
-                        overflow-hidden
-                    ">
-                        {/* Subtle Noise Texture Overlay on Card */}
-                        <div className="absolute inset-0 opacity-10 pointer-events-none z-0 mix-blend-multiply bg-noise"></div>
+            <Link href={href} className="block h-full">
+                <div className="
+                    relative h-full 
+                    bg-white 
+                    border-[3px] border-black 
+                    rounded-xl 
+                    shadow-[3px_3px_0px_0px_#000] 
+                    group-hover:shadow-[6px_6px_0px_0px_#000] 
+                    group-hover:-translate-y-0.5 group-hover:translate-x-0.5
+                    transition-all duration-200 ease-out
+                    flex flex-col
+                    overflow-hidden
+                ">
+                    {showBorderBeam && (
+                        <BorderBeam
+                            size={300}
+                            duration={8}
+                            delay={0}
+                            borderWidth={3}
+                            colorFrom="#FACC15"
+                            colorTo="#FB7185"
+                        />
+                    )}
 
-                        {showBorderBeam && (
-                            <BorderBeam
-                                size={300}
-                                duration={8}
-                                delay={0}
-                                borderWidth={3}
-                                colorFrom="#FACC15"
-                                colorTo="#FB7185"
-                            />
-                        )}
+                    {/* Decorative top bar */}
+                    <div className={cn("h-4 w-full border-b-[3px] border-black", color)}></div>
 
-                        {/* Decorative top bar */}
-                        <div className={cn("h-4 w-full border-b-[3px] border-black relative z-10", color)}></div>
-
-                        <div className="px-5 py-5 flex flex-col justify-between h-full relative z-10">
-                            <div className="flex items-start justify-between mb-3">
-                                <div className={cn(
-                                    "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]",
-                                    color
-                                )}>
-                                    <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
-                                </div>
-                                <div className="
-                                    w-8 h-8 rounded-full border-[2px] border-black flex items-center justify-center
-                                    bg-white/50 group-hover:bg-black transition-colors duration-200
-                                ">
-                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
-                                </div>
+                    <div className="px-5 py-5 flex flex-col justify-between h-full">
+                        <div className="flex items-start justify-between mb-3">
+                            <div className={cn(
+                                "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_#000]",
+                                color
+                            )}>
+                                <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
                             </div>
-
-                            <div>
-                                <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
-                                    <GlitchText text={title} className="block" />
-                                </h3>
-                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
-                                    {description}
-                                </p>
+                            <div className="
+                                w-7 h-7 rounded-full border-[2px] border-black flex items-center justify-center
+                                bg-transparent group-hover:bg-black transition-colors duration-200
+                            ">
+                                <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
                             </div>
                         </div>
+
+                        <div>
+                            <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
+                                <GlitchText text={title} className="block" />
+                            </h3>
+                            <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
+                                {description}
+                            </p>
+                        </div>
                     </div>
-                </Link>
-            </motion.div>
+                </div>
+            </Link>
         </motion.div>
     );
 }
