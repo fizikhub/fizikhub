@@ -122,10 +122,10 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
 
 export default function PaylasPage() {
     return (
-        <div className="min-h-screen bg-[#F9F9F7] pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-background pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
 
             {/* TEXTURED PAPER BACKGROUND */}
-            <div className="absolute inset-0 opacity-40 pointer-events-none z-0 mix-blend-multiply"
+            <div className="absolute inset-0 opacity-20 pointer-events-none z-0 mix-blend-multiply"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                 }}
@@ -146,7 +146,7 @@ export default function PaylasPage() {
 
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <div className="flex flex-col">
-                            <h1 className="text-4xl md:text-6xl font-black text-black leading-[0.9] tracking-tighter uppercase">
+                            <h1 className="text-4xl md:text-6xl font-black text-foreground leading-[0.9] tracking-tighter uppercase">
                                 Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
@@ -157,7 +157,7 @@ export default function PaylasPage() {
                                 />
                             </div>
                         </div>
-                        <p className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-[#F9F9F7]/80 backdrop-blur-sm p-2 rounded-lg border-2 border-black/10">
+                        <p className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-2 rounded-lg border-2 border-border/50">
                             Bilim dünyasına katkı sağlamak için bir içerik türü seç.
                         </p>
                     </div>
