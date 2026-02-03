@@ -101,7 +101,7 @@ export function MobileMenu() {
                             animate="open"
                             exit="closed"
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm"
+                            className="fixed inset-0 z-[9990] bg-black/60 backdrop-blur-sm"
                         />
 
                         {/* DRAWER */}
@@ -111,7 +111,7 @@ export function MobileMenu() {
                             animate="open"
                             exit="closed"
                             className="
-                                fixed top-0 right-0 bottom-0 z-[100]
+                                fixed top-0 right-0 bottom-0 z-[9999]
                                 w-[85vw] max-w-[360px]
                                 bg-[#FACC15] 
                                 border-l-[4px] border-black
