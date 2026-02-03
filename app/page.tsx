@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
-import { CompactHero } from "@/components/home/compact-hero";
+import { NeoHero } from "@/components/home/compact-hero";
 
 import { ScienceStories } from "@/components/science-cards/science-stories";
 
@@ -119,25 +119,46 @@ export default async function Home() {
   feedItems.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 
   return (
-    <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+    <main className="min-h-screen bg-background relative selection:bg-yellow-400 selection:text-black">
 
-      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+      {/* Dynamic Background Noise/Texture */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0 mix-blend-overlay"
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
+      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-16">
 
-          {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-0 sm:px-0">
-            <CompactHero />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-12 pt-4 lg:pt-0">
+
+          {/* Neo Hero Banner */}
+          <div className="lg:col-span-12 mt-0 sm:px-0 mb-8 lg:mb-12">
+            <NeoHero />
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
+          <div className="lg:col-span-12 xl:col-span-8 space-y-10 min-h-screen w-full md:max-w-3xl md:mx-auto xl:mx-0">
+
+            {/* Feed Header / Filter Tabs (Visual Only for now) */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+              <button className="px-4 py-2 bg-black text-white font-bold border-2 border-black rounded-lg shadow-neo dark:bg-white dark:text-black whitespace-nowrap">
+                🔥 Popüler
+              </button>
+              <button className="px-4 py-2 bg-transparent text-foreground font-bold border-2 border-transparent hover:border-black/10 dark:hover:border-white/10 rounded-lg whitespace-nowrap">
+                ✨ Yeniler
+              </button>
+              <button className="px-4 py-2 bg-transparent text-foreground font-bold border-2 border-transparent hover:border-black/10 dark:hover:border-white/10 rounded-lg whitespace-nowrap">
+                🔬 Deneyler
+              </button>
+            </div>
+
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
           {/* Sidebar Column */}
-          <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar />
+          <div className="hidden xl:block xl:col-span-4 relative pl-4">
+            <div className="sticky top-24">
+              <FeedSidebar />
+            </div>
           </div>
         </div>
       </div>

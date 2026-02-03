@@ -29,26 +29,32 @@ interface UnifiedFeedProps {
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
-            {/* Feed Container - Clean cards with subtle shadows */}
-            <div className="flex flex-col gap-5 sm:gap-6">
+            {/* Feed Container - Bold & Spacious */}
+            <div className="flex flex-col gap-8">
                 {items.map((item, index) => (
                     <motion.div
                         key={`${item.type}-${item.data.id}`}
-
-                        initial={index < 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                        whileInView={index < 3 ? undefined : { opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "100px" }}
-                        transition={{ duration: 0.4, delay: index < 3 ? 0 : 0.05, ease: "easeOut" }}
-                        className="group"
+                        transition={{ duration: 0.5, delay: index * 0.1, ease: "backOut" }}
+                        className="group relative"
                     >
+                        {/* Decorative Line for some items */}
+                        {index % 3 === 0 && index !== 0 && (
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-24 h-1 bg-border/20 rounded-full mb-4" />
+                        )}
+
                         {item.type === 'article' && (
-                            <NeoArticleCard
-                                article={item.data}
-                                initialLikes={item.data.likes_count || 0}
-                                initialComments={item.data.comments_count || 0}
-                                initialIsLiked={item.data.is_liked}
-                                initialIsBookmarked={item.data.is_bookmarked}
-                            />
+                            <div className="transform transition-transform duration-300 hover:-rotate-1">
+                                <NeoArticleCard
+                                    article={item.data}
+                                    initialLikes={item.data.likes_count || 0}
+                                    initialComments={item.data.comments_count || 0}
+                                    initialIsLiked={item.data.is_liked}
+                                    initialIsBookmarked={item.data.is_bookmarked}
+                                />
+                            </div>
                         )}
 
                         {item.type === 'blog' && (
@@ -61,17 +67,21 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'experiment' && (
-                            <ExperimentCard
-                                article={item.data}
-                                index={index}
-                            />
+                            <div className="border-2 border-black dark:border-white rounded-xl overflow-hidden shadow-neo">
+                                <ExperimentCard
+                                    article={item.data}
+                                    index={index}
+                                />
+                            </div>
                         )}
 
                         {item.type === 'book-review' && (
-                            <BookReviewCard
-                                article={item.data}
-                                index={index}
-                            />
+                            <div className="transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                                <BookReviewCard
+                                    article={item.data}
+                                    index={index}
+                                />
+                            </div>
                         )}
 
                         {item.type === 'term' && (
@@ -82,39 +92,42 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-all">
+                            <div className="rounded-xl border-2 border-dashed border-muted-foreground/30 bg-card/50 p-4 hover:border-black dark:hover:border-white transition-all">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-muted text-muted-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
+                                    badgeClassName="bg-yellow-400 text-black px-2 py-0.5 rounded-md font-bold text-xs border border-black shadow-[2px_2px_0_0_#000]"
                                 />
                             </div>
                         )}
 
-                        {/* Injected Content - Soft styling */}
+                        {/* Injected Content - Pop Style w/ NeoBrutalistCard wrapper concept (inline styles for now) */}
                         {index === 2 && (
-                            <div className="mt-6">
+                            <div className="mt-8 mb-4">
                                 <CommunityInviteBanner />
                             </div>
                         )}
 
                         {index === 5 && (
-                            <div className="mt-6 rounded-2xl overflow-hidden">
+                            <div className="mt-8 rounded-xl border-2 border-black dark:border-white overflow-hidden shadow-neo">
                                 <ForumTeaserCard />
                             </div>
                         )}
 
-                        {/* Rapid Science Stories Injection - 7th position visually */}
+                        {/* Rapid Science Stories Injection */}
                         {index === 6 && (
-                            <div className="mt-8 mb-8 -mx-4 sm:mx-0">
+                            <div className="mt-10 mb-10 -mx-4 sm:mx-0 py-4 bg-yellow-400/10 border-y-2 border-black/5 dark:border-white/5 relative">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-400 text-black px-3 py-1 font-black text-xs uppercase border-2 border-black transform -rotate-2">
+                                    Hızlı Bilim
+                                </div>
                                 <ScienceStories />
                             </div>
                         )}
 
                         {index === 8 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
-                                <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
-                                    Haftanın Sorusu
+                            <div className="mt-8 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-6 border-2 border-amber-500 shadow-neo">
+                                <h3 className="font-black text-lg uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-6 text-center flex items-center justify-center gap-2">
+                                    <span className="text-2xl">🤔</span> Haftanın Sorusu
                                 </h3>
                                 <QuestionOfTheWeek />
                             </div>
@@ -123,9 +136,9 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 ))}
             </div>
 
-            {/* Suggested Users Footer - Rounded and soft */}
-            <div className="mt-8 rounded-2xl bg-muted/30 border border-border/50 p-6">
-                <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 text-center">
+            {/* Suggested Users Footer */}
+            <div className="mt-12 rounded-xl border-2 border-black dark:border-white bg-card p-6 shadow-neo">
+                <h3 className="font-black text-xl uppercase tracking-wide text-foreground mb-6 text-center">
                     Önerilen Araştırmacılar
                 </h3>
                 <SuggestedUsersCard users={suggestedUsers} />
