@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "framer-motion";
-import OrbitingCircles from "@/components/magicui/orbiting-circles";
 import { Meteors } from "@/components/magicui/meteors";
 import { BorderBeam } from "@/components/magicui/border-beam";
+import HyperText from "@/components/magicui/hyper-text";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -136,45 +136,27 @@ export default function PaylasPage() {
 
             <div className="max-w-[900px] mx-auto relative z-10">
 
-                {/* Header with Orbiting Circles */}
+                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-8 md:mb-10 pt-4 relative"
                 >
-                    {/* ORBITING CIRCLES - Behind Title */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[300px] pointer-events-none -z-10 opacity-30 md:opacity-50">
-                        <OrbitingCircles
-                            className="w-[30px] h-[30px] border-none bg-transparent"
-                            duration={20}
-                            delay={20}
-                            radius={80}
-                        >
-                            <Atom className="w-8 h-8 text-black" />
-                        </OrbitingCircles>
-                        <OrbitingCircles
-                            className="w-[30px] h-[30px] border-none bg-transparent"
-                            duration={20}
-                            delay={10}
-                            radius={80}
-                        >
-                            <Rocket className="w-8 h-8 text-black" />
-                        </OrbitingCircles>
-                        <OrbitingCircles
-                            className="size-[50px] border-none bg-transparent"
-                            radius={150}
-                            duration={20}
-                            reverse
-                        >
-                            <Globe className="w-10 h-10 text-black/50" />
-                        </OrbitingCircles>
-                    </div>
+                    {/* Orbiting Circles Removed */}
 
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
-                        <h1 className="text-4xl md:text-6xl font-black text-black leading-[0.9] tracking-tighter uppercase">
-                            Paylaşım<br />
-                            <span className="text-[#FACC15] text-stroke-black drop-shadow-[3px_3px_0px_#000]">Merkezi</span>
-                        </h1>
+                        <div className="flex flex-col">
+                            <h1 className="text-4xl md:text-6xl font-black text-black leading-[0.9] tracking-tighter uppercase">
+                                Paylaşım<br />
+                            </h1>
+                            <div className="flex items-center">
+                                <HyperText
+                                    text="MERKEZİ"
+                                    className="text-4xl md:text-6xl font-black text-[#FACC15] leading-[0.9] tracking-tighter uppercase text-stroke-black drop-shadow-[3px_3px_0px_#000]"
+                                    duration={1200}
+                                />
+                            </div>
+                        </div>
                         <p className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-[#F9F9F7]/80 backdrop-blur-sm p-2 rounded-lg border-2 border-black/10">
                             Bilim dünyasına katkı sağlamak için bir içerik türü seç.
                         </p>
