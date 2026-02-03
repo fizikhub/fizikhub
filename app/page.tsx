@@ -64,8 +64,6 @@ const getCachedFeedData = unstable_cache(
 
 
 
-// ... imports
-import { MobileHomeV2 } from "@/components/home/mobile/mobile-home-v2";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
@@ -111,24 +109,23 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
-      {/* MOBILE VIEW (V2) */}
-      <MobileHomeV2 items={feedItems} suggestedUsers={suggestedUsers} />
 
-      {/* DESKTOP VIEW (Legacy/Standard) - Hidden on Mobile */}
-      <div className="hidden md:block container max-w-7xl mx-auto px-4 md:px-6 relative z-10 pt-20">
-        <div className="grid grid-cols-12 gap-8">
-          {/* Kompakt Hero Banner */}
-          <div className="col-span-12">
+      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
+
+          {/* Kompakt Hero Banner - Slogan + UFO */}
+          <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
           </div>
 
           {/* Main Feed Column */}
-          <div className="col-span-12 xl:col-span-7 space-y-6">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
           {/* Sidebar Column */}
-          <div className="col-span-5 relative">
+          <div className="hidden xl:block xl:col-span-12 xl:col-span-5 relative">
             <FeedSidebar />
           </div>
         </div>
