@@ -46,9 +46,9 @@ export function BottomNav() {
             <nav className="
                 w-full
                 bg-[#F2C32E]
-                h-[60px]
+                h-[52px]
                 flex items-center justify-between
-                px-4
+                px-6
                 pb-safe
                 relative
                 border-t-2 border-black

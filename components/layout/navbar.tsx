@@ -51,7 +51,7 @@ export function Navbar() {
                 return {
                     left: left,
                     duration: 5 + Math.random() * 8, // 5s-13s
-                    delay: Math.random() * 15, // Spread out start times
+                    delay: -1 * Math.random() * 20, // Start "in the past" so they are visible immediately
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
                     scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
                     opacity: 0.5 + Math.random() * 0.4
