@@ -153,9 +153,9 @@ export function Navbar() {
                         {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            whileTap={{ scale: 0.95 }}
-                            style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }}
-                            className="flex items-center justify-center !w-7 !h-7 !min-w-[28px] !min-h-[28px] !p-0 bg-black border-2 border-white/20 text-white hover:bg-white hover:text-black hover:border-black transition-all rounded-sm md:rounded-lg"
+                            whileTap={{ scale: 0.9 }}
+                            style={{ width: '24px', height: '24px', minWidth: '24px', minHeight: '24px' }}
+                            className="flex items-center justify-center !w-6 !h-6 !min-w-[24px] !min-h-[24px] !p-0 bg-black border border-white/20 text-white hover:bg-white hover:text-black hover:border-black transition-all rounded-sm md:rounded-lg"
                         >
                             <Search className="w-3.5 h-3.5 stroke-[2.5px]" />
                         </motion.button>
@@ -163,11 +163,11 @@ export function Navbar() {
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            whileTap={{ scale: 0.95 }}
-                            style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }}
-                            className="flex md:hidden items-center justify-center !w-7 !h-7 !min-w-[28px] !min-h-[28px] !p-0 bg-[#FACC15] border-2 border-black text-black shadow-[2px_2px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-sm"
+                            whileTap={{ scale: 0.9 }}
+                            style={{ width: '24px', height: '24px', minWidth: '24px', minHeight: '24px' }}
+                            className="flex md:hidden items-center justify-center !w-6 !h-6 !min-w-[24px] !min-h-[24px] !p-0 bg-[#FACC15] border border-black text-black shadow-[1px_1px_0px_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none transition-all rounded-sm"
                         >
-                            <Zap className="w-4 h-4 fill-black stroke-[3px]" />
+                            <Zap className="w-3.5 h-3.5 fill-black stroke-[3px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
