@@ -108,7 +108,6 @@ const config = {
                     "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-2px)" },
                     "20%, 40%, 60%, 80%": { transform: "translateX(2px)" },
                 },
-                // Extracted from NeoBaseAI
                 "fade-in": {
                     "0%": { opacity: "0" },
                     "100%": { opacity: "1" },
@@ -121,6 +120,27 @@ const config = {
                     "0%": { opacity: "0", transform: "translateY(-10px)" },
                     "100%": { opacity: "1", transform: "translateY(0)" },
                 },
+                "orbit": {
+                    "0%": {
+                        transform: "rotate(0deg) translateY(calc(var(--radius) * 1px)) rotate(0deg)",
+                    },
+                    "100%": {
+                        transform: "rotate(360deg) translateY(calc(var(--radius) * 1px)) rotate(-360deg)",
+                    },
+                },
+                "meteor": {
+                    "0%": { transform: "rotate(215deg) translateX(0)", opacity: "1" },
+                    "70%": { opacity: "1" },
+                    "100%": {
+                        transform: "rotate(215deg) translateX(-500px)",
+                        opacity: "0",
+                    },
+                },
+                "border-beam": {
+                    "100%": {
+                        "offset-distance": "100%",
+                    },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
@@ -129,6 +149,9 @@ const config = {
                 "fade-in": "fade-in 0.2s ease-out forwards",
                 "slide-up": "slide-up 0.2s ease-out",
                 "slide-down": "slide-down 0.2s ease-out",
+                "orbit": "orbit calc(var(--duration)*1s) linear infinite",
+                "meteor": "meteor 5s linear infinite",
+                "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
             },
         },
     },

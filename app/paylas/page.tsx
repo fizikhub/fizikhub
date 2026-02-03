@@ -8,10 +8,16 @@ import {
     Library,
     FileText,
     ArrowRight,
-    Search
+    Search,
+    Atom,
+    Rocket,
+    Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "framer-motion";
+import OrbitingCircles from "@/components/magicui/orbiting-circles";
+import { Meteors } from "@/components/magicui/meteors";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -45,9 +51,10 @@ interface FreshCardProps {
     color: string;
     accentColor: string;
     colSpan?: string;
+    showBorderBeam?: boolean;
 }
 
-function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1" }: FreshCardProps) {
+function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", showBorderBeam }: FreshCardProps) {
     return (
         <motion.div
             variants={item}
@@ -68,6 +75,17 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
                     flex flex-col
                     overflow-hidden
                 ">
+                    {showBorderBeam && (
+                        <BorderBeam
+                            size={300}
+                            duration={8}
+                            delay={0}
+                            borderWidth={3}
+                            colorFrom="#FACC15"
+                            colorTo="#FB7185"
+                        />
+                    )}
+
                     {/* Decorative top bar */}
                     <div className={cn("h-4 w-full border-b-[3px] border-black", color)}></div>
 
@@ -113,20 +131,51 @@ export default function PaylasPage() {
                 }}
             ></div>
 
+            {/* METEORS - Subtle Background Motion */}
+            <Meteors number={15} />
+
             <div className="max-w-[900px] mx-auto relative z-10">
 
-                {/* Header */}
+                {/* Header with Orbiting Circles */}
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 md:mb-10 pt-4"
+                    className="mb-8 md:mb-10 pt-4 relative"
                 >
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2">
+                    {/* ORBITING CIRCLES - Behind Title */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[300px] pointer-events-none -z-10 opacity-30 md:opacity-50">
+                        <OrbitingCircles
+                            className="w-[30px] h-[30px] border-none bg-transparent"
+                            duration={20}
+                            delay={20}
+                            radius={80}
+                        >
+                            <Atom className="w-8 h-8 text-black" />
+                        </OrbitingCircles>
+                        <OrbitingCircles
+                            className="w-[30px] h-[30px] border-none bg-transparent"
+                            duration={20}
+                            delay={10}
+                            radius={80}
+                        >
+                            <Rocket className="w-8 h-8 text-black" />
+                        </OrbitingCircles>
+                        <OrbitingCircles
+                            className="size-[50px] border-none bg-transparent"
+                            radius={150}
+                            duration={20}
+                            reverse
+                        >
+                            <Globe className="w-10 h-10 text-black/50" />
+                        </OrbitingCircles>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <h1 className="text-4xl md:text-6xl font-black text-black leading-[0.9] tracking-tighter uppercase">
                             Paylaşım<br />
                             <span className="text-[#FACC15] text-stroke-black drop-shadow-[3px_3px_0px_#000]">Merkezi</span>
                         </h1>
-                        <p className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight">
+                        <p className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-[#F9F9F7]/80 backdrop-blur-sm p-2 rounded-lg border-2 border-black/10">
                             Bilim dünyasına katkı sağlamak için bir içerik türü seç.
                         </p>
                     </div>
@@ -148,6 +197,7 @@ export default function PaylasPage() {
                         color="bg-[#FACC15]"
                         accentColor="#FACC15"
                         colSpan="col-span-2 lg:col-span-2"
+                        showBorderBeam={true}
                     />
 
                     {/* 2. Question - Pink */}
