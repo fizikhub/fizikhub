@@ -150,25 +150,21 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH */}
-                        <motion.button
+                        {/* 1. SEARCH - NUCLEAR OPTION */}
+                        <div
                             onClick={() => setIsSearchOpen(true)}
-                            whileTap={{ scale: 0.9 }}
-                            style={{ width: '24px', height: '24px', minWidth: '24px', minHeight: '24px' }}
-                            className="flex items-center justify-center !w-6 !h-6 !min-w-[24px] !min-h-[24px] !p-0 bg-black border border-white/20 text-white hover:bg-white hover:text-black hover:border-black transition-all rounded-sm md:rounded-lg"
+                            className="flex items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-black border border-white/20 rounded-sm cursor-pointer"
                         >
-                            <Search className="w-3.5 h-3.5 stroke-[2.5px]" />
-                        </motion.button>
+                            <Search className="w-[10px] h-[10px] text-white stroke-[3px]" />
+                        </div>
 
-                        {/* 2. ZAP - Mobile Only */}
-                        <motion.button
+                        {/* 2. ZAP - NUCLEAR OPTION */}
+                        <div
                             onClick={() => window.location.href = '/ozel'}
-                            whileTap={{ scale: 0.9 }}
-                            style={{ width: '24px', height: '24px', minWidth: '24px', minHeight: '24px' }}
-                            className="flex md:hidden items-center justify-center !w-6 !h-6 !min-w-[24px] !min-h-[24px] !p-0 bg-[#FACC15] border border-black text-black shadow-[1px_1px_0px_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none transition-all rounded-sm"
+                            className="flex md:hidden items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-[#FACC15] border border-black rounded-sm shadow-[1px_1px_0px_#000] cursor-pointer active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"
                         >
-                            <Zap className="w-3.5 h-3.5 fill-black stroke-[3px]" />
-                        </motion.button>
+                            <Zap className="w-[10px] h-[10px] text-black fill-black stroke-[3px]" />
+                        </div>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
                         <div className="md:hidden">

@@ -57,17 +57,11 @@ export function MobileMenu() {
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-                <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    style={{ width: '24px', height: '24px', minWidth: '24px', minHeight: '24px' }}
-                    className={cn(
-                        "flex items-center justify-center !w-6 !h-6 !min-w-[24px] !min-h-[24px] !p-0",
-                        "bg-white border border-black text-black rounded-sm",
-                        "hover:bg-[#FACC15] hover:border-black transition-colors"
-                    )}
+                <div
+                    className="flex items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-white border border-black rounded-sm cursor-pointer hover:bg-[#FACC15] transition-colors"
                 >
-                    <Menu className="w-3.5 h-3.5 stroke-[2.5px]" />
-                </motion.button>
+                    <Menu className="w-[10px] h-[10px] text-black stroke-[3px]" />
+                </div>
             </SheetTrigger>
 
             {/* PREMIUM POP NEO-BRUTALIST SIDE DRAWER */}
