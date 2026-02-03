@@ -33,8 +33,8 @@ const menuVariants = {
 
 const itemVariants = {
     closed: { opacity: 0, x: 50 },
-    open: { opacity: 1, x: 0 }
-};
+    open: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+} as const;
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
@@ -58,9 +58,9 @@ export function MobileMenu() {
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <div
-                    className="flex items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-white border border-black rounded-sm cursor-pointer hover:bg-[#FACC15] transition-colors"
+                    className="flex items-center justify-center w-[22px] h-[22px] min-w-[22px] min-h-[22px] bg-white border border-black rounded-sm cursor-pointer hover:bg-[#FACC15] transition-colors"
                 >
-                    <Menu className="w-[10px] h-[10px] text-black stroke-[3px]" />
+                    <Menu className="w-3 h-3 text-black stroke-[2.5px]" />
                 </div>
             </SheetTrigger>
 

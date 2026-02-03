@@ -150,20 +150,20 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH - NUCLEAR OPTION */}
+                        {/* 1. SEARCH - CALIBRATED (22px) */}
                         <div
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-black border border-white/20 rounded-sm cursor-pointer"
+                            className="flex items-center justify-center w-[22px] h-[22px] min-w-[22px] min-h-[22px] bg-black border border-white/20 rounded-sm cursor-pointer"
                         >
-                            <Search className="w-[10px] h-[10px] text-white stroke-[3px]" />
+                            <Search className="w-3 h-3 text-white stroke-[2.5px]" />
                         </div>
 
-                        {/* 2. ZAP - NUCLEAR OPTION */}
+                        {/* 2. ZAP - CALIBRATED (22px) */}
                         <div
                             onClick={() => window.location.href = '/ozel'}
-                            className="flex md:hidden items-center justify-center w-[18px] h-[18px] min-w-[18px] min-h-[18px] bg-[#FACC15] border border-black rounded-sm shadow-[1px_1px_0px_#000] cursor-pointer active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"
+                            className="flex md:hidden items-center justify-center w-[22px] h-[22px] min-w-[22px] min-h-[22px] bg-[#FACC15] border border-black rounded-sm shadow-[1px_1px_0px_#000] cursor-pointer active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"
                         >
-                            <Zap className="w-[10px] h-[10px] text-black fill-black stroke-[3px]" />
+                            <Zap className="w-3 h-3 text-black fill-black stroke-[2.5px]" />
                         </div>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
