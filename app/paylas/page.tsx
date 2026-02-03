@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
     BookOpen,
     MessageCircle,
@@ -18,6 +19,8 @@ import { motion, Variants } from "framer-motion";
 import { Meteors } from "@/components/magicui/meteors";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
+import { GlitchText } from "@/components/magicui/glitch-text";
+import { createClient } from "@/lib/supabase-client";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -107,7 +110,7 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
 
                         <div>
                             <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
-                                {title}
+                                <GlitchText text={title} className="block" />
                             </h3>
                             <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
                                 {description}
@@ -121,6 +124,31 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
 }
 
 export default function PaylasPage() {
+    const [userName, setUserName] = useState<string | null>(null);
+    const [loaded, setLoaded] = useState(false);
+    const supabase = createClient();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('full_name, username')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    setUserName(profile.full_name || profile.username || "Bilim İnsanı");
+                } else {
+                    setUserName("Bilim İnsanı");
+                }
+            }
+            setLoaded(true);
+        };
+        fetchUser();
+    }, [supabase]);
+
     return (
         <div className="min-h-screen bg-background pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
 
@@ -157,9 +185,19 @@ export default function PaylasPage() {
                                 />
                             </div>
                         </div>
-                        <p className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-2 rounded-lg border-2 border-border/50">
-                            Bilim dünyasına katkı sağlamak için bir içerik türü seç.
-                        </p>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-3 rounded-lg border-2 border-border/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]"
+                        >
+                            {loaded ? (
+                                userName ?
+                                    `Bugün ne paylaşmak istersin, ${userName}?` :
+                                    "Bugün ne paylaşmak istersin?"
+                            ) : (
+                                "Yükleniyor..."
+                            )}
+                        </motion.p>
                     </div>
                 </motion.div>
 
@@ -244,11 +282,12 @@ export default function PaylasPage() {
                     <Link href="/ara" className="block group">
                         <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]">
                             <span className="font-bold text-sm md:text-lg flex items-center gap-3">
-                                <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-                                <span className="text-gray-400">Daha fazlasını mı arıyorsun?</span>
+                                <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full"></div>
+                                <span className="font-mono text-gray-300">_komut_satiri:</span>
+                                <span className="text-white">Daha fazlasını ara...</span>
                             </span>
-                            <div className="bg-white text-black px-3 py-1 rounded font-bold text-xs md:text-sm">
-                                ARA
+                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff]">
+                                ENTER
                             </div>
                         </div>
                     </Link>
