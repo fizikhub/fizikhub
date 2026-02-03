@@ -3,16 +3,16 @@
 import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, MoreHorizontal, Copy, Check } from "lucide-react";
+import { Mail, Copy, Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-// --- TEXTURES (Reused from MemeCorner for consistency) ---
+// --- TEXTURES (Unchanged) ---
 function getStarTexture() {
     if (typeof document === 'undefined') return new THREE.Texture();
     const canvas = document.createElement('canvas');
@@ -59,8 +59,9 @@ function GalaxyDust({ count = 30000 }) {
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const c_Inner = new THREE.Color('#66aaff');
-        const c_Outer = new THREE.Color('#3355aa');
+        // MATTE PREMIUM COLORS: Deep Blue/White instead of Neon
+        const c_Inner = new THREE.Color('#4466aa');
+        const c_Outer = new THREE.Color('#223355');
         const arms = 2;
         const spin = 3.5;
         for (let i = 0; i < count; i++) {
@@ -91,7 +92,7 @@ function GalaxyDust({ count = 30000 }) {
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         return geo;
     }, [count]);
-    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.05; });
+    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.02; });
     return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={0.12} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.6} /></points>;
 }
 
@@ -102,9 +103,9 @@ function MainStars({ count = 10000 }) {
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const c_Core = new THREE.Color('#fff5c2');
-        const c_Inner = new THREE.Color('#d4f1ff');
-        const c_Outer = new THREE.Color('#5599ff');
+        const c_Core = new THREE.Color('#ffffff'); // Pure white core
+        const c_Inner = new THREE.Color('#e0e0e0');
+        const c_Outer = new THREE.Color('#a0a0ff');
         const arms = 2;
         const spin = 3.5;
         const bulgeCount = 4000;
@@ -120,7 +121,7 @@ function MainStars({ count = 10000 }) {
                 const z = r * Math.cos(phi);
                 positions[i3] = x; positions[i3 + 1] = y; positions[i3 + 2] = z;
                 color.copy(c_Core);
-                if (Math.random() > 0.7) color.multiplyScalar(1.5);
+                if (Math.random() > 0.7) color.multiplyScalar(1.2);
             } else {
                 const rRandom = Math.pow(Math.random(), 1.5);
                 const radius = 2.5 + rRandom * 8;
@@ -136,8 +137,8 @@ function MainStars({ count = 10000 }) {
                 positions[i3] = x; positions[i3 + 1] = randomY; positions[i3 + 2] = z;
                 color.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
                 const rand = Math.random();
-                if (rand > 0.95) color.set('#ffffff').multiplyScalar(2.0);
-                else if (rand > 0.90) color.set('#ffccaa');
+                if (rand > 0.95) color.set('#ffffff').multiplyScalar(1.5);
+                else if (rand > 0.90) color.set('#ffffff');
             }
             colors[i3] = color.r; colors[i3 + 1] = color.g; colors[i3 + 2] = color.b;
         }
@@ -146,8 +147,8 @@ function MainStars({ count = 10000 }) {
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         return geo;
     }, [count]);
-    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.05; });
-    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={0.35} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={1.0} /></points>;
+    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.03; });
+    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={0.3} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.8} /></points>;
 }
 
 // --- NEBULA CLOUDS ---
@@ -157,9 +158,10 @@ function NebulaClouds({ count = 8000 }) {
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const c_Pink = new THREE.Color('#aa00ff');
-        const c_Purple = new THREE.Color('#4400ff');
-        const c_Blue = new THREE.Color('#001155');
+        // MATTE COLORS: Subtle Blue/Purple
+        const c_Pink = new THREE.Color('#333366');
+        const c_Purple = new THREE.Color('#222244');
+        const c_Blue = new THREE.Color('#111133');
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             const radius = 1 + Math.random() * 10;
@@ -171,7 +173,7 @@ function NebulaClouds({ count = 8000 }) {
             const color = new THREE.Color();
             const mix = Math.random();
             if (mix < 0.33) color.copy(c_Pink); else if (mix < 0.66) color.copy(c_Purple); else color.copy(c_Blue);
-            color.multiplyScalar(1.2);
+            color.multiplyScalar(1.0);
             colors[i3] = color.r; colors[i3 + 1] = color.g; colors[i3 + 2] = color.b;
         }
         const geo = new THREE.BufferGeometry();
@@ -179,8 +181,8 @@ function NebulaClouds({ count = 8000 }) {
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         return geo;
     }, [count]);
-    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.02; });
-    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={3.0} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.5} /></points>;
+    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.01; });
+    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={3.0} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.3} /></points>;
 }
 
 // --- BACKGROUND STARS ---
@@ -191,7 +193,7 @@ function BackgroundStars({ count = 2000 }) {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
         const c_White = new THREE.Color('#ffffff');
-        const c_Blue = new THREE.Color('#aaaaff');
+        const c_Blue = new THREE.Color('#cccccc');
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             const r = 20 + Math.random() * 20;
@@ -210,8 +212,8 @@ function BackgroundStars({ count = 2000 }) {
         geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         return geo;
     }, [count]);
-    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y -= delta * 0.005; });
-    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={0.15} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.6} /></points>;
+    useFrame((state, delta) => { if (pointsRef.current) pointsRef.current.rotation.y -= delta * 0.002; });
+    return <points ref={pointsRef}><primitive object={geometry} /><pointsMaterial map={texture} size={0.15} sizeAttenuation={true} depthWrite={false} blending={THREE.AdditiveBlending} vertexColors transparent opacity={0.4} /></points>;
 }
 
 interface NeoProfileHeroProps {
@@ -245,33 +247,14 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
 
     return (
         <div className="w-full relative group mb-8 sm:mb-0">
-            {/* GLOBAL STYLES */}
-            <style jsx global>{`
-                @keyframes gradient-flow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-                @keyframes shimmer { 0% { transform: translateX(-100%) rotate(25deg); } 100% { transform: translateX(200%) rotate(25deg); } }
-                @keyframes pulse-glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
-                @keyframes glitch {
-                    0% { transform: translate(0); }
-                    20% { transform: translate(-2px, 2px); }
-                    40% { transform: translate(-2px, -2px); }
-                    60% { transform: translate(2px, 2px); }
-                    80% { transform: translate(2px, -2px); }
-                    100% { transform: translate(0); }
-                }
-                .glitch-text:hover {
-                    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-                }
-            `}</style>
-
-            {/* HERO BACKGROUND */}
+            {/* HERO BACKGROUND - MATTE BLACK */}
             <div className={cn(
-                "relative overflow-hidden bg-[radial-gradient(120%_120%_at_50%_50%,_#2a0a45_0%,_#050514_50%,_#000000_100%)]",
-                // Mobile: Full width breakout, taller for deeper cover feel
+                "relative overflow-hidden bg-[#050505]", // Matte Deep Black
                 "-mx-2 -mt-4 w-[calc(100%+1rem)] h-[220px]",
-                "border-b-[4px] border-b-cyan-500/30 rounded-b-[24px]",
-                // Desktop: Standard box
+                "border-b border-white/10 rounded-b-[24px]", // Subtle border
+                // Desktop
                 "sm:mx-0 sm:mt-0 sm:w-full sm:h-[240px] sm:rounded-b-none sm:border-b-0",
-                "sm:rounded-[8px] sm:border-[3px] sm:border-black sm:shadow-[4px_4px_0px_#000]"
+                "sm:rounded-xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black"
             )}>
                 {/* 3D CANVAS */}
                 <div className="absolute inset-0 z-0">
@@ -283,30 +266,22 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             <NebulaClouds />
                         </group>
                         <EffectComposer enableNormalPass={false}>
-                            <Bloom luminanceThreshold={0.6} mipmapBlur intensity={1.1} radius={0.4} />
+                            <Bloom luminanceThreshold={0.6} mipmapBlur intensity={0.5} radius={0.4} />
                         </EffectComposer>
                     </Canvas>
                 </div>
 
-                {/* OVERLAYS */}
-                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
-                <div className="absolute inset-0 z-[2] pointer-events-none opacity-[0.05]" style={{ backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)` }} />
-
-                {/* HUD CORNERS (Desktop Only) */}
-                <div className="hidden sm:block">
-                    <svg className="absolute top-2 right-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite]"><path d="M23 9V1H15" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-                    <svg className="absolute bottom-2 left-2 w-6 h-6 text-cyan-400/40 z-20 animate-[pulse-glow_3s_ease-in-out_infinite_0.5s]"><path d="M1 15V23H9" stroke="currentColor" strokeWidth="2" fill="none" /></svg>
-                </div>
+                {/* VIGNETTE & GRAIN OVERLAY */}
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
 
                 {/* DESKTOP CONTENT */}
-                <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-6 gap-6">
-                    {/* ... (Desktop Layout implementation remains same as reference for desktop) ... */}
+                <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-8 gap-6">
                     <div className="relative shrink-0 group/avatar">
-                        <div className="w-32 h-32 bg-black border-[3px] border-white/20 shadow-[4px_4px_0px_#000] overflow-hidden rounded-[4px] relative z-10 transition-transform duration-500 group-hover/avatar:scale-105">
+                        <div className="w-32 h-32 bg-black border border-white/20 shadow-xl overflow-hidden rounded-xl relative z-10 transition-transform duration-500 group-hover/avatar:scale-105">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-3xl font-black text-neutral-600">
+                                <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-3xl font-black text-zinc-700">
                                     {profile?.full_name?.charAt(0) || "?"}
                                 </div>
                             )}
@@ -314,24 +289,28 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </div>
 
                     <div className="flex-1 text-left mb-2">
-                        <h1 className="text-5xl font-black tracking-tight text-white drop-shadow-md font-[family-name:var(--font-outfit)] glitch-text cursor-default">
+                        <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-sm font-[family-name:var(--font-outfit)]">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
                         <div className="flex items-center justify-start gap-3 mt-1">
                             <button
                                 onClick={handleCopyUsername}
-                                className="flex items-center gap-1.5 text-cyan-400 font-mono text-sm tracking-widest uppercase hover:text-cyan-300 transition-colors group/copy"
+                                className="flex items-center gap-1.5 text-zinc-400 font-medium text-sm tracking-wide transition-colors group/copy hover:text-white"
                             >
                                 @{profile?.username}
                                 {isCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity" />}
                             </button>
-                            {profile?.is_verified && <span className="bg-[#FFC800] text-black text-[10px] font-bold px-1.5 py-0.5 border border-black">VERIFIED</span>}
+                            {profile?.is_verified && (
+                                <span className="flex items-center gap-1 bg-[#FACC15]/10 text-[#FACC15] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#FACC15]/20">
+                                    <ShieldCheck className="w-3 h-3" /> VERIFIED
+                                </span>
+                            )}
                         </div>
-                        {profile?.bio && <p className="mt-3 text-neutral-300/80 text-sm max-w-lg leading-relaxed line-clamp-2 font-mono">{profile.bio}</p>}
+                        {profile?.bio && <p className="mt-3 text-zinc-400 text-sm max-w-lg leading-relaxed line-clamp-2">{profile.bio}</p>}
                     </div>
 
                     <div className="flex flex-col gap-2 shrink-0 mb-2">
-                        {/* Desktop Actions */}
+                        {/* Desktop Actions - Matte Buttons */}
                         {isOwnProfile ? (
                             <>
                                 <ProfileSettingsDialog
@@ -344,19 +323,19 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                     currentSocialLinks={profile?.social_links}
                                     userEmail={user?.email}
                                     trigger={
-                                        <button className="w-full px-6 py-2.5 bg-[#FFC800] text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all shadow-[4px_4px_0px_0px_#000]">
+                                        <button className="w-full px-6 py-2.5 bg-[#FACC15] text-black font-bold uppercase tracking-wide text-xs rounded-lg hover:bg-[#FACC15]/90 transition-all">
                                             PROFİLİ DÜZENLE
                                         </button>
                                     }
                                 />
-                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-neutral-900 text-white font-black uppercase tracking-wider text-xs border-[2px] border-neutral-700 hover:bg-neutral-800 transition-all flex items-center justify-center gap-2">
+                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-black/50 text-white font-bold uppercase tracking-wide text-xs border border-white/20 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
                                     <Mail className="w-3.5 h-3.5" /> MESAJLARIM
                                 </Link>
                             </>
                         ) : (
                             <>
                                 <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="modern" />
-                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-white text-black font-black uppercase tracking-wider text-xs border-[2px] border-black hover:bg-neutral-200 transition-all flex items-center justify-center gap-2">
+                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-white text-black font-bold uppercase tracking-wide text-xs rounded-lg hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
                                     <Mail className="w-3.5 h-3.5" /> MESAJ GÖNDER
                                 </Link>
                             </>
@@ -366,44 +345,41 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
             </div>
 
             {/* ------------------------------------------------------------------ */}
-            {/* MOBILE LAYOUT & HUD (New design) */}
+            {/* MOBILE LAYOUT & HUD */}
             {/* ------------------------------------------------------------------ */}
             <div className="relative px-2 sm:hidden -mt-[60px] z-30">
                 <div className="flex items-end justify-between">
-                    {/* Avatar - Merged into cover visually */}
+                    {/* Avatar - Clean & Matte */}
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="relative"
                     >
-                        <div className="w-28 h-28 rounded-[12px] border-[4px] border-black bg-black overflow-hidden shadow-[0px_4px_10px_rgba(0,0,0,0.5)]">
+                        <div className="w-24 h-24 rounded-xl border-4 border-black bg-black overflow-hidden shadow-2xl">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full bg-neutral-900 flex items-center justify-center text-3xl font-black text-neutral-600">
+                                <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-3xl font-black text-zinc-700">
                                     ?
                                 </div>
                             )}
                         </div>
                         {profile?.is_verified && (
-                            <div className="absolute -bottom-2 -right-2 bg-[#FFC800] text-black p-1 rounded-full border-[2px] border-white shadow-sm z-20">
-                                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" /></svg>
+                            <div className="absolute -bottom-1 -right-1 bg-[#FACC15] text-black p-1 rounded-full border-2 border-black z-20">
+                                <ShieldCheck className="w-3 h-3" />
                             </div>
                         )}
                     </motion.div>
 
-                    {/* Quick Stats - Glassmorphic Container for clearer reading */}
-                    <div className="flex gap-2 pb-1 pl-2 flex-1 justify-end">
-                        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md rounded-xl p-2 border border-white/10 shadow-sm">
-                            <div className="text-center px-1">
-                                <span className="block font-black text-lg text-white drop-shadow-md leading-none">{formatNumber(stats?.followersCount || 0)}</span>
-                                <span className="text-[9px] text-white/70 font-bold uppercase tracking-wider">Takipçi</span>
-                            </div>
-                            <div className="w-px h-6 bg-white/20"></div>
-                            <div className="text-center px-1">
-                                <span className="block font-black text-lg text-white drop-shadow-md leading-none">{formatNumber(stats?.followingCount || 0)}</span>
-                                <span className="text-[9px] text-white/70 font-bold uppercase tracking-wider">Takip</span>
-                            </div>
+                    {/* Quick Stats - Clean Glass */}
+                    <div className="flex gap-4 pb-2 px-4 flex-1 justify-end">
+                        <div className="text-center">
+                            <span className="block font-bold text-lg text-white leading-none">{formatNumber(stats?.followersCount || 0)}</span>
+                            <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wide">Takipçi</span>
+                        </div>
+                        <div className="text-center">
+                            <span className="block font-bold text-lg text-white leading-none">{formatNumber(stats?.followingCount || 0)}</span>
+                            <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wide">Takip</span>
                         </div>
                     </div>
                 </div>
@@ -411,12 +387,12 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 {/* Name & Bio & Actions Block */}
                 <div className="mt-4 space-y-4">
                     <div>
-                        <h1 className="text-3xl font-black text-foreground font-[family-name:var(--font-outfit)] leading-none tracking-tight glitch-text w-fit">
+                        <h1 className="text-3xl font-bold text-foreground font-[family-name:var(--font-outfit)] leading-tight">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
                         <button
                             onClick={handleCopyUsername}
-                            className="text-sm font-bold text-neutral-500 font-mono tracking-wide mt-1 flex items-center gap-1.5 active:text-foreground transition-colors"
+                            className="text-sm font-medium text-zinc-500 mt-0.5 flex items-center gap-1.5 active:text-foreground transition-colors"
                         >
                             @{profile?.username}
                             {isCopied && <Check className="w-3 h-3 text-green-500" />}
@@ -424,24 +400,23 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </div>
 
                     {profile?.bio && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
+                        <p className="text-sm text-zinc-400 leading-relaxed font-normal">
                             {profile.bio}
                         </p>
                     )}
 
-                    {/* NEW: Reputation & Actions Row */}
+                    {/* Reputation & Actions */}
                     <div className="flex items-center justify-between gap-3 pt-2">
-                        {/* Reputation Badge */}
-                        <div className="flex items-center gap-2 pl-3 pr-4 py-1.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-white/10 rounded-full shadow-sm">
-                            <div className="w-2 h-2 rounded-full bg-[#FFC800] animate-pulse" />
-                            <span className="text-xs font-black text-foreground">{formatNumber(stats?.reputation || 0)} <span className="text-neutral-400 font-normal">Puan</span></span>
+                        {/* Clean Rep Badge */}
+                        <div className="flex items-center gap-2 pl-3 pr-4 py-1.5 bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-full">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                            <span className="text-xs font-bold text-foreground">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-500 font-normal">Puan</span></span>
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="flex items-center gap-2">
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-all shadow-sm">
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-transparent border border-zinc-700/50 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
                                         <Mail className="w-4 h-4" />
                                     </Link>
                                     <ProfileSettingsDialog
@@ -454,7 +429,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         currentSocialLinks={profile?.social_links}
                                         userEmail={user?.email}
                                         trigger={
-                                            <button className="h-9 px-4 bg-[#000] text-white font-bold text-xs rounded-lg border border-transparent shadow-[2px_2px_0px_#333] active:translate-y-[1px] active:shadow-none hover:bg-neutral-800 transition-all uppercase tracking-wide">
+                                            <button className="h-9 px-4 bg-white text-black font-bold text-xs rounded-lg border border-transparent hover:bg-zinc-200 transition-all uppercase tracking-wide">
                                                 DÜZENLE
                                             </button>
                                         }
@@ -462,7 +437,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-white border border-neutral-300 rounded-lg text-neutral-700 hover:bg-neutral-50 transition-all shadow-sm">
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-transparent border border-zinc-700/50 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
                                         <Mail className="w-4 h-4" />
                                     </Link>
                                     <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
