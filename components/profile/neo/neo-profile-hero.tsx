@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, Copy, Check, ShieldCheck, PenTool, Crown } from "lucide-react";
+import { Mail, Copy, Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -305,16 +305,6 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                     <ShieldCheck className="w-3 h-3" /> VERIFIED
                                 </span>
                             )}
-                            {profile?.is_writer && (
-                                <span className="flex items-center gap-1 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/20">
-                                    <PenTool className="w-3 h-3" /> YAZAR
-                                </span>
-                            )}
-                            {(profile?.is_admin || profile?.role === 'admin') && (
-                                <span className="flex items-center gap-1 bg-red-500/10 text-red-500 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-500/20">
-                                    <Crown className="w-3 h-3" /> ADMIN
-                                </span>
-                            )}
                         </div>
                         {profile?.bio && <p className="mt-3 text-zinc-400 text-sm max-w-lg leading-relaxed line-clamp-2">{profile.bio}</p>}
                     </div>
@@ -374,25 +364,11 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 </div>
                             )}
                         </div>
-
-                        {/* Badges Container for Mobile */}
-                        <div className="absolute -bottom-2 -right-2 flex flex-col-reverse gap-1 z-20">
-                            {profile?.is_verified && (
-                                <div className="bg-[#FACC15] text-black p-1 rounded-full border-2 border-black shadow-sm" title="Onaylı Hesap">
-                                    <ShieldCheck className="w-3 h-3" />
-                                </div>
-                            )}
-                            {profile?.is_writer && (
-                                <div className="bg-indigo-500 text-white p-1 rounded-full border-2 border-black shadow-sm" title="Yazar">
-                                    <PenTool className="w-3 h-3" />
-                                </div>
-                            )}
-                            {(profile?.is_admin || profile?.role === 'admin') && (
-                                <div className="bg-red-500 text-white p-1 rounded-full border-2 border-black shadow-sm" title="Admin">
-                                    <Crown className="w-3 h-3" />
-                                </div>
-                            )}
-                        </div>
+                        {profile?.is_verified && (
+                            <div className="absolute -bottom-1 -right-1 bg-[#FACC15] text-black p-1 rounded-full border-2 border-black z-20">
+                                <ShieldCheck className="w-3 h-3" />
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Quick Stats - Clean Glass */}
