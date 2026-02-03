@@ -45,35 +45,35 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "text-blue-500", border: "group-hover:border-blue-500", bg: "group-hover:bg-blue-500/10" },
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "text-yellow-500", border: "group-hover:border-yellow-500", bg: "group-hover:bg-yellow-500/10" },
-        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, color: "text-purple-500", border: "group-hover:border-purple-500", bg: "group-hover:bg-purple-500/10" },
-        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, color: "text-green-500", border: "group-hover:border-green-500", bg: "group-hover:bg-green-500/10" },
-        { href: "/blog", label: "BLOG", icon: BookOpen, color: "text-pink-500", border: "group-hover:border-pink-500", bg: "group-hover:bg-pink-500/10" },
-        { href: "/testler", label: "TESTLER", icon: FlaskConical, color: "text-red-500", border: "group-hover:border-red-500", bg: "group-hover:bg-red-500/10" },
-        { href: "/siralamalar", label: "LİG", icon: Award, color: "text-orange-500", border: "group-hover:border-orange-500", bg: "group-hover:bg-orange-500/10" },
+        { href: "/", label: "ANA SAYFA", icon: Home, color: "hover:bg-blue-500", text: "hover:text-white" },
+        { href: "/makale", label: "KEŞFET", icon: Zap, color: "hover:bg-yellow-400", text: "hover:text-black" },
+        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, color: "hover:bg-purple-500", text: "hover:text-white" },
+        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, color: "hover:bg-green-500", text: "hover:text-white" },
+        { href: "/blog", label: "BLOG", icon: BookOpen, color: "hover:bg-pink-500", text: "hover:text-white" },
+        { href: "/testler", label: "TESTLER", icon: FlaskConical, color: "hover:bg-red-500", text: "hover:text-white" },
+        { href: "/siralamalar", label: "LİG", icon: Award, color: "hover:bg-orange-500", text: "hover:text-white" },
     ];
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }}
                     className={cn(
-                        "flex items-center justify-center !w-8 !h-8 !min-w-[32px] !min-h-[32px] !p-0",
-                        "bg-white/10 backdrop-blur-md border border-white/20 rounded-lg",
-                        "text-white hover:bg-white hover:text-black transition-all"
+                        "flex items-center justify-center !w-7 !h-7 !min-w-[28px] !min-h-[28px] !p-0",
+                        "bg-white border-2 border-white/20 text-black rounded-sm",
+                        "hover:bg-[#FACC15] hover:border-black transition-colors"
                     )}
                 >
-                    <Menu className="w-4 h-4 stroke-[2px]" />
+                    <Menu className="w-4 h-4 stroke-[2.5px]" />
                 </motion.button>
             </SheetTrigger>
 
-            {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}
+            {/* RAW NEO-BRUTALIST SIDE DRAWER */}
             <SheetContent
                 side="right"
-                className="w-[85vw] max-w-[300px] p-0 border-l border-white/10 bg-[#09090b]/95 backdrop-blur-2xl overflow-hidden shadow-2xl"
+                className="w-[85vw] max-w-[300px] p-0 border-l-4 border-black bg-white shadow-[-10px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
             >
                 <SheetTitle className="sr-only">Menü</SheetTitle>
 
@@ -84,61 +84,55 @@ export function MobileMenu() {
                     exit="closed"
                     variants={menuVariants}
                 >
-                    {/* BACKGROUND NOISE TEXTURE */}
-                    <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/noise.png")' }} />
+                    {/* CROSS-HATCH PATTERN OVERLAY (Subtle) */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                        style={{ backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%)', backgroundSize: '10px 10px' }}
+                    />
 
                     {/* HEADER */}
-                    <div className="flex items-center justify-between p-5 pb-2 z-10 border-b border-white/5">
-                        <span className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] select-none">SYSTEM_NAV</span>
+                    <div className="flex items-center justify-between p-5 border-b-4 border-black bg-white z-10">
+                        <span className="text-xl font-black italic tracking-tighter text-black select-none">FIZIK<span className="text-[#FACC15] drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">HUB</span></span>
                         <SheetClose asChild>
                             <motion.button
                                 whileHover={{ rotate: 90 }}
                                 whileTap={{ scale: 0.9 }}
-                                className="flex items-center justify-center w-8 h-8 border border-white/10 rounded-md text-white/60 hover:bg-white hover:text-black transition-colors"
+                                className="flex items-center justify-center w-8 h-8 border-2 border-black bg-black text-white hover:bg-white hover:text-black transition-colors"
                             >
-                                <X className="w-4 h-4 stroke-[2px]" />
+                                <X className="w-5 h-5 stroke-[3px]" />
                             </motion.button>
                         </SheetClose>
                     </div>
 
                     {/* SCROLLABLE CONTENT */}
-                    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 z-10 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto z-10 scrollbar-hide bg-white">
 
-                        {/* NAV ITEMS - COLORIZED & COMPACT */}
-                        <div className="space-y-2">
+                        {/* NAV ITEMS - HARD BLOCKS */}
+                        <div className="flex flex-col">
                             {menuItems.map((item, index) => {
                                 const isActive = pathname === item.href;
                                 return (
-                                    <motion.div key={item.href} variants={itemVariants}>
+                                    <motion.div key={item.href} variants={itemVariants} className="w-full">
                                         <ViewTransitionLink
                                             href={item.href}
                                             className={cn(
-                                                "group flex items-center justify-between px-3 py-2.5 rounded-lg border border-transparent",
-                                                "transition-all duration-200",
-                                                isActive ? `bg-white/10 border-white/10` : `hover:bg-white/5 ${item.border}`
+                                                "group flex items-center justify-between px-5 py-4 border-b-2 border-black",
+                                                "transition-all duration-150",
+                                                isActive ? "bg-black text-white" : `bg-white text-black hover:pl-8 ${item.color} ${item.text}`
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className={cn(
-                                                    "p-1.5 rounded-md bg-white/5 transition-colors",
-                                                    isActive ? "text-white" : `${item.color} group-hover:text-white ${item.bg}`
-                                                )}>
-                                                    <item.icon className="w-4 h-4" />
-                                                </div>
                                                 <span className={cn(
-                                                    "text-sm font-bold uppercase tracking-wide",
-                                                    isActive ? "text-white" : "text-zinc-400 group-hover:text-white"
+                                                    "text-lg font-black uppercase tracking-tight",
+                                                    isActive ? "text-white" : "text-black group-hover:text-inherit"
                                                 )}>
                                                     {item.label}
                                                 </span>
                                             </div>
 
-                                            {isActive && (
-                                                <motion.div
-                                                    layoutId="active-dot"
-                                                    className={cn("w-1.5 h-1.5 rounded-full shadow-[0px_0px_8px] bg-current", item.color.replace('text-', 'bg-'))}
-                                                />
-                                            )}
+                                            <item.icon className={cn(
+                                                "w-5 h-5 stroke-[2.5px]",
+                                                isActive ? "text-[#FACC15]" : "text-black group-hover:text-inherit"
+                                            )} />
                                         </ViewTransitionLink>
                                     </motion.div>
                                 );
@@ -146,39 +140,40 @@ export function MobileMenu() {
                         </div>
                     </div>
 
-                    {/* FOOTER - UTILITY GRID */}
+                    {/* FOOTER - RAW UTILITY */}
                     <motion.div
                         variants={itemVariants}
-                        className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md z-10"
+                        className="p-5 border-t-4 border-black bg-[#F5F5F5] z-10"
                     >
-                        <div className="grid grid-cols-2 gap-2 mb-4">
+                        <div className="grid grid-cols-2 gap-3 mb-5">
                             <ViewTransitionLink
                                 href="/profil"
-                                className="flex flex-col items-center justify-center gap-1 p-2 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all"
+                                className="flex flex-col items-center justify-center gap-1 p-3 border-2 border-black bg-white shadow-[3px_3px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#000] active:shadow-none transition-all"
                             >
-                                <User className="w-4 h-4 text-zinc-400" />
-                                <span className="text-[10px] font-bold text-zinc-500 uppercase">Hesabım</span>
+                                <User className="w-5 h-5 text-black stroke-[2.5px]" />
+                                <span className="text-[11px] font-black text-black uppercase tracking-tight">Hesabım</span>
                             </ViewTransitionLink>
                             <ViewTransitionLink
                                 href="/ayarlar"
-                                className="flex flex-col items-center justify-center gap-1 p-2 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all"
+                                className="flex flex-col items-center justify-center gap-1 p-3 border-2 border-black bg-white shadow-[3px_3px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_#000] active:shadow-none transition-all"
                             >
-                                <Settings className="w-4 h-4 text-zinc-400" />
-                                <span className="text-[10px] font-bold text-zinc-500 uppercase">Ayarlar</span>
+                                <Settings className="w-5 h-5 text-black stroke-[2.5px]" />
+                                <span className="text-[11px] font-black text-black uppercase tracking-tight">Ayarlar</span>
                             </ViewTransitionLink>
                         </div>
 
-                        <div className="scale-90 origin-bottom">
+                        <div className="scale-95 origin-bottom">
+                            {/* Override AuthButton internally or wrap it */}
                             <AuthButton />
                         </div>
 
                         {/* SOCIALS / INFO */}
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5 text-zinc-700">
-                            <span className="text-[9px] font-mono uppercase tracking-widest">v2.4.2 COLOR</span>
-                            <div className="flex gap-3 text-zinc-600">
-                                <Twitter className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
-                                <Github className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
-                                <Globe className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
+                        <div className="flex justify-between items-center mt-5 pt-4 border-t-2 border-black/10 text-black">
+                            <span className="text-[10px] font-black font-mono uppercase bg-black text-white px-1">v3.0 RAW</span>
+                            <div className="flex gap-4 text-black">
+                                <Twitter className="w-4 h-4 hover:scale-110 transition-transform cursor-pointer stroke-[2.5px]" />
+                                <Github className="w-4 h-4 hover:scale-110 transition-transform cursor-pointer stroke-[2.5px]" />
+                                <Globe className="w-4 h-4 hover:scale-110 transition-transform cursor-pointer stroke-[2.5px]" />
                             </div>
                         </div>
                     </motion.div>
