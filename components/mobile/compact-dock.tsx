@@ -31,14 +31,16 @@ export function CompactDock() {
     return (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] md:hidden w-auto">
             {/* 
-        NEO-CAPSULE DOCK (STEALTH LUXE)
-        - Style: Matte Black, Gold Glow.
+        NEO-CAPSULE DOCK
+        - "Compact & Quality": Only as wide as needed.
+        - "Not Bulky": Floating with refined shadows.
+        - Style: Black Glass with Yellow Accents.
       */}
             <motion.div
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="flex items-center gap-1 p-2 bg-[#050505]/90 backdrop-blur-md border border-[#FACC15]/20 rounded-full shadow-[0px_10px_30px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/5"
+                className="flex items-center gap-1 p-2 bg-[#09090b]/90 backdrop-blur-md border-[2px] border-white/10 rounded-full shadow-neo-sm ring-1 ring-black/5"
             >
 
                 {dockLinks.map((link) => {
@@ -54,9 +56,9 @@ export function CompactDock() {
                             >
                                 <Link
                                     href={link.href}
-                                    className="flex items-center justify-center w-12 h-12 bg-[#facc15] text-black rounded-full shadow-[0px_0px_15px_rgba(250,204,21,0.4)]"
+                                    className="flex items-center justify-center w-12 h-12 bg-[#facc15] border-[2px] border-black shadow-neo-sm text-black rounded-full"
                                 >
-                                    <link.icon className="w-6 h-6 stroke-[2.5px]" />
+                                    <link.icon className="w-6 h-6 stroke-[3px]" />
                                 </Link>
                             </motion.div>
                         )
@@ -110,7 +112,7 @@ export function CompactDock() {
                             href={link.href}
                             className={cn(
                                 "relative flex items-center justify-center w-10 h-10 rounded-full transition-all",
-                                isActive ? "text-[#facc15]" : "text-zinc-500 hover:text-zinc-300"
+                                isActive ? "text-[#facc15]" : "text-gray-400 hover:text-white"
                             )}
                         >
                             <link.icon className={cn("w-5 h-5 stroke-[2.5px]")} />

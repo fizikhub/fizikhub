@@ -76,33 +76,34 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V31: STEALTH LUXE HUD
+                V29: PREMIUM SCIENCE HUD
                 - Height: h-14 (56px) - Optimized for Mobile
-                - Style: Matte Black, Gold Accents, Minimalist
+                - Style: Sharp Neo-Brutalist, Blue Base
             */}
             <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#050505] border-b border-[#FACC15]/20", // Stealth Black + Subtle Gold Border
-                        "w-full relative overflow-hidden transition-all duration-300"
+                        "bg-[#3B82F6] border-b-[3px] border-black",
+                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
+                        "w-full relative overflow-hidden"
                     )}
                 >
-                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - GOLD DATA STREAM */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-10">
+                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
                                 style={{
                                     left: `${drop.left}%`,
-                                    fontSize: `${10 * drop.scale}px`,
-                                    color: '#FACC15', // Gold Data Stream
-                                    filter: 'blur(0.4px)'
+                                    fontSize: `${13 * drop.scale}px`,
+                                    color: `rgba(0,0,0,${drop.opacity || 0.3})`,
+                                    filter: 'blur(0.3px)'
                                 }}
                                 initial={{ y: 60, opacity: 0 }}
-                                animate={{ y: -20, opacity: [0, 0.8, 0] }}
+                                animate={{ y: -20, opacity: [0, 1, 0] }}
                                 transition={{
                                     duration: drop.duration,
                                     repeat: Infinity,
@@ -115,15 +116,22 @@ export function Navbar() {
                         ))}
                     </div>
 
+                    {/* RULER TICKS - SHARPER */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
+                    </div>
+
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300 active:scale-95">
+                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-3 pb-0.5">
+                    <div className="relative z-10 flex items-center gap-3 pb-1">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
@@ -132,9 +140,9 @@ export function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-1.5 text-xs font-bold uppercase transition-all rounded-full",
-                                        "text-zinc-400 hover:text-[#FACC15] hover:bg-[#FACC15]/10",
-                                        pathname === item.href && "text-[#FACC15] bg-[#FACC15]/10"
+                                        "px-4 py-1.5 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
+                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
+                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
                                     )}
                                 >
                                     {item.label}
@@ -143,21 +151,24 @@ export function Navbar() {
                         </div>
 
                         {/* 1. SEARCH */}
+                        {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-9 h-9 text-zinc-400 transition-all hover:text-[#FACC15] active:text-white"
+                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
+                            style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px", padding: 0 }}
+                            className="flex items-center justify-center !w-[28px] !h-[28px] !min-w-[28px] !min-h-[28px] !p-0 bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
-                            <Search className="w-5 h-5 stroke-[2px]" />
+                            <Search className="!w-4 !h-4 stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            whileTap={{ scale: 0.9 }}
-                            className="flex md:hidden items-center justify-center w-9 h-9 text-[#FACC15] transition-all bg-[#FACC15]/10 rounded-full border border-[#FACC15]/20"
+                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
+                            style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px", padding: 0 }}
+                            className="flex md:hidden items-center justify-center !w-[28px] !h-[28px] !min-w-[28px] !min-h-[28px] !p-0 bg-[#FFC800] border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
                         >
-                            <Zap className="w-4 h-4 fill-[#FACC15] stroke-[2px]" />
+                            <Zap className="!w-4 !h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
