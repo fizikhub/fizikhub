@@ -23,8 +23,8 @@ const config = {
                 border: "#000000", // Force Black Borders
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))", // Dynamic from globals.css
-                foreground: "#ffffff",
+                background: "#FFFFFF", // Default White
+                foreground: "#000000", // Default Black
                 primary: {
                     DEFAULT: "#facc15", // Warning Yellow
                     foreground: "#000000",
@@ -33,66 +33,68 @@ const config = {
                     DEFAULT: "#8b5cf6", // Quantum Purple
                     foreground: "#ffffff",
                 },
-                card: {
-                    DEFAULT: "#1f2937", // Matter
-                    foreground: "#ffffff",
-                },
                 destructive: {
-                    DEFAULT: "hsl(var(--destructive))",
-                    foreground: "hsl(var(--destructive-foreground))",
+                    DEFAULT: "#FF0000",
+                    foreground: "#FFFFFF",
                 },
                 muted: {
-                    DEFAULT: "#27272a",
-                    foreground: "#a1a1aa",
+                    DEFAULT: "#f4f4f5",
+                    foreground: "#71717a",
                 },
                 accent: {
                     DEFAULT: "#facc15",
                     foreground: "#000000",
                 },
                 popover: {
-                    DEFAULT: "#1f2937",
-                    foreground: "#ffffff",
+                    DEFAULT: "#FFFFFF",
+                    foreground: "#000000",
                 },
-                // Custom Neo-Brutalist Colors
+                card: {
+                    DEFAULT: "#FFFFFF",
+                    foreground: "#000000",
+                },
+                // Neo-Brutalist Pop Colors
                 neo: {
-                    yellow: "#facc15",
-                    purple: "#8b5cf6",
+                    yellow: "#FFE500", // Bright Yellow
+                    pink: "#FF00D6",   // Hot Pink
+                    cyan: "#00FFFF",   // Electric Cyan
+                    teal: "#3BB3BD",   // Muted Teal (from Figma)
+                    orange: "#FF8800", // Safety Orange
+                    green: "#00FF00",  // Lime Green
                     black: "#000000",
                     white: "#FFFFFF",
-                    void: "#09090b",
-                    matter: "#1f2937"
+                    offwhite: "#FDFDFD",
                 }
             },
             borderRadius: {
-                lg: "var(--radius)",
-                md: "calc(var(--radius) - 2px)",
-                sm: "calc(var(--radius) - 4px)",
+                lg: "12px",
+                md: "8px",
+                sm: "4px",
                 none: "0px",
+                full: "9999px",
             },
             borderWidth: {
                 DEFAULT: "2px",
                 '3': "3px",
+                '4': "4px",
             },
             boxShadow: {
-                // Neo-Brutalism Shadow Scale (RetroUI inspired, 0 blur)
-                'neo-xs': '1px 1px 0px 0px #000000',    // Micro elements
-                'neo-sm': '2px 2px 0px 0px #000000',    // Mobile/Compact
-                'neo': '4px 4px 0px 0px #000000',    // Default
-                'neo-lg': '6px 6px 0px 0px #000000',    // Large components
-                'neo-xl': '10px 10px 0px 0px #000000',  // Hero elements
-                // Interactive States
-                'neo-hover': '2px 2px 0px 0px #000000',
-                'neo-active': '0px 0px 0px 0px #000000',
-                // Dark Mode Variants
-                'neo-dark': '4px 4px 0px 0px #ffffff',
-                'neo-white': '4px 4px 0px 0px #ffffff',
-                // Colored Shadows (Accent)
-                'neo-yellow': '4px 4px 0px 0px #facc15',
-                'neo-purple': '4px 4px 0px 0px #8b5cf6',
+                // Hard Shadows (No Blur)
+                'neo-xs': '1px 1px 0px 0px #000000',
+                'neo-sm': '2px 2px 0px 0px #000000',
+                'neo': '4px 4px 0px 0px #000000',
+                'neo-lg': '6px 6px 0px 0px #000000',
+                'neo-xl': '8px 8px 0px 0px #000000',
+                // Interactive (Pressed)
+                'neo-pressed': '0px 0px 0px 0px #000000',
+                // Color Shadows
+                'neo-yellow': '4px 4px 0px 0px #FFE500',
+                'neo-pink': '4px 4px 0px 0px #FF00D6',
+                'neo-cyan': '4px 4px 0px 0px #00FFFF',
             },
             fontFamily: {
                 sans: ["var(--font-inter)", "sans-serif"],
-                heading: ["var(--font-outfit)", "sans-serif"],
+                heading: ["var(--font-space-grotesk)", "sans-serif"], // Using Space Grotesk for headings
             },
             keyframes: {
                 "accordion-down": {
@@ -108,27 +110,11 @@ const config = {
                     "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-2px)" },
                     "20%, 40%, 60%, 80%": { transform: "translateX(2px)" },
                 },
-                // Extracted from NeoBaseAI
-                "fade-in": {
-                    "0%": { opacity: "0" },
-                    "100%": { opacity: "1" },
-                },
-                "slide-up": {
-                    "0%": { opacity: "0", transform: "translateY(10px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
-                },
-                "slide-down": {
-                    "0%": { opacity: "0", transform: "translateY(-10px)" },
-                    "100%": { opacity: "1", transform: "translateY(0)" },
-                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "shake": "shake 0.4s cubic-bezier(.36,.07,.19,.97) both",
-                "fade-in": "fade-in 0.2s ease-out forwards",
-                "slide-up": "slide-up 0.2s ease-out",
-                "slide-down": "slide-down 0.2s ease-out",
             },
         },
     },

@@ -1,0 +1,24 @@
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+export interface NeoInputProps
+    extends React.InputHTMLAttributes<HTMLInputElement> { }
+
+const NeoInput = React.forwardRef<HTMLInputElement, NeoInputProps>(
+    ({ className, type, ...props }, ref) => {
+        return (
+            <input
+                type={type}
+                className={cn(
+                    "flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-neo-sm focus:shadow-neo",
+                    className
+                )}
+                ref={ref}
+                {...props}
+            />
+        )
+    }
+)
+NeoInput.displayName = "NeoInput"
+
+export { NeoInput }

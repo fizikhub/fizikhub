@@ -1,146 +1,147 @@
-import { createClient } from "@supabase/supabase-js";
-import { unstable_cache } from "next/cache";
-import type { Metadata } from "next";
-import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
-import { FeedSidebar } from "@/components/home/feed-sidebar";
-import { CompactHero } from "@/components/home/compact-hero";
+"use client"
 
-import { ScienceStories } from "@/components/science-cards/science-stories";
+import { NeoButton } from "@/components/neo/NeoButton"
+import { NeoCard } from "@/components/neo/NeoCard"
+import { NeoBadge } from "@/components/neo/NeoBadge"
+import { ArrowRight, BookOpen, Flame, Zap, Home, User, Search, Menu } from "lucide-react"
 
-
-
-// "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
-
-export const metadata: Metadata = {
-  title: "Ana Sayfa",
-  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
-  openGraph: {
-    title: "Fizikhub | Bilim Platformu",
-    description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
-    type: "website",
-  },
-};
-
-// Cached Data Fetching
-const getCachedFeedData = unstable_cache(
-  async () => {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-
-    const [articlesResult, questionsResult, profilesResult] = await Promise.all([
-      // Fetch Articles & Blogs (using same table)
-      supabase
-        .from('articles')
-        .select('*, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(20), // get recent 20
-
-      // Fetch Questions
-      supabase
-        .from('questions')
-        .select('*, profiles(username, full_name, avatar_url, is_verified), answers(count)')
-        .order('created_at', { ascending: false })
-        .limit(20),
-
-      // Fetch Suggested Users (e.g., writers or active users)
-      supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, is_writer, is_verified, bio')
-        .limit(10) // Ideally random or by popularity, for now just first 10
-    ]);
-
-    return {
-      articles: articlesResult.data || [],
-      questions: questionsResult.data || [],
-      suggestedUsers: profilesResult.data || []
-    };
-  },
-  ['feed-data-v3'], // Bump version to invalidate cache
-  { revalidate: 60, tags: ['feed'] }
-);
-
-
-
-export default async function Home() {
-  const { articles, questions, suggestedUsers } = await getCachedFeedData();
-
-  // Process and Merge Data
-  const feedItems: FeedItem[] = [];
-
-  // Add Articles (Distinguish Blog vs Article if needed, e.g. by is_writer or category, but for now treating similarly as 'article' or 'blog' type for visuals)
-  articles.forEach((a: { author?: { is_writer?: boolean }; category?: string; created_at: string;[key: string]: any }) => {
-    // If author is writer -> Article style (maybe), if not -> Blog style? 
-    // User said "blogların ve makalelerin kartları makale sayfası ve blog sayfasındaki ... ile aynı olsun".
-    // Makale page uses SocialArticleCard. Blog page uses SocialArticleCard. They are visually same/similar.
-    // Let's distinguish by `author.is_writer`.
-
-    // Check if it's an experiment
-    let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
-    if (a.category === 'Deney') {
-      type = 'experiment';
-    } else if (a.category === 'Kitap İncelemesi') {
-      type = 'book-review';
-    } else if (a.category === 'Terim') {
-      type = 'term';
-    }
-
-    // We need to fetch/attach loop counts for likes? For MVP just pass 0 or mock? 
-    // The previous implementation fetched them. For performance in "Feed", ideally we join or fetch.
-    // Since we are using basic select, we might miss counts.
-    // Ideally we should do a .rpc() call or separate queries for counts if critical. 
-    // For now, let's proceed with basic data. SocialArticleCard handles 0 gracefully.
-
-    feedItems.push({
-      type: type,
-      data: {
-        ...a,
-        likes_count: 0, // In a real "Feed", these should be fetched. 
-        comments_count: 0
-      },
-      sortDate: a.created_at
-    });
-  });
-
-  questions.forEach((q: { id: string; answers?: { count: number }[]; created_at: string;[key: string]: any }) => {
-    feedItems.push({
-      type: 'question',
-      data: {
-        ...q,
-        answer_count: q.answers?.[0]?.count || 0
-      },
-      sortDate: q.created_at
-    });
-  });
-
-  // Sort by date descending
-  feedItems.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
-
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-neo-white text-black font-sans pb-24">
+      {/* Mobile Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b-2 border-black bg-white px-4 py-3 shadow-neo-sm">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 bg-neo-yellow border-2 border-black flex items-center justify-center font-bold text-xl shadow-neo-xs">
+            F
+          </div>
+          <span className="font-heading text-xl font-bold tracking-tight">FIZIKHUB</span>
+        </div>
+        <NeoButton size="icon" variant="ghost" className="h-10 w-10">
+          <Menu className="h-6 w-6" />
+        </NeoButton>
+      </nav>
 
-      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+      <main className="container mx-auto px-4 pt-20">
+        {/* Hero Section */}
+        <section className="mb-12 mt-8">
+          <NeoBadge variant="neo-pink" className="mb-4">
+            NEW: QUANTUM LEAP V2
+          </NeoBadge>
+          <h1 className="font-heading text-5xl font-black leading-[0.9] tracking-tight mb-6">
+            SCIENCE <br />
+            <span className="text-neo-purple bg-black text-white px-2">UNFILTERED</span>
+          </h1>
+          <p className="text-lg font-medium text-muted-foreground mb-8 max-w-md">
+            Raw science explanations for curious minds. No fluff, just the good stuff.
+          </p>
+          <div className="flex gap-4">
+            <NeoButton className="w-full text-base font-bold shadow-neo">
+              Start Reading <ArrowRight className="ml-2 h-4 w-4" />
+            </NeoButton>
+            <NeoButton variant="outline" className="w-14 shrink-0 shadow-neo">
+              <Search className="h-5 w-5" />
+            </NeoButton>
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
+        {/* Categories / Tags */}
+        <section className="mb-10 overflow-x-auto pb-4 -mx-4 px-4 flex gap-3 no-scrollbar">
+          {["Quantum", "Space", "Biology", "Tech", "Math", "History"].map((tag, i) => (
+            <NeoButton
+              key={tag}
+              variant={i === 0 ? "default" : "outline"}
+              size="sm"
+              className="rounded-full px-6 shadow-neo-sm font-bold border-2"
+            >
+              #{tag}
+            </NeoButton>
+          ))}
+        </section>
 
-          {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-0 sm:px-0">
-            <CompactHero />
+        {/* Featured Content Feed */}
+        <section className="space-y-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-heading text-2xl font-bold flex items-center gap-2">
+              <Flame className="h-6 w-6 text-neo-orange fill-current" />
+              HOT TAKES
+            </h2>
           </div>
 
-          {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
-            <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
-          </div>
+          {/* Article Card 1 */}
+          <NeoCard className="overflow-hidden">
+            <div className="h-48 bg-neo-purple/20 border-b-2 border-black relative group">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Zap className="h-16 w-16 text-neo-purple opacity-50 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <NeoBadge className="absolute top-4 left-4 bg-white" variant="neo-black">
+                PHYSICS
+              </NeoBadge>
+            </div>
+            <div className="p-5">
+              <h3 className="font-heading text-2xl font-bold leading-tight mb-2">
+                Why Time Travel is Probably Impossible
+              </h3>
+              <p className="text-muted-foreground font-medium mb-4 line-clamp-2">
+                Grandfather paradoxes, wormholes, and why you can't kill your past self (even if you wanted to).
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold bg-neo-yellow/30 px-2 py-1 rounded border-2 border-black/10">
+                  5 MIN READ
+                </span>
+                <NeoButton size="sm" variant="ghost" className="hover:bg-neo-purple hover:text-white">
+                  Read <ArrowRight className="ml-1 h-3 w-3" />
+                </NeoButton>
+              </div>
+            </div>
+          </NeoCard>
 
-          {/* Sidebar Column */}
-          <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar />
-          </div>
+          {/* Article Card 2 */}
+          <NeoCard className="overflow-hidden">
+            <div className="h-48 bg-neo-cyan/20 border-b-2 border-black relative group">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <BookOpen className="h-16 w-16 text-neo-cyan opacity-50 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <NeoBadge className="absolute top-4 left-4 bg-white" variant="neo-black">
+                SPACE
+              </NeoBadge>
+            </div>
+            <div className="p-5">
+              <h3 className="font-heading text-2xl font-bold leading-tight mb-2">
+                The Great Filter: Are We Alone?
+              </h3>
+              <p className="text-muted-foreground font-medium mb-4 line-clamp-2">
+                Fermi's paradox explained. Where are all the aliens? Maybe they're already dead.
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold bg-neo-yellow/30 px-2 py-1 rounded border-2 border-black/10">
+                  8 MIN READ
+                </span>
+                <NeoButton size="sm" variant="ghost" className="hover:bg-neo-cyan hover:text-black">
+                  Read <ArrowRight className="ml-1 h-3 w-3" />
+                </NeoButton>
+              </div>
+            </div>
+          </NeoCard>
+        </section>
+      </main>
+
+      {/* Floating Dock Navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+        <div className="flex items-center gap-2 p-2 bg-black rounded-xl border-2 border-black shadow-neo-lg scale-90 sm:scale-100">
+          <NeoButton variant="default" size="icon" className="rounded-lg shadow-none border-transparent bg-neo-yellow text-black hover:bg-white">
+            <Home className="h-6 w-6" />
+          </NeoButton>
+          <NeoButton variant="ghost" size="icon" className="rounded-lg text-white hover:bg-white hover:text-black hover:shadow-none border-transparent">
+            <Search className="h-6 w-6" />
+          </NeoButton>
+          <NeoButton variant="ghost" size="icon" className="rounded-lg text-white hover:bg-white hover:text-black hover:shadow-none border-transparent">
+            <BookOpen className="h-6 w-6" />
+          </NeoButton>
+          <NeoButton variant="ghost" size="icon" className="rounded-lg text-white hover:bg-white hover:text-black hover:shadow-none border-transparent">
+            <User className="h-6 w-6" />
+          </NeoButton>
         </div>
       </div>
-    </main>
-  );
+    </div>
+  )
 }
