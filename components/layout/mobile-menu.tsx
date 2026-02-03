@@ -45,13 +45,13 @@ export function MobileMenu() {
     }, [pathname]);
 
     const menuItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "text-blue-500", border: "hover:border-blue-500" },
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "text-yellow-500", border: "hover:border-yellow-500" },
-        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, color: "text-purple-500", border: "hover:border-purple-500" },
-        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, color: "text-green-500", border: "hover:border-green-500" },
-        { href: "/blog", label: "BLOG", icon: BookOpen, color: "text-pink-500", border: "hover:border-pink-500" },
-        { href: "/testler", label: "TESTLER", icon: FlaskConical, color: "text-red-500", border: "hover:border-red-500" },
-        { href: "/siralamalar", label: "LİG", icon: Award, color: "text-orange-500", border: "hover:border-orange-500" },
+        { href: "/", label: "ANA SAYFA", icon: Home, color: "text-blue-500", border: "group-hover:border-blue-500", bg: "group-hover:bg-blue-500/10" },
+        { href: "/makale", label: "KEŞFET", icon: Zap, color: "text-yellow-500", border: "group-hover:border-yellow-500", bg: "group-hover:bg-yellow-500/10" },
+        { href: "/simulasyonlar", label: "SİMÜLASYONLAR", icon: Atom, color: "text-purple-500", border: "group-hover:border-purple-500", bg: "group-hover:bg-purple-500/10" },
+        { href: "/notlar", label: "NOTLARIM", icon: StickyNote, color: "text-green-500", border: "group-hover:border-green-500", bg: "group-hover:bg-green-500/10" },
+        { href: "/blog", label: "BLOG", icon: BookOpen, color: "text-pink-500", border: "group-hover:border-pink-500", bg: "group-hover:bg-pink-500/10" },
+        { href: "/testler", label: "TESTLER", icon: FlaskConical, color: "text-red-500", border: "group-hover:border-red-500", bg: "group-hover:bg-red-500/10" },
+        { href: "/siralamalar", label: "LİG", icon: Award, color: "text-orange-500", border: "group-hover:border-orange-500", bg: "group-hover:bg-orange-500/10" },
     ];
 
     return (
@@ -59,8 +59,9 @@ export function MobileMenu() {
             <SheetTrigger asChild>
                 <motion.button
                     whileTap={{ scale: 0.9 }}
+                    style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
                     className={cn(
-                        "flex items-center justify-center w-8 h-8",
+                        "flex items-center justify-center !w-8 !h-8 !min-w-[32px] !min-h-[32px] !p-0",
                         "bg-white/10 backdrop-blur-md border border-white/20 rounded-lg",
                         "text-white hover:bg-white hover:text-black transition-all"
                     )}
@@ -72,7 +73,7 @@ export function MobileMenu() {
             {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}
             <SheetContent
                 side="right"
-                className="w-[85vw] max-w-[320px] p-0 border-l border-white/10 bg-[#09090b]/95 backdrop-blur-2xl overflow-hidden shadow-2xl"
+                className="w-[85vw] max-w-[300px] p-0 border-l border-white/10 bg-[#09090b]/95 backdrop-blur-2xl overflow-hidden shadow-2xl"
             >
                 <SheetTitle className="sr-only">Menü</SheetTitle>
 
@@ -88,7 +89,7 @@ export function MobileMenu() {
 
                     {/* HEADER */}
                     <div className="flex items-center justify-between p-5 pb-2 z-10 border-b border-white/5">
-                        <span className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em]">SYSTEM_NAV</span>
+                        <span className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em] select-none">SYSTEM_NAV</span>
                         <SheetClose asChild>
                             <motion.button
                                 whileHover={{ rotate: 90 }}
@@ -103,8 +104,8 @@ export function MobileMenu() {
                     {/* SCROLLABLE CONTENT */}
                     <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 z-10 scrollbar-hide">
 
-                        {/* NAV ITEMS - COMPACT LIST */}
-                        <div className="space-y-1.5">
+                        {/* NAV ITEMS - COLORIZED & COMPACT */}
+                        <div className="space-y-2">
                             {menuItems.map((item, index) => {
                                 const isActive = pathname === item.href;
                                 return (
@@ -112,25 +113,32 @@ export function MobileMenu() {
                                         <ViewTransitionLink
                                             href={item.href}
                                             className={cn(
-                                                "group flex items-center justify-between px-3 py-3 rounded-none border-b border-white/5",
+                                                "group flex items-center justify-between px-3 py-2.5 rounded-lg border border-transparent",
                                                 "transition-all duration-200",
-                                                isActive ? "bg-white/5 border-l-[3px] border-l-[#FACC15]" : "hover:bg-white/5 hover:border-l-[3px] hover:border-l-white/20"
+                                                isActive ? `bg-white/10 border-white/10` : `hover:bg-white/5 ${item.border}`
                                             )}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <item.icon className={cn(
-                                                    "w-4 h-4",
-                                                    isActive ? "text-[#FACC15]" : "text-zinc-500 group-hover:text-zinc-300"
-                                                )} />
+                                                <div className={cn(
+                                                    "p-1.5 rounded-md bg-white/5 transition-colors",
+                                                    isActive ? "text-white" : `${item.color} group-hover:text-white ${item.bg}`
+                                                )}>
+                                                    <item.icon className="w-4 h-4" />
+                                                </div>
                                                 <span className={cn(
-                                                    "text-sm font-bold uppercase tracking-wider",
+                                                    "text-sm font-bold uppercase tracking-wide",
                                                     isActive ? "text-white" : "text-zinc-400 group-hover:text-white"
                                                 )}>
                                                     {item.label}
                                                 </span>
                                             </div>
 
-                                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15] shadow-[0px_0px_8px_#FACC15]" />}
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="active-dot"
+                                                    className={cn("w-1.5 h-1.5 rounded-full shadow-[0px_0px_8px] bg-current", item.color.replace('text-', 'bg-'))}
+                                                />
+                                            )}
                                         </ViewTransitionLink>
                                     </motion.div>
                                 );
@@ -166,7 +174,7 @@ export function MobileMenu() {
 
                         {/* SOCIALS / INFO */}
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5 text-zinc-700">
-                            <span className="text-[9px] font-mono uppercase tracking-widest">v2.4.1 stable</span>
+                            <span className="text-[9px] font-mono uppercase tracking-widest">v2.4.2 COLOR</span>
                             <div className="flex gap-3 text-zinc-600">
                                 <Twitter className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
                                 <Github className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />

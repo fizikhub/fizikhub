@@ -154,7 +154,8 @@ export function Navbar() {
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-8 h-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white hover:text-black transition-all"
+                            style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
+                            className="flex items-center justify-center !w-8 !h-8 !min-w-[32px] !min-h-[32px] !p-0 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white hover:text-black transition-all"
                         >
                             <Search className="w-4 h-4 stroke-[2px]" />
                         </motion.button>
@@ -163,7 +164,8 @@ export function Navbar() {
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             whileTap={{ scale: 0.9 }}
-                            className="flex md:hidden items-center justify-center w-8 h-8 bg-[#FACC15] text-black rounded-lg shadow-[0px_0px_10px_rgba(250,204,21,0.4)] transition-all"
+                            style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
+                            className="flex md:hidden items-center justify-center !w-8 !h-8 !min-w-[32px] !min-h-[32px] !p-0 bg-[#FACC15] text-black rounded-lg shadow-[0px_0px_10px_rgba(250,204,21,0.4)] transition-all"
                         >
                             <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
