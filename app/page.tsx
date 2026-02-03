@@ -64,20 +64,17 @@ const getCachedFeedData = unstable_cache(
 
 
 
+// ... imports
+import { MobileHomeV2 } from "@/components/home/mobile/mobile-home-v2";
+
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
   // Process and Merge Data
   const feedItems: FeedItem[] = [];
 
-  // Add Articles (Distinguish Blog vs Article if needed, e.g. by is_writer or category, but for now treating similarly as 'article' or 'blog' type for visuals)
+  // Add Articles
   articles.forEach((a: { author?: { is_writer?: boolean }; category?: string; created_at: string;[key: string]: any }) => {
-    // If author is writer -> Article style (maybe), if not -> Blog style? 
-    // User said "blogların ve makalelerin kartları makale sayfası ve blog sayfasındaki ... ile aynı olsun".
-    // Makale page uses SocialArticleCard. Blog page uses SocialArticleCard. They are visually same/similar.
-    // Let's distinguish by `author.is_writer`.
-
-    // Check if it's an experiment
     let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
     if (a.category === 'Deney') {
       type = 'experiment';
@@ -87,17 +84,11 @@ export default async function Home() {
       type = 'term';
     }
 
-    // We need to fetch/attach loop counts for likes? For MVP just pass 0 or mock? 
-    // The previous implementation fetched them. For performance in "Feed", ideally we join or fetch.
-    // Since we are using basic select, we might miss counts.
-    // Ideally we should do a .rpc() call or separate queries for counts if critical. 
-    // For now, let's proceed with basic data. SocialArticleCard handles 0 gracefully.
-
     feedItems.push({
       type: type,
       data: {
         ...a,
-        likes_count: 0, // In a real "Feed", these should be fetched. 
+        likes_count: 0,
         comments_count: 0
       },
       sortDate: a.created_at
@@ -120,23 +111,24 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      {/* MOBILE VIEW (V2) */}
+      <MobileHomeV2 items={feedItems} suggestedUsers={suggestedUsers} />
 
-      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
-
-          {/* Kompakt Hero Banner - Slogan + UFO */}
-          <div className="lg:col-span-12 mt-0 sm:px-0">
+      {/* DESKTOP VIEW (Legacy/Standard) - Hidden on Mobile */}
+      <div className="hidden md:block container max-w-7xl mx-auto px-4 md:px-6 relative z-10 pt-20">
+        <div className="grid grid-cols-12 gap-8">
+          {/* Kompakt Hero Banner */}
+          <div className="col-span-12">
             <CompactHero />
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
+          <div className="col-span-12 xl:col-span-7 space-y-6">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
           {/* Sidebar Column */}
-          <div className="hidden xl:block xl:col-span-5 relative">
+          <div className="col-span-5 relative">
             <FeedSidebar />
           </div>
         </div>
