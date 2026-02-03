@@ -14,9 +14,9 @@ import {
     Atom
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
-const container = {
+const container: Variants = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,
@@ -27,9 +27,14 @@ const container = {
     }
 };
 
-const item = {
+const item: Variants = {
     hidden: { y: 30, opacity: 0, scale: 0.95 },
-    show: { y: 0, opacity: 1, scale: 1, transition: { type: "spring", stiffness: 50 } }
+    show: {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        transition: { type: "spring", stiffness: 50 }
+    }
 };
 
 interface HubCardProps {
