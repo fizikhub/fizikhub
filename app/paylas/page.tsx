@@ -201,14 +201,7 @@ export default function PaylasPage() {
                     className="mt-8"
                 >
                     <Link href="/ara" className="block group">
-                        <div className="
-                            bg-black text-white 
-                            h-16 rounded-xl 
-                            flex items-center justify-between px-6 
-                            border-[3px] border-black
-                            hover:bg-[#1a1a1a] transition-colors
-                            shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]
-                         ">
+                        <div className="bg-black text-white h-16 rounded-xl flex items-center justify-between px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)]">
                             <span className="font-bold text-lg flex items-center gap-3">
                                 <Search className="w-5 h-5 text-gray-400" />
                                 <span className="text-gray-400">Daha fazlasını mı arıyorsun?</span>
