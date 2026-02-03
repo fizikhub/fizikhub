@@ -76,22 +76,22 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V29: PREMIUM SCIENCE HUD
+                V31: PREMIUM GLASS HUD (DARK MODE RESTORED)
                 - Height: h-14 (56px) - Optimized for Mobile
-                - Style: Sharp Neo-Brutalist, Blue Base
+                - Style: Dark Glass Neo-Brutalist
             */}
             <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
                 <div
                     className={cn(
                         "pointer-events-auto h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#3B82F6] border-b-[3px] border-black",
-                        "shadow-[0px_4px_0px_0px_rgba(0,0,0,1)]", // Thicker shadow
+                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
+                        "shadow-lg",
                         "w-full relative overflow-hidden"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-80">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
@@ -99,7 +99,7 @@ export function Navbar() {
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${13 * drop.scale}px`,
-                                    color: `rgba(0,0,0,${drop.opacity || 0.3})`,
+                                    color: `rgba(255,255,255,${drop.opacity || 0.3})`,
                                     filter: 'blur(0.3px)'
                                 }}
                                 initial={{ y: 60, opacity: 0 }}
@@ -117,9 +117,9 @@ export function Navbar() {
                     </div>
 
                     {/* RULER TICKS - SHARPER */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-40 mix-blend-overlay">
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-20 mix-blend-overlay">
                         {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-black h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
                         ))}
                     </div>
 
@@ -140,9 +140,9 @@ export function Navbar() {
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-1.5 text-xs font-black uppercase border-[2px] border-black transition-all bg-white text-black hover:bg-[#FFC800]",
-                                        "shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]",
-                                        pathname === item.href && "bg-[#FFC800] translate-x-[1px] translate-y-[1px] shadow-[1px_1px_0px_0px_#000]"
+                                        "px-4 py-1.5 text-xs font-black uppercase border border-white/10 transition-all bg-white/5 text-zinc-300 hover:bg-white hover:text-black rounded-lg",
+                                        "hover:shadow-[0px_0px_15px_rgba(255,255,255,0.2)]",
+                                        pathname === item.href && "bg-white text-black shadow-[0px_0px_10px_rgba(255,255,255,0.3)]"
                                     )}
                                 >
                                     {item.label}
@@ -151,24 +151,21 @@ export function Navbar() {
                         </div>
 
                         {/* 1. SEARCH */}
-                        {/* 1. SEARCH */}
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
-                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                            style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px", padding: 0 }}
-                            className="flex items-center justify-center !w-[28px] !h-[28px] !min-w-[28px] !min-h-[28px] !p-0 bg-white border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
+                            whileTap={{ scale: 0.9 }}
+                            className="flex items-center justify-center w-9 h-9 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white hover:text-black transition-all"
                         >
-                            <Search className="!w-4 !h-4 stroke-[2.5px]" />
+                            <Search className="w-5 h-5 stroke-[2px]" />
                         </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
-                            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                            style={{ width: "28px", height: "28px", minWidth: "28px", minHeight: "28px", padding: 0 }}
-                            className="flex md:hidden items-center justify-center !w-[28px] !h-[28px] !min-w-[28px] !min-h-[28px] !p-0 bg-[#FFC800] border-2 border-black rounded-md shadow-[2px_2px_0px_0px_#000] text-black transition-all"
+                            whileTap={{ scale: 0.9 }}
+                            className="flex md:hidden items-center justify-center w-9 h-9 bg-[#FACC15] text-black rounded-lg shadow-[0px_0px_10px_rgba(250,204,21,0.4)] transition-all"
                         >
-                            <Zap className="!w-4 !h-4 fill-black stroke-[2.5px]" />
+                            <Zap className="w-5 h-5 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}

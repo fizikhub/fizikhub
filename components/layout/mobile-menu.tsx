@@ -29,7 +29,7 @@ const menuVariants = {
             delayChildren: 0.1
         }
     }
-};
+} as const;
 
 const itemVariants = {
     closed: { opacity: 0, x: 50 },
