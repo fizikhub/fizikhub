@@ -414,6 +414,13 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         </div>
 
                         <div className="flex items-center gap-2">
+                            {/* ADMIN BUTTON - ONLY FOR BARAN BOZKURT */}
+                            {(profile?.username === 'baranbozkurt' || user?.email === 'baran@fizikhub.com') && (
+                                <Link href="/admin" className="h-9 px-3 flex items-center justify-center bg-red-600 text-white font-bold text-[10px] rounded-lg border border-red-500 hover:bg-red-700 transition-all uppercase tracking-wide">
+                                    ADMIN
+                                </Link>
+                            )}
+
                             {isOwnProfile ? (
                                 <>
                                     <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-transparent border border-zinc-700/50 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
