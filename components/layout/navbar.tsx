@@ -150,23 +150,23 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH - CALIBRATED (22px) */}
+                        {/* 1. SEARCH - UPSCALE (30px) */}
                         <div
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center justify-center w-[22px] h-[22px] min-w-[22px] min-h-[22px] bg-black border border-white/20 rounded-sm cursor-pointer"
+                            className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-black border border-white/20 rounded-sm cursor-pointer"
                         >
-                            <Search className="w-3 h-3 text-white stroke-[2.5px]" />
+                            <Search className="w-4 h-4 text-white stroke-[2.5px]" />
                         </div>
 
-                        {/* 2. ZAP - CALIBRATED (22px) */}
+                        {/* 2. ZAP - UPSCALE (30px) */}
                         <div
                             onClick={() => window.location.href = '/ozel'}
-                            className="flex md:hidden items-center justify-center w-[22px] h-[22px] min-w-[22px] min-h-[22px] bg-[#FACC15] border border-black rounded-sm shadow-[1px_1px_0px_#000] cursor-pointer active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"
+                            className="flex md:hidden items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-[#FACC15] border border-black rounded-sm shadow-[2px_2px_0px_#000] cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                         >
-                            <Zap className="w-3 h-3 text-black fill-black stroke-[2.5px]" />
+                            <Zap className="w-4 h-4 text-black fill-black stroke-[2.5px]" />
                         </div>
 
-                        {/* 3. MOBILE MENU (RIGHT SHEET) */}
+                        {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
                         <div className="md:hidden">
                             <MobileMenu />
                         </div>
