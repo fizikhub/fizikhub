@@ -36,52 +36,53 @@ export function BottomNav() {
         )}>
             <nav className="
                 w-full
-                h-[60px]
+                h-[50px]
                 bg-[#FACC15]
                 border-t-2 border-black
                 shadow-[0px_-4px_0px_#000000]
                 flex items-center justify-between
-                px-6
+                px-8
                 pb-safe
                 relative
             ">
-                {/* LEFT GROUP */}
-                <div className="flex items-center gap-8">
+                {/* LEFT GROUP - More spaced out */}
+                <div className="flex items-center gap-10">
                     <ViewTransitionLink href="/" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname === "/" ? "opacity-100" : "opacity-60")}>
-                        <Home className={cn("w-6 h-6 text-black", pathname === "/" && "fill-black stroke-[2.5px]")} />
+                        <Home className={cn("w-5 h-5 text-black", pathname === "/" && "fill-black stroke-[2.5px]")} />
                     </ViewTransitionLink>
 
                     <ViewTransitionLink href="/makale" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/makale") ? "opacity-100" : "opacity-60")}>
-                        <BookOpen className={cn("w-6 h-6 text-black", pathname.startsWith("/makale") && "fill-black stroke-[2.5px]")} />
+                        <BookOpen className={cn("w-5 h-5 text-black", pathname.startsWith("/makale") && "fill-black stroke-[2.5px]")} />
                     </ViewTransitionLink>
                 </div>
 
-                {/* CENTER FLOATING BUTTON */}
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+                {/* CENTER FLOATING BUTTON - Slightly smaller, better positioned */}
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
                     <ViewTransitionLink
                         href="/paylas"
                         className="
                             flex items-center justify-center
-                            w-16 h-16
+                            w-14 h-14
                             bg-white
                             border-2 border-black
                             rounded-full
-                            shadow-[4px_4px_0px_#000000]
+                            shadow-[3px_3px_0px_#000000]
                             active:translate-y-1 active:shadow-none transition-all
+                            hover:scale-105
                         "
                     >
-                        <Plus className="w-8 h-8 text-black stroke-[3px]" />
+                        <Plus className="w-7 h-7 text-black stroke-[3px]" />
                     </ViewTransitionLink>
                 </div>
 
-                {/* RIGHT GROUP */}
-                <div className="flex items-center gap-8">
+                {/* RIGHT GROUP - More spaced out */}
+                <div className="flex items-center gap-10">
                     <ViewTransitionLink href="/forum" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/forum") ? "opacity-100" : "opacity-60")}>
-                        <MessageCircle className={cn("w-6 h-6 text-black", pathname.startsWith("/forum") && "fill-black stroke-[2.5px]")} />
+                        <MessageCircle className={cn("w-5 h-5 text-black", pathname.startsWith("/forum") && "fill-black stroke-[2.5px]")} />
                     </ViewTransitionLink>
 
                     <ViewTransitionLink href="/profil" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/profil") ? "opacity-100" : "opacity-60")}>
-                        <User className={cn("w-6 h-6 text-black", pathname.startsWith("/profil") && "fill-black stroke-[2.5px]")} />
+                        <User className={cn("w-5 h-5 text-black", pathname.startsWith("/profil") && "fill-black stroke-[2.5px]")} />
                     </ViewTransitionLink>
                 </div>
             </nav>
