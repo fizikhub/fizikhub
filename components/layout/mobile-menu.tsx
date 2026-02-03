@@ -60,19 +60,19 @@ export function MobileMenu() {
                 <motion.button
                     whileTap={{ scale: 0.9 }}
                     className={cn(
-                        "flex items-center justify-center w-9 h-9",
+                        "flex items-center justify-center w-8 h-8",
                         "bg-white/10 backdrop-blur-md border border-white/20 rounded-lg",
                         "text-white hover:bg-white hover:text-black transition-all"
                     )}
                 >
-                    <Menu className="w-5 h-5 stroke-[2px]" />
+                    <Menu className="w-4 h-4 stroke-[2px]" />
                 </motion.button>
             </SheetTrigger>
 
-            {/* PREMIUM NEO-DARK SIDE DRAWER */}
+            {/* COMPACT NEO-BRUTALIST SIDE DRAWER */}
             <SheetContent
                 side="right"
-                className="w-full sm:w-[400px] p-0 border-l border-white/10 bg-[#09090b]/95 backdrop-blur-2xl overflow-hidden"
+                className="w-[85vw] max-w-[320px] p-0 border-l border-white/10 bg-[#09090b]/95 backdrop-blur-2xl overflow-hidden shadow-2xl"
             >
                 <SheetTitle className="sr-only">Menü</SheetTitle>
 
@@ -84,48 +84,27 @@ export function MobileMenu() {
                     variants={menuVariants}
                 >
                     {/* BACKGROUND NOISE TEXTURE */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/noise.png")' }} />
+                    <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("/noise.png")' }} />
 
                     {/* HEADER */}
-                    <div className="flex items-center justify-between p-6 pb-2 z-10">
-                        <span className="text-xs font-mono text-zinc-500 tracking-widest">NAVIGATION_V3.0</span>
+                    <div className="flex items-center justify-between p-5 pb-2 z-10 border-b border-white/5">
+                        <span className="text-[10px] font-black uppercase text-white/40 tracking-[0.2em]">SYSTEM_NAV</span>
                         <SheetClose asChild>
                             <motion.button
                                 whileHover={{ rotate: 90 }}
                                 whileTap={{ scale: 0.9 }}
-                                className="flex items-center justify-center w-10 h-10 border border-white/10 rounded-full text-white hover:bg-white hover:text-black transition-colors"
+                                className="flex items-center justify-center w-8 h-8 border border-white/10 rounded-md text-white/60 hover:bg-white hover:text-black transition-colors"
                             >
-                                <X className="w-5 h-5 stroke-[2px]" />
+                                <X className="w-4 h-4 stroke-[2px]" />
                             </motion.button>
                         </SheetClose>
                     </div>
 
                     {/* SCROLLABLE CONTENT */}
-                    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2 z-10 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 z-10 scrollbar-hide">
 
-                        {/* HERO CARD - PREMIUM ACCESS */}
-                        <motion.div variants={itemVariants} className="mb-6">
-                            <ViewTransitionLink
-                                href="/ozel"
-                                className="group relative flex items-center justify-between w-full p-5 overflow-hidden border border-[#FACC15]/30 bg-[#FACC15]/5 hover:bg-[#FACC15]/10 transition-all rounded-xl"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#FACC15]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                                <div className="flex flex-col gap-1 z-10">
-                                    <div className="flex items-center gap-2 text-[#FACC15]">
-                                        <Crown className="w-4 h-4 fill-[#FACC15]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">Premium</span>
-                                    </div>
-                                    <span className="text-lg font-black text-white italic">ÖZEL İÇERİK</span>
-                                </div>
-                                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FACC15] text-black group-hover:scale-110 transition-transform">
-                                    <ChevronRight className="w-5 h-5 stroke-[3px]" />
-                                </div>
-                            </ViewTransitionLink>
-                        </motion.div>
-
-                        {/* NAV ITEMS */}
-                        <div className="space-y-3">
+                        {/* NAV ITEMS - COMPACT LIST */}
+                        <div className="space-y-1.5">
                             {menuItems.map((item, index) => {
                                 const isActive = pathname === item.href;
                                 return (
@@ -133,31 +112,25 @@ export function MobileMenu() {
                                         <ViewTransitionLink
                                             href={item.href}
                                             className={cn(
-                                                "group flex items-center justify-between p-4",
-                                                "border-b border-white/5 hover:border-white/20",
-                                                "transition-all duration-300",
-                                                isActive ? "bg-white/5 border-l-2 border-l-[#FACC15]" : "hover:pl-6"
+                                                "group flex items-center justify-between px-3 py-3 rounded-none border-b border-white/5",
+                                                "transition-all duration-200",
+                                                isActive ? "bg-white/5 border-l-[3px] border-l-[#FACC15]" : "hover:bg-white/5 hover:border-l-[3px] hover:border-l-white/20"
                                             )}
                                         >
-                                            <div className="flex items-center gap-4">
-                                                <div className={cn(
-                                                    "p-2 rounded-md bg-white/5 transition-colors group-hover:bg-white/10",
-                                                    isActive ? "text-[#FACC15]" : "text-zinc-400 group-hover:text-white"
-                                                )}>
-                                                    <item.icon className="w-5 h-5 stroke-[2px]" />
-                                                </div>
+                                            <div className="flex items-center gap-3">
+                                                <item.icon className={cn(
+                                                    "w-4 h-4",
+                                                    isActive ? "text-[#FACC15]" : "text-zinc-500 group-hover:text-zinc-300"
+                                                )} />
                                                 <span className={cn(
-                                                    "text-xl font-black tracking-tight",
-                                                    isActive ? "text-white" : "text-zinc-500 group-hover:text-white"
+                                                    "text-sm font-bold uppercase tracking-wider",
+                                                    isActive ? "text-white" : "text-zinc-400 group-hover:text-white"
                                                 )}>
                                                     {item.label}
                                                 </span>
                                             </div>
 
-                                            <ChevronRight className={cn(
-                                                "w-5 h-5 transition-transform group-hover:translate-x-1",
-                                                isActive ? "text-[#FACC15]" : "text-zinc-700 group-hover:text-white"
-                                            )} />
+                                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15] shadow-[0px_0px_8px_#FACC15]" />}
                                         </ViewTransitionLink>
                                     </motion.div>
                                 );
@@ -168,34 +141,36 @@ export function MobileMenu() {
                     {/* FOOTER - UTILITY GRID */}
                     <motion.div
                         variants={itemVariants}
-                        className="p-6 border-t border-white/10 bg-black/20 backdrop-blur-md z-10"
+                        className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md z-10"
                     >
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className="grid grid-cols-2 gap-2 mb-4">
                             <ViewTransitionLink
                                 href="/profil"
-                                className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all"
+                                className="flex flex-col items-center justify-center gap-1 p-2 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all"
                             >
                                 <User className="w-4 h-4 text-zinc-400" />
-                                <span className="text-xs font-bold text-zinc-300">Hesabım</span>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase">Hesabım</span>
                             </ViewTransitionLink>
                             <ViewTransitionLink
                                 href="/ayarlar"
-                                className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all"
+                                className="flex flex-col items-center justify-center gap-1 p-2 rounded-md border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all"
                             >
                                 <Settings className="w-4 h-4 text-zinc-400" />
-                                <span className="text-xs font-bold text-zinc-300">Ayarlar</span>
+                                <span className="text-[10px] font-bold text-zinc-500 uppercase">Ayarlar</span>
                             </ViewTransitionLink>
                         </div>
 
-                        <AuthButton />
+                        <div className="scale-90 origin-bottom">
+                            <AuthButton />
+                        </div>
 
                         {/* SOCIALS / INFO */}
-                        <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/5 text-zinc-600">
-                            <span className="text-[10px] font-mono">FIZIKHUB v2.4</span>
-                            <div className="flex gap-4">
-                                <Twitter className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
-                                <Github className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
-                                <Globe className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
+                        <div className="flex justify-between items-center mt-4 pt-4 border-t border-white/5 text-zinc-700">
+                            <span className="text-[9px] font-mono uppercase tracking-widest">v2.4.1 stable</span>
+                            <div className="flex gap-3 text-zinc-600">
+                                <Twitter className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
+                                <Github className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
+                                <Globe className="w-3.5 h-3.5 hover:text-white transition-colors cursor-pointer" />
                             </div>
                         </div>
                     </motion.div>

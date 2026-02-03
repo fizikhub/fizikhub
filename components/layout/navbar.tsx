@@ -154,18 +154,18 @@ export function Navbar() {
                         <motion.button
                             onClick={() => setIsSearchOpen(true)}
                             whileTap={{ scale: 0.9 }}
-                            className="flex items-center justify-center w-9 h-9 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white hover:text-black transition-all"
+                            className="flex items-center justify-center w-8 h-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white hover:bg-white hover:text-black transition-all"
                         >
-                            <Search className="w-5 h-5 stroke-[2px]" />
+                            <Search className="w-4 h-4 stroke-[2px]" />
                         </motion.button>
 
                         {/* 2. ZAP - Mobile Only */}
                         <motion.button
                             onClick={() => window.location.href = '/ozel'}
                             whileTap={{ scale: 0.9 }}
-                            className="flex md:hidden items-center justify-center w-9 h-9 bg-[#FACC15] text-black rounded-lg shadow-[0px_0px_10px_rgba(250,204,21,0.4)] transition-all"
+                            className="flex md:hidden items-center justify-center w-8 h-8 bg-[#FACC15] text-black rounded-lg shadow-[0px_0px_10px_rgba(250,204,21,0.4)] transition-all"
                         >
-                            <Zap className="w-5 h-5 fill-black stroke-[2.5px]" />
+                            <Zap className="w-4 h-4 fill-black stroke-[2.5px]" />
                         </motion.button>
 
                         {/* 3. MOBILE MENU (RIGHT SHEET) */}
