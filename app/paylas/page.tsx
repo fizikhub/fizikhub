@@ -34,7 +34,7 @@ interface BentoCardProps {
     title: string;
     description: string;
     href: string;
-    icon: React.ElementType;
+    icon: any;
     colorClass: string; // e.g., "bg-pink-500"
     className?: string; // For grid span
     delay?: number;
