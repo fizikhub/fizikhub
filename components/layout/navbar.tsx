@@ -60,11 +60,7 @@ export function Navbar() {
             setRaindrops(drops);
         };
 
-        if ('requestIdleCallback' in window) {
-            (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(generateRain);
-        } else {
-            setTimeout(generateRain, 100);
-        }
+        generateRain();
     }, []);
 
     const navItems = [
