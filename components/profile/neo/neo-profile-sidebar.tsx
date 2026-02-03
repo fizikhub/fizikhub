@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Calendar, Link as LinkIcon, Award, Zap, Users, BookOpen, MessageCircle, HelpCircle } from "lucide-react";
+import { Calendar, Link as LinkIcon, Award, Zap, Users, BookOpen, MessageCircle, HelpCircle, Terminal } from "lucide-react";
 
 interface NeoProfileSidebarProps {
     profile: any;
@@ -26,75 +26,70 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
     };
 
     return (
-        <div className="space-y-6 lg:sticky lg:top-32 transition-all duration-300">
+        <div className="space-y-6 lg:sticky lg:top-32 transition-all duration-300 font-mono">
 
-            {/* === 1. STATS CARD (HUD Style) === */}
-            <div className="bg-black border-[3px] border-neutral-800 rounded-xl overflow-hidden shadow-[4px_4px_0px_#000] group hover:border-[#FFC800] transition-colors relative">
-                {/* Decoration Lines */}
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-[3px] border-r-[3px] border-white/10 rounded-tr-xl pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-[3px] border-l-[3px] border-white/10 rounded-bl-xl pointer-events-none" />
-
-                {/* Scanline Effect */}
-                <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-[5] bg-[length:100%_2px,3px_100%] pointer-events-none" />
-
-                <div className="p-4 border-b-[3px] border-neutral-800 bg-neutral-900/50 flex items-center justify-between group-hover:border-[#FFC800] transition-colors relative z-10">
-                    <h3 className="font-black text-white flex items-center gap-2 tracking-wider">
-                        <Zap className="w-5 h-5 text-[#FFC800]" />
-                        İSTATİSTİKLER
+            {/* === 1. STATS CARD (SYSTEM STATUS) === */}
+            <div className="bg-black border-2 border-white rounded-none p-0">
+                {/* Header */}
+                <div className="bg-white text-black p-3 border-b-2 border-white flex items-center justify-between">
+                    <h3 className="font-bold tracking-wider flex items-center gap-2 text-sm uppercase">
+                        <Terminal className="w-4 h-4" />
+                        SYS_STATS
                     </h3>
-                    <div className="text-[10px] font-mono text-neutral-500 bg-black px-2 py-1 rounded border border-neutral-800">
-                        UID: {profile?.id?.slice(0, 6)}
-                    </div>
+                    <div className="w-2 h-2 bg-black animate-pulse" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-[2px] bg-neutral-800 border-b-[2px] border-neutral-800 relative z-10">
+                {/* Score Big Display */}
+                <div className="p-6 border-b border-white/20 flex flex-col items-center justify-center bg-zinc-900/50 relative overflow-hidden group">
+                    <span className="text-[10px] text-zinc-500 absolute top-2 left-2 uppercase tracking-widest">REPUTATION_SCORE</span>
+                    <span className="text-5xl font-black text-white tracking-tighter group-hover:text-[#FACC15] transition-colors">{formatNumber(stats.reputation)}</span>
+                    <div className="absolute inset-0 border border-white/5 pointer-events-none" />
+                </div>
+
+                {/* Grid Stats */}
+                <div className="grid grid-cols-2 bg-white gap-px border-b border-white">
                     {[
-                        { label: "Puan", value: stats.reputation, icon: Zap, color: "text-[#FFC800]", bg: "hover:bg-[#FFC800]/10" },
-                        { label: "Takipçi", value: stats.followersCount, icon: Users, color: "text-cyan-400", bg: "hover:bg-cyan-400/10" },
-                        { label: "Makale", value: stats.articlesCount, icon: BookOpen, color: "text-purple-400", bg: "hover:bg-purple-400/10" },
-                        { label: "Soru", value: stats.questionsCount, icon: HelpCircle, color: "text-red-400", bg: "hover:bg-red-400/10" },
-                        { label: "Cevap", value: stats.answersCount, icon: MessageCircle, color: "text-green-400", bg: "hover:bg-green-400/10" },
-                        { label: "Takip", value: stats.followingCount, icon: Users, color: "text-blue-400", bg: "hover:bg-blue-400/10" },
+                        { label: "FOLLOWERS", value: stats.followersCount, icon: Users },
+                        { label: "FOLLOWING", value: stats.followingCount, icon: Users },
+                        { label: "ARTICLES", value: stats.articlesCount, icon: BookOpen },
+                        { label: "QUESTIONS", value: stats.questionsCount, icon: HelpCircle },
+                        { label: "ANSWERS", value: stats.answersCount, icon: MessageCircle },
+                        { label: "BADGES", value: userBadges?.length || 0, icon: Award },
                     ].map((stat, i) => (
-                        <div key={i} className={cn("bg-black p-4 flex flex-col items-center justify-center transition-all group/stat relative overflow-hidden", stat.bg)}>
-                            <div className="absolute inset-0 opacity-0 group-hover/stat:opacity-100 transition-opacity bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-                            <stat.icon className={cn("w-5 h-5 mb-2 opacity-50 group-hover/stat:opacity-100 group-hover/stat:scale-110 transition-all", stat.color)} />
-                            <span className="text-2xl font-black text-white tabular-nums tracking-tight">{formatNumber(stat.value)}</span>
-                            <span className="text-[10px] text-neutral-500 uppercase font-bold tracking-widest mt-1 group-hover/stat:text-white transition-colors">{stat.label}</span>
+                        <div key={i} className="bg-black p-4 flex flex-col items-start justify-center group hover:bg-white hover:text-black transition-colors h-24 relative">
+                            <span className="text-[9px] text-zinc-500 uppercase tracking-widest mb-1 group-hover:text-black/60 transition-colors">{stat.label}</span>
+                            <span className="text-xl font-bold tabular-nums">{formatNumber(stat.value)}</span>
+                            <stat.icon className="absolute bottom-2 right-2 w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
                         </div>
                     ))}
                 </div>
 
-                {/* Footer Deco */}
-                <div className="bg-black p-2 flex justify-between items-center text-[9px] text-neutral-600 font-mono uppercase tracking-widest px-4 relative z-10">
-                    <span>SYS_READY</span>
-                    <span className="animate-pulse text-green-500">● ONLINE</span>
+                {/* Footer */}
+                <div className="bg-black p-2 flex justify-between items-center text-[9px] text-zinc-500 font-mono uppercase tracking-widest px-3">
+                    <span>ID::{profile?.id?.slice(0, 8)}</span>
+                    <span className="text-green-500">● ACTIVE</span>
                 </div>
             </div>
 
             {/* === 2. ABOUT CARD === */}
-            <div className="bg-black border-[3px] border-neutral-800 rounded-xl p-6 shadow-[4px_4px_0px_#000]">
-                <h3 className="font-black text-white mb-5 flex items-center gap-3 text-lg">
-                    <div className="w-1.5 h-6 bg-cyan-500 skew-x-[-12deg]" />
-                    HAKKINDA
-                </h3>
+            <div className="bg-black border-2 border-white rounded-none">
+                <div className="p-3 border-b-2 border-white bg-black">
+                    <h3 className="font-bold text-white text-sm uppercase tracking-wider flex items-center gap-2">
+                        <div className="w-1 h-4 bg-[#FACC15]" />
+                        BIO_DATA
+                    </h3>
+                </div>
 
-                <div className="space-y-5">
-                    {profile?.bio && (
-                        <div className="text-sm text-neutral-300 leading-relaxed font-mono bg-neutral-900 border-l-[3px] border-neutral-700 p-4 rounded-r-lg">
-                            {profile.bio}
-                        </div>
-                    )}
-
-                    <div className="flex flex-col gap-3 text-xs font-bold text-neutral-400 font-mono">
-                        <div className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors">
-                            <Calendar className="w-4 h-4 text-cyan-500" />
-                            <span className="tracking-wide">Katılım: <span className="text-white">{format(new Date(user?.created_at || Date.now()), 'MMMM yyyy', { locale: tr })}</span></span>
+                <div className="p-4 space-y-4">
+                    <div className="flex flex-col gap-2 text-xs font-bold text-zinc-400">
+                        <div className="flex items-center gap-3 p-2 border border-white/10 hover:border-white hover:text-white transition-colors bg-zinc-900/30">
+                            <Calendar className="w-4 h-4" />
+                            <span className="tracking-wide">JOINED: <span className="text-white">{format(new Date(user?.created_at || Date.now()), 'MMM yyyy').toUpperCase()}</span></span>
                         </div>
                         {profile?.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 hover:bg-white/5 rounded transition-colors group">
-                                <LinkIcon className="w-4 h-4 text-purple-500 group-hover:rotate-45 transition-transform" />
-                                <span className="truncate max-w-[200px] text-purple-400 group-hover:underline decoration-purple-500/50 underline-offset-4">{profile.website}</span>
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-2 border border-white/10 hover:border-[#FACC15] hover:text-[#FACC15] transition-colors bg-zinc-900/30">
+                                <LinkIcon className="w-4 h-4" />
+                                <span className="truncate max-w-[200px]">{profile.website.replace(/^https?:\/\//, '')}</span>
                             </a>
                         )}
                     </div>
@@ -103,28 +98,24 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
 
             {/* === 3. BADGES CARD === */}
             {userBadges && userBadges.length > 0 && (
-                <div className="bg-black border-[3px] border-neutral-800 rounded-xl p-6 shadow-[4px_4px_0px_#000]">
-                    <h3 className="font-black text-white mb-5 flex items-center gap-3 text-lg">
-                        <Award className="w-6 h-6 text-purple-500" />
-                        ROZETLER
-                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded ml-auto border border-purple-500/30">
-                            {userBadges.length}
-                        </span>
+                <div className="bg-black border-2 border-white rounded-none p-4 relative">
+                    <h3 className="font-bold text-white text-sm uppercase tracking-wider mb-4 border-b border-white/20 pb-2 flex justify-between">
+                        <span>ACHIEVEMENTS</span>
+                        <span className="bg-white text-black px-1 text-[10px]">{userBadges.length}</span>
                     </h3>
 
-                    <div className="grid grid-cols-5 gap-2">
+                    <div className="grid grid-cols-5 gap-1">
                         {userBadges.map((badgeItem: any, i: number) => {
                             const badge = badgeItem.badges;
                             return (
                                 <div key={i} className="group relative aspect-square">
-                                    <div className="w-full h-full bg-neutral-900 border border-neutral-700 rounded-lg flex items-center justify-center text-2xl hover:border-purple-500 hover:bg-purple-500/10 hover:scale-105 transition-all cursor-help hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] z-0 hover:z-10">
-                                        {badge.icon || "🏆"}
+                                    <div className="w-full h-full bg-zinc-900 border border-zinc-700 flex items-center justify-center text-xl hover:bg-[#FACC15] hover:text-black hover:border-white transition-colors cursor-help">
+                                        {badge.icon || "★"}
                                     </div>
                                     {/* Tooltip */}
-                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[180px] bg-black border-[2px] border-purple-500 text-white text-xs p-3 rounded-lg shadow-[4px_4px_0px_0px_rgba(168,85,247,0.3)] opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 translate-y-2 group-hover:translate-y-0">
-                                        <div className="font-bold mb-1 text-purple-400 uppercase tracking-widest text-[10px]">{badge.name}</div>
-                                        <div className="text-white/80 text-[11px] leading-tight">{badge.description}</div>
-                                        <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-black border-b-[2px] border-r-[2px] border-purple-500 rotate-45"></div>
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[160px] bg-white border-2 border-black text-black text-xs p-2 shadow-[4px_4px_0px_#000] opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 hidden group-hover:block">
+                                        <div className="font-black mb-1 uppercase text-[10px]">{badge.name}</div>
+                                        <div className="text-[10px] leading-tight opacity-80">{badge.description}</div>
                                     </div>
                                 </div>
                             );
