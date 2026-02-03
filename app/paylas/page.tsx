@@ -153,7 +153,7 @@ export default function PaylasPage() {
     }, [supabase]);
 
     return (
-        <div className="min-h-screen bg-background pb-32 pt-14 md:pt-20 px-4 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-background pb-32 pt-2 md:pt-20 px-4 font-sans relative overflow-hidden">
 
             {/* TEXTURED PAPER BACKGROUND */}
             <div className="absolute inset-0 opacity-20 pointer-events-none z-0 mix-blend-multiply"
