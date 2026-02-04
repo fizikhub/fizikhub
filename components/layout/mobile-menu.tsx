@@ -1,108 +1,132 @@
 "use client";
 
-import { useState } from "react";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link as LinkIcon, Home, BookOpen, Trophy, User, Zap, Menu, X, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 const menuItems = [
-    { href: "/", label: "Ana Sayfa", icon: Home, gradient: "from-blue-500 to-indigo-500" },
-    { href: "/makale", label: "Makaleler", icon: BookOpen, gradient: "from-purple-500 to-pink-500" },
-    { href: "/siralamalar", label: "Sıralama", icon: Trophy, gradient: "from-yellow-400 to-orange-500" },
-    { href: "/profil", label: "Profil", icon: User, gradient: "from-green-400 to-emerald-600" },
-    { href: "/ozel", label: "Özel İçerik", icon: Zap, gradient: "from-red-500 to-rose-600" },
+    { href: "/", label: "ANA SAYFA", sub: "Başlangıç Noktası" },
+    { href: "/makale", label: "MAKALELER", sub: "Bilimsel İçerik" },
+    { href: "/siralamalar", label: "SIRALAMA", sub: "Liderlik Tablosu" },
+    { href: "/profil", label: "PROFİL", sub: "Kişisel Alan" },
+    { href: "/ozel", label: "ÖZEL İÇERİK", sub: "Premium Erişim" },
 ];
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
+
+    // Lock body scroll when open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => { document.body.style.overflow = "unset"; };
+    }, [isOpen]);
 
     return (
-        <div className="relative">
-            {/* Trigger Button */}
+        <>
+            {/* TRIGGER BUTTON */}
             <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    "flex items-center justify-center w-[40px] h-[40px] rounded-full transition-all duration-300 z-50 relative",
-                    isOpen
-                        ? "bg-white text-black rotate-90 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                        : "bg-transparent text-white border border-white/20 hover:bg-white/10"
-                )}
+                onClick={() => setIsOpen(true)}
+                className="relative z-[60] flex items-center justify-center w-12 h-12 bg-white/5 border border-white/10 rounded-xl hover:bg-white text-white hover:text-black transition-all duration-300"
             >
-                {isOpen ? <X className="w-5 h-5 stroke-[3]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
+                <Menu className="w-6 h-6 stroke-[2]" />
             </button>
 
-            {/* Backdrop */}
+            {/* BACKDROP & MENU CONTAINER */}
             <AnimatePresence>
                 {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsOpen(false)}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-40"
-                    />
-                )}
-            </AnimatePresence>
+                    <>
+                        {/* BACKDROP BLUR */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
+                        />
 
-            {/* Menu Dropdown */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
-                        transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                        className="absolute top-full right-0 mt-4 w-[280px] origin-top-right z-50"
-                    >
-                        <div className="bg-[#09090b]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
+                        {/* MENU DRAWER */}
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: "0%" }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="fixed top-0 right-0 h-full w-[85%] max-w-[400px] bg-[#09090b] border-l border-white/10 z-[100] shadow-2xl flex flex-col"
+                        >
+                            {/* BACKGROUND NOISE TEXTURE */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}></div>
 
-                            {/* Header */}
-                            <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                                <span className="text-xs font-bold text-zinc-400 tracking-widest uppercase">Navigasyon</span>
-                                <Sparkles className="w-3 h-3 text-yellow-400" />
+                            {/* HEADER */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/10">
+                                <div className="flex flex-col">
+                                    <span className="text-2xl font-black italic tracking-tighter text-white">MENÜ</span>
+                                    <span className="text-[10px] text-zinc-500 font-mono tracking-widest">FIZIKHUB SYSTEM</span>
+                                </div>
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white transition-all group"
+                                >
+                                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                                </button>
                             </div>
 
-                            {/* Items */}
-                            <div className="p-2 space-y-1">
+                            {/* LINKS LIST */}
+                            <div className="flex-1 overflow-y-auto py-8 px-6 space-y-6">
                                 {menuItems.map((item, i) => (
-                                    <Link
+                                    <motion.div
                                         key={item.href}
-                                        href={item.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors relative overflow-hidden"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05 + 0.1 }}
                                     >
-                                        {/* Icon Container with Gradient */}
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br shadow-inner",
-                                            item.gradient
-                                        )}>
-                                            <item.icon className="w-5 h-5 text-white stroke-[2.5]" />
-                                        </div>
+                                        <Link
+                                            href={item.href}
+                                            onClick={() => setIsOpen(false)}
+                                            className="group block relative"
+                                        >
+                                            <div className="flex items-baseline justify-between">
+                                                <span className={cn(
+                                                    "text-4xl font-black tracking-tight transition-colors duration-300",
+                                                    pathname === item.href ? "text-[#FACC15]" : "text-white group-hover:text-zinc-300"
+                                                )}>
+                                                    {item.label}
+                                                </span>
+                                                <ArrowUpRight className="w-6 h-6 text-zinc-600 group-hover:text-[#FACC15] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                                            </div>
+                                            <p className="text-sm text-zinc-500 font-medium tracking-wide mt-1 group-hover:text-zinc-400 transition-colors">
+                                                {item.sub}
+                                            </p>
 
-                                        {/* Label */}
-                                        <div className="flex flex-col z-10">
-                                            <span className="text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
-                                                {item.label}
-                                            </span>
-                                        </div>
-
-                                        {/* Chevron */}
-                                        <div className="ml-auto opacity-0 group-hover:opacity-100 group-hover:-translate-x-1 transition-all">
-                                            <span className="text-zinc-500 text-lg">›</span>
-                                        </div>
-                                    </Link>
+                                            {/* Hover Line */}
+                                            <div className="h-[2px] w-0 bg-[#FACC15] mt-4 group-hover:w-full transition-all duration-500 ease-out" />
+                                        </Link>
+                                    </motion.div>
                                 ))}
                             </div>
 
-                            {/* Footer info */}
-                            <div className="px-4 py-3 bg-black/40 border-t border-white/5 text-[10px] text-zinc-600 font-mono text-center">
-                                FIZIKHUB v2.0
+                            {/* FOOTER AREA */}
+                            <div className="p-6 border-t border-white/10 bg-zinc-900/50">
+                                <div className="flex gap-4">
+                                    {['Twitter', 'Instagram', 'Discord'].map((social) => (
+                                        <a key={social} href="#" className="text-xs font-bold text-zinc-500 hover:text-white uppercase tracking-wider">{social}</a>
+                                    ))}
+                                </div>
+                                <div className="mt-4 text-[10px] text-zinc-700 font-mono">
+                                    DESIGNED BY ANTIGRAVITY // 2026
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
-        </div>
+        </>
     );
 }
