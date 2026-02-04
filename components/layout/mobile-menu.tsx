@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, ExternalLink } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useState } from "react";
+import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const menuItems = [
     { href: "/", label: "Ana Sayfa", icon: Home },
@@ -15,105 +17,94 @@ const menuItems = [
 ];
 
 export function MobileMenu() {
-    const [isOpen, setIsOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
-
-    // Close when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        if (isOpen) {
-            document.addEventListener("mousedown", handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isOpen]);
+    const [open, setOpen] = useState(false);
 
     return (
-        <div className="relative" ref={menuRef}>
-            {/* TRIGGER BUTTON */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-lg border-2 transition-all duration-200",
-                    isOpen
-                        ? "bg-white text-black border-white rotate-90"
-                        : "bg-transparent text-white border-white/20 hover:bg-white/10"
-                )}
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full hover:bg-zinc-800">
+                    <Menu className="w-6 h-6 text-white" />
+                    <span className="sr-only">Menüyü Aç</span>
+                </Button>
+            </SheetTrigger>
+
+            <SheetContent
+                side="right"
+                className="w-[80%] max-w-[350px] p-0 bg-black border-l border-zinc-800 text-white flex flex-col h-full shadow-2xl"
             >
-                {isOpen ? <X className="w-5 h-5 stroke-[3]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
-            </button>
+                <div className="sr-only">
+                    <SheetTitle>Navigasyon Menüsü</SheetTitle>
+                    <SheetDescription>Site içi bağlantılar</SheetDescription>
+                </div>
 
-            {/* DROPDOWN CARD */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                        className="absolute top-full right-0 mt-3 w-[280px] z-50 origin-top-right"
-                    >
-                        {/* CARD CONTAINER - mimic an Article Card */}
-                        <div className="bg-[#0f0f11] border border-white/10 rounded-xl shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8)] overflow-hidden ring-1 ring-white/5">
+                {/* Header Section */}
+                <div className="p-6 pb-4 border-b border-zinc-900">
+                    <span className="text-xl font-bold tracking-tight">Fizikhub</span>
+                    <p className="text-xs text-zinc-500 mt-1">Bilim Platformu</p>
+                </div>
 
-                            {/* CARD IMAGE / HEADER AREA */}
-                            <div className="h-24 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 relative overflow-hidden flex items-end p-4">
-                                {/* Decorative Noise */}
-                                <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
-
-                                {/* Decorative Glow */}
-                                <div className="absolute top-[-50%] right-[-50%] w-full h-full bg-blue-500/30 blur-3xl rounded-full"></div>
-
-                                {/* "Category Tag" */}
-                                <span className="relative z-10 bg-[#FACC15] text-black text-[10px] font-black uppercase px-2 py-1 rounded-sm tracking-wide shadow-lg transform -rotate-2">
-                                    NAVIGASYON
-                                </span>
-                            </div>
-
-                            {/* CARD CONTENT (Links) */}
-                            <div className="p-2 bg-[#0f0f11]">
-                                <div className="flex flex-col gap-1">
-                                    {menuItems.map((item, i) => (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className="group flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-all active:scale-[0.98]"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                {/* Icon Box */}
-                                                <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center group-hover:bg-[#FACC15] group-hover:text-black transition-colors duration-300">
-                                                    <item.icon className="w-4 h-4" />
-                                                </div>
-                                                <span className="text-sm font-semibold text-zinc-200 group-hover:text-white font-sans tracking-tight">
-                                                    {item.label}
-                                                </span>
-                                            </div>
-
-                                            {/* Arrow */}
-                                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                                        </Link>
-                                    ))}
+                {/* Main Links */}
+                <div className="flex-1 overflow-y-auto py-4">
+                    <div className="flex flex-col px-3 gap-1">
+                        {menuItems.map((item) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setOpen(false)}
+                                className="group flex items-center justify-between p-3 rounded-lg hover:bg-zinc-900 transition-all duration-200"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <item.icon className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
+                                    <span className="font-medium text-[15px]">{item.label}</span>
                                 </div>
-                            </div>
+                                <ChevronRight className="w-4 h-4 text-zinc-700 group-hover:text-zinc-400" />
+                            </Link>
+                        ))}
+                    </div>
 
-                            {/* CARD FOOTER */}
-                            <div className="px-5 py-3 bg-black/40 border-t border-white/5 flex justify-between items-center text-[10px] text-zinc-500 font-medium">
-                                <span>Fizikhub v2.0</span>
-                                <div className="flex gap-2">
-                                    <Link href="#" className="hover:text-white transition-colors">TR</Link>
-                                    <Link href="#" className="hover:text-white transition-colors">EN</Link>
-                                </div>
+                    <div className="px-6 py-4">
+                        <Separator className="bg-zinc-900 my-4" />
+                        <div className="space-y-4">
+                            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Hesap</p>
+                            <div className="flex flex-col gap-2">
+                                <Link
+                                    href="/giris"
+                                    onClick={() => setOpen(false)}
+                                    className="block w-full py-2.5 px-4 bg-zinc-900 rounded-lg text-center text-sm font-medium hover:bg-zinc-800 transition-colors"
+                                >
+                                    Giriş Yap
+                                </Link>
+                                <Link
+                                    href="/kayit"
+                                    onClick={() => setOpen(false)}
+                                    className="block w-full py-2.5 px-4 bg-white text-black rounded-lg text-center text-sm font-bold hover:bg-zinc-200 transition-colors"
+                                >
+                                    Kayıt Ol
+                                </Link>
                             </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    </div>
+                </div>
+
+                {/* Footer Section */}
+                <div className="p-6 border-t border-zinc-900 bg-black">
+                    <div className="flex justify-center gap-6">
+                        <Link href="#" className="text-zinc-500 hover:text-white transition-colors">
+                            <Twitter className="w-5 h-5" />
+                        </Link>
+                        <Link href="#" className="text-zinc-500 hover:text-white transition-colors">
+                            <Instagram className="w-5 h-5" />
+                        </Link>
+                        <Link href="#" className="text-zinc-500 hover:text-white transition-colors">
+                            <Github className="w-5 h-5" />
+                        </Link>
+                    </div>
+                    <p className="text-[10px] text-center text-zinc-600 mt-4">
+                        © 2026 Fizikhub Inc.
+                    </p>
+                </div>
+
+            </SheetContent>
+        </Sheet>
     );
 }
