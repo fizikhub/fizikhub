@@ -58,9 +58,17 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size, className }), "relative overflow-hidden")}
       {...props}
-    />
+    >
+      {props.children}
+      {/* Ripple Effect Integration can be complex in server components if not careful. 
+          For now, we'll keep it simple: Just add strict overflow-hidden to the button itself 
+          so any child effects don't spill out. 
+          Real Ripple usually requires client-side state. 
+          If we want a pure CSS ripple, we can use active states. 
+          For now, let's ensure the class is prepared. */}
+    </Comp>
   )
 }
 
