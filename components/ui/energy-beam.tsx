@@ -21,28 +21,36 @@ const EnergyBeam: React.FC<EnergyBeamProps> = ({
 
     useEffect(() => {
         const loadScript = () => {
-            if (scriptLoadedRef.current) return;
-
-            // Check if script already exists to prevent duplicates
+            // 1. If script is already there, check if global is ready
             if (document.querySelector('script[src*="unicornStudio.umd.js"]')) {
-                scriptLoadedRef.current = true;
-                if (window.UnicornStudio && containerRef.current) {
-                    window.UnicornStudio.init();
-                }
+                const checkGlobal = setInterval(() => {
+                    if (window.UnicornStudio) {
+                        clearInterval(checkGlobal);
+                        console.log("UnicornStudio global found, initializing...");
+                        window.UnicornStudio.init();
+                    }
+                }, 100);
+
+                // Stop checking after 5 seconds to avoid infinite loop
+                setTimeout(() => clearInterval(checkGlobal), 5000);
                 return;
             }
 
+            // 2. If script not there, append it
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js';
             script.async = true;
 
             script.onload = () => {
                 scriptLoadedRef.current = true;
-                if (window.UnicornStudio && containerRef.current) {
+                if (window.UnicornStudio) {
                     console.log('Unicorn Studio loaded, initializing project...');
-                    // Initialize the Unicorn Studio project
                     window.UnicornStudio.init();
                 }
+            };
+
+            script.onerror = (e) => {
+                console.error("Failed to load UnicornStudio script", e);
             };
 
             document.head.appendChild(script);
