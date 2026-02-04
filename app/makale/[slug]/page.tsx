@@ -27,9 +27,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const coverUrl = article.cover_url && article.cover_url.length > 0
-        ? article.cover_url
-        : "https://fizikhub.com/og-image.jpg"; // Updated to match layout's default
+    let coverUrl = article.cover_url;
+
+    // Ensure absolute URL for social media crawlers
+    if (!coverUrl) {
+        coverUrl = "https://fizikhub.com/og-image.jpg";
+    } else if (coverUrl.startsWith("/")) {
+        coverUrl = `https://fizikhub.com${coverUrl}`;
+    }
 
     return {
         title: article.title,
@@ -40,6 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             type: "article",
             publishedTime: article.created_at,
             authors: ["Fizikhub"],
+            url: `https://fizikhub.com/makale/${article.slug}`,
             images: [
                 {
                     url: coverUrl,
@@ -48,12 +54,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                     alt: article.title,
                 }
             ],
+            siteName: "Fizikhub",
+            locale: "tr_TR",
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
             description: (article.content || "").substring(0, 160) + "...",
             images: [coverUrl],
+            creator: "@fizikhub",
+            site: "@fizikhub",
         },
     };
 }
