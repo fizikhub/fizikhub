@@ -14,7 +14,6 @@
             height: 100%;
             overflow: hidden;
             background: #000000;
-            /* Force Black Background for Space Effect */
         }
 
         #scene {
@@ -26,44 +25,75 @@
             display: block;
         }
 
-        /* Force canvas to fill */
         canvas {
             width: 100% !important;
             height: 100% !important;
             outline: none;
+            display: block;
+        }
+
+        #debug {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 10px;
+            z-index: 100;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px;
+            display: none;
+            /* Hidden by default, enable via URL param ?debug=true */
         }
     </style>
 </head>
 
 <body>
-    <!-- The container Unicorn Studio looks for -->
-    <div id="scene" data-us-project="hRFfUymDGOHwtFe7evR2"></div>
+    <div id="debug">Initializing...</div>
 
-    <!-- The Script -->
+    <!-- Container with Retina Support Defaults -->
+    <div id="scene" data-us-project="hRFfUymDGOHwtFe7evR2" data-us-scale="1" data-us-dpi="1.5">
+    </div>
+
     <script
         src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js"></script>
 
     <script>
-        // Parse query params to override project ID if needed
         const urlParams = new URLSearchParams(window.location.search);
         const projectId = urlParams.get('projectId');
+        const isDebug = urlParams.get('debug');
+
+        const debugEl = document.getElementById('debug');
+        if (isDebug) debugEl.style.display = 'block';
 
         if (projectId) {
             document.getElementById('scene').setAttribute('data-us-project', projectId);
         }
 
-        // Initialize when script is ready
+        function log(msg) {
+            console.log(msg);
+            if (debugEl) debugEl.innerHTML += '<br>' + msg;
+        }
+
         function init() {
             if (window.UnicornStudio) {
-                console.log("Initializing Unicorn Project:", projectId || "Default");
-                window.UnicornStudio.init();
+                log("Script loaded. Init Project: " + (projectId || 'Default'));
+
+                window.UnicornStudio.init()
+                    .then(() => {
+                        log("Init Success!");
+                    })
+                    .catch(err => {
+                        log("Init Error: " + err);
+                        console.error(err);
+                    });
+
             } else {
-                // Poll if script loads async
-                setTimeout(init, 50);
+                setTimeout(init, 100);
             }
         }
 
-        // Start
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
