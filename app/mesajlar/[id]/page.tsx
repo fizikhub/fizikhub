@@ -74,18 +74,33 @@ export default async function ConversationPage({
 
     return (
         <div className="flex flex-col h-screen">
-            {/* Header */}
-            <div className="border-b bg-card px-4 py-3 flex items-center gap-3">
-                <Link href="/mesajlar">
-                    <Button variant="ghost" size="icon">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                </Link>
-                <div>
-                    <h2 className="font-semibold">
-                        {otherUser?.full_name || otherUser?.username || "Bilinmeyen Kullanıcı"}
-                    </h2>
-                    <p className="text-xs text-muted-foreground">@{otherUser?.username || "user"}</p>
+            {/* Header - Neo Brutalist */}
+            <div className="bg-[#09090b] border-b-2 border-zinc-800 px-4 py-4 flex items-center justify-between sticky top-0 z-50">
+                <div className="flex items-center gap-4">
+                    <Link href="/mesajlar">
+                        <button className="h-10 w-10 bg-zinc-900 border border-zinc-700 flex items-center justify-center hover:bg-[#FACC15] hover:text-black hover:border-black transition-all shadow-[4px_4px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none bg-white/5 text-white">
+                            <ArrowLeft className="h-5 w-5 stroke-[3px]" />
+                        </button>
+                    </Link>
+                    <div>
+                        <h2 className="font-black text-xl text-white uppercase tracking-tight italic">
+                            {otherUser?.full_name || otherUser?.username || "GİZLİ KULLANICI"}
+                        </h2>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <p className="text-xs font-mono text-zinc-400">ONLINE /// ENCRYPTED</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                    <div className="w-10 h-10 border-2 border-zinc-800 rounded-full flex items-center justify-center">
+                        <img
+                            src={otherUser?.avatar_url || "/default-avatar.png"}
+                            className="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all cursor-pointer"
+                        />
+                    </div>
                 </div>
             </div>
 

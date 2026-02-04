@@ -83,11 +83,11 @@ export function Navbar() {
                         "flex items-center justify-between px-4 sm:px-6",
                         "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
                         "shadow-lg",
-                        "w-full relative overflow-hidden"
+                        "w-full relative"
                     )}
                 >
-                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30">
+                    {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
@@ -120,14 +120,14 @@ export function Navbar() {
                     </div>
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-10 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-50 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-10 flex items-center gap-3 pb-1">
+                    <div className="relative z-50 flex items-center gap-3 pb-1">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
@@ -149,7 +149,7 @@ export function Navbar() {
                         {/* 1. SEARCH - UPSCALE (30px) */}
                         <div
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-black border border-white/20 rounded-sm cursor-pointer"
+                            className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-black border border-white/20 rounded-sm cursor-pointer hover:border-white transition-colors"
                         >
                             <Search className="w-4 h-4 text-white stroke-[2.5px]" />
                         </div>
@@ -163,7 +163,7 @@ export function Navbar() {
                         </div>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
-                        <div className="md:hidden">
+                        <div className="md:hidden relative z-50">
                             <MobileMenu />
                         </div>
                     </div>

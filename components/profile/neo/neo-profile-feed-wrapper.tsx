@@ -47,37 +47,39 @@ export function NeoProfileFeedWrapper({
     })).sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
 
-            {/* --- TABS (Matte Pills) --- */}
-            <div className="flex items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] pb-2 sticky top-[60px] z-30 bg-background/95 backdrop-blur-sm pt-4">
-                <TabButton
-                    label="GÖNDERİLER"
-                    icon={FileText}
-                    isActive={activeTab === 'posts'}
-                    onClick={() => setActiveTab('posts')}
-                />
-                <TabButton
-                    label="YANITLAR"
-                    icon={MessageCircle}
-                    isActive={activeTab === 'replies'}
-                    onClick={() => setActiveTab('replies')}
-                />
-                <TabButton
-                    label="KAYDEDİLENLER"
-                    icon={Bookmark}
-                    isActive={activeTab === 'saved'}
-                    onClick={() => setActiveTab('saved')}
-                />
-                {isOwnProfile && drafts.length > 0 && (
+            {/* --- TABS (Neo Brutalist Pills) --- */}
+            <div className="sticky top-[60px] z-30 bg-[#050505]/95 backdrop-blur-md py-4 -mx-2 px-2 border-b-2 border-zinc-800">
+                <div className="flex items-center gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
                     <TabButton
-                        label={`TASLAKLAR (${drafts.length})`}
-                        icon={BookOpen}
-                        isActive={activeTab === 'drafts'}
-                        onClick={() => setActiveTab('drafts')}
-                        colorClass="text-red-500"
+                        label="GÖNDERİLER"
+                        icon={FileText}
+                        isActive={activeTab === 'posts'}
+                        onClick={() => setActiveTab('posts')}
                     />
-                )}
+                    <TabButton
+                        label="YANITLAR"
+                        icon={MessageCircle}
+                        isActive={activeTab === 'replies'}
+                        onClick={() => setActiveTab('replies')}
+                    />
+                    <TabButton
+                        label="KAYDEDİLENLER"
+                        icon={Bookmark}
+                        isActive={activeTab === 'saved'}
+                        onClick={() => setActiveTab('saved')}
+                    />
+                    {isOwnProfile && drafts.length > 0 && (
+                        <TabButton
+                            label={`TASLAKLAR (${drafts.length})`}
+                            icon={BookOpen}
+                            isActive={activeTab === 'drafts'}
+                            onClick={() => setActiveTab('drafts')}
+                            colorClass="text-red-500 hover:text-red-400"
+                        />
+                    )}
+                </div>
             </div>
 
             {/* --- CONTENT --- */}
@@ -86,58 +88,85 @@ export function NeoProfileFeedWrapper({
                     {activeTab === 'posts' && (
                         <motion.div
                             key="posts"
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3, ease: "backOut" }}
                         >
                             {postsItems.length > 0 ? (
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <UnifiedFeed items={postsItems} />
                                 </div>
                             ) : (
-                                <EmptyState label="Henüz gönderi yok" description="Bilimsel yolculuk boş bir sayfayla başlar." />
+                                <EmptyState label="HENÜZ BİR ŞEY YOK" description="Bilimsel yolculuk boş bir sayfayla başlar. İlk adımını at." />
                             )}
                         </motion.div>
                     )}
 
                     {activeTab === 'saved' && (
-                        <div key="saved">
+                        <motion.div
+                            key="saved"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                        >
                             {savedItems.length > 0 ? (
                                 <UnifiedFeed items={savedItems} />
                             ) : (
-                                <EmptyState label="Koleksiyon boş" description="Henüz bir şey kaydetmedin." icon={Bookmark} />
+                                <EmptyState label="KOLEKSİYON BOŞ" description="İlham verici içerikleri buraya kaydedebilirsin." icon={Bookmark} />
                             )}
-                        </div>
+                        </motion.div>
                     )}
 
                     {activeTab === 'drafts' && (
-                        <div key="drafts">
+                        <motion.div key="drafts">
                             <UnifiedFeed items={draftsItems} />
-                        </div>
+                        </motion.div>
                     )}
 
                     {activeTab === 'replies' && (
-                        <div key="replies" className="space-y-4">
+                        <motion.div
+                            key="replies"
+                            className="space-y-4"
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                hidden: { opacity: 0 },
+                                visible: {
+                                    opacity: 1,
+                                    transition: {
+                                        staggerChildren: 0.1
+                                    }
+                                }
+                            }}
+                        >
                             {answers.length > 0 ? (
                                 answers.map((answer) => (
-                                    <div key={answer.id} className="bg-[#050505] border border-white/10 rounded-xl p-5 hover:border-white/20 transition-all group">
-                                        <div className="flex items-center gap-2 mb-3 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                                    <motion.div
+                                        key={answer.id}
+                                        variants={{
+                                            hidden: { y: 20, opacity: 0 },
+                                            visible: { y: 0, opacity: 1 }
+                                        }}
+                                        className="bg-[#09090b] border-2 border-zinc-800 rounded-xl p-5 hover:border-[#FACC15] hover:shadow-[4px_4px_0px_#FACC15] transition-all group cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-2 mb-3 text-[10px] text-zinc-400 font-black uppercase tracking-wider bg-zinc-900/50 w-fit px-2 py-1 rounded">
                                             <MessageCircle className="w-3 h-3 text-[#FACC15]" />
                                             <span>YANITLADI</span>
                                         </div>
-                                        <h4 className="text-white font-bold mb-2 group-hover:text-[#FACC15] transition-colors line-clamp-1 text-base">
+                                        <h4 className="text-white font-bold mb-2 group-hover:text-[#FACC15] transition-colors line-clamp-1 text-lg font-[family-name:var(--font-outfit)]">
                                             {answer.questions?.title}
                                         </h4>
-                                        <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3">
+                                        <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3 border-l-2 border-zinc-700 pl-3 group-hover:border-[#FACC15] transition-colors">
                                             {answer.content}
                                         </p>
-                                    </div>
+                                    </motion.div>
                                 ))
                             ) : (
-                                <EmptyState label="Sessiz.." description="Henüz bir tartışmaya katılmadın." icon={MessageCircle} />
+                                <EmptyState label="SESSİZLİK..." description="Henüz hiçbir tartışmaya katılmadın." icon={MessageCircle} />
                             )}
-                        </div>
+                        </motion.div>
                     )}
                 </AnimatePresence>
             </div>
@@ -150,14 +179,14 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label
         <button
             onClick={onClick}
             className={cn(
-                "relative flex shrink-0 items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all select-none border",
+                "relative flex shrink-0 items-center justify-center gap-2 px-6 py-3 rounded-lg text-xs font-black tracking-wider transition-all select-none border-2",
                 isActive
-                    ? "bg-white text-black border-white shadow-lg shadow-white/5"
-                    : "bg-black/40 text-zinc-500 border-white/10 hover:bg-white/5 hover:text-white hover:border-white/20",
+                    ? "bg-[#FACC15] text-black border-black shadow-[4px_4px_0px_#000] -translate-y-1"
+                    : "bg-zinc-900/50 text-zinc-500 border-zinc-700 hover:border-white hover:text-white hover:bg-black",
                 colorClass && !isActive && colorClass
             )}
         >
-            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-black" : "opacity-70")} />
+            <Icon className={cn("w-4 h-4", isActive ? "text-black stroke-[2.5px]" : "opacity-70")} />
             {label}
         </button>
     );
@@ -165,12 +194,12 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label
 
 function EmptyState({ label, description, icon: Icon }: { label: string, description: string, icon?: any }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/5">
-                {Icon ? <Icon className="w-6 h-6 text-zinc-500" /> : <Inbox className="w-6 h-6 text-zinc-500" />}
+        <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-zinc-800 rounded-2xl bg-zinc-900/20">
+            <div className="w-20 h-20 bg-zinc-900 rounded-2xl flex items-center justify-center mb-6 border-2 border-zinc-800 shadow-[4px_4px_0px_#000] rotate-3">
+                {Icon ? <Icon className="w-8 h-8 text-zinc-500" /> : <Inbox className="w-8 h-8 text-zinc-500" />}
             </div>
-            <p className="text-white font-bold text-lg mb-1">{label}</p>
-            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto">{description}</p>
+            <p className="text-white font-black text-xl mb-2 font-[family-name:var(--font-outfit)] uppercase tracking-tight">{label}</p>
+            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto font-medium">{description}</p>
         </div>
     );
 }

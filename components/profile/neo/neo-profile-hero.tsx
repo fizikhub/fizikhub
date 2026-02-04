@@ -251,13 +251,13 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
             <div className={cn(
                 "relative overflow-hidden bg-[#050505]", // Matte Deep Black
                 "-mx-2 -mt-4 w-[calc(100%+1rem)] h-[220px]",
-                "border-b border-white/10 rounded-b-[24px]", // Subtle border
+                "border-b-4 border-black rounded-b-[32px] sm:rounded-b-none sm:border-b-0", // Mobile: Rounded + Thick Border
                 // Desktop
-                "sm:mx-0 sm:mt-0 sm:w-full sm:h-[240px] sm:rounded-b-none sm:border-b-0",
-                "sm:rounded-xl sm:border sm:border-white/10 sm:shadow-2xl sm:shadow-black"
+                "sm:mx-0 sm:mt-0 sm:w-full sm:h-[280px]",
+                "sm:rounded-xl sm:border-2 sm:border-black sm:shadow-[8px_8px_0px_#000]"
             )}>
                 {/* 3D CANVAS */}
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-0 opacity-80">
                     <Canvas camera={{ position: [0, 5, 7], fov: 50 }} gl={{ antialias: false, powerPreference: "high-performance", alpha: true }} dpr={[1, 2]}>
                         <group>
                             <BackgroundStars />
@@ -266,51 +266,87 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             <NebulaClouds />
                         </group>
                         <EffectComposer enableNormalPass={false}>
-                            <Bloom luminanceThreshold={0.6} mipmapBlur intensity={0.5} radius={0.4} />
+                            <Bloom luminanceThreshold={0.6} mipmapBlur intensity={0.8} radius={0.4} />
                         </EffectComposer>
                     </Canvas>
                 </div>
 
                 {/* VIGNETTE & GRAIN OVERLAY */}
-                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.9)_100%)]" />
+                <div className="absolute inset-0 z-10 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'url("/noise.png")' }}></div>
 
                 {/* DESKTOP CONTENT */}
-                <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-8 gap-6">
-                    <div className="relative shrink-0 group/avatar">
-                        <div className="w-32 h-32 bg-black border border-white/20 shadow-xl overflow-hidden rounded-xl relative z-10 transition-transform duration-500 group-hover/avatar:scale-105">
+                <div className="absolute inset-0 z-20 hidden sm:flex flex-col sm:flex-row items-center sm:items-end p-8 gap-8">
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                        className="relative shrink-0 group/avatar"
+                    >
+                        <div className="w-36 h-36 bg-black border-[3px] border-white shadow-[8px_8px_0px_#FACC15] overflow-hidden rounded-xl relative z-10 transition-transform duration-300 group-hover/avatar:-translate-y-2 group-hover/avatar:shadow-[12px_12px_0px_#FACC15]">
                             {profile?.avatar_url ? (
-                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover grayscale group-hover/avatar:grayscale-0 transition-all duration-500" />
                             ) : (
-                                <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-3xl font-black text-zinc-700">
+                                <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-3xl font-black text-white">
                                     {profile?.full_name?.charAt(0) || "?"}
                                 </div>
                             )}
                         </div>
-                    </div>
+                        {profile?.is_verified && (
+                            <div className="absolute -top-3 -right-3 bg-[#FACC15] text-black w-8 h-8 flex items-center justify-center rounded-full border-2 border-black z-20 shadow-[2px_2px_0px_#000]">
+                                <ShieldCheck className="w-5 h-5" />
+                            </div>
+                        )}
+                    </motion.div>
 
                     <div className="flex-1 text-left mb-2">
-                        <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-sm font-[family-name:var(--font-outfit)]">
+                        <motion.h1
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-5xl font-black tracking-tighter text-white drop-shadow-md font-[family-name:var(--font-outfit)] italic uppercase"
+                        >
                             {profile?.full_name || "İsimsiz"}
-                        </h1>
-                        <div className="flex items-center justify-start gap-3 mt-1">
+                        </motion.h1>
+                        <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="flex items-center justify-start gap-4 mt-2"
+                        >
                             <button
                                 onClick={handleCopyUsername}
-                                className="flex items-center gap-1.5 text-zinc-400 font-medium text-sm tracking-wide transition-colors group/copy hover:text-white"
+                                className="flex items-center gap-1.5 bg-black/50 px-2 py-1 rounded border border-white/10 text-zinc-300 font-mono text-sm tracking-wide transition-colors hover:bg-white hover:text-black hover:font-bold"
                             >
                                 @{profile?.username}
-                                {isCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity" />}
+                                {isCopied ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                             </button>
-                            {profile?.is_verified && (
-                                <span className="flex items-center gap-1 bg-[#FACC15]/10 text-[#FACC15] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#FACC15]/20">
-                                    <ShieldCheck className="w-3 h-3" /> VERIFIED
-                                </span>
-                            )}
-                        </div>
-                        {profile?.bio && <p className="mt-3 text-zinc-400 text-sm max-w-lg leading-relaxed line-clamp-2">{profile.bio}</p>}
+                            <div className="h-4 w-[1px] bg-white/20"></div>
+                            {/* Reputation Tag */}
+                            <div className="flex items-center gap-1.5 text-[#FACC15] font-black tracking-wide text-sm">
+                                <div className="w-2 h-2 bg-[#FACC15] rounded-full animate-pulse shadow-[0px_0px_10px_#FACC15]"></div>
+                                {formatNumber(stats?.reputation || 0)} REP
+                            </div>
+                        </motion.div>
+                        {profile?.bio && (
+                            <motion.p
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="mt-4 text-zinc-300 text-sm max-w-lg leading-relaxed line-clamp-2 border-l-2 border-[#FACC15] pl-3"
+                            >
+                                {profile.bio}
+                            </motion.p>
+                        )}
                     </div>
 
-                    <div className="flex flex-col gap-2 shrink-0 mb-2">
-                        {/* Desktop Actions - Matte Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="flex flex-col gap-3 shrink-0 mb-2 min-w-[180px]"
+                    >
+                        {/* Desktop Actions - Neo Brutalist Buttons */}
                         {isOwnProfile ? (
                             <>
                                 <ProfileSettingsDialog
@@ -323,44 +359,51 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                     currentSocialLinks={profile?.social_links}
                                     userEmail={user?.email}
                                     trigger={
-                                        <button className="w-full px-6 py-2.5 bg-[#FACC15] text-black font-bold uppercase tracking-wide text-xs rounded-lg hover:bg-[#FACC15]/90 transition-all">
+                                        <button className="w-full px-6 py-3 bg-[#FACC15] text-black font-black uppercase tracking-wider text-xs border-2 border-black rounded-lg hover:translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_#fff] transition-all active:translate-x-0 active:translate-y-0 active:shadow-none">
                                             PROFİLİ DÜZENLE
                                         </button>
                                     }
                                 />
-                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-black/50 text-white font-bold uppercase tracking-wide text-xs border border-white/20 rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2 backdrop-blur-sm">
-                                    <Mail className="w-3.5 h-3.5" /> MESAJLARIM
+                                <Link href="/mesajlar">
+                                    <button className="w-full px-6 py-3 bg-zinc-900 text-white font-black uppercase tracking-wider text-xs border-2 border-zinc-700 rounded-lg hover:border-white hover:bg-black transition-all flex items-center justify-center gap-2">
+                                        <Mail className="w-3.5 h-3.5" /> MESAJLARIM
+                                    </button>
                                 </Link>
                                 {(profile?.role === 'author' || profile?.role === 'admin') && (
-                                    <Link href="/yazar/yeni" className="w-full px-6 py-2.5 bg-[#FACC15] text-black font-bold uppercase tracking-wide text-xs border border-yellow-500 rounded-lg hover:bg-yellow-400 transition-all flex items-center justify-center gap-2">
-                                        <PenTool className="w-3.5 h-3.5" /> YAZAR EDİTÖRÜ
+                                    <Link href="/yazar/yeni">
+                                        <button className="w-full px-6 py-3 bg-[#00E6CC] text-black font-black uppercase tracking-wider text-xs border-2 border-black rounded-lg hover:translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_#fff] transition-all flex items-center justify-center gap-2">
+                                            <PenTool className="w-3.5 h-3.5" /> YAZAR PANELİ
+                                        </button>
                                     </Link>
                                 )}
                             </>
                         ) : (
                             <>
                                 <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="modern" />
-                                <Link href="/mesajlar" className="w-full px-6 py-2.5 bg-white text-black font-bold uppercase tracking-wide text-xs rounded-lg hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
-                                    <Mail className="w-3.5 h-3.5" /> MESAJ GÖNDER
+                                <Link href="/mesajlar">
+                                    <button className="w-full px-6 py-3 bg-white text-black font-black uppercase tracking-wider text-xs border-2 border-black rounded-lg hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 shadow-[4px_4px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]">
+                                        <Mail className="w-3.5 h-3.5" /> MESAJ AT
+                                    </button>
                                 </Link>
                             </>
                         )}
-                    </div>
+                    </motion.div>
                 </div>
             </div>
 
             {/* ------------------------------------------------------------------ */}
-            {/* MOBILE LAYOUT & HUD */}
+            {/* MOBILE LAYOUT & HUD (Heavy Redesign) */}
             {/* ------------------------------------------------------------------ */}
             <div className="relative px-2 sm:hidden -mt-[60px] z-30">
                 <div className="flex items-end justify-between">
-                    {/* Avatar - Clean & Matte */}
+                    {/* Avatar - Mobile */}
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
+                        initial={{ scale: 0.8, opacity: 0, rotate: -5 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        transition={{ type: "spring", bounce: 0.5 }}
                         className="relative"
                     >
-                        <div className="w-24 h-24 rounded-xl border-4 border-black bg-black overflow-hidden shadow-2xl">
+                        <div className="w-28 h-28 rounded-xl border-[3px] border-white bg-black overflow-hidden shadow-[6px_6px_0px_#FACC15]">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
@@ -370,34 +413,34 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             )}
                         </div>
                         {profile?.is_verified && (
-                            <div className="absolute -bottom-1 -right-1 bg-[#FACC15] text-black p-1 rounded-full border-2 border-black z-20">
-                                <ShieldCheck className="w-3 h-3" />
+                            <div className="absolute -bottom-2 -right-2 bg-[#FACC15] text-black p-1.5 rounded-full border-2 border-black z-20 shadow-sm">
+                                <ShieldCheck className="w-4 h-4" />
                             </div>
                         )}
                     </motion.div>
 
-                    {/* Quick Stats - Clean Glass */}
-                    <div className="flex gap-4 pb-2 px-4 flex-1 justify-end">
-                        <div className="text-center">
-                            <span className="block font-bold text-lg text-white leading-none">{formatNumber(stats?.followersCount || 0)}</span>
-                            <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wide">Takipçi</span>
+                    {/* Quick Stats - Mobile Cards */}
+                    <div className="flex gap-2 pb-1 flex-1 justify-end">
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg text-center min-w-[60px]">
+                            <span className="block font-black text-lg text-white leading-none">{formatNumber(stats?.followersCount || 0)}</span>
+                            <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Takipçi</span>
                         </div>
-                        <div className="text-center">
-                            <span className="block font-bold text-lg text-white leading-none">{formatNumber(stats?.followingCount || 0)}</span>
-                            <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wide">Takip</span>
+                        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg text-center min-w-[60px]">
+                            <span className="block font-black text-lg text-white leading-none">{formatNumber(stats?.followingCount || 0)}</span>
+                            <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Takip</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Name & Bio & Actions Block */}
-                <div className="mt-4 space-y-4">
+                <div className="mt-5 space-y-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground font-[family-name:var(--font-outfit)] leading-tight">
+                        <h1 className="text-4xl font-black text-foreground font-[family-name:var(--font-outfit)] leading-[0.9] text-black dark:text-white uppercase italic tracking-tighter">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
                         <button
                             onClick={handleCopyUsername}
-                            className="text-sm font-medium text-zinc-500 mt-0.5 flex items-center gap-1.5 active:text-foreground transition-colors"
+                            className="text-sm font-bold text-zinc-500 mt-1 flex items-center gap-1.5 active:text-foreground transition-colors font-mono"
                         >
                             @{profile?.username}
                             {isCopied && <Check className="w-3 h-3 text-green-500" />}
@@ -405,7 +448,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     </div>
 
                     {profile?.bio && (
-                        <p className="text-sm text-zinc-400 leading-relaxed font-normal">
+                        <p className="text-sm text-zinc-400 leading-relaxed font-medium border-l-[3px] border-[#FACC15] pl-3 py-1 bg-zinc-900/30 rounded-r-lg">
                             {profile.bio}
                         </p>
                     )}
@@ -413,23 +456,23 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     {/* Reputation & Actions */}
                     <div className="flex items-center justify-between gap-3 pt-2">
                         {/* Clean Rep Badge */}
-                        <div className="flex items-center gap-2 pl-3 pr-4 py-1.5 bg-zinc-100 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/10 rounded-full">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
-                            <span className="text-xs font-bold text-foreground">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-500 font-normal">Puan</span></span>
+                        <div className="flex items-center gap-2 pl-3 pr-4 py-2 bg-black border-2 border-zinc-800 rounded-lg shadow-sm">
+                            <div className="w-2 h-2 rounded-full bg-[#FACC15] animate-pulse" />
+                            <span className="text-xs font-black text-white tracking-wide">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-500 font-bold">REP</span></span>
                         </div>
 
                         <div className="flex items-center gap-2">
-                            {/* ADMIN BUTTON - ONLY FOR BARAN BOZKURT */}
+                            {/* ADMIN BUTTON */}
                             {(profile?.username === 'baranbozkurt' || user?.email === 'baran@fizikhub.com') && (
-                                <Link href="/admin" className="h-9 px-3 flex items-center justify-center bg-red-600 text-white font-bold text-[10px] rounded-lg border border-red-500 hover:bg-red-700 transition-all uppercase tracking-wide">
+                                <Link href="/admin" className="h-10 px-3 flex items-center justify-center bg-red-600 text-white font-bold text-[10px] rounded-lg border-2 border-red-800 shadow-[2px_2px_0px_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
                                     ADMIN
                                 </Link>
                             )}
 
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-transparent border border-zinc-700/50 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
-                                        <Mail className="w-4 h-4" />
+                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-zinc-900 border-2 border-zinc-700 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
+                                        <Mail className="w-5 h-5" />
                                     </Link>
                                     <ProfileSettingsDialog
                                         currentUsername={profile?.username}
@@ -441,21 +484,21 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         currentSocialLinks={profile?.social_links}
                                         userEmail={user?.email}
                                         trigger={
-                                            <button className="h-9 px-4 bg-white text-black font-bold text-xs rounded-lg border border-transparent hover:bg-zinc-200 transition-all uppercase tracking-wide">
+                                            <button className="h-10 px-4 bg-[#FACC15] text-black font-black text-xs rounded-lg border-2 border-black shadow-[3px_3px_0px_#000] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all uppercase tracking-wide">
                                                 DÜZENLE
                                             </button>
                                         }
                                     />
                                     {(profile?.role === 'author' || profile?.role === 'admin') && (
-                                        <Link href="/yazar/yeni" className="h-9 px-3 flex items-center justify-center bg-[#FACC15] text-black font-bold text-[10px] rounded-lg border border-yellow-500 hover:bg-yellow-400 transition-all uppercase tracking-wide">
-                                            <PenTool className="w-4 h-4 mr-1" /> YAZAR
+                                        <Link href="/yazar/yeni" className="h-10 px-3 flex items-center justify-center bg-[#00E6CC] text-black font-bold text-[10px] rounded-lg border-2 border-black shadow-[3px_3px_0px_#000] active:shadow-none active:translate-x-0.5 active:translate-y-0.5 transition-all">
+                                            <PenTool className="w-5 h-5" />
                                         </Link>
                                     )}
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-transparent border border-zinc-700/50 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
-                                        <Mail className="w-4 h-4" />
+                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-zinc-900 border-2 border-zinc-700 rounded-lg text-zinc-400 hover:text-white hover:border-white transition-all">
+                                        <Mail className="w-5 h-5" />
                                     </Link>
                                     <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
                                 </>
