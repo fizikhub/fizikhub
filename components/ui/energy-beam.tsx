@@ -63,12 +63,25 @@ const EnergyBeam: React.FC<EnergyBeamProps> = ({
     }, [projectId]);
 
     return (
-        <div className={`relative w-full h-full bg-black overflow-hidden ${className}`}>
+        <div className={`relative w-full h-full overflow-hidden ${className}`}>
             <div
                 ref={containerRef}
                 data-us-project={projectId}
-                className="w-full h-full"
+                className="w-full h-full absolute inset-0 z-10"
+                style={{ width: '100%', height: '100%' }}
             />
+            {/* Force Canvas Style */}
+            <style jsx global>{`
+                [data-us-project] canvas {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: cover !important;
+                    display: block !important;
+                    position: absolute !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                }
+            `}</style>
         </div>
     );
 };
