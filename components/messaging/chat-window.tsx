@@ -144,49 +144,43 @@ export function ChatWindow({
     // Simple logic: if previous msg sender is same, hide avatar
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] w-full bg-[#09090b] relative">
-            {/* NOISE & GRID BACKGROUND */}
-            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/noise.png")' }}></div>
-            <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none" style={{
-                backgroundImage: 'linear-gradient(to right, #333 1px, transparent 1px), linear-gradient(to bottom, #333 1px, transparent 1px)',
-                backgroundSize: '40px 40px'
-            }}></div>
+        <div className="flex flex-col h-[calc(100vh-64px)] w-full bg-[#050505]">
 
             {/* Chat Area */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth z-10 relative">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth">
                 {messages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center opacity-50">
-                        <div className="w-24 h-24 bg-zinc-900 border-2 border-zinc-800 flex items-center justify-center mb-6 shadow-[8px_8px_0px_#27272a] transform -rotate-3 hover:rotate-0 transition-all duration-300">
-                            <Smile className="w-12 h-12 text-[#FACC15] stroke-[1.5px]" />
+                    <div className="h-full flex flex-col items-center justify-center opacity-40">
+                        <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-4">
+                            <Smile className="w-10 h-10 text-zinc-500" />
                         </div>
-                        <p className="font-black text-2xl text-white uppercase tracking-tight">Sinyal Yok</p>
-                        <div className="h-1 w-12 bg-[#FACC15] my-3"></div>
-                        <p className="text-zinc-500 font-mono text-sm">İlk frekansı sen başlat.</p>
+                        <p className="font-bold text-xl text-white">Sohbet Başlangıcı</p>
+                        <p className="text-zinc-500 text-sm mt-1">İlk mesajı göndererek sessizliği boz.</p>
                     </div>
                 ) : (
                     messages.map((msg, index) => {
                         const isMe = msg.sender_id === currentUserId;
                         const msgLikes = likes[msg.id] || { count: 0, likedByMe: false };
                         const prevMsg = messages[index - 1];
+                        // const nextMsg = messages[index + 1];
                         const showAvatar = !isMe && (!prevMsg || prevMsg.sender_id !== msg.sender_id);
                         const isLiked = msgLikes.likedByMe;
 
                         return (
                             <motion.div
-                                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                                initial={{ opacity: 0, y: 10, scale: 0.98 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                transition={{ duration: 0.2 }}
                                 className={cn("flex w-full", isMe ? "justify-end" : "justify-start")}
                                 key={msg.id}
                             >
                                 <div className={cn("flex max-w-[85%] sm:max-w-[70%] gap-3", isMe ? "flex-row-reverse" : "flex-row")}>
 
-                                    {/* Avatar */}
-                                    <div className="w-10 flex-shrink-0 flex flex-col justify-end">
+                                    {/* Avatar (Left side only) */}
+                                    <div className="w-8 flex-shrink-0 flex flex-col justify-end">
                                         {!isMe && showAvatar && (
-                                            <Avatar className="w-10 h-10 border-2 border-zinc-800 shadow-[4px_4px_0px_rgba(0,0,0,0.5)]">
+                                            <Avatar className="w-8 h-8 ring-2 ring-[#050505]">
                                                 <AvatarImage src={otherUserAvatar || ""} />
-                                                <AvatarFallback className="text-xs bg-[#FACC15] text-black font-bold">?</AvatarFallback>
+                                                <AvatarFallback className="text-[10px] bg-zinc-800 text-zinc-400 font-bold">?</AvatarFallback>
                                             </Avatar>
                                         )}
                                     </div>
@@ -196,23 +190,19 @@ export function ChatWindow({
                                         <div
                                             onDoubleClick={() => handleDoubleClick(msg.id)}
                                             className={cn(
-                                                "px-5 py-3.5 shadow-lg relative text-[15px] leading-relaxed select-none transition-all duration-200 border-2",
+                                                "px-4 py-2.5 text-[15px] leading-relaxed transition-all shadow-sm",
                                                 isMe
-                                                    ? "bg-[#FACC15] text-black font-bold border-black shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-none"
-                                                    : "bg-[#18181b] text-zinc-100 border-zinc-700 shadow-[5px_5px_0px_rgba(0,0,0,1)] rounded-none",
-                                                isLiked && "scale-[1.02] ring-2 ring-white/20"
+                                                    ? "bg-[#FACC15] text-black font-medium rounded-2xl rounded-tr-sm" // My Bubble: Yellow, Top-Right Sharp
+                                                    : "bg-zinc-800 text-white rounded-2xl rounded-tl-sm", // Other Bubble: Dark Grey, Top-Left Sharp
                                             )}
                                         >
-                                            {/* Neo-brutalist Notch */}
-                                            <div className={cn(
-                                                "absolute w-3 h-3 border-2 border-inherit bg-inherit rotate-45",
-                                                isMe ? "-right-1.5 bottom-4 border-l-0 border-b-0" : "-left-1.5 bottom-4 border-r-0 border-t-0"
-                                            )}></div>
-
                                             {msg.content}
 
-                                            {/* Timestamp (Bottom Right) */}
-                                            <div className={cn("text-[8px] font-black tracking-wider mt-2 flex items-center gap-1 opacity-70", isMe ? "justify-end text-black/60" : "justify-end text-zinc-500")}>
+                                            {/* Timestamp & Checks */}
+                                            <div className={cn(
+                                                "text-[9px] font-bold tracking-wide mt-1 flex items-center gap-1 opacity-70",
+                                                isMe ? "justify-end text-black/60" : "justify-end text-zinc-400"
+                                            )}>
                                                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 {isMe && <CheckCheck className="w-3 h-3 text-black/50" />}
                                             </div>
@@ -220,33 +210,32 @@ export function ChatWindow({
 
                                         {/* Actions (Delete only for me) */}
                                         {isMe && (
-                                            <div className="absolute top-0 -left-10 opacity-0 group-hover:opacity-100 transition-opacity h-full flex items-center">
-                                                <button onClick={() => handleDelete(msg.id)} className="p-2 hover:bg-red-500 hover:text-white bg-zinc-900 border border-zinc-700 text-zinc-500 transition-all rounded-none shadow-[2px_2px_0px_#000]">
-                                                    <Trash2 className="w-3.5 h-3.5" />
+                                            <div className="absolute top-1/2 -translate-y-1/2 -left-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => handleDelete(msg.id)} className="p-1.5 hover:bg-zinc-800 text-zinc-600 hover:text-red-500 rounded-full transition-colors">
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         )}
 
-                                        {/* Like Heart (Absolute Badge with Pop) */}
+                                        {/* Like Reaction */}
                                         <AnimatePresence>
                                             {msgLikes.count > 0 && (
                                                 <motion.div
-                                                    initial={{ scale: 0, rotate: -45 }}
-                                                    animate={{ scale: 1, rotate: 0 }}
-                                                    exit={{ scale: 0, rotate: 45 }}
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    exit={{ scale: 0 }}
                                                     className={cn(
-                                                        "absolute border-2 border-black px-2 py-0.5 flex items-center gap-1 shadow-[3px_3px_0px_#000] z-10",
-                                                        isLiked ? "bg-red-600 text-white" : "bg-zinc-800 text-white"
+                                                        "absolute border-2 border-[#050505] px-1.5 py-0.5 flex items-center gap-1 rounded-full shadow-sm z-10",
+                                                        isLiked ? "bg-red-500 text-white" : "bg-zinc-700 text-white"
                                                     )}
                                                     style={{
-                                                        bottom: -15,
-                                                        right: isMe ? 'auto' : -10,
-                                                        left: isMe ? -10 : 'auto',
-                                                        transform: isMe ? 'rotate(-5deg)' : 'rotate(5deg)'
+                                                        bottom: -10,
+                                                        right: isMe ? 0 : 'auto',
+                                                        left: isMe ? 'auto' : 0,
                                                     }}
                                                 >
-                                                    <Heart className="w-3 h-3 fill-current" />
-                                                    {msgLikes.count > 1 && <span className="text-[10px] font-black">{msgLikes.count}</span>}
+                                                    <Heart className="w-2.5 h-2.5 fill-current" />
+                                                    {msgLikes.count > 1 && <span className="text-[9px] font-bold">{msgLikes.count}</span>}
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
@@ -258,28 +247,37 @@ export function ChatWindow({
                 )}
             </div>
 
-            {/* Input Bar - Floating Dock Style */}
-            <div className="p-4 bg-transparent absolute bottom-0 left-0 right-0 z-20 pointer-events-none flex justify-center pb-6">
-                <div className="w-full max-w-2xl bg-[#18181b]/90 backdrop-blur-xl border-2 border-zinc-700/50 p-2 shadow-[0px_8px_40px_rgba(0,0,0,0.5)] flex items-center gap-2 pointer-events-auto transition-all focus-within:border-[#FACC15] focus-within:shadow-[0px_0px_0px_2px_#FACC15] group hover:scale-[1.01]">
+            {/* Input Bar - Elegant & Fixed */}
+            <div className="p-3 sm:p-4 bg-[#050505] border-t border-zinc-900 sticky bottom-0 z-20">
+                <div className="max-w-4xl mx-auto flex items-end gap-3">
 
-                    {/* Media Button (Mock) */}
-                    <button className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors">
+                    <button className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
                         <MoreVertical className="w-5 h-5" />
                     </button>
 
-                    <input
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        placeholder="Şifreli mesajını yaz..."
-                        className="flex-1 bg-transparent text-white placeholder:text-zinc-600 text-base font-medium focus:outline-none px-2 font-mono"
-                    />
+                    <div className="flex-1 bg-zinc-900 rounded-[24px] flex items-center relative border-2 border-transparent focus-within:border-[#FACC15]/50 transition-colors">
+                        <textarea
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend(e);
+                                }
+                            }}
+                            placeholder="Bir mesaj yaz..."
+                            className="w-full bg-transparent text-white placeholder:text-zinc-500 text-base font-medium focus:outline-none py-3 px-4 max-h-32 min-h-[44px] resize-none overflow-hidden"
+                            rows={1}
+                            style={{ height: 'auto', minHeight: '44px' }}
+                        />
+                    </div>
 
                     <button
                         onClick={handleSend}
                         disabled={!inputText.trim() || sending}
-                        className="w-12 h-10 bg-[#FACC15] text-black border-2 border-black flex items-center justify-center hover:translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_#000] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:shadow-none"
+                        className="h-12 w-12 shrink-0 bg-[#FACC15] text-black rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:shadow-none"
                     >
-                        <Send className="w-5 h-5 stroke-[2.5px]" />
+                        <Send className={cn("w-5 h-5 ml-0.5", sending && "animate-pulse")} />
                     </button>
                 </div>
             </div>

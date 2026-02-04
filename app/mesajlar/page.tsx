@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare, Search, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 export default async function MessagesPage() {
     const supabase = await createClient();
@@ -19,95 +20,91 @@ export default async function MessagesPage() {
     const conversations = await getConversations();
 
     return (
-        <div className="min-h-screen bg-[#050505] selection:bg-[#FACC15] selection:text-black">
-            {/* BACKGROUND GRAIN */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("/noise.png")' }}></div>
+        <div className="min-h-screen bg-[#050505] text-white">
+            <div className="container mx-auto max-w-3xl px-4 py-8">
 
-            <div className="container mx-auto max-w-2xl px-4 py-8 relative z-10">
-
-                {/* HEADER */}
-                <div className="flex flex-col gap-1 mb-8 pt-4">
-                    <h1 className="text-4xl font-black text-white italic tracking-tighter uppercase transform -skew-x-2">
-                        Gelen Kutusu
-                    </h1>
-                    <div className="h-1 w-20 bg-[#FACC15] mb-2"></div>
-                    <p className="text-zinc-500 font-mono text-xs uppercase tracking-widest">
-                        /// Secure Connection Established
-                    </p>
+                {/* HEADER: Clean & Bold */}
+                <div className="mb-10 mt-4 flex items-end justify-between border-b-2 border-zinc-800 pb-4">
+                    <div>
+                        <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-white font-[family-name:var(--font-outfit)]">
+                            Gelen Kutusu
+                        </h1>
+                        <p className="text-zinc-400 mt-2 font-medium text-sm sm:text-base">
+                            Sohbetlerin ve bağlantıların.
+                        </p>
+                    </div>
+                    {/* Add a subtle 'New Message' button or icon here if needed in future, keeping it clean for now */}
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {conversations.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 border-[3px] border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
-                            <div className="w-20 h-20 bg-[#FACC15] rounded-full flex items-center justify-center mb-6 shadow-[0px_0px_30px_rgba(250,204,21,0.2)]">
-                                <MessageSquare className="h-10 w-10 text-black stroke-[2.5px]" />
+                        <div className="flex flex-col items-center justify-center py-24 bg-zinc-900/50 rounded-2xl border-2 border-dashed border-zinc-800">
+                            <div className="w-16 h-16 bg-[#FACC15] rounded-2xl flex items-center justify-center mb-4 shadow-[4px_4px_0px_white] transform -rotate-3">
+                                <MessageSquare className="h-8 w-8 text-black fill-black/10" />
                             </div>
-                            <h3 className="text-white font-black text-2xl uppercase tracking-tight">Sessizlik...</h3>
-                            <p className="text-zinc-500 font-mono text-sm mt-2 text-center max-w-xs">
-                                Henüz kimseyle frekans yakalamadın. <br /> Bir yazarın profiline git ve sinyal gönder.
+                            <h3 className="text-white font-bold text-xl">Henüz mesaj yok</h3>
+                            <p className="text-zinc-500 mt-2 text-center max-w-xs text-sm">
+                                Bilimsel tartışmalar başlatmak için yazarlara ulaşabilirsin.
                             </p>
                         </div>
                     ) : (
-                        conversations.map((conv, index) => (
+                        conversations.map((conv) => (
                             <Link
                                 key={conv.id}
                                 href={`/mesajlar/${conv.id}`}
-                                className="block"
+                                className="block group"
                             >
-                                <div
-                                    className="group relative flex items-center gap-5 p-5 rounded-none bg-[#0a0a0a] border border-zinc-800 hover:border-[#FACC15] transition-all duration-300 hover:translate-x-2 hover:-translate-y-1 hover:shadow-[8px_8px_0px_#18181b] overflow-hidden"
-                                >
-                                    {/* HOVER GLOW BAR */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#FACC15] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                                <div className="relative flex items-center gap-4 p-4 rounded-xl bg-zinc-900/40 border border-white/5 hover:bg-zinc-900 hover:border-white/20 transition-all duration-300">
 
-                                    {/* AVATAR */}
-                                    <div className="relative">
-                                        <Avatar className="h-16 w-16 border-[3px] border-zinc-800 group-hover:border-[#FACC15] transition-colors rounded-none transform rotate-3 group-hover:rotate-0 duration-300">
+                                    {/* AVATAR: Clean Circle with Indicator */}
+                                    <div className="relative shrink-0">
+                                        <Avatar className="h-14 w-14 border-2 border-zinc-800 group-hover:border-[#FACC15] transition-colors rounded-full">
                                             <AvatarImage src={conv.otherUser?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-zinc-900 text-zinc-500 font-black text-xl rounded-none">
+                                            <AvatarFallback className="bg-zinc-800 text-zinc-400 font-bold text-lg">
                                                 {conv.otherUser?.username?.substring(0, 2).toUpperCase() || "??"}
                                             </AvatarFallback>
                                         </Avatar>
-                                        {/* ONLINE STATUS DOT (MOCK) */}
-                                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500/0 border-2 border-transparent group-hover:bg-green-500 group-hover:border-black transition-all"></div>
+                                        {/* Unread Indicator on Avatar */}
+                                        {conv.unreadCount > 0 && (
+                                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#FACC15] text-black text-[10px] font-black flex items-center justify-center rounded-full border-2 border-[#050505]">
+                                                {conv.unreadCount}
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <h3 className="font-black text-white text-lg tracking-tight group-hover:text-[#FACC15] transition-colors truncate uppercase">
-                                                {conv.otherUser?.full_name || conv.otherUser?.username || "Ajan"}
+                                    {/* CONTENT */}
+                                    <div className="flex-1 min-w-0 py-1">
+                                        <div className="flex items-center justify-between mb-0.5">
+                                            <h3 className="font-bold text-white text-base sm:text-lg tracking-tight group-hover:text-[#FACC15] transition-colors truncate pr-2 font-[family-name:var(--font-outfit)]">
+                                                {conv.otherUser?.full_name || conv.otherUser?.username || "Kullanıcı"}
                                             </h3>
                                             {conv.lastMessage && (
-                                                <span className="font-mono text-[10px] font-bold text-zinc-600 bg-zinc-900/80 px-2 py-1 border border-zinc-800 rounded-sm">
-                                                    {formatDistanceToNow(new Date(conv.lastMessage.created_at), {
-                                                        addSuffix: false,
-                                                        locale: tr
-                                                    })}
+                                                <span className="text-xs font-medium text-zinc-500 shrink-0">
+                                                    {formatDistanceToNow(new Date(conv.lastMessage.created_at), { addSuffix: false, locale: tr })} önce
                                                 </span>
                                             )}
                                         </div>
 
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-sm text-zinc-400 font-medium truncate pr-4 opacity-60 group-hover:opacity-100 group-hover:text-white transition-all font-mono">
-                                                {conv.lastMessage ? (
-                                                    <span className="flex items-center gap-2">
-                                                        <span className="text-[#FACC15]">{">"}</span> {conv.lastMessage.content}
-                                                    </span>
-                                                ) : "Veri yok..."}
-                                            </p>
-
-                                            {conv.unreadCount > 0 && (
-                                                <span className="bg-[#FACC15] text-black text-xs font-black min-w-[24px] h-6 flex items-center justify-center shadow-[0px_0px_10px_rgba(250,204,21,0.5)] transform rotate-12">
-                                                    {conv.unreadCount}
+                                        <p className={cn(
+                                            "text-sm truncate pr-6 leading-relaxed",
+                                            conv.unreadCount > 0 ? "text-white font-medium" : "text-zinc-500 group-hover:text-zinc-400"
+                                        )}>
+                                            {conv.lastMessage ? (
+                                                <span className="flex items-center gap-1.5">
+                                                    {conv.lastMessage.sender_id === user.id && (
+                                                        <span className="text-zinc-600 text-xs">Sen:</span>
+                                                    )}
+                                                    {conv.lastMessage.content}
                                                 </span>
+                                            ) : (
+                                                <span className="italic opacity-50">Mesajlaşma başlatıldı</span>
                                             )}
+                                        </p>
+                                    </div>
 
-                                            {conv.unreadCount === 0 && (
-                                                <div className="opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                                                    <ChevronRight className="w-5 h-5 text-[#FACC15]" />
-                                                </div>
-                                            )}
-                                        </div>
+                                    {/* ARROW ICON */}
+                                    <div className="text-zinc-600 group-hover:text-white transition-colors transform group-hover:translate-x-1 duration-300">
+                                        <ChevronRight className="w-5 h-5" />
                                     </div>
                                 </div>
                             </Link>
