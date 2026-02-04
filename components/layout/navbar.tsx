@@ -66,6 +66,7 @@ export function Navbar() {
     const navItems = [
         { href: "/", label: "Ana" },
         { href: "/makale", label: "Keşfet" },
+        { href: "/simulasyonlar", label: "Simülasyonlar" },
         { href: "/siralamalar", label: "Lig" },
     ];
 
