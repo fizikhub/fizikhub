@@ -83,6 +83,7 @@ export function MobileMenu() {
             <button
                 onClick={() => setIsOpen(true)}
                 className="
+                    relative z-50 pointer-events-auto
                     flex items-center justify-center 
                     w-[42px] h-[42px] 
                     bg-white text-black 
@@ -104,7 +105,7 @@ export function MobileMenu() {
                         initial="closed"
                         animate="open"
                         exit="closed"
-                        className="fixed inset-0 z-[9999] pointer-events-auto"
+                        className="fixed inset-0 z-[10000] pointer-events-auto"
                     >
                         {/* BACKDROP */}
                         <motion.div
