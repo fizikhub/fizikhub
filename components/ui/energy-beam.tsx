@@ -21,38 +21,33 @@ const EnergyBeam: React.FC<EnergyBeamProps> = ({
     const scriptLoadedRef = useRef(false);
 
     useEffect(() => {
-        const loadScript = () => {
-            if (scriptLoadedRef.current) return;
+        let timeoutId: NodeJS.Timeout;
 
-            // Check if script already exists in document
-            if (document.querySelector('script[src*="unicornStudio.umd.js"]')) {
-                scriptLoadedRef.current = true;
-                if (window.UnicornStudio && containerRef.current) {
-                    window.UnicornStudio.init();
-                }
-                return;
+        const init = () => {
+            if (window.UnicornStudio) {
+                console.log("UnicornStudio found, initializing...");
+                window.UnicornStudio.init();
+            } else {
+                // If script exists but global not ready, verify if script is actually loaded or just inserted
+                // We'll standardly poll for a bit
+                timeoutId = setTimeout(init, 100);
             }
+        };
 
+        const existingScript = document.querySelector('script[src*="unicornStudio.umd.js"]');
+
+        if (existingScript) {
+            init();
+        } else {
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js';
             script.async = true;
-
-            script.onload = () => {
-                scriptLoadedRef.current = true;
-                if (window.UnicornStudio && containerRef.current) {
-                    console.log('Unicorn Studio loaded, initializing project...');
-                    window.UnicornStudio.init();
-                }
-            };
-
+            script.onload = init;
             document.head.appendChild(script);
-        };
+        }
 
-        loadScript();
-
-        // Cleanup function to re-init if needed or cleanup
         return () => {
-            // Usually we don't remove the script as it might be used elsewhere
+            if (timeoutId) clearTimeout(timeoutId);
         };
     }, [projectId]);
 
