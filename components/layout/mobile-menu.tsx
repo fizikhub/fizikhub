@@ -1,11 +1,12 @@
 "use client";
 
-import { Drawer } from "vaul";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useState } from "react";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, Settings, Github, Twitter } from "lucide-react";
+import { Menu, X, Home, BookOpen, Trophy, User, Zap, Settings, Github, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { DankLogo } from "@/components/brand/dank-logo";
 
 const menuItems = [
     { href: "/", label: "Ana Sayfa", icon: Home, color: "bg-blue-400" },
@@ -19,92 +20,108 @@ export function MobileMenu() {
     const [open, setOpen] = useState(false);
 
     return (
-        <Drawer.Root shouldScaleBackground open={open} onOpenChange={setOpen}>
-            <Drawer.Trigger asChild>
-                <button className="flex items-center justify-center w-[40px] h-[40px] bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-md">
-                    <Menu className="w-6 h-6 text-black stroke-[3]" />
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <button className="flex items-center justify-center w-[44px] h-[44px] bg-[#FACC15] border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-md group">
+                    <Menu className="w-6 h-6 text-black stroke-[3] group-hover:rotate-180 transition-transform duration-500" />
                 </button>
-            </Drawer.Trigger>
-            <Drawer.Portal>
-                <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity" />
-                <Drawer.Content className="bg-[#09090b] flex flex-col rounded-t-[20px] h-[85vh] mt-24 fixed bottom-0 left-0 right-0 z-50 border-t-4 border-l-4 border-r-4 border-white shadow-[0px_-10px_40px_rgba(0,0,0,0.5)] outline-none">
+            </SheetTrigger>
 
-                    {/* Handle Bar */}
-                    <div className="mx-auto w-16 h-2 flex-shrink-0 rounded-full bg-white/20 mt-4 mb-4" />
+            {/* RIGHT SIDE DRAWER - FULL BRUTALIST */}
+            <SheetContent
+                side="right"
+                className="w-[85vw] sm:w-[400px] p-0 border-l-[4px] border-black bg-[#09090b] shadow-2xl"
+            // Remove default close button to use custom one
+            >
+                {/* ACCESSIBILITY: Required Title & Description */}
+                <div className="sr-only">
+                    <SheetTitle>Mobil Navigasyon Menüsü</SheetTitle>
+                    <SheetDescription>Site içi hızlı erişim linkleri</SheetDescription>
+                </div>
 
-                    {/* Header */}
-                    <div className="px-6 pb-6 border-b border-white/10 flex justify-between items-center">
-                        <div>
-                            <h2 className="text-3xl font-black text-white italic tracking-tighter">MENÜ</h2>
-                            <p className="text-sm text-zinc-400 font-mono">Navigasyon Sistemi v2.0</p>
+                <div className="h-full flex flex-col relative overflow-hidden">
+
+                    {/* DECORATIVE BACKGROUND NOISE */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }}></div>
+
+                    {/* HEADER: YELLOW BLOCK */}
+                    <div className="bg-[#FACC15] p-6 border-b-[4px] border-black flex justify-between items-center relative z-10">
+                        <div className="flex flex-col">
+                            <h2 className="text-4xl font-black text-black italic tracking-tighter leading-none transform -skew-x-6">MENÜ</h2>
+                            <span className="text-xs font-bold text-black font-mono">v.2.0 //// NAV-SYS</span>
                         </div>
-                        <Drawer.Close asChild>
-                            <button className="w-10 h-10 bg-red-500 border-2 border-black shadow-[2px_2px_0px_#fff] flex items-center justify-center rounded-full active:scale-95 transition-transform">
-                                <X className="w-6 h-6 text-black stroke-[3]" />
-                            </button>
-                        </Drawer.Close>
+
+                        <button
+                            onClick={() => setOpen(false)}
+                            className="w-12 h-12 bg-[#ff5555] border-[3px] border-black shadow-[3px_3px_0px_black] flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                        >
+                            <X className="w-8 h-8 text-black stroke-[4]" />
+                        </button>
                     </div>
 
-                    {/* Menu Items (Scrollable) */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                        <AnimatePresence>
-                            {menuItems.map((item, i) => (
-                                <motion.div
-                                    key={item.href}
-                                    initial={{ opacity: 0, x: -50 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1, type: "spring", stiffness: 300, damping: 24 }}
-                                >
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setOpen(false)}
-                                        className="group relative flex items-center gap-4 p-4 bg-zinc-900 border-2 border-white/10 hover:border-[#FACC15] hover:bg-[#FACC15] transition-all rounded-xl overflow-hidden shadow-sm hover:shadow-[4px_4px_0px_#fff] active:translate-y-1 active:shadow-none"
-                                    >
-                                        {/* Icon Box */}
-                                        <div className={cn("w-12 h-12 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center transition-transform group-hover:rotate-12", item.color)}>
-                                            <item.icon className="w-6 h-6 text-black stroke-[2.5]" />
+                    {/* SCROLLABLE CONTENT */}
+                    <div className="flex-1 overflow-y-auto p-5 space-y-4 relative z-10">
+                        {menuItems.map((item, i) => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setOpen(false)}
+                                className="block group"
+                            >
+                                <div className="relative bg-zinc-900 border-[3px] border-white/20 p-4 transition-all duration-200 group-hover:bg-white group-hover:border-black group-hover:shadow-[6px_6px_0px_#000] group-active:translate-x-[2px] group-active:translate-y-[2px] group-active:shadow-none overflow-hidden">
+
+                                    {/* HOVER REVEAL PATTERN */}
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-[url('https://www.transparenttextures.com/patterns/diagonal-stripes.png')] transition-opacity" />
+
+                                    <div className="flex items-center gap-4 relative z-10">
+                                        {/* ICON BOX */}
+                                        <div className={cn(
+                                            "w-12 h-12 border-[3px] border-black flex items-center justify-center shadow-[2px_2px_0px_black] transition-transform group-hover:rotate-12",
+                                            item.color
+                                        )}>
+                                            <item.icon className="w-6 h-6 text-black stroke-[3]" />
                                         </div>
 
-                                        {/* Label */}
+                                        {/* TEXT */}
                                         <div className="flex flex-col">
-                                            <span className="text-xl font-black text-white group-hover:text-black uppercase tracking-tight">{item.label}</span>
-                                            <span className="text-xs font-mono text-zinc-500 group-hover:text-black/70">Gitmek için dokun →</span>
+                                            <span className="text-2xl font-black text-white group-hover:text-black uppercase tracking-tight leading-none">
+                                                {item.label}
+                                            </span>
                                         </div>
 
-                                        {/* Arrow */}
-                                        <div className="ml-auto opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
-                                                <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-1" />
-                                            </div>
+                                        {/* ARROW */}
+                                        <div className="ml-auto transform translate-x-10 group-hover:translate-x-0 transition-transform duration-300">
+                                            <span className="text-3xl font-black text-black">→</span>
                                         </div>
-                                    </Link>
-                                </motion.div>
-                            ))}
-                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
 
-                    {/* Footer / Socials */}
-                    <div className="p-6 border-t border-white/10 bg-zinc-950/50">
-                        <div className="flex justify-between items-center">
-                            <div className="flex gap-4">
-                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-white hover:bg-black transition-colors">
-                                    <Github className="w-5 h-5 text-white" />
+                    {/* FOOTER */}
+                    <div className="p-6 border-t-[4px] border-white/10 bg-black relative z-10">
+                        <div className="flex justify-between items-end">
+                            <div className="flex gap-3">
+                                <Link href="#" className="w-10 h-10 bg-zinc-800 border-2 border-white/20 flex items-center justify-center hover:bg-[#FACC15] hover:border-black hover:text-black transition-all">
+                                    <Twitter className="w-5 h-5" />
                                 </Link>
-                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-blue-400 hover:bg-black transition-colors">
-                                    <Twitter className="w-5 h-5 text-white" />
+                                <Link href="#" className="w-10 h-10 bg-zinc-800 border-2 border-white/20 flex items-center justify-center hover:bg-[#FACC15] hover:border-black hover:text-black transition-all">
+                                    <Instagram className="w-5 h-5" />
                                 </Link>
-                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-green-400 hover:bg-black transition-colors">
-                                    <Settings className="w-5 h-5 text-white" />
+                                <Link href="#" className="w-10 h-10 bg-zinc-800 border-2 border-white/20 flex items-center justify-center hover:bg-[#FACC15] hover:border-black hover:text-black transition-all">
+                                    <Settings className="w-5 h-5" />
                                 </Link>
                             </div>
-                            <div className="text-right">
-                                <p className="text-xs font-bold text-zinc-500">FIZIKHUB v2.0</p>
-                                <p className="text-[10px] text-zinc-700 font-mono">Designed by Antigravity</p>
+
+                            <div className="text-right opacity-50">
+                                <DankLogo />
                             </div>
                         </div>
                     </div>
-                </Drawer.Content>
-            </Drawer.Portal>
-        </Drawer.Root>
+
+                </div>
+            </SheetContent>
+        </Sheet>
     );
 }
