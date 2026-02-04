@@ -17,7 +17,7 @@ export function MaintenanceAudioPlayer() {
                         document.removeEventListener('keydown', playAudio);
                     })
                     .catch((err) => {
-                        console.log("Audio play failed (waiting for interaction):", err);
+                        // Audio play failed (waiting for interaction)
                     });
             }
         };
@@ -40,7 +40,7 @@ export function MaintenanceAudioPlayer() {
     return (
         <audio ref={audioRef} loop>
             <source src="/audio/error_theme.mp3" type="audio/mpeg" />
-            <source src="/audio/error_theme.wav" type="audio/wav" /> 
+            <source src="/audio/error_theme.wav" type="audio/wav" />
         </audio>
     );
 }

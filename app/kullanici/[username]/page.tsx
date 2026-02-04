@@ -2,12 +2,10 @@ import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { getFollowStatus, getFollowStats } from "@/app/profil/actions";
 import { Metadata } from "next";
-import { ModernProfileHeader } from "@/components/profile/modern/modern-profile-header";
-import { ModernProfileFeed } from "@/components/profile/modern/modern-profile-feed";
-
-interface PageProps {
-    params: Promise<{ username: string }>;
-}
+import { NeoProfileHero } from "@/components/profile/neo/neo-profile-hero";
+import { NeoProfileFeedWrapper } from "@/components/profile/neo/neo-profile-feed-wrapper";
+import { NeoProfileSidebar } from "@/components/profile/neo/neo-profile-sidebar";
+import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { username } = await params;
@@ -100,31 +98,50 @@ export default async function PublicProfilePage({ params }: PageProps) {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <div className="min-h-screen bg-background border-x border-border max-w-[600px] mx-auto pb-32">
-            {/* 
-                We remove the 'container' and 'px' constraints to allow full-bleed cover image 
-                and max-width mimics the Twitter timeline width.
-             */}
+        <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+            <BackgroundWrapper />
 
-            <ModernProfileHeader
-                profile={profile}
-                user={user || { created_at: profile.created_at }}
-                isOwnProfile={isOwnProfile}
-                isFollowing={isFollowing}
-                stats={stats}
-                userBadges={formattedBadges}
-            />
+            <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-4 lg:pt-8 pb-32">
 
-            <div className="border-t border-border mt-8">
-                <ModernProfileFeed
-                    articles={articles || []}
-                    questions={questions || []}
-                    answers={answers || []}
-                    bookmarkedArticles={[]}
-                    bookmarkedQuestions={[]}
-                    isOwnProfile={isOwnProfile}
-                />
+                {/* 1. HERO SECTION (Full Width) */}
+                <div className="mb-8">
+                    <NeoProfileHero
+                        profile={profile}
+                        user={user || { created_at: profile.created_at }} // Fallback if no user
+                        isOwnProfile={isOwnProfile}
+                        isFollowing={isFollowing}
+                        stats={stats}
+                    />
+                </div>
+
+                {/* 2. GRID CONTENT */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
+
+                    {/* LEFT: MAIN FEED (7 Columns) */}
+                    <div className="lg:col-span-12 xl:col-span-7 space-y-6">
+                        <NeoProfileFeedWrapper
+                            articles={articles || []}
+                            questions={questions || []}
+                            answers={answers || []}
+                            drafts={[]} // No drafts on public profile
+                            bookmarkedArticles={[]} // No bookmarks on public profile
+                            bookmarkedQuestions={[]}
+                            isOwnProfile={isOwnProfile}
+                        />
+                    </div>
+
+                    {/* RIGHT: SIDEBAR (5 Columns) */}
+                    <div className="hidden xl:block xl:col-span-5 relative">
+                        <NeoProfileSidebar
+                            profile={profile}
+                            user={user || { created_at: profile.created_at }}
+                            stats={stats}
+                            userBadges={formattedBadges}
+                        />
+                    </div>
+
+                </div>
             </div>
-        </div>
+        </main>
     );
 }

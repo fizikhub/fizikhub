@@ -1,12 +1,5 @@
-"use client";
-
-import dynamic from "next/dynamic";
-
-const BlackHoleBackground = dynamic(
-    () => import("@/components/home/black-hole-background").then((mod) => mod.BlackHoleBackground),
-    { ssr: false }
-);
+import { LightweightBackground } from "@/components/ui/lightweight-background";
 
 export function BackgroundWrapper() {
-    return <BlackHoleBackground />;
+    return <LightweightBackground />;
 }

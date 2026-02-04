@@ -176,9 +176,8 @@ import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 
-import { CompactDock } from "@/components/mobile/compact-dock";
-import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export default async function RootLayout({
   children,

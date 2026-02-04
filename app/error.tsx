@@ -17,10 +17,7 @@ export default function Error({
         console.error("Yüksek ihtimalle sıçtık:", error);
 
         // Auto-play audio if possible
-        if (audioRef.current) {
-            audioRef.current.volume = 0.5;
-            audioRef.current.play().catch(e => console.log("Audio autoplay failed:", e));
-        }
+
     }, [error]);
 
     return (

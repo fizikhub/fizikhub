@@ -37,7 +37,7 @@ export default async function ConversationPage({
         initialLikes = likesResult;
 
         if (process.env.NODE_ENV === 'development') {
-            console.log(`Conversation Page: Fetched ${messages.length} messages`);
+
         }
     } catch (e) {
         console.error("Conversation Page: Error fetching messages", e);
