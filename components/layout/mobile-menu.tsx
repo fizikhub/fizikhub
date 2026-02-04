@@ -2,18 +2,19 @@
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useState } from "react";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom } from "lucide-react";
+import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 const menuItems = [
-    { href: "/", label: "ANA SAYFA", sub: "Başlangıç", icon: Home },
-    { href: "/makale", label: "MAKALELER", sub: "Bilimsel Yayınlar", icon: BookOpen },
-    { href: "/simulasyonlar", label: "SİMÜLASYONLAR", sub: "İnteraktif Deneyler", icon: Atom },
-    { href: "/siralamalar", label: "SIRALAMA", sub: "Liderlik Tablosu", icon: Trophy },
-    { href: "/profil", label: "PROFİL", sub: "Hesap Detayları", icon: User },
+    { href: '/', label: 'Akış', icon: Home, color: 'bg-[#FFC800]' },
+    { href: '/kesfet', label: 'Keşfet', icon: Compass, color: 'bg-[#FF90E8]' },
+    { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'bg-[#23A9FA]' },
+    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'bg-[#FFC800]' },
+    { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'bg-[#00F0A0]' }, // Added Dictionary
+    { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'bg-zinc-200' },
     { href: "/ozel", label: "ÖZEL İÇERİK", sub: "Premium Alan", icon: Zap },
 ];
 
