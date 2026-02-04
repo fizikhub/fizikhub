@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Energy Beam</title>
     <style>
-        html, body {
+        html,
+        body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: transparent; /* Allow transparency */
+            background: #000000;
+            /* Force Black Background for Space Effect */
         }
+
         #scene {
             position: absolute;
             top: 0;
@@ -21,6 +25,7 @@
             height: 100%;
             display: block;
         }
+
         /* Force canvas to fill */
         canvas {
             width: 100% !important;
@@ -29,18 +34,20 @@
         }
     </style>
 </head>
+
 <body>
     <!-- The container Unicorn Studio looks for -->
     <div id="scene" data-us-project="hRFfUymDGOHwtFe7evR2"></div>
 
     <!-- The Script -->
-    <script src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js"></script>
-    
+    <script
+        src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js"></script>
+
     <script>
         // Parse query params to override project ID if needed
         const urlParams = new URLSearchParams(window.location.search);
         const projectId = urlParams.get('projectId');
-        
+
         if (projectId) {
             document.getElementById('scene').setAttribute('data-us-project', projectId);
         }
@@ -64,4 +71,5 @@
         }
     </script>
 </body>
+
 </html>
