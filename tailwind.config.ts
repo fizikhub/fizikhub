@@ -55,6 +55,11 @@ const config = {
                     DEFAULT: "hsl(var(--popover))",
                     foreground: "hsl(var(--popover-foreground))",
                 },
+                // Neo-Brutalism Library Aliases
+                main: "hsl(var(--primary))",
+                "main-foreground": "hsl(var(--primary-foreground))",
+                overlay: "rgba(0,0,0,0.8)",
+
                 // Custom Neo-Brutalist Colors
                 neo: {
                     yellow: "#facc15",
@@ -69,6 +74,7 @@ const config = {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+                base: "var(--radius)",
                 none: "0px",
             },
             borderWidth: {
@@ -92,12 +98,23 @@ const config = {
                 'neo-xl': '10px 10px 0px 0px #000000',
                 'neo-hover': '2px 2px 0px 0px #000000',
                 'neo-active': '0px 0px 0px 0px #000000',
-                'neo-dark': '4px 4px 0px 0px #ffffff',
+                "neo-dark": "4px 4px 0px 0px #ffffff",
+            },
+            translate: {
+                boxShadowX: "4px",
+                boxShadowY: "4px",
+                reverseBoxShadowX: "-4px",
+                reverseBoxShadowY: "-4px",
+            },
+            fontWeight: {
+                base: "500",
+                heading: "700",
             },
             fontFamily: {
                 sans: ["var(--font-sans)", "sans-serif"],
                 heading: ["var(--font-head)", "sans-serif"],
                 head: ["var(--font-head)", "sans-serif"], // RetroUI alias
+                base: ["var(--font-sans)", "sans-serif"], // NeoBrutalism alias
             },
             keyframes: {
                 "accordion-down": {
