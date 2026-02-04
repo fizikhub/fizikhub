@@ -332,7 +332,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                     <Mail className="w-3.5 h-3.5" /> MESAJLARIM
                                 </Link>
                                 {(profile?.role === 'author' || profile?.role === 'admin') && (
-                                    <Link href="/makale/yeni" className="w-full px-6 py-2.5 bg-[#FACC15] text-black font-bold uppercase tracking-wide text-xs border border-yellow-500 rounded-lg hover:bg-yellow-400 transition-all flex items-center justify-center gap-2">
+                                    <Link href="/yazar/yeni" className="w-full px-6 py-2.5 bg-[#FACC15] text-black font-bold uppercase tracking-wide text-xs border border-yellow-500 rounded-lg hover:bg-yellow-400 transition-all flex items-center justify-center gap-2">
                                         <PenTool className="w-3.5 h-3.5" /> YAZAR EDİTÖRÜ
                                     </Link>
                                 )}
@@ -447,7 +447,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         }
                                     />
                                     {(profile?.role === 'author' || profile?.role === 'admin') && (
-                                        <Link href="/makale/yeni" className="h-9 px-3 flex items-center justify-center bg-[#FACC15] text-black font-bold text-[10px] rounded-lg border border-yellow-500 hover:bg-yellow-400 transition-all uppercase tracking-wide">
+                                        <Link href="/yazar/yeni" className="h-9 px-3 flex items-center justify-center bg-[#FACC15] text-black font-bold text-[10px] rounded-lg border border-yellow-500 hover:bg-yellow-400 transition-all uppercase tracking-wide">
                                             <PenTool className="w-4 h-4 mr-1" /> YAZAR
                                         </Link>
                                     )}

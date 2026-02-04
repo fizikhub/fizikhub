@@ -11,13 +11,14 @@ export default async function NewArticlePage() {
     }
 
     // Check if user is a writer
+    // Check if user is a writer
     const { data: profile } = await supabase
         .from("profiles")
-        .select("is_writer")
+        .select("is_writer, role")
         .eq("id", user.id)
         .single();
 
-    if (!profile?.is_writer) {
+    if (!profile?.is_writer && profile?.role !== 'author' && profile?.role !== 'admin') {
         redirect("/");
     }
 
