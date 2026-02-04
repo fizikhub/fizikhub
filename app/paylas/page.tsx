@@ -17,7 +17,7 @@ import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase-client";
 import { TiltCard } from "@/components/magicui/tilt-card";
-import EnergyBeam from "@/components/ui/energy-beam";
+import { Meteors } from "@/components/magicui/meteors";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -167,7 +167,9 @@ export default function PaylasPage() {
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="mb-8 relative rounded-2xl overflow-hidden border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-black h-[250px] md:h-[300px]"
                 >
-                    <EnergyBeam className="w-full h-full opacity-90" />
+                    <Meteors number={30} />
+
+                    <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-black/0 to-black/20 pointer-events-none" />
 
                     <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
                         <div className="flex flex-col">
