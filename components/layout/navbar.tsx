@@ -163,7 +163,7 @@ export function Navbar() {
                         </div>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
-                        <div className="md:hidden relative z-50">
+                        <div className="md:hidden">
                             <MobileMenu />
                         </div>
                     </div>
