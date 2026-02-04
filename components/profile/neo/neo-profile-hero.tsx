@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { motion } from "framer-motion";
@@ -11,8 +11,6 @@ import { FollowButton } from "@/components/profile/follow-button";
 import { Mail, Copy, Check, ShieldCheck, PenTool } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import confetti from "canvas-confetti";
-import NumberTicker from "@/components/magicui/number-ticker";
 
 // --- TEXTURES (Unchanged) ---
 function getStarTexture() {
@@ -236,36 +234,6 @@ interface NeoProfileHeroProps {
 export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = false, stats }: NeoProfileHeroProps) {
     const [isCopied, setIsCopied] = useState(false);
 
-    useEffect(() => {
-        if (stats?.reputation && stats.reputation > 500) {
-            const duration = 3 * 1000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-            const interval: any = setInterval(function () {
-                const timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-
-                const particleCount = 50 * (timeLeft / duration);
-                confetti({
-                    ...defaults,
-                    particleCount,
-                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-                });
-                confetti({
-                    ...defaults,
-                    particleCount,
-                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-                });
-            }, 250);
-        }
-    }, [stats?.reputation]);
-
     const formatNumber = (num: number) =>
         new Intl.NumberFormat('tr-TR', { notation: "compact", maximumFractionDigits: 1 }).format(num);
 
@@ -357,8 +325,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             {/* Reputation Tag */}
                             <div className="flex items-center gap-1.5 text-[#FACC15] font-black tracking-wide text-sm">
                                 <div className="w-2 h-2 bg-[#FACC15] rounded-full animate-pulse shadow-[0px_0px_10px_#FACC15]"></div>
-                                <NumberTicker value={stats?.reputation || 0} className="text-[#FACC15]" />
-                                <span className="text-[#FACC15]">REP</span>
+                                {formatNumber(stats?.reputation || 0)} REP
                             </div>
                         </motion.div>
                         {profile?.bio && (
@@ -490,10 +457,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                         {/* Clean Rep Badge */}
                         <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
-                            <span className="text-[10px] font-bold text-white tracking-wide flex items-center gap-1">
-                                <NumberTicker value={stats?.reputation || 0} className="text-white" />
-                                <span className="text-zinc-600">REP</span>
-                            </span>
+                            <span className="text-[10px] font-bold text-white tracking-wide">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-600">REP</span></span>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -546,4 +510,3 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
         </div>
     );
 }
-

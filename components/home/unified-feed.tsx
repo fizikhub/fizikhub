@@ -6,7 +6,7 @@ import { CommunityInviteBanner } from "@/components/explore/community-invite-ban
 import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
 import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
 import { WriterApplicationCard } from "@/components/home/writer-application-card";
-import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { motion } from "framer-motion";
 
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
@@ -32,10 +32,13 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
             {/* Feed Container - Clean cards with subtle shadows */}
             <div className="flex flex-col gap-5 sm:gap-6">
                 {items.map((item, index) => (
-                    <ScrollReveal
+                    <motion.div
                         key={`${item.type}-${item.data.id}`}
-                        direction="up"
-                        delay={index < 3 ? index * 0.15 : 0}
+
+                        initial={index < 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                        whileInView={index < 3 ? undefined : { opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "100px" }}
+                        transition={{ duration: 0.4, delay: index < 3 ? 0 : 0.05, ease: "easeOut" }}
                         className="group"
                     >
                         {item.type === 'article' && (
@@ -116,7 +119,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                                 <QuestionOfTheWeek />
                             </div>
                         )}
-                    </ScrollReveal>
+                    </motion.div>
                 ))}
             </div>
 
