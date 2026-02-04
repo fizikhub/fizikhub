@@ -17,6 +17,17 @@ const buttonVariants = cva(
           "bg-secondary-background text-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
         reverse:
           "text-main-foreground bg-main border-2 border-border hover:translate-x-reverseBoxShadowX hover:translate-y-reverseBoxShadowY hover:shadow-shadow",
+        // Backward Compatibility Variants (Shadcn Standard)
+        destructive:
+          "bg-destructive text-destructive-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+        outline:
+          "bg-background text-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+        secondary:
+          "bg-secondary text-secondary-foreground border-2 border-border shadow-shadow hover:translate-x-boxShadowX hover:translate-y-boxShadowY hover:shadow-none",
+        ghost:
+          "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground border-2 border-transparent hover:border-border hover:shadow-shadow transition-all",
+        link:
+          "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
