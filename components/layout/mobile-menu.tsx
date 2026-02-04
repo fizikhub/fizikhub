@@ -13,6 +13,8 @@ export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
 
+    console.log("MobileMenu Render:", { isOpen, mounted });
+
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -79,23 +81,26 @@ export function MobileMenu() {
 
     return (
         <>
-            {/* TRIGGER BUTTON - RESIZED TO 30px TO MATCH NAVBAR ICONS */}
+            {/* TRIGGER BUTTON - RESIZED TO 40px FOR BETTER TOUCH TARGET */}
             <button
-                onClick={() => setIsOpen(true)}
+                onClick={() => {
+                    console.log("MOBILE MENU CLICKED");
+                    setIsOpen(true);
+                }}
                 className="
-                    relative z-[60] pointer-events-auto
+                    relative z-[60]
                     flex items-center justify-center 
-                    w-[30px] h-[30px] 
+                    w-10 h-10
                     bg-white text-black 
                     border border-white/20
-                    rounded-sm
+                    rounded-md
                     active:scale-95
                     transition-all
                     cursor-pointer
                     hover:bg-zinc-200
                 "
             >
-                <Menu className="w-5 h-5 stroke-[2.5px]" />
+                <Menu className="w-6 h-6 stroke-[2.5px]" />
             </button>
 
             <AnimatePresence>

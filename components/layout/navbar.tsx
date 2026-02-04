@@ -76,10 +76,10 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-14 sm:h-16 pointer-events-none">
+            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16">
                 <div
                     className={cn(
-                        "pointer-events-auto h-full",
+                        "h-full",
                         "flex items-center justify-between px-4 sm:px-6",
                         "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
                         "shadow-lg",
@@ -163,7 +163,7 @@ export function Navbar() {
                         </div>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
-                        <div className="md:hidden">
+                        <div className="md:hidden relative z-[100]">
                             <MobileMenu />
                         </div>
                     </div>
