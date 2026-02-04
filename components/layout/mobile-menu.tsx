@@ -1,72 +1,108 @@
 "use client";
 
 import { useState } from "react";
-import { Link as LinkIcon, Home, BookOpen, Trophy, User, Zap, Menu, X } from "lucide-react";
+import { Menu, X, Home, BookOpen, Trophy, User, Zap, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const menuItems = [
-    { href: "/", label: "ANA SAYFA", icon: Home },
-    { href: "/makale", label: "MAKALELER", icon: BookOpen },
-    { href: "/siralamalar", label: "SIRALAMA", icon: Trophy },
-    { href: "/profil", label: "PROFİL", icon: User },
-    { href: "/ozel", label: "ÖZEL İÇERİK", icon: Zap },
+    { href: "/", label: "Ana Sayfa", icon: Home, gradient: "from-blue-500 to-indigo-500" },
+    { href: "/makale", label: "Makaleler", icon: BookOpen, gradient: "from-purple-500 to-pink-500" },
+    { href: "/siralamalar", label: "Sıralama", icon: Trophy, gradient: "from-yellow-400 to-orange-500" },
+    { href: "/profil", label: "Profil", icon: User, gradient: "from-green-400 to-emerald-600" },
+    { href: "/ozel", label: "Özel İçerik", icon: Zap, gradient: "from-red-500 to-rose-600" },
 ];
 
 export function MobileMenu() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>
-                <button
-                    className={cn(
-                        "flex items-center justify-center w-[40px] h-[40px] border-2 border-black transition-all rounded-md shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
-                        isOpen ? "bg-black text-white" : "bg-white text-black"
-                    )}
-                >
-                    {isOpen ? <X className="w-6 h-6 stroke-[3]" /> : <Menu className="w-6 h-6 stroke-[3]" />}
-                </button>
-            </PopoverTrigger>
-
-            <PopoverContent
-                align="end"
-                sideOffset={8}
-                className="w-[260px] p-0 bg-[#FACC15] border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none"
+        <div className="relative">
+            {/* Trigger Button */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={cn(
+                    "flex items-center justify-center w-[40px] h-[40px] rounded-full transition-all duration-300 z-50 relative",
+                    isOpen
+                        ? "bg-white text-black rotate-90 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                        : "bg-transparent text-white border border-white/20 hover:bg-white/10"
+                )}
             >
-                {/* DECORATIVE HEADER */}
-                <div className="bg-black text-[#FACC15] px-4 py-2 font-black text-xs tracking-widest border-b-[4px] border-black flex justify-between">
-                    <span>NAV.SYS</span>
-                    <span>v2.0</span>
-                </div>
+                {isOpen ? <X className="w-5 h-5 stroke-[3]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
+            </button>
 
-                {/* LINKS */}
-                <div className="flex flex-col p-2 gap-2">
-                    {menuItems.map((item, i) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setIsOpen(false)}
-                            className="group relative flex items-center gap-3 p-3 bg-white border-2 border-black hover:bg-black hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                        >
-                            <item.icon className="w-5 h-5 stroke-[2.5]" />
-                            <span className="font-black tracking-tight">{item.label}</span>
+            {/* Backdrop */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsOpen(false)}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-[2px] z-40"
+                    />
+                )}
+            </AnimatePresence>
 
-                            {/* Hover Arrow */}
-                            <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                                →
-                            </span>
-                        </Link>
-                    ))}
-                </div>
+            {/* Menu Dropdown */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
+                        transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                        className="absolute top-full right-0 mt-4 w-[280px] origin-top-right z-50"
+                    >
+                        <div className="bg-[#09090b]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_10px_50px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
 
-                {/* FOOTER */}
-                <div className="px-4 py-2 border-t-[4px] border-black bg-white/50 text-[10px] font-mono text-center font-bold">
-                    FIZIKHUB © 2026
-                </div>
-            </PopoverContent>
-        </Popover>
+                            {/* Header */}
+                            <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                                <span className="text-xs font-bold text-zinc-400 tracking-widest uppercase">Navigasyon</span>
+                                <Sparkles className="w-3 h-3 text-yellow-400" />
+                            </div>
+
+                            {/* Items */}
+                            <div className="p-2 space-y-1">
+                                {menuItems.map((item, i) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        onClick={() => setIsOpen(false)}
+                                        className="group flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors relative overflow-hidden"
+                                    >
+                                        {/* Icon Container with Gradient */}
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br shadow-inner",
+                                            item.gradient
+                                        )}>
+                                            <item.icon className="w-5 h-5 text-white stroke-[2.5]" />
+                                        </div>
+
+                                        {/* Label */}
+                                        <div className="flex flex-col z-10">
+                                            <span className="text-sm font-bold text-white group-hover:translate-x-1 transition-transform">
+                                                {item.label}
+                                            </span>
+                                        </div>
+
+                                        {/* Chevron */}
+                                        <div className="ml-auto opacity-0 group-hover:opacity-100 group-hover:-translate-x-1 transition-all">
+                                            <span className="text-zinc-500 text-lg">›</span>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {/* Footer info */}
+                            <div className="px-4 py-3 bg-black/40 border-t border-white/5 text-[10px] text-zinc-600 font-mono text-center">
+                                FIZIKHUB v2.0
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
