@@ -1,12 +1,13 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Trail, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { SimSlider } from "@/components/simulations/ui/sim-slider";
 import { SimButton } from "@/components/simulations/ui/sim-button";
 import { Play, Pause, RotateCcw } from "lucide-react";
+import { SimulationLayout } from "@/components/simulations/ui/simulation-layout";
 
 // Planet Data Type
 type Planet = {
@@ -163,12 +164,8 @@ function Scene({
 
 export default function SolarSystemSim() {
     const [isPlaying, setIsPlaying] = useState(true);
-
-    // Physics Parameters
     const [gravityConstant, setGravityConstant] = useState(0.8);
     const [timeScale, setTimeScale] = useState(1);
-
-    // Scene State
     const [planets, setPlanets] = useState<Planet[]>(INITIAL_PLANETS);
 
     const resetSim = () => {
@@ -176,10 +173,46 @@ export default function SolarSystemSim() {
         setIsPlaying(true);
     };
 
+    const Controls = (
+        <div className="p-6 space-y-8 flex-1">
+            <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Çekim Sabiti (G)</label>
+                    <span className="font-mono text-xs font-bold bg-[#A855F7] text-white px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">{gravityConstant.toFixed(1)}</span>
+                </div>
+                <SimSlider value={[gravityConstant]} onValueChange={(v: number[]) => setGravityConstant(v[0])} min={0.1} max={3} step={0.1} />
+            </div>
+
+            <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Zaman Hızı</label>
+                    <span className="font-mono text-xs font-bold bg-zinc-200 text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">{timeScale.toFixed(1)}x</span>
+                </div>
+                <SimSlider value={[timeScale]} onValueChange={(v: number[]) => setTimeScale(v[0])} min={0} max={3} step={0.1} />
+            </div>
+
+            <div className="pt-4 space-y-3">
+                <SimButton onClick={() => setIsPlaying(!isPlaying)} className="w-full gap-2 text-lg h-14" size="lg">
+                    {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+                    {isPlaying ? "DURAKLAT" : "DEVAM ET"}
+                </SimButton>
+                <SimButton variant="secondary" onClick={resetSim} className="w-full gap-2 text-xs h-10">
+                    <RotateCcw className="w-4 h-4" />
+                    BAŞA AL
+                </SimButton>
+            </div>
+
+            <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                <p className="font-bold mb-1 text-black dark:text-purple-500 uppercase">Kütleçekim Yasası</p>
+                <span className="font-mono bg-white dark:bg-black px-1 rounded">F = G(m₁m₂)/r²</span><br />
+                Gezegenler arasındaki çekim kuvveti, kütlelerinin çarpımı ile doğru, aralarındaki mesafenin karesi ile ters orantılıdır.
+            </div>
+        </div>
+    );
+
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-140px)] bg-neutral-900 border-t-[3px] border-black">
-            {/* Canvas Area */}
-            <div className="flex-1 relative overflow-hidden bg-black">
+        <SimulationLayout controls={Controls} title="Güneş Sistemi">
+            <div className="flex-1 relative overflow-hidden bg-black h-full w-full">
                 <Canvas camera={{ position: [0, 20, 25], fov: 45 }}>
                     <Scene
                         isPlaying={isPlaying}
@@ -189,73 +222,14 @@ export default function SolarSystemSim() {
                         setPlanets={setPlanets}
                     />
                 </Canvas>
-
                 <div className="absolute top-4 left-4 z-10 pointer-events-none opacity-50 text-white font-mono text-[10px] uppercase tracking-widest">
                     React Three Fiber Engine<br />
                     N-Body Gravity
                 </div>
-
                 <div className="absolute bottom-4 left-4 z-10 pointer-events-none text-white/40 font-mono text-[10px]">
                     Sol Tık: Döndür | Sağ Tık: Kaydır | Tekerlek: Yakınlaştır
                 </div>
             </div>
-
-            {/* Controls Sidebar */}
-            <div className="w-full lg:w-80 bg-white dark:bg-zinc-900 border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-black flex flex-col h-[50vh] lg:h-full overflow-y-auto">
-                <div className="p-6 space-y-8 flex-1">
-
-                    {/* Gravity Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Çekim Sabiti (G)</label>
-                            <span className="font-mono text-xs font-bold bg-[#A855F7] text-white px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                                {gravityConstant.toFixed(1)}
-                            </span>
-                        </div>
-                        <SimSlider
-                            value={[gravityConstant]}
-                            onValueChange={(v: number[]) => setGravityConstant(v[0])}
-                            min={0.1} max={3} step={0.1}
-                        />
-                    </div>
-
-                    {/* Time Scale Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Zaman Hızı</label>
-                            <span className="font-mono text-xs font-bold bg-zinc-200 text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                                {timeScale.toFixed(1)}x
-                            </span>
-                        </div>
-                        <SimSlider
-                            value={[timeScale]}
-                            onValueChange={(v: number[]) => setTimeScale(v[0])}
-                            min={0} max={3} step={0.1}
-                        />
-                    </div>
-                </div>
-
-                {/* Info Box */}
-                <div className="px-6 pb-6">
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                        <p className="font-bold mb-1 text-black dark:text-purple-500 uppercase">Kütleçekim Yasası</p>
-                        <span className="font-mono bg-white dark:bg-black px-1 rounded">F = G(m₁m₂)/r²</span><br />
-                        Gezegenler arasındaki çekim kuvveti, kütlelerinin çarpımı ile doğru, aralarındaki mesafenin karesi ile ters orantılıdır.
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="p-6 bg-white dark:bg-zinc-900 border-t-2 border-zinc-100 dark:border-zinc-800 space-y-3 mt-auto">
-                    <SimButton onClick={() => setIsPlaying(!isPlaying)} className="w-full gap-2 text-lg h-14" size="lg">
-                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                        {isPlaying ? "DURAKLAT" : "DEVAM ET"}
-                    </SimButton>
-                    <SimButton variant="secondary" onClick={resetSim} className="w-full gap-2 text-xs h-10">
-                        <RotateCcw className="w-4 h-4" />
-                        BAŞA AL
-                    </SimButton>
-                </div>
-            </div>
-        </div>
+        </SimulationLayout>
     );
 }
