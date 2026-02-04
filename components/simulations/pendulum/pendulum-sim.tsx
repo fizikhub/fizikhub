@@ -136,45 +136,47 @@ export default function PendulumSim() {
     };
 
     const Controls = (
-        <div className="p-6 space-y-8 flex-1">
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">İp Uzunluğu</label>
-                    <span className="font-mono text-xs font-bold bg-[#FFC800] text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">{length}px</span>
+        <div className="p-4 lg:p-6 space-y-6 flex-1">
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-x-4 gap-y-6">
+                <div className="space-y-2 col-span-2 lg:col-span-1">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">İp Uzunluğu</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-[#FFC800] text-black px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">{length}px</span>
+                    </div>
+                    <SimSlider value={[length]} onValueChange={(v: number[]) => setLength(v[0])} min={50} max={350} step={1} className="py-1" />
                 </div>
-                <SimSlider value={[length]} onValueChange={(v: number[]) => setLength(v[0])} min={50} max={350} step={1} />
+
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Yerçekimi</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-[#3B82F6] text-white px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">{gravity}g</span>
+                    </div>
+                    <SimSlider value={[gravity]} onValueChange={(v: number[]) => setGravity(v[0])} min={0.1} max={3} step={0.1} className="py-1" />
+                </div>
+
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Sürtünme</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-zinc-200 text-black px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+                            {((1 - damping) * 1000).toFixed(0)}
+                        </span>
+                    </div>
+                    <SimSlider value={[damping]} onValueChange={(v: number[]) => setDamping(v[0])} min={0.9} max={1} step={0.001} className="py-1" />
+                </div>
             </div>
 
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Yerçekimi</label>
-                    <span className="font-mono text-xs font-bold bg-[#3B82F6] text-white px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">{gravity}g</span>
-                </div>
-                <SimSlider value={[gravity]} onValueChange={(v: number[]) => setGravity(v[0])} min={0.1} max={3} step={0.1} />
-            </div>
-
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Sürtünme</label>
-                    <span className="font-mono text-xs font-bold bg-zinc-200 text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                        {((1 - damping) * 1000).toFixed(0)}
-                    </span>
-                </div>
-                <SimSlider value={[damping]} onValueChange={(v: number[]) => setDamping(v[0])} min={0.9} max={1} step={0.001} />
-            </div>
-
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-4">
                 <SimButton onClick={() => {
                     angleRef.current = Math.PI / 4;
                     aVelocityRef.current = 0;
                     aAccelerationRef.current = 0;
-                }} className="w-full gap-2 text-xs h-10">
-                    <RotateCcw className="w-4 h-4" />
+                }} className="w-full gap-2 text-[10px] lg:text-xs h-9 lg:h-10">
+                    <RotateCcw className="w-3 h-3 lg:w-4 lg:h-4" />
                     BAŞA AL
                 </SimButton>
             </div>
 
-            <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            <div className="hidden lg:block mt-6 p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 <p className="font-bold mb-1 text-black dark:text-purple-500 uppercase">İpucu</p>
                 Sarkaç topunu (bob) tutup sürükleyerek açıyı değiştirebilirsiniz.
             </div>

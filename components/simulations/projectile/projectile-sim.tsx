@@ -169,67 +169,69 @@ export default function ProjectileSim() {
     };
 
     const Controls = (
-        <div className="p-6 space-y-8 flex-1">
-            {/* Controls Content */}
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Fırlatma Hızı</label>
-                    <span className="font-mono text-xs font-bold bg-[#FFC800] text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                        {velocity} m/s
-                    </span>
+        <div className="p-4 lg:p-6 space-y-6 flex-1">
+            {/* Controls Content Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-x-4 gap-y-6">
+                <div className="space-y-2 col-span-2 lg:col-span-1">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Fırlatma Hızı</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-[#FFC800] text-black px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+                            {velocity} m/s
+                        </span>
+                    </div>
+                    <SimSlider value={[velocity]} onValueChange={(v) => setVelocity(v[0])} min={1} max={30} step={1} className="py-1" />
                 </div>
-                <SimSlider value={[velocity]} onValueChange={(v) => setVelocity(v[0])} min={1} max={30} step={1} />
-            </div>
 
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Fırlatma Açısı</label>
-                    <span className="font-mono text-xs font-bold bg-[#3B82F6] text-white px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                        {angle}°
-                    </span>
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Açı</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-[#3B82F6] text-white px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+                            {angle}°
+                        </span>
+                    </div>
+                    <SimSlider value={[angle]} onValueChange={(v) => setAngle(v[0])} min={0} max={90} step={1} className="py-1" />
                 </div>
-                <SimSlider value={[angle]} onValueChange={(v) => setAngle(v[0])} min={0} max={90} step={1} />
-            </div>
 
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Yerçekimi</label>
-                    <span className="font-mono text-xs font-bold bg-zinc-200 text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                        {gravity}g
-                    </span>
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Yerçekimi</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-zinc-200 text-black px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+                            {gravity}g
+                        </span>
+                    </div>
+                    <SimSlider value={[gravity]} onValueChange={(v) => setGravity(v[0])} min={0} max={3} step={0.1} className="py-1" />
                 </div>
-                <SimSlider value={[gravity]} onValueChange={(v) => setGravity(v[0])} min={0} max={3} step={0.1} />
-            </div>
 
-            <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                    <label className="font-black uppercase text-xs tracking-wider text-black dark:text-white">Esneklik</label>
-                    <span className="font-mono text-xs font-bold bg-zinc-200 text-black px-2 py-1 border border-black shadow-[2px_2px_0px_#000]">
-                        {(restitution * 100).toFixed(0)}%
-                    </span>
+                <div className="space-y-2 col-span-2 lg:col-span-1">
+                    <div className="flex justify-between items-center">
+                        <label className="font-black uppercase text-[10px] lg:text-xs tracking-wider text-zinc-500 dark:text-zinc-400">Esneklik</label>
+                        <span className="font-mono text-[10px] lg:text-xs font-bold bg-zinc-200 text-black px-1.5 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+                            {(restitution * 100).toFixed(0)}%
+                        </span>
+                    </div>
+                    <SimSlider value={[restitution]} onValueChange={(v) => setRestitution(v[0])} min={0} max={1} step={0.1} className="py-1" />
                 </div>
-                <SimSlider value={[restitution]} onValueChange={(v) => setRestitution(v[0])} min={0} max={1} step={0.1} />
             </div>
 
             {/* Actions */}
-            <div className="pt-4 space-y-3">
-                <SimButton onClick={fireProjectile} className="w-full gap-2 text-lg h-14" size="lg">
-                    <Target className="w-5 h-5" />
+            <div className="pt-2 space-y-3">
+                <SimButton onClick={fireProjectile} className="w-full gap-2 text-sm lg:text-lg h-12 lg:h-14" size="lg">
+                    <Target className="w-4 h-4 lg:w-5 lg:h-5" />
                     ATEŞLE
                 </SimButton>
                 <div className="grid grid-cols-2 gap-3">
-                    <SimButton variant="secondary" onClick={clearProjectiles} className="w-full gap-2 text-xs h-10">
-                        <Trash2 className="w-4 h-4" />
+                    <SimButton variant="secondary" onClick={clearProjectiles} className="w-full gap-2 text-[10px] lg:text-xs h-9 lg:h-10">
+                        <Trash2 className="w-3 h-3 lg:w-4 lg:h-4" />
                         TEMİZLE
                     </SimButton>
-                    <SimButton variant="ghost" onClick={() => { setVelocity(15); setAngle(45); }} className="w-full gap-2 text-xs h-10">
-                        <RotateCcw className="w-4 h-4" />
+                    <SimButton variant="ghost" onClick={() => { setVelocity(15); setAngle(45); }} className="w-full gap-2 text-[10px] lg:text-xs h-9 lg:h-10">
+                        <RotateCcw className="w-3 h-3 lg:w-4 lg:h-4" />
                         SIFIRLA
                     </SimButton>
                 </div>
             </div>
 
-            <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/10 border-2 border-yellow-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            <div className="hidden lg:block mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/10 border-2 border-yellow-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
                 <p className="font-bold mb-1 text-black dark:text-yellow-500 uppercase">Nasıl Çalışır?</p>
                 Ayarladığınız hız ve açı vektörlerine göre cismin yörüngesi hesaplanır.
             </div>
