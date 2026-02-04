@@ -13,12 +13,14 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
+    /* Brand Primary (FizikHub Yellow) */
     --primary: 47 100% 50%;
-    /* #FFC800 Amber */
     --primary-foreground: 0 0% 0%;
+    --primary-hover: 47 100% 45%;
 
     --secondary: 0 0% 90%;
     --secondary-foreground: 0 0% 0%;
+    --secondary-hover: 0 0% 80%;
 
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
@@ -30,16 +32,24 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 0%;
-    /* Black Borders */
     --input: 0 0% 0%;
     --ring: 0 0% 0%;
 
     --radius: 0.5rem;
+
+    /* RetroUI / Neo-Brutalist Shadow Offsets */
+    --shadow-xs: 1px 1px 0px 0px var(--border);
+    --shadow-sm: 2px 2px 0px 0px var(--border);
+    --shadow: 3px 3px 0px 0px var(--border);
+    --shadow-md: 4px 4px 0px 0px var(--border);
+    --shadow-lg: 6px 6px 0px 0px var(--border);
+    --shadow-xl: 10px 10px 0px 0px var(--border);
+    --shadow-2xl: 16px 16px 0px 0px var(--border);
   }
 
   .dark {
     --background: 0 0% 14%;
-    /* RGB(36,36,36) - Requested Adobe RGB Gray */
+    /* RGB(36,36,36) */
     --foreground: 0 0% 98%;
 
     --card: 240 10% 4%;
@@ -50,9 +60,11 @@
 
     --primary: 47 100% 50%;
     --primary-foreground: 0 0% 0%;
+    --primary-hover: 47 100% 45%;
 
     --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 98%;
+    --secondary-hover: 240 4% 25%;
 
     --muted: 240 4% 16%;
     --muted-foreground: 240 5% 65%;
@@ -64,9 +76,17 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 0 0% 100%;
-    /* White Borders */
     --input: 0 0% 100%;
     --ring: 0 0% 100%;
+
+    /* Shadows in dark mode usually white or just absent, but for Neo-Brutalism we want visible borders */
+    --shadow-xs: 1px 1px 0px 0px var(--border);
+    --shadow-sm: 2px 2px 0px 0px var(--border);
+    --shadow: 3px 3px 0px 0px var(--border);
+    --shadow-md: 4px 4px 0px 0px var(--border);
+    --shadow-lg: 6px 6px 0px 0px var(--border);
+    --shadow-xl: 10px 10px 0px 0px var(--border);
+    --shadow-2xl: 16px 16px 0px 0px var(--border);
   }
 }
 

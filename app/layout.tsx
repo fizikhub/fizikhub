@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Space_Grotesk } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import "./mobile-optimizations.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -16,11 +16,16 @@ const inter = Inter({
   fallback: ['system-ui', 'arial'],
 });
 
-
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-space",
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const archivoBlack = Archivo_Black({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-head",
   display: "swap",
 });
 
@@ -280,7 +285,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />

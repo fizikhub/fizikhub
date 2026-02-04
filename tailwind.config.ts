@@ -20,38 +20,40 @@ const config = {
         },
         extend: {
             colors: {
-                border: "#000000", // Force Black Borders
+                border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))", // Dynamic from globals.css
-                foreground: "#ffffff",
+                background: "hsl(var(--background))",
+                foreground: "hsl(var(--foreground))",
                 primary: {
-                    DEFAULT: "#facc15", // Warning Yellow
-                    foreground: "#000000",
+                    DEFAULT: "hsl(var(--primary))",
+                    foreground: "hsl(var(--primary-foreground))",
+                    hover: "hsl(var(--primary-hover))",
                 },
                 secondary: {
-                    DEFAULT: "#8b5cf6", // Quantum Purple
-                    foreground: "#ffffff",
+                    DEFAULT: "hsl(var(--secondary))",
+                    foreground: "hsl(var(--secondary-foreground))",
+                    hover: "hsl(var(--secondary-hover))",
                 },
                 card: {
-                    DEFAULT: "#1f2937", // Matter
-                    foreground: "#ffffff",
+                    DEFAULT: "hsl(var(--card))",
+                    foreground: "hsl(var(--card-foreground))",
                 },
                 destructive: {
                     DEFAULT: "hsl(var(--destructive))",
                     foreground: "hsl(var(--destructive-foreground))",
                 },
                 muted: {
-                    DEFAULT: "#27272a",
-                    foreground: "#a1a1aa",
+                    DEFAULT: "hsl(var(--muted))",
+                    foreground: "hsl(var(--muted-foreground))",
                 },
                 accent: {
-                    DEFAULT: "#facc15",
-                    foreground: "#000000",
+                    DEFAULT: "hsl(var(--accent))",
+                    foreground: "hsl(var(--accent-foreground))",
                 },
                 popover: {
-                    DEFAULT: "#1f2937",
-                    foreground: "#ffffff",
+                    DEFAULT: "hsl(var(--popover))",
+                    foreground: "hsl(var(--popover-foreground))",
                 },
                 // Custom Neo-Brutalist Colors
                 neo: {
@@ -74,25 +76,28 @@ const config = {
                 '3': "3px",
             },
             boxShadow: {
-                // Neo-Brutalism Shadow Scale (RetroUI inspired, 0 blur)
-                'neo-xs': '1px 1px 0px 0px #000000',    // Micro elements
-                'neo-sm': '2px 2px 0px 0px #000000',    // Mobile/Compact
-                'neo': '4px 4px 0px 0px #000000',    // Default
-                'neo-lg': '6px 6px 0px 0px #000000',    // Large components
-                'neo-xl': '10px 10px 0px 0px #000000',  // Hero elements
-                // Interactive States
+                // RetroUI Logic: Override defaults with hard shadows
+                sm: "var(--shadow-sm)",
+                DEFAULT: "var(--shadow)",
+                md: "var(--shadow-md)",
+                lg: "var(--shadow-lg)",
+                xl: "var(--shadow-xl)",
+                '2xl': "var(--shadow-2xl)",
+
+                // Existing Custom
+                'neo-xs': '1px 1px 0px 0px #000000',
+                'neo-sm': '2px 2px 0px 0px #000000',
+                'neo': '4px 4px 0px 0px #000000',
+                'neo-lg': '6px 6px 0px 0px #000000',
+                'neo-xl': '10px 10px 0px 0px #000000',
                 'neo-hover': '2px 2px 0px 0px #000000',
                 'neo-active': '0px 0px 0px 0px #000000',
-                // Dark Mode Variants
                 'neo-dark': '4px 4px 0px 0px #ffffff',
-                'neo-white': '4px 4px 0px 0px #ffffff',
-                // Colored Shadows (Accent)
-                'neo-yellow': '4px 4px 0px 0px #facc15',
-                'neo-purple': '4px 4px 0px 0px #8b5cf6',
             },
             fontFamily: {
-                sans: ["var(--font-inter)", "sans-serif"],
-                heading: ["var(--font-outfit)", "sans-serif"],
+                sans: ["var(--font-sans)", "sans-serif"],
+                heading: ["var(--font-head)", "sans-serif"],
+                head: ["var(--font-head)", "sans-serif"], // RetroUI alias
             },
             keyframes: {
                 "accordion-down": {
