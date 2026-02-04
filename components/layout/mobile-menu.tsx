@@ -68,7 +68,7 @@ export function MobileMenu() {
                                         {/* Label */}
                                         <div className="flex flex-col">
                                             <span className="text-xl font-black text-white group-hover:text-black uppercase tracking-tight">{item.label}</span>
-                                            <span className="text-xs font-mono text-zinc-500 group-hover:text-black/70">Gitmek için dokun -></span>
+                                            <span className="text-xs font-mono text-zinc-500 group-hover:text-black/70">Gitmek için dokun →</span>
                                         </div>
 
                                         {/* Arrow */}
