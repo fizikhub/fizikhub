@@ -455,23 +455,23 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     {/* Reputation & Actions */}
                     <div className="flex items-center justify-between gap-3 pt-2">
                         {/* Clean Rep Badge */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
-                            <div className="w-2 h-2 rounded-full bg-[#FACC15] shadow-[0px_0px_8px_#FACC15]" />
-                            <span className="text-xs font-bold text-white tracking-wide">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-600">REP</span></span>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
+                            <span className="text-[10px] font-bold text-white tracking-wide">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-600">REP</span></span>
                         </div>
 
                         <div className="flex items-center gap-2">
                             {/* ADMIN BUTTON */}
                             {(profile?.username === 'baranbozkurt' || user?.email === 'baran@fizikhub.com') && (
-                                <Link href="/admin" className="h-10 px-3 flex items-center justify-center bg-red-600/10 text-red-500 border border-red-500/50 rounded-xl font-bold text-[10px] active:scale-95 transition-all">
+                                <Link href="/admin" className="h-9 px-3 flex items-center justify-center bg-red-950/20 text-red-500 border border-red-900/40 rounded-lg font-bold text-[10px] active:scale-95 transition-all">
                                     ADMIN
                                 </Link>
                             )}
 
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all">
-                                        <Mail className="w-5 h-5" />
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all">
+                                        <Mail className="w-4 h-4" />
                                     </Link>
                                     <ProfileSettingsDialog
                                         currentUsername={profile?.username}
@@ -483,21 +483,21 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         currentSocialLinks={profile?.social_links}
                                         userEmail={user?.email}
                                         trigger={
-                                            <button className="h-10 px-5 bg-[#FACC15] text-black font-black text-xs rounded-xl shadow-[0px_4px_12px_rgba(250,204,21,0.2)] hover:shadow-[0px_4px_20px_rgba(250,204,21,0.4)] active:scale-95 transition-all uppercase tracking-wide">
+                                            <button className="h-9 px-4 bg-[#FACC15] text-black font-bold text-[10px] rounded-lg border border-yellow-600/20 hover:bg-yellow-400 active:scale-95 transition-all uppercase tracking-wide">
                                                 DÜZENLE
                                             </button>
                                         }
                                     />
                                     {(profile?.role === 'author' || profile?.role === 'admin') && (
-                                        <Link href="/yazar/yeni" className="h-10 px-3 flex items-center justify-center bg-[#00E6CC] text-black font-bold text-[10px] rounded-xl shadow-[0px_4px_12px_rgba(0,230,204,0.3)] active:scale-95 transition-all">
-                                            <PenTool className="w-5 h-5" />
+                                        <Link href="/yazar/yeni" className="h-9 px-3 flex items-center justify-center bg-zinc-900 text-emerald-400 border border-emerald-900/30 font-bold text-[10px] rounded-lg hover:border-emerald-500/50 active:scale-95 transition-all">
+                                            <PenTool className="w-4 h-4" />
                                         </Link>
                                     )}
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all">
-                                        <Mail className="w-5 h-5" />
+                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all">
+                                        <Mail className="w-4 h-4" />
                                     </Link>
                                     <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
                                 </>
