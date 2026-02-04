@@ -7,6 +7,10 @@ import { NeoProfileFeedWrapper } from "@/components/profile/neo/neo-profile-feed
 import { NeoProfileSidebar } from "@/components/profile/neo/neo-profile-sidebar";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
+interface PageProps {
+    params: Promise<{ username: string }>;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { username } = await params;
     return {
