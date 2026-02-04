@@ -180,6 +180,7 @@ import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
+import SmoothScrollProvider from "@/components/providers/smooth-scroll-provider";
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
@@ -298,7 +299,9 @@ export default async function RootLayout({
           <FramerMotionProvider>
             <TimeLimitProvider>
               <NavigationWrapper showOnboarding={showOnboarding}>
-                {children}
+                <SmoothScrollProvider>
+                  {children}
+                </SmoothScrollProvider>
               </NavigationWrapper>
 
             </TimeLimitProvider>
