@@ -7,6 +7,7 @@ import { SimButton } from "@/components/simulations/ui/sim-button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import p5Types from "p5";
 import { SimulationLayout } from "@/components/simulations/ui/simulation-layout";
+import { SimulationTheory } from "@/components/simulations/ui/simulation-theory";
 
 // Dynamic import for p5
 const Sketch = dynamic(() => import("react-p5").then((mod) => mod.default), {
@@ -147,9 +148,20 @@ export default function WaveSim() {
                 </SimButton>
             </div>
 
-            <div className="hidden lg:block mt-6 p-4 bg-green-50 dark:bg-green-900/10 border-2 border-green-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p className="font-bold mb-1 text-black dark:text-green-500 uppercase">Girişim</p>
-                Dalga tepeleri ve çukurlarının üst üste binmesiyle oluşan desen. Sarı bölgeler yapıcı, mavi bölgeler yıkıcı girişimi temsil eder.
+            <div className="pt-4">
+                <SimulationTheory title="Girişim (Interference)">
+                    <p>İki veya daha fazla dalganın aynı anda aynı noktada karşılaşarak birbirini güçlendirmesi veya sönümlemesidir.</p>
+
+                    <div className="bg-zinc-50 dark:bg-black/20 p-2 rounded border border-zinc-200 dark:border-zinc-800 font-mono text-xs">
+                        y_toplam = y₁ + y₂
+                    </div>
+
+                    <ul className="list-disc list-inside space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <li><strong>Yapıcı Girişim (Sarı):</strong> Tepe + Tepe. Dalgalar birbirini güçlendirir.</li>
+                        <li><strong>Yıkıcı Girişim (Mavi/Karanlık):</strong> Tepe + Çukur. Dalgalar birbirini sönümler.</li>
+                        <li><strong>Süperpozisyon İlkesi:</strong> Bileşke dalga, bireysel dalgaların cebirsel toplamıdır.</li>
+                    </ul>
+                </SimulationTheory>
             </div>
         </div>
     );

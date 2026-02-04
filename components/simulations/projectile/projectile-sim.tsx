@@ -6,6 +6,7 @@ import { SimSlider } from "@/components/simulations/ui/sim-slider";
 import { SimButton } from "@/components/simulations/ui/sim-button";
 import { RotateCcw, Target, Trash2 } from "lucide-react";
 import { SimulationLayout } from "@/components/simulations/ui/simulation-layout";
+import { SimulationTheory } from "@/components/simulations/ui/simulation-theory";
 
 export default function ProjectileSim() {
     const sceneRef = useRef<HTMLDivElement>(null);
@@ -231,9 +232,22 @@ export default function ProjectileSim() {
                 </div>
             </div>
 
-            <div className="hidden lg:block mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/10 border-2 border-yellow-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p className="font-bold mb-1 text-black dark:text-yellow-500 uppercase">Nasıl Çalışır?</p>
-                Ayarladığınız hız ve açı vektörlerine göre cismin yörüngesi hesaplanır.
+            <div className="pt-4">
+                <SimulationTheory title="Fizik Prensipleri">
+                    <p><strong>Eğik Atış Hareketi:</strong> Bir cisim hem yatayda hem de düşeyde hareket eder.</p>
+
+                    <div className="bg-zinc-50 dark:bg-black/20 p-2 rounded border border-zinc-200 dark:border-zinc-800 font-mono text-xs">
+                        x = v₀ ⋅ cos(θ) ⋅ t<br />
+                        y = v₀ ⋅ sin(θ) ⋅ t - ½gt²
+                    </div>
+
+                    <ul className="list-disc list-inside space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <li><strong>Yatay Hız (Vx):</strong> Sabittir (sürtünmesiz ortamda).</li>
+                        <li><strong>Düşey Hız (Vy):</strong> Yerçekimi etkisiyle sürekli değişir.</li>
+                        <li><strong>Menzil:</strong> 45° açıda maksimuma ulaşır.</li>
+                        <li><strong>Tepe Noktası:</strong> Düşey hızın sıfır olduğu andır.</li>
+                    </ul>
+                </SimulationTheory>
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ import { SimButton } from "@/components/simulations/ui/sim-button";
 import { RotateCcw } from "lucide-react";
 import p5Types from "p5";
 import { SimulationLayout } from "@/components/simulations/ui/simulation-layout";
+import { SimulationTheory } from "@/components/simulations/ui/simulation-theory";
 
 // Dynamic import for p5 to avoid SSR issues
 const Sketch = dynamic(() => import("react-p5").then((mod) => mod.default), {
@@ -176,9 +177,21 @@ export default function PendulumSim() {
                 </SimButton>
             </div>
 
-            <div className="hidden lg:block mt-6 p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p className="font-bold mb-1 text-black dark:text-purple-500 uppercase">İpucu</p>
-                Sarkaç topunu (bob) tutup sürükleyerek açıyı değiştirebilirsiniz.
+            <div className="pt-4">
+                <SimulationTheory title="Fizik Prensipleri">
+                    <p><strong>Basit Harmonik Hareket:</strong> Sarkaç, denge konumuna geri çağırıcı bir kuvvet (yerçekimi bileşeni) etkisi altında salınım yapar.</p>
+
+                    <div className="bg-zinc-50 dark:bg-black/20 p-2 rounded border border-zinc-200 dark:border-zinc-800 font-mono text-xs">
+                        T ≈ 2π√(L/g)
+                    </div>
+
+                    <ul className="list-disc list-inside space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <li><strong>Periyot (T):</strong> Bir tam salınım için geçen süre.</li>
+                        <li><strong>L:</strong> İp uzunluğu. Uzunluk arttıkça periyot artar (yavaşlar).</li>
+                        <li><strong>g:</strong> Yerçekimi ivmesi. Yerçekimi arttıkça periyot azalır (hızlanır).</li>
+                        <li><strong> Enerji:</strong> Sürtünme yoksa Mekanik Enerji (Kinetik + Potansiyel) korunur.</li>
+                    </ul>
+                </SimulationTheory>
             </div>
         </div>
     );

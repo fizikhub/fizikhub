@@ -8,6 +8,7 @@ import { SimSlider } from "@/components/simulations/ui/sim-slider";
 import { SimButton } from "@/components/simulations/ui/sim-button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { SimulationLayout } from "@/components/simulations/ui/simulation-layout";
+import { SimulationTheory } from "@/components/simulations/ui/simulation-theory";
 
 // Planet Data Type
 type Planet = {
@@ -204,10 +205,21 @@ export default function SolarSystemSim() {
                 </SimButton>
             </div>
 
-            <div className="hidden lg:block mt-6 p-4 bg-purple-50 dark:bg-purple-900/10 border-2 border-purple-400/50 rounded-sm text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p className="font-bold mb-1 text-black dark:text-purple-500 uppercase">Kütleçekim Yasası</p>
-                <span className="font-mono bg-white dark:bg-black px-1 rounded">F = G(m₁m₂)/r²</span><br />
-                Gezegenler arasındaki çekim kuvveti, kütlelerinin çarpımı ile doğru, aralarındaki mesafenin karesi ile ters orantılıdır.
+            <div className="pt-4">
+                <SimulationTheory title="Evrensel Çekim Yasası">
+                    <p>Newton'un Evrensel Kütleçekim Yasası, evrendeki her parçacığın diğerini kütleleriyle doğru, aralarındaki mesafenin karesiyle ters orantılı olarak çektiğini belirtir.</p>
+
+                    <div className="bg-zinc-50 dark:bg-black/20 p-2 rounded border border-zinc-200 dark:border-zinc-800 font-mono text-xs">
+                        F = G ⋅ (m₁m₂) / r²
+                    </div>
+
+                    <ul className="list-disc list-inside space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
+                        <li><strong>F:</strong> Çekim kuvveti (Force).</li>
+                        <li><strong>G:</strong> Evrensel çekim sabiti.</li>
+                        <li><strong>r:</strong> İki cisim arasındaki mesafe.</li>
+                        <li>Mesafe 2 katına çıkarsa, çekim kuvveti 4 kat azalır (Ters Kare Yasası).</li>
+                    </ul>
+                </SimulationTheory>
             </div>
         </div>
     );
