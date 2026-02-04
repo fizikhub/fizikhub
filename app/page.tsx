@@ -65,6 +65,9 @@ const getCachedFeedData = unstable_cache(
 
 
 
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { BackToTop } from "@/components/ui/back-to-top";
+
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
@@ -109,8 +112,11 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      <ScrollProgress />
+      <BackToTop />
 
       <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
