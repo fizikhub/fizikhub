@@ -48,16 +48,13 @@ export function MobileMenu() {
                 </div>
 
                 {/* 1. HEADER SECTION (Mimics Article Image Area) */}
-                <div className="relative h-32 bg-[#FFC800] border-b-[3px] border-black flex items-end p-4 overflow-hidden">
+                <div className="relative h-24 bg-zinc-100 dark:bg-zinc-800 border-b-[3px] border-black flex items-end p-4 overflow-hidden">
                     {/* Noise */}
-                    <div className="absolute inset-0 opacity-[0.1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
-
-                    {/* Decorative Elements */}
-                    <div className="absolute top-[-20%] right-[-20%] w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+                    <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
 
                     {/* "Category Tag" Style Title */}
-                    <div className="relative z-10 transform -rotate-2">
-                        <span className="inline-block bg-white border-[2px] border-black text-black px-3 py-1 font-black text-xl uppercase shadow-[3px_3px_0px_0px_#000] tracking-tighter">
+                    <div className="relative z-10 transform -rotate-1">
+                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-lg uppercase shadow-[2px_2px_0px_0px_#000] tracking-tighter">
                             MENÜ
                         </span>
                     </div>
@@ -65,14 +62,14 @@ export function MobileMenu() {
                     {/* Custom Close Button */}
                     <button
                         onClick={() => setOpen(false)}
-                        className="absolute top-4 right-4 w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-20 rounded-md"
+                        className="absolute top-4 right-4 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-20 rounded-md"
                     >
-                        <X className="w-6 h-6 stroke-[3]" />
+                        <X className="w-5 h-5 stroke-[3]" />
                     </button>
                 </div>
 
                 {/* 2. BODY SECTION (Mimics Content Area) */}
-                <div className="flex-1 overflow-y-auto bg-white dark:bg-[#27272a] p-5 space-y-4">
+                <div className="flex-1 overflow-y-auto bg-white dark:bg-[#27272a] p-4 space-y-3">
                     {menuItems.map((item) => (
                         <Link
                             key={item.href}
@@ -81,36 +78,36 @@ export function MobileMenu() {
                             className="group block relative"
                         >
                             <div className={cn(
-                                "flex items-center justify-between p-4 border-[2px] border-black bg-white dark:bg-[#18181b] rounded-lg transition-all duration-200",
+                                "flex items-center justify-between p-3 border-[2px] border-black bg-white dark:bg-[#18181b] rounded-lg transition-all duration-200",
                                 // Interaction State
-                                "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0px_0px_#000]"
+                                "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[3px_3px_0px_0px_#000] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0px_0px_#000]"
                             )}>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 flex items-center justify-center bg-[#FFC800] border-[2px] border-black rounded-md text-black">
-                                        <item.icon className="w-5 h-5 stroke-[2.5]" />
+                                    <div className="w-9 h-9 flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 border-[2px] border-black rounded-md text-black dark:text-white group-hover:bg-[#FFC800] group-hover:text-black transition-colors">
+                                        <item.icon className="w-4 h-4 stroke-[2.5]" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="font-black text-lg uppercase tracking-tight leading-none text-black dark:text-white">
+                                        <span className="font-black text-base uppercase tracking-tight leading-none text-black dark:text-white">
                                             {item.label}
                                         </span>
-                                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
                                             {item.sub}
                                         </span>
                                     </div>
                                 </div>
 
-                                <ChevronRight className="w-5 h-5 stroke-[3] text-black dark:text-white group-hover:translate-x-1 transition-transform" />
+                                <ChevronRight className="w-4 h-4 stroke-[3] text-zinc-300 group-hover:text-black dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
                             </div>
                         </Link>
                     ))}
 
                     {/* SEPARATOR */}
-                    <div className="h-px w-full border-t-[2px] border-dashed border-black/10 my-6"></div>
+                    <div className="h-px w-full border-t-[2px] border-dashed border-black/10 my-4"></div>
 
                     {/* ACCOUNT BUTTONS */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                         <Link href="/giris" onClick={() => setOpen(false)}>
-                            <button className="w-full py-3 font-bold border-[2px] border-black bg-black text-white hover:bg-zinc-800 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] dark:border-white dark:shadow-none rounded-lg uppercase tracking-wide text-sm">
+                            <button className="w-full py-2.5 font-bold border-[2px] border-black bg-black text-white hover:bg-zinc-800 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] dark:border-white dark:shadow-none rounded-lg uppercase tracking-wide text-xs">
                                 Giriş Yap
                             </button>
                         </Link>
@@ -118,16 +115,16 @@ export function MobileMenu() {
                 </div>
 
                 {/* 3. FOOTER (Mimics Author/Actions) */}
-                <div className="p-5 border-t-[3px] border-black bg-zinc-50 dark:bg-zinc-900">
-                    <div className="flex justify-center gap-4">
+                <div className="p-4 border-t-[3px] border-black bg-zinc-50 dark:bg-zinc-900">
+                    <div className="flex justify-center gap-3">
                         {[Twitter, Instagram, Github].map((Icon, i) => (
-                            <a key={i} href="#" className="w-10 h-10 flex items-center justify-center border-[2px] border-black bg-white hover:bg-[#FFC800] transition-colors shadow-[2px_2px_0px_0px_#000] rounded-md">
-                                <Icon className="w-5 h-5 stroke-[2.5]" />
+                            <a key={i} href="#" className="w-9 h-9 flex items-center justify-center border-[2px] border-black bg-white hover:bg-[#FFC800] transition-colors shadow-[2px_2px_0px_0px_#000] rounded-md">
+                                <Icon className="w-4 h-4 stroke-[2.5]" />
                             </a>
                         ))}
                     </div>
-                    <div className="mt-4 text-center">
-                        <p className="text-[10px] font-black uppercase text-zinc-400">Designed by Antigravity v2.0</p>
+                    <div className="mt-3 text-center">
+                        <p className="text-[9px] font-black uppercase text-zinc-300 tracking-widest">FIZIKHUB © 2026</p>
                     </div>
                 </div>
 
