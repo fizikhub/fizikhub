@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Beam</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent; /* Allow transparency */
+        }
+        #scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* Force canvas to fill */
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- The container Unicorn Studio looks for -->
+    <div id="scene" data-us-project="hRFfUymDGOHwtFe7evR2"></div>
+
+    <!-- The Script -->
+    <script src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.2/dist/unicornStudio.umd.js"></script>
+    
+    <script>
+        // Parse query params to override project ID if needed
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('projectId');
+        
+        if (projectId) {
+            document.getElementById('scene').setAttribute('data-us-project', projectId);
+        }
+
+        // Initialize when script is ready
+        function init() {
+            if (window.UnicornStudio) {
+                console.log("Initializing Unicorn Project:", projectId || "Default");
+                window.UnicornStudio.init();
+            } else {
+                // Poll if script loads async
+                setTimeout(init, 50);
+            }
+        }
+
+        // Start
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
