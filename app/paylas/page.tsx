@@ -9,15 +9,19 @@ import {
     Library,
     FileText,
     ArrowRight,
+    Search,
+    Atom,
+    Rocket,
+    Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "framer-motion";
+import { Meteors } from "@/components/magicui/meteors";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase-client";
 import { TiltCard } from "@/components/magicui/tilt-card";
-import { Meteors } from "@/components/magicui/meteors";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -149,7 +153,7 @@ export default function PaylasPage() {
     }, [supabase]);
 
     return (
-        <div className="min-h-screen bg-background pb-32 pt-2 md:pt-20 px-4 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-background pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
 
             {/* TEXTURED PAPER BACKGROUND */}
             <div className="absolute inset-0 opacity-20 pointer-events-none z-0 mix-blend-multiply"
@@ -158,51 +162,44 @@ export default function PaylasPage() {
                 }}
             ></div>
 
+            {/* METEORS - Subtle Background Motion */}
+            <Meteors number={15} />
+
             <div className="max-w-[900px] mx-auto relative z-10">
 
-                {/* VISUAL HEADER WITH ENERGY BEAM */}
+                {/* Header */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="mb-8 relative rounded-2xl overflow-hidden border-[3px] border-black shadow-[4px_4px_0px_0px_#000] bg-black h-[250px] md:h-[300px]"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8 md:mb-10 pt-4 relative"
                 >
-                    <Meteors number={30} />
-
-                    <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-black/0 to-black/20 pointer-events-none" />
-
-                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <div className="flex flex-col">
-                            <h1 className="text-4xl md:text-5xl font-black text-white leading-[0.9] tracking-tighter uppercase drop-shadow-lg">
-                                Paylaşım
+                            <h1 className="text-4xl md:text-6xl font-black text-foreground leading-[0.9] tracking-tighter uppercase">
+                                Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
                                 <HyperText
                                     text="MERKEZİ"
-                                    className="text-4xl md:text-5xl font-black text-[#FACC15] leading-[0.9] tracking-tighter uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                                    className="text-4xl md:text-6xl font-black text-[#FACC15] leading-[0.9] tracking-tighter uppercase text-stroke-black drop-shadow-[3px_3px_0px_#000]"
                                     duration={1200}
                                 />
                             </div>
                         </div>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-3 rounded-lg border-2 border-border/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]"
+                        >
+                            {loaded ? (
+                                userName ?
+                                    `Bugün ne paylaşmak istersin, ${userName}?` :
+                                    "Bugün ne paylaşmak istersin?"
+                            ) : (
+                                "Yükleniyor..."
+                            )}
+                        </motion.p>
                     </div>
-                </motion.div>
-
-                {/* USER GREETING */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="mb-8 flex justify-end"
-                >
-                    <p className="text-foreground font-bold text-sm md:text-base max-w-xs text-right leading-tight bg-white p-3 rounded-lg border-2 border-black shadow-[3px_3px_0px_0px_#000]">
-                        {loaded ? (
-                            userName ?
-                                `Bugün ne paylaşmak istersin, ${userName}?` :
-                                "Bugün ne paylaşmak istersin?"
-                        ) : (
-                            "Yükleniyor..."
-                        )}
-                    </p>
                 </motion.div>
 
                 {/* Grid - Compact Mobile */}
