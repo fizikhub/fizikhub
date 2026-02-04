@@ -1,198 +1,110 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { Menu, X, Home, Zap, BookOpen, FlaskConical, Award, User, Settings, Twitter, Github, Globe, Atom, StickyNote, ArrowUpRight } from "lucide-react";
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import { Drawer } from "vaul";
+import { useState } from "react";
+import { Menu, X, Home, BookOpen, Trophy, User, Zap, Settings, Github, Twitter } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
+const menuItems = [
+    { href: "/", label: "Ana Sayfa", icon: Home, color: "bg-blue-400" },
+    { href: "/makale", label: "Makaleler", icon: BookOpen, color: "bg-purple-400" },
+    { href: "/siralamalar", label: "Sıralama", icon: Trophy, color: "bg-yellow-400" },
+    { href: "/profil", label: "Profil", icon: User, color: "bg-green-400" },
+    { href: "/ozel", label: "Özel İçerik", icon: Zap, color: "bg-red-400" },
+];
+
 export function MobileMenu() {
-    const pathname = usePathname();
-    const [isOpen, setIsOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Lock body scroll
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
-        return () => { document.body.style.overflow = "unset" };
-    }, [isOpen]);
-
-    // Close on navigation
-    useEffect(() => {
-        setIsOpen(false);
-    }, [pathname]);
-
-    // POP-BRUTALIST CONFIG
-    const primaryItems = [
-        { href: "/", label: "ANA SAYFA", icon: Home, color: "bg-[#fff]", rotate: "-rotate-1" },
-        { href: "/makale", label: "KEŞFET", icon: Zap, color: "bg-[#a5f3fc]", rotate: "rotate-1" },
-        { href: "/simulasyonlar", label: "SIM", icon: Atom, color: "bg-[#fbcfe8]", rotate: "-rotate-2" },
-        { href: "/notlar", label: "NOTLAR", icon: StickyNote, color: "bg-[#fde047]", rotate: "rotate-1" },
-    ];
-
-    const secondaryItems = [
-        { href: "/blog", label: "BLOG", icon: BookOpen },
-        { href: "/testler", label: "TEST", icon: FlaskConical },
-        { href: "/siralamalar", label: "LİG", icon: Award },
-    ];
-
-    if (!mounted) return null;
+    const [open, setOpen] = useState(false);
 
     return (
-        <>
-            {/* TRIGGER - SHAPE SHIFTING BUTTON */}
-            <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setIsOpen(true);
-                }}
-                className="
-                    relative z-[60]
-                    flex items-center justify-center 
-                    w-9 h-9
-                    bg-white
-                    border-[3px] border-black
-                    shadow-[3px_3px_0px_black]
-                    active:translate-x-[2px] active:translate-y-[2px] active:shadow-none
-                    transition-all
-                    hover:-rotate-3
-                "
-            >
-                <Menu className="w-5 h-5 text-black stroke-[3px]" />
-            </button>
+        <Drawer.Root shouldScaleBackground open={open} onOpenChange={setOpen}>
+            <Drawer.Trigger asChild>
+                <button className="flex items-center justify-center w-[40px] h-[40px] bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-md">
+                    <Menu className="w-6 h-6 text-black stroke-[3]" />
+                </button>
+            </Drawer.Trigger>
+            <Drawer.Portal>
+                <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity" />
+                <Drawer.Content className="bg-[#09090b] flex flex-col rounded-t-[20px] h-[85vh] mt-24 fixed bottom-0 left-0 right-0 z-50 border-t-4 border-l-4 border-r-4 border-white shadow-[0px_-10px_40px_rgba(0,0,0,0.5)] outline-none">
 
-            {/* PORTAL */}
-            {createPortal(
-                <AnimatePresence>
-                    {isOpen && (
-                        <div className="fixed inset-0 z-[99999] font-[family-name:var(--font-outfit)] flex items-start justify-end p-4">
+                    {/* Handle Bar */}
+                    <div className="mx-auto w-16 h-2 flex-shrink-0 rounded-full bg-white/20 mt-4 mb-4" />
 
-                            {/* BACKDROP - HALFTONE PATTERN */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setIsOpen(false)}
-                                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                                style={{
-                                    backgroundImage: 'radial-gradient(#444 1px, transparent 1px)',
-                                    backgroundSize: '20px 20px'
-                                }}
-                            />
-
-                            {/* POP MENU CONTAINER - FLOATING GRID */}
-                            <motion.div
-                                initial={{ scale: 0.9, opacity: 0, y: -20, rotate: 2 }}
-                                animate={{ scale: 1, opacity: 1, y: 0, rotate: 0 }}
-                                exit={{ scale: 0.9, opacity: 0, y: -20, rotate: 2 }}
-                                transition={{ type: "spring", bounce: 0.4 }}
-                                className="
-                                    relative z-50
-                                    w-full max-w-[340px] mt-12
-                                    bg-[#18181b]
-                                    border-[3px] border-black
-                                    shadow-[8px_8px_0px_black]
-                                    p-4 rounded-xl
-                                    overflow-hidden
-                                "
-                            >
-                                {/* DECORATIVE NOISE TEXTURE OVERLAY */}
-                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
-
-                                {/* HEADER */}
-                                <div className="flex justify-between items-center mb-6 relative z-10">
-                                    <div className="bg-black text-white px-3 py-1 text-xs font-black tracking-widest uppercase -rotate-2 border border-white/20">
-                                        NAVIGASYON
-                                    </div>
-                                    <button
-                                        onClick={() => setIsOpen(false)}
-                                        className="w-8 h-8 bg-[#ef4444] border-[2px] border-black text-white flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
-                                    >
-                                        <X className="w-5 h-5 stroke-[4px]" />
-                                    </button>
-                                </div>
-
-                                {/* PRIMARY GRID - BIG CARDS */}
-                                <div className="grid grid-cols-2 gap-3 mb-4 relative z-10">
-                                    {primaryItems.map((item, i) => (
-                                        <Link href={item.href} key={i} onClick={() => setIsOpen(false)}>
-                                            <motion.div
-                                                whileHover={{ scale: 1.02, rotate: 0 }}
-                                                whileTap={{ scale: 0.95 }}
-                                                className={cn(
-                                                    "h-24 flex flex-col justify-between p-3 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] rounded-lg transition-all",
-                                                    item.color,
-                                                    item.rotate
-                                                )}
-                                            >
-                                                <div className="flex justify-between items-start">
-                                                    <item.icon className="w-6 h-6 text-black stroke-[2.5px]" />
-                                                    <ArrowUpRight className="w-4 h-4 text-black opacity-50" />
-                                                </div>
-                                                <span className="font-black text-black text-sm tracking-tight">{item.label}</span>
-                                            </motion.div>
-                                        </Link>
-                                    ))}
-                                </div>
-
-                                {/* SECONDARY ITEMS - PILLS */}
-                                <div className="flex flex-col gap-2 relative z-10">
-                                    {secondaryItems.map((item, i) => (
-                                        <Link href={item.href} key={i} onClick={() => setIsOpen(false)}>
-                                            <motion.div
-                                                whileHover={{ x: 4 }}
-                                                className="
-                                                    flex items-center justify-between p-3 
-                                                    bg-[#27272a] border border-white/10 
-                                                    hover:bg-[#FACC15] hover:border-black hover:text-black
-                                                    text-zinc-400 transition-colors
-                                                    rounded-lg group
-                                                "
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <item.icon className="w-4 h-4 group-hover:stroke-[3px]" />
-                                                    <span className="font-bold text-sm tracking-wider uppercase group-hover:text-black text-zinc-300">{item.label}</span>
-                                                </div>
-                                            </motion.div>
-                                        </Link>
-                                    ))}
-                                </div>
-
-                                {/* USER UTILS BOTTOM ROW */}
-                                <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t-2 border-dashed border-white/10 relative z-10">
-                                    <Link href="/profil" onClick={() => setIsOpen(false)} className="bg-white/5 p-2 rounded flex flex-col items-center justify-center border border-transparent hover:border-white/20">
-                                        <User className="w-4 h-4 text-zinc-400 mb-1" />
-                                        <span className="text-[9px] text-zinc-500 font-bold uppercase">PROFİL</span>
-                                    </Link>
-                                    <Link href="/ayarlar" onClick={() => setIsOpen(false)} className="bg-white/5 p-2 rounded flex flex-col items-center justify-center border border-transparent hover:border-white/20">
-                                        <Settings className="w-4 h-4 text-zinc-400 mb-1" />
-                                        <span className="text-[9px] text-zinc-500 font-bold uppercase">AYARLAR</span>
-                                    </Link>
-                                </div>
-
-                                {/* SOCIAL STRIP */}
-                                <div className="mt-4 flex justify-between bg-black p-2 rounded border border-zinc-800">
-                                    <a href="#" className="text-zinc-500 hover:text-[#FACC15]"><Twitter className="w-4 h-4" /></a>
-                                    <a href="#" className="text-zinc-500 hover:text-[#FACC15]"><Github className="w-4 h-4" /></a>
-                                    <a href="#" className="text-zinc-500 hover:text-[#FACC15]"><Globe className="w-4 h-4" /></a>
-                                </div>
-
-                            </motion.div>
+                    {/* Header */}
+                    <div className="px-6 pb-6 border-b border-white/10 flex justify-between items-center">
+                        <div>
+                            <h2 className="text-3xl font-black text-white italic tracking-tighter">MENÜ</h2>
+                            <p className="text-sm text-zinc-400 font-mono">Navigasyon Sistemi v2.0</p>
                         </div>
-                    )}
-                </AnimatePresence>,
-                document.body
-            )}
-        </>
+                        <Drawer.Close asChild>
+                            <button className="w-10 h-10 bg-red-500 border-2 border-black shadow-[2px_2px_0px_#fff] flex items-center justify-center rounded-full active:scale-95 transition-transform">
+                                <X className="w-6 h-6 text-black stroke-[3]" />
+                            </button>
+                        </Drawer.Close>
+                    </div>
+
+                    {/* Menu Items (Scrollable) */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <AnimatePresence>
+                            {menuItems.map((item, i) => (
+                                <motion.div
+                                    key={item.href}
+                                    initial={{ opacity: 0, x: -50 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.1, type: "spring", stiffness: 300, damping: 24 }}
+                                >
+                                    <Link
+                                        href={item.href}
+                                        onClick={() => setOpen(false)}
+                                        className="group relative flex items-center gap-4 p-4 bg-zinc-900 border-2 border-white/10 hover:border-[#FACC15] hover:bg-[#FACC15] transition-all rounded-xl overflow-hidden shadow-sm hover:shadow-[4px_4px_0px_#fff] active:translate-y-1 active:shadow-none"
+                                    >
+                                        {/* Icon Box */}
+                                        <div className={cn("w-12 h-12 rounded-lg border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center transition-transform group-hover:rotate-12", item.color)}>
+                                            <item.icon className="w-6 h-6 text-black stroke-[2.5]" />
+                                        </div>
+
+                                        {/* Label */}
+                                        <div className="flex flex-col">
+                                            <span className="text-xl font-black text-white group-hover:text-black uppercase tracking-tight">{item.label}</span>
+                                            <span className="text-xs font-mono text-zinc-500 group-hover:text-black/70">Gitmek için dokun -></span>
+                                        </div>
+
+                                        {/* Arrow */}
+                                        <div className="ml-auto opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                                                <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white border-b-[5px] border-b-transparent ml-1" />
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Footer / Socials */}
+                    <div className="p-6 border-t border-white/10 bg-zinc-950/50">
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-4">
+                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-white hover:bg-black transition-colors">
+                                    <Github className="w-5 h-5 text-white" />
+                                </Link>
+                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-blue-400 hover:bg-black transition-colors">
+                                    <Twitter className="w-5 h-5 text-white" />
+                                </Link>
+                                <Link href="#" className="p-3 bg-zinc-800 rounded-lg border border-white/10 hover:border-green-400 hover:bg-black transition-colors">
+                                    <Settings className="w-5 h-5 text-white" />
+                                </Link>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs font-bold text-zinc-500">FIZIKHUB v2.0</p>
+                                <p className="text-[10px] text-zinc-700 font-mono">Designed by Antigravity</p>
+                            </div>
+                        </div>
+                    </div>
+                </Drawer.Content>
+            </Drawer.Portal>
+        </Drawer.Root>
     );
 }
