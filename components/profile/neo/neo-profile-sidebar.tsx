@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Calendar, Link as LinkIcon, Award, Zap, Users, BookOpen, MessageCircle, Info } from "lucide-react";
 import Link from "next/link";
+import { haptics } from "@/lib/haptics";
 
 interface NeoProfileSidebarProps {
     profile: any;
@@ -30,31 +31,36 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
         <div className="space-y-6 lg:sticky lg:top-32 transition-all duration-300 font-[family-name:var(--font-outfit)]">
 
             {/* === 1. STATS CARD === */}
-            <div className="bg-zinc-950 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="bg-zinc-950 border border-white/5 rounded-3xl overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
 
-                <div className="p-4 border-b border-white/5 flex items-center justify-between bg-zinc-900/30">
-                    <h3 className="font-black text-white flex items-center gap-2 text-xs tracking-widest uppercase">
-                        <Zap className="w-4 h-4 text-[#4169E1] fill-[#4169E1]" />
-                        İSTATİSTİKLER
+                <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                    <h3 className="font-black text-zinc-500 flex items-center gap-2 text-[10px] tracking-[0.2em] uppercase">
+                        <Zap className="w-3.5 h-3.5 text-[#4169E1] fill-[#4169E1]" />
+                        PERFORMANS VERİLERİ
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-2 divide-x divide-white/5 border-b border-white/5">
-                    {/* HUB PUAN Highlight */}
+                <div className="grid grid-cols-2 divide-x divide-white/5">
+                    {/* HUB PUAN PRESTIGE CARD */}
                     <Link
                         href="/yardim/puanlar"
-                        className="col-span-2 p-8 flex flex-col items-center justify-center bg-black hover:bg-zinc-900/40 transition-all relative group/sidebar-rep"
+                        onClick={() => haptics.medium()}
+                        className="col-span-2 p-10 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-black to-zinc-950 hover:from-black hover:to-zinc-900 transition-all relative group/sidebar-rep border-b border-white/5"
                     >
-                        <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest mb-2 group-hover/sidebar-rep:text-[#4169E1] transition-colors">TOPLAM HUB PUAN</span>
+                        {/* Shimmer Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent -translate-x-full group-hover/sidebar-rep:translate-x-full transition-transform duration-1000"></div>
+
+                        <span className="text-[10px] text-zinc-500 uppercase font-black tracking-[0.3em] mb-4 group-hover/sidebar-rep:text-[#4169E1] transition-colors">HUB PRESTİJ PUANI</span>
                         <div className="relative">
-                            <span className="text-5xl font-black text-white tracking-tighter italic z-10 relative">
+                            <span className="text-6xl font-black text-white tracking-tighter italic z-10 relative drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
                                 {formatNumber(stats.reputation)}
                             </span>
-                            <div className="absolute -bottom-1 left-0 w-full h-3 bg-[#4169E1]/10 -skew-x-12 z-0"></div>
+                            <div className="absolute -bottom-2 left-0 w-full h-4 bg-[#4169E1]/20 -skew-x-12 blur-xl z-0"></div>
                         </div>
 
-                        <div className="absolute top-4 right-4 opacity-0 group-hover/sidebar-rep:opacity-100 transition-all">
-                            <Info className="w-4 h-4 text-[#4169E1]" />
+                        <div className="mt-6 flex items-center gap-2 px-4 py-1.5 bg-white/[0.03] border border-white/10 rounded-full scale-100 group-hover/sidebar-rep:scale-110 transition-transform">
+                            <Award className="w-3.5 h-3.5 text-[#4169E1]" />
+                            <span className="text-[10px] text-white font-black uppercase tracking-widest">KIDEMLİ ÜYE</span>
                         </div>
                     </Link>
 
@@ -64,12 +70,12 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                         { label: "Makale", value: stats.articlesCount, icon: BookOpen },
                         { label: "Cevap", value: stats.answersCount, icon: MessageCircle },
                     ].map((stat, i) => (
-                        <div key={i} className="p-5 flex flex-col items-center justify-center hover:bg-zinc-900/50 transition-colors group cursor-default">
-                            <stat.icon className="w-4 h-4 text-zinc-600 mb-2 group-hover:text-[#4169E1] transition-colors stroke-[2.5px]" />
-                            <span className="text-xl font-black text-white tabular-nums">
+                        <div key={i} className="p-6 flex flex-col items-center justify-center hover:bg-white/[0.02] transition-colors group cursor-default">
+                            <stat.icon className="w-4 h-4 text-zinc-600 mb-2 group-hover:text-white transition-colors stroke-[2px]" />
+                            <span className="text-2xl font-black text-white tabular-nums tracking-tighter">
                                 {formatNumber(stat.value)}
                             </span>
-                            <span className="text-[9px] text-zinc-600 uppercase font-bold tracking-widest mt-1 text-center group-hover:text-zinc-400">{stat.label}</span>
+                            <span className="text-[9px] text-zinc-600 uppercase font-black tracking-widest mt-1 text-center group-hover:text-zinc-400">{stat.label}</span>
                         </div>
                     ))}
                 </div>

@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { followUser, unfollowUser } from "@/app/profil/actions";
 import { toast } from "sonner";
 import { UserPlus, UserMinus, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { haptics } from "@/lib/haptics";
 
 interface FollowButtonProps {
     targetUserId: string;
     initialIsFollowing: boolean;
     targetUsername?: string;
     variant?: string;
+    className?: string;
 }
 
-export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant }: FollowButtonProps) {
+export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant, className }: FollowButtonProps) {
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isPending, startTransition] = useTransition();
 
@@ -58,9 +61,12 @@ export function FollowButton({ targetUserId, initialIsFollowing, targetUsername,
         <Button
             variant={isFollowing ? "outline" : "default"}
             size="sm"
-            onClick={handleFollowToggle}
+            onClick={() => {
+                haptics.medium();
+                handleFollowToggle();
+            }}
             disabled={isPending}
-            className="gap-2 min-w-[120px]"
+            className={cn("gap-2 min-w-[120px]", className)}
         >
             {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

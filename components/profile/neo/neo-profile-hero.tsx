@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, Copy, Check, ShieldCheck, PenTool, Share2, Info, Settings } from "lucide-react";
+import { Mail, Copy, Check, ShieldCheck, PenTool, Share2, Info, Settings, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { haptics } from "@/lib/haptics";
 
 interface NeoProfileHeroProps {
     profile: any;
@@ -26,12 +27,26 @@ interface NeoProfileHeroProps {
 
 export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = false, stats }: NeoProfileHeroProps) {
     const [isCopied, setIsCopied] = useState(false);
+    const [showFloatingBar, setShowFloatingBar] = useState(false);
+    const { scrollY } = useScroll();
+
+    // Show floating bar after scrolling past the hero
+    useEffect(() => {
+        return scrollY.onChange((latest) => {
+            if (latest > 400) {
+                setShowFloatingBar(true);
+            } else {
+                setShowFloatingBar(false);
+            }
+        });
+    }, [scrollY]);
 
     const formatNumber = (num: number) =>
         new Intl.NumberFormat('tr-TR', { notation: "compact", maximumFractionDigits: 1 }).format(num);
 
     const handleCopyUsername = () => {
         if (!profile?.username) return;
+        haptics.light();
         navigator.clipboard.writeText(`@${profile.username}`);
         setIsCopied(true);
         toast.success("Kullanıcı adı kopyalandı!");
@@ -39,6 +54,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
     };
 
     const handleShareProfile = () => {
+        haptics.medium();
         const url = `${window.location.origin}/p/${profile?.username || profile?.id}`;
         if (navigator.share) {
             navigator.share({
@@ -56,10 +72,67 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
 
     return (
         <div className="w-full relative group mb-2 sm:mb-8 font-[family-name:var(--font-outfit)]">
+
+            {/* FLOATING ACTION BAR - MOBILE ONLY */}
+            <AnimatePresence>
+                {showFloatingBar && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] sm:hidden w-[90%] max-w-[400px]"
+                    >
+                        <div className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 px-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-9 h-9 rounded-xl border border-white/10 overflow-hidden shrink-0">
+                                    <img src={profile?.avatar_url || ""} alt="" className="w-full h-full object-cover" />
+                                </div>
+                                <span className="text-white font-black text-sm truncate uppercase tracking-tighter italic">
+                                    {profile?.full_name?.split(' ')[0]}
+                                </span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                {isOwnProfile ? (
+                                    <ProfileSettingsDialog
+                                        currentUsername={profile?.username}
+                                        currentFullName={profile?.full_name}
+                                        currentBio={profile?.bio}
+                                        currentAvatarUrl={profile?.avatar_url}
+                                        currentCoverUrl={profile?.cover_url}
+                                        currentWebsite={profile?.website}
+                                        currentSocialLinks={profile?.social_links}
+                                        userEmail={user?.email}
+                                        trigger={
+                                            <button
+                                                onClick={() => haptics.light()}
+                                                className="h-9 px-4 bg-[#FFC800] text-black font-black text-[10px] rounded-xl active:scale-95 transition-all uppercase tracking-widest"
+                                            >
+                                                DÜZENLE
+                                            </button>
+                                        }
+                                    />
+                                ) : (
+                                    <div onClick={() => haptics.medium()}>
+                                        <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" className="h-9 px-4 text-[10px]" />
+                                    </div>
+                                )}
+                                <button
+                                    onClick={handleShareProfile}
+                                    className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-white/5 rounded-xl text-zinc-400"
+                                >
+                                    <Share2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* HERO BACKGROUND - COVER IMAGE */}
             <div className={cn(
                 "relative overflow-hidden bg-zinc-950",
-                "-mx-2 -mt-4 w-[calc(100%+1rem)] h-[180px] sm:h-[300px]", // Increased mobile/desktop height
+                "-mx-2 -mt-4 w-[calc(100%+1rem)] h-[180px] sm:h-[300px]",
                 "border-b border-white/5 rounded-b-[32px] sm:rounded-b-none sm:border-b-0",
                 "sm:mx-0 sm:mt-0 sm:w-full",
                 "sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-2xl"
@@ -105,9 +178,13 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
             {/* MOBILE LAYOUT CONTENT */}
             <div className="relative px-5 sm:hidden z-30 -mt-20">
                 <div className="flex flex-col items-center text-center">
+
+                    {/* Visual Depth Glow */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-[#4169E1]/10 blur-[80px] -z-10 rounded-full"></div>
+
                     {/* Avatar - Mobile (Overlap) */}
-                    <div className="relative mb-4">
-                        <div className="w-28 h-28 rounded-[2rem] border-[6px] border-[#0a0a0a] bg-zinc-900 overflow-hidden shadow-2xl relative">
+                    <div className="relative mb-5 scale-100 active:scale-95 transition-transform duration-500">
+                        <div className="w-28 h-28 rounded-[2.5rem] border-[6px] border-[#0a0a0a] bg-zinc-900 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative">
                             {profile?.avatar_url ? (
                                 <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover scale-110" />
                             ) : (
@@ -115,63 +192,70 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                     {profile?.full_name?.charAt(0) || "?"}
                                 </div>
                             )}
-                            <div className="absolute inset-0 border border-white/10 rounded-[2rem] pointer-events-none"></div>
+                            <div className="absolute inset-0 border border-white/10 rounded-[2.5rem] pointer-events-none"></div>
                         </div>
                         {profile?.is_verified && (
-                            <div className="absolute -bottom-1 -right-1 bg-[#4169E1] text-white p-1.5 rounded-full border-[4px] border-[#0a0a0a] z-20 shadow-lg">
+                            <div className="absolute -bottom-1 -right-1 bg-[#4169E1] text-white p-1.5 rounded-full border-[4px] border-[#0a0a0a] z-20 shadow-lg animate-in zoom-in duration-500">
                                 <ShieldCheck className="w-3.5 h-3.5" />
                             </div>
                         )}
                     </div>
 
                     {/* Identity Block */}
-                    <div className="space-y-1.5 mb-5">
-                        <h1 className="text-3xl font-black text-white italic tracking-tighter leading-none">
+                    <div className="space-y-2 mb-6 w-full">
+                        <h1 className="text-3xl font-black text-white italic tracking-tighter leading-none drop-shadow-2xl">
                             {profile?.full_name || "İsimsiz"}
                         </h1>
-                        <div className="flex flex-col items-center gap-2">
-                            <button onClick={handleCopyUsername} className="text-[11px] font-black tracking-widest uppercase text-zinc-500 flex items-center gap-1.5 bg-white/5 border border-white/5 px-3 py-1 rounded-full w-fit hover:bg-white/10 transition-all">
+                        <div className="flex flex-col items-center gap-3">
+                            <button
+                                onClick={handleCopyUsername}
+                                className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2 bg-white/[0.03] border border-white/10 px-4 py-1.5 rounded-full active:bg-white/10 transition-all active:scale-90"
+                            >
                                 @{profile?.username}
                                 {isCopied && <Check className="w-3 h-3 text-green-500" />}
                             </button>
 
-                            {/* CLEAN STATS ROW - MOBILE */}
-                            <div className="flex items-center gap-6 mt-1">
-                                <div className="flex items-center gap-1.5">
+                            {/* PREMIUM STATS CHIPS - MOBILE */}
+                            <div className="flex items-center gap-3 mt-1">
+                                <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 py-1.5 px-3 rounded-xl">
                                     <span className="text-sm font-black text-white">{formatNumber(stats?.followersCount || 0)}</span>
-                                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Takipçi</span>
+                                    <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest">Takipçi</span>
                                 </div>
-                                <div className="w-1 h-1 bg-zinc-800 rounded-full"></div>
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-2 bg-white/[0.02] border border-white/5 py-1.5 px-3 rounded-xl">
                                     <span className="text-sm font-black text-white">{formatNumber(stats?.followingCount || 0)}</span>
-                                    <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest">Takip</span>
+                                    <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest">Takip</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {profile?.bio && (
-                        <div className="w-full mb-6">
-                            <p className="text-[13px] text-zinc-400 leading-relaxed font-medium bg-white/[0.02] border border-white/5 p-4 rounded-2xl italic">
-                                "{profile.bio}"
+                        <div className="w-full mb-8 relative">
+                            <div className="absolute -left-2 top-0 text-3xl text-primary/20 font-black italic">"</div>
+                            <p className="text-[14px] text-zinc-400 leading-relaxed font-medium px-4 italic">
+                                {profile.bio}
                             </p>
                         </div>
                     )}
 
                     {/* ACTION BAR - MOBILE */}
-                    <div className="w-full flex items-center justify-between gap-2.5 p-2.5 bg-white/[0.03] backdrop-blur-md border border-white/5 rounded-2xl">
-                        {/* HUB PUAN COMPACT */}
+                    <div className="w-full flex items-center justify-between gap-3 p-3 bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-[24px] shadow-2xl">
+                        {/* HUB PUAN PREMIUM */}
                         <Link
                             href="/yardim/puanlar"
-                            className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-zinc-900 border border-white/5 rounded-xl active:scale-95 transition-all"
+                            onClick={() => haptics.light()}
+                            className="flex-1 flex items-center justify-center gap-3 py-3 bg-zinc-950 border border-white/5 rounded-2xl active:scale-95 transition-all group"
                         >
-                            <div className="flex items-center justify-center w-5 h-5 bg-[#4169E1] rounded-md text-white font-black text-[10px]">H</div>
-                            <span className="text-xs font-black text-white whitespace-nowrap">
-                                {formatNumber(stats?.reputation || 0)} <span className="text-white/30 ml-0.5">PTS</span>
-                            </span>
+                            <div className="flex items-center justify-center w-6 h-6 bg-gradient-to-br from-[#4169E1] to-[#304ba3] rounded-lg text-white font-black text-[11px] shadow-lg shadow-blue-900/40">H</div>
+                            <div className="flex flex-col items-start leading-none">
+                                <span className="text-xs font-black text-white italic tracking-tighter">
+                                    {formatNumber(stats?.reputation || 0)} PTS
+                                </span>
+                                <span className="text-[7px] text-zinc-500 font-black uppercase tracking-widest mt-0.5 group-hover:text-primary transition-colors">HUB PRESTİJ</span>
+                            </div>
                         </Link>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             {isOwnProfile ? (
                                 <>
                                     <ProfileSettingsDialog
@@ -184,28 +268,38 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                         currentSocialLinks={profile?.social_links}
                                         userEmail={user?.email}
                                         trigger={
-                                            <button className="h-10 px-6 bg-[#FFC800] text-black font-black text-[10px] rounded-xl border border-black/10 active:scale-95 transition-all uppercase tracking-widest shadow-lg shadow-yellow-900/10">
+                                            <button
+                                                onClick={() => haptics.medium()}
+                                                className="h-12 px-6 bg-[#FFC800] text-black font-black text-[10px] rounded-2xl active:scale-95 transition-all uppercase tracking-widest shadow-[0_8px_20px_rgba(255,200,0,0.2)]"
+                                            >
                                                 DÜZENLE
                                             </button>
                                         }
                                     />
-                                    <Link href="/mesajlar" className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-white/5 rounded-xl text-zinc-400 active:scale-95 transition-all">
-                                        <Mail className="w-4 h-4" />
+                                    <Link
+                                        href="/mesajlar"
+                                        onClick={() => haptics.light()}
+                                        className="w-12 h-12 flex items-center justify-center bg-zinc-950 border border-white/10 rounded-2xl text-zinc-400 active:scale-95 transition-all"
+                                    >
+                                        <Mail className="w-5 h-5" />
                                     </Link>
-                                    {profile?.username === 'baranbozkurt' && (
-                                        <Link href="/admin" className="h-10 w-10 flex items-center justify-center bg-red-950/20 text-red-500 border border-red-900/20 rounded-xl active:scale-95 transition-all">
-                                            <Settings className="w-4 h-4" />
-                                        </Link>
-                                    )}
+                                    <button
+                                        onClick={handleShareProfile}
+                                        className="w-12 h-12 flex items-center justify-center bg-zinc-950 border border-white/10 rounded-2xl text-zinc-400 active:scale-95 transition-all"
+                                    >
+                                        <MoreHorizontal className="w-5 h-5" />
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
+                                    <div onClick={() => haptics.heavy()}>
+                                        <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" className="h-12 px-8 rounded-2xl text-xs" />
+                                    </div>
                                     <button
                                         onClick={handleShareProfile}
-                                        className="w-10 h-10 flex items-center justify-center bg-zinc-900 border border-white/5 rounded-xl text-zinc-400 active:scale-95 transition-all"
+                                        className="w-12 h-12 flex items-center justify-center bg-zinc-950 border border-white/10 rounded-2xl text-zinc-400 active:scale-95 transition-all"
                                     >
-                                        <Share2 className="w-4 h-4" />
+                                        <Share2 className="w-5 h-5" />
                                     </button>
                                 </>
                             )}
@@ -214,7 +308,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                 </div>
             </div>
 
-            {/* DESKTOP ACTIONS BAR (Optional/Extra) */}
+            {/* DESKTOP ACTIONS BAR */}
             <div className="hidden sm:flex mt-8 items-center gap-4 bg-zinc-900/50 p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-8">
                     <div className="flex flex-col">
@@ -262,3 +356,4 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
         </div>
     );
 }
+

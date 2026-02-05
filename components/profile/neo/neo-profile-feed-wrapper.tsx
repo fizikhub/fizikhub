@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { UnifiedFeed } from "@/components/home/unified-feed";
 import { BookOpen, MessageCircle, Bookmark, FileText, Inbox } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { haptics } from "@/lib/haptics";
 
 interface NeoProfileFeedWrapperProps {
     articles: any[];
@@ -176,7 +177,10 @@ export function NeoProfileFeedWrapper({
 function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label: string, icon: any, isActive: boolean, onClick: () => void, colorClass?: string }) {
     return (
         <button
-            onClick={onClick}
+            onClick={() => {
+                haptics.selection();
+                onClick();
+            }}
             className={cn(
                 "relative flex shrink-0 items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all select-none",
                 isActive
