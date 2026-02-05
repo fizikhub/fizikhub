@@ -88,14 +88,14 @@ export const simulations: Simulation[] = [
         tags: ["AI", "Genetik"]
     },
     {
-        id: "evosim-v3",
-        slug: "evrimsel-yurume-v3",
-        title: "Bio-Evolution 3D (V3)",
-        description: "3D Spring-Mass sistemiyle evrimleşen biyo-organik yaratıklar. Ultra hızlı nesil döngüsü!",
-        icon: Sparkles,
-        color: "#00ffff",
-        formula: "F = -k(L-L₀)",
+        id: "evosim-v4",
+        slug: "evrimsel-yurume-v4",
+        title: "Neuro-Centipede (V4)",
+        description: "Biyolojik sinir ağları tarafından kontrol edilen omurgalı yaratıklar. Gerçek Nöroevrim!",
+        icon: Activity,
+        color: "#22d3ee",
+        formula: "Brain = f(Sensors)",
         difficulty: "Zor",
-        tags: ["3D", "Physics", "Bio-AI"]
+        tags: ["Neuro-AI", "Fizik", "Evrim"]
     }
 ];
