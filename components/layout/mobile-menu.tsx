@@ -25,9 +25,9 @@ export function MobileMenu() {
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <button
-                    className="no-min-size w-6 h-6 box-border p-0 flex items-center justify-center bg-white border border-black shadow-[1px_1px_0px_0px_#000] hover:translate-x-[0.5px] hover:translate-y-[0.5px] hover:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all rounded-md"
+                    className="no-min-size w-8 h-8 box-border p-0 flex items-center justify-center bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-lg"
                 >
-                    <Menu className="w-3.5 h-3.5 text-black stroke-[3]" />
+                    <Menu className="w-4 h-4 text-black stroke-[3]" />
                 </button>
             </SheetTrigger>
 
