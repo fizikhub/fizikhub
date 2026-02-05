@@ -42,7 +42,7 @@ export function EvolutionarySimulation() {
         let zoom = 0.8;
 
         p.setup = () => {
-            p.createCanvas(p.windowWidth, p.innerHeight - 200).parent(p.select('body') as any);
+            p.createCanvas(p.windowWidth, p.windowHeight - 200).parent(p.select('body') as any);
 
             // Physics Init
             engine.gravity.y = 1.2;
@@ -198,7 +198,7 @@ export function EvolutionarySimulation() {
         };
 
         p.windowResized = () => {
-            p.resizeCanvas(p.windowWidth, p.innerHeight - 200);
+            p.resizeCanvas(p.windowWidth, p.windowHeight - 200);
         };
     };
 
