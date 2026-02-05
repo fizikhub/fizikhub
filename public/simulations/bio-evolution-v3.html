@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bio-Evolution 3D | V3 Spring-Mass</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; }
+        #canvas-container { width: 100vw; height: 100vh; touch-action: none; }
+        #hud {
+            position: absolute; top: 20px; left: 20px; color: #0f0;
+            background: rgba(0, 0, 0, 0.8); padding: 15px;
+            border: 2px solid #0f0; box-shadow: 5px 5px 0px #0f0;
+            pointer-events: none; z-index: 100; font-weight: bold;
+        }
+        .stats-row { display: flex; gap: 20px; margin-bottom: 5px; }
+        .label { color: #555; font-size: 10px; text-transform: uppercase; }
+        .value { font-size: 18px; color: #0ff; }
+        #loading {
+            position: absolute; inset: 0; background: #000; display: flex;
+            align-items: center; justify-content: center; color: #fff; z-index: 200;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">INITIALIZING BIO-ENGINE...</div>
+    <div id="hud">
+        <div class="stats-row">
+            <div><div class="label">Generation</div><div id="gen" class="value">1</div></div>
+            <div><div class="label">Lifespan</div><div id="time" class="value">4.0s</div></div>
+        </div>
+        <div class="stats-row">
+            <div><div class="label">Best Distance</div><div id="best" class="value">0.0m</div></div>
+            <div><div class="label">Alpha Record</div><div id="record" class="value">0.0m</div></div>
+        </div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "cannon-es": "https://unpkg.com/cannon-es@0.20.0/dist/cannon-es.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import * as CANNON from 'cannon-es';
+
+        // --- CONFIG ---
+        const POP_SIZE = 30;
+        const LIFESPAN = 4000; // 4 seconds
+        const NODE_COUNT = 5;
+        const MUTATION_RATE = 0.15;
+
+        class Genome {
+            constructor(data) {
+                if (data) {
+                    this.data = data;
+                } else {
+                    this.data = this.createRandom();
+                }
+            }
+
+            createRandom() {
+                const springs = [];
+                // Connect nodes in a triangle/blob fashion
+                for (let i = 0; i < NODE_COUNT; i++) {
+                    for (let j = i + 1; j < NODE_COUNT; j++) {
+                        springs.push({
+                            nodeA: i,
+                            nodeB: j,
+                            restLength: 1 + Math.random() * 2,
+                            amplitude: 0.5 + Math.random() * 1.5,
+                            frequency: 2 + Math.random() * 8, // Fast heartbeat
+                            phase: Math.random() * Math.PI * 2,
+                            stiffness: 100 + Math.random() * 200
+                        });
+                    }
+                }
+                const nodePositions = [];
+                for(let i=0; i<NODE_COUNT; i++) {
+                    nodePositions.push({
+                        x: (Math.random()-0.5)*2,
+                        y: 1 + (Math.random()*2),
+                        z: (Math.random()-0.5)*2
+                    });
+                }
+                return { springs, nodePositions };
+            }
+
+            static mutate(genome) {
+                const newData = JSON.parse(JSON.stringify(genome.data));
+                newData.springs.forEach(s => {
+                    if (Math.random() < MUTATION_RATE) {
+                        s.amplitude += (Math.random() - 0.5) * 0.5;
+                        s.phase += (Math.random() - 0.5) * 1;
+                        s.frequency += (Math.random() - 0.5) * 2;
+                    }
+                });
+                return new Genome(newData);
+            }
+
+            static crossover(p1, p2) {
+                const newData = JSON.parse(JSON.stringify(p1.data));
+                newData.springs = p1.data.springs.map((s, i) => {
+                    return Math.random() > 0.5 ? s : p2.data.springs[i];
+                });
+                return new Genome(newData);
+            }
+        }
+
+        class Creature {
+            constructor(genome, scene, world) {
+                this.genome = genome;
+                this.scene = scene;
+                this.world = world;
+                this.nodes = [];
+                this.springs = [];
+                this.visualSprings = [];
+                this.meshNodes = [];
+                this.fitness = 0;
+                this.isAlive = true;
+                this.startTime = Date.now();
+                
+                this.group = new THREE.Group();
+                this.initNodes();
+                this.initSprings();
+                scene.add(this.group);
+            }
+
+            initNodes() {
+                const nodeGeo = new THREE.SphereGeometry(0.2, 16, 16);
+                const nodeMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+                
+                this.genome.data.nodePositions.forEach(pos => {
+                    const body = new CANNON.Body({
+                        mass: 1,
+                        position: new CANNON.Vec3(pos.x, pos.y, pos.z),
+                        linearDamping: 0.1,
+                        angularDamping: 1.0,
+                        shape: new CANNON.Sphere(0.2)
+                    });
+                    this.world.addBody(body);
+                    this.nodes.push(body);
+
+                    const mesh = new THREE.Mesh(nodeGeo, nodeMat.clone());
+                    this.group.add(mesh);
+                    this.meshNodes.push(mesh);
+                });
+            }
+
+            initSprings() {
+                const material = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 });
+                this.genome.data.springs.forEach(s => {
+                    const spring = new CANNON.Spring(this.nodes[s.nodeA], this.nodes[s.nodeB], {
+                        restLength: s.restLength,
+                        stiffness: s.stiffness,
+                        damping: 1
+                    });
+                    this.springs.push({ cannon: spring, meta: s });
+
+                    const points = [new THREE.Vector3(), new THREE.Vector3()];
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const line = new THREE.Line(geometry, material.clone());
+                    this.group.add(line);
+                    this.visualSprings.push(line);
+                });
+            }
+
+            update(time) {
+                if (!this.isAlive) return;
+
+                this.springs.forEach((s, i) => {
+                    const meta = s.meta;
+                    const val = Math.sin(time * 0.001 * meta.frequency + meta.phase);
+                    const targetLen = meta.restLength + (val * meta.amplitude);
+                    s.cannon.restLength = Math.max(0.1, targetLen);
+                    s.cannon.applyForce();
+
+                    // Visual Feedback
+                    const mat = this.visualSprings[i].material;
+                    if (val > 0) {
+                        mat.color.setRGB(0, 1, 1 - val); // Extending: Greenish
+                    } else {
+                        mat.color.setRGB(Math.abs(val), 0, 0.5); // Contracting: Reddish
+                    }
+                });
+
+                // Update Viz
+                this.nodes.forEach((body, i) => {
+                    this.meshNodes[i].position.copy(body.position);
+                    this.group.position.set(0,0,0); // Relative handles
+                });
+
+                this.visualSprings.forEach((line, i) => {
+                    const s = this.genome.data.springs[i];
+                    const posA = this.nodes[s.nodeA].position;
+                    const posB = this.nodes[s.nodeB].position;
+                    const positions = line.geometry.attributes.position.array;
+                    positions[0] = posA.x; positions[1] = posA.y; positions[2] = posA.z;
+                    positions[3] = posB.x; positions[4] = posB.y; positions[5] = posB.z;
+                    line.geometry.attributes.position.needsUpdate = true;
+                });
+
+                this.fitness = this.nodes[0].position.x;
+            }
+
+            remove() {
+                this.isAlive = false;
+                this.nodes.forEach(b => this.world.removeBody(b));
+                this.scene.remove(this.group);
+            }
+        }
+
+        // --- MAIN ENGINE ---
+        let scene, camera, renderer, world, controls;
+        let population = [];
+        let generation = 1;
+        let bestDistance = 0;
+        let alphaRecord = 0;
+        let startTime = Date.now();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            scene.fog = new THREE.FogExp2(0x000000, 0.1);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.set(5, 5, 10);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            // Physics
+            world = new CANNON.World();
+            world.gravity.set(0, -9.81, 0);
+            world.broadphase = new CANNON.SAPBroadphase(world);
+
+            const groundMat = new CANNON.Material();
+            const groundBody = new CANNON.Body({
+                mass: 0,
+                shape: new CANNON.Plane(),
+                material: groundMat
+            });
+            groundBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
+            world.addBody(groundBody);
+
+            // Reflective Grid Floor
+            const grid = new THREE.GridHelper(100, 100, 0x00ff00, 0x111111);
+            scene.add(grid);
+
+            spawnGen();
+            document.getElementById('loading').style.display = 'none';
+            animate();
+        }
+
+        function spawnGen(genomes) {
+            population.forEach(c => c.remove());
+            population = [];
+            for (let i = 0; i < POP_SIZE; i++) {
+                const g = genomes ? genomes[i] : new Genome();
+                population.push(new Creature(g, scene, world));
+            }
+            startTime = Date.now();
+        }
+
+        function evolve() {
+            population.sort((a,b) => b.fitness - a.fitness);
+            const best = population[0].fitness;
+            if (best > alphaRecord) alphaRecord = best;
+
+            const nextGen = [];
+            // Elitism
+            nextGen.push(new Genome(JSON.parse(JSON.stringify(population[0].genome.data))));
+            nextGen.push(new Genome(JSON.parse(JSON.stringify(population[1].genome.data))));
+
+            while(nextGen.length < POP_SIZE) {
+                const p1 = population[Math.floor(Math.random() * 5)].genome;
+                const p2 = population[Math.floor(Math.random() * 10)].genome;
+                let child = Genome.crossover(p1, p2);
+                if (Math.random() < 0.2) child = Genome.mutate(child);
+                nextGen.push(child);
+            }
+
+            generation++;
+            document.getElementById('gen').innerText = generation;
+            document.getElementById('record').innerText = alphaRecord.toFixed(1) + 'm';
+            spawnGen(nextGen);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const now = Date.now();
+            const elapsed = now - startTime;
+
+            world.fixedStep();
+            population.forEach(c => c.update(now));
+
+            // Camera Following (Smooth)
+            const alpha = population.reduce((p, c) => c.fitness > p.fitness ? c : p);
+            const targetPos = alpha.nodes[0].position;
+            camera.lookAt(targetPos.x, targetPos.y, targetPos.z);
+            controls.target.lerp(new THREE.Vector3(targetPos.x, targetPos.y, targetPos.z), 0.1);
+            
+            // HUD
+            document.getElementById('time').innerText = ((LIFESPAN - elapsed)/1000).toFixed(1) + 's';
+            document.getElementById('best').innerText = alpha.fitness.toFixed(1) + 'm';
+
+            if (elapsed > LIFESPAN) {
+                evolve();
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        init();
+    </script>
+</body>
+</html>
