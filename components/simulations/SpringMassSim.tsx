@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { Play, Pause, RotateCcw, Target, Info } from "lucide-react";
 
 interface SpringMassSimProps {
     className?: string;
@@ -44,9 +45,19 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             const height = canvas.height;
             const centerX = width / 2;
 
-            // Clear
-            ctx.fillStyle = "#1a1a1a";
+            // Clear with site background color
+            ctx.fillStyle = "#121214"; // bg-background approx
             ctx.fillRect(0, 0, width, height);
+
+            // Grid lines (very subtle)
+            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+            }
+            for (let j = 0; j < height; j += 40) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(width, j); ctx.stroke();
+            }
 
             // Physics (Hooke's Law)
             if (isRunning) {
@@ -60,60 +71,62 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             const massY = restY + 80 + posRef.current;
 
             // Draw ceiling
-            ctx.fillStyle = "#444";
-            ctx.fillRect(centerX - 50, 20, 100, 15);
+            ctx.fillStyle = "#27272a";
+            ctx.fillRect(centerX - 60, 20, 120, 12);
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(centerX - 60, 20, 120, 12);
 
             // Draw spring (zigzag)
-            ctx.strokeStyle = posRef.current > 0 ? "#FF6B6B" : "#4ECDC4";
-            ctx.lineWidth = 3;
+            ctx.strokeStyle = posRef.current > 0 ? "#A0C4FF" : "#FFA0A0"; // Pastel Blue / Pastel Red
+            ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.moveTo(centerX, 35);
+            ctx.moveTo(centerX, 32);
 
-            const coils = 8;
+            const coils = 12;
             const springLength = 80 + posRef.current;
             const coilH = springLength / coils;
 
             for (let i = 0; i < coils; i++) {
-                const y = 35 + (i + 0.5) * coilH;
+                const y = 32 + (i + 0.5) * coilH;
                 const dir = i % 2 === 0 ? 1 : -1;
-                ctx.lineTo(centerX + dir * 20, y);
+                ctx.lineTo(centerX + dir * 18, y);
             }
             ctx.lineTo(centerX, massY - 25);
             ctx.stroke();
 
             // Draw mass
-            ctx.fillStyle = "#3B82F6";
+            ctx.fillStyle = "#A0C4FF"; // Pastel Blue
             ctx.strokeStyle = "#000";
             ctx.lineWidth = 3;
-            ctx.fillRect(centerX - 30, massY - 25, 60, 50);
-            ctx.strokeRect(centerX - 30, massY - 25, 60, 50);
+            // Mass Shadow
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.fillRect(centerX - 35, massY - 25, 70, 50);
+            ctx.shadowBlur = 0;
+            ctx.strokeRect(centerX - 35, massY - 25, 70, 50);
 
             // Mass label
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 14px monospace";
+            ctx.fillStyle = "#000";
+            ctx.font = "black 12px sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(`${mass} kg`, centerX, massY + 5);
 
             // Equilibrium line
-            ctx.strokeStyle = "#4ADE80";
-            ctx.lineWidth = 1;
-            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = "rgba(255, 200, 0, 0.3)";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 4]);
             ctx.beginPath();
-            ctx.moveTo(centerX - 60, restY + 80);
-            ctx.lineTo(centerX + 60, restY + 80);
+            ctx.moveTo(centerX - 100, restY + 80);
+            ctx.lineTo(centerX + 100, restY + 80);
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // x label
-            ctx.fillStyle = "#4ADE80";
-            ctx.font = "12px sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText("x = 0", centerX + 65, restY + 84);
-
-            // Current displacement
-            ctx.fillStyle = "#fff";
-            ctx.font = "12px monospace";
-            ctx.fillText(`x = ${(posRef.current / 100).toFixed(2)} m`, 20, 50);
+            // Labels
+            ctx.fillStyle = "rgba(255, 200, 0, 0.8)";
+            ctx.font = "bold 10px tracking-widest";
+            ctx.textAlign = "right";
+            ctx.fillText("DENGE KONUMU", centerX - 110, restY + 84);
 
             animationId = requestAnimationFrame(draw);
         };
@@ -128,96 +141,129 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
     };
 
     return (
-        <div className={cn("bg-neutral-900", className)}>
-            {/* Challenge */}
-            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">🎯</span>
-                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
-                </div>
-                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
-                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
-            </div>
-
-            {/* Canvas */}
-            <div className="relative">
-                <canvas ref={canvasRef} width={400} height={280} className="w-full" onClick={reset} />
-
-                {/* Formula */}
-                <div className="absolute top-4 right-4 bg-black/80 rounded-lg p-3 text-right">
-                    <p className="text-cyan-400 font-mono text-xs">F = -kx (Hooke)</p>
-                    <p className="text-yellow-400 font-mono text-sm font-bold mt-1">ω = √(k/m)</p>
-                    <p className="text-white font-mono text-lg">
-                        f = <span className="text-green-400">{frequency.toFixed(2)}</span> Hz
-                    </p>
-                    <p className="text-white font-mono text-sm">
-                        T = <span className="text-green-400">{period.toFixed(2)}</span> s
-                    </p>
+        <div className={cn("bg-background min-h-full flex flex-col font-[family-name:var(--font-outfit)]", className)}>
+            {/* Top Mission Control */}
+            <div className="bg-[#A0C4FF]/5 border-b border-white/5 p-4 sm:p-6">
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-[#A0C4FF] flex items-center justify-center text-black border border-black shadow-[2px_2px_0px_#000]">
+                                <Target className="w-4 h-4" />
+                            </div>
+                            <span className="text-[#A0C4FF] font-black text-xs uppercase tracking-[0.2em]">GÖREV {challenge + 1}</span>
+                        </div>
+                        <h2 className="text-white text-base sm:text-lg font-black tracking-tight uppercase italic">{challenges[challenge].question}</h2>
+                        <div className="flex items-center gap-1.5 mt-2">
+                            <Info className="w-3 h-3 text-zinc-500" />
+                            <p className="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">{challenges[challenge].hint}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Controls */}
-            <div className="p-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-white font-bold text-sm">Yay Sabiti (k)</span>
-                            <span className="text-cyan-400 font-mono text-sm">{springK} N/m</span>
+            <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden">
+                {/* Simulation Canvas Area */}
+                <div className="lg:col-span-8 relative bg-[#121214] border-b lg:border-b-0 lg:border-r border-white/5 order-1">
+                    <canvas ref={canvasRef} width={800} height={500} className="w-full h-full object-contain cursor-pointer" onClick={reset} />
+
+                    {/* Live Data Overlays */}
+                    <div className="absolute top-6 left-6 flex flex-col gap-3">
+                        <div className="bg-black/40 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl">
+                            <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block mb-1">Anlık Uzanım (x)</span>
+                            <span className="text-[#FFA0A0] font-mono text-xl font-black">{(posRef.current / 100).toFixed(2)} m</span>
                         </div>
-                        <input
-                            type="range" min="20" max="150" value={springK}
-                            onChange={(e) => setSpringK(Number(e.target.value))}
-                            className="w-full h-2 rounded-lg accent-cyan-400"
-                        />
                     </div>
-                    <div>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-white font-bold text-sm">Kütle (m)</span>
-                            <span className="text-blue-400 font-mono text-sm">{mass} kg</span>
+
+                    <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end gap-4 pointer-events-none">
+                        <div className="bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl pointer-events-auto">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                                <div>
+                                    <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">Periyot (T)</span>
+                                    <span className="text-white font-mono text-base font-bold">{period.toFixed(2)} s</span>
+                                </div>
+                                <div>
+                                    <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">Frekans (f)</span>
+                                    <span className="text-[#B2F2BB] font-mono text-base font-bold">{frequency.toFixed(2)} Hz</span>
+                                </div>
+                                <div className="col-span-2 pt-2 border-t border-white/5 mt-1">
+                                    <span className="text-zinc-400 text-[10px] sm:text-xs font-bold uppercase italic font-mono">ω = √(k/m) = {omega.toFixed(2)} rad/s</span>
+                                </div>
+                            </div>
                         </div>
-                        <input
-                            type="range" min="1" max="5" step="0.5" value={mass}
-                            onChange={(e) => setMass(Number(e.target.value))}
-                            className="w-full h-2 rounded-lg accent-blue-400"
-                        />
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setIsRunning(!isRunning)}
-                        className={cn(
-                            "flex-1 py-2 font-bold text-sm border-2 border-black",
-                            isRunning ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                        )}
-                    >
-                        {isRunning ? "Durdur" : "Başlat"}
-                    </button>
-                    <button onClick={reset} className="flex-1 py-2 font-bold text-sm border-2 border-black bg-neutral-700 text-white">
-                        Sıfırla
-                    </button>
-                </div>
+                {/* Controls Sidebar */}
+                <div className="lg:col-span-4 p-6 sm:p-8 space-y-8 bg-background order-2">
+                    {/* Parameters */}
+                    <div className="space-y-6">
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                <span className="text-zinc-400 font-black text-[10px] uppercase tracking-[0.2em]">Yay Sabiti (k)</span>
+                                <span className="text-[#A0C4FF] font-mono text-sm font-black">{springK} N/m</span>
+                            </div>
+                            <input
+                                type="range" min="20" max="150" value={springK}
+                                onChange={(e) => setSpringK(Number(e.target.value))}
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#A0C4FF]"
+                            />
+                        </div>
 
-                <div className="flex gap-2">
-                    {challenges.map((_, i) => (
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                <span className="text-zinc-400 font-black text-[10px] uppercase tracking-[0.2em]">Kütle (m)</span>
+                                <span className="text-[#FFA0A0] font-mono text-sm font-black">{mass} kg</span>
+                            </div>
+                            <input
+                                type="range" min="0.5" max="10" step="0.5" value={mass}
+                                onChange={(e) => setMass(Number(e.target.value))}
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FFA0A0]"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3">
                         <button
-                            key={i}
-                            onClick={() => setChallenge(i)}
+                            onClick={() => setIsRunning(!isRunning)}
                             className={cn(
-                                "flex-1 py-1 text-xs font-bold border-2 border-black",
-                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                                "flex-1 h-16 rounded-2xl border-2 border-black flex items-center justify-center gap-2 transition-all active:scale-95 shadow-[4px_4px_0px_#000]",
+                                isRunning ? "bg-[#FFA0A0] text-black" : "bg-[#B2F2BB] text-black"
                             )}
                         >
-                            Görev {i + 1}
+                            {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+                            <span className="font-black text-sm uppercase italic">{isRunning ? "DURAKLAT" : "DEVAM ET"}</span>
                         </button>
-                    ))}
-                </div>
+                        <button
+                            onClick={reset}
+                            className="w-16 h-16 rounded-2xl border-2 border-black bg-zinc-100 text-black flex items-center justify-center hover:bg-white transition-all shadow-[4px_4px_0px_#000] active:scale-95"
+                        >
+                            <RotateCcw className="w-6 h-6" />
+                        </button>
+                    </div>
 
-                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                    <p className="text-green-400 text-xs">
-                        ✨ <strong>Keşif:</strong> k artınca → frekans artar (daha hızlı salınım).
-                        m artınca → frekans azalır (daha yavaş).
-                    </p>
+                    {/* Challenge Selector */}
+                    <div className="grid grid-cols-3 gap-2">
+                        {challenges.map((_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => setChallenge(i)}
+                                className={cn(
+                                    "py-2.5 rounded-xl border border-black text-[10px] font-black uppercase tracking-widest transition-all shadow-[3px_3px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none",
+                                    challenge === i ? "bg-[#A0C4FF] text-black" : "bg-zinc-900 text-zinc-500 border-zinc-800 shadow-none hover:bg-zinc-800"
+                                )}
+                            >
+                                GÖREV {i + 1}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Discovery Note */}
+                    <div className="bg-[#B2F2BB]/5 border border-[#B2F2BB]/20 rounded-2xl p-4 sm:p-5">
+                        <p className="text-[#B2F2BB] text-[11px] sm:text-xs leading-relaxed font-bold italic uppercase tracking-wider">
+                            ✨ Keşif: Yay sabiti (k) artınca salınım hızlanır. Kütle (m) artınca ise hantallaşır ve frekans düşer.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

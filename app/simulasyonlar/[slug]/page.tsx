@@ -8,6 +8,7 @@ import ProjectileSim from "@/components/simulations/projectile/projectile-sim";
 import PendulumSim from "@/components/simulations/pendulum/pendulum-sim";
 import SolarSystemSim from "@/components/simulations/solar-system/solar-system-sim";
 import WaveSim from "@/components/simulations/waves/wave-sim";
+import { SpringMassSim } from "@/components/simulations/SpringMassSim";
 
 export function generateStaticParams() {
     return simulations.map((sim) => ({
@@ -38,13 +39,15 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
         case "wave":
             Component = WaveSim;
             break;
-        // Cases for other sims...
+        case "spring":
+            Component = SpringMassSim;
+            break;
         default:
             Component = () => <div className="p-8 text-center text-white">Bu simülasyon henüz yapım aşamasında.</div>;
     }
 
     return (
-        <div className="min-h-screen bg-[#1A1A1A] flex flex-col">
+        <div className="min-h-screen bg-background flex flex-col font-[family-name:var(--font-outfit)]">
             {/* Simulation Header */}
             <div className="border-b-[3px] border-black sticky top-0 z-50" style={{ backgroundColor: sim.color }}>
                 <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
