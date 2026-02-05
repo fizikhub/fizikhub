@@ -1,11 +1,11 @@
 "use client";
 
-import { BioEvolution3D } from "@/components/simulations/EvolutionarySimulation/BioEvolution3D";
+import { EvolutionarySimulation } from "@/components/simulations/EvolutionarySimulation";
 
 export default function EvrimselYurumeV3Page() {
     return (
         <div className="fixed inset-0 bg-black z-[100]">
-            <BioEvolution3D />
+            <EvolutionarySimulation />
         </div>
     );
 }
