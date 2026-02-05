@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { UnifiedFeed } from "@/components/home/unified-feed";
 import { BookOpen, MessageCircle, Bookmark, FileText, Inbox } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { haptics } from "@/lib/haptics";
 
 interface NeoProfileFeedWrapperProps {
     articles: any[];
@@ -51,8 +50,8 @@ export function NeoProfileFeedWrapper({
         <div className="space-y-8">
 
             {/* --- TABS (App-Like Segmented Control) --- */}
-            <div className="sticky top-[60px] z-30 bg-background/95 backdrop-blur-xl py-4 -mx-2 px-4 border-b border-white/5">
-                <div className="flex items-center justify-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/[0.03] p-1.5 rounded-2xl border border-white/5 max-w-fit mx-auto">
+            <div className="sticky top-[60px] z-30 bg-background/95 backdrop-blur-xl py-3 -mx-2 px-2 border-b border-white/5">
+                <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/[0.03] p-1 rounded-xl border border-white/5">
                     <TabButton
                         label="GÖNDERİLER"
                         icon={FileText}
@@ -177,10 +176,7 @@ export function NeoProfileFeedWrapper({
 function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label: string, icon: any, isActive: boolean, onClick: () => void, colorClass?: string }) {
     return (
         <button
-            onClick={() => {
-                haptics.selection();
-                onClick();
-            }}
+            onClick={onClick}
             className={cn(
                 "relative flex shrink-0 items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all select-none",
                 isActive
