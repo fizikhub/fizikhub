@@ -42,7 +42,8 @@ export function EvolutionarySimulation() {
         let zoom = 0.8;
 
         p.setup = () => {
-            p.createCanvas(p.windowWidth, p.windowHeight - 200).parent(p.select('body') as any);
+            const container = p.select('body')?.elt; // Fallback, but P5Wrapper handles this
+            p.createCanvas(p.windowWidth > 1200 ? 1100 : p.windowWidth, 500);
 
             // Physics Init
             engine.gravity.y = 1.2;
@@ -136,9 +137,9 @@ export function EvolutionarySimulation() {
             cameraX = p.lerp(cameraX, targetX - p.width / 3, 0.1);
 
             p.push();
-            p.translate(-cameraX, p.height / 2);
+            p.translate(-cameraX, p.height - 100);
             p.scale(zoom);
-            p.translate(0, -p.height / 2);
+            p.translate(0, -p.height + 100);
 
             // Draw Ground (Neo-Brutalist)
             p.fill(0);
@@ -198,7 +199,7 @@ export function EvolutionarySimulation() {
         };
 
         p.windowResized = () => {
-            p.resizeCanvas(p.windowWidth, p.windowHeight - 200);
+            p.resizeCanvas(p.windowWidth > 1200 ? 1100 : p.windowWidth, 500);
         };
     };
 
@@ -224,9 +225,11 @@ export function EvolutionarySimulation() {
                 </div>
             </div>
 
-            <P5Wrapper sketch={sketch} className="flex-1" />
+            <div className="relative w-full h-[500px] bg-white border-y-2 border-black overflow-hidden">
+                <P5Wrapper sketch={sketch} className="w-full h-full" />
+            </div>
 
-            <div className="p-4 bg-zinc-900 text-white text-[10px] font-bold uppercase tracking-widest text-center">
+            <div className="p-4 bg-black text-white text-[10px] font-bold uppercase tracking-widest text-center border-t-2 border-black">
                 Yaratıklar rastgele genlerle başlar ve yürümeyi evrimle öğrenir.
             </div>
         </div>
