@@ -84,19 +84,19 @@ export class NeuroCreature {
         const head = this.segments[0];
 
         // --- SENSORS (Inputs) ---
-        const inputs = [
+        const inputValues: number[] = [
             head.velocity.x,
             head.velocity.y,
-            (groundY - head.position.y) / 200, // Normalized height
-            this.joints[0]?.bodyA.angle - this.joints[0]?.bodyB.angle || 0,
-            this.joints[1]?.bodyA.angle - this.joints[1]?.bodyB.angle || 0,
-            this.joints[2]?.bodyA.angle - this.joints[2]?.bodyB.angle || 0,
-            this.joints[3]?.bodyA.angle - this.joints[3]?.bodyB.angle || 0,
+            (groundY - head.position.y) / 200,
+            this.joints[0] ? this.joints[0].bodyA.angle - this.joints[0].bodyB.angle : 0,
+            this.joints[1] ? this.joints[1].bodyA.angle - this.joints[1].bodyB.angle : 0,
+            this.joints[2] ? this.joints[2].bodyA.angle - this.joints[2].bodyB.angle : 0,
+            this.joints[3] ? this.joints[3].bodyA.angle - this.joints[3].bodyB.angle : 0,
             this.getGroundContact() ? 1 : 0
         ];
 
         // --- BRAIN (Processing) ---
-        const outputs = this.brain.predict(inputs);
+        const outputs = this.brain.predict(inputValues);
 
         // --- ACTUATORS (Outputs) ---
         // Apply torque to move segments
