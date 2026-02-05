@@ -7,7 +7,7 @@ import { tr } from "date-fns/locale";
 import { motion } from "framer-motion";
 import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Heart, MessageCircle, Bookmark } from "lucide-react";
 
 interface PremiumArchiveCardProps {
     article: Article;
