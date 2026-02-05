@@ -4,83 +4,80 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 import { useState } from "react";
 import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 const menuItems = [
-    { href: '/', label: 'Akış', icon: Home, color: 'bg-[#FFC800]' },
-    { href: '/kesfet', label: 'Keşfet', icon: Compass, color: 'bg-[#FF90E8]' },
-    { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'bg-[#23A9FA]' },
-    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'bg-[#FFC800]' },
-    { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'bg-[#00F0A0]' }, // Added Dictionary
-    { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'bg-zinc-200' },
-    { href: "/ozel", label: "ÖZEL İÇERİK", sub: "Premium Alan", icon: Zap },
+    { href: '/', label: 'Akış', sub: 'Ana Sayfa', icon: Home, color: 'bg-[#FFC800]' },
+    { href: '/makale', label: 'Keşfet', sub: 'Makaleler ve Bloglar', icon: Compass, color: 'bg-[#FF90E8]' },
+    { href: '/simulasyonlar', label: 'Laboratuvar', sub: 'İnteraktif Deneyler', icon: Atom, color: 'bg-[#23A9FA]' },
+    { href: '/siralamalar', label: 'Liderlik', sub: 'Lig ve Sıralamalar', icon: Trophy, color: 'bg-[#FFC800]' },
+    { href: '/sozluk', label: 'Sözlük', sub: 'Terimler Rehberi', icon: Book, color: 'bg-[#00F0A0]' },
+    { href: '/iletisim', label: 'Destek', sub: 'Bize Ulaşın', icon: Mail, color: 'bg-zinc-200' },
+    { href: "/ozel", label: "Premium", sub: "Özel İçerik Alanı", icon: Zap },
 ];
 
 export function MobileMenu() {
     const [open, setOpen] = useState(false);
+    const pathname = usePathname();
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <button
-                    className="w-10 h-10 flex items-center justify-center bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-lg"
+                    className="w-[30px] h-[30px] flex items-center justify-center bg-white border border-black/20 rounded-sm hover:border-white transition-colors"
                 >
-                    <Menu className="w-6 h-6 text-black stroke-[3]" />
+                    <Menu className="w-4 h-4 text-black stroke-[2.5px]" />
                 </button>
             </SheetTrigger>
 
-            {/* 
-               NEO-BRUTALIST SHEET: 
-               - No default Shadcn overlay animation (controlled via classes if needed, but standard is fine).
-               - Custom Border & Shadow matching Article Card.
-            */}
             <SheetContent
                 side="right"
                 className={cn(
-                    "w-[85%] max-w-[350px] p-0 border-l-[3px] border-black bg-white dark:bg-[#27272a] shadow-none flex flex-col h-full",
-                    // Use a massive shadow to simulate the page being 'behind'
-                    "shadow-[-10px_0px_30px_-10px_rgba(0,0,0,0.5)]"
+                    "w-[85%] max-w-[320px] p-0 border-l-[3px] border-black bg-[#fafafa] dark:bg-[#121214] shadow-none flex flex-col h-full",
+                    "shadow-[-10px_0px_50px_-10px_rgba(0,0,0,0.3)]"
                 )}
-                showClose={false} // We implement custom close
+                showClose={false}
             >
                 <div className="sr-only">
                     <SheetTitle>Navigasyon</SheetTitle>
                     <SheetDescription>Ana Menü</SheetDescription>
                 </div>
 
-                {/* 1. HEADER SECTION (Mimics Article Image Area) */}
-                <div className="relative h-24 bg-zinc-100 dark:bg-zinc-800 border-b-[3px] border-black flex items-end p-4 overflow-hidden">
-                    {/* Noise */}
-                    <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
+                {/* 1. HEADER SECTION (Premium Soft-Brutalist) */}
+                <div className="relative h-32 bg-[#FACC15] border-b-[3px] border-black flex items-end p-6 overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.1] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
 
-                    {/* "Category Tag" Style Title */}
-                    <div className="relative z-10 transform -rotate-1">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-lg uppercase shadow-[2px_2px_0px_0px_#000] tracking-tighter">
-                            MENÜ
+                    {/* Animated Geometric Decoration */}
+                    <div className="absolute -top-12 -right-12 w-32 h-32 border-[10px] border-black/10 rounded-full animate-pulse" />
+                    <div className="absolute bottom-4 right-4 w-12 h-12 border-[4px] border-black/5 rotate-45" />
+
+                    <div className="relative z-10">
+                        <span className="inline-block bg-white border-[2px] border-black text-black px-4 py-1.5 font-black text-xl uppercase shadow-[4px_4px_0px_0px_#000] tracking-tighter -rotate-1">
+                            KEŞFET
                         </span>
+                        <p className="text-[10px] font-black uppercase text-black/60 mt-2 tracking-widest pl-1">Fizikhub Navigasyon</p>
                     </div>
 
-                    {/* Custom Close Button */}
                     <button
                         onClick={() => setOpen(false)}
-                        className="absolute top-4 right-4 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-20 rounded-md"
+                        className="absolute top-6 right-6 w-10 h-10 bg-white border-[2px] border-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all z-20 rounded-xl"
                     >
-                        <X className="w-5 h-5 stroke-[3]" />
+                        <X className="w-5 h-5 stroke-[3px]" />
                     </button>
                 </div>
 
-                {/* 2. BODY SECTION (Mimics Content Area) */}
-                <div className="flex-1 overflow-y-auto bg-white dark:bg-[#27272a] p-4">
-                    {/* Motion Wrapper for staggered effect */}
-                    <div className="flex flex-col gap-3">
+                {/* 2. BODY SECTION */}
+                <div className="flex-1 overflow-y-auto p-4 pt-8">
+                    <div className="flex flex-col gap-4">
                         {menuItems.map((item, i) => (
                             <motion.div
                                 key={item.href}
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 + (i * 0.05), duration: 0.3, type: "spring", stiffness: 300, damping: 24 }}
+                                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                             >
                                 <Link
                                     href={item.href}
@@ -88,25 +85,27 @@ export function MobileMenu() {
                                     className="group block relative"
                                 >
                                     <div className={cn(
-                                        "flex items-center justify-between p-3 border-[2px] border-black bg-white dark:bg-[#18181b] rounded-lg transition-all duration-200",
-                                        // Interaction State
-                                        "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[3px_3px_0px_0px_#000] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0px_0px_#000]"
+                                        "flex items-center justify-between p-4 border-[2.5px] border-black bg-white dark:bg-zinc-900 rounded-2xl transition-all duration-300",
+                                        "hover:bg-zinc-50 dark:hover:bg-zinc-800",
+                                        pathname === item.href ? "bg-zinc-50 border-[#FACC15] shadow-[4px_4px_0px_0px_#FACC15]" : "shadow-[4px_4px_0px_0px_#000]"
                                     )}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 border-[2px] border-black rounded-md text-black dark:text-white group-hover:bg-[#FFC800] group-hover:text-black transition-colors duration-300">
-                                                <item.icon className="w-4 h-4 stroke-[2.5]" />
+                                        <div className="flex items-center gap-4">
+                                            <div className={cn(
+                                                "w-11 h-11 flex items-center justify-center border-2 border-black rounded-xl text-black transition-transform group-hover:scale-110",
+                                                item.color || "bg-white"
+                                            )}>
+                                                <item.icon className="w-5 h-5 stroke-[2.5px]" />
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="font-black text-base uppercase tracking-tight leading-none text-black dark:text-white">
                                                     {item.label}
                                                 </span>
-                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
+                                                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wide mt-1">
                                                     {item.sub}
                                                 </span>
                                             </div>
                                         </div>
-
-                                        <ChevronRight className="w-4 h-4 stroke-[3] text-zinc-300 group-hover:text-black dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
+                                        <ChevronRight className="w-5 h-5 stroke-[3px] text-zinc-300 group-hover:text-black group-hover:translate-x-1 transition-all" />
                                     </div>
                                 </Link>
                             </motion.div>

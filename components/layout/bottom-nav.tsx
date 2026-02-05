@@ -31,52 +31,60 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-transform duration-300 ease-in-out font-sans",
-            isVisible ? "translate-y-0" : "translate-y-20"
+            "fixed bottom-4 left-4 right-4 z-[50] md:hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]",
+            isVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-24 opacity-0 scale-95"
         )}>
             <nav className="
                 w-full
-                h-[42px]
+                h-[68px]
                 bg-[#FACC15]
-                border-t border-black/10
+                border-[3px] border-black
+                rounded-[24px]
+                shadow-[0px_8px_0px_0px_#000]
                 flex items-center justify-between
                 px-6
-                pb-safe
                 relative
-                backdrop-blur-sm
+                overflow-hidden
             ">
-                <ViewTransitionLink href="/" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname === "/" ? "opacity-100" : "opacity-60")}>
-                    <Home className={cn("w-5 h-5 text-black", pathname === "/" && "fill-black stroke-[2px]")} />
+                {/* Gloss effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+
+                <ViewTransitionLink href="/" className={cn("flex flex-col items-center gap-1 transition-all active:scale-90 relative z-10", pathname === "/" ? "scale-110" : "opacity-70")}>
+                    <Home className={cn("w-5 h-5 text-black", pathname === "/" && "fill-black stroke-[2.5px]")} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-black">Ana</span>
                 </ViewTransitionLink>
 
-                <ViewTransitionLink href="/makale" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/makale") ? "opacity-100" : "opacity-60")}>
-                    <BookOpen className={cn("w-5 h-5 text-black", pathname.startsWith("/makale") && "fill-black stroke-[2px]")} />
+                <ViewTransitionLink href="/makale" className={cn("flex flex-col items-center gap-1 transition-all active:scale-90 relative z-10", pathname.startsWith("/makale") ? "scale-110" : "opacity-70")}>
+                    <BookOpen className={cn("w-5 h-5 text-black", pathname.startsWith("/makale") && "fill-black stroke-[2.5px]")} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-black">Keşfet</span>
                 </ViewTransitionLink>
 
                 <ViewTransitionLink
                     href="/paylas"
                     className="
                         flex items-center justify-center
-                        w-11 h-11
+                        w-12 h-12
                         bg-white
-                        border border-black/20
-                        rounded-full
-                        shadow-sm
-                        active:scale-95 transition-all
-                        hover:scale-105
-                        mb-6
-                        relative z-10
+                        border-[3px] border-black
+                        rounded-2xl
+                        shadow-[3px_3px_0px_0px_#000]
+                        active:scale-90 active:shadow-none transition-all
+                        hover:scale-110
+                        relative z-20
+                        -mt-2
                     "
                 >
-                    <Plus className="w-5 h-5 text-black stroke-[2.5px]" />
+                    <Plus className="w-6 h-6 text-black stroke-[3px]" />
                 </ViewTransitionLink>
 
-                <ViewTransitionLink href="/forum" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/forum") ? "opacity-100" : "opacity-60")}>
-                    <MessageCircle className={cn("w-5 h-5 text-black", pathname.startsWith("/forum") && "fill-black stroke-[2px]")} />
+                <ViewTransitionLink href="/forum" className={cn("flex flex-col items-center gap-1 transition-all active:scale-90 relative z-10", pathname.startsWith("/forum") ? "scale-110" : "opacity-70")}>
+                    <MessageCircle className={cn("w-5 h-5 text-black", pathname.startsWith("/forum") && "fill-black stroke-[2.5px]")} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-black">Forum</span>
                 </ViewTransitionLink>
 
-                <ViewTransitionLink href="/profil" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/profil") ? "opacity-100" : "opacity-60")}>
-                    <User className={cn("w-5 h-5 text-black", pathname.startsWith("/profil") && "fill-black stroke-[2px]")} />
+                <ViewTransitionLink href="/profil" className={cn("flex flex-col items-center gap-1 transition-all active:scale-90 relative z-10", pathname.startsWith("/profil") ? "scale-110" : "opacity-70")}>
+                    <User className={cn("w-5 h-5 text-black", pathname.startsWith("/profil") && "fill-black stroke-[2.5px]")} />
+                    <span className="text-[10px] font-black uppercase tracking-tighter text-black">Profil</span>
                 </ViewTransitionLink>
             </nav>
         </div>
