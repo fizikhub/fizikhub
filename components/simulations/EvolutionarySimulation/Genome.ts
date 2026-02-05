@@ -1,13 +1,20 @@
+export interface JointGene {
+    amplitude: number;
+    phase: number;
+    frequency: number;
+    offset: number; // Resting angle
+}
+
+export interface LegGene {
+    hip: JointGene;
+    knee: JointGene;
+}
+
 export interface GenomeData {
-    nodes: Array<{ x: number, y: number, radius: number }>;
-    muscles: Array<{
-        nodeA: number,
-        nodeB: number,
-        amplitude: number,
-        phase: number,
-        frequency: number,
-        stiffness: number
-    }>;
+    legCount: number;
+    bodyWidth: number;
+    bodyHeight: number;
+    legs: LegGene[];
 }
 
 export class Genome {
@@ -22,72 +29,68 @@ export class Genome {
     }
 
     private createRandom(): GenomeData {
-        const nodeCount = Math.floor(Math.random() * 3) + 4; // 4-6 nodes
-        const nodes = [];
-        for (let i = 0; i < nodeCount; i++) {
-            nodes.push({
-                x: (Math.random() - 0.5) * 100,
-                y: (Math.random() - 0.5) * 100,
-                radius: Math.random() * 8 + 4
+        const legCount = Math.random() > 0.5 ? 2 : 4;
+        const legs: LegGene[] = [];
+
+        for (let i = 0; i < legCount; i++) {
+            legs.push({
+                hip: this.randomJoint(),
+                knee: this.randomJoint()
             });
         }
 
-        const muscles = [];
-        // Connect each node to at least one other to ensure a connected graph
-        for (let i = 0; i < nodeCount; i++) {
-            for (let j = i + 1; j < nodeCount; j++) {
-                if (Math.random() > 0.4) {
-                    muscles.push({
-                        nodeA: i,
-                        nodeB: j,
-                        amplitude: Math.random() * 30 + 5,
-                        phase: Math.random() * Math.PI * 2,
-                        frequency: 0.05 + Math.random() * 0.1,
-                        stiffness: 0.1 + Math.random() * 0.4
-                    });
-                }
-            }
-        }
-        return { nodes, muscles };
+        return {
+            legCount,
+            bodyWidth: Math.random() * 40 + 40,
+            bodyHeight: Math.random() * 20 + 20,
+            legs
+        };
+    }
+
+    private randomJoint(): JointGene {
+        return {
+            amplitude: Math.random() * 1.5, // 0 to 1.5 radians
+            phase: Math.random() * Math.PI * 2,
+            frequency: 0.05 + Math.random() * 0.1,
+            offset: (Math.random() - 0.5) * 0.5
+        };
     }
 
     static mutate(genome: Genome, rate: number = 0.1): Genome {
         const newData = JSON.parse(JSON.stringify(genome.data));
 
-        // Mutate nodes
-        newData.nodes.forEach((node: any) => {
-            if (Math.random() < rate) {
-                node.x += (Math.random() - 0.5) * 20;
-                node.y += (Math.random() - 0.5) * 20;
-            }
+        newData.legs.forEach((leg: LegGene) => {
+            this.mutateJoint(leg.hip, rate);
+            this.mutateJoint(leg.knee, rate);
         });
 
-        // Mutate muscles
-        newData.muscles.forEach((muscle: any) => {
-            if (Math.random() < rate) {
-                muscle.amplitude += (Math.random() - 0.5) * 10;
-                muscle.phase += (Math.random() - 0.5) * 0.5;
-                muscle.frequency += (Math.random() - 0.5) * 0.02;
-            }
-        });
+        if (Math.random() < rate) {
+            newData.bodyWidth += (Math.random() - 0.5) * 10;
+            newData.bodyHeight += (Math.random() - 0.5) * 5;
+        }
 
         return new Genome(newData);
     }
 
+    private static mutateJoint(joint: JointGene, rate: number) {
+        if (Math.random() < rate) joint.amplitude += (Math.random() - 0.5) * 0.2;
+        if (Math.random() < rate) joint.phase += (Math.random() - 0.5) * 0.5;
+        if (Math.random() < rate) joint.frequency += (Math.random() - 0.5) * 0.02;
+        if (Math.random() < rate) joint.offset += (Math.random() - 0.5) * 0.1;
+    }
+
     static crossover(parentA: Genome, parentB: Genome): Genome {
-        // Simple one-point crossover on nodes and muscles
-        const midNodes = Math.floor(parentA.data.nodes.length / 2);
-        const nodes = [
-            ...parentA.data.nodes.slice(0, midNodes),
-            ...parentB.data.nodes.slice(midNodes)
-        ];
+        const newData = JSON.parse(JSON.stringify(parentA.data));
 
-        const midMuscles = Math.floor(parentA.data.muscles.length / 2);
-        const muscles = [
-            ...parentA.data.muscles.slice(0, midMuscles),
-            ...parentB.data.muscles.slice(midMuscles)
-        ];
+        // Inherit leg count from parent A mostly
+        // Mix leg genes
+        newData.legs = parentA.data.legs.map((leg, i) => {
+            if (parentB.data.legs[i] && Math.random() > 0.5) {
+                return parentB.data.legs[i];
+            }
+            return leg;
+        });
 
-        return new Genome({ nodes, muscles });
+        return new Genome(newData);
     }
 }

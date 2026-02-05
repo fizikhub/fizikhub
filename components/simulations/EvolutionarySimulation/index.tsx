@@ -13,14 +13,12 @@ export function EvolutionarySimulation() {
         population: Creature[];
         generation: number;
         timer: number;
-        bestFitness: number;
         totalBestFitness: number;
     }>({
         engine: Matter.Engine.create(),
         population: [],
         generation: 1,
         timer: 0,
-        bestFitness: 0,
         totalBestFitness: 0
     });
 
@@ -32,27 +30,24 @@ export function EvolutionarySimulation() {
     });
 
     const POP_SIZE = 12;
-    const SIM_DURATION = 900; // ~15 seconds at 60fps
+    const SIM_DURATION = 900; // ~15 seconds
 
     const sketch = (p: p5) => {
         let engine = simulationRef.current.engine;
-        let world = engine.world;
         let ground: Matter.Body;
         let cameraX = 0;
-        let zoom = 0.8;
 
         p.setup = () => {
-            const container = p.select('body')?.elt; // Fallback, but P5Wrapper handles this
             p.createCanvas(p.windowWidth > 1200 ? 1100 : p.windowWidth, 500);
 
-            // Physics Init
-            engine.gravity.y = 1.2;
+            engine.gravity.y = 1.0;
 
-            ground = Matter.Bodies.rectangle(5000, p.height - 20, 20000, 40, {
+            // Infinity Ground
+            ground = Matter.Bodies.rectangle(10000, p.height - 25, 20000, 50, {
                 isStatic: true,
                 friction: 1.0
             });
-            Matter.World.add(world, ground);
+            Matter.World.add(engine.world, ground);
 
             spawnPopulation();
         };
@@ -61,15 +56,15 @@ export function EvolutionarySimulation() {
             simulationRef.current.population.forEach(c => c.remove());
             simulationRef.current.population = [];
 
-            const colors = ['#FACC15', '#4169E1', '#F43F5E', '#10B981', '#8B5CF6'];
+            const colors = ['#FACC15', '#3B82F6', '#EF4444', '#10B981', '#A855F7', '#F97316'];
 
             for (let i = 0; i < POP_SIZE; i++) {
                 const genome = genomes ? genomes[i] : new Genome();
                 const creature = new Creature(
                     genome,
                     engine,
-                    100,
-                    p.height - 150,
+                    150,
+                    p.height - 200,
                     colors[i % colors.length]
                 );
                 simulationRef.current.population.push(creature);
@@ -77,27 +72,24 @@ export function EvolutionarySimulation() {
         };
 
         const evolve = () => {
-            const pop = simulationRef.current.population;
+            const pop = [...simulationRef.current.population];
             pop.sort((a, b) => b.fitness - a.fitness);
 
-            const best = pop[0].fitness;
-            if (best > simulationRef.current.totalBestFitness) {
-                simulationRef.current.totalBestFitness = best;
+            if (pop[0].fitness > simulationRef.current.totalBestFitness) {
+                simulationRef.current.totalBestFitness = pop[0].fitness;
             }
 
-            // Selection & Crossover
             const nextGenGenomes: Genome[] = [];
 
-            // Keep the best (Elitism)
-            nextGenGenomes.push(pop[0].genome);
-            nextGenGenomes.push(pop[1].genome);
+            // Elite (Top 2 survive)
+            nextGenGenomes.push(new Genome(JSON.parse(JSON.stringify(pop[0].genome.data))));
+            nextGenGenomes.push(new Genome(JSON.parse(JSON.stringify(pop[1].genome.data))));
 
-            // Create offspring
             while (nextGenGenomes.length < POP_SIZE) {
-                const parentA = pop[Math.floor(Math.random() * 3)].genome; // Top 3
-                const parentB = pop[Math.floor(Math.random() * 6)].genome; // Top 6
-                let child = Genome.crossover(parentA, parentB);
-                child = Genome.mutate(child, 0.15);
+                const p1 = pop[p.floor(p.random() * 4)].genome;
+                const p2 = pop[p.floor(p.random() * 6)].genome;
+                let child = Genome.crossover(p1, p2);
+                child = Genome.mutate(child, 0.1);
                 nextGenGenomes.push(child);
             }
 
@@ -107,95 +99,101 @@ export function EvolutionarySimulation() {
         };
 
         p.draw = () => {
-            p.background(250);
+            p.background(255);
 
-            // UI Update
-            if (p.frameCount % 10 === 0) {
+            // Physics Update
+            Matter.Engine.update(engine, 1000 / 60);
+            simulationRef.current.timer++;
+
+            if (simulationRef.current.timer >= SIM_DURATION) {
+                evolve();
+            }
+
+            // Stats Update
+            if (p.frameCount % 20 === 0) {
                 const currentBest = Math.max(...simulationRef.current.population.map(c => c.fitness));
                 setStats({
                     gen: simulationRef.current.generation,
-                    time: Math.floor((SIM_DURATION - simulationRef.current.timer) / 60),
+                    time: Math.ceil((SIM_DURATION - simulationRef.current.timer) / 60),
                     best: Math.floor(currentBest / 10),
                     overallBest: Math.floor(simulationRef.current.totalBestFitness / 10)
                 });
             }
 
-            // Evolutionary Cycle
-            simulationRef.current.timer++;
-            if (simulationRef.current.timer >= SIM_DURATION) {
-                evolve();
-            }
-
-            // Physics Step
-            Matter.Engine.update(engine, 1000 / 60);
-
-            // Follow best creature
-            const bestCreature = simulationRef.current.population.reduce((prev, current) =>
-                (prev.fitness > current.fitness) ? prev : current
+            // Camera Tracking
+            const alphaCreature = simulationRef.current.population.reduce((prev, curr) =>
+                (prev.fitness > curr.fitness) ? prev : curr
             );
-            const targetX = bestCreature.getCenterPosition().x;
-            cameraX = p.lerp(cameraX, targetX - p.width / 3, 0.1);
+            const targetX = alphaCreature.getCenterPosition().x;
+            cameraX = p.lerp(cameraX, targetX - p.width / 4, 0.1);
 
             p.push();
-            p.translate(-cameraX, p.height - 100);
-            p.scale(zoom);
-            p.translate(0, -p.height + 100);
+            p.translate(-cameraX, 0);
 
             // Draw Ground (Neo-Brutalist)
             p.fill(0);
             p.noStroke();
-            p.rect(ground.position.x - 10000, ground.position.y - 20, 20000, 40);
+            p.rect(0, ground.position.y - 25, 20000, 50);
 
-            // Grid for distance
-            p.stroke(0, 20);
+            // Distance Markers
+            p.stroke(0, 15);
             p.strokeWeight(1);
-            for (let x = 0; x < 15000; x += 100) {
-                p.line(x, 0, x, p.height);
-                if (x % 500 === 0) {
-                    p.fill(0, 50);
+            for (let d = 0; d < 20000; d += 200) {
+                if (d > cameraX - 100 && d < cameraX + p.width + 100) {
+                    p.line(d, 0, d, p.height);
                     p.noStroke();
-                    p.textSize(12);
-                    p.text(`${x / 10}m`, x + 5, ground.position.y - 25);
+                    p.fill(0, 40);
+                    p.textSize(10);
+                    p.text(`${d / 10}m`, d + 5, ground.position.y - 30);
+                    p.stroke(0, 15);
                 }
             }
 
             // Draw Creatures
             simulationRef.current.population.forEach(creature => {
-                const isBest = creature === bestCreature;
+                const isAlpha = creature === alphaCreature;
 
-                // Draw Muscles (Constraints)
+                // Draw Body
+                p.fill(creature.color);
                 p.stroke(0);
-                p.strokeWeight(isBest ? 4 : 2);
-                creature.constraints.forEach(c => {
-                    // @ts-ignore
-                    p.line(c.bodyA.position.x, c.bodyA.position.y, c.bodyB.position.x, c.bodyB.position.y);
-                });
+                p.strokeWeight(isAlpha ? 4 : 2.5);
 
-                // Draw Nodes
-                creature.bodies.forEach((b, i) => {
-                    p.fill(creature.color);
-                    p.stroke(0);
-                    p.strokeWeight(2);
-                    p.ellipse(b.position.x, b.position.y, b.circleRadius! * 2);
+                const b = creature.body;
+                p.push();
+                p.translate(b.position.x, b.position.y);
+                p.rotate(b.angle);
+                p.rectMode(p.CENTER);
+                p.rect(0, 0, creature.genome.data.bodyWidth, creature.genome.data.bodyHeight, 4);
+                p.pop();
 
-                    // Shadow effect
-                    p.noFill();
-                    p.stroke(0, 50);
-                    p.ellipse(b.position.x + 2, b.position.y + 2, b.circleRadius! * 2);
+                // Draw Legs
+                creature.legs.forEach(leg => {
+                    // Upper
+                    p.push();
+                    p.translate(leg.upper.position.x, leg.upper.position.y);
+                    p.rotate(leg.upper.angle);
+                    p.rectMode(p.CENTER);
+                    p.rect(0, 0, 6, 35, 3);
+                    p.pop();
+
+                    // Lower
+                    p.push();
+                    p.translate(leg.lower.position.x, leg.lower.position.y);
+                    p.rotate(leg.lower.angle);
+                    p.rectMode(p.CENTER);
+                    p.rect(0, 0, 6, 35, 3);
+                    p.pop();
+
+                    // Joints (Visual Circles)
+                    p.fill(0);
+                    p.circle(leg.hipJoint.bodyB.position.x, leg.hipJoint.bodyB.position.y - 17, 4);
+                    p.circle(leg.kneeJoint.bodyB.position.x, leg.kneeJoint.bodyB.position.y - 17, 3);
                 });
 
                 creature.update(p.frameCount);
             });
 
             p.pop();
-
-            // Mobile HUD Overlay (Neo-Brutalist)
-            drawHUD(p);
-        };
-
-        const drawHUD = (p: p5) => {
-            p.resetMatrix();
-            // HUD logic could go here, but we use React for HUD better
         };
 
         p.windowResized = () => {
@@ -204,33 +202,40 @@ export function EvolutionarySimulation() {
     };
 
     return (
-        <div className="flex flex-col w-full h-full bg-white font-mono">
-            {/* HUD */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-4 bg-[#FACC15] border-b-4 border-black z-10">
-                <div className="bg-white border-2 border-black p-2 shadow-[4px_4px_0px_0px_#000]">
-                    <span className="block text-[10px] uppercase font-black">NESİL</span>
-                    <span className="text-xl font-black italic">{stats.gen}</span>
+        <div className="flex flex-col w-full h-full bg-white font-mono select-none">
+            {/* HUD V2 - Neo Brutalist */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-0 border-b-[3px] border-black">
+                <div className="bg-[#FACC15] p-3 border-r-[3px] border-black">
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-black/60">GENES</div>
+                    <div className="text-2xl font-black italic">GEN-{stats.gen}</div>
                 </div>
-                <div className="bg-white border-2 border-black p-2 shadow-[4px_4px_0px_0px_#000]">
-                    <span className="block text-[10px] uppercase font-black">SÜRE (S)</span>
-                    <span className="text-xl font-black italic">{stats.time}</span>
+                <div className="bg-white p-3 border-r-[3px] border-black">
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-black/60">NEXT CYCLE</div>
+                    <div className="text-2xl font-black italic">{stats.time}s</div>
                 </div>
-                <div className="bg-white border-2 border-black p-2 shadow-[4px_4px_0px_0px_#000]">
-                    <span className="block text-[10px] uppercase font-black">REKOR (M)</span>
-                    <span className="text-xl font-black italic">{stats.overallBest}</span>
+                <div className="bg-[#4169E1] p-3 border-r-[3px] border-black text-white">
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-white/60">ALPHA RECORD</div>
+                    <div className="text-2xl font-black italic">{stats.overallBest}m</div>
                 </div>
-                <div className="bg-white border-2 border-black p-2 shadow-[4px_4px_0px_0px_#000]">
-                    <span className="block text-[10px] uppercase font-black">ŞU ANKİ (M)</span>
-                    <span className="text-xl font-black italic text-[#4169E1]">{stats.best}</span>
+                <div className="bg-black p-3 text-white">
+                    <div className="text-[10px] font-black uppercase tracking-tighter text-[#FACC15]">CURRENT BEST</div>
+                    <div className="text-2xl font-black italic">{stats.best}m</div>
                 </div>
             </div>
 
-            <div className="relative w-full h-[500px] bg-white border-y-2 border-black overflow-hidden">
+            <div className="relative w-full h-[500px] bg-white overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                    style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                 <P5Wrapper sketch={sketch} className="w-full h-full" />
             </div>
 
-            <div className="p-4 bg-black text-white text-[10px] font-bold uppercase tracking-widest text-center border-t-2 border-black">
-                Yaratıklar rastgele genlerle başlar ve yürümeyi evrimle öğrenir.
+            <div className="p-4 bg-white border-t-[3px] border-black">
+                <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 rounded-full bg-[#FACC15] animate-pulse border-2 border-black" />
+                    <p className="text-xs font-black uppercase italic tracking-tight">
+                        V2 Motor: Bacaklı anatomi ve osilatör tabanlı kas kontrolü devrede.
+                    </p>
+                </div>
             </div>
         </div>
     );
