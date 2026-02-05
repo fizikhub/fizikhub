@@ -4,7 +4,8 @@ import {
     Sparkles,
     Target,
     Magnet,
-    Atom
+    Atom,
+    Dna
 } from "lucide-react";
 
 export type Simulation = {
@@ -74,5 +75,16 @@ export const simulations: Simulation[] = [
         formula: "F = G(m₁m₂)/r²",
         difficulty: "Orta",
         tags: ["Astronomi", "Kütleçekim"]
+    },
+    {
+        id: "evosim",
+        slug: "evrimsel-yurume",
+        title: "Evrimsel Yürüme",
+        description: "Yapay zeka ve genetik algoritmalarla yürümeyi kendi kendine öğrenen yaratıkları keşfedin.",
+        icon: Dna,
+        color: "#FACC15",
+        formula: "v = Δx / Δt",
+        difficulty: "Zor",
+        tags: ["Yapay Zeka", "Genetik", "Fizik"]
     }
 ];
