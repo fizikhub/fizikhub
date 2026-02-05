@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Space_Grotesk, Archivo_Black } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk, Archivo_Black, EB_Garamond, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import "./mobile-optimizations.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -14,6 +14,18 @@ const inter = Inter({
   display: "swap",
   preload: true,
   fallback: ['system-ui', 'arial'],
+});
+
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -286,7 +298,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${ebGaramond.variable} ${playfair.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />

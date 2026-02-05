@@ -1,16 +1,21 @@
-import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { TableOfContents } from "@/components/blog/table-of-contents";
-import { RelatedArticles } from "@/components/blog/related-articles";
-import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
-import { ArticleReader } from "@/components/blog/article-reader";
 import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
+import { BookmarkButton } from "@/components/bookmark-button";
+import { LikeButton } from "@/components/articles/like-button";
+import { ShareButtons } from "@/components/blog/share-buttons";
+import { AuthorCard } from "@/components/blog/author-card";
+import { RelatedArticles } from "@/components/blog/related-articles";
+import { notFound } from "next/navigation";
+import { PremiumArticleHeader } from "@/components/articles/premium-article-header";
+import { PremiumArticleContent } from "@/components/articles/premium-article-content";
+import { ScientificSidebar } from "@/components/articles/scientific-sidebar";
+import { CommentSection } from "@/components/articles/comment-section";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -67,8 +72,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
     };
 }
-
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 // Enable ISR with 10 minute revalidation
 export const revalidate = 600;
@@ -245,24 +248,85 @@ export default async function ArticlePage({ params }: PageProps) {
                         initialBookmarked={!!userBookmark}
                     />
                 ) : (
-                    <>
-                        {/* Immersive Neo Hero */}
-                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
-
-                        {/* State-managed Article Reader */}
-                        <ArticleReader
+                    <div className="flex flex-col">
+                        {/* New Scientific Header */}
+                        <PremiumArticleHeader
                             article={article}
                             readingTime={formattedReadingTime}
-                            likeCount={likeCount || 0}
-                            initialLiked={!!userLike}
-                            initialBookmarked={!!userBookmark}
-                            comments={comments || []}
-                            isLoggedIn={!!user}
-                            isAdmin={isAdmin}
-                            userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                            relatedArticles={relatedArticles || []}
                         />
-                    </>
+
+                        <div className="container max-w-7xl mx-auto px-4 py-12 md:py-20 lg:py-24">
+                            <div className="flex flex-col xl:flex-row gap-12 lg:gap-20">
+                                {/* Main Article Stream */}
+                                <main className="flex-1 min-w-0">
+                                    <PremiumArticleContent article={article} />
+
+                                    {/* Interaction Footer (Action Bar) */}
+                                    <div className="mt-12 pt-12 border-t border-foreground/10">
+                                        <div className="flex flex-wrap items-center justify-between gap-6 mb-16 px-6 py-8 bg-foreground/[0.02] rounded-2xl border border-foreground/5">
+                                            <div className="flex items-center gap-6">
+                                                <LikeButton
+                                                    articleId={article.id}
+                                                    initialLiked={!!userLike}
+                                                    initialCount={likeCount || 0}
+                                                />
+                                                <div className="w-px h-8 bg-foreground/10" />
+                                                <BookmarkButton
+                                                    type="article"
+                                                    itemId={article.id}
+                                                    initialBookmarked={!!userBookmark}
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">Share Article</span>
+                                                <ShareButtons title={article.title} slug={article.slug} />
+                                            </div>
+                                        </div>
+
+                                        {/* Author, Related & Comments */}
+                                        <div className="space-y-20 lg:space-y-32">
+                                            <div className="bg-foreground/[0.02] border border-foreground/5 rounded-3xl p-8 lg:p-12 relative overflow-hidden group transition-all hover:bg-foreground/[0.03]">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-foreground/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                                                <AuthorCard author={(article.author as any) || {}} />
+                                            </div>
+
+                                            {relatedArticles && relatedArticles.length > 0 && (
+                                                <div className="space-y-12">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="h-px flex-1 bg-foreground/10" />
+                                                        <h3 className="text-xl font-display font-bold uppercase tracking-[0.2em] text-foreground/30">Benzer Tahkikatlar</h3>
+                                                        <div className="h-px flex-1 bg-foreground/10" />
+                                                    </div>
+                                                    <RelatedArticles articles={relatedArticles as any} />
+                                                </div>
+                                            )}
+
+                                            {/* Comments Section */}
+                                            <div className="space-y-12 pt-12 border-t border-dashed border-foreground/10">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-3xl font-display font-medium text-foreground tracking-tight">
+                                                        Müzakere & Yorumlar <span className="text-foreground/20 ml-3 text-xl">({comments.length})</span>
+                                                    </h3>
+                                                </div>
+                                                <div className="bg-foreground/[0.01] border border-foreground/5 rounded-3xl p-6 md:p-12">
+                                                    <CommentSection
+                                                        articleId={article.id}
+                                                        comments={comments || []}
+                                                        isLoggedIn={!!user}
+                                                        isAdmin={isAdmin}
+                                                        userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </main>
+
+                                {/* Scientific Sidebar (Desktop Only) */}
+                                <ScientificSidebar article={article} />
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </>
