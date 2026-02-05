@@ -31,54 +31,97 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-transform duration-300 ease-in-out font-sans",
-            isVisible ? "translate-y-0" : "translate-y-20"
+            "fixed bottom-4 left-4 right-4 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"
         )}>
             <nav className="
                 w-full
-                h-[42px]
-                bg-[#FACC15]
-                border-t border-black/10
-                flex items-center justify-between
-                px-6
-                pb-safe
+                h-[62px]
+                bg-white/80 dark:bg-zinc-900/80
+                backdrop-blur-lg
+                border-[2.5px] border-black dark:border-white/20
+                flex items-center justify-around
+                px-2
                 relative
-                backdrop-blur-sm
+                rounded-2xl
+                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]
             ">
-                <ViewTransitionLink href="/" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname === "/" ? "opacity-100" : "opacity-60")}>
-                    <Home className={cn("w-5 h-5 text-black", pathname === "/" && "fill-black stroke-[2px]")} />
-                </ViewTransitionLink>
+                <NavItem
+                    href="/"
+                    icon={Home}
+                    label="Akış"
+                    isActive={pathname === "/"}
+                />
 
-                <ViewTransitionLink href="/makale" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/makale") ? "opacity-100" : "opacity-60")}>
-                    <BookOpen className={cn("w-5 h-5 text-black", pathname.startsWith("/makale") && "fill-black stroke-[2px]")} />
-                </ViewTransitionLink>
+                <NavItem
+                    href="/makale"
+                    icon={BookOpen}
+                    label="Makale"
+                    isActive={pathname.startsWith("/makale")}
+                />
 
                 <ViewTransitionLink
                     href="/paylas"
                     className="
                         flex items-center justify-center
-                        w-11 h-11
-                        bg-white
-                        border border-black/20
-                        rounded-full
-                        shadow-sm
-                        active:scale-95 transition-all
-                        hover:scale-105
-                        mb-6
+                        w-12 h-12
+                        bg-[#FACC15]
+                        border-2 border-black
+                        rounded-xl
+                        shadow-[2px_2px_0px_0px_#000]
+                        active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                        transition-all
+                        -mt-8
                         relative z-10
                     "
                 >
-                    <Plus className="w-5 h-5 text-black stroke-[2.5px]" />
+                    <Plus className="w-6 h-6 text-black stroke-[3px]" />
                 </ViewTransitionLink>
 
-                <ViewTransitionLink href="/forum" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/forum") ? "opacity-100" : "opacity-60")}>
-                    <MessageCircle className={cn("w-5 h-5 text-black", pathname.startsWith("/forum") && "fill-black stroke-[2px]")} />
-                </ViewTransitionLink>
+                <NavItem
+                    href="/forum"
+                    icon={MessageCircle}
+                    label="Forum"
+                    isActive={pathname.startsWith("/forum")}
+                />
 
-                <ViewTransitionLink href="/profil" className={cn("flex flex-col items-center gap-1 transition-transform active:scale-90", pathname.startsWith("/profil") ? "opacity-100" : "opacity-60")}>
-                    <User className={cn("w-5 h-5 text-black", pathname.startsWith("/profil") && "fill-black stroke-[2px]")} />
-                </ViewTransitionLink>
+                <NavItem
+                    href="/profil"
+                    icon={User}
+                    label="Profil"
+                    isActive={pathname.startsWith("/profil")}
+                />
             </nav>
         </div>
+    );
+}
+
+function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: any; label: string; isActive: boolean }) {
+    return (
+        <ViewTransitionLink
+            href={href}
+            className={cn(
+                "flex flex-col items-center justify-center min-w-[50px] h-full relative group transition-all duration-300",
+                isActive ? "text-black dark:text-white" : "text-black/40 dark:text-white/40"
+            )}
+        >
+            <motion.div
+                initial={false}
+                animate={isActive ? { y: -2, scale: 1.1 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className={cn(
+                    "p-1.5 rounded-xl transition-colors duration-300 flex flex-col items-center gap-0.5",
+                    isActive && "bg-[#FACC15] border-[1.5px] border-black shadow-[2px_2px_0px_0px_#000]"
+                )}
+            >
+                <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-[2px]")} />
+                <span className={cn(
+                    "text-[9px] font-black uppercase tracking-tight",
+                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                )}>
+                    {label}
+                </span>
+            </motion.div>
+        </ViewTransitionLink>
     );
 }
