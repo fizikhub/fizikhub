@@ -148,20 +148,20 @@ export function Navbar() {
                         </div>
 
                         {/* 1. SEARCH - UPSCALE (34px) */}
-                        <div
+                        <button
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center justify-center w-[34px] h-[34px] bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                            className="flex items-center justify-center !w-[34px] !h-[34px] !min-w-0 !min-h-0 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
                         >
-                            <Search className="w-4 h-4 text-black stroke-[3px]" />
-                        </div>
+                            <Search className="w-4 h-4 text-black stroke-[3.5px]" />
+                        </button>
 
                         {/* 2. ZAP - UPSCALE (34px) */}
-                        <div
+                        <button
                             onClick={() => window.location.href = '/ozel'}
-                            className="flex items-center justify-center w-[34px] h-[34px] bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1"
+                            className="flex items-center justify-center !w-[34px] !h-[34px] !min-w-0 !min-h-0 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
-                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
-                        </div>
+                            <Zap className="w-4 h-4 text-black fill-black stroke-[3.5px]" />
+                        </button>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
                         <div className="md:hidden relative z-[100]">
