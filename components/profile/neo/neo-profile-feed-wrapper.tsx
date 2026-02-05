@@ -50,8 +50,8 @@ export function NeoProfileFeedWrapper({
         <div className="space-y-8">
 
             {/* --- TABS (App-Like Segmented Control) --- */}
-            <div className="sticky top-[60px] z-30 bg-[#050505]/80 backdrop-blur-xl py-4 -mx-2 px-2 border-b border-zinc-900/50">
-                <div className="flex items-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-zinc-900/50 p-1 rounded-xl border border-white/5">
+            <div className="sticky top-[60px] z-30 bg-background/80 backdrop-blur-xl py-3 -mx-2 px-2 border-b border-white/5">
+                <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/5 p-1 rounded-xl border border-white/5">
                     <TabButton
                         label="GÖNDERİLER"
                         icon={FileText}
@@ -72,11 +72,10 @@ export function NeoProfileFeedWrapper({
                     />
                     {isOwnProfile && drafts.length > 0 && (
                         <TabButton
-                            label={`TASLAKLAR (${drafts.length})`}
+                            label={`TASLAKLAR`}
                             icon={BookOpen}
                             isActive={activeTab === 'drafts'}
                             onClick={() => setActiveTab('drafts')}
-                            colorClass="text-red-500 hover:text-red-400"
                         />
                     )}
                 </div>

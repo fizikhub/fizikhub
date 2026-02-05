@@ -29,11 +29,6 @@ const SlimeEffects = dynamic(
     { ssr: false }
 );
 
-const FloatingActionButton = dynamic(
-    () => import("@/components/layout/floating-action-button").then(mod => mod.FloatingActionButton),
-    { ssr: false }
-);
-
 const HubGPTButton = dynamic(
     () => import("@/components/ai/hub-gpt-button").then(mod => mod.HubGPTButton),
     { ssr: false }
@@ -59,7 +54,6 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             <Footer />
             <BottomNav />
             <HubGPTButton />
-            <FloatingActionButton />
         </>
     );
 }
