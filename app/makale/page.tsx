@@ -80,17 +80,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
                         {/* Neo-Brutalist Journal Filters */}
                         <div className="flex flex-col space-y-8">
-                            <div className="flex items-center gap-6">
-                                <div className="h-0.5 flex-1 bg-black/10" />
+                            <div className="flex items-center gap-6 text-black/20 dark:text-white/20">
+                                <div className="h-0.5 flex-1 bg-current" />
                                 <span className="text-[11px] font-black uppercase tracking-[0.4em] text-black dark:text-white px-2">Katalog ve Tasnif</span>
-                                <div className="h-0.5 flex-1 bg-black/10" />
+                                <div className="h-0.5 flex-1 bg-current" />
                             </div>
 
                             <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide py-2">
                                 <Link
                                     href="/makale"
                                     className={cn(
-                                        "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
+                                        "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none",
                                         !categoryParam && sortParam === 'latest'
                                             ? "bg-[#FFC800] text-black"
                                             : "bg-white text-black hover:bg-neutral-50"
@@ -101,13 +101,13 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                 <Link
                                     href="/makale?sort=popular"
                                     className={cn(
-                                        "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none flex items-center gap-2",
+                                        "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none flex items-center gap-2",
                                         sortParam === 'popular'
                                             ? "bg-[#FF5500] text-white"
                                             : "bg-white text-black hover:bg-neutral-50"
                                     )}
                                 >
-                                    <Flame className="w-4 h-4 filled" />
+                                    <Flame className="w-4 h-4" />
                                     Popüler Tahkikatlar
                                 </Link>
 
@@ -116,9 +116,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                         key={cat}
                                         href={`/makale?category=${encodeURIComponent(cat)}`}
                                         className={cn(
-                                            "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
+                                            "px-6 py-2.5 text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none",
                                             categoryParam === cat
-                                                ? "bg-cyan-400 text-black"
+                                                ? "bg-cyan-400 text-black shadow-none border-cyan-500"
                                                 : "bg-white text-black hover:bg-neutral-50"
                                         )}
                                     >
@@ -128,19 +128,20 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             </div>
                         </div>
 
-                        {/* Article Stream - Editorial Hierarchy Style */}
-                        <div className="flex flex-col gap-12 sm:gap-16">
+                        {/* Article Bento Feed - Magazine Discovery Style */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
                             {allArticles.map((article, index) => {
-                                // Decide variant based on position and filters
-                                // Top article is 'lead' only on the first page/default sort
-                                const isLead = index === 0 && !categoryParam && !searchParam;
+                                // Dynamic Bento Sizes
+                                let size: 'large' | 'medium' | 'small' = 'medium';
+                                if (index === 0 && !categoryParam && !searchParam) size = 'large';
+                                else if (index > 4) size = 'small';
 
                                 return (
                                     <PremiumArchiveCard
                                         key={article.id}
                                         article={article as any}
                                         index={index}
-                                        variant={isLead ? 'lead' : 'horizontal'}
+                                        size={size}
                                     />
                                 );
                             })}
@@ -152,12 +153,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                     <Telescope className="w-10 h-10 text-foreground/20" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-2xl font-display font-medium text-foreground tracking-tight">Netice Bulunamadı</h3>
+                                    <h3 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">Netice Bulunamadı</h3>
                                     <p className="text-sm font-serif italic text-foreground/40 max-w-sm mx-auto">
                                         Seçtiğiniz kriterlere uygun veya aradığınız başlığa sahip bir makale arşivimizde bulunmuyor.
                                     </p>
                                 </div>
-                                <Link href="/makale" className="inline-block px-10 py-3 bg-foreground text-background font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+                                <Link href="/makale" className="inline-block px-10 py-3 bg-black border-[3px] border-[#FFC800] text-white font-black text-xs uppercase tracking-widest hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                                     Arşivi Sıfırla
                                 </Link>
                             </div>
@@ -168,10 +169,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     <aside className="hidden lg:block lg:col-span-4 space-y-12 h-fit sticky top-32">
 
                         {/* Trending Section */}
-                        <div className="space-y-8 bg-white dark:bg-zinc-900 border-[3px] border-black shadow-neo-sm p-6">
-                            <div className="flex items-center gap-4 border-b-2 border-black pb-3">
+                        <div className="space-y-8 bg-white dark:bg-zinc-900 border-[3px] border-black shadow-neo-sm p-6 rounded-sm">
+                            <div className="flex items-center gap-4 border-b-2 border-dashed border-black/10 pb-3">
                                 <TrendingUp className="w-5 h-5 text-[#FFC800]" />
-                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-black dark:text-white font-heading">Gündemdekiler</h3>
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-black dark:text-white">Gündemdekiler</h3>
                             </div>
 
                             <div className="space-y-8">
@@ -181,14 +182,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                         href={`/makale/${article.slug}`}
                                         className="group flex gap-6 items-start border-b border-black/5 pb-4 last:border-0"
                                     >
-                                        <span className="text-4xl font-display font-light text-black/10 dark:text-white/10 group-hover:text-[#FFC800] transition-colors leading-[0.8] font-heading">
+                                        <span className="text-4xl font-black text-black/10 dark:text-white/10 group-hover:text-[#FFC800] transition-colors leading-[0.8] italic uppercase">
                                             {(i + 1).toString().padStart(2, '0')}
                                         </span>
-                                        <div className="space-y-1.5">
-                                            <div className="text-[10px] font-black text-[#FFC800] uppercase tracking-widest">
+                                        <div className="space-y-1.5 pt-1">
+                                            <div className="text-[10px] font-black text-[#FFC800] uppercase tracking-widest font-mono">
                                                 {article.category}
                                             </div>
-                                            <h4 className="font-display font-medium text-lg text-black dark:text-white group-hover:underline underline-offset-2 transition-colors leading-snug">
+                                            <h4 className="font-black text-base text-black dark:text-white group-hover:underline underline-offset-4 decoration-[3px] decoration-[#FFC800] leading-none uppercase tracking-tighter">
                                                 {article.title}
                                             </h4>
                                         </div>
@@ -199,24 +200,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
                         {/* Writer CTA - Recruitment Masthead */}
                         <div className="relative p-8 border-[3px] border-black bg-[#FF8800] shadow-neo group overflow-hidden">
-                            {/* Subtle dot pattern */}
-                            <div className="absolute inset-0 opacity-[0.1] pointer-events-none"
-                                style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '12px 12px' }}
-                            />
+                            {/* Subtle noise pattern */}
+                            <div className="absolute inset-0 opacity-[0.4] pointer-events-none mix-blend-overlay bg-[url('/noise.png')]" />
 
                             <div className="relative space-y-6 text-center">
-                                <div className="p-3 bg-white border-2 border-black rounded-full w-12 h-12 mx-auto flex items-center justify-center shadow-[2px_2px_0px_0px_#000]">
+                                <div className="p-3 bg-white border-2 border-black rounded-full w-12 h-12 mx-auto flex items-center justify-center shadow-[4px_4px_0px_0px_#000]">
                                     <UserPlus className="w-5 h-5 text-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-2xl font-display font-medium text-white tracking-tight drop-shadow-[2px_2px_0px_black]">İlmi İştirak</h3>
-                                    <p className="text-xs font-serif italic text-white/90 leading-relaxed font-medium">
+                                    <h3 className="text-3xl font-black text-white px-2 bg-black inline-block uppercase italic tracking-tighter scale-110 -rotate-1">KALEMİNİ KAP</h3>
+                                    <p className="text-xs font-serif italic text-white/95 leading-relaxed font-bold py-2">
                                         Kendi bilimsel çalışmalarınızı FizikHub arşivine dahil etmek ister misiniz? Topluluğumuza yazar olarak katkı sağlayın.
                                     </p>
                                 </div>
                                 <Link
                                     href="/yazar"
-                                    className="block w-full py-3 bg-white border-2 border-black text-black font-black text-xs uppercase tracking-[0.2em] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-neo-sm"
+                                    className="block w-full py-4 bg-white border-[3px] border-black text-black font-black text-xs uppercase tracking-[0.2em] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 shadow-neo-sm"
                                 >
                                     Müracaat Formu
                                 </Link>
