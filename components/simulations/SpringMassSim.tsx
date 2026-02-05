@@ -78,7 +78,7 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             ctx.strokeRect(centerX - 60, 20, 120, 12);
 
             // Draw spring (zigzag)
-            ctx.strokeStyle = posRef.current > 0 ? "#A0C4FF" : "#FFA0A0"; // Pastel Blue / Pastel Red
+            ctx.strokeStyle = posRef.current > 0 ? "#518DFF" : "#FF5757"; // Vibrant Blue / Vibrant Red
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.moveTo(centerX, 32);
@@ -96,7 +96,7 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             ctx.stroke();
 
             // Draw mass
-            ctx.fillStyle = "#A0C4FF"; // Pastel Blue
+            ctx.fillStyle = "#518DFF"; // Vibrant Blue
             ctx.strokeStyle = "#000";
             ctx.lineWidth = 3;
             // Mass Shadow
@@ -113,7 +113,7 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             ctx.fillText(`${mass} kg`, centerX, massY + 5);
 
             // Equilibrium line
-            ctx.strokeStyle = "rgba(255, 200, 0, 0.3)";
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.4)";
             ctx.lineWidth = 2;
             ctx.setLineDash([8, 4]);
             ctx.beginPath();
@@ -123,7 +123,7 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             ctx.setLineDash([]);
 
             // Labels
-            ctx.fillStyle = "rgba(255, 200, 0, 0.8)";
+            ctx.fillStyle = "rgba(255, 215, 0, 0.8)";
             ctx.font = "bold 10px tracking-widest";
             ctx.textAlign = "right";
             ctx.fillText("DENGE KONUMU", centerX - 110, restY + 84);
@@ -143,14 +143,14 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
     return (
         <div className={cn("bg-background min-h-full flex flex-col font-[family-name:var(--font-outfit)]", className)}>
             {/* Top Mission Control */}
-            <div className="bg-[#A0C4FF]/5 border-b border-white/5 p-4 sm:p-6">
+            <div className="bg-[#518DFF]/10 border-b border-white/5 p-4 sm:p-6">
                 <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-[#A0C4FF] flex items-center justify-center text-black border border-black shadow-[2px_2px_0px_#000]">
+                            <div className="w-8 h-8 rounded-lg bg-[#518DFF] flex items-center justify-center text-black border border-black shadow-[2px_2px_0px_#000]">
                                 <Target className="w-4 h-4" />
                             </div>
-                            <span className="text-[#A0C4FF] font-black text-xs uppercase tracking-[0.2em]">GÖREV {challenge + 1}</span>
+                            <span className="text-[#518DFF] font-black text-xs uppercase tracking-[0.2em]">MISSION CONTROL</span>
                         </div>
                         <h2 className="text-white text-base sm:text-lg font-black tracking-tight uppercase italic">{challenges[challenge].question}</h2>
                         <div className="flex items-center gap-1.5 mt-2">

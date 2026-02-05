@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { Target, RotateCcw, Play, Info, MapPin } from "lucide-react";
 
 interface ProjectileSimProps {
     className?: string;
@@ -16,7 +17,7 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
     const [velocity, setVelocity] = useState(50);
     const [challenge, setChallenge] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
-    const [lastResult, setLastResult] = useState<{ range: number; maxHeight: number; time: number } | null>(null);
+    const [lastResult, setLastResult] = useState<{ range: number; maxHeight: number; time: number; x: number } | null>(null);
 
     // Simulation state
     const projRef = useRef<{ x: number; y: number; vx: number; vy: number; active: boolean } | null>(null);
@@ -24,12 +25,12 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
 
     // Physics constants
     const g = 9.81;
-    const timeStep = 0.016 * 1.5; // Slightly accelerated for "fun"
+    const timeStep = 0.016 * 1.5;
     const scale = 3.5; // Pixels per meter
 
     const challenges = [
         { question: "Maksimum menzil için en iyi açıyı bul!", hint: "Açıyı 45° yap ve 'Ateşle' butonuna bas." },
-        { question: "50 metre menzile ulaş!", hint: "Açı ve hızı koordine ederek tam 50m'yi hedefle." },
+        { question: "50 metre menzile ulaş!", hint: "Hız ve açıyı ayarlayarak tam 50m'yi hedefle." },
         { question: "En yüksek irtifa rekoru kır!", hint: "Açıyı 90°'ye yaklaştırıp hızı fulle." },
     ];
 
@@ -39,7 +40,7 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
             if (containerRef.current && canvasRef.current) {
                 const rect = containerRef.current.getBoundingClientRect();
                 canvasRef.current.width = rect.width;
-                canvasRef.current.height = 350;
+                canvasRef.current.height = 400; // Fixed simulation height
             }
         };
         resize();
@@ -51,8 +52,8 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const groundY = canvas.height - 40;
-        const startX = 50;
+        const groundY = canvas.height - 60;
+        const startX = 60;
         const angleRad = (angle * Math.PI) / 180;
 
         projRef.current = {
@@ -63,7 +64,8 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
             active: true
         };
         trailRef.current = [];
-        setLastResult(null);
+        // Keep lastResult for ghost marker, only clear when new launch starts? 
+        // No, let's keep the marker until it hits again.
     };
 
     const handleInteraction = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
@@ -74,18 +76,18 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
         const x = clientX - rect.left;
         const y = clientY - rect.top;
 
-        const startX = 50;
-        const groundY = canvasRef.current.height - 40;
+        const startX = 60;
+        const groundY = canvasRef.current.height - 60;
 
         const dx = x - startX;
         const dy = groundY - y;
 
-        if (dx > 0 && dy > 0) {
+        if (dx > 0 && dy > -20) {
             const newAngle = Math.atan2(dy, dx) * 180 / Math.PI;
             const newVelocity = Math.sqrt(dx * dx + dy * dy) / scale;
 
-            setAngle(Math.min(90, Math.round(newAngle)));
-            setVelocity(Math.min(100, Math.round(newVelocity)));
+            setAngle(Math.min(90, Math.max(0, Math.round(newAngle))));
+            setVelocity(Math.min(100, Math.max(5, Math.round(newVelocity))));
         }
     };
 
@@ -96,44 +98,77 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
         if (!ctx) return;
 
         let animationId: number;
-        const startX = 50;
-        const groundY = canvas.height - 40;
+        const startX = 60;
+        const groundY = canvas.height - 60;
 
         const draw = () => {
             const width = canvas.width;
             const height = canvas.height;
 
             // BACKGROUND
-            const bgGradient = ctx.createLinearGradient(0, 0, 0, height);
-            bgGradient.addColorStop(0, "#082f49"); // Deep sky blue
-            bgGradient.addColorStop(1, "#0c4a6e");
-            ctx.fillStyle = bgGradient;
+            ctx.fillStyle = "#121214";
             ctx.fillRect(0, 0, width, height);
 
-            // GRID & DISTANCE MARKERS
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            for (let i = 0; i < width; i += 50) {
+            // GRIDLINES
+            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 40) {
                 ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, groundY); ctx.stroke();
-                if (i > 50 && (i - 50) % 100 === 0) {
-                    ctx.fillStyle = "rgba(255,255,255,0.3)";
-                    ctx.font = "10px Inter";
-                    ctx.fillText(`${Math.round((i - 50) / scale)}m`, i - 10, groundY + 25);
-                }
+            }
+            for (let j = 0; j < groundY; j += 40) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(width, j); ctx.stroke();
             }
 
             // GROUND
-            ctx.fillStyle = "#14532d"; // Dark green
+            ctx.fillStyle = "#1c1c1f";
             ctx.fillRect(0, groundY, width, height - groundY);
-            ctx.fillStyle = "#166534";
-            ctx.fillRect(0, groundY, width, 4);
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(width, groundY);
+            ctx.stroke();
 
-            // PREVIEW ARC (Interaction Feedback)
+            // DISTANCE MARKERS (Meters)
+            for (let i = 0; i < width; i += 50) {
+                const meters = Math.round((i - startX) / scale);
+                if (meters >= 0 && meters % 10 === 0) {
+                    ctx.fillStyle = "rgba(255,255,255,0.4)";
+                    ctx.font = "black 10px monospace";
+                    ctx.textAlign = "center";
+                    ctx.fillText(`${meters}m`, i, groundY + 25);
+
+                    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+                    ctx.beginPath();
+                    ctx.moveTo(i, groundY);
+                    ctx.lineTo(i, groundY + 10);
+                    ctx.stroke();
+                }
+            }
+
+            // GHOST LANDING MARKER
+            if (lastResult) {
+                ctx.save();
+                ctx.translate(lastResult.x, groundY);
+                ctx.fillStyle = "#FF5757";
+                ctx.globalAlpha = 0.4;
+                ctx.beginPath();
+                ctx.arc(0, 0, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.textAlign = "center";
+                ctx.font = "bold 12px sans-serif";
+                ctx.fillText(`${lastResult.range.toFixed(1)}m`, 0, -15);
+                ctx.restore();
+            }
+
+            // INTERACTION FEEDBACK (Dashed line)
             const angleRad = (angle * Math.PI) / 180;
             const previewVX = velocity * Math.cos(angleRad) * scale;
             const previewVY = -velocity * Math.sin(angleRad) * scale;
 
-            ctx.setLineDash([5, 5]);
-            ctx.strokeStyle = "rgba(251, 191, 36, 0.3)";
+            ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = "rgba(255, 215, 0, 0.2)";
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(startX, groundY);
             for (let t = 0; t < 2; t += 0.1) {
@@ -150,37 +185,37 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
             ctx.translate(startX, groundY);
             ctx.rotate(-angleRad);
 
-            // Cannon Base
-            ctx.fillStyle = "#334155";
+            // Base
+            ctx.fillStyle = "#27272a";
             ctx.beginPath();
-            ctx.arc(0, 0, 15, Math.PI, 0);
+            ctx.arc(0, 0, 18, Math.PI, 0);
             ctx.fill();
-
-            // Cannon Barrel
-            const barrelGrad = ctx.createLinearGradient(0, -10, 0, 10);
-            barrelGrad.addColorStop(0, "#475569");
-            barrelGrad.addColorStop(1, "#1e293b");
-            ctx.fillStyle = barrelGrad;
-            ctx.fillRect(0, -10, 45, 20);
             ctx.strokeStyle = "#000";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, -10, 45, 20);
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Barrel
+            const barrelGrad = ctx.createLinearGradient(0, -12, 0, 12);
+            barrelGrad.addColorStop(0, "#FF5757");
+            barrelGrad.addColorStop(1, "#992222");
+            ctx.fillStyle = barrelGrad;
+            ctx.fillRect(0, -12, 50, 24);
+            ctx.strokeStyle = "#000";
+            ctx.strokeRect(0, -12, 50, 24);
             ctx.restore();
 
             // TRAIL
             if (trailRef.current.length > 1) {
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = "#fca5a5";
-                ctx.strokeStyle = "#f87171";
-                ctx.lineWidth = 4;
-                ctx.lineCap = "round";
+                ctx.strokeStyle = "rgba(255, 87, 87, 0.4)";
+                ctx.lineWidth = 3;
+                ctx.setLineDash([3, 3]);
                 ctx.beginPath();
                 trailRef.current.forEach((p, i) => {
                     if (i === 0) ctx.moveTo(p.x, p.y);
                     else ctx.lineTo(p.x, p.y);
                 });
                 ctx.stroke();
-                ctx.shadowBlur = 0;
+                ctx.setLineDash([]);
             }
 
             // PROJECTILE
@@ -193,37 +228,23 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
                 trailRef.current.push({ x: proj.x, y: proj.y });
 
                 // Projectile visual
-                ctx.fillStyle = "#fbbf24";
+                ctx.fillStyle = "#FFD700";
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#FFD700";
                 ctx.beginPath();
-                ctx.arc(proj.x, proj.y, 8, 0, Math.PI * 2);
+                ctx.arc(proj.x, proj.y, 10, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.shadowBlur = 0;
                 ctx.strokeStyle = "#000";
+                ctx.lineWidth = 3;
                 ctx.stroke();
 
                 if (proj.y >= groundY) {
                     proj.active = false;
                     const range = (proj.x - startX) / scale;
                     const maxH = Math.max(...trailRef.current.map(p => groundY - p.y)) / scale;
-                    setLastResult({ range, maxHeight: maxH, time: trailRef.current.length * timeStep });
+                    setLastResult({ range, maxHeight: maxH, time: trailRef.current.length * timeStep, x: proj.x });
                 }
-            }
-
-            // VECTORS UI (Components)
-            if (!proj?.active) {
-                const arrowLen = 60;
-                // Vx component
-                ctx.strokeStyle = "#3b82f6";
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(startX, groundY);
-                ctx.lineTo(startX + arrowLen * Math.cos(angleRad), groundY);
-                ctx.stroke();
-                // Vy component
-                ctx.strokeStyle = "#ef4444";
-                ctx.beginPath();
-                ctx.moveTo(startX, groundY);
-                ctx.lineTo(startX, groundY - arrowLen * Math.sin(angleRad));
-                ctx.stroke();
             }
 
             animationId = requestAnimationFrame(draw);
@@ -231,116 +252,139 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
 
         draw();
         return () => cancelAnimationFrame(animationId);
-    }, [angle, velocity]);
+    }, [angle, velocity, lastResult]);
 
     return (
-        <div ref={containerRef} className={cn("bg-[#082f49] overflow-hidden rounded-xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]", className)}>
-            {/* Premium Header */}
-            <div className="bg-rose-500 p-4 border-b-4 border-black flex justify-between items-center">
-                <div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl">☄️</span>
-                        <h3 className="font-black uppercase italic text-lg text-white">PROJECTILE ELITE</h3>
+        <div ref={containerRef} className={cn("bg-background min-h-screen flex flex-col font-[family-name:var(--font-outfit)]", className)}>
+            {/* Header / Mission Area */}
+            <div className="bg-[#FF5757]/10 border-b border-white/5 p-4 sm:p-6">
+                <div className="max-w-4xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-[#FF5757] flex items-center justify-center text-black border border-black shadow-[2px_2px_0px_#000]">
+                                <Target className="w-4 h-4" />
+                            </div>
+                            <span className="text-[#FF5757] font-black text-xs uppercase tracking-[0.2em]">MISSION CONTROL</span>
+                        </div>
+                        <h2 className="text-white text-base sm:text-lg font-black tracking-tight uppercase italic">{challenges[challenge].question}</h2>
+                        <div className="flex items-center gap-1.5 mt-2">
+                            <Info className="w-3 h-3 text-zinc-500" />
+                            <p className="text-zinc-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">{challenges[challenge].hint}</p>
+                        </div>
                     </div>
-                </div>
-                <div className="flex gap-2">
                     {lastResult && (
-                        <div className="bg-black/40 px-3 py-1 rounded text-[10px] font-bold text-rose-200">
-                            SON ATK: {lastResult.range.toFixed(1)}m
+                        <div className="bg-zinc-900 border border-white/10 p-3 rounded-2xl flex items-center gap-4 animate-in fade-in slide-in-from-right-4">
+                            <div className="text-right">
+                                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">SON MENZİL</span>
+                                <span className="text-[#FFD700] font-mono text-xl font-black">{lastResult.range.toFixed(1)}m</span>
+                            </div>
+                            <MapPin className="text-[#FF5757] w-6 h-6" />
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Canvas Area */}
-            <div className="relative touch-none overflow-hidden">
-                <canvas
-                    ref={canvasRef}
-                    onMouseDown={(e) => { setIsDragging(true); handleInteraction(e); }}
-                    onMouseMove={(e) => { if (isDragging) handleInteraction(e); }}
-                    onMouseUp={() => setIsDragging(false)}
-                    onTouchStart={(e) => { setIsDragging(true); handleInteraction(e); }}
-                    onTouchMove={(e) => { if (isDragging) handleInteraction(e); }}
-                    onTouchEnd={() => setIsDragging(false)}
-                    className="w-full h-[350px] block cursor-crosshair"
-                />
+            <div className="flex-1 max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-0">
+                {/* Simulation Canvas Area */}
+                <div className="lg:col-span-8 relative bg-[#121214] border-b lg:border-b-0 lg:border-r border-white/5 touch-none">
+                    <canvas
+                        ref={canvasRef}
+                        onMouseDown={(e) => { setIsDragging(true); handleInteraction(e); }}
+                        onMouseMove={(e) => { if (isDragging) handleInteraction(e); }}
+                        onMouseUp={() => setIsDragging(false)}
+                        onTouchStart={(e) => { setIsDragging(true); handleInteraction(e); }}
+                        onTouchMove={(e) => { if (isDragging) handleInteraction(e); }}
+                        onTouchEnd={() => setIsDragging(false)}
+                        className="w-full h-full object-contain cursor-crosshair"
+                    />
 
-                {/* Challenge Card (Overlay) */}
-                <div className="absolute top-4 left-4 right-4 md:right-auto md:w-80">
-                    <div className="bg-white p-3 rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs bg-rose-500 text-white px-1.5 py-0.5 rounded font-black">GÖREV {challenge + 1}</span>
-                            <p className="text-xs font-black uppercase tracking-tighter truncate">{challenges[challenge].question}</p>
+                    {/* Live Data Overlays */}
+                    <div className="absolute top-6 left-6 flex flex-col gap-3">
+                        <div className="bg-black/60 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl">
+                            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                                <div>
+                                    <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block mb-1">Menzil (R)</span>
+                                    <span className="text-[#FFD700] font-mono text-xl font-black">{(velocity * velocity * Math.sin(2 * angle * Math.PI / 180) / g).toFixed(1)}m</span>
+                                </div>
+                                <div>
+                                    <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block mb-1">Dikey (H)</span>
+                                    <span className="text-white font-mono text-xl font-black">{(Math.pow(velocity * Math.sin(angle * Math.PI / 180), 2) / (2 * g)).toFixed(1)}m</span>
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-[10px] text-neutral-500 font-bold leading-tight">💡 {challenges[challenge].hint}</p>
                     </div>
                 </div>
 
-                {/* Live Physics Panel */}
-                <div className="absolute bottom-12 right-4 bg-black/80 backdrop-blur-md p-4 rounded-xl border-2 border-white/10 space-y-3 min-w-[140px]">
-                    <div className="space-y-1">
-                        <p className="text-[10px] text-neutral-400 font-black uppercase">Menzil (R)</p>
-                        <p className="text-xl font-black text-rose-400 font-mono">{(velocity * velocity * Math.sin(2 * angle * Math.PI / 180) / g).toFixed(1)}m</p>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-[10px] text-neutral-400 font-black uppercase">Max Yükseklik (H)</p>
-                        <p className="text-lg font-black text-white font-mono">{(Math.pow(velocity * Math.sin(angle * Math.PI / 180), 2) / (2 * g)).toFixed(1)}m</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Premium Controls */}
-            <div className="p-6 bg-slate-900 border-t-4 border-black space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                        <div className="bg-slate-800/50 p-4 rounded-xl border-2 border-white/5">
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="text-white font-black uppercase text-xs">Fırlatma Açısı</label>
-                                <span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold text-xs">{angle}°</span>
+                {/* Controls Sidebar */}
+                <div className="lg:col-span-4 p-6 sm:p-8 space-y-8 bg-background">
+                    {/* Parameters */}
+                    <div className="space-y-6">
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                <span className="text-zinc-400 font-black text-[10px] uppercase tracking-[0.2em]">Fırlatma Açısı</span>
+                                <span className="text-[#FF5757] font-mono text-sm font-black">{angle}°</span>
                             </div>
                             <input
                                 type="range" min="0" max="90" value={angle}
                                 onChange={(e) => setAngle(Number(e.target.value))}
-                                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FF5757]"
                             />
                         </div>
-                        <div className="bg-slate-800/50 p-4 rounded-xl border-2 border-white/5">
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="text-white font-black uppercase text-xs">İlk Hız (v₀)</label>
-                                <span className="bg-rose-500 text-white px-2 py-0.5 rounded font-bold text-xs">{velocity} m/s</span>
+
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
+                                <span className="text-zinc-400 font-black text-[10px] uppercase tracking-[0.2em]">İlk Hız (v₀)</span>
+                                <span className="text-[#FFD700] font-mono text-sm font-black">{velocity} m/s</span>
                             </div>
                             <input
-                                type="range" min="10" max="100" value={velocity}
+                                type="range" min="5" max="100" value={velocity}
                                 onChange={(e) => setVelocity(Number(e.target.value))}
-                                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FFD700]"
                             />
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 justify-center">
+                    {/* Actions */}
+                    <div className="flex flex-col gap-4">
                         <button
                             onClick={launch}
-                            className="w-full py-6 bg-green-500 text-white font-black text-2xl uppercase border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-none transition-all active:scale-95"
+                            disabled={projRef.current?.active}
+                            className={cn(
+                                "h-20 rounded-2xl border-2 border-black flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[6px_6px_0px_#000]",
+                                "bg-[#FFD700] text-black hover:bg-white disabled:opacity-50 disabled:shadow-none"
+                            )}
                         >
-                            🚀 Ateşle!
+                            <Play className="w-6 h-6 fill-current" />
+                            <span className="font-black text-xl uppercase italic tracking-tighter">ATEŞLE!</span>
                         </button>
 
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-4 gap-2">
+                            <button
+                                onClick={() => { setAngle(45); setVelocity(50); setLastResult(null); }}
+                                className="col-span-1 h-12 rounded-xl border border-black bg-zinc-100 text-black flex items-center justify-center hover:bg-white transition-all shadow-[3px_3px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                            >
+                                <RotateCcw className="w-4 h-4" />
+                            </button>
                             {challenges.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setChallenge(i)}
                                     className={cn(
-                                        "py-2 text-[10px] font-black uppercase border-2 border-black transition-all",
-                                        challenge === i
-                                            ? "bg-rose-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                                            : "bg-slate-800 text-neutral-500 hover:bg-slate-700"
+                                        "py-2.5 rounded-xl border border-black text-[10px] font-black uppercase tracking-widest transition-all shadow-[3px_3px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none",
+                                        challenge === i ? "bg-[#FF5757] text-black" : "bg-zinc-900 text-zinc-500 border-zinc-800 shadow-none hover:bg-zinc-800"
                                     )}
                                 >
-                                    {i + 1}
+                                    #{i + 1}
                                 </button>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Educational Note */}
+                    <div className="bg-[#FFD700]/5 border border-[#FFD700]/20 rounded-2xl p-4 sm:p-5">
+                        <p className="text-[#FFD700] text-[11px] sm:text-xs leading-relaxed font-bold italic uppercase tracking-wider">
+                            ✨ İpucu: Maksimum menzil için açıyı 45° yapmayı dene. Hız arttıkça topun izlediği parabol genişleyecektir.
+                        </p>
                     </div>
                 </div>
             </div>
