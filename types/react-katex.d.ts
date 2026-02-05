@@ -6,7 +6,7 @@ declare module 'react-katex' {
         block?: boolean;
         errorColor?: string;
         renderError?: (error: Error | TypeError) => React.ReactNode;
-        settings?: any;
+        settings?: Record<string, unknown>;
         as?: React.ElementType;
         className?: string;
         style?: React.CSSProperties;
