@@ -79,12 +79,23 @@ export const simulations: Simulation[] = [
     {
         id: "evosim",
         slug: "evrimsel-yurume",
-        title: "Evrimsel Yürüme",
+        title: "Evrimsel Yürüme (V1)",
         description: "Yapay zeka ve genetik algoritmalarla yürümeyi kendi kendine öğrenen yaratıkları keşfedin.",
         icon: Dna,
         color: "#FACC15",
         formula: "v = Δx / Δt",
         difficulty: "Zor",
-        tags: ["Yapay Zeka", "Genetik", "Fizik"]
+        tags: ["AI", "Genetik"]
+    },
+    {
+        id: "evosim-v3",
+        slug: "evrimsel-yurume-v3",
+        title: "Bio-Evolution 3D (V3)",
+        description: "3D Spring-Mass sistemiyle evrimleşen biyo-organik yaratıklar. Ultra hızlı nesil döngüsü!",
+        icon: Sparkles,
+        color: "#00ffff",
+        formula: "F = -k(L-L₀)",
+        difficulty: "Zor",
+        tags: ["3D", "Physics", "Bio-AI"]
     }
 ];

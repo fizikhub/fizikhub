@@ -19,7 +19,7 @@ export class Creature3D {
         const { nodePositions, springConnections } = this.genome.data;
 
         // Create Nodes
-        nodePositions.forEach(pos => {
+        nodePositions.forEach((pos: { x: number, y: number, z: number }) => {
             const body = new CANNON.Body({
                 mass: 1,
                 position: new CANNON.Vec3(pos.x, pos.y, pos.z),
@@ -32,7 +32,7 @@ export class Creature3D {
         });
 
         // Create Springs (Muscles)
-        springConnections.forEach(meta => {
+        springConnections.forEach((meta: any) => {
             const spring = new CANNON.Spring(this.nodes[meta.a], this.nodes[meta.b], {
                 restLength: meta.restLength,
                 stiffness: meta.stiffness,
