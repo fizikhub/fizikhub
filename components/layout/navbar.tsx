@@ -77,7 +77,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16">
                 <div
                     className={cn(
                         "h-full",
@@ -121,14 +121,14 @@ export function Navbar() {
                     </div>
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-50 flex-shrink-0 pt-1 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
                         <ViewTransitionLink href="/">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-3 pb-1">
+                    <div className="relative z-50 flex items-center gap-2">
 
                         {/* Desktop Links */}
                         <div className="hidden md:flex items-center gap-2 mr-6">
@@ -147,20 +147,20 @@ export function Navbar() {
                             ))}
                         </div>
 
-                        {/* 1. SEARCH - UPSCALE (30px) */}
+                        {/* 1. SEARCH - UPSCALE (34px) */}
                         <div
                             onClick={() => setIsSearchOpen(true)}
-                            className="flex items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-black border border-white/20 rounded-sm cursor-pointer hover:border-white transition-colors"
+                            className="flex items-center justify-center w-[34px] h-[34px] bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                         >
-                            <Search className="w-4 h-4 text-white stroke-[2.5px]" />
+                            <Search className="w-4 h-4 text-black stroke-[3px]" />
                         </div>
 
-                        {/* 2. ZAP - UPSCALE (30px) */}
+                        {/* 2. ZAP - UPSCALE (34px) */}
                         <div
                             onClick={() => window.location.href = '/ozel'}
-                            className="flex md:hidden items-center justify-center w-[30px] h-[30px] min-w-[30px] min-h-[30px] bg-[#FACC15] border border-black rounded-sm shadow-[2px_2px_0px_#000] cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                            className="flex items-center justify-center w-[34px] h-[34px] bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1"
                         >
-                            <Zap className="w-4 h-4 text-black fill-black stroke-[2.5px]" />
+                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
                         </div>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
@@ -171,7 +171,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[56px] sm:h-[64px]" />
+            <div className="h-[53px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
