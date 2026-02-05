@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Calendar, Link as LinkIcon, Award, Zap, Users, BookOpen, MessageCircle, HelpCircle } from "lucide-react";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 interface NeoProfileSidebarProps {
     profile: any;
@@ -43,7 +44,9 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                     <div className="col-span-2 p-6 flex flex-col items-center justify-center bg-black">
                         <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest mb-1">TOPLAM İTİBAR</span>
                         <div className="relative">
-                            <span className="text-5xl font-black text-white tracking-tighter italic z-10 relative">{formatNumber(stats.reputation)}</span>
+                            <span className="text-5xl font-black text-white tracking-tighter italic z-10 relative">
+                                <NumberTicker value={stats.reputation} className="text-white" />
+                            </span>
                             <div className="absolute -bottom-1 left-0 w-full h-3 bg-[#FACC15]/20 -skew-x-12 z-0"></div>
                         </div>
                     </div>
@@ -56,7 +59,9 @@ export function NeoProfileSidebar({ profile, user, stats, userBadges = [] }: Neo
                     ].map((stat, i) => (
                         <div key={i} className="p-4 flex flex-col items-center justify-center hover:bg-zinc-900 transition-colors group cursor-default">
                             <stat.icon className="w-5 h-5 text-zinc-600 mb-2 group-hover:text-[#FACC15] transition-colors stroke-[2.5px]" />
-                            <span className="text-xl font-black text-white tabular-nums">{formatNumber(stat.value)}</span>
+                            <span className="text-xl font-black text-white tabular-nums">
+                                <NumberTicker value={stat.value} className="text-white" />
+                            </span>
                             <span className="text-[10px] text-zinc-600 uppercase font-bold tracking-wide mt-1 group-hover:text-zinc-400 text-center">{stat.label}</span>
                         </div>
                     ))}

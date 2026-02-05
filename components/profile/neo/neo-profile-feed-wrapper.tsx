@@ -49,9 +49,9 @@ export function NeoProfileFeedWrapper({
     return (
         <div className="space-y-8">
 
-            {/* --- TABS (Neo Brutalist Pills) --- */}
-            <div className="sticky top-[60px] z-30 bg-[#050505]/95 backdrop-blur-md py-4 -mx-2 px-2 border-b-2 border-zinc-800">
-                <div className="flex items-center gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none]">
+            {/* --- TABS (App-Like Segmented Control) --- */}
+            <div className="sticky top-[60px] z-30 bg-[#050505]/80 backdrop-blur-xl py-4 -mx-2 px-2 border-b border-zinc-900/50">
+                <div className="flex items-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-zinc-900/50 p-1 rounded-xl border border-white/5">
                     <TabButton
                         label="GÖNDERİLER"
                         icon={FileText}
@@ -179,14 +179,21 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label
         <button
             onClick={onClick}
             className={cn(
-                "relative flex shrink-0 items-center justify-center gap-2 px-6 py-3 rounded-lg text-xs font-black tracking-wider transition-all select-none border-2",
+                "relative flex shrink-0 items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all select-none",
                 isActive
-                    ? "bg-[#FACC15] text-black border-black shadow-[4px_4px_0px_#000] -translate-y-1"
-                    : "bg-zinc-900/50 text-zinc-500 border-zinc-700 hover:border-white hover:text-white hover:bg-black",
+                    ? "bg-[#FACC15] text-black shadow-lg"
+                    : "text-zinc-500 hover:text-zinc-300",
                 colorClass && !isActive && colorClass
             )}
         >
-            <Icon className={cn("w-4 h-4", isActive ? "text-black stroke-[2.5px]" : "opacity-70")} />
+            {isActive && (
+                <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-[#FACC15] rounded-lg -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+            )}
+            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-black stroke-[2.5px]" : "opacity-70")} />
             {label}
         </button>
     );

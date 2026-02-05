@@ -8,9 +8,10 @@ import * as THREE from "three";
 import { cn } from "@/lib/utils";
 import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
 import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, Copy, Check, ShieldCheck, PenTool } from "lucide-react";
+import { Mail, Copy, Check, ShieldCheck, PenTool, Share2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 // --- TEXTURES (Unchanged) ---
 function getStarTexture() {
@@ -245,6 +246,22 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
         setTimeout(() => setIsCopied(false), 2000);
     };
 
+    const handleShareProfile = () => {
+        const url = `${window.location.origin}/p/${profile?.username || profile?.id}`;
+        if (navigator.share) {
+            navigator.share({
+                title: `${profile?.full_name} - FizikHub Profili`,
+                url: url,
+            }).catch(() => {
+                navigator.clipboard.writeText(url);
+                toast.success("Profil linki kopyalandı!");
+            });
+        } else {
+            navigator.clipboard.writeText(url);
+            toast.success("Profil linki kopyalandı!");
+        }
+    };
+
     return (
         <div className="w-full relative group mb-8 sm:mb-0">
             {/* HERO BACKGROUND - MATTE BLACK */}
@@ -325,7 +342,7 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                             {/* Reputation Tag */}
                             <div className="flex items-center gap-1.5 text-[#FACC15] font-black tracking-wide text-sm">
                                 <div className="w-2 h-2 bg-[#FACC15] rounded-full animate-pulse shadow-[0px_0px_10px_#FACC15]"></div>
-                                {formatNumber(stats?.reputation || 0)} REP
+                                <NumberTicker value={stats?.reputation || 0} className="text-[#FACC15]" /> REP
                             </div>
                         </motion.div>
                         {profile?.bio && (
@@ -420,13 +437,17 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
 
                     {/* Quick Stats - Mobile Glass Cards */}
                     <div className="flex gap-2 pb-2 flex-1 justify-end">
-                        <div className="bg-black/40 backdrop-blur-md border border-white/10 p-2.5 rounded-2xl text-center min-w-[70px] shadow-lg">
-                            <span className="block font-black text-xl text-white leading-none tracking-tight">{formatNumber(stats?.followersCount || 0)}</span>
-                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wide mt-1 block">Takipçi</span>
+                        <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center min-w-[75px] shadow-2xl ring-1 ring-white/5 active:scale-95 transition-transform">
+                            <span className="block font-black text-2xl text-white leading-none tracking-tight">
+                                <NumberTicker value={stats?.followersCount || 0} className="text-white" />
+                            </span>
+                            <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mt-1 block">Takipçi</span>
                         </div>
-                        <div className="bg-black/40 backdrop-blur-md border border-white/10 p-2.5 rounded-2xl text-center min-w-[70px] shadow-lg">
-                            <span className="block font-black text-xl text-white leading-none tracking-tight">{formatNumber(stats?.followingCount || 0)}</span>
-                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wide mt-1 block">Takip</span>
+                        <div className="bg-black/60 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center min-w-[75px] shadow-2xl ring-1 ring-white/5 active:scale-95 transition-transform">
+                            <span className="block font-black text-2xl text-white leading-none tracking-tight">
+                                <NumberTicker value={stats?.followingCount || 0} className="text-white" />
+                            </span>
+                            <span className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mt-1 block">Takip</span>
                         </div>
                     </div>
                 </div>
@@ -455,9 +476,11 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                     {/* Reputation & Actions */}
                     <div className="flex items-center justify-between gap-3 pt-2">
                         {/* Clean Rep Badge */}
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15]" />
-                            <span className="text-[10px] font-bold text-white tracking-wide">{formatNumber(stats?.reputation || 0)} <span className="text-zinc-600">REP</span></span>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-xl">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#FACC15] shadow-[0_0_8px_#FACC15]" />
+                            <span className="text-[11px] font-black text-white tracking-wider">
+                                <NumberTicker value={stats?.reputation || 0} className="text-white" /> <span className="text-zinc-600">REP</span>
+                            </span>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -496,9 +519,12 @@ export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = fals
                                 </>
                             ) : (
                                 <>
-                                    <Link href="/mesajlar" className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all">
-                                        <Mail className="w-4 h-4" />
-                                    </Link>
+                                    <button
+                                        onClick={handleShareProfile}
+                                        className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white hover:border-zinc-700 active:scale-95 transition-all"
+                                    >
+                                        <Share2 className="w-4 h-4" />
+                                    </button>
                                     <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="default" />
                                 </>
                             )}
