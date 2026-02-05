@@ -31,19 +31,20 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+            "fixed bottom-4 left-4 right-4 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"
         )}>
             <nav className="
                 w-full
-                h-[50px]
-                bg-white dark:bg-zinc-950
-                border-t-[3px] border-black dark:border-white/20
+                h-[64px]
+                bg-white/90 dark:bg-black/90
+                backdrop-blur-xl
+                border-[2.5px] border-black dark:border-white/20
+                rounded-2xl
                 flex items-center justify-around
                 px-2
-                pb-safe
                 relative
-                shadow-[0_-3px_0px_0px_rgba(0,0,0,1)]
+                shadow-[0_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[0_8px_0px_0px_rgba(255,255,255,0.05)]
             ">
                 <NavItem
                     href="/"
@@ -59,21 +60,25 @@ export function BottomNav() {
                     isActive={pathname.startsWith("/makale")}
                 />
 
-                <div className="relative -top-3">
+                {/* CENTER BUTTON - INTEGRATED BRIDGE */}
+                <div className="relative -top-5">
+                    <div className="absolute inset-0 bg-black/20 dark:bg-white/10 blur-xl rounded-full translate-y-2 scale-75" />
                     <ViewTransitionLink
                         href="/paylas"
                         className="
                             flex items-center justify-center
-                            w-11 h-11
+                            w-14 h-14
                             bg-[#FACC15]
                             border-[3px] border-black
-                            rounded-xl
+                            rounded-[20px]
                             shadow-[4px_4px_0px_0px_#000]
-                            active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                            transition-all
+                            hover:scale-105 active:scale-95 active:shadow-none
+                            active:translate-x-[2px] active:translate-y-[2px]
+                            transition-all duration-200
+                            relative z-10
                         "
                     >
-                        <Plus className="w-7 h-7 text-black stroke-[4px]" />
+                        <Plus className="w-8 h-8 text-black stroke-[4px]" />
                     </ViewTransitionLink>
                 </div>
 
@@ -100,30 +105,44 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
         <ViewTransitionLink
             href={href}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative py-0.5",
+                "flex flex-col items-center justify-center min-w-[60px] h-full relative group",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-400"
             )}
         >
-            <motion.div
-                initial={false}
-                animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
-                className="flex flex-col items-center gap-0"
-            >
-                <div className={cn(
-                    "p-1.5 transition-all duration-200",
-                    isActive && "bg-[#FACC15] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] rounded-lg -rotate-3"
-                )}>
+            <div className="relative flex flex-col items-center justify-center w-full h-full">
+                {/* SLIDING ACTIVE PILL */}
+                {isActive && (
+                    <motion.div
+                        layoutId="activePill"
+                        className="absolute inset-x-1 inset-y-2 bg-[#FACC15] border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        transition={{ type: "spring", bounce: 0.35, duration: 0.6 }}
+                    />
+                )}
+
+                <motion.div
+                    className="relative z-10 flex flex-col items-center"
+                    animate={isActive ? { y: -2 } : { y: 0 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
                     <Icon className={cn(
-                        "w-4 h-4 transition-all text-black dark:text-white",
-                        isActive ? "stroke-[3px]" : "stroke-[2.5px]"
+                        "w-5 h-5 transition-colors",
+                        isActive ? "text-black stroke-[3px]" : "group-hover:text-black dark:group-hover:text-white stroke-[2.5px]"
                     )} />
-                </div>
+                    <span className={cn(
+                        "text-[9px] font-black uppercase tracking-tighter mt-1 transition-all duration-300",
+                        isActive ? "text-black opacity-100 scale-100" : "opacity-0 scale-75"
+                    )}>
+                        {label}
+                    </span>
+                </motion.div>
+
+                {/* INACTIVE LABEL HOVER (Subtle) */}
                 {!isActive && (
-                    <span className="text-[7.5px] font-black uppercase tracking-tighter opacity-70 mt-1">
+                    <span className="absolute bottom-2 text-[7px] font-bold uppercase opacity-0 group-hover:opacity-40 transition-opacity">
                         {label}
                     </span>
                 )}
-            </motion.div>
+            </div>
         </ViewTransitionLink>
     );
 }
