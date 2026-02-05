@@ -31,20 +31,20 @@ export function BottomNav() {
 
     return (
         <div className={cn(
-            "fixed bottom-4 left-4 right-4 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0"
+            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
         )}>
             <nav className="
                 w-full
-                h-[62px]
-                bg-white/80 dark:bg-zinc-900/80
-                backdrop-blur-lg
-                border-[2.5px] border-black dark:border-white/20
+                h-[56px]
+                bg-white/95 dark:bg-zinc-950/95
+                backdrop-blur-xl
+                border-t-[1.5px] border-black dark:border-white/10
                 flex items-center justify-around
-                px-2
+                px-4
+                pb-safe
                 relative
-                rounded-2xl
-                shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]
+                shadow-[0_-4px_12px_-5px_rgba(0,0,0,0.15)]
             ">
                 <NavItem
                     href="/"
@@ -56,27 +56,27 @@ export function BottomNav() {
                 <NavItem
                     href="/makale"
                     icon={BookOpen}
-                    label="Makale"
+                    label="Yazılar"
                     isActive={pathname.startsWith("/makale")}
                 />
 
-                <ViewTransitionLink
-                    href="/paylas"
-                    className="
-                        flex items-center justify-center
-                        w-12 h-12
-                        bg-[#FACC15]
-                        border-2 border-black
-                        rounded-xl
-                        shadow-[2px_2px_0px_0px_#000]
-                        active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                        transition-all
-                        -mt-8
-                        relative z-10
-                    "
-                >
-                    <Plus className="w-6 h-6 text-black stroke-[3px]" />
-                </ViewTransitionLink>
+                <div className="relative -top-3">
+                    <ViewTransitionLink
+                        href="/paylas"
+                        className="
+                            flex items-center justify-center
+                            w-12 h-12
+                            bg-[#FACC15]
+                            border-[2px] border-black
+                            rounded-2xl
+                            shadow-[3px_3px_0px_0px_#000]
+                            active:shadow-none active:translate-x-[1px] active:translate-y-[1px]
+                            transition-all
+                        "
+                    >
+                        <Plus className="w-6 h-6 text-black stroke-[3.5px]" />
+                    </ViewTransitionLink>
+                </div>
 
                 <NavItem
                     href="/forum"
@@ -101,27 +101,39 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
         <ViewTransitionLink
             href={href}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[50px] h-full relative group transition-all duration-300",
-                isActive ? "text-black dark:text-white" : "text-black/40 dark:text-white/40"
+                "flex flex-col items-center justify-center min-w-[60px] h-full relative py-1",
+                isActive ? "text-black dark:text-white" : "text-zinc-400 dark:text-zinc-500"
             )}
         >
             <motion.div
                 initial={false}
-                animate={isActive ? { y: -2, scale: 1.1 } : { y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className={cn(
-                    "p-1.5 rounded-xl transition-colors duration-300 flex flex-col items-center gap-0.5",
-                    isActive && "bg-[#FACC15] border-[1.5px] border-black shadow-[2px_2px_0px_0px_#000]"
-                )}
+                animate={isActive ? { y: -1, scale: 1.05 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                className="flex flex-col items-center gap-0.5"
             >
-                <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5px]" : "stroke-[2px]")} />
+                <div className={cn(
+                    "p-1.5 rounded-xl transition-all duration-300",
+                    isActive && "bg-[#FACC15]/20 dark:bg-[#FACC15]/30"
+                )}>
+                    <Icon className={cn(
+                        "w-5 h-5 transition-all text-black dark:text-white",
+                        isActive ? "stroke-[2.5px]" : "stroke-[2px]"
+                    )} />
+                </div>
                 <span className={cn(
-                    "text-[9px] font-black uppercase tracking-tight",
-                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                    "text-[8px] font-black uppercase tracking-widest transition-all",
+                    isActive ? "opacity-100 scale-100" : "opacity-40 scale-95"
                 )}>
                     {label}
                 </span>
             </motion.div>
+
+            {isActive && (
+                <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute bottom-0 w-8 h-[3px] bg-[#FACC15] rounded-t-full"
+                />
+            )}
         </ViewTransitionLink>
     );
 }
