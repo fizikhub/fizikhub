@@ -50,8 +50,8 @@ export function NeoProfileFeedWrapper({
         <div className="space-y-8">
 
             {/* --- TABS (App-Like Segmented Control) --- */}
-            <div className="sticky top-[60px] z-30 bg-background/80 backdrop-blur-xl py-3 -mx-2 px-2 border-b border-white/5">
-                <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/5 p-1 rounded-xl border border-white/5">
+            <div className="sticky top-[60px] z-30 bg-background/95 backdrop-blur-xl py-3 -mx-2 px-2 border-b border-white/5">
+                <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/[0.03] p-1 rounded-xl border border-white/5">
                     <TabButton
                         label="GÖNDERİLER"
                         icon={FileText}
