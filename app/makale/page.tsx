@@ -128,15 +128,22 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             </div>
                         </div>
 
-                        {/* Article Grid - Journal Index Style */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-12">
-                            {allArticles.map((article, index) => (
-                                <PremiumArchiveCard
-                                    key={article.id}
-                                    article={article as any}
-                                    index={index}
-                                />
-                            ))}
+                        {/* Article Stream - Editorial Hierarchy Style */}
+                        <div className="flex flex-col gap-12 sm:gap-16">
+                            {allArticles.map((article, index) => {
+                                // Decide variant based on position and filters
+                                // Top article is 'lead' only on the first page/default sort
+                                const isLead = index === 0 && !categoryParam && !searchParam;
+
+                                return (
+                                    <PremiumArchiveCard
+                                        key={article.id}
+                                        article={article as any}
+                                        index={index}
+                                        variant={isLead ? 'lead' : 'horizontal'}
+                                    />
+                                );
+                            })}
                         </div>
 
                         {allArticles.length === 0 && (
