@@ -24,13 +24,15 @@ export class BlobCreature {
 
         // Create Soft Body Grid (e.g., 4x4)
         // Matter.Composites.softBody(x, y, columns, rows, columnGap, rowGap, crossBrace, particleRadius, particleOptions, constraintOptions)
-        this.composite = Matter.Composites.softBody(x, y, 4, 4, 0, 0, true, 8, {
-            friction: 0.6,
-            frictionStatic: 0.2,
+        this.composite = Matter.Composites.softBody(x, y, 4, 4, 15, 15, true, 6, {
+            friction: 0.8,
+            frictionStatic: 0.4,
+            restitution: 0.1,
             render: { visible: false },
             collisionFilter: { group: Matter.Body.nextGroup(true) }
         }, {
             stiffness: genome.data.stiffness,
+            damping: genome.data.damping,
             render: { visible: false }
         });
 
@@ -56,8 +58,8 @@ export class BlobCreature {
                     (c as any).originalLength = c.length;
                 }
 
-                const targetOffset = Math.sin(frameCount * freq + phase) * amp * 10;
-                c.length = Math.max(1, (c as any).originalLength + targetOffset);
+                const targetOffset = Math.sin(frameCount * freq + phase) * amp * 5;
+                c.length = Math.max(2, (c as any).originalLength + targetOffset);
             }
         });
 

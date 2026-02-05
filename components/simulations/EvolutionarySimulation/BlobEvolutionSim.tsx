@@ -38,10 +38,21 @@ export function BlobEvolutionSim() {
         let engine = simulationRef.current.engine;
         let ground: Matter.Body;
         let cameraX = 0;
+        let stars: { x: number, y: number, size: number, op: number }[] = [];
 
         p.setup = () => {
             p.createCanvas(p.windowWidth > 1200 ? 1100 : p.windowWidth, 500);
             engine.gravity.y = 1.0;
+
+            // Generate Stars
+            for (let i = 0; i < 100; i++) {
+                stars.push({
+                    x: p.random(p.width * 2),
+                    y: p.random(p.height),
+                    size: p.random(1, 3),
+                    op: p.random(50, 200)
+                });
+            }
 
             // Ground
             ground = Matter.Bodies.rectangle(10000, p.height - 25, 20000, 50, {
@@ -62,7 +73,7 @@ export function BlobEvolutionSim() {
                 '#00F5FF', // Neon Cyan
                 '#FF00FF', // Neon Pink
                 '#39FF14', // Neon Green
-                '#FFD700', // Gold
+                '#FFFF00', // Neon Yellow
                 '#FF4500'  // OrangeRed
             ];
 
@@ -110,7 +121,15 @@ export function BlobEvolutionSim() {
 
         p.draw = () => {
             // Dark Void Background
-            p.background(10, 10, 20);
+            p.background(5, 5, 15);
+
+            // Draw Stars (Parallax)
+            p.noStroke();
+            stars.forEach(s => {
+                const sx = (s.x - cameraX * 0.2) % p.width;
+                p.fill(255, 255, 255, s.op);
+                p.circle(sx, s.y, s.size);
+            });
 
             // Update Physics
             Matter.Engine.update(engine, 1000 / 60);
@@ -174,46 +193,48 @@ export function BlobEvolutionSim() {
                 const pos = creature.getCenterPosition();
                 const bodies = Matter.Composite.allBodies(creature.composite);
 
-                // Draw Trail
-                p.noFill();
-                p.strokeWeight(2);
-                p.beginShape();
-                creature.trail.forEach((t, idx) => {
-                    const alpha = p.map(idx, 0, creature.trail.length, 150, 0);
-                    p.stroke(creature.color + Math.floor(alpha).toString(16).padStart(2, '0'));
-                    p.vertex(t.x, t.y);
-                });
-                p.endShape();
+                // 1. Draw Organic Trail (Smoother)
+                if (creature.trail.length > 2) {
+                    p.noFill();
+                    for (let i = 0; i < creature.trail.length - 1; i++) {
+                        const alphaVal = p.map(i, 0, creature.trail.length, 0, isAlpha ? 150 : 50);
+                        p.stroke(creature.color + Math.floor(alphaVal).toString(16).padStart(2, '0'));
+                        p.strokeWeight(p.map(i, 0, creature.trail.length, 12, 1));
+                        p.line(creature.trail[i].x, creature.trail[i].y, creature.trail[i + 1].x, creature.trail[i + 1].y);
+                    }
+                }
 
-                // Draw Soft Body Mesh
-                p.fill(creature.color + (isAlpha ? '66' : '33')); // Translucent
-                p.stroke(creature.color);
-                p.strokeWeight(isAlpha ? 3 : 1);
-
-                // Simple polygon drawing from bodies
-                p.beginShape();
-                // To make a smooth blob, we'd need to order these, 
-                // but for a grid softbody, we can draw connections or a hull.
-                // Let's draw it as a connected mesh.
-                bodies.forEach((b, idx) => {
-                    // Just draw nodes for now
-                    p.circle(b.position.x, b.position.y, 6);
-                });
-                p.endShape();
-
-                // Draw Connections (Muscles)
-                p.strokeWeight(0.5);
+                // 2. Draw Muscle Connections (Glow Effect)
                 const constraints = Matter.Composite.allConstraints(creature.composite);
                 constraints.forEach(c => {
                     if (c.bodyA && c.bodyB) {
+                        const tension = Math.abs(c.length - (c as any).originalLength || 0) / 10;
+                        p.strokeWeight(0.5 + tension * 2);
+                        p.stroke(creature.color + (isAlpha ? 'AA' : '44'));
                         p.line(c.bodyA.position.x, c.bodyA.position.y, c.bodyB.position.x, c.bodyB.position.y);
                     }
                 });
 
+                // 3. Draw Nodes (Glowing Points)
+                p.noStroke();
+                bodies.forEach((b) => {
+                    // Outer Glow
+                    p.fill(creature.color + '22');
+                    p.circle(b.position.x, b.position.y, isAlpha ? 18 : 12);
+                    // Core
+                    p.fill(isAlpha ? '#FFFFFF' : creature.color);
+                    p.circle(b.position.x, b.position.y, isAlpha ? 6 : 4);
+                });
+
+                // 4. Alpha Highlighter
                 if (isAlpha) {
                     p.noFill();
-                    p.stroke(255, 255, 255, 150);
-                    p.circle(pos.x, pos.y, 80); // Glow ring for alpha
+                    p.stroke(255, 255, 255, 50);
+                    p.strokeWeight(1);
+                    p.circle(pos.x, pos.y, 100 + Math.sin(p.frameCount * 0.1) * 10);
+
+                    p.stroke(creature.color);
+                    p.circle(pos.x, pos.y, 110 + Math.cos(p.frameCount * 0.1) * 5);
                 }
             });
 
