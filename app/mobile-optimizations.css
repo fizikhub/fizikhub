@@ -79,8 +79,8 @@ img {
 
 /* Minimum touch target size */
 .touch-target,
-button:not([class*="ghost"]):not([class*="link"]),
-[role="button"],
+button:not([class*="ghost"]):not([class*="link"]):not(.no-min-size),
+[role="button"]:not(.no-min-size),
 .like-button,
 .vote-button,
 .icon-button {
