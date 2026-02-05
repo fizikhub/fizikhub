@@ -186,8 +186,10 @@ export function EvolutionarySimulation() {
 
                     // Joints (Visual Circles)
                     p.fill(0);
-                    p.circle(leg.hipJoint.bodyB.position.x, leg.hipJoint.bodyB.position.y - 17, 4);
-                    p.circle(leg.kneeJoint.bodyB.position.x, leg.kneeJoint.bodyB.position.y - 17, 3);
+                    if (leg.hipJoint.bodyB && leg.kneeJoint.bodyB) {
+                        p.circle(leg.hipJoint.bodyB.position.x, leg.hipJoint.bodyB.position.y - 17, 4);
+                        p.circle(leg.kneeJoint.bodyB.position.x, leg.kneeJoint.bodyB.position.y - 17, 3);
+                    }
                 });
 
                 creature.update(p.frameCount);
