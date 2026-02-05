@@ -1,18 +1,18 @@
 import { createClient } from "@/lib/supabase-server";
-import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
-import { TrendingUp, Flame, Telescope } from "lucide-react";
+import { PremiumArchiveCard } from "@/components/articles/premium-archive-card";
+import { PremiumArchiveHeader } from "@/components/articles/premium-archive-header";
+import { Flame, TrendingUp, Telescope, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { NeoArticleHeader } from "@/components/articles/neo-article-header";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-    title: "Makaleler | Fizikhub",
-    description: "Evrenin sırlarını çözmeye çalışanların not defteri.",
+    title: "Tahkikat Arşivi | Fizikhub",
+    description: "Evrenin sırlarını derinlemesine inceleyen bilimsel makaleler ve notlar.",
 };
 
-// ISR: Regenerate every 60 seconds
-export const revalidate = 60;
+// Enable immediate updates during design overhaul
+export const revalidate = 0;
 
 interface BlogPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -57,62 +57,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const { data: articles } = await query;
     const allArticles = articles || [];
 
-    // Collect IDs for batch fetching interactions
-    const articleIds = allArticles.map(a => a.id);
-
-    // Fetch Interaction Counts (Likes & Comments)
-    const { data: likesData } = await supabase
-        .from('article_likes')
-        .select('article_id')
-        .in('article_id', articleIds);
-
-    const likeCounts = (likesData || []).reduce((acc, curr) => {
-        acc[curr.article_id] = (acc[curr.article_id] || 0) + 1;
-        return acc;
-    }, {} as Record<number, number>);
-
-    const { data: commentsData } = await supabase
-        .from('article_comments')
-        .select('article_id')
-        .in('article_id', articleIds);
-
-    const commentCounts = (commentsData || []).reduce((acc, curr) => {
-        acc[curr.article_id] = (acc[curr.article_id] || 0) + 1;
-        return acc;
-    }, {} as Record<number, number>);
-
-    // Fetch User's Likes & Bookmarks
-    const userLikes = new Set<number>();
-    const userBookmarks = new Set<number>();
-
-    if (user) {
-        const { data: myLikes } = await supabase
-            .from('article_likes')
-            .select('article_id')
-            .eq('user_id', user.id)
-            .in('article_id', articleIds);
-
-        myLikes?.forEach(l => userLikes.add(l.article_id));
-
-        const { data: myBookmarks } = await supabase
-            .from('article_bookmarks')
-            .select('article_id')
-            .eq('user_id', user.id)
-            .in('article_id', articleIds);
-
-        myBookmarks?.forEach(b => userBookmarks.add(b.article_id));
-    }
-
-    // Combine Data
-    const feedArticles = allArticles.map(article => ({
-        ...article,
-        likes_count: likeCounts[article.id] || 0,
-        comments_count: commentCounts[article.id] || 0,
-        is_liked: userLikes.has(article.id),
-        is_bookmarked: userBookmarks.has(article.id)
-    }));
-
-    // Extract categories for sidebar/tabs
+    // Extract categories for filters
     const { data: allCategoriesData } = await supabase
         .from('articles')
         .select('category')
@@ -121,133 +66,152 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
 
     return (
-        <div className="min-h-screen pb-20 bg-background"> {/* Restored to site default bg */}
-            <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="min-h-screen bg-background">
+            {/* New Premium Header with Search Integration */}
+            <PremiumArchiveHeader />
 
-                {/* Animated Neo Header */}
-                <NeoArticleHeader />
+            <div className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
 
-                {/* Filters / Tabs */}
-                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[2px] border-black/10 dark:border-white/10">
-                    <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
-                        <Link
-                            href="/makale"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${!categoryParam && sortParam === 'latest'
-                                ? 'bg-[#FFC800] text-black'
-                                : 'bg-white text-black hover:bg-neutral-100'
-                                }`}
-                        >
-                            Tümü
-                        </Link>
-                        <Link
-                            href="/makale?sort=popular"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-2 ${sortParam === 'popular'
-                                ? 'bg-[#FF5500] text-white'
-                                : 'bg-white text-black hover:bg-neutral-100'
-                                }`}
-                        >
-                            <Flame className="w-3 h-3 filled" />
-                            Popüler
-                        </Link>
+                    {/* Main Content Column */}
+                    <div className="lg:col-span-8 space-y-16">
 
-                        {categories.map((cat, index) => (
-                            <Link
-                                key={cat}
-                                href={`/makale?category=${encodeURIComponent(cat)}`}
-                                className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${categoryParam === cat
-                                    ? 'bg-cyan-400 text-black'
-                                    : 'bg-white text-black hover:bg-neutral-100'
-                                    }`}
-                            >
-                                {cat}
-                            </Link>
-                        ))}
-                    </div>
-                </div>
+                        {/* Elegant Minimalist Filters */}
+                        <div className="flex flex-col space-y-6">
+                            <div className="flex items-center gap-4">
+                                <div className="h-px flex-1 bg-foreground/10" />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/30 px-4">Tasnif & Filtre</span>
+                                <div className="h-px flex-1 bg-foreground/10" />
+                            </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-                    {/* Main Content - Social Feed */}
-                    <div className="lg:col-span-8">
-                        {/* Feed Layout: Grid for Neo Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {feedArticles.map((article, index) => (
-                                <div key={article.id} className={index % 3 === 0 ? "md:col-span-2" : ""}>
-                                    <NeoArticleCard
-                                        article={article}
-                                        initialLikes={article.likes_count}
-                                        initialComments={article.comments_count}
-                                        initialIsLiked={article.is_liked}
-                                        initialIsBookmarked={article.is_bookmarked}
-                                        className="h-full"
-                                    />
-                                    {index === 4 && (
-                                        <div className="my-8 md:col-span-2">
-                                            <ForumTeaserCard />
-                                        </div>
+                            <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-4">
+                                <Link
+                                    href="/makale"
+                                    className={cn(
+                                        "px-6 py-2 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border",
+                                        !categoryParam && sortParam === 'latest'
+                                            ? "bg-foreground text-background border-foreground"
+                                            : "bg-transparent text-foreground/50 border-foreground/10 hover:border-foreground/40 hover:text-foreground"
                                     )}
-                                </div>
+                                >
+                                    Tüm Koleksiyon
+                                </Link>
+                                <Link
+                                    href="/makale?sort=popular"
+                                    className={cn(
+                                        "px-6 py-2 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border flex items-center gap-2",
+                                        sortParam === 'popular'
+                                            ? "bg-foreground text-background border-foreground"
+                                            : "bg-transparent text-foreground/50 border-foreground/10 hover:border-foreground/40 hover:text-foreground"
+                                    )}
+                                >
+                                    <Flame className="w-3.5 h-3.5" />
+                                    Popüler Tahkikatlar
+                                </Link>
+
+                                {categories.map((cat) => (
+                                    <Link
+                                        key={cat}
+                                        href={`/makale?category=${encodeURIComponent(cat)}`}
+                                        className={cn(
+                                            "px-6 py-2 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border",
+                                            categoryParam === cat
+                                                ? "bg-foreground text-background border-foreground"
+                                                : "bg-transparent text-foreground/50 border-foreground/10 hover:border-foreground/40 hover:text-foreground"
+                                        )}
+                                    >
+                                        {cat}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Article Grid - Journal Index Style */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 md:gap-y-24">
+                            {allArticles.map((article, index) => (
+                                <PremiumArchiveCard
+                                    key={article.id}
+                                    article={article as any}
+                                    index={index}
+                                />
                             ))}
                         </div>
 
-                        {feedArticles.length === 0 && (
-                            <div className="text-center py-24 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-xl">
-                                <Telescope className="w-16 h-16 mx-auto mb-4 text-black" />
-                                <p className="text-2xl font-black uppercase text-black mb-2">HİÇBİR ŞEY YOK MU?</p>
-                                <p className="text-sm font-bold text-neutral-500 mb-6">Bu kategoride henüz bir makale paylaşılmamış.</p>
-                                <Link href="/makale" className="inline-block px-6 py-3 bg-[#FFC800] border-2 border-black font-black uppercase shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all text-black">
-                                    Tüm Makalelere Dön
+                        {allArticles.length === 0 && (
+                            <div className="text-center py-32 space-y-6">
+                                <div className="p-8 bg-foreground/[0.02] rounded-full w-24 h-24 mx-auto flex items-center justify-center border border-foreground/5 mb-6">
+                                    <Telescope className="w-10 h-10 text-foreground/20" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-2xl font-display font-medium text-foreground tracking-tight">Netice Bulunamadı</h3>
+                                    <p className="text-sm font-serif italic text-foreground/40 max-w-sm mx-auto">
+                                        Seçtiğiniz kriterlere uygun veya aradığınız başlığa sahip bir makale arşivimizde bulunmuyor.
+                                    </p>
+                                </div>
+                                <Link href="/makale" className="inline-block px-10 py-3 bg-foreground text-background font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+                                    Arşivi Sıfırla
                                 </Link>
                             </div>
                         )}
                     </div>
 
-                    {/* Sidebar */}
-                    <aside className="hidden lg:block lg:col-span-4 space-y-8 sticky top-32 h-fit">
-                        {/* Trending Section - Neo Style */}
-                        <div className="bg-white dark:bg-zinc-900 border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-0 overflow-hidden">
-                            <div className="bg-black p-3 flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-[#FFC800]" />
-                                <h3 className="text-sm font-black text-white uppercase tracking-widest">
-                                    Gündemdekiler
-                                </h3>
+                    {/* Sidebar Column - Synchronized with Article Page */}
+                    <aside className="hidden lg:block lg:col-span-4 space-y-12 h-fit sticky top-32">
+
+                        {/* Trending Section */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-4">
+                                <TrendingUp className="w-4 h-4 text-foreground/30" />
+                                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/40">Gündemdekiler</h3>
                             </div>
-                            <div className="divide-y-2 divide-black">
+
+                            <div className="space-y-8">
                                 {allArticles.slice(0, 5).map((article, i) => (
                                     <Link
                                         key={article.id}
-                                        href={`/blog/${article.slug}`}
-                                        className="block group p-4 hover:bg-[#FFC800]/10 transition-colors"
+                                        href={`/makale/${article.slug}`}
+                                        className="group flex gap-6 items-start"
                                     >
-                                        <div className="flex items-start gap-3">
-                                            <span className="text-3xl font-black text-black/10 group-hover:text-[#FFC800] transition-colors leading-none">
-                                                {i + 1}
-                                            </span>
-                                            <div>
-                                                <div className="text-[10px] font-bold text-neutral-500 uppercase mb-1">
-                                                    {article.category}
-                                                </div>
-                                                <h4 className="font-bold text-base text-black dark:text-white group-hover:underline decoration-2 decoration-black leading-snug">
-                                                    {article.title}
-                                                </h4>
+                                        <span className="text-4xl font-display font-light text-foreground/10 group-hover:text-foreground/30 transition-colors leading-[0.8]">
+                                            {(i + 1).toString().padStart(2, '0')}
+                                        </span>
+                                        <div className="space-y-1.5">
+                                            <div className="text-[9px] font-bold text-foreground/30 uppercase tracking-widest">
+                                                {article.category}
                                             </div>
+                                            <h4 className="font-display font-medium text-lg text-foreground group-hover:text-foreground/70 transition-colors leading-snug">
+                                                {article.title}
+                                            </h4>
                                         </div>
                                     </Link>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Writer CTA - Neo Style */}
-                        <div className="bg-[#FF8800] border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-6 text-center transform rotate-1 hover:rotate-0 transition-transform">
-                            <h3 className="text-2xl font-black text-white uppercase drop-shadow-[2px_2px_0px_black] mb-2 leading-none">YAZAR OLMAK İSTER MİSİN?</h3>
-                            <p className="text-xs font-bold text-white/90 mb-5 max-w-[200px] mx-auto border-b-2 border-black/10 pb-2">
-                                Kendi bilimsel makalelerini yayınla, topluluğa katkı sağla.
-                            </p>
-                            <Link
-                                href="/yazar"
-                                className="inline-flex w-full items-center justify-center py-3 bg-white border-2 border-black text-black font-black text-sm uppercase tracking-widest shadow-[3px_3px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_#000] transition-all"
-                            >
-                                Başvuru Yap
-                            </Link>
+                        {/* Writer CTA - Academic Recruitment Style */}
+                        <div className="relative p-8 border border-foreground/10 bg-foreground/[0.03] overflow-hidden group">
+                            {/* Subtle dot pattern */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }}
+                            />
+
+                            <div className="relative space-y-6 text-center">
+                                <div className="p-3 bg-foreground/[0.05] rounded-full w-12 h-12 mx-auto flex items-center justify-center border border-foreground/5">
+                                    <UserPlus className="w-5 h-5 text-foreground/40" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-display font-medium text-foreground tracking-tight">İlmi İştirak</h3>
+                                    <p className="text-xs font-serif italic text-foreground/50 leading-relaxed">
+                                        Kendi bilimsel çalışmalarınızı FizikHub arşivine dahil etmek ister misiniz? Topluluğumuza yazar olarak katkı sağlayın.
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/yazar"
+                                    className="block w-full py-3 border border-foreground bg-foreground text-background font-bold text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-background hover:text-foreground shadow-sm"
+                                >
+                                    Müracaat Formu
+                                </Link>
+                            </div>
                         </div>
                     </aside>
                 </div>
