@@ -75,27 +75,5 @@ export const simulations: Simulation[] = [
         formula: "F = G(m₁m₂)/r²",
         difficulty: "Orta",
         tags: ["Astronomi", "Kütleçekim"]
-    },
-    {
-        id: "evosim",
-        slug: "evrimsel-yurume",
-        title: "Evrimsel Yürüme (V1)",
-        description: "Yapay zeka ve genetik algoritmalarla yürümeyi kendi kendine öğrenen yaratıkları keşfedin.",
-        icon: Dna,
-        color: "#FACC15",
-        formula: "v = Δx / Δt",
-        difficulty: "Zor",
-        tags: ["AI", "Genetik"]
-    },
-    {
-        id: "evosim-v4",
-        slug: "evrimsel-yurume-v4",
-        title: "Neuro-Centipede (V4)",
-        description: "Biyolojik sinir ağları tarafından kontrol edilen omurgalı yaratıklar. Gerçek Nöroevrim!",
-        icon: Activity,
-        color: "#22d3ee",
-        formula: "Brain = f(Sensors)",
-        difficulty: "Zor",
-        tags: ["Neuro-AI", "Fizik", "Evrim"]
     }
 ];
