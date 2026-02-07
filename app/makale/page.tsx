@@ -1,25 +1,24 @@
 import { createClient } from "@/lib/supabase-server";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { SearchInput } from "@/components/blog/search-input";
-import { Sparkles, Flame, Clock, ArrowRight, PenTool } from "lucide-react";
+import { Flame, Clock } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Makaleler | FizikHub",
-    description: "FizikHub yazarlarından bilimsel makaleler.",
+    description: "Bilimsel makaleler ve araştırmalar.",
 };
 
 export const revalidate = 60;
 
-interface BlogPageProps {
+interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function BlogPage({ searchParams }: BlogPageProps) {
-    const resolvedSearchParams = await searchParams;
-    const categoryParam = typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined;
-    const sortParam = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
+export default async function MakalePage({ searchParams }: PageProps) {
+    const params = await searchParams;
+    const category = typeof params.category === 'string' ? params.category : undefined;
+    const sort = typeof params.sort === 'string' ? params.sort : 'latest';
 
     const supabase = await createClient();
 
@@ -29,119 +28,72 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         .eq('status', 'published')
         .eq('author.is_writer', true);
 
-    if (categoryParam) {
-        query = query.eq('category', categoryParam);
-    }
+    if (category) query = query.eq('category', category);
 
-    if (sortParam === 'popular') {
-        query = query.order('views', { ascending: false });
-    } else {
-        query = query.order('created_at', { ascending: false });
-    }
+    query = sort === 'popular'
+        ? query.order('views', { ascending: false })
+        : query.order('created_at', { ascending: false });
 
     const { data: articles } = await query;
-    const allArticles = articles || [];
+    const list = articles || [];
 
-    const { data: allCategoriesData } = await supabase.from('articles').select('category').eq('status', 'published');
-    const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
+    const { data: catData } = await supabase.from('articles').select('category').eq('status', 'published');
+    const cats = [...new Set((catData || []).map(a => a.category).filter(Boolean))] as string[];
 
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container max-w-2xl mx-auto px-2 sm:px-4 py-6">
+        <main className="min-h-screen bg-background">
+            <div className="max-w-2xl mx-auto px-4 py-8">
 
-                {/* Header */}
-                <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-foreground">
-                        Makaleler
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {allArticles.length} makale yayında
-                    </p>
-                </div>
+                {/* Başlık */}
+                <header className="mb-8">
+                    <h1 className="text-3xl font-black tracking-tight">Makaleler</h1>
+                    <p className="text-muted-foreground text-sm mt-1">{list.length} yazı</p>
+                </header>
 
-                {/* Search */}
-                <div className="mb-6">
-                    <SearchInput />
-                </div>
-
-                {/* Filter Pills */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-hide mb-6">
-                    <FilterPill href="/makale" active={!categoryParam && sortParam !== 'popular'}>
-                        <Sparkles className="w-3 h-3" /> Tümü
-                    </FilterPill>
-                    <FilterPill href="/makale?sort=popular" active={sortParam === 'popular'}>
-                        <Flame className="w-3 h-3" /> Popüler
-                    </FilterPill>
-                    <FilterPill href="/makale?sort=latest" active={sortParam === 'latest' && !categoryParam}>
-                        <Clock className="w-3 h-3" /> Yeni
-                    </FilterPill>
-
-                    {categories.length > 0 && <div className="w-px h-5 bg-border mx-1" />}
-
-                    {categories.map(cat => (
-                        <FilterPill key={cat} href={`/makale?category=${encodeURIComponent(cat)}`} active={categoryParam === cat}>
-                            {cat}
-                        </FilterPill>
+                {/* Filtreler */}
+                <nav className="flex gap-2 mb-8 overflow-x-auto pb-2">
+                    <Tab href="/makale" on={!category && sort === 'latest'}>Son</Tab>
+                    <Tab href="/makale?sort=popular" on={sort === 'popular'}>
+                        <Flame className="w-3.5 h-3.5" /> Popüler
+                    </Tab>
+                    <span className="text-border">|</span>
+                    {cats.map(c => (
+                        <Tab key={c} href={`/makale?category=${c}`} on={category === c}>{c}</Tab>
                     ))}
-                </div>
+                </nav>
 
-                {/* Article Feed */}
-                {allArticles.length > 0 ? (
-                    <div className="flex flex-col gap-5">
-                        {allArticles.map((article) => (
-                            <NeoArticleCard
-                                key={article.id}
-                                article={article}
-                                initialLikes={0}
-                                initialComments={0}
-                            />
+                {/* Liste */}
+                {list.length > 0 ? (
+                    <div className="space-y-6">
+                        {list.map(article => (
+                            <NeoArticleCard key={article.id} article={article} />
                         ))}
-
-                        {/* Writer CTA */}
-                        <div className="mt-8 p-6 bg-[#FFC800] border-[3px] border-black rounded-lg shadow-[4px_4px_0px_0px_#000]">
-                            <div className="flex items-center gap-2 text-black text-xs font-black uppercase tracking-widest mb-2">
-                                <PenTool className="w-4 h-4" />
-                                Yazarlık Programı
-                            </div>
-                            <h3 className="text-xl font-black text-black uppercase tracking-tight mb-2">
-                                Sen de yazar ol
-                            </h3>
-                            <p className="text-sm text-black/70 mb-4">
-                                Bilimsel makalelerini binlerce okuyucu ile paylaş.
-                            </p>
-                            <Link
-                                href="/yazar"
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white font-bold text-sm rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
-                            >
-                                Başvur <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </div>
                     </div>
                 ) : (
-                    <div className="text-center py-16 border-[3px] border-black rounded-lg bg-card">
-                        <Sparkles className="w-10 h-10 text-[#FFC800] mx-auto mb-4" />
-                        <h3 className="text-lg font-black uppercase text-foreground mb-2">İçerik Bulunamadı</h3>
-                        <p className="text-sm text-muted-foreground mb-4">Bu kategoride henüz makale yok.</p>
-                        <Link
-                            href="/makale"
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white font-bold text-sm rounded-lg"
-                        >
-                            Tüm Makaleler <ArrowRight className="w-4 h-4" />
-                        </Link>
+                    <div className="py-20 text-center text-muted-foreground">
+                        Bu kategoride henüz içerik yok.
                     </div>
                 )}
+
+                {/* Yazar CTA */}
+                <aside className="mt-16 p-6 rounded-xl bg-muted/50 border">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Yazarlık</p>
+                    <h2 className="text-lg font-bold mb-1">Sen de yaz</h2>
+                    <p className="text-sm text-muted-foreground mb-4">Araştırmalarını paylaş.</p>
+                    <Link href="/yazar" className="text-sm font-semibold underline underline-offset-4 hover:no-underline">
+                        Başvur →
+                    </Link>
+                </aside>
             </div>
-        </div>
+        </main>
     );
 }
 
-function FilterPill({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+function Tab({ href, on, children }: { href: string; on: boolean; children: React.ReactNode }) {
     return (
         <Link
             href={href}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-md border-2 border-black whitespace-nowrap transition-all ${active
-                    ? "bg-black text-white shadow-none"
-                    : "bg-white dark:bg-zinc-900 text-black dark:text-white shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000]"
+            className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors ${on ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
         >
             {children}
