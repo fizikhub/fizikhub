@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { MagazineMasthead } from "@/components/articles/magazine-masthead";
 import { MagazineCard } from "@/components/articles/magazine-card";
-import { Sparkles, ArrowRight, PenTool, Zap } from "lucide-react";
+import { Sparkles, ArrowRight, ArrowUpRight, PenTool, Zap } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
