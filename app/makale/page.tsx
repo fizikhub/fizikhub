@@ -1,13 +1,13 @@
 import { createClient } from "@/lib/supabase-server";
-import { MagazineCard } from "@/components/articles/magazine-card";
-import { MagazineHeader } from "@/components/articles/magazine-header";
-import { TrendingUp, Flame, Clock, BookOpen, Telescope, PenTool } from "lucide-react";
+import { JournalCard } from "@/components/articles/journal-card";
+import { JournalHeader } from "@/components/articles/journal-header";
+import { Flame, Clock, ArrowRight, PenTool } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Bilim Dergisi | FizikHub",
-    description: "FizikHub yazarlarından bilimsel makaleler. Evrenin sırlarını çözen içerikler.",
+    description: "FizikHub yazarlarından bilimsel makaleler. Evrenin sırlarını keşfedin.",
 };
 
 export const revalidate = 60;
@@ -31,7 +31,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         .eq('status', 'published')
         .eq('author.is_writer', true);
 
-    if (categoryParam && categoryParam !== 'Tümü') {
+    if (categoryParam) {
         query = query.eq('category', categoryParam);
     }
 
@@ -76,117 +76,135 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const { data: allCategoriesData } = await supabase.from('articles').select('category').eq('status', 'published');
     const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
 
-    const heroArticle = feedArticles[0];
-    const featuredArticles = feedArticles.slice(1, 5);
-    const restArticles = feedArticles.slice(5);
+    // Layout split
+    const coverArticle = feedArticles[0];
+    const featureArticles = feedArticles.slice(1, 3);
+    const gridArticles = feedArticles.slice(3, 9);
+    const listArticles = feedArticles.slice(9);
 
     return (
-        <div className="min-h-screen pb-20 bg-gradient-to-b from-background via-background to-[#FFC800]/5">
-            <div className="container mx-auto max-w-6xl px-3 sm:px-6 py-6 sm:py-10">
+        <div className="min-h-screen bg-white dark:bg-neutral-950">
+            <div className="container mx-auto max-w-6xl px-4 sm:px-6 py-8">
 
-                {/* Magazine Header */}
-                <MagazineHeader />
+                {/* Header */}
+                <JournalHeader />
 
-                {/* Filter Pills */}
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-4 mb-6 -mx-3 px-3">
-                    <FilterPill href="/makale" active={!categoryParam && sortParam === 'latest'} icon={<BookOpen className="w-3.5 h-3.5" />}>
-                        Tümü
-                    </FilterPill>
-                    <FilterPill href="/makale?sort=popular" active={sortParam === 'popular'} icon={<Flame className="w-3.5 h-3.5" />} color="bg-orange-500">
-                        Popüler
-                    </FilterPill>
-                    <FilterPill href="/makale?sort=latest" active={sortParam === 'latest' && !categoryParam} icon={<Clock className="w-3.5 h-3.5" />} color="bg-cyan-500">
-                        En Yeni
-                    </FilterPill>
-                    <div className="w-px h-6 bg-black/20 dark:bg-white/20 mx-1 flex-shrink-0" />
+                {/* Navigation */}
+                <nav className="flex items-center justify-center gap-6 py-4 border-b border-neutral-200 dark:border-neutral-800 mb-10 overflow-x-auto">
+                    <NavLink href="/makale" active={!categoryParam && sortParam === 'latest'}>Tümü</NavLink>
+                    <NavLink href="/makale?sort=popular" active={sortParam === 'popular'}>
+                        <Flame className="w-3.5 h-3.5" /> Popüler
+                    </NavLink>
+                    <NavLink href="/makale?sort=latest" active={sortParam === 'latest' && !categoryParam}>
+                        <Clock className="w-3.5 h-3.5" /> En Yeni
+                    </NavLink>
+                    <span className="w-px h-4 bg-neutral-300 dark:bg-neutral-700" />
                     {categories.map(cat => (
-                        <FilterPill key={cat} href={`/makale?category=${encodeURIComponent(cat)}`} active={categoryParam === cat} color="bg-purple-500">
+                        <NavLink key={cat} href={`/makale?category=${encodeURIComponent(cat)}`} active={categoryParam === cat}>
                             {cat}
-                        </FilterPill>
+                        </NavLink>
                     ))}
-                </div>
+                </nav>
 
-                {/* Main Content */}
                 {feedArticles.length > 0 ? (
-                    <div className="space-y-8">
-                        {/* Hero Article */}
-                        {heroArticle && (
-                            <MagazineCard
-                                article={heroArticle}
-                                index={0}
-                                variant="hero"
-                                initialLikes={heroArticle.likes_count}
-                                initialIsLiked={heroArticle.is_liked}
-                                initialIsBookmarked={heroArticle.is_bookmarked}
-                            />
+                    <div className="space-y-16">
+
+                        {/* Cover Story */}
+                        {coverArticle && (
+                            <section>
+                                <JournalCard
+                                    article={coverArticle}
+                                    variant="cover"
+                                    initialLikes={coverArticle.likes_count}
+                                    initialIsLiked={coverArticle.is_liked}
+                                    initialIsBookmarked={coverArticle.is_bookmarked}
+                                />
+                            </section>
                         )}
 
-                        {/* Featured Grid */}
-                        {featuredArticles.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {featuredArticles.map((article, i) => (
-                                    <MagazineCard
-                                        key={article.id}
-                                        article={article}
-                                        index={i + 1}
-                                        variant="featured"
-                                        initialLikes={article.likes_count}
-                                        initialIsLiked={article.is_liked}
-                                        initialIsBookmarked={article.is_bookmarked}
-                                    />
-                                ))}
-                            </div>
+                        {/* Feature Stories */}
+                        {featureArticles.length > 0 && (
+                            <section>
+                                <SectionTitle>Öne Çıkanlar</SectionTitle>
+                                <div className="space-y-8">
+                                    {featureArticles.map((article) => (
+                                        <JournalCard
+                                            key={article.id}
+                                            article={article}
+                                            variant="feature"
+                                            initialLikes={article.likes_count}
+                                            initialIsLiked={article.is_liked}
+                                            initialIsBookmarked={article.is_bookmarked}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
+                        {/* Grid */}
+                        {gridArticles.length > 0 && (
+                            <section>
+                                <SectionTitle>Son Makaleler</SectionTitle>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {gridArticles.map((article) => (
+                                        <JournalCard
+                                            key={article.id}
+                                            article={article}
+                                            variant="standard"
+                                            initialLikes={article.likes_count}
+                                            initialIsLiked={article.is_liked}
+                                            initialIsBookmarked={article.is_bookmarked}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
                         )}
 
                         {/* Writer CTA */}
-                        <div className="relative overflow-hidden rounded-2xl border-[3px] border-black bg-gradient-to-r from-[#FF8800] to-[#FF5500] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#000]">
-                            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-                            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <section className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-8 sm:p-12">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center border-2 border-white/30">
-                                        <PenTool className="w-7 h-7 text-white" />
+                                    <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                                        <PenTool className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-white uppercase">Sen de Yazar Ol!</h3>
-                                        <p className="text-sm text-white/80">Bilimsel makalelerini yayınla, topluluğa katkı sağla.</p>
+                                        <h3 className="text-lg font-serif font-bold text-black dark:text-white">Yazar Olmak İster misin?</h3>
+                                        <p className="text-sm text-neutral-600 dark:text-neutral-400">Bilimsel makalelerini yayınla, topluluğa katkı sağla.</p>
                                     </div>
                                 </div>
-                                <Link href="/yazar" className="px-6 py-3 bg-white text-black font-black text-sm uppercase tracking-wide rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                    Başvuru Yap
+                                <Link
+                                    href="/yazar"
+                                    className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black text-sm font-semibold rounded-full hover:opacity-90 transition-opacity"
+                                >
+                                    Başvuru Yap <ArrowRight className="w-4 h-4" />
                                 </Link>
                             </div>
-                        </div>
+                        </section>
 
-                        {/* Rest as Compact List */}
-                        {restArticles.length > 0 && (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                                <div className="lg:col-span-2 mb-2">
-                                    <h2 className="text-lg font-black uppercase text-black dark:text-white flex items-center gap-2">
-                                        <TrendingUp className="w-5 h-5 text-[#FFC800]" />
-                                        Daha Fazla Makale
-                                    </h2>
+                        {/* Minimal List */}
+                        {listArticles.length > 0 && (
+                            <section>
+                                <SectionTitle>Arşivden</SectionTitle>
+                                <div className="max-w-2xl">
+                                    {listArticles.map((article) => (
+                                        <JournalCard
+                                            key={article.id}
+                                            article={article}
+                                            variant="minimal"
+                                            initialLikes={article.likes_count}
+                                            initialIsLiked={article.is_liked}
+                                            initialIsBookmarked={article.is_bookmarked}
+                                        />
+                                    ))}
                                 </div>
-                                {restArticles.map((article, i) => (
-                                    <MagazineCard
-                                        key={article.id}
-                                        article={article}
-                                        index={i}
-                                        variant="compact"
-                                        initialLikes={article.likes_count}
-                                        initialIsLiked={article.is_liked}
-                                        initialIsBookmarked={article.is_bookmarked}
-                                    />
-                                ))}
-                            </div>
+                            </section>
                         )}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-white dark:bg-zinc-900 rounded-2xl border-[3px] border-black shadow-[6px_6px_0px_0px_#000]">
-                        <Telescope className="w-16 h-16 mx-auto mb-4 text-[#FFC800]" />
-                        <h3 className="text-2xl font-black uppercase text-black dark:text-white mb-2">Henüz Makale Yok</h3>
-                        <p className="text-sm text-neutral-500 mb-6">Bu kategoride henüz bir makale yayınlanmamış.</p>
-                        <Link href="/makale" className="inline-block px-6 py-3 bg-[#FFC800] text-black font-black uppercase rounded-xl border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                            Tüm Makalelere Dön
+                    <div className="text-center py-20">
+                        <p className="text-lg text-neutral-500 mb-6">Bu kategoride henüz makale yok.</p>
+                        <Link href="/makale" className="inline-flex items-center gap-2 text-amber-600 font-medium hover:underline">
+                            Tüm makalelere dön <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>
                 )}
@@ -195,17 +213,24 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     );
 }
 
-function FilterPill({ href, active, icon, color, children }: { href: string; active: boolean; icon?: React.ReactNode; color?: string; children: React.ReactNode }) {
+function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
     return (
         <Link
             href={href}
-            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-black uppercase tracking-wide whitespace-nowrap rounded-full border-2 transition-all ${active
-                    ? `${color || 'bg-[#FFC800]'} border-black text-${color ? 'white' : 'black'} shadow-[3px_3px_0px_0px_#000]`
-                    : 'bg-white dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700'
+            className={`flex items-center gap-1.5 text-sm font-medium whitespace-nowrap transition-colors ${active
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
                 }`}
         >
-            {icon}
             {children}
         </Link>
+    );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+    return (
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-6 pb-2 border-b border-neutral-200 dark:border-neutral-800">
+            {children}
+        </h2>
     );
 }
