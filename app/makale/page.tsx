@@ -1,17 +1,15 @@
 import { createClient } from "@/lib/supabase-server";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
-import { TrendingUp, Flame, Telescope } from "lucide-react";
+import { TrendingUp, Flame, Clock, Sparkles, Telescope } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { NeoArticleHeader } from "@/components/articles/neo-article-header";
 
 export const metadata: Metadata = {
-    title: "Makaleler | Fizikhub",
-    description: "Evrenin sırlarını çözmeye çalışanların not defteri.",
+    title: "Bilim Arşivi | FizikHub",
+    description: "FizikHub yazarlarından bilimsel makaleler. Evrenin sırlarını çözen içerikler.",
 };
 
-// ISR: Regenerate every 60 seconds
 export const revalidate = 60;
 
 interface BlogPageProps {
@@ -27,7 +25,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Base Query
     let query = supabase
         .from('articles')
         .select(`
@@ -37,17 +34,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         .eq('status', 'published')
         .eq('author.is_writer', true);
 
-    // Apply Category Filter
-    if (categoryParam && categoryParam !== 'Tümü' && categoryParam !== 'Popüler' && categoryParam !== 'En Yeni') {
+    if (categoryParam && categoryParam !== 'Tümü') {
         query = query.eq('category', categoryParam);
     }
 
-    // Apply Search Filter
     if (searchParam) {
         query = query.ilike('title', `%${searchParam}%`);
     }
 
-    // Apply Sorting
     if (sortParam === 'popular') {
         query = query.order('views', { ascending: false });
     } else {
@@ -57,10 +51,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const { data: articles } = await query;
     const allArticles = articles || [];
 
-    // Collect IDs for batch fetching interactions
     const articleIds = allArticles.map(a => a.id);
 
-    // Fetch Interaction Counts (Likes & Comments)
     const { data: likesData } = await supabase
         .from('article_likes')
         .select('article_id')
@@ -81,7 +73,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         return acc;
     }, {} as Record<number, number>);
 
-    // Fetch User's Likes & Bookmarks
     const userLikes = new Set<number>();
     const userBookmarks = new Set<number>();
 
@@ -103,7 +94,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         myBookmarks?.forEach(b => userBookmarks.add(b.article_id));
     }
 
-    // Combine Data
     const feedArticles = allArticles.map(article => ({
         ...article,
         likes_count: likeCounts[article.id] || 0,
@@ -112,7 +102,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         is_bookmarked: userBookmarks.has(article.id)
     }));
 
-    // Extract categories for sidebar/tabs
     const { data: allCategoriesData } = await supabase
         .from('articles')
         .select('category')
@@ -121,42 +110,56 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     const categories = Array.from(new Set((allCategoriesData || []).map(a => a.category).filter(Boolean))) as string[];
 
     return (
-        <div className="min-h-screen pb-20 bg-background"> {/* Restored to site default bg */}
-            <div className="container mx-auto max-w-7xl px-3 sm:px-6 py-8 sm:py-12 md:py-16">
+        <div className="min-h-screen pb-20 bg-background">
+            <div className="container mx-auto max-w-6xl px-3 sm:px-6 py-6 sm:py-10">
 
-                {/* Animated Neo Header */}
                 <NeoArticleHeader />
 
-                {/* Filters / Tabs */}
-                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:mx-0 sm:px-0 mb-8 border-b-[2px] border-black/10 dark:border-white/10">
-                    <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
+                {/* Filters - Pill Style */}
+                <div className="sticky top-14 z-30 bg-background/95 backdrop-blur-sm py-3 -mx-3 px-3 sm:mx-0 sm:px-0 mb-6">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
                         <Link
                             href="/makale"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${!categoryParam && sortParam === 'latest'
-                                ? 'bg-[#FFC800] text-black'
-                                : 'bg-white text-black hover:bg-neutral-100'
+                            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap rounded-full border-2 transition-all ${!categoryParam && sortParam === 'latest'
+                                    ? 'bg-[#FFC800] border-black text-black shadow-[2px_2px_0px_0px_#000]'
+                                    : 'bg-white dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700'
                                 }`}
                         >
+                            <Sparkles className="w-3 h-3" />
                             Tümü
                         </Link>
+
                         <Link
                             href="/makale?sort=popular"
-                            className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all flex items-center gap-2 ${sortParam === 'popular'
-                                ? 'bg-[#FF5500] text-white'
-                                : 'bg-white text-black hover:bg-neutral-100'
+                            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap rounded-full border-2 transition-all ${sortParam === 'popular'
+                                    ? 'bg-[#FF5500] border-black text-white shadow-[2px_2px_0px_0px_#000]'
+                                    : 'bg-white dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700'
                                 }`}
                         >
-                            <Flame className="w-3 h-3 filled" />
+                            <Flame className="w-3 h-3" />
                             Popüler
                         </Link>
 
-                        {categories.map((cat, index) => (
+                        <Link
+                            href="/makale?sort=latest"
+                            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap rounded-full border-2 transition-all ${sortParam === 'latest' && !categoryParam
+                                    ? 'bg-[#23A9FA] border-black text-black shadow-[2px_2px_0px_0px_#000]'
+                                    : 'bg-white dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700'
+                                }`}
+                        >
+                            <Clock className="w-3 h-3" />
+                            En Yeni
+                        </Link>
+
+                        <div className="w-px h-6 bg-black/20 dark:bg-white/20 mx-1" />
+
+                        {categories.map(cat => (
                             <Link
                                 key={cat}
                                 href={`/makale?category=${encodeURIComponent(cat)}`}
-                                className={`px-5 py-2 text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap border-[2px] border-black shadow-[3px_3px_0px_0px_#000] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all ${categoryParam === cat
-                                    ? 'bg-cyan-400 text-black'
-                                    : 'bg-white text-black hover:bg-neutral-100'
+                                className={`px-4 py-2 text-xs font-bold uppercase tracking-wide whitespace-nowrap rounded-full border-2 transition-all ${categoryParam === cat
+                                        ? 'bg-purple-500 border-black text-white shadow-[2px_2px_0px_0px_#000]'
+                                        : 'bg-white dark:bg-zinc-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700'
                                     }`}
                             >
                                 {cat}
@@ -165,13 +168,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-                    {/* Main Content - Social Feed */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                    {/* Main Content */}
                     <div className="lg:col-span-8">
-                        {/* Feed Layout: Grid for Neo Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                             {feedArticles.map((article, index) => (
-                                <div key={article.id} className={index % 3 === 0 ? "md:col-span-2" : ""}>
+                                <div key={article.id} className={index === 0 ? "sm:col-span-2" : ""}>
                                     <NeoArticleCard
                                         article={article}
                                         initialLikes={article.likes_count}
@@ -180,21 +182,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                         initialIsBookmarked={article.is_bookmarked}
                                         className="h-full"
                                     />
-                                    {index === 4 && (
-                                        <div className="my-8 md:col-span-2">
-                                            <ForumTeaserCard />
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>
 
                         {feedArticles.length === 0 && (
-                            <div className="text-center py-24 bg-white border-[3px] border-black shadow-[4px_4px_0px_0px_#000] rounded-xl">
-                                <Telescope className="w-16 h-16 mx-auto mb-4 text-black" />
-                                <p className="text-2xl font-black uppercase text-black mb-2">HİÇBİR ŞEY YOK MU?</p>
-                                <p className="text-sm font-bold text-neutral-500 mb-6">Bu kategoride henüz bir makale paylaşılmamış.</p>
-                                <Link href="/makale" className="inline-block px-6 py-3 bg-[#FFC800] border-2 border-black font-black uppercase shadow-[3px_3px_0px_0px_#000] hover:translate-y-1 hover:shadow-none transition-all text-black">
+                            <div className="text-center py-16 bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] rounded-xl">
+                                <Telescope className="w-12 h-12 mx-auto mb-3 text-[#FFC800]" />
+                                <p className="text-xl font-black uppercase text-black dark:text-white mb-2">Henüz Makale Yok</p>
+                                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-6">Bu kategoride henüz bir makale yok.</p>
+                                <Link href="/makale" className="inline-block px-5 py-2.5 bg-[#FFC800] border-2 border-black font-bold uppercase text-sm shadow-[3px_3px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_#000] transition-all text-black rounded-lg">
                                     Tüm Makalelere Dön
                                 </Link>
                             </div>
@@ -202,31 +199,31 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                     </div>
 
                     {/* Sidebar */}
-                    <aside className="hidden lg:block lg:col-span-4 space-y-8 sticky top-32 h-fit">
-                        {/* Trending Section - Neo Style */}
-                        <div className="bg-white dark:bg-zinc-900 border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-0 overflow-hidden">
-                            <div className="bg-black p-3 flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-[#FFC800]" />
-                                <h3 className="text-sm font-black text-white uppercase tracking-widest">
+                    <aside className="hidden lg:block lg:col-span-4 space-y-6">
+                        {/* Trending */}
+                        <div className="bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] rounded-xl overflow-hidden">
+                            <div className="bg-black dark:bg-white px-4 py-3 flex items-center gap-2">
+                                <TrendingUp className="w-4 h-4 text-[#FFC800] dark:text-black" />
+                                <h3 className="text-sm font-black text-white dark:text-black uppercase tracking-wide">
                                     Gündemdekiler
                                 </h3>
                             </div>
-                            <div className="divide-y-2 divide-black">
+                            <div className="divide-y divide-black/10 dark:divide-white/10">
                                 {allArticles.slice(0, 5).map((article, i) => (
                                     <Link
                                         key={article.id}
                                         href={`/blog/${article.slug}`}
-                                        className="block group p-4 hover:bg-[#FFC800]/10 transition-colors"
+                                        className="block p-4 hover:bg-[#FFC800]/10 transition-colors group"
                                     >
                                         <div className="flex items-start gap-3">
-                                            <span className="text-3xl font-black text-black/10 group-hover:text-[#FFC800] transition-colors leading-none">
+                                            <span className="text-2xl font-black text-black/10 dark:text-white/10 group-hover:text-[#FFC800] transition-colors leading-none">
                                                 {i + 1}
                                             </span>
-                                            <div>
+                                            <div className="min-w-0">
                                                 <div className="text-[10px] font-bold text-neutral-500 uppercase mb-1">
                                                     {article.category}
                                                 </div>
-                                                <h4 className="font-bold text-base text-black dark:text-white group-hover:underline decoration-2 decoration-black leading-snug">
+                                                <h4 className="font-bold text-sm text-black dark:text-white group-hover:text-[#FFC800] transition-colors leading-snug line-clamp-2">
                                                     {article.title}
                                                 </h4>
                                             </div>
@@ -236,15 +233,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             </div>
                         </div>
 
-                        {/* Writer CTA - Neo Style */}
-                        <div className="bg-[#FF8800] border-[3px] border-black shadow-[6px_6px_0px_0px_#000] p-6 text-center transform rotate-1 hover:rotate-0 transition-transform">
-                            <h3 className="text-2xl font-black text-white uppercase drop-shadow-[2px_2px_0px_black] mb-2 leading-none">YAZAR OLMAK İSTER MİSİN?</h3>
-                            <p className="text-xs font-bold text-white/90 mb-5 max-w-[200px] mx-auto border-b-2 border-black/10 pb-2">
+                        {/* Writer CTA */}
+                        <div className="bg-gradient-to-br from-[#FF8800] to-[#FF5500] border-[3px] border-black shadow-[4px_4px_0px_0px_#000] p-5 rounded-xl">
+                            <h3 className="text-xl font-black text-white uppercase mb-2 leading-tight">
+                                Yazar Olmak İster misin?
+                            </h3>
+                            <p className="text-xs font-medium text-white/80 mb-4">
                                 Kendi bilimsel makalelerini yayınla, topluluğa katkı sağla.
                             </p>
                             <Link
                                 href="/yazar"
-                                className="inline-flex w-full items-center justify-center py-3 bg-white border-2 border-black text-black font-black text-sm uppercase tracking-widest shadow-[3px_3px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_#000] transition-all"
+                                className="block w-full text-center py-2.5 bg-white border-2 border-black text-black font-bold text-sm uppercase shadow-[3px_3px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_#000] transition-all rounded-lg"
                             >
                                 Başvuru Yap
                             </Link>
