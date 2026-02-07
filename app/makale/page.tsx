@@ -123,11 +123,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 </nav>
 
                 {feedArticles.length > 0 ? (
-                    <div className="space-y-20">
-
+                    <div className="space-y-32">
                         {/* HERO SECTION */}
                         {heroArticle && (
-                            <section>
+                            <section className="relative">
+                                <div className="absolute -top-10 -left-10 w-40 h-40 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none" />
                                 <EliteCard
                                     article={heroArticle}
                                     variant="hero"
@@ -139,63 +139,46 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                             </section>
                         )}
 
-                        {/* SPOTLIGHT SECTION */}
-                        {spotlightArticles.length > 0 && (
-                            <section>
-                                <SectionHeader icon={<TrendingUp className="w-5 h-5" />} title="Öne Çıkanlar" subtitle="Editör seçkisi" />
-                                <div className="space-y-6">
-                                    {spotlightArticles.map((article, i) => (
+                        {/* BENTO GRID SECTION */}
+                        <section>
+                            <SectionHeader
+                                icon={<Sparkles className="w-5 h-5" />}
+                                title="Keşfedilmeye Değer"
+                                subtitle="Bilimin en taze ve dikkat çeken başlıkları"
+                            />
+                            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                                {/* Large Spotlight Item */}
+                                {spotlightArticles[0] && (
+                                    <div className="md:col-span-4 lg:col-span-4">
                                         <EliteCard
-                                            key={article.id}
-                                            article={article}
-                                            index={i}
+                                            article={spotlightArticles[0]}
                                             variant="spotlight"
-                                            initialLikes={article.likes_count}
-                                            initialComments={article.comments_count}
-                                            initialIsLiked={article.is_liked}
-                                            initialIsBookmarked={article.is_bookmarked}
+                                            initialLikes={spotlightArticles[0].likes_count}
+                                            initialComments={spotlightArticles[0].comments_count}
+                                            initialIsLiked={spotlightArticles[0].is_liked}
+                                            initialIsBookmarked={spotlightArticles[0].is_bookmarked}
                                         />
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-
-                        {/* WRITER CTA */}
-                        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 p-8 sm:p-12">
-                            {/* Animated background circles */}
-                            <div className="absolute inset-0 overflow-hidden">
-                                <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl animate-pulse" />
-                                <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-black/10 rounded-full blur-3xl" />
-                            </div>
-
-                            <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6">
-                                <div className="flex items-center gap-5">
-                                    <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
-                                        <PenTool className="w-8 h-8 text-white" />
                                     </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black text-white mb-1">Sen de Yazar Ol!</h3>
-                                        <p className="text-sm text-white/80">Bilimsel makalelerini yayınla, binlerce okuyucuya ulaş.</p>
-                                    </div>
-                                </div>
-                                <Link
-                                    href="/yazar"
-                                    className="group flex items-center gap-2 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-neutral-100 transition-colors shadow-2xl"
-                                >
-                                    Başvuru Yap
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                            </div>
-                        </section>
+                                )}
 
-                        {/* GRID SECTION */}
-                        {gridArticles.length > 0 && (
-                            <section>
-                                <SectionHeader icon={<Sparkles className="w-5 h-5" />} title="Son Makaleler" subtitle="Güncel içerikler" />
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {gridArticles.map((article, i) => (
+                                {/* Vertical Spotlight Item */}
+                                {spotlightArticles[1] && (
+                                    <div className="md:col-span-4 lg:col-span-2">
                                         <EliteCard
-                                            key={article.id}
+                                            article={spotlightArticles[1]}
+                                            variant="card"
+                                            initialLikes={spotlightArticles[1].likes_count}
+                                            initialComments={spotlightArticles[1].comments_count}
+                                            initialIsLiked={spotlightArticles[1].is_liked}
+                                            initialIsBookmarked={spotlightArticles[1].is_bookmarked}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Rest of Grid */}
+                                {gridArticles.map((article, i) => (
+                                    <div key={article.id} className="md:col-span-2 lg:col-span-2">
+                                        <EliteCard
                                             article={article}
                                             index={i}
                                             variant="card"
@@ -204,28 +187,72 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                                             initialIsLiked={article.is_liked}
                                             initialIsBookmarked={article.is_bookmarked}
                                         />
-                                    ))}
-                                </div>
-                            </section>
-                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
 
-                        {/* LIST SECTION */}
+                        {/* WRITER CTA */}
+                        <section className="relative overflow-hidden rounded-[2rem] bg-neutral-900 border border-neutral-800 p-8 sm:p-16">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.15),transparent_50%)]" />
+                            <div className="absolute bottom-0 right-0 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full" />
+
+                            <div className="relative flex flex-col md:flex-row items-center justify-between gap-12">
+                                <div className="max-w-xl text-center md:text-left">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6">
+                                        <PenTool className="w-3 h-3" />
+                                        Yazarlık Akademisi
+                                    </div>
+                                    <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
+                                        Bilimi Senin Sesinden <span className="text-amber-500 italic">Dinleyelim.</span>
+                                    </h3>
+                                    <p className="text-lg text-neutral-400">
+                                        Araştırmalarını, teorilerini ve bilimsel meraklarını binlerce okuyucuyla paylaşma zamanı geldi.
+                                    </p>
+                                </div>
+                                <Link
+                                    href="/yazar"
+                                    className="group relative flex items-center gap-3 px-10 py-5 bg-white text-black font-black rounded-2xl hover:bg-amber-400 transition-all shadow-[0_20px_40px_-15px_rgba(255,255,255,0.1)] active:scale-95"
+                                >
+                                    BAŞVURU YAP
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+                        </section>
+
+                        {/* ARCHIVE SECTION */}
                         {listArticles.length > 0 && (
-                            <section>
-                                <SectionHeader title="Arşivden" subtitle="Daha fazla içerik" />
-                                <div className="max-w-3xl bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6">
-                                    {listArticles.map((article, i) => (
-                                        <EliteCard
-                                            key={article.id}
-                                            article={article}
-                                            index={i}
-                                            variant="list"
-                                            initialLikes={article.likes_count}
-                                            initialComments={article.comments_count}
-                                            initialIsLiked={article.is_liked}
-                                            initialIsBookmarked={article.is_bookmarked}
-                                        />
-                                    ))}
+                            <section className="grid lg:grid-cols-12 gap-12">
+                                <div className="lg:col-span-4">
+                                    <div className="sticky top-32">
+                                        <h2 className="text-4xl font-black text-black dark:text-white mb-4 tracking-tighter italic">ARŞİVDEN</h2>
+                                        <p className="text-neutral-500 text-sm max-w-xs mb-8">
+                                            Geçmişin derinliklerinden bugüne ışık tutan zamansız bilimsel çalışmalar.
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {categories.slice(0, 5).map(cat => (
+                                                <Link key={cat} href={`/makale?category=${cat}`} className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-amber-500 transition-colors">
+                                                    #{cat}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="lg:col-span-8">
+                                    <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                                        {listArticles.map((article, i) => (
+                                            <EliteCard
+                                                key={article.id}
+                                                article={article}
+                                                index={i}
+                                                variant="list"
+                                                initialLikes={article.likes_count}
+                                                initialComments={article.comments_count}
+                                                initialIsLiked={article.is_liked}
+                                                initialIsBookmarked={article.is_bookmarked}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
                             </section>
                         )}
@@ -255,8 +282,8 @@ function NavPill({ href, active, icon, children }: { href: string; active: boole
         <Link
             href={href}
             className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold whitespace-nowrap rounded-full transition-all duration-200 ${active
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                ? 'bg-black dark:bg-white text-white dark:text-black shadow-lg'
+                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                 }`}
         >
             {icon}

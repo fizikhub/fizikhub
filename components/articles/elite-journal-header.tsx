@@ -141,13 +141,13 @@ export function EliteJournalHeader() {
                     <div className="relative">
                         <motion.div
                             animate={{
-                                rotateY: mousePosition.x * 5,
-                                rotateX: -mousePosition.y * 5
+                                rotateY: mousePosition.x * 3,
+                                rotateX: -mousePosition.y * 3
                             }}
                             transition={{ type: "spring", stiffness: 100 }}
                             style={{ perspective: 1000, transformStyle: "preserve-3d" }}
                         >
-                            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-black via-neutral-800 to-neutral-600 dark:from-white dark:via-neutral-200 dark:to-neutral-400 leading-none select-none">
+                            <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-black via-neutral-800 to-neutral-500 dark:from-white dark:via-neutral-100 dark:to-neutral-400 leading-[0.8] select-none italic">
                                 FİZİKHUB
                             </h1>
                         </motion.div>
@@ -156,19 +156,19 @@ export function EliteJournalHeader() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="mt-3 flex items-center justify-center gap-4"
+                            className="mt-6 flex items-center justify-center gap-6"
                         >
                             <motion.span
-                                className="h-px w-12 bg-gradient-to-r from-transparent to-amber-400"
+                                className="h-px flex-1 max-w-[100px] bg-gradient-to-r from-transparent via-amber-400 to-transparent"
                                 initial={{ scaleX: 0 }}
                                 animate={{ scaleX: 1 }}
                                 transition={{ delay: 0.7 }}
                             />
-                            <span className="text-[11px] font-semibold uppercase tracking-[0.4em] text-amber-600 dark:text-amber-400">
-                                Bilim Dergisi
+                            <span className="text-xs font-black uppercase tracking-[0.5em] text-amber-600 dark:text-amber-400">
+                                BİLİM & KEŞİF DERGİSİ
                             </span>
                             <motion.span
-                                className="h-px w-12 bg-gradient-to-l from-transparent to-amber-400"
+                                className="h-px flex-1 max-w-[100px] bg-gradient-to-l from-transparent via-amber-400 to-transparent"
                                 initial={{ scaleX: 0 }}
                                 animate={{ scaleX: 1 }}
                                 transition={{ delay: 0.7 }}
