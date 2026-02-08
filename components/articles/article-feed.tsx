@@ -21,7 +21,7 @@ const containerVariants = {
             delayChildren: 0.1,
         },
     },
-};
+} as const;
 
 const itemVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -34,7 +34,7 @@ const itemVariants = {
             damping: 15,
         },
     },
-};
+} as const;
 
 const headerVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -43,7 +43,7 @@ const headerVariants = {
         x: 0,
         transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
     },
-};
+} as const;
 
 const pillVariants = {
     hidden: { opacity: 0, scale: 0.8 },
@@ -52,7 +52,7 @@ const pillVariants = {
         scale: 1,
         transition: { type: "spring", stiffness: 200, damping: 20 },
     },
-};
+} as const;
 
 export function ArticleFeed({ articles, categories, activeCategory, sortParam }: ArticleFeedProps) {
     return (
@@ -179,8 +179,8 @@ function FilterPill({ href, active, children }: { href: string; active: boolean;
         <Link
             href={href}
             className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl whitespace-nowrap transition-all active:scale-95 ${active
-                    ? "bg-black text-white dark:bg-white dark:text-black shadow-md"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                ? "bg-black text-white dark:bg-white dark:text-black shadow-md"
+                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                 }`}
         >
             {children}
