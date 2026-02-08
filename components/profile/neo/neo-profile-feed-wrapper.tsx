@@ -47,11 +47,11 @@ export function NeoProfileFeedWrapper({
     })).sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
 
-            {/* --- TABS (App-Like Segmented Control) --- */}
-            <div className="sticky top-[60px] z-30 bg-background/95 backdrop-blur-xl py-3 -mx-2 px-2 border-b border-white/5">
-                <div className="flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] bg-white/[0.03] p-1 rounded-xl border border-white/5">
+            {/* --- TABS (Neo-Brutalist Buttons) --- */}
+            <div className="sticky top-[60px] z-30 bg-[#f0f0f0]/95 dark:bg-[#09090b]/95 backdrop-blur-sm py-3 -mx-2 px-2 border-b-[3px] border-black dark:border-white">
+                <div className="flex items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:none] pb-1">
                     <TabButton
                         label="GÖNDERİLER"
                         icon={FileText}
@@ -148,16 +148,16 @@ export function NeoProfileFeedWrapper({
                                             hidden: { y: 20, opacity: 0 },
                                             visible: { y: 0, opacity: 1 }
                                         }}
-                                        className="bg-[#09090b] border-2 border-zinc-800 rounded-xl p-5 hover:border-[#FACC15] hover:shadow-[4px_4px_0px_#FACC15] transition-all group cursor-pointer"
+                                        className="bg-white dark:bg-black border-[3px] border-black dark:border-white rounded-xl p-5 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all group cursor-pointer"
                                     >
-                                        <div className="flex items-center gap-2 mb-3 text-[10px] text-zinc-400 font-black uppercase tracking-wider bg-zinc-900/50 w-fit px-2 py-1 rounded">
-                                            <MessageCircle className="w-3 h-3 text-[#FACC15]" />
+                                        <div className="flex items-center gap-2 mb-3 text-[10px] text-black font-black uppercase tracking-wider bg-[#FACC15] w-fit px-2 py-1 rounded border border-black">
+                                            <MessageCircle className="w-3 h-3 text-black" />
                                             <span>YANITLADI</span>
                                         </div>
-                                        <h4 className="text-white font-bold mb-2 group-hover:text-[#FACC15] transition-colors line-clamp-1 text-lg font-[family-name:var(--font-outfit)]">
+                                        <h4 className="text-black dark:text-white font-black mb-2 group-hover:underline transition-colors line-clamp-1 text-lg font-[family-name:var(--font-outfit)]">
                                             {answer.questions?.title}
                                         </h4>
-                                        <p className="text-zinc-400 text-sm leading-relaxed line-clamp-3 border-l-2 border-zinc-700 pl-3 group-hover:border-[#FACC15] transition-colors">
+                                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed line-clamp-3 border-l-[3px] border-zinc-300 dark:border-zinc-700 pl-3">
                                             {answer.content}
                                         </p>
                                     </motion.div>
@@ -173,26 +173,18 @@ export function NeoProfileFeedWrapper({
     );
 }
 
-function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label: string, icon: any, isActive: boolean, onClick: () => void, colorClass?: string }) {
+function TabButton({ label, icon: Icon, isActive, onClick }: { label: string, icon: any, isActive: boolean, onClick: () => void }) {
     return (
         <button
             onClick={onClick}
             className={cn(
-                "relative flex shrink-0 items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all select-none",
+                "relative flex shrink-0 items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-[10px] font-black tracking-widest transition-all select-none border-2",
                 isActive
-                    ? "bg-[#FACC15] text-black shadow-lg"
-                    : "text-zinc-500 hover:text-zinc-300",
-                colorClass && !isActive && colorClass
+                    ? "bg-[#4169E1] text-white border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+                    : "bg-white dark:bg-zinc-900 text-zinc-500 border-transparent hover:border-black dark:hover:border-zinc-600 hover:text-black dark:hover:text-white"
             )}
         >
-            {isActive && (
-                <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-[#FACC15] rounded-lg -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-            )}
-            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-black stroke-[2.5px]" : "opacity-70")} />
+            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-white stroke-[2.5px]" : "opacity-70")} />
             {label}
         </button>
     );
@@ -200,12 +192,12 @@ function TabButton({ label, icon: Icon, isActive, onClick, colorClass }: { label
 
 function EmptyState({ label, description, icon: Icon }: { label: string, description: string, icon?: any }) {
     return (
-        <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-zinc-800 rounded-2xl bg-zinc-900/20">
-            <div className="w-20 h-20 bg-zinc-900 rounded-2xl flex items-center justify-center mb-6 border-2 border-zinc-800 shadow-[4px_4px_0px_#000] rotate-3">
-                {Icon ? <Icon className="w-8 h-8 text-zinc-500" /> : <Inbox className="w-8 h-8 text-zinc-500" />}
+        <div className="flex flex-col items-center justify-center py-24 text-center border-[3px] border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50">
+            <div className="w-20 h-20 bg-white dark:bg-black rounded-xl flex items-center justify-center mb-6 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rotate-3">
+                {Icon ? <Icon className="w-8 h-8 text-black dark:text-white" /> : <Inbox className="w-8 h-8 text-black dark:text-white" />}
             </div>
-            <p className="text-white font-black text-xl mb-2 font-[family-name:var(--font-outfit)] uppercase tracking-tight">{label}</p>
-            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto font-medium">{description}</p>
+            <p className="text-black dark:text-white font-black text-xl mb-2 font-[family-name:var(--font-outfit)] uppercase tracking-tight">{label}</p>
+            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto font-bold">{description}</p>
         </div>
     );
 }
