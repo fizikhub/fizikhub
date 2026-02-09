@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { FreshProfileLayout } from "@/components/profile/fresh/fresh-profile-layout";
+import { FunkyProfileLayout } from "@/components/profile/funky/funky-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,23 +47,21 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-neo-off-white relative selection:bg-neo-vibrant-lime/30 overflow-hidden">
-            {/* Global Decoration */}
-            <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] bg-neo-vibrant-cyan rounded-full blur-[150px] opacity-10 pointer-events-none" />
-            <div className="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-neo-vibrant-pink rounded-full blur-[150px] opacity-10 pointer-events-none" />
-
-            <FreshProfileLayout
-                profile={profile}
-                user={user}
-                stats={stats}
-                articles={articles || []}
-                questions={questions || []}
-                answers={answers || []}
-                drafts={drafts || []}
-                bookmarkedArticles={bookmarkedArticles || []}
-                bookmarkedQuestions={bookmarkedQuestions || []}
-                isOwnProfile={true}
-            />
+        <main className="min-h-screen bg-neo-off-white flex justify-center">
+            <div className="w-full max-w-md bg-white min-h-screen shadow-2xl border-x-4 border-black relative">
+                <FunkyProfileLayout
+                    profile={profile}
+                    user={user}
+                    stats={stats}
+                    articles={articles || []}
+                    questions={questions || []}
+                    answers={answers || []}
+                    drafts={drafts || []}
+                    bookmarkedArticles={bookmarkedArticles || []}
+                    bookmarkedQuestions={bookmarkedQuestions || []}
+                    isOwnProfile={true}
+                />
+            </div>
         </main>
     );
 }

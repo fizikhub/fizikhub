@@ -73,6 +73,7 @@ const config = {
                     "vibrant-cyan": "#23A9FA",
                     "vibrant-lime": "#B8FF01",
                     "off-white": "#FDFDFD",
+                    "funky-lime": "#C6F956",
                 }
             },
             borderRadius: {
