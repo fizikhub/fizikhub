@@ -1,8 +1,6 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { MemeCorner } from "@/components/home/meme-corner"; // Import V28
+import { MemeCorner } from "@/components/home/meme-corner";
 
 // ==========================================
 // COMPACT HERO -> NOW THE MEME MACHINE

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -49,9 +50,9 @@ export default async function AdminUserDetailsPage({ params }: Props) {
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-4">
-                        <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-bold text-primary border-2 border-primary">
+                        <div className="relative h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-bold text-primary border-2 border-primary overflow-hidden">
                             {profile.avatar_url ? (
-                                <img src={profile.avatar_url} alt={profile.username} className="h-full w-full rounded-full object-cover" />
+                                <Image src={profile.avatar_url} alt={profile.username || 'Avatar'} fill className="rounded-full object-cover" />
                             ) : (
                                 profile.username?.charAt(0).toUpperCase() || <Users />
                             )}

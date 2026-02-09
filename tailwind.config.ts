@@ -220,7 +220,7 @@ const config = {
 } satisfies Config;
 
 // This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
-function addVariablesForColors({ addBase, theme }: { addBase: any; theme: any }) {
+function addVariablesForColors({ addBase, theme }: { addBase: (arg: Record<string, Record<string, string>>) => void; theme: (path: string) => Record<string, unknown> }) {
     const allColors = theme("colors");
     const newVars = Object.fromEntries(
         Object.entries(allColors).flatMap(([color, values]) => {

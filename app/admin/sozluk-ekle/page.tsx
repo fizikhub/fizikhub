@@ -40,8 +40,8 @@ export default function AddDictionaryTermPage() {
             toast.success("Terim sözlüğe eklendi!");
             setFormData({ term: "", definition: "", category: "" }); // Reset form
             router.refresh();
-        } catch (error: any) {
-            toast.error("Hata: " + error.message);
+        } catch (error) {
+            toast.error("Hata: " + (error instanceof Error ? error.message : "Bilinmeyen hata"));
         } finally {
             setLoading(false);
         }

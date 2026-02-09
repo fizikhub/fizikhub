@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Plus, GraduationCap, Settings } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
