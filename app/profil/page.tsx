@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { NanoProfileLayout } from "@/components/profile/nano/nano-profile-layout";
+import { VCProfileLayout } from "@/components/profile/vibrant-compact/vc-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,8 +47,12 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-gray-200 flex justify-center items-start pt-0 md:pt-4">
-            <NanoProfileLayout
+        <main className="min-h-screen bg-neo-off-white flex justify-center items-start pt-0 md:pt-4 relative overflow-hidden">
+            {/* Global Decoration Blobs */}
+            <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-neo-vibrant-pink/10 blur-[100px] pointer-events-none" />
+            <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-neo-vibrant-cyan/10 blur-[120px] pointer-events-none" />
+
+            <VCProfileLayout
                 profile={profile}
                 user={user}
                 stats={stats}
