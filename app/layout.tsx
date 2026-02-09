@@ -36,14 +36,7 @@ const archivoBlack = Archivo_Black({
   display: "swap",
 });
 
-import { Rubik_Glitch } from "next/font/google";
 
-const rubikGlitch = Rubik_Glitch({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-rubik-glitch",
-  display: "swap",
-});
 
 
 
@@ -280,7 +273,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />

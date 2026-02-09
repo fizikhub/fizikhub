@@ -142,6 +142,69 @@ article,
     }
 }
 
+/* ========== AGGRESSIVE MOBILE OPTIMIZATIONS ========== */
+@media (max-width: 767px) {
+    /* Reduce backdrop blur on mobile for performance */
+    .backdrop-blur-xl,
+    .backdrop-blur-lg,
+    .backdrop-blur-md {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+    }
+
+    /* Disable complex shadows on mobile */
+    .shadow-2xl,
+    .shadow-xl {
+        box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Content-visibility for off-screen sections */
+    section,
+    article,
+    .card,
+    [class*="feed-item"] {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 300px;
+    }
+
+    /* Disable will-change on mobile (uses memory) */
+    .will-change-transform {
+        will-change: auto !important;
+    }
+
+    /* Simplify gradients */
+    .bg-gradient-to-br,
+    .bg-gradient-to-r {
+        background-attachment: scroll !important;
+    }
+
+    /* Disable hover transforms (they cause jank on scroll) */
+    .hover\:scale-105:hover,
+    .hover\:scale-110:hover,
+    .group-hover\:scale-105:hover {
+        transform: none !important;
+    }
+}
+
+/* Ultra-low-end device optimizations */
+@media (max-width: 767px) and (hover: none) {
+    /* Completely disable animations on low-end touch devices */
+    [class*="animate-"] {
+        animation: none !important;
+    }
+
+    /* No blur at all */
+    .backdrop-blur,
+    .backdrop-blur-sm,
+    .backdrop-blur-md,
+    .backdrop-blur-lg,
+    .backdrop-blur-xl {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: rgba(0, 0, 0, 0.85) !important;
+    }
+}
+
 /* ========== IMAGE PERFORMANCE ========== */
 
 /* Lazy loading optimization */

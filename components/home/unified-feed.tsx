@@ -1,19 +1,32 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { QuestionCard } from "@/components/forum/question-card";
-import { CommunityInviteBanner } from "@/components/explore/community-invite-banner";
-import { ForumTeaserCard } from "@/components/blog/forum-teaser-card";
-import { SuggestedUsersCard } from "@/components/home/suggested-users-card";
-import { WriterApplicationCard } from "@/components/home/writer-application-card";
 import { motion } from "framer-motion";
 
-import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
-
 import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { TermCard } from "@/components/term/term-card";
-import { ScienceStories } from "@/components/science-cards/science-stories";
+
+const SuggestedUsersCard = dynamic(() => import("@/components/home/suggested-users-card").then(mod => mod.SuggestedUsersCard), {
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+});
+const WriterApplicationCard = dynamic(() => import("@/components/home/writer-application-card").then(mod => mod.WriterApplicationCard));
+
+// Lazy load heavy injected components
+const CommunityInviteBanner = dynamic(() => import("@/components/explore/community-invite-banner").then(mod => mod.CommunityInviteBanner), {
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+});
+const ForumTeaserCard = dynamic(() => import("@/components/blog/forum-teaser-card").then(mod => mod.ForumTeaserCard), {
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+});
+const ScienceStories = dynamic(() => import("@/components/science-cards/science-stories").then(mod => mod.ScienceStories), {
+    loading: () => <div className="h-64 bg-muted/20 animate-pulse rounded-2xl" />
+});
+const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-the-week").then(mod => mod.QuestionOfTheWeek), {
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+});
 
 export interface FeedItem {
     type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term';

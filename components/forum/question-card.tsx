@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { MessageCircle, Eye, ChevronUp, ChevronDown, BadgeCheck, ArrowBigUp } from "lucide-react";
+import { MessageCircle, Eye, ThumbsUp, CheckCircle2, ChevronUp, ChevronDown } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -192,11 +194,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             className="flex items-center gap-2 group/author cursor-pointer"
                         >
                             <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
-                                {question.profiles?.avatar_url ? (
-                                    <img src={question.profiles.avatar_url} alt="A" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-black flex items-center justify-center text-[8px] text-white">?</div>
-                                )}
+                                <OptimizedAvatar
+                                    src={question.profiles?.avatar_url}
+                                    alt={question.profiles?.username || "?"}
+                                    size={24}
+                                    className="w-full h-full"
+                                />
                             </div>
                             <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400 group-hover/author:text-[#FFBD2E] transition-colors">
                                 {question.full_name || question.profiles?.username}

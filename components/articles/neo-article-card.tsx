@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
-import Image from "next/image";
+import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Heart, Bookmark, Share2, MessageCircle } from "lucide-react";
@@ -134,7 +134,7 @@ export function NeoArticleCard({
 
                 {/* 1. IMAGE SECTION */}
                 <div className="relative aspect-[16/9] w-full border-b-[3px] border-black bg-[#FFC800] z-10">
-                    <Image
+                    <OptimizedImage
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
@@ -176,11 +176,11 @@ export function NeoArticleCard({
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
-                                <Image
+                                <OptimizedAvatar
                                     src={authorAvatar}
                                     alt={authorName}
-                                    fill
-                                    className="object-cover"
+                                    size={40}
+                                    className="w-full h-full"
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
