@@ -34,7 +34,7 @@ const HubGPTButton = dynamic(
     { ssr: false }
 );
 
-export function NavigationWrapper({ children, showOnboarding = false }: { children: React.ReactNode; showOnboarding?: boolean }) {
+export function NavigationWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     // Hide navigation on onboarding and auth pages (login, verify) for a cleaner focus
     const shouldHideNav = pathname?.startsWith("/onboarding") || pathname?.startsWith("/auth");
@@ -48,7 +48,6 @@ export function NavigationWrapper({ children, showOnboarding = false }: { childr
             <GlobalEffects />
             <SlimeEffects />
             <GlobalAdminNotification />
-            {showOnboarding && <OnboardingTour />}
             <Navbar />
             {children}
             <Footer />

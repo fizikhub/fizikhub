@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Outfit, Space_Grotesk, Archivo_Black, EB_Garamond, Playfair_Display } from "next/font/google";
+import { Inter, Space_Grotesk, Archivo_Black, EB_Garamond } from "next/font/google";
 import "./globals.css";
 import "./mobile-optimizations.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -22,11 +22,6 @@ const ebGaramond = EB_Garamond({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "swap",
-});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -196,6 +191,8 @@ import SmoothScrollProvider from "@/components/providers/smooth-scroll-provider"
 
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { OnboardingCheck } from "@/components/auth/onboarding-check";
+import { Suspense } from "react";
 
 export default async function RootLayout({
   children,
@@ -259,21 +256,6 @@ export default async function RootLayout({
     );
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  let showOnboarding = false;
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('has_seen_onboarding')
-      .eq('id', user!.id)
-      .single();
-
-    if (profile && !profile?.has_seen_onboarding) {
-      showOnboarding = true;
-    }
-  }
 
   return (
     <html lang="tr" suppressHydrationWarning>
@@ -298,7 +280,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} ${ebGaramond.variable} ${playfair.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} ${rubikGlitch.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
 
         <UserActivityTracker />
@@ -310,7 +292,10 @@ export default async function RootLayout({
         >
           <FramerMotionProvider>
             <TimeLimitProvider>
-              <NavigationWrapper showOnboarding={showOnboarding}>
+              <NavigationWrapper>
+                <Suspense fallback={null}>
+                  <OnboardingCheck />
+                </Suspense>
                 <SmoothScrollProvider>
                   {children}
                 </SmoothScrollProvider>
