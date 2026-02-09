@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { VibrantProfileFeedWrapper } from "@/components/profile/vibrant/vibrant-profile-feed-wrapper";
-import { BackgroundWrapper } from "@/components/home/background-wrapper";
+import { CompactProfileFeedWrapper } from "@/components/profile/compact/compact-profile-feed-wrapper";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -48,15 +47,9 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-neo-off-white relative selection:bg-neo-vibrant-lime/50">
-            {/* Ambient Background */}
-            <div className="fixed inset-0 z-0 opacity-40 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-neo-vibrant-pink blur-[120px] opacity-30" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-neo-vibrant-cyan blur-[120px] opacity-30" />
-            </div>
-
-            <div className="container max-w-7xl mx-auto px-4 md:px-6 relative z-10 pt-4 lg:pt-8">
-                <VibrantProfileFeedWrapper
+        <main className="min-h-screen bg-neo-off-white flex justify-center">
+            <div className="w-full max-w-md bg-white min-h-screen shadow-2xl border-x-2 border-neo-dark/10">
+                <CompactProfileFeedWrapper
                     profile={profile}
                     user={user}
                     stats={stats}
