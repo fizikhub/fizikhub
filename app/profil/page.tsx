@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { VCProfileLayout } from "@/components/profile/vibrant-compact/vc-profile-layout";
+import { BlueprintProfileLayout } from "@/components/profile/blueprint/blueprint-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,12 +47,8 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-neo-off-white flex justify-center items-start pt-0 md:pt-4 relative overflow-hidden">
-            {/* Global Decoration Blobs */}
-            <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-neo-vibrant-pink/10 blur-[100px] pointer-events-none" />
-            <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-neo-vibrant-cyan/10 blur-[120px] pointer-events-none" />
-
-            <VCProfileLayout
+        <main className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] bg-fixed bg-gray-200 flex justify-center items-start pt-0 md:pt-8 p-4">
+            <BlueprintProfileLayout
                 profile={profile}
                 user={user}
                 stats={stats}
