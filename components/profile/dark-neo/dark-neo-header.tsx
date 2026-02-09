@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, Link as LinkIcon, Edit3, Share2, Check, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
+
+// Royal Blue: #4169E1
+const ROYAL_BLUE = "#4169E1";
 
 interface DarkNeoHeaderProps {
     profile: any;
@@ -33,74 +35,71 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
 
     return (
         <div className="w-full">
-            {/* HEADER BANNER - Dark with colorful gradient overlay */}
-            <div className="relative h-44 md:h-56 overflow-hidden rounded-t-3xl border-[3px] border-zinc-800">
+            {/* COMPACT HEADER BANNER */}
+            <div className="relative h-32 md:h-40 overflow-hidden rounded-2xl border-2 border-white/10">
                 {/* Dark gradient base */}
-                <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a15] via-[#0f0f20] to-[#050510]" />
 
-                {/* Colorful accent glow */}
-                <div className="absolute -top-20 -left-20 w-60 h-60 bg-purple-600/20 rounded-full blur-3xl" />
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-cyan-500/20 rounded-full blur-3xl" />
-                <div className="absolute top-10 right-20 w-32 h-32 bg-yellow-500/15 rounded-full blur-2xl" />
+                {/* Royal blue accent glow */}
+                <div className="absolute -top-16 -left-16 w-48 h-48 bg-[#4169E1]/15 rounded-full blur-3xl" />
+                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
 
-                {/* Decorative elements */}
-                <div className="absolute inset-0 overflow-hidden opacity-60">
-                    <span className="absolute top-6 left-8 text-yellow-400 text-2xl">✦</span>
-                    <span className="absolute top-12 right-16 text-purple-400 text-xl">✦</span>
-                    <span className="absolute bottom-8 left-20 text-cyan-400 text-lg">✧</span>
-                    <span className="absolute top-8 left-1/3 text-pink-400 text-sm">✧</span>
-                    <span className="absolute bottom-12 right-1/3 text-yellow-300 text-xl">★</span>
-                    <div className="absolute top-6 right-10 w-6 h-6 border-2 border-yellow-400/50 rotate-12" />
-                    <div className="absolute bottom-10 right-24 w-4 h-4 bg-pink-500/50 rounded-full" />
-                    <div className="absolute top-16 left-12 w-3 h-3 bg-cyan-500/50 rotate-45" />
+                {/* Decorative elements - Smaller & more subtle */}
+                <div className="absolute inset-0 overflow-hidden">
+                    <span className="absolute top-4 left-6 text-[#4169E1] text-lg">✦</span>
+                    <span className="absolute top-8 right-12 text-cyan-400/60 text-sm">✦</span>
+                    <span className="absolute bottom-6 left-16 text-yellow-400/50 text-xs">✧</span>
+                    <span className="absolute bottom-8 right-1/4 text-yellow-300/60 text-sm">★</span>
+                    <div className="absolute top-5 right-8 w-4 h-4 border border-yellow-400/40 rotate-12" />
+                    <div className="absolute bottom-6 right-20 w-2 h-2 bg-pink-500/40 rounded-full" />
                 </div>
 
-                {/* Grid pattern overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+                {/* Physics equations pattern */}
+                <div className="absolute inset-0 opacity-[0.03] bg-[url('/images/equations-pattern.png')] bg-repeat" />
             </div>
 
-            {/* CONTENT CARD - Dark with borders */}
-            <div className="relative bg-zinc-900 border-[3px] border-t-0 border-zinc-800 rounded-b-3xl pt-16 pb-6 px-5 md:px-8">
+            {/* COMPACT CONTENT CARD */}
+            <div className="relative bg-[#0a0a0a] border-2 border-white/10 border-t-0 rounded-b-2xl pt-12 pb-4 px-4 md:px-6">
 
-                {/* FLOATING AVATAR */}
-                <div className="absolute -top-14 left-6 md:left-8">
+                {/* COMPACT FLOATING AVATAR */}
+                <div className="absolute -top-10 left-4 md:left-6">
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="relative"
                     >
-                        <div className="w-28 h-28 md:w-32 md:h-32 bg-zinc-800 rounded-2xl border-[3px] border-zinc-700 shadow-[4px_4px_0_rgba(250,204,21,0.5)] overflow-hidden">
+                        <div className="w-20 h-20 bg-[#111] rounded-xl border-2 border-white/20 shadow-[3px_3px_0_#4169E1] overflow-hidden">
                             <Avatar className="w-full h-full rounded-none">
                                 <AvatarImage src={profile?.avatar_url} className="object-cover" />
-                                <AvatarFallback className="text-4xl font-black bg-gradient-to-br from-yellow-400 to-orange-500 text-black rounded-none">
+                                <AvatarFallback className="text-2xl font-black bg-gradient-to-br from-[#4169E1] to-cyan-500 text-white rounded-none">
                                     {initial}
                                 </AvatarFallback>
                             </Avatar>
                         </div>
-                        {/* Verified badge */}
-                        <div className="absolute -bottom-2 -right-2 bg-cyan-500 text-black p-1.5 rounded-lg border-2 border-zinc-800">
-                            <ShieldCheck className="w-4 h-4" />
+                        {/* Verified badge - Smaller */}
+                        <div className="absolute -bottom-1 -right-1 bg-cyan-400 text-black p-1 rounded-md border border-black">
+                            <ShieldCheck className="w-3 h-3" />
                         </div>
                     </motion.div>
                 </div>
 
-                {/* NAME & HANDLE */}
-                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
-                    <div className="md:ml-36 lg:ml-40">
-                        <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                {/* NAME & HANDLE - Compact */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <div className="md:ml-24">
+                        <h1 className="text-xl md:text-2xl font-black text-white tracking-tight">
                             {profile?.full_name || "New User"}
                         </h1>
-                        <span className="inline-block mt-1 text-sm font-bold bg-yellow-400 text-black px-2 py-0.5 border-2 border-black transform -skew-x-6">
+                        <span className="inline-block mt-0.5 text-xs font-bold bg-[#4169E1] text-white px-2 py-0.5 rounded border border-white/20">
                             @{profile?.username || "username"}
                         </span>
                     </div>
 
-                    {/* ACTION BUTTONS */}
-                    <div className="flex gap-3">
+                    {/* ACTION BUTTONS - Smaller */}
+                    <div className="flex gap-2 md:ml-24 lg:ml-0">
                         {isOwnProfile ? (
                             <Link href="/profil/duzenle">
-                                <button className="flex items-center gap-2 bg-white hover:bg-zinc-100 text-black px-5 py-2.5 rounded-xl font-bold text-sm border-2 border-black shadow-[3px_3px_0_#FACC15] hover:shadow-[1px_1px_0_#FACC15] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                    <Edit3 className="w-4 h-4" />
+                                <button className="flex items-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#4169E1] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                                    <Edit3 className="w-3.5 h-3.5" />
                                     Düzenle
                                 </button>
                             </Link>
@@ -108,69 +107,69 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                             <FollowButton
                                 targetUserId={profile.id}
                                 initialIsFollowing={isFollowing}
-                                className="px-6 py-2.5 text-sm font-bold rounded-xl border-2 border-black shadow-[3px_3px_0_#4169E1]"
+                                className="px-4 py-2 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#4169E1]"
                             />
                         )}
                         <button
                             onClick={handleShare}
-                            className="flex items-center justify-center p-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl border-2 border-zinc-600 shadow-[3px_3px_0_rgba(255,255,255,0.1)] transition-all"
+                            className="flex items-center justify-center p-2 bg-white/5 hover:bg-white/10 text-white rounded-lg border border-white/20 transition-all"
                         >
-                            {isSharing ? <Check className="w-5 h-5 text-green-400" /> : <Share2 className="w-5 h-5" />}
+                            {isSharing ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
                         </button>
                     </div>
                 </div>
 
-                {/* BIO */}
+                {/* BIO - Compact */}
                 {profile?.bio && (
-                    <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-6 max-w-2xl border-l-4 border-purple-500 pl-4 py-1">
+                    <p className="text-zinc-400 text-xs leading-relaxed mb-3 max-w-xl border-l-2 border-[#4169E1] pl-3 py-0.5">
                         {profile.bio}
                     </p>
                 )}
 
-                {/* META INFO */}
-                <div className="flex flex-wrap gap-4 text-sm font-medium text-zinc-500 mb-8">
+                {/* META INFO - Compact inline */}
+                <div className="flex flex-wrap gap-3 text-xs font-medium text-zinc-500 mb-4">
                     {profile?.location && (
-                        <div className="flex items-center gap-1.5">
-                            <MapPin className="w-4 h-4 text-pink-400" />
+                        <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-pink-400" />
                             {profile.location}
                         </div>
                     )}
                     {profile?.website && (
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors">
-                            <LinkIcon className="w-4 h-4 text-cyan-400" />
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-[#4169E1] transition-colors">
+                            <LinkIcon className="w-3 h-3 text-[#4169E1]" />
                             {profile.website.replace(/^https?:\/\//, '')}
                         </a>
                     )}
-                    <div className="flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-yellow-400" />
-                        Katılım: {new Date(profile?.created_at || Date.now()).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}
+                    <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-yellow-400" />
+                        Katılım: {new Date(profile?.created_at || Date.now()).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })}
                     </div>
                 </div>
 
-                {/* STATS GRID - Colorful cards on dark */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {/* HUB POINTS */}
-                    <div className="col-span-2 md:col-span-1 bg-gradient-to-br from-purple-600 to-purple-800 p-4 rounded-xl border-2 border-purple-500 shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-purple-200 mb-1">Hub Puan</p>
-                        <h3 className="text-3xl font-black text-white">{formatNumber(stats.reputation)}</h3>
+                {/* COMPACT STATS ROW - High contrast */}
+                <div className="grid grid-cols-4 gap-2">
+                    {/* HUB POINTS - Royal Blue */}
+                    <div className="bg-[#4169E1] p-3 rounded-lg border-2 border-white/30 shadow-[3px_3px_0_#000]">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-white/70">Hub Puan</p>
+                        <h3 className="text-xl font-black text-white">{formatNumber(stats.reputation)}</h3>
                     </div>
 
-                    {/* FOLLOWERS */}
-                    <div className="bg-zinc-800 p-4 rounded-xl border-2 border-zinc-700 shadow-[4px_4px_0_rgba(250,204,21,0.2)] hover:border-yellow-500/50 transition-colors">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Takipçi</p>
-                        <h3 className="text-2xl font-black text-white">{formatNumber(stats.followersCount)}</h3>
+                    {/* FOLLOWERS - High contrast dark */}
+                    <div className="bg-black p-3 rounded-lg border-2 border-white/20 hover:border-[#4169E1]/50 transition-colors">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">Takipçi</p>
+                        <h3 className="text-xl font-black text-white">{formatNumber(stats.followersCount)}</h3>
                     </div>
 
                     {/* FOLLOWING */}
-                    <div className="bg-zinc-800 p-4 rounded-xl border-2 border-zinc-700 shadow-[4px_4px_0_rgba(236,72,153,0.2)] hover:border-pink-500/50 transition-colors">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Takip</p>
-                        <h3 className="text-2xl font-black text-white">{formatNumber(stats.followingCount)}</h3>
+                    <div className="bg-black p-3 rounded-lg border-2 border-white/20 hover:border-cyan-500/50 transition-colors">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-500">Takip</p>
+                        <h3 className="text-xl font-black text-white">{formatNumber(stats.followingCount)}</h3>
                     </div>
 
-                    {/* CONTRIBUTIONS */}
-                    <div className="bg-gradient-to-br from-cyan-600 to-cyan-800 p-4 rounded-xl border-2 border-cyan-500 shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-200 mb-1">Katkı</p>
-                        <h3 className="text-2xl font-black text-white">{stats.articlesCount + stats.questionsCount + stats.answersCount}</h3>
+                    {/* CONTRIBUTIONS - Cyan accent */}
+                    <div className="bg-cyan-600 p-3 rounded-lg border-2 border-white/30 shadow-[3px_3px_0_#000]">
+                        <p className="text-[9px] font-bold uppercase tracking-wider text-white/70">Katkı</p>
+                        <h3 className="text-xl font-black text-white">{stats.articlesCount + stats.questionsCount + stats.answersCount}</h3>
                     </div>
                 </div>
             </div>

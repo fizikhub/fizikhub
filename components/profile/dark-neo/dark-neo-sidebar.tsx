@@ -17,42 +17,34 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="space-y-6 sticky top-24"
+            className="space-y-4 sticky top-24"
         >
-            {/* ABOUT CARD */}
-            <div className="bg-zinc-900 border-2 border-zinc-800 rounded-xl p-6 shadow-[5px_5px_0_rgba(250,204,21,0.15)] relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-yellow-400 to-orange-500" />
+            {/* COMPACT ABOUT CARD */}
+            <div className="bg-[#0a0a0a] border-2 border-white/10 rounded-xl p-4 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#4169E1]" />
 
-                <h3 className="font-black text-lg mb-4 flex items-center gap-2 uppercase tracking-tight text-white">
-                    <span className="w-8 h-8 bg-yellow-400 text-black rounded-lg flex items-center justify-center">
-                        <UserIcon className="w-4 h-4" />
+                <h3 className="font-black text-sm mb-3 flex items-center gap-2 uppercase tracking-tight text-white">
+                    <span className="w-6 h-6 bg-[#4169E1] text-white rounded flex items-center justify-center">
+                        <UserIcon className="w-3 h-3" />
                     </span>
                     Hakkında
                 </h3>
 
-                <div className="space-y-3 text-sm font-bold">
-                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="purple" />
+                <div className="space-y-2 text-xs font-bold">
+                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="blue" />
                     <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="cyan" />
                     <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="pink" />
                 </div>
 
                 {profile?.level && (
-                    <div className="mt-6 pt-4 border-t border-zinc-700 border-dashed">
-                        <div className="flex justify-between items-end mb-2">
-                            <div>
-                                <p className="text-xs font-black text-zinc-500 uppercase">Seviye</p>
-                                <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                                    LVL {profile.level}
-                                </p>
-                            </div>
-                            <div className="w-10 h-10 bg-zinc-800 text-yellow-400 rounded-full flex items-center justify-center border-2 border-yellow-500/50">
-                                <Zap className="w-5 h-5 fill-current" />
-                            </div>
+                    <div className="mt-4 pt-3 border-t border-white/10">
+                        <div className="flex justify-between items-center mb-1.5">
+                            <p className="text-[10px] font-black text-zinc-500 uppercase">Seviye</p>
+                            <p className="text-lg font-black text-[#4169E1]">LVL {profile.level}</p>
                         </div>
-                        {/* Progress bar */}
-                        <div className="w-full h-3 bg-zinc-800 rounded-full border border-zinc-700 overflow-hidden relative">
+                        <div className="w-full h-2 bg-black rounded-full border border-white/10 overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-yellow-400 to-orange-500"
+                                className="h-full bg-[#4169E1]"
                                 style={{ width: `${(profile.xp_current / profile.xp_next) * 100}%` }}
                             />
                         </div>
@@ -60,64 +52,64 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                 )}
             </div>
 
-            {/* BADGES CARD */}
-            <div className="bg-gradient-to-br from-purple-900/50 to-purple-950/50 border-2 border-purple-500/30 rounded-xl p-6 shadow-[5px_5px_0_rgba(168,85,247,0.2)] relative overflow-hidden">
-                <div className="absolute -right-6 -bottom-6 opacity-10">
-                    <Award className="w-32 h-32 rotate-12 text-purple-400" />
+            {/* COMPACT BADGES CARD - Royal Blue */}
+            <div className="bg-[#4169E1]/10 border-2 border-[#4169E1]/30 rounded-xl p-4 relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-10">
+                    <Award className="w-24 h-24 rotate-12 text-[#4169E1]" />
                 </div>
 
-                <h3 className="font-black text-lg mb-4 flex items-center gap-2 uppercase tracking-tight text-white relative z-10">
-                    <span className="w-8 h-8 bg-purple-500 text-white rounded-lg flex items-center justify-center">
-                        <Award className="w-4 h-4" />
+                <h3 className="font-black text-sm mb-3 flex items-center gap-2 uppercase tracking-tight text-white relative z-10">
+                    <span className="w-6 h-6 bg-[#4169E1] text-white rounded flex items-center justify-center">
+                        <Award className="w-3 h-3" />
                     </span>
                     Rozetler
                 </h3>
 
                 {userBadges && userBadges.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-2 relative z-10">
+                    <div className="grid grid-cols-4 gap-1.5 relative z-10">
                         {userBadges.map((badgeObj: any, index: number) => {
                             const badge = badgeObj.badges;
                             return (
                                 <div
                                     key={index}
-                                    className="aspect-square bg-purple-800/50 rounded-lg border border-purple-600/50 flex items-center justify-center relative group cursor-pointer hover:bg-purple-700/50 transition-colors"
+                                    className="aspect-square bg-[#4169E1]/30 rounded-lg border border-[#4169E1]/50 flex items-center justify-center relative group cursor-pointer hover:bg-[#4169E1]/50 transition-colors"
                                     title={badge.name}
                                 >
                                     {badge.icon ? (
-                                        <div className="text-2xl">{badge.icon}</div>
+                                        <div className="text-lg">{badge.icon}</div>
                                     ) : (
-                                        <Shield className="w-6 h-6 text-purple-300" />
+                                        <Shield className="w-4 h-4 text-white/70" />
                                     )}
-                                    <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black text-white text-xs font-bold px-2 py-1 rounded border border-zinc-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold px-2 py-1 rounded border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                                         {badge.name}
                                     </div>
                                 </div>
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-purple-900/30 rounded-lg border border-purple-800/30 flex items-center justify-center">
-                                <div className="w-2 h-2 rounded-full bg-purple-700/50" />
+                            <div key={`empty-${i}`} className="aspect-square bg-[#4169E1]/10 rounded-lg border border-[#4169E1]/20 flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#4169E1]/30" />
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-6 relative z-10">
-                        <div className="w-12 h-12 bg-purple-800/50 rounded-full flex items-center justify-center mx-auto mb-2 border border-purple-600/50">
-                            <AlertCircle className="w-6 h-6 text-purple-400" />
+                    <div className="text-center py-4 relative z-10">
+                        <div className="w-10 h-10 bg-[#4169E1]/30 rounded-full flex items-center justify-center mx-auto mb-2 border border-[#4169E1]/50">
+                            <AlertCircle className="w-5 h-5 text-[#4169E1]" />
                         </div>
-                        <p className="text-xs font-bold text-purple-300">Henüz rozet kazanılmadı.</p>
+                        <p className="text-[10px] font-bold text-white/60">Henüz rozet kazanılmadı.</p>
                     </div>
                 )}
             </div>
 
-            {/* COMMUNITY LINK */}
-            <div className="bg-gradient-to-br from-pink-600 to-pink-800 border-2 border-pink-500 rounded-xl p-5 shadow-[5px_5px_0_rgba(0,0,0,0.3)] flex items-center justify-between hover:translate-x-1 transition-transform cursor-pointer group">
+            {/* COMPACT COMMUNITY LINK - Cyan */}
+            <div className="bg-cyan-600 border-2 border-white/20 rounded-xl p-3 shadow-[3px_3px_0_#000] flex items-center justify-between hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#000] transition-all cursor-pointer">
                 <div>
-                    <p className="text-xs font-bold uppercase text-pink-200 mb-1">Topluluk</p>
-                    <h3 className="text-lg font-black text-white leading-tight">Katkı Kuralları</h3>
+                    <p className="text-[10px] font-bold uppercase text-white/70">Topluluk</p>
+                    <h3 className="text-sm font-black text-white">Katkı Kuralları</h3>
                 </div>
-                <div className="bg-black/20 p-2 rounded-lg border border-pink-400/30">
-                    <GraduationCap className="w-6 h-6 text-pink-100" />
+                <div className="bg-black/20 p-1.5 rounded-lg">
+                    <GraduationCap className="w-4 h-4 text-white" />
                 </div>
             </div>
         </motion.div>
@@ -135,7 +127,7 @@ function UserIcon({ className }: { className?: string }) {
 
 function StatRow({ icon: Icon, label, value, color }: any) {
     const colorClasses = {
-        purple: "text-purple-400",
+        blue: "text-[#4169E1]",
         cyan: "text-cyan-400",
         pink: "text-pink-400",
         yellow: "text-yellow-400"

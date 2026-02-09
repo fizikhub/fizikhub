@@ -35,10 +35,10 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "from-purple-500 to-purple-700" },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "from-[#4169E1] to-blue-700" },
         { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "from-cyan-500 to-cyan-700" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kaydedilenler", icon: Bookmark, color: "from-pink-500 to-pink-700" },
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "from-pink-500 to-pink-700" },
             { id: "drafts", label: "Taslaklar", icon: FileText, color: "from-yellow-500 to-yellow-700" }
         ] : [])
     ];
@@ -63,9 +63,9 @@ export function DarkNeoFeed({
 
     return (
         <div className="w-full space-y-6">
-            {/* TABS */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900 border-2 border-zinc-800 rounded-xl p-2 shadow-[4px_4px_0_rgba(0,0,0,0.3)]">
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto pb-2 sm:pb-0">
+            {/* COMPACT TABS */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-[#0a0a0a] border-2 border-white/10 rounded-xl p-1.5 shadow-[3px_3px_0_#000]">
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1.5 sm:pb-0">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -75,13 +75,13 @@ export function DarkNeoFeed({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "relative flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all whitespace-nowrap border-2",
+                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap border",
                                     isActive
-                                        ? `bg-gradient-to-r ${tab.color} text-white border-transparent shadow-[3px_3px_0_rgba(0,0,0,0.5)]`
-                                        : "bg-transparent text-zinc-500 border-transparent hover:bg-zinc-800 hover:text-white"
+                                        ? `bg-gradient-to-r ${tab.color} text-white border-white/20 shadow-[2px_2px_0_#000]`
+                                        : "bg-transparent text-zinc-500 border-transparent hover:bg-white/5 hover:text-white"
                                 )}
                             >
-                                <Icon className={cn("w-4 h-4", isActive && "stroke-[2.5px]")} />
+                                <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
                                 {tab.label}
                                 {counts[tab.id as keyof typeof counts] > 0 && (
                                     <span className={cn(
