@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { NBProfileLayout } from "@/components/profile/neo-brutal/nb-profile-layout";
+import { NIProfileLayout } from "@/components/profile/neo-illust/ni-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,8 +47,8 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#FFFEF2] flex justify-center items-start">
-            <NBProfileLayout
+        <main className="min-h-screen bg-[#c1f07c] flex justify-center items-start">
+            <NIProfileLayout
                 profile={profile}
                 user={user}
                 stats={stats}
