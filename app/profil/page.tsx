@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { FunkyProfileLayout } from "@/components/profile/funky/funky-profile-layout";
+import { NanoProfileLayout } from "@/components/profile/nano/nano-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,21 +47,16 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-neo-off-white flex justify-center">
-            <div className="w-full max-w-md bg-white min-h-screen shadow-2xl border-x-4 border-black relative">
-                <FunkyProfileLayout
-                    profile={profile}
-                    user={user}
-                    stats={stats}
-                    articles={articles || []}
-                    questions={questions || []}
-                    answers={answers || []}
-                    drafts={drafts || []}
-                    bookmarkedArticles={bookmarkedArticles || []}
-                    bookmarkedQuestions={bookmarkedQuestions || []}
-                    isOwnProfile={true}
-                />
-            </div>
+        <main className="min-h-screen bg-gray-200 flex justify-center items-start pt-0 md:pt-4">
+            <NanoProfileLayout
+                profile={profile}
+                user={user}
+                stats={stats}
+                articles={articles || []}
+                questions={questions || []}
+                drafts={drafts || []}
+                isOwnProfile={true}
+            />
         </main>
     );
 }
