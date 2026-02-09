@@ -110,7 +110,11 @@ export default function OnboardingPage() {
         setLoading(true);
 
         try {
-            const result = await completeOnboarding(formData);
+            const formDataToSend = new FormData();
+            formDataToSend.append("bio", formData.bio);
+            // formDataToSend.append("interests", ...); // interests not present in current form state
+
+            const result = await completeOnboarding(formDataToSend);
 
             if (result?.error) {
                 toast.error(result.error);

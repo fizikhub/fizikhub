@@ -1,49 +1,69 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
-export async function signOut() {
+export async function login(formData: FormData) {
     const supabase = await createClient();
-    await supabase.auth.signOut();
-    redirect('/');
-}
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-export async function verifyOtp(email: string, token: string) {
-    const supabase = await createClient();
-    // Remove any non-alphanumeric characters (spaces, dashes, etc.)
-    const cleanToken = token.replace(/[^a-zA-Z0-9]/g, '');
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
 
-
-
-    // Array of types to try in order
-    // 'signup': For new users
-    // 'email': For existing users logging in or changing email
-    // 'recovery': For password reset (sometimes used interchangeably in flows)
-    const types: ('signup' | 'email' | 'recovery')[] = ['signup', 'email', 'recovery'];
-    let lastError = "";
-
-    for (const type of types) {
-        const { data, error } = await supabase.auth.verifyOtp({
-            email,
-            token: cleanToken,
-            type
-        });
-
-        if (!error) {
-
-            return { success: true };
-        }
-
-
-        // Capture the error from the 'signup' attempt as it's the most likely one for new users
-        if (type === 'signup') {
-            lastError = error.message;
-        }
+    if (error) {
+        return { error: error.message };
     }
 
-    // If all fail, return the specific error for debugging
-    return { success: false, error: lastError || "Doğrulama başarısız." };
+    revalidatePath("/", "layout");
+    redirect("/");
+}
+
+export async function signup(formData: FormData) {
+    const supabase = await createClient();
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const fullName = formData.get("fullName") as string;
+    const username = formData.get("username") as string;
+
+    const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                full_name: fullName,
+                username: username,
+            },
+        },
+    });
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath("/", "layout");
+    redirect("/auth/verify");
+}
+
+export async function verifyOtp(token: string, type: 'signup' | 'recovery' | 'magiclink' = 'signup', email: string) {
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type,
+    });
+
+    if (error) {
+        return { success: false, error: error.message };
+    }
+
+    revalidatePath("/", "layout");
+    return { success: true };
 }
 
 export async function resendOtp(email: string) {
@@ -61,7 +81,7 @@ export async function resendOtp(email: string) {
     return { success: true };
 }
 
-export async function completeOnboarding(formData: { username: string; fullName: string; avatarUrl?: string; bio?: string }) {
+export async function completeOnboarding(formData: FormData) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -69,45 +89,29 @@ export async function completeOnboarding(formData: { username: string; fullName:
         return { success: false, error: "Kullanıcı bulunamadı." };
     }
 
-    // Normalize username just in case client-side validation was bypassed
-    let username = formData.username.toLowerCase();
-    const trMap: { [key: string]: string } = { 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c' };
-    username = username.replace(/[ğüşıöç]/g, char => trMap[char] || char);
-    username = username.replace(/[^a-z0-9_.-]/g, '');
+    const bio = formData.get("bio") as string;
+    const interests = formData.getAll("interests") as string[];
 
-    if (username.length < 3) {
-        return { success: false, error: "Kullanıcı adı en az 3 karakter olmalıdır." };
-    }
-
-    // Check username uniqueness
-    const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', username)
-        .neq('id', user.id) // Exclude self if updating
-        .maybeSingle();
-
-    if (existingUser) {
-        return { success: false, error: "Bu kullanıcı adı zaten alınmış." };
-    }
-
-    // UPSERT profile to handle both new and existing (auto-created) profiles
     const { error } = await supabase
         .from('profiles')
-        .upsert({
-            id: user.id,
-            username: formData.username,
-            full_name: formData.fullName,
-            avatar_url: formData.avatarUrl,
-            bio: formData.bio,
-            onboarding_completed: true,
-            updated_at: new Date().toISOString()
-        });
+        .update({
+            bio,
+            interests,
+            has_seen_onboarding: true
+        })
+        .eq('id', user.id);
 
     if (error) {
         return { success: false, error: error.message };
     }
 
-    // Redirect to profile page on success
-    redirect('/profil');
+    revalidatePath("/", "layout");
+    redirect("/");
+}
+
+export async function signOut() {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    revalidatePath("/");
+    redirect("/login");
 }

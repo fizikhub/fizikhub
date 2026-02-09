@@ -29,7 +29,7 @@ function VerifyContent() {
 
         setLoading(true);
         try {
-            const result = await verifyOtp(email, code);
+            const result = await verifyOtp(code, 'signup', email);
 
             if (result.success) {
                 toast.success("Erişim izni onaylandı.");
