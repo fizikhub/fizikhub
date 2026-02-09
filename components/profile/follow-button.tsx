@@ -5,15 +5,17 @@ import { Button } from "@/components/ui/button";
 import { followUser, unfollowUser } from "@/app/profil/actions";
 import { toast } from "sonner";
 import { UserPlus, UserMinus, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FollowButtonProps {
     targetUserId: string;
     initialIsFollowing: boolean;
     targetUsername?: string;
     variant?: string;
+    className?: string;
 }
 
-export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant }: FollowButtonProps) {
+export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant, className }: FollowButtonProps) {
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isPending, startTransition] = useTransition();
 
@@ -57,10 +59,15 @@ export function FollowButton({ targetUserId, initialIsFollowing, targetUsername,
     return (
         <Button
             variant={isFollowing ? "outline" : "default"}
-            size="sm"
+            className={cn(
+                "gap-2 transition-all duration-300",
+                isFollowing
+                    ? "border-zinc-300 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:border-zinc-700 dark:hover:bg-red-900/20"
+                    : "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5",
+                className
+            )}
             onClick={handleFollowToggle}
             disabled={isPending}
-            className="gap-2 min-w-[120px]"
         >
             {isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

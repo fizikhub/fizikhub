@@ -1,20 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { ProfileSettingsDialog } from "@/components/profile/profile-settings-dialog";
-import { FollowButton } from "@/components/profile/follow-button";
-import { Mail, Copy, Check, ShieldCheck, Settings, Share2, MapPin, Link as LinkIcon, Calendar } from "lucide-react";
+import { motion, Variants } from "framer-motion";
+import {
+    MapPin, Calendar, Link as LinkIcon, Edit3, Share2,
+    UserPlus, Check, MessageSquare, ShieldCheck, Trophy,
+    TrendingUp, Award, Zap
+} from "lucide-react";
+import Image from "next/image"; // Ensure next/image usage
 import Link from "next/link";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { FollowButton } from "../follow-button";
+import { formatNumber } from "@/lib/utils";
 
 interface NeoProfileHeroProps {
     profile: any;
     user: any;
     isOwnProfile: boolean;
-    isFollowing?: boolean;
-    stats?: {
+    isFollowing: boolean;
+    stats: {
         reputation: number;
         followersCount: number;
         followingCount: number;
@@ -24,216 +28,244 @@ interface NeoProfileHeroProps {
     };
 }
 
-export function NeoProfileHero({ profile, user, isOwnProfile, isFollowing = false, stats }: NeoProfileHeroProps) {
-    const [isCopied, setIsCopied] = useState(false);
+export function NeoProfileHero({
+    profile,
+    user,
+    isOwnProfile,
+    isFollowing,
+    stats
+}: NeoProfileHeroProps) {
+    const [isSharing, setIsSharing] = useState(false);
 
-    const formatNumber = (num: number) =>
-        new Intl.NumberFormat('tr-TR', { notation: "compact", maximumFractionDigits: 1 }).format(num);
-
-    const handleCopyUsername = () => {
-        if (!profile?.username) return;
-        navigator.clipboard.writeText(`@${profile.username}`);
-        setIsCopied(true);
-        toast.success("Kullanıcı adı kopyalandı!");
-        setTimeout(() => setIsCopied(false), 2000);
+    const handleShare = async () => {
+        setIsSharing(true);
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            // toast.success("Profil bağlantısı kopyalandı!");
+        } catch (err) {
+            console.error("Failed to copy:", err);
+        }
+        setTimeout(() => setIsSharing(false), 2000);
     };
 
-    const handleShareProfile = () => {
-        const url = `${window.location.origin}/p/${profile?.username || profile?.id}`;
-        if (navigator.share) {
-            navigator.share({
-                title: `${profile?.full_name} - FizikHub Profili`,
-                url: url,
-            }).catch(() => {
-                navigator.clipboard.writeText(url);
-                toast.success("Profil linki kopyalandı!");
-            });
-        } else {
-            navigator.clipboard.writeText(url);
-            toast.success("Profil linki kopyalandı!");
+    // Stagger animation variants
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const itemVariants: Variants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: { type: "spring", stiffness: 100 }
         }
     };
 
     return (
-        <div className="w-full relative font-[family-name:var(--font-outfit)] mb-8">
-            {/* NEO-BRUTALIST CONTAINER */}
-            <div className="relative bg-[#f0f0f0] dark:bg-[#09090b] border-[3px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
+        <div className="w-full relative mb-12">
+            <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+            >
+                {/* 1. COVER IMAGE AREA - Massive & Immersive */}
+                <div className="relative h-48 md:h-64 lg:h-72 w-full overflow-hidden rounded-t-3xl border-x-[3px] border-t-[3px] border-black dark:border-white bg-zinc-100 dark:bg-zinc-900 group">
+                    <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 mix-blend-overlay z-10 pointer-events-none"></div>
 
-                {/* COVER IMAGE AREA */}
-                <div className="h-[140px] sm:h-[220px] w-full border-b-[3px] border-black dark:border-white relative bg-zinc-200 dark:bg-zinc-900 pattern-grid-lg">
                     {profile?.cover_url ? (
-                        <img src={profile.cover_url} className="w-full h-full object-cover" alt="Cover" />
+                        <Image
+                            src={profile.cover_url}
+                            alt="Cover"
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            priority
+                        />
                     ) : (
-                        <div className="w-full h-full bg-[#FFDE59] dark:bg-[#4169E1] relative overflow-hidden">
-                            <div className="absolute inset-0 opacity-20"
-                                style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-                            </div>
-                        </div>
+                        <div className="w-full h-full bg-[repeating-linear-gradient(45deg,#4169E1_0,#4169E1_20px,#3152c1_20px,#3152c1_40px)] opacity-20"></div>
                     )}
+
+                    {/* Decorative Overlay Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0"></div>
                 </div>
 
-                {/* PROFILE CONTENT */}
-                <div className="px-4 pb-6 pt-0 sm:px-8 sm:pb-8 relative">
+                {/* 2. MAIN CONTENT AREA - Where the magic happens */}
+                <div className="relative bg-white dark:bg-black border-[3px] border-black dark:border-white rounded-b-3xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-6 md:p-8 -mt-1 z-20 overflow-visible">
 
-                    {/* AVATAR & ACTIONS ROW */}
-                    <div className="flex justify-between items-end -mt-10 sm:-mt-14 mb-4">
-                        {/* AVATAR */}
-                        <div className="relative group">
-                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl border-[3px] border-black dark:border-white bg-white dark:bg-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] overflow-hidden">
+                    {/* FLOATING HEADER GRID */}
+                    <div className="flex flex-col md:flex-row gap-6 items-start -mt-20 md:-mt-24 relative z-30 mb-8">
+
+                        {/* AVATAR - Breaking the Grid */}
+                        <motion.div
+                            variants={itemVariants}
+                            className="relative shrink-0"
+                        >
+                            <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl border-[4px] border-black dark:border-white bg-white dark:bg-black shadow-[6px_6px_0px_0px_rgba(240,204,21,1)] overflow-hidden rotate-[-3deg] hover:rotate-0 transition-transform duration-300">
                                 {profile?.avatar_url ? (
-                                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                                    <Image
+                                        src={profile.avatar_url}
+                                        alt={profile.full_name}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-[#FF5757] text-white text-3xl font-black uppercase">
-                                        {profile?.full_name?.charAt(0) || "?"}
+                                    <div className="w-full h-full flex items-center justify-center bg-[#FACC15] text-black font-black text-5xl">
+                                        {profile?.full_name?.charAt(0) || "U"}
                                     </div>
                                 )}
                             </div>
-                            {profile?.is_verified && (
-                                <div className="absolute -bottom-2 -right-2 bg-[#4169E1] text-white w-7 h-7 flex items-center justify-center rounded-full border-2 border-black z-20 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                    <ShieldCheck className="w-4 h-4" />
-                                </div>
-                            )}
-                        </div>
 
-                        {/* DESKTOP ACTIONS */}
-                        <div className="hidden sm:flex gap-3 mb-1">
-                            {isOwnProfile ? (
-                                <>
-                                    <ProfileSettingsDialog
-                                        currentUsername={profile?.username}
-                                        currentFullName={profile?.full_name}
-                                        currentBio={profile?.bio}
-                                        currentAvatarUrl={profile?.avatar_url}
-                                        currentCoverUrl={profile?.cover_url}
-                                        currentWebsite={profile?.website}
-                                        currentSocialLinks={profile?.social_links}
-                                        userEmail={user?.email}
-                                        trigger={
-                                            <button className="h-10 px-5 bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-bold text-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all uppercase rounded-lg flex items-center gap-2">
-                                                <Settings className="w-4 h-4" />
-                                                Profili Düzenle
-                                            </button>
-                                        }
-                                    />
-                                    <Link href="/mesajlar" className="h-10 w-10 flex items-center justify-center bg-[#FFDE59] border-2 border-black text-black rounded-lg hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
-                                        <Mail className="w-5 h-5" />
-                                    </Link>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={handleShareProfile}
-                                        className="h-10 px-4 flex items-center gap-2 bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-bold rounded-lg hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                            {/* Verified Badge */}
+                            <div className="absolute -bottom-2 -right-2 bg-[#4169E1] text-white p-1.5 rounded-lg border-[3px] border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-40">
+                                <ShieldCheck className="w-5 h-5 md:w-6 md:h-6" />
+                            </div>
+                        </motion.div>
+
+                        {/* USER INFO & ACTIONS */}
+                        <div className="flex-1 pt-4 md:pt-24 lg:pt-24 space-y-4 w-full">
+                            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
+
+                                {/* TEXT BIO */}
+                                <motion.div variants={itemVariants} className="space-y-1 md:space-y-2 max-w-2xl">
+                                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-black dark:text-white uppercase tracking-tighter leading-[0.9] font-head">
+                                        {profile?.full_name || "İsimsiz Kullanıcı"}
+                                    </h1>
+                                    <a
+                                        href={`/kullanici/${profile?.username}`}
+                                        className="inline-block text-lg md:text-xl font-bold bg-[#FACC15] text-black px-2 py-0.5 border-2 border-black transform -skew-x-12 hover:skew-x-0 transition-transform cursor-pointer"
                                     >
-                                        <Share2 className="w-4 h-4" />
-                                        Paylaş
+                                        @{profile?.username}
+                                    </a>
+
+                                    {profile?.bio && (
+                                        <p className="text-base md:text-lg text-zinc-600 dark:text-zinc-300 font-medium leading-relaxed max-w-xl mt-4 border-l-4 border-[#4169E1] pl-3 py-1">
+                                            {profile.bio}
+                                        </p>
+                                    )}
+                                </motion.div>
+
+                                {/* ACTION BUTTONS (Desktop) */}
+                                <motion.div variants={itemVariants} className="flex flex-wrap gap-3 w-full lg:w-auto mt-4 lg:mt-0">
+                                    {isOwnProfile ? (
+                                        <Link href="/profil/duzenle" className="w-full sm:w-auto">
+                                            <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider border-[3px] border-transparent hover:border-black dark:hover:border-white hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(100,100,100,0.5)] active:translate-y-[2px] active:shadow-none">
+                                                <Edit3 className="w-4 h-4" />
+                                                <span>Düzenle</span>
+                                            </button>
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            {/* Follow Button Wrapper for Consistent Height */}
+                                            <div className="w-full sm:w-auto min-h-[48px] flex">
+                                                <FollowButton
+                                                    targetUserId={profile.id}
+                                                    initialIsFollowing={isFollowing}
+                                                    className="w-full h-full min-h-[48px] px-8 text-sm font-black uppercase tracking-wider rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#4169E1] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center bg-[#4169E1] text-white hover:bg-[#3152c1]"
+                                                />
+                                            </div>
+                                            <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white dark:bg-zinc-900 text-black dark:text-white px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider border-[3px] border-black dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none text-center">
+                                                <MessageSquare className="w-4 h-4" />
+                                                <span>Mesaj</span>
+                                            </button>
+                                        </>
+                                    )}
+
+                                    <button
+                                        onClick={handleShare}
+                                        className="w-full sm:w-auto flex items-center justify-center gap-2 p-3 bg-[#FACC15] text-black rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-[#FFE066] active:translate-y-[2px] active:shadow-none transition-all"
+                                        title="Profili Paylaş"
+                                    >
+                                        {isSharing ? <Check className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
+                                        <span className="sm:hidden font-bold">PAYLAŞ</span>
                                     </button>
-                                    <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="neo" />
-                                </>
-                            )}
-                        </div>
+                                </motion.div>
+                            </div>
 
-                        {/* MOBILE ACTIONS */}
-                        <div className="flex sm:hidden gap-2 mb-0.5">
-                            {isOwnProfile ? (
-                                <ProfileSettingsDialog
-                                    currentUsername={profile?.username}
-                                    currentFullName={profile?.full_name}
-                                    currentBio={profile?.bio}
-                                    currentAvatarUrl={profile?.avatar_url}
-                                    currentCoverUrl={profile?.cover_url}
-                                    currentWebsite={profile?.website}
-                                    currentSocialLinks={profile?.social_links}
-                                    userEmail={user?.email}
-                                    trigger={
-                                        <button className="h-9 px-4 bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white font-bold text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all uppercase rounded-lg">
-                                            Düzenle
-                                        </button>
-                                    }
-                                />
-                            ) : (
-                                <FollowButton targetUserId={profile?.id} initialIsFollowing={isFollowing} targetUsername={profile?.username} variant="neo-sm" />
-                            )}
-
-                            <button onClick={handleShareProfile} className="h-9 w-9 flex items-center justify-center bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
-                                <Share2 className="w-4 h-4" />
-                            </button>
+                            {/* META INFO ROW */}
+                            <motion.div variants={itemVariants} className="flex flex-wrap gap-x-6 gap-y-2 pt-6 text-sm font-bold text-zinc-500 dark:text-zinc-400 border-t-2 border-zinc-100 dark:border-zinc-800 mt-6">
+                                {profile?.location && (
+                                    <div className="flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-[#FF0080]" />
+                                        <span>{profile.location}</span>
+                                    </div>
+                                )}
+                                {profile?.website && (
+                                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-[#4169E1] hover:underline transition-colors">
+                                        <LinkIcon className="w-4 h-4 text-[#4169E1]" />
+                                        <span>{profile.website.replace(/^https?:\/\//, '')}</span>
+                                    </a>
+                                )}
+                                <div className="flex items-center gap-1.5">
+                                    <Calendar className="w-4 h-4 text-[#FACC15]" />
+                                    <span>Katılım: {new Date(profile.created_at || Date.now()).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}</span>
+                                </div>
+                            </motion.div>
                         </div>
                     </div>
 
-                    {/* NAME & BIO SECTION */}
-                    <div className="space-y-3">
-                        <div>
-                            <h1 className="text-2xl sm:text-4xl font-black text-black dark:text-white uppercase leading-none tracking-tight">
-                                {profile?.full_name || "İsimsiz"}
-                            </h1>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="font-mono text-sm sm:text-base text-zinc-600 dark:text-zinc-400 font-bold">@{profile?.username}</span>
-                                <button
-                                    onClick={handleCopyUsername}
-                                    className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-md transition-colors"
-                                >
-                                    {isCopied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* BIO */}
-                        {profile?.bio && (
-                            <div className="p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-700 rounded-lg max-w-2xl relative">
-                                <p className="text-sm sm:text-base text-zinc-800 dark:text-zinc-200 font-medium leading-relaxed">
-                                    {profile.bio}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* META INFO */}
-                        <div className="flex flex-wrap gap-x-4 gap-y-2 pt-1 text-xs sm:text-sm font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-wide">
-                            <div className="flex items-center gap-1">
-                                <Calendar className="w-3.5 h-3.5" />
-                                <span>Katıldı: {new Date(user?.created_at || profile?.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })}</span>
-                            </div>
-                            {profile?.website && (
-                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-[#4169E1] hover:underline transition-all">
-                                    <LinkIcon className="w-3.5 h-3.5" />
-                                    <span>Website</span>
-                                </a>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* STATS BAR - COMPACT NEO */}
-                    <div className="grid grid-cols-3 sm:flex sm:items-center gap-3 sm:gap-6 mt-6 py-4 border-t-2 border-black/10 dark:border-white/10">
-
-                        {/* HUB SCORE */}
-                        <Link href="/yardim/puanlar" className="col-span-3 sm:col-span-1 group">
-                            <div className="flex items-center justify-between sm:justify-start gap-3 px-3 py-2 bg-[#4169E1] text-white border-2 border-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all">
-                                <div className="font-black text-2xl">{formatNumber(stats?.reputation || 0)}</div>
-                                <div className="text-[10px] font-black uppercase text-white/80 leading-tight text-right sm:text-left">
-                                    Hub<br />Puan
+                    {/* 3. BENTO GRID STATS - Integrated into Hero */}
+                    <div className="mt-8 pt-8 border-t-[3px] border-black dark:border-white border-dashed">
+                        <motion.div
+                            variants={containerVariants}
+                            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+                        >
+                            {/* HUB POINTS - MAIN CARD */}
+                            <div className="col-span-2 md:col-span-1 bg-[#4169E1] text-white p-5 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group hover:-translate-y-1 transition-transform">
+                                <div className="absolute top-0 right-0 p-2 opacity-20">
+                                    <Trophy className="w-20 h-20 transform rotate-12 text-white" />
+                                </div>
+                                <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">Hub Puan</p>
+                                <h3 className="text-5xl font-black font-head">{formatNumber(stats.reputation)}</h3>
+                                <div className="mt-3 text-[10px] font-bold bg-black/20 text-white inline-block px-2 py-1 rounded max-w-fit backdrop-blur-sm">
+                                    ELİT ÜYE
                                 </div>
                             </div>
-                        </Link>
 
-                        <div className="flex flex-col items-center sm:items-start p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
-                            <span className="font-black text-xl text-black dark:text-white">{formatNumber(stats?.followersCount || 0)}</span>
-                            <span className="text-[10px] uppercase font-bold text-zinc-500">Takipçi</span>
-                        </div>
+                            {/* FOLLOWERS */}
+                            <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 transition-transform group">
+                                <div className="flex justify-between items-start mb-3">
+                                    <UserPlus className="w-6 h-6 text-zinc-400 group-hover:text-[#FACC15] transition-colors" />
+                                    <span className="text-[10px] font-black uppercase text-zinc-300">Social</span>
+                                </div>
+                                <h3 className="text-4xl font-black text-black dark:text-white">{formatNumber(stats.followersCount)}</h3>
+                                <p className="text-xs font-bold text-zinc-500 uppercase mt-1">Takipçi</p>
+                            </div>
 
-                        <div className="flex flex-col items-center sm:items-start p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors cursor-pointer">
-                            <span className="font-black text-xl text-black dark:text-white">{formatNumber(stats?.followingCount || 0)}</span>
-                            <span className="text-[10px] uppercase font-bold text-zinc-500">Takip</span>
-                        </div>
+                            {/* FOLLOWING */}
+                            <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 transition-transform group">
+                                <div className="flex justify-between items-start mb-3">
+                                    <TrendingUp className="w-6 h-6 text-zinc-400 group-hover:text-[#FF0080] transition-colors" />
+                                    <span className="text-[10px] font-black uppercase text-zinc-300">Network</span>
+                                </div>
+                                <h3 className="text-4xl font-black text-black dark:text-white">{formatNumber(stats.followingCount)}</h3>
+                                <p className="text-xs font-bold text-zinc-500 uppercase mt-1">Takip</p>
+                            </div>
 
-                        <div className="flex flex-col items-center sm:items-start p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">
-                            <span className="font-black text-xl text-black dark:text-white">{formatNumber(stats?.articlesCount || 0)}</span>
-                            <span className="text-[10px] uppercase font-bold text-zinc-500">Makale</span>
-                        </div>
+                            {/* TOTAL CONTENT */}
+                            <div className="bg-[#FACC15] text-black p-5 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-transform relative overflow-hidden">
+                                <div className="absolute -bottom-4 -right-4 opacity-10">
+                                    <Zap className="w-24 h-24 rotate-[-12deg]" />
+                                </div>
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="w-8 h-8 rounded-full bg-black text-[#FACC15] flex items-center justify-center font-bold">
+                                        <Zap className="w-4 h-4 fill-current" />
+                                    </div>
+                                </div>
+                                <h3 className="text-4xl font-black text-black relative z-10">{stats.articlesCount + stats.questionsCount + stats.answersCount}</h3>
+                                <p className="text-xs font-black opacity-70 uppercase relative z-10 mt-1">Katkı</p>
+                            </div>
+                        </motion.div>
                     </div>
 
                 </div>
-            </div>
+            </motion.div>
         </div>
+
     );
 }
-
