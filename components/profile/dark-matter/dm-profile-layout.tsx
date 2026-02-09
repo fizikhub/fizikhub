@@ -3,12 +3,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from "react";
-import { BentoHero } from "./bento-hero";
-import { BentoStats } from "./bento-stats";
-import { BentoFeed } from "./bento-feed";
+import { DMHeader } from "./dm-header";
+import { DMStats } from "./dm-stats";
+import { DMFeed } from "./dm-feed";
 import { cn } from "@/lib/utils";
 
-interface BentoProfileLayoutProps {
+interface DMProfileLayoutProps {
     profile: any;
     user: any;
     stats: any;
@@ -18,7 +18,7 @@ interface BentoProfileLayoutProps {
     isOwnProfile: boolean;
 }
 
-export function BentoProfileLayout({
+export function DMProfileLayout({
     profile,
     user,
     stats,
@@ -26,7 +26,7 @@ export function BentoProfileLayout({
     questions,
     drafts,
     isOwnProfile
-}: BentoProfileLayoutProps) {
+}: DMProfileLayoutProps) {
     const [activeTab, setActiveTab] = useState("all");
 
     // Unified feed
@@ -42,8 +42,8 @@ export function BentoProfileLayout({
         : allItems.filter(item => item.type === activeTab.replace('s', '')); // 'articles' -> 'article'
 
     const tabs = [
-        { id: "all", label: "Overview" },
-        { id: "articles", label: "Posts" },
+        { id: "all", label: "All Activity" },
+        { id: "articles", label: "Articles" },
         { id: "questions", label: "Questions" },
     ];
     if (isOwnProfile && drafts.length > 0) {
@@ -51,25 +51,21 @@ export function BentoProfileLayout({
     }
 
     return (
-        <div className="w-full max-w-2xl mx-auto p-4 md:p-6 min-h-screen">
+        <div className="w-full max-w-lg mx-auto p-4 md:p-0 min-h-screen pb-20">
+            <DMHeader profile={profile} user={user} isOwnProfile={isOwnProfile} />
+            <DMStats stats={stats} />
 
-            {/* Top Grid: Hero + Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <BentoHero profile={profile} user={user} isOwnProfile={isOwnProfile} />
-                <BentoStats stats={stats} />
-            </div>
-
-            {/* Filter Pills */}
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+            {/* Filter Segmented Control */}
+            <div className="flex p-1 bg-white/5 rounded-xl border border-white/5 mb-6 relative backdrop-blur-md">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={cn(
-                            "px-5 py-2.5 rounded-2xl font-bold text-sm transition-all shadow-sm border-2",
+                            "flex-1 py-2 rounded-lg text-xs font-medium transition-all duration-300 relative z-10",
                             activeTab === tab.id
-                                ? "bg-black text-white border-black shadow-md transform -translate-y-0.5"
-                                : "bg-white text-gray-500 border-transparent hover:bg-gray-50 hover:text-black hover:border-gray-200"
+                                ? "text-black bg-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                : "text-gray-500 hover:text-gray-300"
                         )}
                     >
                         {tab.label}
@@ -77,9 +73,10 @@ export function BentoProfileLayout({
                 ))}
             </div>
 
-            {/* Content Grid */}
-            <BentoFeed items={displayedItems} />
+            <DMFeed items={displayedItems} />
 
+            {/* Bottom Fade */}
+            <div className="fixed bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
         </div>
     );
 }

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { BentoProfileLayout } from "@/components/profile/bento/bento-profile-layout";
+import { DMProfileLayout } from "@/components/profile/dark-matter/dm-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,11 +47,13 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-gray-50/50 flex justify-center items-start pt-0 md:pt-8 relative overflow-hidden">
-            {/* Subtle dot pattern background */}
-            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        <main className="min-h-screen bg-[#050505] text-white flex justify-center items-start pt-8 pb-12 relative overflow-hidden">
+            {/* Global Stars / Nebula Background */}
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 pointer-events-none" />
+            <div className="fixed top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-purple-900/10 blur-[120px] pointer-events-none" />
+            <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none" />
 
-            <BentoProfileLayout
+            <DMProfileLayout
                 profile={profile}
                 user={user}
                 stats={stats}
