@@ -37,7 +37,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
     return (
         <div className="w-full">
             {/* COVER BANNER with overlapping stats */}
-            <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-2xl border-2 border-white/10">
+            <div className="relative h-40 sm:h-48 md:h-56 overflow-visible rounded-2xl border-2 border-white/10">
                 {/* Deep royal blue gradient base */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
 
@@ -118,10 +118,10 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     </div>
 
                     {/* ACTION BUTTONS */}
-                    <div className="flex flex-wrap gap-2 mt-1">
+                    <div className="flex gap-2 mt-1">
                         {isOwnProfile ? (
-                            <Link href="/profil/duzenle" className="flex-1">
-                                <button className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#1E3A5F] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                            <Link href="/profil/duzenle" className="flex-1 sm:flex-none">
+                                <button className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#1E3A5F] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
                                     <Edit3 className="w-3.5 h-3.5" />
                                     Profili Düzenle
                                 </button>
@@ -131,10 +131,10 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                 <FollowButton
                                     targetUserId={profile.id}
                                     initialIsFollowing={isFollowing}
-                                    className="flex-1 min-w-[100px] px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
+                                    className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
                                 />
-                                <Link href={`/mesajlar?to=${profile.id}`} className="flex-1 min-w-[100px]">
-                                    <button className="w-full flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                <Link href={`/mesajlar?to=${profile.id}`}>
+                                    <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
                                         <MessageCircle className="w-3.5 h-3.5" />
                                         Mesaj
                                     </button>
