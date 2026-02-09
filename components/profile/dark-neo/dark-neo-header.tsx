@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, Share2, Check, ShieldCheck, Users } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, Share2, Check, ShieldCheck, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
@@ -127,11 +127,19 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                 </button>
                             </Link>
                         ) : (
-                            <FollowButton
-                                targetUserId={profile.id}
-                                initialIsFollowing={isFollowing}
-                                className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
-                            />
+                            <>
+                                <FollowButton
+                                    targetUserId={profile.id}
+                                    initialIsFollowing={isFollowing}
+                                    className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
+                                />
+                                <Link href={`/mesajlar?to=${profile.id}`}>
+                                    <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                        <MessageCircle className="w-3.5 h-3.5" />
+                                        Mesaj
+                                    </button>
+                                </Link>
+                            </>
                         )}
                         <button
                             onClick={handleShare}
@@ -169,19 +177,10 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     </div>
                 </div>
 
-                {/* STATS - Hub Puan & Katkı */}
-                <div className="grid grid-cols-2 gap-2">
-                    {/* HUB POINTS */}
-                    <div className="bg-[#1E3A5F] p-3 rounded-lg border border-white/10">
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-white/60">Hub Puan</p>
-                        <h3 className="text-xl sm:text-2xl font-black text-white">{formatNumber(stats.reputation)}</h3>
-                    </div>
-
-                    {/* CONTRIBUTIONS */}
-                    <div className="bg-yellow-500 p-3 rounded-lg border border-black/10">
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-black/60">Toplam Katkı</p>
-                        <h3 className="text-xl sm:text-2xl font-black text-black">{stats.articlesCount + stats.questionsCount + stats.answersCount}</h3>
-                    </div>
+                {/* STATS - Hub Puan only */}
+                <div className="bg-[#1E3A5F] p-3 rounded-lg border border-white/10">
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-white/60">Hub Puan</p>
+                    <h3 className="text-xl sm:text-2xl font-black text-white">{formatNumber(stats.reputation)}</h3>
                 </div>
             </div>
         </div>
