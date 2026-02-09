@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
 import { getTotalUnreadCount } from "@/app/mesajlar/actions";
-import { BlueprintProfileLayout } from "@/components/profile/blueprint/blueprint-profile-layout";
+import { BentoProfileLayout } from "@/components/profile/bento/bento-profile-layout";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -47,8 +47,11 @@ export default async function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] bg-fixed bg-gray-200 flex justify-center items-start pt-0 md:pt-8 p-4">
-            <BlueprintProfileLayout
+        <main className="min-h-screen bg-gray-50/50 flex justify-center items-start pt-0 md:pt-8 relative overflow-hidden">
+            {/* Subtle dot pattern background */}
+            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+            <BentoProfileLayout
                 profile={profile}
                 user={user}
                 stats={stats}
