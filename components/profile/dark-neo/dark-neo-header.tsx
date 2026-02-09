@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
@@ -20,29 +20,47 @@ interface DarkNeoHeaderProps {
 
 export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing }: DarkNeoHeaderProps) {
     const initial = profile?.full_name?.[0]?.toUpperCase() || "U";
+    const isAdmin = profile?.username === "baranbozkurt";
+    const hasCoverPhoto = profile?.cover_url;
 
     return (
         <div className="w-full">
             {/* COVER BANNER with overlapping stats */}
             <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-t-2xl border-2 border-b-0 border-white/10">
-                {/* Deep royal blue gradient base */}
-                <div className="absolute inset-0 rounded-t-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
+                {/* Cover photo or default gradient */}
+                {hasCoverPhoto ? (
+                    <img
+                        src={profile.cover_url}
+                        alt="Kapak fotoğrafı"
+                        className="absolute inset-0 w-full h-full object-cover rounded-t-2xl"
+                    />
+                ) : (
+                    <>
+                        {/* Deep royal blue gradient base (default) */}
+                        <div className="absolute inset-0 rounded-t-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
 
-                {/* Subtle accent glows */}
-                <div className="absolute -top-20 -left-20 w-56 h-56 bg-[#2C5282]/20 rounded-full blur-3xl" />
-                <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
+                        {/* Subtle accent glows */}
+                        <div className="absolute -top-20 -left-20 w-56 h-56 bg-[#2C5282]/20 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
 
-                {/* Decorative elements */}
-                <div className="absolute inset-0 overflow-hidden opacity-40 rounded-t-2xl">
-                    <span className="absolute top-6 left-8 text-yellow-400/60 text-base">✦</span>
-                    <span className="absolute top-10 right-16 text-white/30 text-sm">✦</span>
-                    <span className="absolute bottom-8 left-24 text-yellow-400/40 text-xs">✧</span>
-                    <span className="absolute bottom-10 right-1/3 text-white/20 text-sm">★</span>
-                    <div className="absolute top-8 right-12 w-4 h-4 border border-yellow-400/30 rotate-12" />
-                </div>
+                        {/* Decorative elements */}
+                        <div className="absolute inset-0 overflow-hidden opacity-40 rounded-t-2xl">
+                            <span className="absolute top-6 left-8 text-yellow-400/60 text-base">✦</span>
+                            <span className="absolute top-10 right-16 text-white/30 text-sm">✦</span>
+                            <span className="absolute bottom-8 left-24 text-yellow-400/40 text-xs">✧</span>
+                            <span className="absolute bottom-10 right-1/3 text-white/20 text-sm">★</span>
+                            <div className="absolute top-8 right-12 w-4 h-4 border border-yellow-400/30 rotate-12" />
+                        </div>
 
-                {/* Grid pattern */}
-                <div className="absolute inset-0 rounded-t-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
+                        {/* Grid pattern */}
+                        <div className="absolute inset-0 rounded-t-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
+                    </>
+                )}
+
+                {/* Dark overlay for readability when cover photo exists */}
+                {hasCoverPhoto && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl" />
+                )}
 
                 {/* FOLLOWER/FOLLOWING BOXES - Equal width */}
                 <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-2 z-20">
@@ -119,6 +137,15 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                     Mesajlar
                                 </button>
                             </Link>
+                            {/* Admin Panel Button - Only for @baranbozkurt */}
+                            {isAdmin && (
+                                <Link href="/admin">
+                                    <button className="flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                        <Settings className="w-3.5 h-3.5" />
+                                        Admin
+                                    </button>
+                                </Link>
+                            )}
                         </>
                     ) : (
                         <>
