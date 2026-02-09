@@ -76,6 +76,7 @@ export async function updateProfile(formData: {
     website?: string;
     social_links?: any;
     cover_offset_y?: number;
+    location?: string;
 }) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -92,6 +93,7 @@ export async function updateProfile(formData: {
     if (formData.website !== undefined) updateData.website = formData.website;
     if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
+    if (formData.location !== undefined) updateData.location = formData.location;
 
     // Add updated_at timestamp
     const finalUpdateData = {
