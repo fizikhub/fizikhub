@@ -44,26 +44,26 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                 {/* Grid pattern */}
                 <div className="absolute inset-0 rounded-t-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
 
-                {/* FOLLOWER/FOLLOWING BOXES - Overlapping bottom right */}
+                {/* FOLLOWER/FOLLOWING BOXES - Equal width */}
                 <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-2 z-20">
                     <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-card border-2 border-border/30 rounded-xl px-4 py-3 shadow-lg backdrop-blur-sm"
+                        className="bg-card border-2 border-border/30 rounded-xl min-w-[72px] sm:min-w-[80px] py-3 px-3 shadow-lg backdrop-blur-sm text-center"
                     >
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takipçi</p>
-                        <h3 className="text-xl sm:text-2xl font-black text-foreground">{formatNumber(stats.followersCount)}</h3>
+                        <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takipçi</p>
+                        <h3 className="text-lg sm:text-xl font-black text-foreground">{formatNumber(stats.followersCount)}</h3>
                     </motion.div>
 
                     <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-card border-2 border-border/30 rounded-xl px-4 py-3 shadow-lg backdrop-blur-sm"
+                        className="bg-card border-2 border-border/30 rounded-xl min-w-[72px] sm:min-w-[80px] py-3 px-3 shadow-lg backdrop-blur-sm text-center"
                     >
-                        <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takip</p>
-                        <h3 className="text-xl sm:text-2xl font-black text-foreground">{formatNumber(stats.followingCount)}</h3>
+                        <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takip</p>
+                        <h3 className="text-lg sm:text-xl font-black text-foreground">{formatNumber(stats.followingCount)}</h3>
                     </motion.div>
                 </div>
             </div>
