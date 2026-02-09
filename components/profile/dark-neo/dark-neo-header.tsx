@@ -24,16 +24,16 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
     return (
         <div className="w-full">
             {/* COVER BANNER with overlapping stats */}
-            <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-2xl border-2 border-white/10">
+            <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-t-2xl border-2 border-b-0 border-white/10">
                 {/* Deep royal blue gradient base */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
+                <div className="absolute inset-0 rounded-t-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
 
                 {/* Subtle accent glows */}
                 <div className="absolute -top-20 -left-20 w-56 h-56 bg-[#2C5282]/20 rounded-full blur-3xl" />
                 <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
 
                 {/* Decorative elements */}
-                <div className="absolute inset-0 overflow-hidden opacity-40 rounded-2xl">
+                <div className="absolute inset-0 overflow-hidden opacity-40 rounded-t-2xl">
                     <span className="absolute top-6 left-8 text-yellow-400/60 text-base">✦</span>
                     <span className="absolute top-10 right-16 text-white/30 text-sm">✦</span>
                     <span className="absolute bottom-8 left-24 text-yellow-400/40 text-xs">✧</span>
@@ -42,7 +42,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                 </div>
 
                 {/* Grid pattern */}
-                <div className="absolute inset-0 rounded-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
+                <div className="absolute inset-0 rounded-t-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
 
                 {/* FOLLOWER/FOLLOWING BOXES - Overlapping bottom right */}
                 <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-2 z-20">
