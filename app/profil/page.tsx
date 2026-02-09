@@ -5,6 +5,7 @@ import { getTotalUnreadCount } from "@/app/mesajlar/actions";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
+import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -55,14 +56,13 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <main className="min-h-screen bg-black relative selection:bg-yellow-500/30">
-            {/* Subtle background texture */}
-            <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,0,255,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_right,rgba(0,200,255,0.05),transparent_50%)]" />
+        <main className="min-h-screen bg-background relative selection:bg-primary/30">
+            <BackgroundWrapper />
 
-            <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-4 lg:pt-8 pb-32">
+            <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-2 sm:pt-4 lg:pt-8 pb-24 sm:pb-32">
 
-                {/* 1. HERO SECTION */}
-                <div className="mb-8">
+                {/* HERO SECTION */}
+                <div className="mb-4 sm:mb-6 lg:mb-8">
                     <DarkNeoHeader
                         profile={profile}
                         user={user}
@@ -72,11 +72,11 @@ export default async function ProfilePage() {
                     />
                 </div>
 
-                {/* 2. GRID CONTENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
+                {/* GRID CONTENT */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
 
-                    {/* LEFT: MAIN FEED */}
-                    <div className="lg:col-span-12 xl:col-span-7 space-y-6">
+                    {/* MAIN FEED */}
+                    <div className="lg:col-span-12 xl:col-span-7">
                         <DarkNeoFeed
                             articles={articles || []}
                             questions={questions || []}
@@ -88,7 +88,7 @@ export default async function ProfilePage() {
                         />
                     </div>
 
-                    {/* RIGHT: SIDEBAR */}
+                    {/* SIDEBAR - Hidden on mobile */}
                     <div className="hidden xl:block xl:col-span-5 relative">
                         <DarkNeoSidebar
                             profile={profile}

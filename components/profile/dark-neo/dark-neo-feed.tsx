@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter } from "lucide-react";
+import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
+
+// True Royal Blue
+const ROYAL_BLUE = "#1E3A5F";
 
 interface DarkNeoFeedProps {
     articles: any[];
@@ -35,11 +38,11 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "from-[#4169E1] to-blue-700" },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "from-cyan-500 to-cyan-700" },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#1E3A5F]" },
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-cyan-600" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "from-pink-500 to-pink-700" },
-            { id: "drafts", label: "Taslaklar", icon: FileText, color: "from-yellow-500 to-yellow-700" }
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-pink-600" },
+            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-500" }
         ] : [])
     ];
 
@@ -62,10 +65,10 @@ export function DarkNeoFeed({
     const feedItems = getFeedItems(activeTab);
 
     return (
-        <div className="w-full space-y-6">
-            {/* COMPACT TABS */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-[#0a0a0a] border-2 border-white/10 rounded-xl p-1.5 shadow-[3px_3px_0_#000]">
-                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1.5 sm:pb-0">
+        <div className="w-full space-y-4">
+            {/* MOBILE OPTIMIZED TABS - Horizontal scroll */}
+            <div className="bg-card border border-border/20 rounded-xl p-1.5 shadow-sm">
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -75,18 +78,19 @@ export function DarkNeoFeed({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap border",
+                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
                                     isActive
-                                        ? `bg-gradient-to-r ${tab.color} text-white border-white/20 shadow-[2px_2px_0_#000]`
-                                        : "bg-transparent text-zinc-500 border-transparent hover:bg-white/5 hover:text-white"
+                                        ? `${tab.color} text-white shadow-sm`
+                                        : "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
-                                {tab.label}
+                                <span className="hidden sm:inline">{tab.label}</span>
+                                <span className="sm:hidden">{tab.label.slice(0, 3)}</span>
                                 {counts[tab.id as keyof typeof counts] > 0 && (
                                     <span className={cn(
-                                        "ml-1 text-[10px] px-1.5 py-0.5 rounded border",
-                                        isActive ? "bg-white/20 text-white border-white/30" : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                                        "text-[10px] px-1.5 py-0.5 rounded",
+                                        isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
                                     )}>
                                         {counts[tab.id as keyof typeof counts]}
                                     </span>
@@ -95,51 +99,40 @@ export function DarkNeoFeed({
                         );
                     })}
                 </div>
-
-                {/* Filter controls */}
-                <div className="flex items-center gap-2 border-l border-zinc-700 pl-4">
-                    <button className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-colors">
-                        <Search className="w-5 h-5" />
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-2 bg-zinc-800 rounded-lg text-sm font-bold text-zinc-400 hover:text-white border border-zinc-700 hover:border-zinc-600 transition-all">
-                        <Filter className="w-4 h-4" />
-                        <span className="hidden lg:inline">Filtrele</span>
-                    </button>
-                </div>
             </div>
 
             {/* CONTENT */}
-            <div className="min-h-[400px]">
+            <div className="min-h-[300px]">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.15 }}
                     >
                         {activeTab === "posts" && <UnifiedFeed items={feedItems} />}
 
                         {activeTab === "replies" && (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-zinc-900 border-2 border-zinc-800 rounded-xl p-5 shadow-[4px_4px_0_rgba(6,182,212,0.2)] hover:border-cyan-500/50 transition-all cursor-pointer group">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase">
-                                                    <MessageCircle className="w-4 h-4 text-cyan-400" />
+                                        <div key={answer.id} className="bg-card border border-border/20 rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-pointer group active:scale-[0.99]">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                                                    <MessageCircle className="w-3.5 h-3.5 text-cyan-500" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
-                                                    <div className="flex items-center gap-1 bg-green-500/20 text-green-400 px-2 py-0.5 rounded border border-green-500/50 text-xs font-black uppercase">
-                                                        ✓ Kabul Edildi
+                                                    <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded text-[10px] font-black uppercase">
+                                                        ✓ Kabul
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-bold text-lg text-white mb-2 group-hover:text-cyan-400 transition-colors">
+                                            <h4 className="font-bold text-sm text-foreground mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-zinc-400 text-sm line-clamp-3 pl-3 border-l-4 border-zinc-700">
+                                            <div className="text-muted-foreground text-xs line-clamp-2 pl-3 border-l-2 border-border">
                                                 {answer.content.replace(/<[^>]*>?/gm, "")}
                                             </div>
                                         </div>
@@ -148,15 +141,35 @@ export function DarkNeoFeed({
                                     <EmptyState
                                         icon={MessageCircle}
                                         label="Henüz Yanıt Yok"
-                                        description="Bu kullanıcı henüz hiçbir soruya yanıt vermemiş."
-                                        color="cyan"
+                                        description="Henüz hiçbir soruya yanıt verilmemiş."
                                     />
                                 )}
                             </div>
                         )}
 
-                        {activeTab === "saved" && <UnifiedFeed items={feedItems} />}
-                        {activeTab === "drafts" && <UnifiedFeed items={feedItems} />}
+                        {activeTab === "saved" && (
+                            feedItems.length > 0 ? (
+                                <UnifiedFeed items={feedItems} />
+                            ) : (
+                                <EmptyState
+                                    icon={Bookmark}
+                                    label="Kayıtlı İçerik Yok"
+                                    description="Beğendiğin içerikleri kaydet, sonra buradan ulaş."
+                                />
+                            )
+                        )}
+
+                        {activeTab === "drafts" && (
+                            feedItems.length > 0 ? (
+                                <UnifiedFeed items={feedItems} />
+                            ) : (
+                                <EmptyState
+                                    icon={FileText}
+                                    label="Taslak Yok"
+                                    description="Yazmaya başla, taslakların burada görünecek."
+                                />
+                            )
+                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>
@@ -164,24 +177,14 @@ export function DarkNeoFeed({
     );
 }
 
-function EmptyState({ icon: Icon, label, description, color }: any) {
-    const colorClasses = {
-        cyan: "shadow-[4px_4px_0_rgba(6,182,212,0.3)] border-cyan-500/30",
-        purple: "shadow-[4px_4px_0_rgba(168,85,247,0.3)] border-purple-500/30",
-        pink: "shadow-[4px_4px_0_rgba(236,72,153,0.3)] border-pink-500/30",
-        yellow: "shadow-[4px_4px_0_rgba(250,204,21,0.3)] border-yellow-500/30"
-    };
-
+function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className={cn(
-            "flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-2xl bg-zinc-900/50",
-            colorClasses[color as keyof typeof colorClasses] || colorClasses.cyan
-        )}>
-            <div className="w-20 h-20 bg-zinc-800 rounded-xl flex items-center justify-center mb-6 border-2 border-zinc-700 shadow-[4px_4px_0_rgba(0,0,0,0.3)] rotate-3">
-                <Icon className="w-8 h-8 text-zinc-400" />
+        <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border/30 rounded-xl bg-muted/30">
+            <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-4 border border-border/20">
+                <Icon className="w-6 h-6 text-muted-foreground" />
             </div>
-            <p className="text-white font-black text-xl mb-2 uppercase tracking-tight">{label}</p>
-            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto font-medium">{description}</p>
+            <p className="text-foreground font-black text-base mb-1">{label}</p>
+            <p className="text-muted-foreground text-xs max-w-[200px] leading-relaxed">{description}</p>
         </div>
     );
 }
