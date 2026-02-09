@@ -1,16 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, Share2, Check, ShieldCheck, MessageCircle } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
 
 // True Royal Blue
 const ROYAL_BLUE = "#1E3A5F";
-const ROYAL_BLUE_LIGHT = "#2C5282";
 
 interface DarkNeoHeaderProps {
     profile: any;
@@ -21,23 +19,12 @@ interface DarkNeoHeaderProps {
 }
 
 export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing }: DarkNeoHeaderProps) {
-    const [isSharing, setIsSharing] = useState(false);
     const initial = profile?.full_name?.[0]?.toUpperCase() || "U";
-
-    const handleShare = async () => {
-        setIsSharing(true);
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-        } catch (err) {
-            console.error("Failed to copy:", err);
-        }
-        setTimeout(() => setIsSharing(false), 2000);
-    };
 
     return (
         <div className="w-full">
             {/* COVER BANNER with overlapping stats */}
-            <div className="relative h-40 sm:h-48 md:h-56 overflow-visible rounded-2xl border-2 border-white/10">
+            <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-2xl border-2 border-white/10">
                 {/* Deep royal blue gradient base */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
 
@@ -82,7 +69,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
             </div>
 
             {/* CONTENT CARD */}
-            <div className="relative bg-background border-2 border-white/10 border-t-0 rounded-b-2xl pt-14 sm:pt-16 pb-5 px-4 sm:px-6">
+            <div className="relative bg-background border-2 border-white/10 border-t-0 rounded-b-2xl pt-16 sm:pt-20 pb-5 px-4 sm:px-6">
 
                 {/* FLOATING AVATAR */}
                 <div className="absolute -top-12 sm:-top-14 left-4 sm:left-6">
@@ -106,48 +93,48 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     </motion.div>
                 </div>
 
-                {/* NAME & HANDLE */}
-                <div className="flex flex-col gap-3 mb-4">
-                    <div className="ml-28 sm:ml-32">
-                        <h1 className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tight leading-tight">
-                            {profile?.full_name || "New User"}
-                        </h1>
-                        <span className="inline-block mt-0.5 text-[10px] sm:text-xs font-bold bg-[#1E3A5F] text-white px-2 py-0.5 rounded">
-                            @{profile?.username || "username"}
-                        </span>
-                    </div>
+                {/* NAME & HANDLE - Below avatar */}
+                <div className="mb-4">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tight leading-tight">
+                        {profile?.full_name || "New User"}
+                    </h1>
+                    <span className="inline-block mt-0.5 text-[10px] sm:text-xs font-bold bg-[#1E3A5F] text-white px-2 py-0.5 rounded">
+                        @{profile?.username || "username"}
+                    </span>
+                </div>
 
-                    {/* ACTION BUTTONS */}
-                    <div className="flex gap-2 mt-1">
-                        {isOwnProfile ? (
-                            <Link href="/profil/duzenle" className="flex-1 sm:flex-none">
-                                <button className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#1E3A5F] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                {/* ACTION BUTTONS */}
+                <div className="flex gap-2 mb-4">
+                    {isOwnProfile ? (
+                        <>
+                            <Link href="/profil/duzenle" className="flex-1">
+                                <button className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#1E3A5F] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
                                     <Edit3 className="w-3.5 h-3.5" />
                                     Profili Düzenle
                                 </button>
                             </Link>
-                        ) : (
-                            <>
-                                <FollowButton
-                                    targetUserId={profile.id}
-                                    initialIsFollowing={isFollowing}
-                                    className="flex-1 sm:flex-none px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
-                                />
-                                <Link href={`/mesajlar?to=${profile.id}`}>
-                                    <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                        <MessageCircle className="w-3.5 h-3.5" />
-                                        Mesaj
-                                    </button>
-                                </Link>
-                            </>
-                        )}
-                        <button
-                            onClick={handleShare}
-                            className="flex items-center justify-center p-2.5 bg-muted hover:bg-muted/80 text-foreground rounded-lg border border-border/20 transition-all active:scale-95"
-                        >
-                            {isSharing ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
-                        </button>
-                    </div>
+                            <Link href="/mesajlar">
+                                <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                    Mesajlar
+                                </button>
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <FollowButton
+                                targetUserId={profile.id}
+                                initialIsFollowing={isFollowing}
+                                className="flex-1 px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
+                            />
+                            <Link href={`/mesajlar?to=${profile.id}`}>
+                                <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                    Mesaj
+                                </button>
+                            </Link>
+                        </>
+                    )}
                 </div>
 
                 {/* BIO */}
