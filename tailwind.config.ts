@@ -67,7 +67,12 @@ const config = {
                     black: "#000000",
                     white: "#FFFFFF",
                     void: "#09090b",
-                    matter: "#1f2937"
+                    matter: "#1f2937",
+                    "vibrant-pink": "#FF90E8",
+                    "vibrant-yellow": "#FFC700",
+                    "vibrant-cyan": "#23A9FA",
+                    "vibrant-lime": "#B8FF01",
+                    "off-white": "#FDFDFD",
                 }
             },
             borderRadius: {

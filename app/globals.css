@@ -37,14 +37,22 @@
 
     --radius: 0.5rem;
 
-    /* RetroUI / Neo-Brutalist Shadow Offsets */
-    --shadow-xs: 1px 1px 0px 0px var(--border);
-    --shadow-sm: 2px 2px 0px 0px var(--border);
-    --shadow: 3px 3px 0px 0px var(--border);
-    --shadow-md: 4px 4px 0px 0px var(--border);
-    --shadow-lg: 6px 6px 0px 0px var(--border);
-    --shadow-xl: 10px 10px 0px 0px var(--border);
-    --shadow-2xl: 16px 16px 0px 0px var(--border);
+    /* Neo-Brutalist Palette */
+    --neo-bg: #FFFDF5;
+    --neo-primary: #FF6B6B;
+    --neo-secondary: #4ECDC4;
+    --neo-accent: #FFE66D;
+    --neo-dark: #1A1A1A;
+    --neo-white: #FFFFFF;
+
+    /* Neo-Brutalist Shadow Offsets */
+    --shadow-xs: 2px 2px 0px 0px #000;
+    --shadow-sm: 3px 3px 0px 0px #000;
+    --shadow: 4px 4px 0px 0px #000;
+    --shadow-md: 6px 6px 0px 0px #000;
+    --shadow-lg: 8px 8px 0px 0px #000;
+    --shadow-xl: 12px 12px 0px 0px #000;
+    --shadow-2xl: 16px 16px 0px 0px #000;
   }
 
   .dark {
