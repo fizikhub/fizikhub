@@ -2,17 +2,12 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/profil/actions";
-import { signOut } from "@/app/auth/actions"; // Import from main auth actions file
-import { Camera, Loader2, Save, Upload, Image as ImageIcon, Ruler, Monitor, LogOut, ChevronLeft, MapPin, Link as LinkIcon, AtSign, User as UserIcon } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import { signOut } from "@/app/auth/actions";
+import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Sparkles, LogOut, Check } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ProfileEditFormProps {
     user: any;
@@ -22,6 +17,7 @@ interface ProfileEditFormProps {
 export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [activeSection, setActiveSection] = useState<"info" | "visuals">("info");
 
     // Form States
     const [fullName, setFullName] = useState(profile?.full_name || "");
@@ -36,10 +32,6 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [coverPreview, setCoverPreview] = useState(profile?.cover_url || "");
 
-    // Scale/Position States
-    const [avatarScale, setAvatarScale] = useState<number>(1);
-    const [coverScale, setCoverScale] = useState<number>(1);
-
     // Refs
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const coverInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +41,6 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         if (file) {
             setAvatarFile(file);
             setAvatarPreview(URL.createObjectURL(file));
-            setAvatarScale(1);
         }
     };
 
@@ -58,7 +49,6 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         if (file) {
             setCoverFile(file);
             setCoverPreview(URL.createObjectURL(file));
-            setCoverScale(1);
         }
     };
 
@@ -67,7 +57,6 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         setIsLoading(true);
 
         try {
-            // 1. Upload Images if changed
             if (avatarFile) {
                 const res = await uploadAvatar(avatarFile);
                 if (!res.success) throw new Error(res.error);
@@ -78,7 +67,6 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                 if (!res.success) throw new Error(res.error);
             }
 
-            // 2. Update Basic Info
             const updateRes = await updateProfile({
                 full_name: fullName,
                 bio: bio,
@@ -88,14 +76,12 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
 
             if (!updateRes.success) throw new Error(updateRes.error);
 
-            // 3. Update Username (separate check)
             if (username !== profile.username) {
                 const usernameRes = await updateUsername(username);
                 if (!usernameRes.success) throw new Error(usernameRes.error);
             }
 
-            toast.success("Profil başarıyla güncellendi ✨");
-
+            toast.success("Profil güncellendi!");
             router.refresh();
             router.push('/profil');
 
@@ -109,308 +95,356 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const handleSignOut = async () => {
         try {
             await signOut();
-        } catch (error) {
+        } catch {
             toast.error("Çıkış yapılırken bir hata oluştu.");
         }
     }
 
     return (
-        <div className="max-w-4xl mx-auto pb-20">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-muted">
-                        <ChevronLeft className="w-6 h-6" />
-                    </Button>
-                    <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Profili Düzenle</h1>
-                        <p className="text-muted-foreground text-sm">Görünümünü ve bilgilerini güncelle</p>
-                    </div>
+        <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white">
+            {/* HEADER */}
+            <header className="sticky top-0 z-50 backdrop-blur-xl bg-black/60 border-b border-white/10">
+                <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+                    <button
+                        onClick={() => router.back()}
+                        className="flex items-center gap-2 text-white/70 hover:text-white transition-colors group"
+                    >
+                        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-sm font-medium">Geri</span>
+                    </button>
+
+                    <h1 className="font-head text-lg tracking-tight">PROFİL DÜZENLE</h1>
+
+                    <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-2 text-red-400 hover:text-red-300 transition-colors text-sm"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        <span className="hidden sm:inline">Çıkış</span>
+                    </button>
                 </div>
+            </header>
 
-                <Button variant="destructive" size="sm" onClick={handleSignOut} className="gap-2">
-                    <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Çıkış Yap</span>
-                </Button>
-            </div>
+            <main className="max-w-2xl mx-auto px-4 py-8">
+                <form onSubmit={handleSubmit} className="space-y-8">
 
-            <form onSubmit={handleSubmit} className="space-y-8">
-
-                {/* 1. VISUAL IDENTITY SECTION */}
-                <section className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold flex items-center gap-2">
-                            <ImageIcon className="w-5 h-5 text-primary" />
-                            Görsel Kimlik
-                        </h2>
-                    </div>
-
-                    <div className="relative group rounded-2xl overflow-hidden border border-border shadow-sm h-48 sm:h-64 bg-muted/30">
-                        {/* Cover Photo */}
-                        {coverPreview ? (
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-200"
-                                style={{
-                                    backgroundImage: `url(${coverPreview})`,
-                                    transform: `scale(${coverScale})`
-                                }}
-                            />
-                        ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-gradient-to-br from-muted/50 to-muted">
-                                <ImageIcon className="w-12 h-12 mb-2 opacity-20" />
-                                <span className="text-sm font-medium opacity-60">Kapak Fotoğrafı Yok</span>
-                            </div>
-                        )}
-
-                        {/* Overlay Actions */}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-4 backdrop-blur-[2px]">
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                className="gap-2 shadow-lg"
-                                onClick={() => coverInputRef.current?.click()}
-                            >
-                                <Upload className="w-4 h-4" />
-                                Kapak Değiştir
-                            </Button>
-
-                            {coverPreview && (
-                                <div className="bg-black/60 p-3 rounded-full backdrop-blur-md flex items-center gap-3 w-48 animate-in fade-in slide-in-from-bottom-4">
-                                    <Ruler className="w-4 h-4 text-white/80" />
-                                    <Slider
-                                        value={[coverScale]}
-                                        min={1}
-                                        max={2}
-                                        step={0.1}
-                                        onValueChange={(value: number[]) => setCoverScale(value[0])}
-                                        className="flex-1"
-                                    />
+                    {/* COVER & AVATAR HERO SECTION */}
+                    <section className="relative">
+                        {/* Cover */}
+                        <div
+                            className={cn(
+                                "relative h-40 sm:h-52 rounded-2xl overflow-hidden border-2 border-white/10",
+                                "bg-gradient-to-br from-zinc-800 to-zinc-900 group cursor-pointer"
+                            )}
+                            onClick={() => coverInputRef.current?.click()}
+                        >
+                            {coverPreview ? (
+                                <img
+                                    src={coverPreview}
+                                    alt="Cover"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/30">
+                                    <Camera className="w-10 h-10 mb-2" />
+                                    <span className="text-sm font-medium">Kapak Fotoğrafı Ekle</span>
                                 </div>
                             )}
-                        </div>
-                        <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={handleCoverChange} />
-                    </div>
 
-                    {/* Avatar - Overlapping */}
-                    <div className="relative -mt-16 ml-6 sm:ml-10 flex items-end gap-6">
-                        <div className="relative group">
-                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl border-4 border-background overflow-hidden bg-muted shadow-xl relative z-10">
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 border border-white/20">
+                                    <Camera className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Değiştir</span>
+                                </div>
+                            </div>
+                            <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={handleCoverChange} />
+                        </div>
+
+                        {/* Avatar - Overlapping */}
+                        <div className="absolute -bottom-12 left-6">
+                            <div
+                                className={cn(
+                                    "relative w-24 h-24 rounded-2xl border-4 border-black overflow-hidden",
+                                    "bg-zinc-800 cursor-pointer group shadow-2xl"
+                                )}
+                                onClick={() => avatarInputRef.current?.click()}
+                            >
                                 {avatarPreview ? (
-                                    <div
-                                        className="w-full h-full bg-cover bg-center"
-                                        style={{
-                                            backgroundImage: `url(${avatarPreview})`,
-                                            transform: `scale(${avatarScale})`
-                                        }}
+                                    <img
+                                        src={avatarPreview}
+                                        alt="Avatar"
+                                        className="w-full h-full object-cover"
                                     />
                                 ) : (
-                                    <Avatar className="w-full h-full rounded-none">
-                                        <AvatarFallback className="rounded-none text-2xl">
-                                            {profile?.full_name?.[0]?.toUpperCase() || "U"}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <div className="w-full h-full flex items-center justify-center text-white/30">
+                                        <UserIcon className="w-10 h-10" />
+                                    </div>
                                 )}
 
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center">
-                                    <Button
-                                        type="button"
-                                        size="icon"
-                                        variant="secondary"
-                                        className="rounded-full w-10 h-10 shadow-lg"
-                                        onClick={() => avatarInputRef.current?.click()}
-                                    >
-                                        <Camera className="w-5 h-5" />
-                                    </Button>
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera className="w-6 h-6" />
                                 </div>
-                            </div>
-                            <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
-                        </div>
-
-                        {avatarPreview && (
-                            <div className="mb-2 hidden sm:block w-48">
-                                <p className="text-xs font-medium text-muted-foreground mb-1.5 ml-1">Profil Zoom</p>
-                                <Slider
-                                    value={[avatarScale]}
-                                    min={1}
-                                    max={2}
-                                    step={0.1}
-                                    onValueChange={(value: number[]) => setAvatarScale(value[0])}
-                                />
-                            </div>
-                        )}
-                    </div>
-                </section>
-
-                <div className="h-px bg-border/50" />
-
-                {/* 2. PERSONAL INFO SECTION */}
-                <section className="space-y-6">
-                    <h2 className="text-lg font-semibold flex items-center gap-2">
-                        <UserIcon className="w-5 h-5 text-primary" />
-                        Kişisel Bilgiler
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-1">
-                        <div className="space-y-2.5">
-                            <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">İsim Soyisim</Label>
-                            <div className="relative">
-                                <Input
-                                    id="fullName"
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
-                                    placeholder="Adınız Soyadınız"
-                                    className="pl-3 h-11 bg-muted/40 border-muted-foreground/20 focus:border-primary focus:ring-0 transition-all"
-                                />
+                                <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
                             </div>
                         </div>
+                    </section>
 
-                        <div className="space-y-2.5">
-                            <Label htmlFor="username" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Kullanıcı Adı</Label>
-                            <div className="relative">
-                                <div className="absolute left-3 top-3 text-muted-foreground">
-                                    <AtSign className="w-5 h-5" />
-                                </div>
-                                <Input
-                                    id="username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="pl-10 h-11 bg-muted/40 border-muted-foreground/20 focus:border-primary focus:ring-0 transition-all"
-                                    placeholder="kullaniciadi"
-                                />
-                            </div>
-                            <p className="text-[10px] text-muted-foreground ml-1">
-                                *Sadece 1 kez değiştirilebilir.
-                            </p>
-                        </div>
+                    {/* Spacer for avatar overlap */}
+                    <div className="h-8" />
 
-                        <div className="space-y-2.5 md:col-span-2">
-                            <Label htmlFor="bio" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Biyografi</Label>
-                            <Textarea
-                                id="bio"
-                                value={bio}
-                                onChange={(e) => setBio(e.target.value)}
-                                placeholder="Kendinden, ilgi alanlarından veya çalışmalarından bahset..."
-                                className="bg-muted/40 border-muted-foreground/20 min-h-[120px] resize-none focus:border-primary focus:ring-0 transition-all p-4 leading-relaxed"
-                            />
-                            <p className="text-[10px] text-right text-muted-foreground">
-                                {bio.length}/160
-                            </p>
-                        </div>
-
-                        <div className="space-y-2.5">
-                            <Label htmlFor="website" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Website</Label>
-                            <div className="relative">
-                                <div className="absolute left-3 top-3 text-muted-foreground">
-                                    <LinkIcon className="w-5 h-5" />
-                                </div>
-                                <Input
-                                    id="website"
-                                    value={website}
-                                    onChange={(e) => setWebsite(e.target.value)}
-                                    placeholder="https://seninsiten.com"
-                                    className="pl-10 h-11 bg-muted/40 border-muted-foreground/20 focus:border-primary focus:ring-0 transition-all"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2.5">
-                            <Label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Konum</Label>
-                            <div className="relative">
-                                <div className="absolute left-3 top-3 text-muted-foreground">
-                                    <MapPin className="w-5 h-5" />
-                                </div>
-                                <Input
-                                    id="location"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    placeholder="İstanbul, Türkiye"
-                                    className="pl-10 h-11 bg-muted/40 border-muted-foreground/20 focus:border-primary focus:ring-0 transition-all"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <div className="h-px bg-border/50" />
-
-                {/* 3. THEME & SAVE */}
-                <section className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold flex items-center gap-2">
-                            <Monitor className="w-5 h-5 text-primary" />
-                            Arayüz Teması
-                        </h2>
-                        <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full font-medium">Yakında</span>
-                    </div>
-
-                    <div className="flex gap-4 p-4 bg-muted/30 rounded-xl border border-dashed border-border">
-                        {['#1E3A5F', '#7c3aed', '#db2777', '#059669', '#d97706', '#000000'].map((color) => (
-                            <button
-                                key={color}
-                                type="button"
-                                className="w-10 h-10 rounded-full border-2 border-white/20 hover:scale-110 transition-transform shadow-sm relative group"
-                                style={{ backgroundColor: color }}
-                                onClick={() => toast.info("Tema değiştirme özelliği çok yakında!")}
-                            >
-                                <div className="absolute inset-0 rounded-full ring-2 ring-white/0 group-hover:ring-white/20 transition-all" />
-                            </button>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Sticky Mobile Save Button */}
-                <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-lg border-t border-border sm:static sm:bg-transparent sm:border-0 sm:p-0 z-50">
-                    <div className="max-w-4xl mx-auto flex gap-4">
-                        <Button
+                    {/* TABS */}
+                    <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10">
+                        <button
                             type="button"
-                            variant="outline"
-                            onClick={() => router.back()}
-                            className="flex-1 sm:flex-none border-foreground/10"
-                        >
-                            İptal
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex-[2] sm:flex-none sm:min-w-[150px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20"
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Kaydediliyor...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="w-4 h-4 mr-2" />
-                                    Değişiklikleri Kaydet
-                                </>
+                            onClick={() => setActiveSection("info")}
+                            className={cn(
+                                "flex-1 py-2.5 rounded-lg font-medium text-sm transition-all",
+                                activeSection === "info"
+                                    ? "bg-white text-black shadow-lg"
+                                    : "text-white/60 hover:text-white"
                             )}
-                        </Button>
+                        >
+                            Bilgiler
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveSection("visuals")}
+                            className={cn(
+                                "flex-1 py-2.5 rounded-lg font-medium text-sm transition-all",
+                                activeSection === "visuals"
+                                    ? "bg-white text-black shadow-lg"
+                                    : "text-white/60 hover:text-white"
+                            )}
+                        >
+                            Görünüm
+                        </button>
                     </div>
-                </div>
 
-            </form>
+                    {/* INFO SECTION */}
+                    <AnimatePresence mode="wait">
+                        {activeSection === "info" && (
+                            <motion.div
+                                key="info"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-6"
+                            >
+                                {/* Full Name */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-white/50">İsim</label>
+                                    <input
+                                        type="text"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        placeholder="Adınız Soyadınız"
+                                        className={cn(
+                                            "w-full h-12 px-4 rounded-xl",
+                                            "bg-white/5 border border-white/10",
+                                            "text-white placeholder:text-white/30",
+                                            "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+                                            "transition-all"
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Username */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-white/50">Kullanıcı Adı</label>
+                                    <div className="relative">
+                                        <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                                        <input
+                                            type="text"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            placeholder="kullaniciadi"
+                                            className={cn(
+                                                "w-full h-12 pl-10 pr-4 rounded-xl",
+                                                "bg-white/5 border border-white/10",
+                                                "text-white placeholder:text-white/30",
+                                                "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+                                                "transition-all"
+                                            )}
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-amber-400/70 ml-1">⚠️ Sadece 1 kez değiştirilebilir</p>
+                                </div>
+
+                                {/* Bio */}
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-white/50">Biyografi</label>
+                                        <span className={cn(
+                                            "text-xs",
+                                            bio.length > 140 ? "text-amber-400" : "text-white/30"
+                                        )}>
+                                            {bio.length}/160
+                                        </span>
+                                    </div>
+                                    <textarea
+                                        value={bio}
+                                        onChange={(e) => setBio(e.target.value.slice(0, 160))}
+                                        placeholder="Kendinden biraz bahset..."
+                                        rows={4}
+                                        className={cn(
+                                            "w-full p-4 rounded-xl resize-none",
+                                            "bg-white/5 border border-white/10",
+                                            "text-white placeholder:text-white/30",
+                                            "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+                                            "transition-all leading-relaxed"
+                                        )}
+                                    />
+                                </div>
+
+                                {/* Website & Location Row */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-white/50">Website</label>
+                                        <div className="relative">
+                                            <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                                            <input
+                                                type="url"
+                                                value={website}
+                                                onChange={(e) => setWebsite(e.target.value)}
+                                                placeholder="site.com"
+                                                className={cn(
+                                                    "w-full h-12 pl-10 pr-4 rounded-xl",
+                                                    "bg-white/5 border border-white/10",
+                                                    "text-white placeholder:text-white/30",
+                                                    "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+                                                    "transition-all"
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-white/50">Konum</label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                                            <input
+                                                type="text"
+                                                value={location}
+                                                onChange={(e) => setLocation(e.target.value)}
+                                                placeholder="İstanbul"
+                                                className={cn(
+                                                    "w-full h-12 pl-10 pr-4 rounded-xl",
+                                                    "bg-white/5 border border-white/10",
+                                                    "text-white placeholder:text-white/30",
+                                                    "focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20",
+                                                    "transition-all"
+                                                )}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {activeSection === "visuals" && (
+                            <motion.div
+                                key="visuals"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-6"
+                            >
+                                {/* Theme Selection */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-white/50">Profil Teması</label>
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">Yakında</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-6 gap-3">
+                                        {[
+                                            { name: "Koyu", color: "#000000", active: true },
+                                            { name: "Mor", color: "#7c3aed" },
+                                            { name: "Mavi", color: "#2563eb" },
+                                            { name: "Yeşil", color: "#059669" },
+                                            { name: "Turuncu", color: "#ea580c" },
+                                            { name: "Pembe", color: "#db2777" },
+                                        ].map((theme) => (
+                                            <button
+                                                key={theme.name}
+                                                type="button"
+                                                onClick={() => toast.info("Tema değiştirme yakında!")}
+                                                className={cn(
+                                                    "aspect-square rounded-xl border-2 transition-all relative group",
+                                                    theme.active
+                                                        ? "border-white scale-105"
+                                                        : "border-transparent hover:border-white/30 opacity-50"
+                                                )}
+                                                style={{ backgroundColor: theme.color }}
+                                            >
+                                                {theme.active && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <Check className="w-5 h-5 text-white" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Badge Display */}
+                                <div className="space-y-4">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-white/50">Öne Çıkan Rozet</label>
+                                    <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center gap-2 text-white/40">
+                                        <Sparkles className="w-5 h-5" />
+                                        <span className="text-sm">Rozet sistemi yakında aktif olacak</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* STICKY SAVE BUTTON */}
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black to-transparent">
+                        <div className="max-w-2xl mx-auto flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                className={cn(
+                                    "flex-1 h-12 rounded-xl font-medium",
+                                    "bg-white/5 border border-white/10 text-white/70",
+                                    "hover:bg-white/10 transition-all"
+                                )}
+                            >
+                                İptal
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className={cn(
+                                    "flex-[2] h-12 rounded-xl font-bold",
+                                    "bg-primary text-black",
+                                    "hover:bg-primary/90 transition-all",
+                                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                                    "flex items-center justify-center gap-2"
+                                )}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        <span>Kaydediliyor...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="w-5 h-5" />
+                                        <span>Kaydet</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Bottom padding for sticky button */}
+                    <div className="h-24" />
+
+                </form>
+            </main>
         </div>
     );
-}
-
-// Helper icon
-function User(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-        </svg>
-    )
 }

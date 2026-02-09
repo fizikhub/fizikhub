@@ -22,20 +22,6 @@ export default async function ProfileEditPage() {
         .eq('id', user.id)
         .single();
 
-    return (
-        <main className="min-h-screen bg-background py-8 sm:py-12 px-4">
-            <div className="max-w-2xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-black text-foreground tracking-tight">Profili Düzenle</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Kişisel bilgilerinizi ve profil görünümünüzü buradan yönetebilirsiniz.
-                    </p>
-                </div>
-
-                <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
-                    <ProfileEditForm user={user} profile={profile} />
-                </div>
-            </div>
-        </main>
-    );
+    // The form now handles its own full-page layout
+    return <ProfileEditForm user={user} profile={profile} />;
 }
