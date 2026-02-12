@@ -37,13 +37,14 @@ export function BottomNav() {
             <nav className="
                 w-full
                 h-[50px]
-                bg-white dark:bg-[#0a0a0a]
-                border-t-[3px] border-black dark:border-white/20
+                bg-white/85 dark:bg-[#121212]/85
+                backdrop-blur-md
+                border-t border-black/10 dark:border-white/10
                 flex items-center justify-around
                 px-2
                 pb-safe
                 relative
-                shadow-[0_-5px_0px_0px_rgba(0,0,0,1)] dark:shadow-[0_-5px_0px_0px_rgba(255,255,255,0.1)]
+                shadow-sm
             ">
                 <NavItem
                     href="/"
@@ -64,17 +65,18 @@ export function BottomNav() {
                         href="/paylas"
                         className="
                             flex items-center justify-center
-                            w-14 h-14
+                            w-12 h-12
                             bg-[#FACC15]
-                            border-[3px] border-black
+                            border-2 border-black dark:border-white
                             rounded-full
-                            shadow-[4px_4px_0px_0px_#000]
-                            active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                            transition-all
-                            hover:scale-105 hover:rotate-6
+                            shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                            dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)]
+                            active:shadow-none active:translate-x-[1.5px] active:translate-y-[1.5px]
+                            transition-all duration-200
+                            group
                         "
                     >
-                        <Plus className="w-8 h-8 text-black stroke-[3px]" />
+                        <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:scale-110 transition-transform" />
                     </ViewTransitionLink>
                 </div>
 
@@ -106,17 +108,17 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
             )}
         >
             <motion.div
-                initial={false}
-                animate={isActive ? { y: -2 } : { y: 0 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 className="flex flex-col items-center gap-0.5"
             >
                 <div className={cn(
-                    "p-1.5 transition-all duration-300 rounded-lg border-[2px] border-transparent",
-                    isActive && "bg-black/5 dark:bg-white/10 border-black dark:border-white"
+                    "p-1.5 rounded-lg transition-colors duration-200",
+                    isActive ? "bg-black/5 dark:bg-white/10" : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
                     <Icon className={cn(
-                        "w-5 h-5 transition-all duration-300",
-                        isActive ? "stroke-[2.5px] scale-110" : "stroke-[2px] group-hover:scale-110"
+                        "w-5 h-5 transition-all duration-200",
+                        isActive ? "stroke-[2.5px] scale-105" : "stroke-[2px]"
                     )} />
                 </div>
             </motion.div>
