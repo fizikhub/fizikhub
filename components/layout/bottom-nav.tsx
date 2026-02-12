@@ -43,12 +43,12 @@ export function BottomNav() {
         )}>
             <nav className="
                 w-full
-                h-[60px]
+                h-[50px]
                 bg-white/80 dark:bg-[#121212]/80
                 backdrop-blur-xl
                 border-t border-black/10 dark:border-white/10
-                flex items-center justify-between
-                px-4
+                flex items-center justify-around
+                px-2
                 pb-safe
                 relative
                 shadow-sm
@@ -64,7 +64,7 @@ export function BottomNav() {
                 <NavItem
                     href="/"
                     icon={Home}
-                    label="AKIŞ"
+                    label="Akış"
                     isActive={pathname === "/"}
                     onInteract={vibrate}
                 />
@@ -72,12 +72,12 @@ export function BottomNav() {
                 <NavItem
                     href="/makale"
                     icon={BookOpen}
-                    label="BLOG"
+                    label="Blog"
                     isActive={pathname.startsWith("/makale")}
                     onInteract={vibrate}
                 />
 
-                <div className="relative -top-4 z-20 mx-2">
+                <div className="relative -top-3.5 z-20">
                     <ViewTransitionLink
                         href="/paylas"
                         className="relative block"
@@ -125,7 +125,7 @@ export function BottomNav() {
                 <NavItem
                     href="/forum"
                     icon={MessageCircle}
-                    label="FORUM"
+                    label="Forum"
                     isActive={pathname.startsWith("/forum")}
                     onInteract={vibrate}
                 />
@@ -133,7 +133,7 @@ export function BottomNav() {
                 <NavItem
                     href="/profil"
                     icon={User}
-                    label="PROFİL"
+                    label="Profil"
                     isActive={pathname.startsWith("/profil")}
                     onInteract={vibrate}
                 />
@@ -147,15 +147,15 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
         <ViewTransitionLink
             href={href}
             onClick={onInteract}
-            className="group relative z-10"
+            className={cn(
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
+                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
+            )}
         >
             <motion.div
-                layout
-                className={cn(
-                    "flex items-center justify-center gap-2 px-3 py-2 rounded-full relative overflow-hidden transition-colors",
-                    isActive ? "" : "hover:bg-black/5 dark:hover:bg-white/5"
-                )}
-                style={{ borderRadius: 999 }} // Force fully rounded pill
+                whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="flex flex-col items-center gap-0.5 relative"
             >
                 {isActive && (
                     <motion.div
@@ -164,42 +164,31 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
                             absolute inset-0 
                             bg-black/5 dark:bg-white/10 
                             border border-black/5 dark:border-white/5 
+                            rounded-lg
                             shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
                         "
-                        initial={false}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        style={{ borderRadius: 999 }}
                     />
                 )}
 
-                <motion.div
-                    layout="position"
-                    whileTap={{ scale: 0.9 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                    className="relative z-10 flex items-center justify-center"
-                >
-                    <Icon
-                        fill={isActive ? "currentColor" : "none"}
-                        className={cn(
-                            "w-5 h-5 transition-colors duration-200",
-                            isActive ? "text-black dark:text-white stroke-[2.5px]" : "text-zinc-500 dark:text-zinc-500 stroke-[2px]"
-                        )}
-                    />
-                </motion.div>
-
-                <AnimatePresence mode="popLayout">
-                    {isActive && (
-                        <motion.span
-                            initial={{ opacity: 0, width: 0, x: -5 }}
-                            animate={{ opacity: 1, width: "auto", x: 0 }}
-                            exit={{ opacity: 0, width: 0, x: -5 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            className="text-[10px] font-bold uppercase tracking-wider text-black dark:text-white whitespace-nowrap relative z-10"
-                        >
-                            {label}
-                        </motion.span>
-                    )}
-                </AnimatePresence>
+                <div className={cn(
+                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                )}>
+                    <motion.div
+                        initial={false}
+                        animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                        <Icon
+                            fill={isActive ? "currentColor" : "none"}
+                            className={cn(
+                                "w-5 h-5 transition-all duration-200",
+                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                            )}
+                        />
+                    </motion.div>
+                </div>
             </motion.div>
         </ViewTransitionLink>
     );
