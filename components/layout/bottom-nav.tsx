@@ -80,12 +80,17 @@ export function BottomNav() {
                 <div className="relative -top-3.5 z-20">
                     <ViewTransitionLink
                         href="/paylas"
-                        className="relative"
+                        className="relative block"
                         onClick={vibrate}
                     >
                         <motion.div
-                            whileTap={{ scale: 0.9 }}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            animate={{ scale: [1, 1.05, 1] }}
+                            transition={{
+                                repeat: Infinity,
+                                duration: 3,
+                                ease: "easeInOut"
+                            }}
+                            whileTap={{ scale: 0.9, rotate: 15 }}
                             className="
                                 flex items-center justify-center
                                 w-11 h-11
@@ -108,8 +113,8 @@ export function BottomNav() {
                                 animate={{ x: "100%" }}
                                 transition={{
                                     repeat: Infinity,
-                                    duration: 2,
-                                    repeatDelay: 3,
+                                    duration: 2.5,
+                                    repeatDelay: 4,
                                     ease: "easeInOut"
                                 }}
                             />
@@ -148,8 +153,8 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
             )}
         >
             <motion.div
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 className="flex flex-col items-center gap-0.5 relative"
             >
                 {isActive && (
@@ -175,10 +180,13 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
                         animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
                         transition={{ type: "spring", stiffness: 500, damping: 15 }}
                     >
-                        <Icon className={cn(
-                            "w-5 h-5 transition-all duration-200",
-                            isActive ? "stroke-[2.75px]" : "stroke-[2px]"
-                        )} />
+                        <Icon
+                            fill={isActive ? "currentColor" : "none"}
+                            className={cn(
+                                "w-5 h-5 transition-all duration-200",
+                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                            )}
+                        />
                     </motion.div>
                 </div>
             </motion.div>
