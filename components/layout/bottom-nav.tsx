@@ -36,63 +36,66 @@ export function BottomNav() {
                     initial={{ y: "100%" }}
                     animate={{ y: "0%" }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 400 }}
                     className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
                 >
                     <nav className="
                         w-full
                         h-[50px]
-                        bg-white dark:bg-[#050505]
-                        border-t-[3px] border-black dark:border-white
-                        flex items-center justify-around
+                        bg-white dark:bg-[#09090b]
+                        border-t-2 border-zinc-200 dark:border-white/10
+                        flex items-end justify-around
                         px-2
                         pb-safe
                         relative
+                        shadow-2xl
                     ">
 
                         <NavItem
                             href="/"
                             icon={Home}
-                            label="AKIŞ"
+                            label="Akış"
                             isActive={pathname === "/"}
                         />
 
                         <NavItem
                             href="/makale"
                             icon={BookOpen}
-                            label="BLOG"
+                            label="Blog"
                             isActive={pathname.startsWith("/makale")}
                         />
 
-                        {/* CENTER ACTION BUTTON - RAW BRUTALIST */}
-                        <div className="relative -top-6">
+                        {/* CENTER ACTION - CLEAN & SHARP */}
+                        <div className="relative mb-2">
+                            <div className="absolute inset-0 bg-black rounded-full translate-y-1 blur-sm opacity-20" />
                             <ViewTransitionLink
                                 href="/paylas"
                                 className="
                                     group flex items-center justify-center
-                                    w-14 h-14
+                                    w-12 h-12
                                     bg-[#FACC15]
-                                    border-[3px] border-black
-                                    shadow-[4px_4px_0px_#000]
-                                    active:shadow-none active:translate-x-[4px] active:translate-y-[4px]
-                                    transition-all duration-200
+                                    rounded-xl
+                                    relative z-10
+                                    hover:-translate-y-1
+                                    active:scale-95
+                                    transition-all duration-300 ease-out
                                 "
                             >
-                                <Plus className="w-8 h-8 text-black stroke-[3px]" />
+                                <Plus className="w-6 h-6 text-black stroke-[2.5px]" />
                             </ViewTransitionLink>
                         </div>
 
                         <NavItem
                             href="/forum"
                             icon={MessageCircle}
-                            label="FORUM"
+                            label="Forum"
                             isActive={pathname.startsWith("/forum")}
                         />
 
                         <NavItem
                             href="/profil"
                             icon={User}
-                            label="PROFIL"
+                            label="Profil"
                             isActive={pathname.startsWith("/profil")}
                         />
                     </nav>
@@ -106,32 +109,33 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
     return (
         <ViewTransitionLink
             href={href}
-            className="flex flex-col items-center justify-center w-14 h-full relative"
+            className={cn(
+                "group flex flex-col items-center justify-center w-14 h-[50px] relative transition-all duration-300",
+                isActive ? "opacity-100" : "opacity-60 hover:opacity-100"
+            )}
         >
-            <div className="relative z-10 flex flex-col items-center">
-                <Icon className={cn(
-                    "w-6 h-6 transition-all duration-200",
-                    isActive ? "stroke-[3px] text-black dark:text-white" : "stroke-[2px] text-zinc-500"
-                )} />
-                {isActive && (
-                    <motion.span
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-[9px] font-black tracking-tighter uppercase mt-0.5 text-black dark:text-white"
-                    >
-                        {label}
-                    </motion.span>
-                )}
-            </div>
-
-            {/* Brutalist Active Indicator (Solid Block) */}
+            {/* Active Top Border Indicator */}
             {isActive && (
                 <motion.div
-                    layoutId="activeTabBrutal"
-                    className="absolute inset-x-0 bottom-0 top-0 bg-neutral-100 dark:bg-white/10 -z-10 border-x-2 border-black dark:border-white/20"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    layoutId="activeTabIndicator"
+                    className="absolute top-0 inset-x-0 h-[3px] bg-[#FACC15]"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
             )}
+
+            <div className="flex flex-col items-center gap-1">
+                <Icon className={cn(
+                    "w-5 h-5 transition-all duration-300",
+                    isActive ? "stroke-[2.5px] text-black dark:text-white -translate-y-1" : "stroke-[1.5px] text-zinc-600 dark:text-zinc-400"
+                )} />
+
+                <span className={cn(
+                    "text-[9px] font-bold tracking-tight uppercase transition-all duration-300",
+                    isActive ? "text-black dark:text-white translate-y-0 opacity-100" : "text-zinc-500 translate-y-2 opacity-0 h-0"
+                )}>
+                    {label}
+                </span>
+            </div>
         </ViewTransitionLink>
     );
 }
