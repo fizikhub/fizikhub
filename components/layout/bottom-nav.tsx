@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
+import {
+    HouseLine,
+    BookOpenText,
+    ChatTeardropDots,
+    User,
+    Plus
+} from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -42,21 +48,21 @@ export function BottomNav() {
                     <nav className={cn(
                         "w-full h-[50px] relative",
                         "flex items-center justify-around px-2 pb-safe",
-                        // "Solid Glass 95%" - High Contrast & Legibility
-                        "bg-white/90 dark:bg-black/95 backdrop-blur-xl",
-                        "border-t-[1.5px] border-black/10 dark:border-white/20",
-                        "shadow-[0_-8px_30px_rgba(0,0,0,0.15)]"
+                        // "Liquid Glass 70% Over Zinc"
+                        "bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl",
+                        "border-t-[1.5px] border-black/10 dark:border-white/10",
+                        "shadow-[0_-8px_30px_rgba(0,0,0,0.12)]"
                     )}>
 
                         <NavItem
                             href="/"
-                            icon={Home}
+                            icon={HouseLine}
                             isActive={pathname === "/"}
                         />
 
                         <NavItem
                             href="/makale"
-                            icon={BookOpen}
+                            icon={BookOpenText}
                             isActive={pathname.startsWith("/makale")}
                         />
 
@@ -75,20 +81,20 @@ export function BottomNav() {
                                     w-10 h-10
                                     bg-[#FACC15]
                                     rounded-full
-                                    border-[1.5px] border-black dark:border-white
-                                    shadow-[2.5px_2.5px_0px_#000] dark:shadow-[2.5px_2.5px_0px_#fff]
+                                    border-[1.5px] border-black dark:border-white/40
+                                    shadow-[2.5px_2.5px_0px_#000] dark:shadow-[2.5px_2.5px_0px_rgba(255,255,255,0.2)]
                                     active:shadow-none active:translate-x-[1.5px] active:translate-y-[1.5px]
                                     hover:scale-110 active:scale-90
                                     transition-all duration-300 ease-out
                                 "
                             >
-                                <Plus className="w-5 h-5 text-black stroke-[3px]" />
+                                <Plus weight="bold" className="w-5 h-5 text-black" />
                             </ViewTransitionLink>
                         </div>
 
                         <NavItem
                             href="/forum"
-                            icon={MessageCircle}
+                            icon={ChatTeardropDots}
                             isActive={pathname.startsWith("/forum")}
                         />
 
@@ -121,24 +127,27 @@ function NavItem({ href, icon: Icon, isActive }: { href: string; icon: any; isAc
                 {isActive && (
                     <motion.div
                         layoutId="liquidGlow"
-                        className="absolute inset-0 bg-black/10 dark:bg-white/20 rounded-full blur-lg scale-150"
+                        className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-full blur-md scale-125"
                         transition={{ type: "spring", stiffness: 400, damping: 40 }}
                     />
                 )}
 
-                <Icon className={cn(
-                    "w-5 h-5 transition-all duration-400 cubic-bezier(0.23, 1, 0.32, 1)",
-                    isActive
-                        ? "text-black dark:text-white stroke-[2.5px] scale-110"
-                        : "text-zinc-600/90 dark:text-zinc-400/90 stroke-[1.5px] group-hover:text-black dark:group-hover:text-white group-hover:stroke-[2px]"
-                )} />
+                <Icon
+                    weight={isActive ? "bold" : "regular"}
+                    className={cn(
+                        "w-6 h-6 transition-all duration-400 cubic-bezier(0.23, 1, 0.32, 1)",
+                        isActive
+                            ? "text-black dark:text-white scale-110"
+                            : "text-zinc-600/90 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white group-hover:scale-110"
+                    )}
+                />
             </div>
 
             {/* Active Pixel Dot */}
             {isActive && (
                 <motion.div
                     layoutId="activeDot"
-                    className="absolute -bottom-1.5 w-1 h-1 bg-black dark:bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                    className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.3)]"
                     transition={{ type: "spring", stiffness: 600, damping: 30 }}
                 />
             )}

@@ -2,10 +2,18 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings } from "lucide-react";
+import {
+    MapPin,
+    CalendarBlank,
+    Link as LinkIcon,
+    PencilSimple,
+    ShieldCheck,
+    ChatTeardropDots,
+    GearSix
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber, cn } from "@/lib/utils";
 
 // True Royal Blue
 const ROYAL_BLUE = "#1E3A5F";
@@ -44,9 +52,30 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                 {hasCoverPhoto && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 )}
+
+                {/* FOLLOWER/FOLLOWING BOXES - Reverted to "Eski Hali" */}
+                <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-2 z-20">
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="bg-background border-2 border-white/10 px-3 py-2 rounded-2xl shadow-xl min-w-[70px] text-center"
+                    >
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">Takipçi</p>
+                        <h3 className="text-lg font-black text-foreground leading-none mt-1">{formatNumber(stats.followersCount)}</h3>
+                    </motion.div>
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-background border-2 border-white/10 px-3 py-2 rounded-2xl shadow-xl min-w-[70px] text-center"
+                    >
+                        <p className="text-[8px] font-bold uppercase tracking-wider text-muted-foreground">Takip</p>
+                        <h3 className="text-lg font-black text-foreground leading-none mt-1">{formatNumber(stats.followingCount)}</h3>
+                    </motion.div>
+                </div>
             </div>
 
-            {/* CONTENT CARD - Modernized & Cleaned */}
+            {/* CONTENT CARD */}
             <div className="relative bg-background border-2 border-white/10 border-t-0 rounded-b-3xl pt-14 sm:pt-16 pb-6 px-5 sm:px-8">
 
                 {/* FLOATING AVATAR */}
@@ -66,13 +95,13 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                         </div>
                         {isAdmin && (
                             <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black p-1.5 rounded-xl border-2 border-black shadow-sm">
-                                <ShieldCheck className="w-3.5 h-3.5" />
+                                <ShieldCheck weight="bold" className="w-3.5 h-3.5" />
                             </div>
                         )}
                     </motion.div>
                 </div>
 
-                {/* NAME & INTEGRATED STATS */}
+                {/* NAME AREA */}
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                     <div className="space-y-1">
                         <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
@@ -82,33 +111,22 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                             <span className="text-xs font-bold text-muted-foreground">
                                 @{profile?.username || "username"}
                             </span>
-                            <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
-                            <div className="flex items-center gap-3">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-sm font-black text-foreground">{formatNumber(stats.followersCount)}</span>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Takipçi</span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-sm font-black text-foreground">{formatNumber(stats.followingCount)}</span>
-                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Takip</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    {/* ACTION BUTTONS - Refined */}
+                    {/* ACTION BUTTONS */}
                     <div className="flex gap-2 w-full sm:w-auto">
                         {isOwnProfile ? (
                             <>
                                 <Link href="/profil/duzenle" className="flex-1 sm:flex-none">
                                     <button className="h-10 px-5 rounded-xl bg-foreground text-background font-bold text-xs hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
-                                        <Edit3 className="w-3.5 h-3.5" />
+                                        <PencilSimple weight="bold" className="w-4 h-4" />
                                         Düzenle
                                     </button>
                                 </Link>
                                 <Link href="/mesajlar" className="flex-1 sm:flex-none">
                                     <button className="h-10 px-5 rounded-xl border-2 border-border/50 bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5">
-                                        <MessageCircle className="w-3.5 h-3.5" />
+                                        <ChatTeardropDots weight="bold" className="w-4 h-4" />
                                         Mesajlar
                                     </button>
                                 </Link>
@@ -122,7 +140,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                 />
                                 <Link href={`/mesajlar?to=${profile.id}`}>
                                     <button className="h-10 px-5 rounded-xl border-2 border-border/50 bg-card hover:bg-muted font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5">
-                                        <MessageCircle className="w-3.5 h-3.5" />
+                                        <ChatTeardropDots weight="bold" className="w-4 h-4" />
                                         Mesaj
                                     </button>
                                 </Link>
@@ -131,7 +149,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     </div>
                 </div>
 
-                {/* BIO - cleaner */}
+                {/* BIO */}
                 {profile?.bio && (
                     <p className="text-muted-foreground text-sm leading-relaxed mb-6 max-w-2xl">
                         {profile.bio}
@@ -143,23 +161,23 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground/80">
                         {profile?.location && (
                             <div className="flex items-center gap-1.5">
-                                <MapPin className="w-3.5 h-3.5 text-red-400" />
+                                <MapPin weight="bold" className="w-3.5 h-3.5 text-red-400" />
                                 <span>{profile.location}</span>
                             </div>
                         )}
                         {profile?.website && (
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-foreground transition-colors text-blue-400">
-                                <LinkIcon className="w-3.5 h-3.5" />
+                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-foreground transition-colors text-blue-400 font-bold">
+                                <LinkIcon weight="bold" className="w-3.5 h-3.5" />
                                 <span>{profile.website.replace(/^https?:\/\//, '')}</span>
                             </a>
                         )}
                         <div className="flex items-center gap-1.5">
-                            <Calendar className="w-3.5 h-3.5 text-yellow-500" />
+                            <CalendarBlank weight="bold" className="w-3.5 h-3.5 text-yellow-500" />
                             <span>{new Date(profile?.created_at || Date.now()).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })} Katıldı</span>
                         </div>
                     </div>
 
-                    {/* Reputations / Hub Puan - More subtle but premium */}
+                    {/* Reputations / Hub Puan */}
                     <div className="flex items-center gap-3 bg-muted/30 border border-border/20 px-4 py-2.5 rounded-2xl">
                         <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
                         <div>
