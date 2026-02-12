@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -63,20 +63,24 @@ export function BottomNav() {
                 <div className="relative -top-5">
                     <ViewTransitionLink
                         href="/paylas"
-                        className="
-                            flex items-center justify-center
-                            w-12 h-12
-                            bg-[#FACC15]
-                            border-2 border-black dark:border-white
-                            rounded-full
-                            shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                            dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)]
-                            active:shadow-none active:translate-x-[1.5px] active:translate-y-[1.5px]
-                            transition-all duration-300
-                            group
-                        "
+                        className="relative z-10"
                     >
-                        <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300" />
+                        <motion.div
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            className="
+                                flex items-center justify-center
+                                w-12 h-12
+                                bg-[#FACC15]
+                                border-2 border-black dark:border-white
+                                rounded-full
+                                shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                                dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)]
+                                group
+                            "
+                        >
+                            <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300" />
+                        </motion.div>
                     </ViewTransitionLink>
                 </div>
 
@@ -109,14 +113,20 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
         >
             <motion.div
                 whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="flex flex-col items-center gap-0.5"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="flex flex-col items-center gap-0.5 relative"
             >
+                {isActive && (
+                    <motion.div
+                        layoutId="nav-item-background"
+                        className="absolute inset-0 bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/5 rounded-lg"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                )}
+
                 <div className={cn(
-                    "p-1.5 rounded-lg transition-all duration-200 border border-transparent",
-                    isActive
-                        ? "bg-black/5 dark:bg-white/10 border-black/5 dark:border-white/5"
-                        : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
                     <Icon className={cn(
                         "w-5 h-5 transition-all duration-200",
