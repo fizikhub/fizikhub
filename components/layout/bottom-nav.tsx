@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
+import { Layers, Feather, MessageSquareDashed, UserRound, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -36,57 +36,59 @@ export function BottomNav() {
         )}>
             <nav className="
                 w-full
-                h-[50px]
-                bg-white dark:bg-zinc-950
+                h-[64px]
+                bg-white/80 dark:bg-[#121212]/80
+                backdrop-blur-xl
                 border-t-[3px] border-black dark:border-white/20
                 flex items-center justify-around
-                px-2
+                px-4
                 pb-safe
                 relative
-                shadow-[0_-3px_0px_0px_rgba(0,0,0,1)]
+                shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)]
             ">
                 <NavItem
                     href="/"
-                    icon={Home}
+                    icon={Layers}
                     label="Akış"
                     isActive={pathname === "/"}
                 />
 
                 <NavItem
                     href="/makale"
-                    icon={BookOpen}
+                    icon={Feather}
                     label="Blog"
                     isActive={pathname.startsWith("/makale")}
                 />
 
-                <div className="relative -top-3">
+                <div className="relative -top-5">
                     <ViewTransitionLink
                         href="/paylas"
                         className="
                             flex items-center justify-center
-                            w-11 h-11
+                            w-14 h-14
                             bg-[#FACC15]
                             border-[3px] border-black
-                            rounded-xl
+                            rounded-full
                             shadow-[4px_4px_0px_0px_#000]
                             active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
                             transition-all
+                            hover:scale-105
                         "
                     >
-                        <Plus className="w-7 h-7 text-black stroke-[4px]" />
+                        <Plus className="w-8 h-8 text-black stroke-[3px]" />
                     </ViewTransitionLink>
                 </div>
 
                 <NavItem
                     href="/forum"
-                    icon={MessageCircle}
+                    icon={MessageSquareDashed}
                     label="Forum"
                     isActive={pathname.startsWith("/forum")}
                 />
 
                 <NavItem
                     href="/profil"
-                    icon={User}
+                    icon={UserRound}
                     label="Profil"
                     isActive={pathname.startsWith("/profil")}
                 />
@@ -100,28 +102,29 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
         <ViewTransitionLink
             href={href}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative py-0.5",
+                "flex flex-col items-center justify-center min-w-[60px] h-full relative group",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-400"
             )}
         >
             <motion.div
                 initial={false}
-                animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
-                className="flex flex-col items-center gap-0"
+                animate={isActive ? { y: -2 } : { y: 0 }}
+                className="flex flex-col items-center gap-1"
             >
                 <div className={cn(
-                    "p-1.5 transition-all duration-200",
-                    isActive && "bg-[#FACC15] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] rounded-lg -rotate-3"
+                    "p-2 transition-all duration-300 rounded-xl",
+                    isActive && "bg-black/5 dark:bg-white/10"
                 )}>
                     <Icon className={cn(
-                        "w-4 h-4 transition-all text-black dark:text-white",
-                        isActive ? "stroke-[3px]" : "stroke-[2.5px]"
+                        "w-6 h-6 transition-all duration-300",
+                        isActive ? "stroke-[2.5px] scale-110" : "stroke-[2px] group-hover:scale-110"
                     )} />
                 </div>
-                {!isActive && (
-                    <span className="text-[7.5px] font-black uppercase tracking-tighter opacity-70 mt-1">
-                        {label}
-                    </span>
+                {isActive && (
+                    <motion.div
+                        layoutId="nav-indicator"
+                        className="absolute -bottom-2 w-1 h-1 bg-black dark:bg-white rounded-full"
+                    />
                 )}
             </motion.div>
         </ViewTransitionLink>
