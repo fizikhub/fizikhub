@@ -78,10 +78,10 @@ export function DarkNeoFeed({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
+                                    "relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
                                     isActive
-                                        ? `${tab.color} text-white shadow-sm`
-                                        : "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        ? `${tab.color} text-white shadow-md active:scale-95`
+                                        : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground active:scale-95"
                                 )}
                             >
                                 <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />

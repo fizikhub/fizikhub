@@ -42,10 +42,10 @@ export function BottomNav() {
                     <nav className={cn(
                         "w-full h-[50px] relative",
                         "flex items-center justify-around px-2 pb-safe",
-                        // "Liquid Glass 20%" - Sharp High Contrast
-                        "bg-white/20 dark:bg-black/20 backdrop-blur-xl",
-                        "border-t-[1.5px] border-black/40 dark:border-white/30",
-                        "shadow-[0_-8px_30px_rgba(0,0,0,0.12)]"
+                        // "Solid Glass 95%" - High Contrast & Legibility
+                        "bg-white/90 dark:bg-black/95 backdrop-blur-xl",
+                        "border-t-[1.5px] border-black/10 dark:border-white/20",
+                        "shadow-[0_-8px_30px_rgba(0,0,0,0.15)]"
                     )}>
 
                         <NavItem
