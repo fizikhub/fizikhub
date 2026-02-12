@@ -52,7 +52,6 @@ export function BottomNav() {
                 pb-safe
                 relative
                 shadow-sm
-                overflow-hidden
             ">
                 {/* Noise Texture */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
