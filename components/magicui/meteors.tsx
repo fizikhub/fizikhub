@@ -8,7 +8,7 @@ interface MeteorsProps {
     number?: number;
 }
 
-export const Meteors = ({ number = 20 }: MeteorsProps) => {
+export const Meteors = ({ number = 20, className }: { number?: number, className?: string }) => {
     const [meteorStyles, setMeteorStyles] = useState<Array<React.CSSProperties>>(
         [],
     );
@@ -31,7 +31,8 @@ export const Meteors = ({ number = 20 }: MeteorsProps) => {
                     key={idx}
                     className={cn(
                         "pointer-events-none absolute left-1/2 top-1/2 h-0.5 w-0.5 rotate-[215deg] animate-meteor opacity-0",
-                        "bg-slate-800 shadow-[0_0_0_1px_#ffffff10]"
+                        "bg-slate-800 shadow-[0_0_0_1px_#ffffff10]",
+                        className
                     )}
                     style={style}
                 >
