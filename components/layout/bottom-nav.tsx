@@ -6,12 +6,19 @@ import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+
+    // Haptic feedback helper
+    const vibrate = () => {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+            navigator.vibrate(10); // Ultra light vibration
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -37,19 +44,29 @@ export function BottomNav() {
             <nav className="
                 w-full
                 h-[50px]
-                bg-white dark:bg-zinc-950
-                border-t-[3px] border-black dark:border-white/20
+                bg-white/80 dark:bg-[#121212]/80
+                backdrop-blur-xl
+                border-t border-black/10 dark:border-white/10
                 flex items-center justify-around
                 px-2
                 pb-safe
                 relative
-                shadow-[0_-3px_0px_0px_rgba(0,0,0,1)]
+                shadow-sm
             ">
+                {/* Noise Texture */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
+                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+                />
+
+                {/* Glossy Top Edge */}
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 opacity-50" />
+
                 <NavItem
                     href="/"
                     icon={Home}
                     label="Akış"
                     isActive={pathname === "/"}
+                    onInteract={vibrate}
                 />
 
                 <NavItem
@@ -57,23 +74,51 @@ export function BottomNav() {
                     icon={BookOpen}
                     label="Blog"
                     isActive={pathname.startsWith("/makale")}
+                    onInteract={vibrate}
                 />
 
-                <div className="relative -top-3">
+                <div className="relative -top-3.5 z-20">
                     <ViewTransitionLink
                         href="/paylas"
-                        className="
-                            flex items-center justify-center
-                            w-11 h-11
-                            bg-[#FACC15]
-                            border-[3px] border-black
-                            rounded-xl
-                            shadow-[4px_4px_0px_0px_#000]
-                            active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                            transition-all
-                        "
+                        className="relative block"
+                        onClick={vibrate}
                     >
-                        <Plus className="w-7 h-7 text-black stroke-[4px]" />
+                        <motion.div
+                            animate={{ scale: [1, 1.05, 1] }}
+                            transition={{
+                                repeat: Infinity,
+                                duration: 3,
+                                ease: "easeInOut"
+                            }}
+                            whileTap={{ scale: 0.9, rotate: 15 }}
+                            className="
+                                flex items-center justify-center
+                                w-11 h-11
+                                bg-[#FACC15]
+                                border-2 border-black dark:border-white
+                                rounded-full
+                                shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                group
+                                relative
+                                overflow-hidden
+                            "
+                        >
+                            <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+
+                            {/* Shimmer Effect */}
+                            <motion.div
+                                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent z-0 pointer-events-none"
+                                initial={{ x: "-100%" }}
+                                animate={{ x: "100%" }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 2.5,
+                                    repeatDelay: 4,
+                                    ease: "easeInOut"
+                                }}
+                            />
+                        </motion.div>
                     </ViewTransitionLink>
                 </div>
 
@@ -82,6 +127,7 @@ export function BottomNav() {
                     icon={MessageCircle}
                     label="Forum"
                     isActive={pathname.startsWith("/forum")}
+                    onInteract={vibrate}
                 />
 
                 <NavItem
@@ -89,40 +135,60 @@ export function BottomNav() {
                     icon={User}
                     label="Profil"
                     isActive={pathname.startsWith("/profil")}
+                    onInteract={vibrate}
                 />
             </nav>
         </div>
     );
 }
 
-function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: any; label: string; isActive: boolean }) {
+function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
     return (
         <ViewTransitionLink
             href={href}
+            onClick={onInteract}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative py-0.5",
-                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-400"
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
+                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
             <motion.div
-                initial={false}
-                animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
-                className="flex flex-col items-center gap-0"
+                whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="flex flex-col items-center gap-0.5 relative"
             >
-                <div className={cn(
-                    "p-1.5 transition-all duration-200",
-                    isActive && "bg-[#FACC15] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] rounded-lg -rotate-3"
-                )}>
-                    <Icon className={cn(
-                        "w-4 h-4 transition-all text-black dark:text-white",
-                        isActive ? "stroke-[3px]" : "stroke-[2.5px]"
-                    )} />
-                </div>
-                {!isActive && (
-                    <span className="text-[7.5px] font-black uppercase tracking-tighter opacity-70 mt-1">
-                        {label}
-                    </span>
+                {isActive && (
+                    <motion.div
+                        layoutId="nav-item-background"
+                        className="
+                            absolute inset-0 
+                            bg-black/5 dark:bg-white/10 
+                            border border-black/5 dark:border-white/5 
+                            rounded-lg
+                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
+                        "
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
                 )}
+
+                <div className={cn(
+                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                )}>
+                    <motion.div
+                        initial={false}
+                        animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                        <Icon
+                            fill={isActive ? "currentColor" : "none"}
+                            className={cn(
+                                "w-5 h-5 transition-all duration-200",
+                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                            )}
+                        />
+                    </motion.div>
+                </div>
             </motion.div>
         </ViewTransitionLink>
     );
