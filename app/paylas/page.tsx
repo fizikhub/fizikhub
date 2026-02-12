@@ -286,18 +286,7 @@ export default function PaylasPage() {
                     className="mt-12 md:mt-16 pb-12 px-2"
                 >
                     <Link href="/ara" className="block group">
-                        <div className="
-                            relative overflow-hidden
-                            bg-black dark:bg-white 
-                            text-white dark:text-black 
-                            h-20 rounded-[2rem] 
-                            flex items-center justify-between px-8 
-                            border-[3px] border-black dark:border-white/20
-                            shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)]
-                            hover:translate-x-1 hover:-translate-y-1
-                            hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,0.2)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.1)]
-                            transition-all duration-300
-                        ">
+                        <div className="relative overflow-hidden bg-black dark:bg-white text-white dark:text-black h-20 rounded-[2rem] flex items-center justify-between px-8 border-[3px] border-black dark:border-white/20 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,0.2)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.1)] transition-all duration-300">
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
 
                             <span className="font-bold text-lg md:text-xl flex items-center gap-4 relative z-10">
