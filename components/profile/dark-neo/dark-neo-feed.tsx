@@ -85,8 +85,7 @@ export function DarkNeoFeed({
                                 )}
                             >
                                 <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
-                                <span className="hidden sm:inline">{tab.label}</span>
-                                <span className="sm:hidden">{tab.label.slice(0, 3)}</span>
+                                {tab.label}
                                 {counts[tab.id as keyof typeof counts] > 0 && (
                                     <span className={cn(
                                         "text-[10px] px-1.5 py-0.5 rounded",
