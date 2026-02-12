@@ -37,8 +37,8 @@ export function BottomNav() {
             <nav className="
                 w-full
                 h-[50px]
-                bg-white/85 dark:bg-[#121212]/85
-                backdrop-blur-md
+                bg-white/80 dark:bg-[#121212]/80
+                backdrop-blur-xl
                 border-t border-black/10 dark:border-white/10
                 flex items-center justify-around
                 px-2
@@ -72,11 +72,11 @@ export function BottomNav() {
                             shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
                             dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)]
                             active:shadow-none active:translate-x-[1.5px] active:translate-y-[1.5px]
-                            transition-all duration-200
+                            transition-all duration-300
                             group
                         "
                     >
-                        <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:scale-110 transition-transform" />
+                        <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300" />
                     </ViewTransitionLink>
                 </div>
 
@@ -113,12 +113,14 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
                 className="flex flex-col items-center gap-0.5"
             >
                 <div className={cn(
-                    "p-1.5 rounded-lg transition-colors duration-200",
-                    isActive ? "bg-black/5 dark:bg-white/10" : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    "p-1.5 rounded-lg transition-all duration-200 border border-transparent",
+                    isActive
+                        ? "bg-black/5 dark:bg-white/10 border-black/5 dark:border-white/5"
+                        : "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
                     <Icon className={cn(
                         "w-5 h-5 transition-all duration-200",
-                        isActive ? "stroke-[2.5px] scale-105" : "stroke-[2px]"
+                        isActive ? "stroke-[2.75px] scale-105" : "stroke-[2px]"
                     )} />
                 </div>
             </motion.div>
