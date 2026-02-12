@@ -13,6 +13,13 @@ export function BottomNav() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
+    // Haptic feedback helper
+    const vibrate = () => {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+            navigator.vibrate(10); // Ultra light vibration
+        }
+    };
+
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
@@ -51,6 +58,7 @@ export function BottomNav() {
                     icon={Home}
                     label="Akış"
                     isActive={pathname === "/"}
+                    onInteract={vibrate}
                 />
 
                 <NavItem
@@ -58,12 +66,14 @@ export function BottomNav() {
                     icon={BookOpen}
                     label="Blog"
                     isActive={pathname.startsWith("/makale")}
+                    onInteract={vibrate}
                 />
 
                 <div className="relative -top-5">
                     <ViewTransitionLink
                         href="/paylas"
                         className="relative z-10"
+                        onClick={vibrate}
                     >
                         <motion.div
                             whileTap={{ scale: 0.9 }}
@@ -77,9 +87,24 @@ export function BottomNav() {
                                 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
                                 dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.5)]
                                 group
+                                relative
+                                overflow-hidden
                             "
                         >
-                            <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300" />
+                            <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+
+                            {/* Shimmer Effect */}
+                            <motion.div
+                                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent z-0 pointer-events-none"
+                                initial={{ x: "-100%" }}
+                                animate={{ x: "100%" }}
+                                transition={{
+                                    repeat: Infinity,
+                                    duration: 2,
+                                    repeatDelay: 3,
+                                    ease: "easeInOut"
+                                }}
+                            />
                         </motion.div>
                     </ViewTransitionLink>
                 </div>
@@ -89,6 +114,7 @@ export function BottomNav() {
                     icon={MessageCircle}
                     label="Forum"
                     isActive={pathname.startsWith("/forum")}
+                    onInteract={vibrate}
                 />
 
                 <NavItem
@@ -96,16 +122,18 @@ export function BottomNav() {
                     icon={User}
                     label="Profil"
                     isActive={pathname.startsWith("/profil")}
+                    onInteract={vibrate}
                 />
             </nav>
         </div>
     );
 }
 
-function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: any; label: string; isActive: boolean }) {
+function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
     return (
         <ViewTransitionLink
             href={href}
+            onClick={onInteract}
             className={cn(
                 "flex flex-col items-center justify-center min-w-[55px] h-full relative group",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
@@ -128,10 +156,16 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
                     "p-1.5 rounded-lg transition-all duration-200 relative z-10",
                     !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
-                    <Icon className={cn(
-                        "w-5 h-5 transition-all duration-200",
-                        isActive ? "stroke-[2.75px] scale-105" : "stroke-[2px]"
-                    )} />
+                    <motion.div
+                        initial={false}
+                        animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                        <Icon className={cn(
+                            "w-5 h-5 transition-all duration-200",
+                            isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                        )} />
+                    </motion.div>
                 </div>
             </motion.div>
         </ViewTransitionLink>
