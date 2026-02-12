@@ -45,7 +45,7 @@ export function BottomNav() {
                 w-full
                 h-[50px]
                 bg-white/80 dark:bg-[#121212]/80
-                backdrop-blur-xl
+                backdrop-blur-2xl
                 border-t border-black/10 dark:border-white/10
                 flex items-center justify-around
                 px-2
@@ -96,7 +96,7 @@ export function BottomNav() {
                                 w-11 h-11
                                 bg-[#FACC15]
                                 border-2 border-black dark:border-white
-                                rounded-full
+                                rounded-2xl
                                 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
                                 dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
                                 group
@@ -163,12 +163,19 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
                         className="
                             absolute inset-0 
                             bg-black/5 dark:bg-white/10 
-                            border border-black/5 dark:border-white/5 
+                            border-[1px] border-transparent
                             rounded-lg
                             shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
                         "
+                        style={{
+                            backgroundImage: "linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0)) border-box",
+                            mask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+                            maskComposite: "exclude"
+                        }}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
+                    >
+                        <div className="absolute inset-0 rounded-lg border border-black/5 dark:border-white/10 bg-gradient-to-tr from-transparent via-black/5 to-transparent dark:via-white/10 pointer-events-none" />
+                    </motion.div>
                 )}
 
                 <div className={cn(
