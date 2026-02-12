@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import { Zap, Library, MessageSquareCode, Fingerprint, Plus } from "lucide-react";
+import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -36,63 +36,59 @@ export function BottomNav() {
         )}>
             <nav className="
                 w-full
-                h-[64px]
-                bg-white/90 dark:bg-[#09090b]/80
-                backdrop-blur-2xl
-                border-t border-black/10 dark:border-white/10
-                flex items-center justify-between
-                px-6
+                h-[50px]
+                bg-white dark:bg-[#0a0a0a]
+                border-t-[3px] border-black dark:border-white/20
+                flex items-center justify-around
+                px-2
                 pb-safe
                 relative
-                shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]
+                shadow-[0_-5px_0px_0px_rgba(0,0,0,1)] dark:shadow-[0_-5px_0px_0px_rgba(255,255,255,0.1)]
             ">
                 <NavItem
                     href="/"
-                    icon={Zap}
+                    icon={Home}
                     label="Akış"
                     isActive={pathname === "/"}
                 />
 
                 <NavItem
                     href="/makale"
-                    icon={Library}
-                    label="Kütüphane"
+                    icon={BookOpen}
+                    label="Blog"
                     isActive={pathname.startsWith("/makale")}
                 />
 
-                <div className="relative -top-6">
+                <div className="relative -top-5">
                     <ViewTransitionLink
                         href="/paylas"
                         className="
                             flex items-center justify-center
                             w-14 h-14
                             bg-[#FACC15]
-                            border-[3px] border-black dark:border-white/10
+                            border-[3px] border-black
                             rounded-full
-                            shadow-[0px_8px_20px_-6px_rgba(250,204,21,0.5)]
-                            active:scale-95
-                            transition-all duration-300
-                            hover:rotate-90 hover:scale-110
-                            z-20
+                            shadow-[4px_4px_0px_0px_#000]
+                            active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                            transition-all
+                            hover:scale-105 hover:rotate-6
                         "
                     >
                         <Plus className="w-8 h-8 text-black stroke-[3px]" />
                     </ViewTransitionLink>
-                    {/* Glow effect behind the button */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-[#FACC15] blur-[20px] opacity-40 -z-10 rounded-full" />
                 </div>
 
                 <NavItem
                     href="/forum"
-                    icon={MessageSquareCode}
+                    icon={MessageCircle}
                     label="Forum"
                     isActive={pathname.startsWith("/forum")}
                 />
 
                 <NavItem
                     href="/profil"
-                    icon={Fingerprint}
-                    label="Kimlik"
+                    icon={User}
+                    label="Profil"
                     isActive={pathname.startsWith("/profil")}
                 />
             </nav>
@@ -105,34 +101,23 @@ function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: an
         <ViewTransitionLink
             href={href}
             className={cn(
-                "flex flex-col items-center justify-center h-full relative group w-12",
-                isActive ? "text-black dark:text-white" : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative group",
+                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
-            {isActive && (
-                <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 w-full h-full bg-black/5 dark:bg-white/5 rounded-2xl -z-10"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-            )}
-
             <motion.div
-                whileTap={{ scale: 0.8 }}
-                className="relative flex flex-col items-center gap-1"
+                initial={false}
+                animate={isActive ? { y: -2 } : { y: 0 }}
+                className="flex flex-col items-center gap-0.5"
             >
-                <div className="relative">
+                <div className={cn(
+                    "p-1.5 transition-all duration-300 rounded-lg border-[2px] border-transparent",
+                    isActive && "bg-black/5 dark:bg-white/10 border-black dark:border-white"
+                )}>
                     <Icon className={cn(
-                        "w-6 h-6 transition-all duration-300",
-                        isActive ? "stroke-[2.5px]" : "stroke-[2px]"
+                        "w-5 h-5 transition-all duration-300",
+                        isActive ? "stroke-[2.5px] scale-110" : "stroke-[2px] group-hover:scale-110"
                     )} />
-                    {isActive && (
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute -top-1 -right-1 w-2 h-2 bg-[#FACC15] rounded-full border-2 border-white dark:border-[#09090b]"
-                        />
-                    )}
                 </div>
             </motion.div>
         </ViewTransitionLink>
