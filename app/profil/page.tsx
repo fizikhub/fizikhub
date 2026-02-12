@@ -56,8 +56,16 @@ export default async function ProfilePage() {
     }))?.filter(ub => ub.badges) || [];
 
     return (
-        <main className="min-h-screen bg-background relative selection:bg-primary/30">
-            <BackgroundWrapper />
+        <main className="min-h-screen bg-zinc-50 dark:bg-[#09090b] relative selection:bg-yellow-400/30">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 bg-[#09090b] opacity-[0.03] dark:opacity-100"
+                    style={{
+                        backgroundImage: `radial-gradient(#27272a 1px, transparent 1px)`,
+                        backgroundSize: '32px 32px'
+                    }}
+                />
+            </div>
 
             <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-2 sm:pt-4 lg:pt-8 pb-24 sm:pb-32">
 
