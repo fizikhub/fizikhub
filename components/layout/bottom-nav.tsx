@@ -43,23 +43,23 @@ export function BottomNav() {
         )}>
             <nav className="
                 w-full
-                h-[50px]
-                bg-white/80 dark:bg-[#121212]/80
-                backdrop-blur-xl
-                border-t border-black/10 dark:border-white/10
+                h-[60px]
+                bg-white/90 dark:bg-[#09090b]/90
+                backdrop-blur-3xl saturate-150
+                border-t border-white/20 dark:border-white/10
                 flex items-center justify-around
                 px-2
                 pb-safe
                 relative
-                shadow-sm
+                shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)]
             ">
-                {/* Noise Texture */}
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
-                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+                {/* Ceramic Noise Texture (Subtle) */}
+                <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04] pointer-events-none z-0 mix-blend-overlay"
+                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
                 />
 
-                {/* Glossy Top Edge */}
-                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 opacity-50" />
+                {/* Highlight Edge (Chiseled Look) */}
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent z-10 opacity-70" />
 
                 <NavItem
                     href="/"
@@ -77,7 +77,7 @@ export function BottomNav() {
                     onInteract={vibrate}
                 />
 
-                <div className="relative -top-3.5 z-20">
+                <div className="relative -top-4 z-20">
                     <ViewTransitionLink
                         href="/paylas"
                         className="relative block"
@@ -93,22 +93,22 @@ export function BottomNav() {
                             whileTap={{ scale: 0.9, rotate: 15 }}
                             className="
                                 flex items-center justify-center
-                                w-11 h-11
+                                w-12 h-12
                                 bg-[#FACC15]
                                 border-2 border-black dark:border-white
                                 rounded-full
-                                shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-                                dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                shadow-[0_4px_10px_rgba(250,204,21,0.3)]
+                                dark:shadow-[0_4px_10px_rgba(250,204,21,0.1)]
                                 group
                                 relative
                                 overflow-hidden
                             "
                         >
-                            <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                            <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
 
                             {/* Shimmer Effect */}
                             <motion.div
-                                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent z-0 pointer-events-none"
+                                className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/60 to-transparent z-0 pointer-events-none"
                                 initial={{ x: "-100%" }}
                                 animate={{ x: "100%" }}
                                 transition={{
@@ -148,46 +148,41 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
             href={href}
             onClick={onInteract}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
-                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
+                "flex flex-col items-center justify-center w-14 h-full relative group z-10",
+                isActive ? "text-black dark:text-white" : "text-zinc-400 dark:text-zinc-500"
             )}
         >
-            <motion.div
-                whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex flex-col items-center gap-0.5 relative"
-            >
-                {isActive && (
-                    <motion.div
-                        layoutId="nav-item-background"
-                        className="
-                            absolute inset-0 
-                            bg-black/5 dark:bg-white/10 
-                            border border-black/5 dark:border-white/5 
-                            rounded-lg
-                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
-                        "
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                )}
+            {/* Spotlight Effect */}
+            {isActive && (
+                <motion.div
+                    layoutId="spotlight"
+                    className="absolute top-0 w-8 h-full z-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[30px] bg-gradient-to-b from-black/10 dark:from-white/10 to-transparent blur-md rounded-b-full" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-black/20 dark:bg-white/40 rounded-full blur-[2px]" />
+                </motion.div>
+            )}
 
+            <motion.div
+                whileTap={{ scaleX: 1.2, scaleY: 0.8 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="flex flex-col items-center gap-1 relative z-10"
+            >
                 <div className={cn(
-                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
-                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    "p-2 rounded-2xl transition-all duration-300 relative group-hover:bg-black/5 dark:group-hover:bg-white/5",
                 )}>
-                    <motion.div
-                        initial={false}
-                        animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                    >
-                        <Icon
-                            fill={isActive ? "currentColor" : "none"}
-                            className={cn(
-                                "w-5 h-5 transition-all duration-200",
-                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
-                            )}
-                        />
-                    </motion.div>
+                    <Icon
+                        fill={isActive ? "currentColor" : "none"}
+                        className={cn(
+                            "w-6 h-6 transition-all duration-300",
+                            isActive
+                                ? "stroke-[2.5px] drop-shadow-[0_2px_4px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_2px_4px_rgba(255,255,255,0.1)]"
+                                : "stroke-[2px]"
+                        )}
+                    />
                 </div>
             </motion.div>
         </ViewTransitionLink>
