@@ -52,7 +52,16 @@ export function BottomNav() {
                 pb-safe
                 relative
                 shadow-sm
+                overflow-hidden
             ">
+                {/* Noise Texture */}
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
+                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+                />
+
+                {/* Glossy Top Edge */}
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 opacity-50" />
+
                 <NavItem
                     href="/"
                     icon={Home}
@@ -69,10 +78,10 @@ export function BottomNav() {
                     onInteract={vibrate}
                 />
 
-                <div className="relative -top-5">
+                <div className="relative -top-5 z-20">
                     <ViewTransitionLink
                         href="/paylas"
-                        className="relative z-10"
+                        className="relative"
                         onClick={vibrate}
                     >
                         <motion.div
@@ -135,7 +144,7 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
             href={href}
             onClick={onInteract}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative group",
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
@@ -147,7 +156,13 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
                 {isActive && (
                     <motion.div
                         layoutId="nav-item-background"
-                        className="absolute inset-0 bg-black/5 dark:bg-white/10 border border-black/5 dark:border-white/5 rounded-lg"
+                        className="
+                            absolute inset-0 
+                            bg-black/5 dark:bg-white/10 
+                            border border-black/5 dark:border-white/5 
+                            rounded-lg
+                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
+                        "
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                 )}
