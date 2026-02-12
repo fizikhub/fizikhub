@@ -5,7 +5,6 @@ import { getTotalUnreadCount } from "@/app/mesajlar/actions";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
-import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
