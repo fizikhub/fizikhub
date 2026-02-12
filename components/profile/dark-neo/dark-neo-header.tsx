@@ -2,13 +2,10 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
-
-// True Royal Blue
-const ROYAL_BLUE = "#1E3A5F";
 
 interface DarkNeoHeaderProps {
     profile: any;
@@ -24,179 +21,163 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
     const hasCoverPhoto = profile?.cover_url;
 
     return (
-        <div className="w-full">
-            {/* COVER BANNER with overlapping stats */}
-            <div className="relative h-44 sm:h-52 md:h-60 overflow-visible rounded-t-2xl border-2 border-b-0 border-white/10">
-                {/* Cover photo or default gradient */}
+        <div className="w-full font-sans">
+            {/* COVER AREA */}
+            <div className="relative h-40 sm:h-48 rounded-2xl overflow-hidden border-2 border-black dark:border-white/10 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.1)] bg-zinc-100 dark:bg-zinc-900 group">
                 {hasCoverPhoto ? (
                     <img
                         src={profile.cover_url}
-                        alt="Kapak fotoğrafı"
-                        className="absolute inset-0 w-full h-full object-cover rounded-t-2xl"
+                        alt="Kapak"
+                        className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
                     />
                 ) : (
-                    <>
-                        {/* Deep royal blue gradient base (default) */}
-                        <div className="absolute inset-0 rounded-t-2xl bg-gradient-to-br from-[#0f1a2e] via-[#1E3A5F] to-[#0a1628]" />
-
-                        {/* Subtle accent glows */}
-                        <div className="absolute -top-20 -left-20 w-56 h-56 bg-[#2C5282]/20 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-12 -right-12 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl" />
-
-                        {/* Decorative elements */}
-                        <div className="absolute inset-0 overflow-hidden opacity-40 rounded-t-2xl">
-                            <span className="absolute top-6 left-8 text-yellow-400/60 text-base">✦</span>
-                            <span className="absolute top-10 right-16 text-white/30 text-sm">✦</span>
-                            <span className="absolute bottom-8 left-24 text-yellow-400/40 text-xs">✧</span>
-                            <span className="absolute bottom-10 right-1/3 text-white/20 text-sm">★</span>
-                            <div className="absolute top-8 right-12 w-4 h-4 border border-yellow-400/30 rotate-12" />
-                        </div>
-
-                        {/* Grid pattern */}
-                        <div className="absolute inset-0 rounded-t-2xl bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]" />
-                    </>
+                    <div className="absolute inset-0 bg-[#09090b] dark:bg-zinc-950 flex items-center justify-center overflow-hidden">
+                        {/* Abstract Geometric Pattern */}
+                        <div className="absolute inset-0 opacity-20"
+                            style={{
+                                backgroundImage: 'radial-gradient(#27272a 1px, transparent 1px)',
+                                backgroundSize: '24px 24px'
+                            }}
+                        />
+                        <div className="w-64 h-64 bg-yellow-400/10 rounded-full blur-[100px] absolute -top-10 -right-10" />
+                        <div className="w-64 h-64 bg-pink-500/10 rounded-full blur-[100px] absolute -bottom-10 -left-10" />
+                    </div>
                 )}
-
-                {/* Dark overlay for readability when cover photo exists */}
-                {hasCoverPhoto && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-t-2xl" />
-                )}
-
-                {/* FOLLOWER/FOLLOWING BOXES - Equal width */}
-                <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-2 z-20">
-                    <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        className="bg-card border-2 border-border/30 rounded-xl min-w-[72px] sm:min-w-[80px] py-3 px-3 shadow-lg backdrop-blur-sm text-center"
-                    >
-                        <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takipçi</p>
-                        <h3 className="text-lg sm:text-xl font-black text-foreground">{formatNumber(stats.followersCount)}</h3>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="bg-card border-2 border-border/30 rounded-xl min-w-[72px] sm:min-w-[80px] py-3 px-3 shadow-lg backdrop-blur-sm text-center"
-                    >
-                        <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Takip</p>
-                        <h3 className="text-lg sm:text-xl font-black text-foreground">{formatNumber(stats.followingCount)}</h3>
-                    </motion.div>
-                </div>
             </div>
 
-            {/* CONTENT CARD */}
-            <div className="relative bg-background border-2 border-white/10 border-t-0 rounded-b-2xl pt-16 sm:pt-20 pb-5 px-4 sm:px-6">
+            {/* PROFILE INFO & STATS GRID */}
+            <div className="relative px-2 sm:px-4 -mt-10 sm:-mt-12 flex flex-col lg:flex-row gap-6 lg:items-end">
 
-                {/* FLOATING AVATAR */}
-                <div className="absolute -top-12 sm:-top-14 left-4 sm:left-6">
+                {/* AVATAR */}
+                <div className="relative flex-shrink-0 z-10">
                     <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
+                        initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="relative"
+                        className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-4 border-white dark:border-[#09090b] shadow-xl overflow-hidden bg-white dark:bg-black"
                     >
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-background rounded-xl border-2 border-white/20 shadow-[3px_3px_0_#1E3A5F] overflow-hidden">
-                            <Avatar className="w-full h-full rounded-none">
-                                <AvatarImage src={profile?.avatar_url} className="object-cover" />
-                                <AvatarFallback className="text-2xl sm:text-3xl font-black bg-gradient-to-br from-[#1E3A5F] to-[#2C5282] text-white rounded-none">
-                                    {initial}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                        {/* Verified badge */}
-                        <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black p-1 rounded-md border border-black">
-                            <ShieldCheck className="w-3 h-3" />
-                        </div>
+                        <Avatar className="w-full h-full rounded-none">
+                            <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                            <AvatarFallback className="rounded-none bg-zinc-100 dark:bg-zinc-900 text-3xl font-black text-black dark:text-white">
+                                {initial}
+                            </AvatarFallback>
+                        </Avatar>
                     </motion.div>
-                </div>
-
-                {/* NAME & HANDLE - Below avatar */}
-                <div className="mb-4">
-                    <h1 className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tight leading-tight">
-                        {profile?.full_name || "New User"}
-                    </h1>
-                    <span className="inline-block mt-0.5 text-[10px] sm:text-xs font-bold bg-[#1E3A5F] text-white px-2 py-0.5 rounded">
-                        @{profile?.username || "username"}
-                    </span>
-                </div>
-
-                {/* ACTION BUTTONS */}
-                <div className="flex gap-2 mb-4">
-                    {isOwnProfile ? (
-                        <>
-                            <Link href="/profil/duzenle" className="flex-1">
-                                <button className="w-full flex items-center justify-center gap-1.5 bg-white hover:bg-gray-100 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#1E3A5F] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                    <Edit3 className="w-3.5 h-3.5" />
-                                    Profili Düzenle
-                                </button>
-                            </Link>
-                            <Link href="/mesajlar">
-                                <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                    Mesajlar
-                                </button>
-                            </Link>
-                            {/* Admin Panel Button - Only for @baranbozkurt */}
-                            {isAdmin && (
-                                <Link href="/admin">
-                                    <button className="flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                        <Settings className="w-3.5 h-3.5" />
-                                        Admin
-                                    </button>
-                                </Link>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <FollowButton
-                                targetUserId={profile.id}
-                                initialIsFollowing={isFollowing}
-                                className="flex-1 px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
-                            />
-                            <Link href={`/mesajlar?to=${profile.id}`}>
-                                <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                    Mesaj
-                                </button>
-                            </Link>
-                        </>
-                    )}
-                </div>
-
-                {/* BIO */}
-                {profile?.bio && (
-                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-4 border-l-2 border-[#1E3A5F] pl-3 py-0.5">
-                        {profile.bio}
-                    </p>
-                )}
-
-                {/* META INFO */}
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] sm:text-xs font-medium text-muted-foreground mb-4">
-                    {profile?.location && (
-                        <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-pink-400" />
-                            <span className="truncate max-w-[100px]">{profile.location}</span>
-                        </div>
-                    )}
-                    {profile?.website && (
-                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-[#2C5282] transition-colors">
-                            <LinkIcon className="w-3 h-3 text-[#2C5282]" />
-                            <span className="truncate max-w-[120px]">{profile.website.replace(/^https?:\/\//, '')}</span>
-                        </a>
-                    )}
-                    <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3 text-yellow-500" />
-                        {new Date(profile?.created_at || Date.now()).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' })}
+                    {/* Badge */}
+                    <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-black p-1.5 rounded-lg border-2 border-white dark:border-[#09090b] shadow-sm transform rotate-6">
+                        <ShieldCheck className="w-4 h-4" />
                     </div>
                 </div>
 
-                {/* STATS - Hub Puan only */}
-                <div className="bg-[#1E3A5F] p-3 rounded-lg border border-white/10">
-                    <p className="text-[9px] font-bold uppercase tracking-wider text-white/60">Hub Puan</p>
-                    <h3 className="text-xl sm:text-2xl font-black text-white">{formatNumber(stats.reputation)}</h3>
+                {/* INFO */}
+                <div className="flex-1 pt-2 lg:pt-0 lg:pb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl font-black text-black dark:text-white tracking-tight leading-none mb-1">
+                                {profile?.full_name || "İsimsiz Kullanıcı"}
+                            </h1>
+                            <div className="flex items-center gap-2">
+                                <span className="bg-black/5 dark:bg-white/10 text-black dark:text-white px-2 py-0.5 rounded text-xs font-bold font-mono">
+                                    @{profile?.username || "username"}
+                                </span>
+                                {isAdmin && (
+                                    <span className="bg-red-500 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
+                                        Admin
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* ACTIONS */}
+                        <div className="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                            {isOwnProfile ? (
+                                <Link href="/profil/duzenle" className="flex-1 sm:flex-none">
+                                    <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white/20 rounded-lg font-bold text-sm shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                                        <Edit3 className="w-4 h-4" />
+                                        <span>Düzenle</span>
+                                    </button>
+                                </Link>
+                            ) : (
+                                <>
+                                    <FollowButton
+                                        targetUserId={profile.id}
+                                        initialIsFollowing={isFollowing}
+                                        className="flex-1 sm:flex-none px-6 py-2 bg-black text-white rounded-lg font-bold text-sm shadow-[2px_2px_0px_rgba(0,0,0,0.2)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+                                    />
+                                    <Link href={`/mesajlar?to=${profile.id}`}>
+                                        <button className="flex items-center justify-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                                            <MessageCircle className="w-5 h-5" />
+                                        </button>
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* BIO */}
+                    {profile?.bio && (
+                        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl font-medium">
+                            {profile.bio}
+                        </p>
+                    )}
+
+                    {/* META GRID */}
+                    <div className="mt-4 flex flex-wrap gap-4 text-xs font-semibold text-zinc-500 dark:text-zinc-500">
+                        {profile?.location && (
+                            <div className="flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5" />
+                                <span>{profile.location}</span>
+                            </div>
+                        )}
+                        {profile?.website && (
+                            <a href={profile.website} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-black dark:hover:text-white transition-colors underline decoration-dotted">
+                                <LinkIcon className="w-3.5 h-3.5" />
+                                <span>Website</span>
+                            </a>
+                        )}
+                        <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>{new Date(profile?.created_at).getFullYear()}'den beri üye</span>
+                        </div>
+                    </div>
                 </div>
+
+                {/* BIG STATS */}
+                <div className="hidden lg:flex gap-3">
+                    <StatBox label="Takipçi" value={stats.followersCount} />
+                    <StatBox label="Takip" value={stats.followingCount} />
+                    <StatBox label="Hub Puan" value={stats.reputation} highlight />
+                </div>
+            </div>
+
+            {/* MOBILE STATS SCROLL - Visible only on mobile/tablet */}
+            <div className="lg:hidden mt-6 px-1 grid grid-cols-3 gap-2">
+                <StatBox label="Takipçi" value={stats.followersCount} />
+                <StatBox label="Takip" value={stats.followingCount} />
+                <StatBox label="Hub Puan" value={stats.reputation} highlight />
             </div>
         </div>
     );
+}
+
+function StatBox({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
+    return (
+        <div className={cn(
+            "flex flex-col items-center justify-center p-3 rounded-xl border-2 min-w-[80px]",
+            highlight
+                ? "bg-black dark:bg-zinc-100 border-black dark:border-white text-white dark:text-black"
+                : "bg-white dark:bg-zinc-900 border-black/5 dark:border-white/10"
+        )}>
+            <span className={cn(
+                "text-[10px] uppercase tracking-wider font-bold mb-0.5",
+                highlight ? "text-white/60 dark:text-black/60" : "text-zinc-400"
+            )}>
+                {label}
+            </span>
+            <span className="text-xl font-black">{formatNumber(value)}</span>
+        </div>
+    );
+}
+
+function cn(...classes: (string | undefined | null | false)[]) {
+    return classes.filter(Boolean).join(" ");
 }
