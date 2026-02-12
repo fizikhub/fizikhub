@@ -1,0 +1,105 @@
+
+> fizikhub@0.1.0 build
+> next build --webpack
+
+▲ Next.js 16.1.6 (webpack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · optimizePackageImports
+  · serverActions
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for server...
+ ✓ (pwa) Compiling for client (static)...
+ ○ (pwa) Service worker: /Users/baran/.gemini/antigravity/scratch/fizikhub/public/sw.js
+ ○ (pwa)   URL: /sw.js
+ ○ (pwa)   Scope: /
+✓ Compiled successfully in 16.9s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+⚠ Using edge runtime on a page currently disables static generation for that page
+  Generating static pages using 7 workers (0/75) ...
+  Generating static pages using 7 workers (18/75) 
+  Generating static pages using 7 workers (37/75) 
+  Generating static pages using 7 workers (56/75) 
+✓ Generating static pages using 7 workers (75/75) in 1922.4ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ƒ /_not-found
+├ ƒ /admin
+├ ƒ /admin/articles
+├ ƒ /admin/articles/[id]/edit
+├ ƒ /admin/basvurular
+├ ƒ /admin/broadcast
+├ ƒ /admin/dictionary
+├ ƒ /admin/makale-ekle
+├ ƒ /admin/questions
+├ ƒ /admin/quizzes
+├ ƒ /admin/quizzes/[id]
+├ ƒ /admin/quizzes/new
+├ ƒ /admin/reports
+├ ƒ /admin/sozluk-ekle
+├ ƒ /admin/users
+├ ƒ /admin/users/[userId]
+├ ƒ /admin/weekly-question
+├ ƒ /api/chat
+├ ƒ /api/gemini-live
+├ ƒ /api/notes-ai
+├ ƒ /api/og
+├ ƒ /api/time-limit/update
+├ ƒ /auth/auth-code-error
+├ ƒ /auth/callback
+├ ƒ /auth/verify
+├ ƒ /basvuru/yazar
+├ ƒ /blog
+├ ƒ /blog/[slug]
+├ ƒ /deney/[slug]
+├ ƒ /forgot-password
+├ ƒ /forum
+├ ƒ /forum/[id]
+├ ƒ /gizlilik-politikasi
+├ ƒ /hakkimizda
+├ ƒ /iletisim
+├ ƒ /kitap-inceleme/yeni
+├ ƒ /kullanici/[username]
+├ ƒ /kullanim-sartlari
+├ ƒ /login
+├ ƒ /makale
+├ ƒ /makale/[slug]
+├ ƒ /makale/duzenle/[id]
+├ ƒ /makale/yeni
+├ ƒ /mesajlar
+├ ƒ /mesajlar/[id]
+├ ƒ /nevbara
+├ ƒ /notlar
+├ ƒ /onboarding
+├ ƒ /opengraph-image
+├ ƒ /paylas
+├ ƒ /profil
+├ ƒ /profil/duzenle
+├ ƒ /puanlar-nedir
+├ ƒ /reset-password
+├ ○ /robots.txt
+├ ƒ /simulasyonlar
+├ ƒ /simulasyonlar/[slug]
+├ ƒ /siralamalar
+├ ƒ /sitemap.xml
+├ ƒ /sozluk
+├ ƒ /testler
+├ ƒ /testler/[slug]
+├ ƒ /yazar
+├ ƒ /yazar/[id]
+├ ƒ /yazar/rehber
+└ ƒ /yazar/yeni
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
