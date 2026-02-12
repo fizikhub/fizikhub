@@ -16,7 +16,7 @@
  ○ (pwa) Service worker: /Users/baran/.gemini/antigravity/scratch/fizikhub/public/sw.js
  ○ (pwa)   URL: /sw.js
  ○ (pwa)   Scope: /
-✓ Compiled successfully in 33.3s
+✓ Compiled successfully in 18.4s
   Running TypeScript ...
   Collecting page data using 7 workers ...
 ⚠ Using edge runtime on a page currently disables static generation for that page
@@ -24,7 +24,7 @@
   Generating static pages using 7 workers (18/75) 
   Generating static pages using 7 workers (37/75) 
   Generating static pages using 7 workers (56/75) 
-✓ Generating static pages using 7 workers (75/75) in 3.0s
+✓ Generating static pages using 7 workers (75/75) in 4.8s
   Finalizing page optimization ...
   Collecting build traces ...
 

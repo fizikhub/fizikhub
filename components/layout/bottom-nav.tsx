@@ -64,6 +64,12 @@ export function BottomNav() {
                         <div className="relative -top-4">
                             <ViewTransitionLink
                                 href="/paylas"
+                                onClick={(e) => {
+                                    if (pathname === "/paylas") {
+                                        e.preventDefault();
+                                        window.scrollTo({ top: 0, behavior: "smooth" });
+                                    }
+                                }}
                                 className="
                                     group flex items-center justify-center
                                     w-10 h-10
@@ -102,6 +108,12 @@ function NavItem({ href, icon: Icon, isActive }: { href: string; icon: any; isAc
     return (
         <ViewTransitionLink
             href={href}
+            onClick={(e) => {
+                if (isActive) {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+            }}
             className="flex flex-col items-center justify-center w-12 h-10 relative group"
         >
             <div className="relative flex items-center justify-center">

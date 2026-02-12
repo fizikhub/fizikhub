@@ -8,16 +8,24 @@ interface ViewTransitionLinkProps extends LinkProps {
     children: React.ReactNode;
     className?: string;
     href: string;
+    onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export function ViewTransitionLink({
     children,
     href,
+    onClick,
     ...props
 }: ViewTransitionLinkProps) {
     const router = useRouter();
 
     const handleTransition = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (onClick) {
+            onClick(e);
+        }
+
+        if (e.defaultPrevented) return;
+
         e.preventDefault();
 
         if (!document.startViewTransition) {
