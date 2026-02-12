@@ -4,6 +4,9 @@ import { motion } from "framer-motion";
 import { Award, Shield, BookOpen, HelpCircle, MessageCircle, Zap, AlertCircle, GraduationCap, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+// True Royal Blue
+const ROYAL_BLUE = "#1E3A5F";
+
 interface DarkNeoSidebarProps {
     profile: any;
     user: any;
@@ -17,32 +20,34 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="space-y-6 sticky top-24"
+            className="space-y-4 sticky top-24"
         >
             {/* ABOUT CARD */}
-            <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white/10 rounded-2xl p-5 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.1)] relative overflow-hidden">
-                <h3 className="font-black text-base mb-4 flex items-center gap-2 uppercase tracking-wide text-black dark:text-white">
-                    <span className="w-8 h-8 bg-black dark:bg-white text-white dark:text-black rounded-lg flex items-center justify-center border-2 border-black dark:border-white">
-                        <User className="w-4 h-4" />
+            <div className="bg-card border border-border/20 rounded-xl p-4 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#1E3A5F]" />
+
+                <h3 className="font-black text-sm mb-3 flex items-center gap-2 uppercase tracking-tight text-foreground">
+                    <span className="w-6 h-6 bg-[#1E3A5F] text-white rounded flex items-center justify-center">
+                        <User className="w-3 h-3" />
                     </span>
-                    İstatistikler
+                    Hakkında
                 </h3>
 
-                <div className="space-y-3">
-                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="zinc" />
-                    <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="zinc" />
-                    <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="zinc" />
+                <div className="space-y-2 text-xs font-bold">
+                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="blue" />
+                    <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="cyan" />
+                    <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="yellow" />
                 </div>
 
                 {profile?.level && (
-                    <div className="mt-5 pt-4 border-t-2 border-black/5 dark:border-white/5">
-                        <div className="flex justify-between items-center mb-2">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Seviye</p>
-                            <p className="text-xl font-black text-black dark:text-white">LVL {profile.level}</p>
+                    <div className="mt-4 pt-3 border-t border-border/20">
+                        <div className="flex justify-between items-center mb-1.5">
+                            <p className="text-[10px] font-black text-muted-foreground uppercase">Seviye</p>
+                            <p className="text-lg font-black text-[#1E3A5F]">LVL {profile.level}</p>
                         </div>
-                        <div className="w-full h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden border border-black/5 dark:border-white/5">
+                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-yellow-400"
+                                className="h-full bg-[#1E3A5F]"
                                 style={{ width: `${(profile.xp_current / profile.xp_next) * 100}%` }}
                             />
                         </div>
@@ -51,62 +56,63 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             </div>
 
             {/* BADGES CARD */}
-            <div className="bg-zinc-100 dark:bg-zinc-950 border-2 border-black/10 dark:border-white/10 rounded-2xl p-5 relative overflow-hidden group">
+            <div className="bg-[#1E3A5F]/10 border border-[#1E3A5F]/30 rounded-xl p-4 relative overflow-hidden">
+                <div className="absolute -right-4 -bottom-4 opacity-10">
+                    <Award className="w-24 h-24 rotate-12 text-[#1E3A5F]" />
+                </div>
 
-                <h3 className="font-black text-base mb-4 flex items-center gap-2 uppercase tracking-wide text-black dark:text-white relative z-10">
-                    <span className="w-8 h-8 bg-black dark:bg-white text-white dark:text-black rounded-lg flex items-center justify-center border-2 border-black dark:border-white">
-                        <Award className="w-4 h-4" />
+                <h3 className="font-black text-sm mb-3 flex items-center gap-2 uppercase tracking-tight text-foreground relative z-10">
+                    <span className="w-6 h-6 bg-[#1E3A5F] text-white rounded flex items-center justify-center">
+                        <Award className="w-3 h-3" />
                     </span>
                     Rozetler
                 </h3>
 
                 {userBadges && userBadges.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-2 relative z-10">
+                    <div className="grid grid-cols-4 gap-1.5 relative z-10">
                         {userBadges.map((badgeObj: any, index: number) => {
                             const badge = badgeObj.badges;
                             return (
                                 <div
                                     key={index}
-                                    className="aspect-square bg-white dark:bg-zinc-900 rounded-xl border-2 border-black/5 dark:border-white/5 flex items-center justify-center relative group/badge cursor-pointer hover:border-black dark:hover:border-white transition-all shadow-sm hover:shadow-md"
+                                    className="aspect-square bg-[#1E3A5F]/30 rounded-lg border border-[#1E3A5F]/50 flex items-center justify-center relative group cursor-pointer hover:bg-[#1E3A5F]/50 transition-colors"
                                     title={badge.name}
                                 >
                                     {badge.icon ? (
-                                        <div className="text-xl">{badge.icon}</div>
+                                        <div className="text-lg">{badge.icon}</div>
                                     ) : (
-                                        <Shield className="w-5 h-5 text-zinc-400" />
+                                        <Shield className="w-4 h-4 text-foreground/70" />
                                     )}
-                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] font-bold px-2 py-1 rounded border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                                         {badge.name}
                                     </div>
                                 </div>
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-black/5 dark:bg-white/5 rounded-xl border border-transparent flex items-center justify-center">
-                                <div className="w-1.5 h-1.5 rounded-full bg-black/10 dark:bg-white/10" />
+                            <div key={`empty-${i}`} className="aspect-square bg-[#1E3A5F]/10 rounded-lg border border-[#1E3A5F]/20 flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#1E3A5F]/30" />
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-6 relative z-10 bg-white dark:bg-zinc-900 rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                        <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <AlertCircle className="w-5 h-5 text-zinc-400" />
+                    <div className="text-center py-4 relative z-10">
+                        <div className="w-10 h-10 bg-[#1E3A5F]/30 rounded-full flex items-center justify-center mx-auto mb-2 border border-[#1E3A5F]/50">
+                            <AlertCircle className="w-5 h-5 text-[#1E3A5F]" />
                         </div>
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase">Henüz rozet yok</p>
+                        <p className="text-[10px] font-bold text-muted-foreground">Henüz rozet kazanılmadı.</p>
                     </div>
                 )}
             </div>
 
             {/* COMMUNITY LINK */}
-            <div className="bg-[#FACC15] border-2 border-black dark:border-white/20 rounded-2xl p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all cursor-pointer group">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] font-black uppercase text-black/60 mb-1">Topluluk</p>
-                        <h3 className="text-lg font-black text-black leading-tight">Katkı Kuralları &<br />Rozet Sistemi</h3>
-                    </div>
-                    <div className="bg-black text-white w-10 h-10 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform">
-                        <GraduationCap className="w-5 h-5" />
-                    </div>
+            <div className="bg-yellow-500 border border-black/10 rounded-xl p-3 shadow-[2px_2px_0_#1E3A5F] flex items-center justify-between hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_#1E3A5F] transition-all cursor-pointer">
+                <div>
+                    <p className="text-[10px] font-bold uppercase text-black/60">Topluluk</p>
+                    <h3 className="text-sm font-black text-black">Katkı Kuralları</h3>
+                </div>
+                <div className="bg-black/10 p-1.5 rounded-lg">
+                    <GraduationCap className="w-4 h-4 text-black" />
                 </div>
             </div>
         </motion.div>
@@ -114,15 +120,20 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
 }
 
 function StatRow({ icon: Icon, label, value, color }: any) {
+    const colorClasses = {
+        blue: "text-[#1E3A5F]",
+        cyan: "text-cyan-500",
+        yellow: "text-yellow-500",
+        pink: "text-pink-500"
+    };
+
     return (
-        <div className="flex justify-between items-center border-b border-black/5 dark:border-white/5 pb-2 last:border-0 last:pb-0">
-            <span className="flex items-center gap-2.5 text-zinc-500 dark:text-zinc-400 text-xs font-bold">
-                <div className="p-1 rounded bg-zinc-100 dark:bg-zinc-800">
-                    <Icon className="w-3.5 h-3.5 text-black dark:text-white" />
-                </div>
+        <div className="flex justify-between items-center border-b border-border/20 pb-2">
+            <span className="flex items-center gap-2 text-muted-foreground">
+                <Icon className={cn("w-4 h-4", colorClasses[color as keyof typeof colorClasses])} />
                 {label}
             </span>
-            <span className="text-black dark:text-white bg-black/5 dark:bg-white/10 px-2.5 py-1 rounded-md border border-transparent font-black text-xs min-w-[30px] text-center">
+            <span className="text-foreground bg-muted px-2 py-0.5 rounded border border-border/20 font-bold">
                 {value}
             </span>
         </div>

@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, MessageCircle, Bookmark, FileText } from "lucide-react";
+import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
+
+// True Royal Blue
+const ROYAL_BLUE = "#1E3A5F";
 
 interface DarkNeoFeedProps {
     articles: any[];
@@ -35,11 +38,11 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutGrid },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#1E3A5F]" },
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-cyan-600" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: Bookmark },
-            { id: "drafts", label: "Taslaklar", icon: FileText }
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-pink-600" },
+            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-500" }
         ] : [])
     ];
 
@@ -62,42 +65,43 @@ export function DarkNeoFeed({
     const feedItems = getFeedItems(activeTab);
 
     return (
-        <div className="w-full space-y-6">
-            {/* CLEAN TABS */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-                {tabs.map((tab) => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
+        <div className="w-full space-y-4">
+            {/* MOBILE OPTIMIZED TABS - Horizontal scroll */}
+            <div className="bg-card border border-border/20 rounded-xl p-1.5 shadow-sm">
+                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
 
-                    return (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={cn(
-                                "relative flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap border-2",
-                                isActive
-                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[2px_2px_0px_rgba(0,0,0,0.2)]"
-                                    : "bg-white dark:bg-zinc-900 text-zinc-500 border-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                            )}
-                        >
-                            <Icon className="w-4 h-4" />
-                            {tab.label}
-                            {counts[tab.id as keyof typeof counts] > 0 && (
-                                <span className={cn(
-                                    "text-[10px] px-1.5 py-0.5 rounded-full ml-1",
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={cn(
+                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
                                     isActive
-                                        ? "bg-white/20 text-white dark:text-black"
-                                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-                                )}>
-                                    {counts[tab.id as keyof typeof counts]}
-                                </span>
-                            )}
-                        </button>
-                    );
-                })}
+                                        ? `${tab.color} text-white shadow-sm`
+                                        : "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+                                )}
+                            >
+                                <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
+                                <span className="hidden sm:inline">{tab.label}</span>
+                                <span className="sm:hidden">{tab.label.slice(0, 3)}</span>
+                                {counts[tab.id as keyof typeof counts] > 0 && (
+                                    <span className={cn(
+                                        "text-[10px] px-1.5 py-0.5 rounded",
+                                        isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
+                                    )}>
+                                        {counts[tab.id as keyof typeof counts]}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
-            {/* CONTENT AREA */}
+            {/* CONTENT */}
             <div className="min-h-[300px]">
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -105,41 +109,31 @@ export function DarkNeoFeed({
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.15 }}
                     >
-                        {activeTab === "posts" && (
-                            feedItems.length > 0 ? (
-                                <UnifiedFeed items={feedItems} />
-                            ) : (
-                                <EmptyState
-                                    icon={LayoutGrid}
-                                    label="Henüz Gönderi Yok"
-                                    description="Paylaştığın makale ve sorular burada görünecek."
-                                />
-                            )
-                        )}
+                        {activeTab === "posts" && <UnifiedFeed items={feedItems} />}
 
                         {activeTab === "replies" && (
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-white dark:bg-zinc-900 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl p-5 hover:border-black/10 dark:hover:border-white/10 transition-colors group">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-2 text-xs font-bold text-zinc-400 uppercase tracking-wider">
-                                                    <MessageCircle className="w-4 h-4" />
+                                        <div key={answer.id} className="bg-card border border-border/20 rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-pointer group active:scale-[0.99]">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
+                                                    <MessageCircle className="w-3.5 h-3.5 text-cyan-500" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
-                                                    <div className="flex items-center gap-1.5 bg-yellow-400/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full text-[10px] font-black uppercase">
-                                                        Kabul Edildi
+                                                    <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded text-[10px] font-black uppercase">
+                                                        ✓ Kabul
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-bold text-base text-black dark:text-white mb-3 group-hover:underline decoration-2 decoration-yellow-400 underline-offset-2 transition-all">
+                                            <h4 className="font-bold text-sm text-foreground mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed border-l-4 border-zinc-200 dark:border-zinc-800 pl-4 py-1">
-                                                {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
+                                            <div className="text-muted-foreground text-xs line-clamp-2 pl-3 border-l-2 border-border">
+                                                {answer.content.replace(/<[^>]*>?/gm, "")}
                                             </div>
                                         </div>
                                     ))
@@ -185,12 +179,12 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl bg-zinc-50/50 dark:bg-zinc-900/50">
-            <div className="w-16 h-16 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center mb-5 border-2 border-zinc-100 dark:border-zinc-700 shadow-sm">
-                <Icon className="w-7 h-7 text-zinc-400" />
+        <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border/30 rounded-xl bg-muted/30">
+            <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-4 border border-border/20">
+                <Icon className="w-6 h-6 text-muted-foreground" />
             </div>
-            <p className="text-black dark:text-white font-black text-lg mb-2">{label}</p>
-            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed mx-auto">{description}</p>
+            <p className="text-foreground font-black text-base mb-1">{label}</p>
+            <p className="text-muted-foreground text-xs max-w-[200px] leading-relaxed">{description}</p>
         </div>
     );
 }
