@@ -9,99 +9,118 @@ import {
     Library,
     FileText,
     ArrowRight,
+    Search,
     Atom,
-    Plus,
-    Activity,
-    Compass,
-    Divide
+    Rocket,
+    Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, Variants, AnimatePresence } from "framer-motion";
+import { motion, Variants } from "framer-motion";
+import { Meteors } from "@/components/magicui/meteors";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
+import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase-client";
+import { TiltCard } from "@/components/magicui/tilt-card";
 
 const container: Variants = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2
+            staggerChildren: 0.1
         }
     }
 };
 
 const item: Variants = {
-    hidden: { y: 20, opacity: 0, scale: 0.98 },
+    hidden: { y: 20, opacity: 0, scale: 0.95 },
     show: {
         y: 0,
         opacity: 1,
         scale: 1,
         transition: {
             type: "spring",
-            stiffness: 100,
+            stiffness: 120,
             damping: 15
         }
     }
 };
 
-interface BentoCardProps {
+interface FreshCardProps {
     title: string;
     description: string;
     href: string;
     icon: any;
     color: string;
-    className?: string;
-    delay?: number;
-    size?: "large" | "medium" | "small";
+    accentColor: string;
+    colSpan?: string;
+    showBorderBeam?: boolean;
 }
 
-function BentoCard({ title, description, href, icon: Icon, color, className, size = "medium" }: BentoCardProps) {
+function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", showBorderBeam }: FreshCardProps) {
     return (
         <motion.div
             variants={item}
-            className={cn(
-                "relative group overflow-hidden rounded-2xl border border-white/10 flex flex-col transition-all duration-500",
-                "bg-[#0a0a0a]/40 backdrop-blur-md",
-                "hover:border-white/30 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]",
-                className
-            )}
+            className={cn("relative group h-full perspective-1000", colSpan)}
+            whileHover={{ y: -5, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
         >
-            <Link href={href} className="flex flex-col h-full p-5 sm:p-7 relative z-10">
-                {/* Accent Glow */}
-                <div className={cn(
-                    "absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[80px] opacity-10 group-hover:opacity-25 transition-opacity duration-700",
-                    color
-                )} />
+            <Link href={href} className="block h-full">
+                <TiltCard className="h-full" rotationFactor={12}>
+                    <div className="
+                        relative h-full 
+                        bg-white 
+                        border-[3px] border-black 
+                        rounded-xl 
+                        shadow-[3px_3px_0px_0px_#000] 
+                        group-hover:shadow-[6px_6px_0px_0px_#000] 
+                        group-hover:-translate-y-0.5 group-hover:translate-x-0.5
+                        transition-all duration-200 ease-out
+                        flex flex-col
+                        overflow-hidden
+                    ">
+                        {showBorderBeam && (
+                            <BorderBeam
+                                size={300}
+                                duration={8}
+                                delay={0}
+                                borderWidth={3}
+                                colorFrom="#FACC15"
+                                colorTo="#FB7185"
+                            />
+                        )}
 
-                <div className="flex items-start justify-between mb-4">
-                    <div className={cn(
-                        "w-12 h-12 flex items-center justify-center rounded-xl border border-white/20 shadow-lg relative overflow-hidden",
-                        "bg-white/5 group-hover:bg-white/10 transition-colors"
-                    )}>
-                        <Icon className="w-6 h-6 text-white stroke-[2px]" />
-                        <div className={cn("absolute inset-0 opacity-20", color)} />
+                        {/* Decorative top bar */}
+                        <div className={cn("h-4 w-full border-b-[3px] border-black", color)}></div>
+
+                        <div className="px-5 py-5 flex flex-col justify-between h-full">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className={cn(
+                                    "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black shadow-[2px_2px_0px_0px_#000]",
+                                    color
+                                )}>
+                                    <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
+                                </div>
+                                <div className="
+                                    w-7 h-7 rounded-full border-[2px] border-black flex items-center justify-center
+                                    bg-transparent group-hover:bg-black transition-colors duration-200
+                                ">
+                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl md:text-2xl font-black text-black uppercase mb-1 leading-none tracking-tight">
+                                    <GlitchText text={title} className="block" />
+                                </h3>
+                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
+                                    {description}
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center bg-white/5 group-hover:bg-white text-white group-hover:text-black transition-all duration-300">
-                        <ArrowRight className="w-4 h-4 translate-x-[1px]" />
-                    </div>
-                </div>
-
-                <div className="mt-auto">
-                    <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter mb-2 group-hover:tracking-normal transition-all duration-500">
-                        {title}
-                    </h3>
-                    <p className="text-zinc-400 font-medium text-xs sm:text-sm leading-relaxed max-w-[90%]">
-                        {description}
-                    </p>
-                </div>
-
-                <BorderBeam
-                    size={200}
-                    duration={8}
-                    className="opacity-0 group-hover:opacity-100"
-                />
+                </TiltCard>
             </Link>
         </motion.div>
     );
@@ -123,7 +142,9 @@ export default function PaylasPage() {
                     .single();
 
                 if (profile) {
-                    setUserName(profile.full_name || profile.username || "Kaşif");
+                    setUserName(profile.full_name || profile.username || "Bilim İnsanı");
+                } else {
+                    setUserName("Bilim İnsanı");
                 }
             }
             setLoaded(true);
@@ -132,171 +153,159 @@ export default function PaylasPage() {
     }, [supabase]);
 
     return (
-        <div className="min-h-screen bg-[#050505] pb-32 pt-16 md:pt-24 px-4 font-sans relative overflow-hidden selection:bg-yellow-400/30">
+        <div className="min-h-screen bg-background pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
 
-            {/* SCIENTIFIC HUD OVERLAY */}
-            <div className="absolute inset-0 pointer-events-none opacity-20 pointer-events-none z-0">
-                {/* Grid Lines */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            {/* TEXTURED PAPER BACKGROUND */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none z-0 mix-blend-multiply"
+                style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                }}
+            ></div>
 
-                {/* Coordinates & Formulas */}
-                <div className="absolute top-20 right-10 flex flex-col items-end gap-1 font-mono text-[8px] text-white/40 uppercase tracking-widest leading-none">
-                    <span>COORD_SYS: CAR_3D</span>
-                    <span>LAT: 41.0082° N</span>
-                    <span>LON: 28.9784° E</span>
-                    <span className="mt-4 text-[10px] text-blue-400/30">E = mc²</span>
-                    <span className="text-yellow-400/20">F = G(m₁m₂/r²)</span>
-                    <span className="text-pink-400/20">∇ × E = -∂B/∂t</span>
-                </div>
+            {/* METEORS - Subtle Background Motion */}
+            <Meteors number={15} />
 
-                <div className="absolute bottom-40 left-10 opacity-20 hidden md:block">
-                    <div className="flex flex-col gap-4">
-                        <div className="w-1 h-20 bg-gradient-to-b from-transparent via-white/50 to-transparent" />
-                        <div className="w-20 h-1 bg-gradient-to-r from-white/50 to-transparent" />
-                    </div>
-                </div>
-            </div>
+            <div className="max-w-[900px] mx-auto relative z-10">
 
-            <div className="max-w-6xl mx-auto relative z-10">
-                {/* Header Section */}
-                <div className="mb-12 md:mb-16">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <Activity className="w-4 h-4 text-emerald-500" />
-                                <span className="text-[10px] font-bold text-emerald-500/80 uppercase tracking-[0.3em]">Merkez Operasyon Aktif</span>
-                            </div>
-                            <h1 className="text-5xl md:text-7xl font-black text-white leading-[0.85] tracking-tighter uppercase mb-4">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-8 md:mb-10 pt-4 relative"
+                >
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
+                        <div className="flex flex-col">
+                            <h1 className="text-4xl md:text-6xl font-black text-foreground leading-[0.9] tracking-tighter uppercase">
                                 Paylaşım<br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-200 to-white">Merkezi</span>
                             </h1>
-                            <div className="h-1 w-24 bg-yellow-400 rounded-full" />
+                            <div className="flex items-center">
+                                <HyperText
+                                    text="MERKEZİ"
+                                    className="text-4xl md:text-6xl font-black text-[#FACC15] leading-[0.9] tracking-tighter uppercase text-stroke-black drop-shadow-[3px_3px_0px_#000]"
+                                    duration={1200}
+                                />
+                            </div>
                         </div>
-
-                        <div className="flex flex-col items-start md:items-end gap-3">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={loaded ? "loaded" : "loading"}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-2xl max-w-xs"
-                                >
-                                    <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-1.5 opacity-60 flex items-center gap-2">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                                        Sistem Karşılama:
-                                    </p>
-                                    <p className="text-white text-base font-black leading-tight">
-                                        {loaded ? (
-                                            <>Merhaba <span className="text-yellow-400">{userName || "Kaşif"}</span>, bugün evrene ne katmak istersin?</>
-                                        ) : (
-                                            "Veriler senkronize ediliyor..."
-                                        )}
-                                    </p>
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-3 rounded-lg border-2 border-border/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]"
+                        >
+                            {loaded ? (
+                                userName ?
+                                    `Bugün ne paylaşmak istersin, ${userName}?` :
+                                    "Bugün ne paylaşmak istersin?"
+                            ) : (
+                                "Yükleniyor..."
+                            )}
+                        </motion.p>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Grid - Bento Layout */}
+                {/* Grid - Compact Mobile */}
                 <motion.div
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 grid-rows-[auto] gap-4"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
                 >
-                    {/* 1. Article - BIG HERO (2x2) */}
-                    <BentoCard
+                    {/* 1. Article - Yellow (Full Width Mobile) */}
+                    <FreshCard
                         title="MAKALE"
-                        description="Kapsamlı bilimsel yazılar ve derinlemesine incelemeler kaleme al."
+                        description="Derinlemesine içerik üret."
                         href="/makale/yeni"
                         icon={FileText}
-                        color="bg-yellow-500"
-                        className="sm:col-span-2 sm:row-span-2 min-h-[300px]"
+                        color="bg-[#FACC15]"
+                        accentColor="#FACC15"
+                        colSpan="col-span-2 lg:col-span-2"
+                        showBorderBeam={true}
                     />
 
-                    {/* 2. Question - Medium */}
-                    <BentoCard
+                    {/* 2. Question - Pink */}
+                    <FreshCard
                         title="SORU"
-                        description="Zihnine takılanları topluluğa sor, cevapları keşfet."
+                        description="Topluluğa danış."
                         href="/forum"
                         icon={MessageCircle}
-                        color="bg-pink-500"
-                        className="sm:col-span-2 lg:col-span-1"
+                        color="bg-[#FB7185]"
+                        accentColor="#FB7185"
                     />
 
-                    {/* 3. Experiment - Medium */}
-                    <BentoCard
+                    {/* 3. Experiment - Green */}
+                    <FreshCard
                         title="DENEY"
-                        description="Laboratuvardan notlar ve metodolojik sonuçlar."
+                        description="Sonuçları aktar."
                         href="/deney/yeni"
                         icon={FlaskConical}
-                        color="bg-emerald-500"
-                        className="sm:col-span-2 lg:col-span-1"
+                        color="bg-[#4ADE80]"
+                        accentColor="#4ADE80"
                     />
 
-                    {/* 4. Book - Wide Bottom Section */}
-                    <BentoCard
+                    {/* 4. Book - Blue */}
+                    <FreshCard
                         title="KİTAP"
-                        description="Bilimsel literatür ve kütüphane analizlerini paylaş."
+                        description="Kütüphane notları."
                         href="/kitap-inceleme/yeni"
                         icon={Library}
-                        color="bg-blue-500"
-                        className="sm:col-span-2 lg:col-span-2"
+                        color="bg-[#60A5FA]"
+                        accentColor="#60A5FA"
                     />
 
-                    {/* 5. Term - Small */}
-                    <BentoCard
+                    {/* 5. Term - Purple */}
+                    <FreshCard
                         title="TERİM"
-                        description="Sözlüğe teknik tanımlar ve açıklamalar ekle."
+                        description="Sözlüğe katkı sağla."
                         href="/sozluk"
                         icon={BookOpen}
-                        color="bg-purple-500"
-                        className="sm:col-span-1"
+                        color="bg-[#C084FC]"
+                        accentColor="#C084FC"
                     />
 
-                    {/* 6. Blog - Small */}
-                    <BentoCard
+                    {/* 6. Blog (New? since user asked for standard cards) - Orange */}
+                    <FreshCard
                         title="BLOG"
-                        description="Kısa notlar ve kişisel bilimsel yolculuğun."
+                        description="Serbest yazı."
                         href="/blog"
-                        icon={Activity}
-                        color="bg-orange-500"
-                        className="sm:col-span-1"
+                        icon={FileText}
+                        color="bg-orange-400"
+                        accentColor="#fb923c"
                     />
+
                 </motion.div>
 
-                {/* CMD PROMPT STYLE SEARCH/CTA */}
+                {/* Footer / Search Link */}
                 <motion.div
                     variants={item}
                     initial="hidden"
                     animate="show"
-                    className="mt-12"
+                    className="mt-6 md:mt-8 pb-8"
                 >
-                    <Link href="/ara" className="group">
-                        <div className="relative h-20 rounded-2xl bg-white/5 border border-white/10 hover:border-white/30 transition-all flex items-center justify-between px-8 overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                            <div className="flex items-center gap-6 relative z-10">
-                                <div className="hidden sm:flex items-center gap-2 text-zinc-500 font-mono text-sm uppercase">
-                                    <span className="text-white/30">system@fizikhub</span>
-                                    <span>:</span>
-                                    <span className="text-blue-400">~/search</span>
-                                    <span className="text-white/30">$</span>
-                                </div>
-                                <span className="text-white text-lg font-black tracking-tight group-hover:translate-x-1 transition-transform">
-                                    Daha fazlasını keşfetmek için tara...
-                                </span>
-                            </div>
-
-                            <div className="bg-white/10 group-hover:bg-white text-white group-hover:text-black h-10 px-6 rounded-xl border border-white/20 flex items-center gap-2 transition-all font-black text-xs uppercase tracking-widest shadow-xl">
-                                Keşfe Çık
-                                <ArrowRight className="w-3.5 h-3.5" />
+                    <Link href="/ara" className="block group">
+                        <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]">
+                            <span className="font-bold text-sm md:text-lg flex items-center gap-3">
+                                <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full"></div>
+                                <span className="font-mono text-gray-300">_komut_satiri:</span>
+                                <span className="text-white">Daha fazlasını ara...</span>
+                            </span>
+                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff]">
+                                ENTER
                             </div>
                         </div>
                     </Link>
                 </motion.div>
+
             </div>
+
+            <style jsx global>{`
+                .text-stroke-black {
+                    -webkit-text-stroke: 1.5px black;
+                }
+                @media (min-width: 768px) {
+                    .text-stroke-black {
+                        -webkit-text-stroke: 2px black;
+                    }
+                }
+            `}</style>
         </div>
     );
 }

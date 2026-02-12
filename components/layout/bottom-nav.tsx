@@ -3,16 +3,10 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import {
-    HouseLine,
-    BookOpenText,
-    ChatTeardropDots,
-    User,
-    Plus
-} from "@phosphor-icons/react";
+import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -36,121 +30,100 @@ export function BottomNav() {
     }, [lastScrollY]);
 
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.div
-                    initial={{ y: "100%" }}
-                    animate={{ y: "0%" }}
-                    exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 28, stiffness: 350, mass: 0.7 }}
-                    className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
-                >
-                    <nav className={cn(
-                        "w-full h-[50px] relative",
-                        "flex items-center justify-around px-2 pb-safe",
-                        // "Liquid Glass 70% Over Zinc"
-                        "bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl",
-                        "border-t-[1.5px] border-black/10 dark:border-white/10",
-                        "shadow-[0_-8px_30px_rgba(0,0,0,0.12)]"
-                    )}>
+        <div className={cn(
+            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
+        )}>
+            <nav className="
+                w-full
+                h-[50px]
+                bg-white dark:bg-zinc-950
+                border-t-[3px] border-black dark:border-white/20
+                flex items-center justify-around
+                px-2
+                pb-safe
+                relative
+                shadow-[0_-3px_0px_0px_rgba(0,0,0,1)]
+            ">
+                <NavItem
+                    href="/"
+                    icon={Home}
+                    label="Akış"
+                    isActive={pathname === "/"}
+                />
 
-                        <NavItem
-                            href="/"
-                            icon={HouseLine}
-                            isActive={pathname === "/"}
-                        />
+                <NavItem
+                    href="/makale"
+                    icon={BookOpen}
+                    label="Blog"
+                    isActive={pathname.startsWith("/makale")}
+                />
 
-                        <NavItem
-                            href="/makale"
-                            icon={BookOpenText}
-                            isActive={pathname.startsWith("/makale")}
-                        />
+                <div className="relative -top-3">
+                    <ViewTransitionLink
+                        href="/paylas"
+                        className="
+                            flex items-center justify-center
+                            w-11 h-11
+                            bg-[#FACC15]
+                            border-[3px] border-black
+                            rounded-xl
+                            shadow-[4px_4px_0px_0px_#000]
+                            active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                            transition-all
+                        "
+                    >
+                        <Plus className="w-7 h-7 text-black stroke-[4px]" />
+                    </ViewTransitionLink>
+                </div>
 
-                        {/* CENTER ACTION - COMPACT NEO-BRUTALIST CIRCLE */}
-                        <div className="relative -top-4">
-                            <ViewTransitionLink
-                                href="/paylas"
-                                onClick={(e) => {
-                                    if (pathname === "/paylas") {
-                                        e.preventDefault();
-                                        window.scrollTo({ top: 0, behavior: "smooth" });
-                                    }
-                                }}
-                                className="
-                                    group flex items-center justify-center
-                                    w-10 h-10
-                                    bg-[#FACC15]
-                                    rounded-full
-                                    border-[1.5px] border-black dark:border-white/40
-                                    shadow-[2.5px_2.5px_0px_#000] dark:shadow-[2.5px_2.5px_0px_rgba(255,255,255,0.2)]
-                                    active:shadow-none active:translate-x-[1.5px] active:translate-y-[1.5px]
-                                    hover:scale-110 active:scale-90
-                                    transition-all duration-300 ease-out
-                                "
-                            >
-                                <Plus weight="bold" className="w-5 h-5 text-black" />
-                            </ViewTransitionLink>
-                        </div>
+                <NavItem
+                    href="/forum"
+                    icon={MessageCircle}
+                    label="Forum"
+                    isActive={pathname.startsWith("/forum")}
+                />
 
-                        <NavItem
-                            href="/forum"
-                            icon={ChatTeardropDots}
-                            isActive={pathname.startsWith("/forum")}
-                        />
-
-                        <NavItem
-                            href="/profil"
-                            icon={User}
-                            isActive={pathname.startsWith("/profil")}
-                        />
-                    </nav>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                <NavItem
+                    href="/profil"
+                    icon={User}
+                    label="Profil"
+                    isActive={pathname.startsWith("/profil")}
+                />
+            </nav>
+        </div>
     );
 }
 
-function NavItem({ href, icon: Icon, isActive }: { href: string; icon: any; isActive: boolean }) {
+function NavItem({ href, icon: Icon, label, isActive }: { href: string; icon: any; label: string; isActive: boolean }) {
     return (
         <ViewTransitionLink
             href={href}
-            onClick={(e) => {
-                if (isActive) {
-                    e.preventDefault();
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                }
-            }}
-            className="flex flex-col items-center justify-center w-12 h-10 relative group"
-        >
-            <div className="relative flex items-center justify-center">
-                {/* Refined Liquid Glow */}
-                {isActive && (
-                    <motion.div
-                        layoutId="liquidGlow"
-                        className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-full blur-md scale-125"
-                        transition={{ type: "spring", stiffness: 400, damping: 40 }}
-                    />
-                )}
-
-                <Icon
-                    weight={isActive ? "bold" : "regular"}
-                    className={cn(
-                        "w-6 h-6 transition-all duration-400 cubic-bezier(0.23, 1, 0.32, 1)",
-                        isActive
-                            ? "text-black dark:text-white scale-110"
-                            : "text-zinc-600/90 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white group-hover:scale-110"
-                    )}
-                />
-            </div>
-
-            {/* Active Pixel Dot */}
-            {isActive && (
-                <motion.div
-                    layoutId="activeDot"
-                    className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-                    transition={{ type: "spring", stiffness: 600, damping: 30 }}
-                />
+            className={cn(
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative py-0.5",
+                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-400"
             )}
+        >
+            <motion.div
+                initial={false}
+                animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
+                className="flex flex-col items-center gap-0"
+            >
+                <div className={cn(
+                    "p-1.5 transition-all duration-200",
+                    isActive && "bg-[#FACC15] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] rounded-lg -rotate-3"
+                )}>
+                    <Icon className={cn(
+                        "w-4 h-4 transition-all text-black dark:text-white",
+                        isActive ? "stroke-[3px]" : "stroke-[2.5px]"
+                    )} />
+                </div>
+                {!isActive && (
+                    <span className="text-[7.5px] font-black uppercase tracking-tighter opacity-70 mt-1">
+                        {label}
+                    </span>
+                )}
+            </motion.div>
         </ViewTransitionLink>
     );
 }

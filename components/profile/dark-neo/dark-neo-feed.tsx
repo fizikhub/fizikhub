@@ -2,15 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-    ListBullets,
-    ChatTeardropDots,
-    BookmarkSimple,
-    FileText,
-    MagnifyingGlass,
-    FadersHorizontal,
-    CaretDown
-} from "@phosphor-icons/react";
+import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 
@@ -46,10 +38,10 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: ListBullets, color: "bg-[#1E3A5F]" },
-        { id: "replies", label: "Yanıtlar", icon: ChatTeardropDots, color: "bg-cyan-600" },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#1E3A5F]" },
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-cyan-600" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: BookmarkSimple, color: "bg-pink-600" },
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-pink-600" },
             { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-500" }
         ] : [])
     ];
@@ -86,13 +78,13 @@ export function DarkNeoFeed({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={cn(
-                                    "relative flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
+                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
                                     isActive
-                                        ? `${tab.color} text-white shadow-md active:scale-95`
-                                        : "bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground active:scale-95"
+                                        ? `${tab.color} text-white shadow-sm`
+                                        : "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
-                                <Icon weight={isActive ? "bold" : "regular"} className={cn("w-3.5 h-3.5")} />
+                                <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
                                 {tab.label}
                                 {counts[tab.id as keyof typeof counts] > 0 && (
                                     <span className={cn(
@@ -127,7 +119,7 @@ export function DarkNeoFeed({
                                         <div key={answer.id} className="bg-card border border-border/20 rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-pointer group active:scale-[0.99]">
                                             <div className="flex items-start justify-between mb-2">
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                                                    <ChatTeardropDots weight="bold" className="w-3.5 h-3.5 text-cyan-500" />
+                                                    <MessageCircle className="w-3.5 h-3.5 text-cyan-500" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
@@ -146,7 +138,7 @@ export function DarkNeoFeed({
                                     ))
                                 ) : (
                                     <EmptyState
-                                        icon={ChatTeardropDots}
+                                        icon={MessageCircle}
                                         label="Henüz Yanıt Yok"
                                         description="Henüz hiçbir soruya yanıt verilmemiş."
                                     />
@@ -159,7 +151,7 @@ export function DarkNeoFeed({
                                 <UnifiedFeed items={feedItems} />
                             ) : (
                                 <EmptyState
-                                    icon={BookmarkSimple}
+                                    icon={Bookmark}
                                     label="Kayıtlı İçerik Yok"
                                     description="Beğendiğin içerikleri kaydet, sonra buradan ulaş."
                                 />
@@ -188,7 +180,7 @@ function EmptyState({ icon: Icon, label, description }: { icon: any; label: stri
     return (
         <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border/30 rounded-xl bg-muted/30">
             <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-4 border border-border/20">
-                <Icon weight="bold" className="w-6 h-6 text-muted-foreground" />
+                <Icon className="w-6 h-6 text-muted-foreground" />
             </div>
             <p className="text-foreground font-black text-base mb-1">{label}</p>
             <p className="text-muted-foreground text-xs max-w-[200px] leading-relaxed">{description}</p>
