@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { completeOnboarding } from "@/app/actions/onboarding";
+import { completeOnboarding } from "@/app/auth/actions";
 import { MessageCircle, Feather, BookOpen, Menu, Star, ChevronRight, X, Sparkles, Home, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -288,7 +288,7 @@ export function OnboardingTour() {
             setShowLiftoff(true);
             // Complete after animation
             setTimeout(async () => {
-                await completeOnboarding();
+                await completeOnboarding(new FormData());
                 setIsVisible(false);
             }, 6500); // Animasyon süresi + fade out
         } else {
