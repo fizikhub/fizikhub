@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
-import { Logo } from "@/components/ui/logo";
+import { DankLogo } from "@/components/brand/dank-logo"; // Swapped to DankLogo
+import { StarBackground } from "@/components/background/star-background"; // Added StarBackground
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -118,55 +119,54 @@ export function ModernLogin() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent font-sans relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
-            {/* --- STATIC BACKGROUND --- */}
-            <div className="fixed inset-0 z-0 bg-black">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/40 via-[#050505] to-black" />
-                <div className="absolute inset-0 opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-                <div className="absolute inset-0 bg-[url('/assets/stars.svg')] opacity-30" style={{ backgroundSize: '200px' }} />
-            </div>
-
-            {/* Vignette Overlay for focus */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_100%)] pointer-events-none opacity-80 z-0" />
+            {/* --- 10,000 STAR BACKGROUND --- */}
+            <StarBackground />
 
             {/* Main Card */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 1.0, ease: "easeOut" }}
-                className="w-full max-w-[360px] relative z-10"
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
+                // "Chubby" and "Short" adjustment: max-w increased, vertical padding optimized
+                className="w-full max-w-[420px] relative z-10"
             >
-                {/* Glassmorphism Container */}
-                <div className="relative group perspective-1000">
+                {/* Liquid Glassmorphism Container with Neo-Brutalist Shadow */}
+                <div className="relative group">
 
-                    {/* Amber/Gold Glow behind the card */}
-                    <div className="absolute -inset-1 bg-gradient-to-br from-orange-600/20 via-amber-600/10 to-red-600/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    {/* Neo-Brutalist Shadow Layer (Black & Solid) */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                    {/* The Card Itself */}
-                    <div className="bg-black/20 backdrop-blur-lg border border-white/10 p-6 rounded-xl shadow-2xl relative overflow-hidden">
+                    {/* The Card Itself - "Chubby" rounded-[2.5rem] */}
+                    <div className="bg-white/5 backdrop-blur-3xl border border-white/20 p-8 sm:p-10 rounded-[2.5rem] relative overflow-hidden">
 
-                        {/* Subtle Header Highlight */}
-                        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
+                        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-orange-600/10 blur-[100px] rounded-full pointer-events-none" />
 
-                        {/* Header with LOGO */}
-                        <div className="text-center mb-8 relative">
-                            <div className="inline-flex justify-center mb-5 transform hover:scale-105 transition-transform duration-300">
-                                <Logo className="text-white h-10 w-auto drop-shadow-[0_0_15px_rgba(255,165,0,0.5)]" />
+                        {/* Top Accent Line */}
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
+
+                        {/* Header with DankLogo (Replaced old rocket/text) */}
+                        <div className="text-center mb-6 relative">
+                            <div className="inline-flex justify-center mb-2 transform hover:scale-110 transition-transform duration-500">
+                                <DankLogo />
                             </div>
-
-                            <h1 className="text-xl font-bold text-white uppercase tracking-[0.2em] leading-none drop-shadow-md font-mono">
-                                {isSignUp ? "Kayıt Terminali" : "Giriş Modülü"}
-                            </h1>
-                            <div className="mt-2 w-12 h-[2px] bg-orange-500/50 mx-auto rounded-full" />
+                            {/* Title removed/simplified as requested to use the logo primarily */}
+                            <div className="h-[2px] w-24 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-4" />
                         </div>
 
-                        {/* Social Login */}
+                        {/* Social Login - Optimized height */}
                         <Button
                             type="button"
                             onClick={() => handleOAuthLogin('google')}
                             disabled={loading}
-                            className="w-full h-10 bg-white/5 hover:bg-white/10 text-white font-medium border border-white/10 hover:border-white/30 backdrop-blur-sm transition-all rounded-md mb-6 flex items-center justify-center gap-3 text-xs uppercase tracking-widest group/btn"
+                            className="w-full h-12 bg-white/10 hover:bg-white/20 text-white font-bold border-2 border-white/10 hover:border-white/30 backdrop-blur-md transition-all rounded-2xl mb-6 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.2em] group/btn"
                         >
-                            <svg className="h-4 w-4 opacity-80 group-hover/btn:opacity-100 transition-opacity" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5 opacity-90 group-hover/btn:opacity-100 transition-opacity" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#ffff" />
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#ffff" />
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#ffff" />
@@ -177,25 +177,25 @@ export function ModernLogin() {
 
                         <div className="relative mb-6">
                             <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-white/5" />
+                                <span className="w-full border-t border-white/10" />
                             </div>
-                            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                                <span className="bg-transparent px-2 text-white/20">veya</span>
+                            <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em]">
+                                <span className="bg-transparent px-3 text-white/30 backdrop-blur-sm">veya</span>
                             </div>
                         </div>
 
-                        {/* Form */}
+                        {/* Form - Optimized spacing for "Shorter" look */}
                         <form onSubmit={handleEmailAuth} className="space-y-4">
                             <AnimatePresence mode="popLayout">
                                 {isSignUp && (
                                     <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        className="space-y-3 overflow-hidden"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="space-y-4 overflow-hidden"
                                     >
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold uppercase text-white/40 pl-1 tracking-wider">Kullanıcı Adı</Label>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Kullanıcı Adı</Label>
                                             <Input
                                                 placeholder="username"
                                                 value={username}
@@ -205,42 +205,42 @@ export function ModernLogin() {
                                                     setUsername(value);
                                                 }}
                                                 required
-                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 rounded-md transition-all font-mono text-xs"
+                                                className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                             />
                                         </div>
-                                        <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold uppercase text-white/40 pl-1 tracking-wider">İsim</Label>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">İsim</Label>
                                             <Input
                                                 placeholder="Ad Soyad"
                                                 value={fullName}
                                                 onChange={(e) => setFullName(e.target.value)}
                                                 required
-                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 rounded-md transition-all font-mono text-xs"
+                                                className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                             />
                                         </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
-                            <div className="space-y-1">
-                                <Label className="text-[10px] font-bold uppercase text-white/40 pl-1 tracking-wider">E-Posta</Label>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">E-Posta</Label>
                                 <Input
                                     type="email"
                                     placeholder="mail@ornek.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 rounded-md transition-all font-mono text-xs"
+                                    className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                 />
                             </div>
 
-                            <div className="space-y-1">
-                                <div className="flex justify-between items-center pl-1">
-                                    <Label className="text-[10px] font-bold uppercase text-white/40 tracking-wider">Şifre</Label>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center pl-2">
+                                    <Label className="text-[10px] font-black uppercase text-white/40 tracking-widest">Şifre</Label>
                                     {!isSignUp && (
                                         <Link
                                             href="/forgot-password"
-                                            className="text-[10px] font-bold text-orange-400/60 hover:text-orange-400 transition-colors"
+                                            className="text-[10px] font-black text-orange-500/60 hover:text-orange-500 transition-colors uppercase"
                                         >
                                             Unuttum?
                                         </Link>
@@ -252,14 +252,14 @@ export function ModernLogin() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/20 pr-9 rounded-md transition-all font-mono text-xs"
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 pr-12 rounded-2xl transition-all font-mono text-sm pl-4"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                                     >
-                                        {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
                                 </div>
                             </div>
@@ -271,17 +271,17 @@ export function ModernLogin() {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        className="flex items-start gap-2 py-1"
+                                        className="flex items-start gap-3 py-1 px-2"
                                     >
                                         <input
                                             type="checkbox"
                                             id="terms"
-                                            className="appearance-none w-3.5 h-3.5 border border-white/20 bg-white/5 rounded-sm checked:bg-orange-600 checked:border-orange-600 transition-colors cursor-pointer mt-0.5 shrink-0"
+                                            className="appearance-none w-5 h-5 border-2 border-white/20 bg-white/5 rounded-lg checked:bg-orange-600 checked:border-orange-600 transition-colors cursor-pointer mt-0.5 shrink-0"
                                             required
                                             onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
                                             onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
-                                        <label htmlFor="terms" className="text-[10px] text-white/40 leading-tight font-medium cursor-pointer select-none">
+                                        <label htmlFor="terms" className="text-[10px] text-white/40 leading-relaxed font-bold cursor-pointer select-none uppercase tracking-tighter">
                                             <span className="text-orange-500 hover:text-orange-400 transition-colors">Kullanım Şartlarını</span> okudum ve kabul ediyorum.
                                         </label>
                                     </motion.div>
@@ -289,7 +289,7 @@ export function ModernLogin() {
                             </AnimatePresence>
 
                             {/* Turnstile */}
-                            <div className="flex justify-center my-2 opacity-70 scale-90 origin-center grayscale hover:grayscale-0 transition-all">
+                            <div className="flex justify-center my-4 opacity-80 scale-90 translate-z-0 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                                 <div className="cf-turnstile"
                                     data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
                                     data-callback="onTurnstileSuccess"
@@ -300,33 +300,33 @@ export function ModernLogin() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-10 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-widest text-xs rounded-md border border-orange-400/20 shadow-[0_0_15px_rgba(234,88,12,0.3)] hover:shadow-[0_0_25px_rgba(234,88,12,0.5)] transition-all flex items-center justify-center gap-2"
+                                className="w-full h-14 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.3em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.4)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.6)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
                             >
                                 {loading ? (
-                                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                                    <Loader2 className="h-6 w-6 animate-spin text-white" />
                                 ) : (
                                     <>
-                                        {isSignUp ? "Hesabı Oluştur" : "Giriş Yap"}
-                                        <ArrowRight className="h-3.5 w-3.5" />
+                                        {isSignUp ? "Terminale Katıl" : "Giriş Yap"}
+                                        <ArrowRight className="h-4 w-4" />
                                     </>
                                 )}
                             </Button>
                         </form>
 
                         {/* Toggle */}
-                        <div className="mt-6 text-center">
+                        <div className="mt-8 text-center">
                             <button
                                 type="button"
                                 onClick={() => setIsSignUp(!isSignUp)}
-                                className="text-xs font-bold uppercase tracking-wide text-white/20 hover:text-white transition-colors"
+                                className="text-xs font-black uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors"
                             >
-                                {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz üye değil misin?"}
+                                {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz bir üye aramıza katılmadı mı?"}
                             </button>
                         </div>
                     </div>
 
-                    {/* Cinematic Bottom Light */}
-                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-3/4 h-20 bg-orange-500/20 blur-[50px] pointer-events-none" />
+                    {/* Exterior Glass Highlights */}
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 blur-3xl rounded-full pointer-events-none" />
                 </div>
             </motion.div>
         </div>
