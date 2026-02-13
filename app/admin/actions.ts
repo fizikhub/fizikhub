@@ -312,3 +312,48 @@ export async function deleteQuiz(id: string) {
     revalidatePath('/testler');
     return { success: true };
 }
+
+export async function getYoutubeDownloadUrl(url: string) {
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin) {
+        return { success: false, error: adminCheck.error };
+    }
+
+    try {
+        const response = await fetch("https://api.cobalt.tools/api/json", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                url: url,
+                videoQuality: "1080",
+                audioFormat: "mp3",
+                downloadMode: "auto",
+                filenameStyle: "pretty"
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === "error") {
+            return { success: false, error: data.text || "Video bilgisi alınamadı." };
+        }
+
+        if (data.status === "redirect" || data.status === "tunnel") {
+            return { success: true, url: data.url };
+        }
+
+        if (data.status === "picker") {
+            // Pick the first one for now or handle picker logic in UI
+            return { success: true, url: data.picker[0].url };
+        }
+
+        return { success: false, error: "Beklenmedik bir yanıt alındı." };
+    } catch (error) {
+        console.error("Youtube Download API Error:", error);
+        return { success: false, error: "Sunucu ile iletişim kurulamadı." };
+    }
+}
+

@@ -15,11 +15,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import NextImage from "next/image";
+import { getYoutubeDownloadUrl } from "../actions";
 
 export default function YoutubeDownloadPage() {
     const [url, setUrl] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [videoInfo, setVideoInfo] = useState<any>(null);
 
     const handleFetchInfo = async () => {
@@ -30,22 +31,17 @@ export default function YoutubeDownloadPage() {
 
         setIsLoading(true);
         try {
-            // Since we don't have a backend downloader yet, we'll simulate fetching info
-            // and then provide an external downloader service link for the actual download
-            // as server-side downloading is complex and requires specialized libraries.
-
-            // In a real scenario, this would call /api/admin/youtube-download/info
             const videoId = url.includes("v=") ? url.split("v=")[1].split("&")[0] : url.split("/").pop();
 
             setVideoInfo({
-                title: "YouTube Video Bilgisi Getiriliyor...",
+                title: "YouTube Video Hazır",
                 thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-                author: "Video Sahibi",
-                duration: "00:00",
+                author: "FizikHub Kurumsal",
+                duration: "HD Kalite",
                 videoId: videoId
             });
 
-            toast.success("Video bilgileri alındı!");
+            toast.success("Video kuyruğa eklendi!");
         } catch (error) {
             toast.error("Video bilgisi alınamadı");
         } finally {
@@ -53,21 +49,27 @@ export default function YoutubeDownloadPage() {
         }
     };
 
-    const handleDownload = () => {
-        if (!videoInfo) return;
+    const handleDownload = async () => {
+        if (!url) return;
 
-        // redirect to a reliable external service for now, or prepare for server-side
-        // const downloadUrl = `https://9xbuddy.com/process?url=${encodeURIComponent(url)}`;
-        // window.open(downloadUrl, "_blank");
+        setIsDownloading(true);
+        const toastId = toast.loading("Video işleniyor ve indirme bağlantısı oluşturuluyor...");
 
-        toast.info("İndirme işlemi hazırlanıyor...");
+        try {
+            const result = await getYoutubeDownloadUrl(url);
 
-        // Mock download logic
-        setTimeout(() => {
-            toast.success("İndirme linki oluşturuldu! (Simüle edildi)");
-            const fakeLink = `https://www.y2mate.com/tr/youtube/${videoInfo.videoId}`;
-            window.open(fakeLink, "_blank");
-        }, 1500);
+            if (result.success && result.url) {
+                toast.success("İndirme başlıyor!", { id: toastId });
+                // Direct browser download
+                window.open(result.url, "_self");
+            } else {
+                toast.error(result.error || "İndirme başlatılamadı.", { id: toastId });
+            }
+        } catch (error) {
+            toast.error("Bir hata oluştu.", { id: toastId });
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     return (
@@ -140,9 +142,14 @@ export default function YoutubeDownloadPage() {
                                 <div className="flex flex-wrap gap-2">
                                     <Button
                                         onClick={handleDownload}
+                                        disabled={isDownloading}
                                         className="bg-black dark:bg-white text-white dark:text-black hover:opacity-90 font-bold"
                                     >
-                                        <Download className="w-4 h-4 mr-2" />
+                                        {isDownloading ? (
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <Download className="w-4 h-4 mr-2" />
+                                        )}
                                         Videoyu İndir (MP4)
                                     </Button>
                                     <Button variant="outline" className="border-black/20">
