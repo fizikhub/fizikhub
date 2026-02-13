@@ -109,7 +109,7 @@ export default async function Home() {
       <ScrollProgress />
       <BackToTop />
 
-      <div className="container max-w-7xl mx-auto px-0 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+      <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
 
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
@@ -120,7 +120,7 @@ export default async function Home() {
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0 mt-4 md:mt-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-4 md:mt-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
