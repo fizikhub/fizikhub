@@ -141,7 +141,7 @@ export function ModernLogin() {
                     <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
                     {/* The Card Itself - "Chubby" rounded-[2.5rem] */}
-                    <div className="bg-white/5 backdrop-blur-3xl border border-white/20 p-8 sm:p-10 rounded-[2.5rem] relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-8 sm:p-10 rounded-[2.5rem] relative overflow-hidden">
 
                         {/* Internal Liquid Shine */}
                         <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
@@ -300,7 +300,7 @@ export function ModernLogin() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-14 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.3em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.4)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.6)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
+                                className="w-full h-14 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.3em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
                             >
                                 {loading ? (
                                     <Loader2 className="h-6 w-6 animate-spin text-white" />

@@ -16,7 +16,7 @@ export function DankLogo() {
                     width="220"
                     height="80"
                     viewBox="0 0 220 80"
-                    className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible"
+                    className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
@@ -30,10 +30,7 @@ export function DankLogo() {
                         dx="4"
                         dy="4"
                         style={{
-                            fill: "black",
-                            stroke: "black",
-                            strokeWidth: "8px",
-                            paintOrder: "stroke",
+                            fill: "rgba(0,0,0,0.5)",
                             fontFamily: "var(--font-outfit), sans-serif",
                             fontSize: "48px",
                             fontWeight: 900
@@ -63,7 +60,7 @@ export function DankLogo() {
                         FizikHub
                     </text>
 
-                    {/* 3. FILL LAYER (Yellow) */}
+                    {/* 3. FILL LAYER (Premium Yellow) */}
                     <text
                         x="50%"
                         y="55%"
@@ -71,11 +68,12 @@ export function DankLogo() {
                         dominantBaseline="middle"
                         className="font-black italic tracking-tighter"
                         style={{
-                            fill: "#FFC800",
+                            fill: "#FFD700", // Slightly more premium gold-yellow
                             stroke: "none",
                             fontFamily: "var(--font-outfit), sans-serif",
                             fontSize: "48px",
-                            fontWeight: 900
+                            fontWeight: 900,
+                            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))"
                         }}
                     >
                         FizikHub
