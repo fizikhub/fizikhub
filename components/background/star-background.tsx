@@ -184,6 +184,96 @@ function Stars({ count = 10000 }) {
   );
 }
 
+const shootingStarVertexShader = `
+  uniform float uTime;
+  attribute float aSpeed;
+  attribute float aDelay;
+  attribute vec3 aDirection;
+  varying float vLife;
+
+  void main() {
+    float localTime = mod(uTime + aDelay, 5.0); // 5s loop
+    float progress = localTime * aSpeed;
+    
+    // Reset and move along direction
+    vec3 pos = position + aDirection * progress;
+    
+    // Trail effect using point size and life
+    vLife = smoothstep(0.0, 0.5, localTime) * smoothstep(2.0, 0.5, localTime);
+    
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    gl_PointSize = 2.0 * (1000.0 / -mvPosition.z) * vLife;
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const shootingStarFragmentShader = `
+  varying float vLife;
+  void main() {
+    float r = distance(gl_PointCoord, vec2(0.5));
+    if (r > 0.5) discard;
+    gl_FragColor = vec4(1.0, 1.0, 1.0, vLife * (1.0 - r * 2.0));
+  }
+`;
+
+function ShootingStars({ count = 20 }) {
+  const materialRef = useRef<THREE.ShaderMaterial>(null!);
+
+  const { positions, speeds, delays, directions } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const spd = new Float32Array(count);
+    const del = new Float32Array(count);
+    const dir = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      // Start randomly in a wide box
+      pos[i * 3] = (Math.random() - 0.5) * 1000;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 1000;
+      pos[i * 3 + 2] = -500;
+
+      spd[i] = 100 + Math.random() * 200;
+      del[i] = Math.random() * 5.0;
+
+      // Random diagonal downward direction
+      const d = new THREE.Vector3(
+        Math.random() - 0.5,
+        -0.5 - Math.random() * 0.5,
+        0
+      ).normalize();
+      dir[i * 3] = d.x;
+      dir[i * 3 + 1] = d.y;
+      dir[i * 3 + 2] = d.z;
+    }
+    return { positions: pos, speeds: spd, delays: del, directions: dir };
+  }, [count]);
+
+  useFrame((state) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
+  });
+
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-aSpeed" args={[speeds, 1]} />
+        <bufferAttribute attach="attributes-aDelay" args={[delays, 1]} />
+        <bufferAttribute attach="attributes-aDirection" args={[directions, 3]} />
+      </bufferGeometry>
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={shootingStarVertexShader}
+        fragmentShader={shootingStarFragmentShader}
+        uniforms={{ uTime: { value: 0 } } as any}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
 export function StarBackground() {
   return (
     <div className="fixed inset-0 z-0 bg-[#020205] pointer-events-none">
@@ -191,6 +281,7 @@ export function StarBackground() {
         <fog attach="fog" args={["#020205", 10, 1000]} />
         <Nebula />
         <Stars />
+        <ShootingStars />
       </Canvas>
       {/* Visual Depth Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
