@@ -103,10 +103,11 @@ export default function OnboardingPage() {
 
             const result = await completeOnboarding(formDataToSend);
 
-            if (result?.error) {
-                toast.error(result.error);
-            } else {
+            if (result?.success) {
+                toast.success("Profilin başarıyla oluşturuldu!");
                 router.push('/profil');
+            } else {
+                toast.error(result?.error || "Bir hata oluştu.");
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
