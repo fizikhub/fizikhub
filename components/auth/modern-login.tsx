@@ -125,7 +125,7 @@ export function ModernLogin() {
             {/* Main Card */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: -40 }}
                 transition={{
                     duration: 1.2,
                     ease: [0.16, 1, 0.3, 1],
@@ -313,14 +313,16 @@ export function ModernLogin() {
                             </Button>
                         </form>
 
-                        {/* Toggle */}
-                        <div className="mt-8 text-center">
+                        {/* Toggle - Refined & Lifted */}
+                        <div className="mt-4 text-center">
                             <button
                                 type="button"
                                 onClick={() => setIsSignUp(!isSignUp)}
-                                className="text-xs font-black uppercase tracking-[0.2em] text-white/30 hover:text-white transition-colors"
+                                className="group/toggle px-4 py-2 rounded-full hover:bg-white/5 transition-colors"
                             >
-                                {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz bir üye aramıza katılmadı mı?"}
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 group-hover/toggle:text-white/60 transition-colors">
+                                    {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz bir üye aramıza katılmadı mı?"}
+                                </span>
                             </button>
                         </div>
                     </div>
