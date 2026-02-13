@@ -5,11 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Mail, ShieldCheck, ArrowLeft, Lock, Radio } from "lucide-react";
+import { Loader2, Mail, ShieldCheck, ArrowLeft, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { verifyOtp, resendOtp } from "@/app/auth/actions";
-import { Logo } from "@/components/ui/logo";
+import { DankLogo } from "@/components/brand/dank-logo";
 import { motion } from "framer-motion";
+import { StarBackground } from "@/components/background/star-background";
 
 function VerifyContent() {
     const searchParams = useSearchParams();
@@ -64,93 +65,66 @@ function VerifyContent() {
 
     if (!email) {
         return (
-            <div className="min-h-screen w-full flex items-center justify-center p-4 bg-black text-white">
-                <div className="text-center space-y-4">
-                    <p className="text-white/60 font-mono">GEÇERSİZ ERİŞİM İSTEĞİ.</p>
-                    <Button variant="link" onClick={() => router.push("/login")} className="text-primary">GİRİŞ EKRANINA DÖN</Button>
+            <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent text-white font-mono">
+                <StarBackground />
+                <div className="text-center space-y-4 relative z-10">
+                    <p className="text-white/60">GEÇERSİZ ERİŞİM İSTEĞİ.</p>
+                    <Button variant="link" onClick={() => router.push("/login")} className="text-orange-500">GİRİŞ EKRANINA DÖN</Button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Black Hole Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-transparent via-primary/5 to-transparent blur-3xl opacity-40"
-                />
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-radial from-transparent via-orange-600/10 to-transparent blur-2xl opacity-30"
-                />
-                {[...Array(20)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white rounded-full"
-                        initial={{
-                            x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                            y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
-                            opacity: Math.random()
-                        }}
-                        animate={{
-                            opacity: [0.2, 1, 0.2],
-                            scale: [1, 1.5, 1]
-                        }}
-                        transition={{
-                            duration: 3 + Math.random() * 5,
-                            repeat: Infinity,
-                            delay: Math.random() * 5
-                        }}
-                    />
-                ))}
-            </div>
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-transparent font-sans selection:bg-orange-500/30 selection:text-orange-200">
+            {/* Universal Star Background */}
+            <StarBackground />
 
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="w-full max-w-md relative z-10"
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: -40 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
+                className="w-full max-w-[420px] relative z-10"
             >
-                {/* Header */}
-                <div className="text-center mb-8 space-y-4">
-                    <div className="inline-block">
-                        <Logo />
+                {/* Header Section */}
+                <div className="text-center mb-6 relative">
+                    <div className="inline-flex justify-center mb-1 transform hover:scale-110 transition-transform duration-500">
+                        <DankLogo />
                     </div>
+                    <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-2" />
 
-                    <div className="space-y-1">
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-white">
+                    <div className="mt-8 space-y-2">
+                        <h1 className="text-2xl font-black text-white uppercase tracking-tight">
                             GÜVENLİK KONTROLÜ
                         </h1>
-                        <div className="flex items-center justify-center gap-2 text-xs font-mono text-primary/80">
+                        <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-500/60">
                             <Lock className="h-3 w-3" />
                             <span>ERİŞİM DOĞRULAMASI GEREKLİ</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Industrial Glass Card */}
-                <div className="bg-black/40 backdrop-blur-xl border border-white/10 p-1 rounded-2xl shadow-2xl relative overflow-hidden group">
-                    {/* Industrial Hazard Stripes */}
-                    <div className="absolute top-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
-                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-[repeating-linear-gradient(45deg,#000,#000_10px,#ea580c_10px,#ea580c_20px)] opacity-50 z-20" />
+                {/* The Card Structure */}
+                <div className="relative group">
+                    {/* Neo-Brutalist Shadow Layer */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                    {/* Corner Brackets */}
-                    <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary z-30" />
-                    <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary z-30" />
-                    <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary z-30" />
-                    <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary z-30" />
+                    {/* The Card Itself */}
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-6 sm:p-8 rounded-[2.5rem] relative overflow-hidden">
 
-                    <div className="bg-black/60 p-6 md:p-8 rounded-xl relative z-10">
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
+
                         <div className="text-center mb-6">
-                            <div className="bg-primary/10 border border-primary/20 p-3 mb-4 inline-block rounded-full">
-                                <Mail className="h-6 w-6 mx-auto text-primary" />
+                            <div className="bg-white/5 border border-white/10 p-4 mb-4 inline-block rounded-2xl">
+                                <Mail className="h-6 w-6 mx-auto text-white/40" />
                             </div>
-                            <p className="text-sm font-medium text-white/80">
-                                <span className="font-bold text-primary">{email}</span> adresine gönderilen kodu gir.
+                            <p className="text-xs font-bold text-white/60 tracking-tight leading-relaxed">
+                                <span className="text-orange-500">{email}</span> adresine<br />gönderilen kodu gir.
                             </p>
                         </div>
 
@@ -163,7 +137,7 @@ function VerifyContent() {
                                     placeholder="KODU GİR"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
-                                    className="text-center text-2xl tracking-[0.5em] font-mono h-14 bg-white/5 border-white/10 focus:border-primary transition-all uppercase rounded-none text-white placeholder:text-white/20"
+                                    className="text-center text-3xl tracking-[0.3em] font-mono h-16 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/5 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all uppercase pl-4"
                                     maxLength={8}
                                     required
                                     autoFocus
@@ -172,11 +146,11 @@ function VerifyContent() {
 
                             <Button
                                 type="submit"
-                                className="w-full h-12 text-base font-black uppercase tracking-wider rounded-none border border-white/20 shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary text-white hover:bg-primary/90"
+                                className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    <Loader2 className="h-6 w-6 animate-spin text-white" />
                                 ) : (
                                     <span className="flex items-center gap-2">
                                         DOĞRULA <ShieldCheck className="h-4 w-4" />
@@ -185,11 +159,11 @@ function VerifyContent() {
                             </Button>
                         </form>
 
-                        <div className="mt-6 pt-6 border-t border-white/10 text-center space-y-4">
-                            <div className="text-sm text-white/60">
+                        <div className="mt-8 pt-6 border-t border-white/5 text-center space-y-4">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-white/30">
                                 Kod ulaşmadı mı?{" "}
                                 <button
-                                    className="font-bold text-primary hover:underline uppercase tracking-wide"
+                                    className="text-orange-500 hover:text-orange-400 transition-colors"
                                     onClick={handleResend}
                                     disabled={resending}
                                 >
@@ -200,7 +174,7 @@ function VerifyContent() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-white/40 hover:text-white font-mono text-xs uppercase hover:bg-white/5"
+                                className="text-white/20 hover:text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/5 rounded-xl transition-all"
                                 onClick={() => router.push("/login")}
                             >
                                 <ArrowLeft className="h-3 w-3 mr-2" />
@@ -211,10 +185,10 @@ function VerifyContent() {
                 </div>
 
                 {/* Footer Status */}
-                <div className="mt-8 text-center">
+                <div className="mt-8 text-center invisible sm:visible">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]" />
-                        <span className="text-[10px] font-mono text-white/60 uppercase">SİSTEM ÇEVRİMİÇİ</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
+                        <span className="text-[9px] font-black tracking-widest text-white/40 uppercase">SİSTEM ÇEVRİMİÇİ</span>
                     </div>
                 </div>
             </motion.div>
@@ -224,7 +198,7 @@ function VerifyContent() {
 
 export default function VerifyPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-black"><Loader2 className="h-8 w-8 animate-spin text-orange-500" /></div>}>
             <VerifyContent />
         </Suspense>
     );

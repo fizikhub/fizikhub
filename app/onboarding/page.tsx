@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, User, Camera, ArrowRight } from "lucide-react";
+import { Loader2, Camera, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { completeOnboarding } from "@/app/auth/actions";
-import { Logo } from "@/components/ui/logo";
+import { DankLogo } from "@/components/brand/dank-logo";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
+import { StarBackground } from "@/components/background/star-background";
 
 export default function OnboardingPage() {
     const router = useRouter();
@@ -26,23 +27,7 @@ export default function OnboardingPage() {
         bio: ""
     });
 
-    // Stars
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
-
     useEffect(() => {
-        // Initialize stars
-        const newStars = [];
-        for (let i = 0; i < 120; i++) {
-            newStars.push({
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 2 + 0.5,
-                opacity: Math.random() * 0.5 + 0.2,
-                delay: Math.random() * 5,
-            });
-        }
-        setStars(newStars);
-
         // Check if user already completed onboarding
         const checkStatus = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -77,7 +62,7 @@ export default function OnboardingPage() {
 
         setUploading(true);
         try {
-            const resizedFile = await resizeImage(file, 500, 500, 0.8);
+            // Basic resize helper can be added here or imported
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) throw new Error("Kullanıcı bulunamadı");
 
@@ -87,7 +72,7 @@ export default function OnboardingPage() {
 
             const { error: uploadError } = await supabase.storage
                 .from('avatars')
-                .upload(filePath, resizedFile);
+                .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 
@@ -111,13 +96,17 @@ export default function OnboardingPage() {
 
         try {
             const formDataToSend = new FormData();
+            formDataToSend.append("username", formData.username);
+            formDataToSend.append("fullName", formData.fullName);
+            formDataToSend.append("avatarUrl", formData.avatarUrl);
             formDataToSend.append("bio", formData.bio);
-            // formDataToSend.append("interests", ...); // interests not present in current form state
 
             const result = await completeOnboarding(formDataToSend);
 
             if (result?.error) {
                 toast.error(result.error);
+            } else {
+                router.push('/profil');
             }
         } catch (error) {
             toast.error("Bir hata oluştu.");
@@ -127,245 +116,150 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Stars */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {stars.map((star, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute bg-white rounded-full"
-                        style={{
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                        }}
-                        animate={{
-                            opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: star.delay,
-                            ease: "easeInOut",
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Grid */}
-            <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                    backgroundSize: '60px 60px'
-                }}
-            />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-transparent font-sans selection:bg-orange-500/30 selection:text-orange-200">
+            {/* Universal Star Background */}
+            <StarBackground />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: -40 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
                 className="w-full max-w-[480px] relative z-10"
             >
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <motion.div whileHover={{ scale: 1.02 }} className="inline-block mb-6">
-                        <Logo />
-                    </motion.div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight">
+                {/* Header Section */}
+                <div className="text-center mb-6 relative">
+                    <div className="inline-flex justify-center mb-1 transform hover:scale-110 transition-transform duration-500">
+                        <DankLogo />
+                    </div>
+                    <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-2" />
+
+                    <h1 className="text-2xl font-black text-white uppercase tracking-tight mt-8">
                         Profilini Oluştur
                     </h1>
-                    <p className="text-white/40 text-sm mt-2">
-                        Topluluğa katılmadan önce kendini tanıt
+                    <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-2">
+                        Topluluğa katılmadan önce kendini tanıt.
                     </p>
                 </div>
 
-                {/* Card */}
-                <div className="bg-zinc-950 border-2 border-white/10 p-8 relative">
-                    {/* Corner Accents */}
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary -translate-x-px -translate-y-px" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary translate-x-px -translate-y-px" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary -translate-x-px translate-y-px" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-px translate-y-px" />
+                {/* The Card Structure */}
+                <div className="relative group">
+                    {/* Neo-Brutalist Shadow Layer */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Avatar Upload */}
-                        <div className="flex flex-col items-center justify-center mb-2">
-                            <div
-                                className="relative group cursor-pointer w-24 h-24 bg-black border-2 border-white/20 overflow-hidden hover:border-primary transition-colors"
-                                onClick={() => fileInputRef.current?.click()}
-                            >
-                                {formData.avatarUrl ? (
-                                    <img
-                                        src={formData.avatarUrl}
-                                        alt="Avatar"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center">
-                                        <Camera className="h-6 w-6 text-white/30 group-hover:text-primary transition-colors" />
-                                    </div>
-                                )}
+                    {/* The Card Itself */}
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-6 sm:p-10 rounded-[2.5rem] relative overflow-hidden">
 
-                                {uploading && (
-                                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* Avatar Upload - Stylized */}
+                            <div className="flex flex-col items-center justify-center mb-4">
+                                <div
+                                    className="relative group cursor-pointer w-24 h-24 bg-white/5 border-2 border-white/10 ring-4 ring-black/20 rounded-[2rem] overflow-hidden hover:border-orange-500/50 transition-all duration-500"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {formData.avatarUrl ? (
+                                        <img
+                                            src={formData.avatarUrl}
+                                            alt="Avatar"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center">
+                                            <Camera className="h-6 w-6 text-white/20 group-hover:text-orange-500 transition-colors" />
+                                        </div>
+                                    )}
+
+                                    {uploading && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+                                            <Loader2 className="h-6 w-6 animate-spin text-orange-500" />
+                                        </div>
+                                    )}
+
+                                    {/* Camera Overlay */}
+                                    <div className="absolute inset-0 bg-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Camera className="h-5 w-5 text-white" />
                                     </div>
-                                )}
+                                </div>
+                                <span className="text-[9px] font-black text-white/30 mt-3 uppercase tracking-[0.2em]">Karakter Resmi</span>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                />
                             </div>
-                            <span className="text-[10px] text-white/30 mt-2 uppercase tracking-widest">Fotoğraf Ekle</span>
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileSelect}
-                                className="hidden"
-                            />
-                        </div>
 
-                        <div className="space-y-5">
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                    Kullanıcı Adı
-                                </Label>
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 font-bold">@</span>
+                            <div className="space-y-5">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Kullanıcı Adı</Label>
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500/40 font-black text-sm">@</span>
+                                        <Input
+                                            placeholder="username"
+                                            value={formData.username}
+                                            onChange={(e) => {
+                                                let value = e.target.value.toLowerCase();
+                                                value = value.replace(/[^a-z0-9_.-]/g, '');
+                                                setFormData({ ...formData, username: value });
+                                            }}
+                                            className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 pl-10 rounded-2xl transition-all font-mono text-sm"
+                                            required
+                                            minLength={3}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Tam İsim</Label>
                                     <Input
-                                        placeholder="kullaniciadi"
-                                        value={formData.username}
-                                        onChange={(e) => {
-                                            let value = e.target.value.toLowerCase();
-
-                                            // Replace Turkish chars
-                                            const trMap: { [key: string]: string } = {
-                                                'ğ': 'g', 'ü': 'u', 'ş': 's', 'ı': 'i', 'ö': 'o', 'ç': 'c'
-                                            };
-                                            value = value.replace(/[ğüşıöç]/g, char => trMap[char] || char);
-
-                                            // Remove spaces
-                                            value = value.replace(/\s+/g, '');
-
-                                            // Remove invalid characters (only allow a-z, 0-9, ., _, -)
-                                            value = value.replace(/[^a-z0-9_.-]/g, '');
-
-                                            setFormData({ ...formData, username: value });
-                                        }}
-                                        className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary pl-8 rounded-none transition-all font-medium"
+                                        placeholder="Ad Soyad"
+                                        value={formData.fullName}
+                                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                         required
-                                        minLength={3}
                                     />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Biyografi</Label>
+                                    <textarea
+                                        placeholder="Kendinden kısaca bahset..."
+                                        value={formData.bio}
+                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                        className="flex min-h-[100px] w-full bg-white/5 border-2 border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/10 focus:outline-none focus:bg-white/10 focus:border-orange-500/50 rounded-2xl transition-all resize-none font-mono"
+                                        maxLength={160}
+                                    />
+                                    <div className="flex justify-end">
+                                        <span className="text-[9px] font-black text-white/20 uppercase tracking-tighter">{formData.bio.length}/160</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                    Tam İsim
-                                </Label>
-                                <Input
-                                    placeholder="Adınız Soyadınız"
-                                    value={formData.fullName}
-                                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                                    className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary rounded-none transition-all"
-                                    required
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                    Biyografi <span className="text-white/20">(opsiyonel)</span>
-                                </Label>
-                                <textarea
-                                    placeholder="Kendinden kısaca bahset..."
-                                    value={formData.bio}
-                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                    className="flex min-h-[100px] w-full bg-black border-2 border-white/20 px-3 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary transition-all resize-none"
-                                    maxLength={160}
-                                />
-                                <p className="text-[10px] text-white/30 text-right">{formData.bio.length}/160</p>
-                            </div>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-wide rounded-none border-2 border-primary hover:border-white transition-all group"
-                            disabled={loading || uploading}
-                        >
-                            {loading ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    Tamamla
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            )}
-                        </Button>
-                    </form>
+                            <Button
+                                type="submit"
+                                className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
+                                disabled={loading || uploading}
+                            >
+                                {loading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        Tamamla
+                                        <ArrowRight className="h-4 w-4" />
+                                    </span>
+                                )}
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </motion.div>
         </div>
     );
-}
-
-// Helper function to resize and compress image
-async function resizeImage(
-    file: File,
-    maxWidth: number,
-    maxHeight: number,
-    quality: number
-): Promise<File> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target?.result as string;
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                let width = img.width;
-                let height = img.height;
-
-                if (width > height) {
-                    if (width > maxWidth) {
-                        height = (height * maxWidth) / width;
-                        width = maxWidth;
-                    }
-                } else {
-                    if (height > maxHeight) {
-                        width = (width * maxHeight) / height;
-                        height = maxHeight;
-                    }
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext("2d");
-                if (!ctx) {
-                    reject(new Error("Failed to get canvas context"));
-                    return;
-                }
-
-                ctx.drawImage(img, 0, 0, width, height);
-
-                canvas.toBlob(
-                    (blob) => {
-                        if (!blob) {
-                            reject(new Error("Failed to create blob"));
-                            return;
-                        }
-                        const resizedFile = new File([blob], file.name, {
-                            type: "image/jpeg",
-                            lastModified: Date.now(),
-                        });
-                        resolve(resizedFile);
-                    },
-                    "image/jpeg",
-                    quality
-                );
-            };
-            img.onerror = reject;
-        };
-        reader.onerror = reject;
-    });
 }
