@@ -138,16 +138,6 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                 </button>
                             </Link>
                             {/* Write Article Button - For authors */}
-                            {profile.is_writer && (
-                                <Link href="/yazar/yeni">
-                                    <button className="flex items-center justify-center gap-1.5 bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                        <PenSquare className="w-3.5 h-3.5" />
-                                        Makale Yaz
-                                    </button>
-                                </Link>
-                            )}
-
-                            {/* Write Article Button - For authors */}
                             {profile?.is_writer && (
                                 <Link href="/yazar/yeni">
                                     <button className="flex items-center justify-center gap-1.5 bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
@@ -156,7 +146,6 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                     </button>
                                 </Link>
                             )}
-
                             {/* Admin Panel Button - Only for @baranbozkurt */}
                             {isAdmin && (
                                 <Link href="/admin">
@@ -169,17 +158,21 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                         </>
                     ) : (
                         <>
-                            <FollowButton
-                                targetUserId={profile.id}
-                                initialIsFollowing={isFollowing}
-                                className="flex-1 px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
-                            />
-                            <Link href={`/mesajlar?to=${profile.id}`}>
-                                <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                    Mesaj
-                                </button>
-                            </Link>
+                            {profile?.id && (
+                                <>
+                                    <FollowButton
+                                        targetUserId={profile.id}
+                                        initialIsFollowing={isFollowing}
+                                        className="flex-1 px-4 py-2.5 text-xs font-bold rounded-lg border-2 border-black shadow-[2px_2px_0_#1E3A5F]"
+                                    />
+                                    <Link href={`/mesajlar?to=${profile.id}`}>
+                                        <button className="flex items-center justify-center gap-1.5 bg-[#1E3A5F] hover:bg-[#2C5282] text-white px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                            <MessageCircle className="w-3.5 h-3.5" />
+                                            Mesaj
+                                        </button>
+                                    </Link>
+                                </>
+                            )}
                         </>
                     )}
                 </div>

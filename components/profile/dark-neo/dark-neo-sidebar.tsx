@@ -39,7 +39,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                     <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="yellow" />
                 </div>
 
-                {profile?.level && (
+                {profile?.level !== undefined && profile?.xp_current !== undefined && (
                     <div className="mt-4 pt-3 border-t border-border/20">
                         <div className="flex justify-between items-center mb-1.5">
                             <p className="text-[10px] font-black text-muted-foreground uppercase">Seviye</p>
@@ -48,7 +48,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-[#1E3A5F]"
-                                style={{ width: `${(profile.xp_current / profile.xp_next) * 100}%` }}
+                                style={{ width: `${(profile.xp_current / (profile.xp_next || 100)) * 100}%` }}
                             />
                         </div>
                     </div>

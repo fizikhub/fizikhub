@@ -88,14 +88,18 @@ export function ModernLogin() {
             if (isSignUp) {
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
 
-                const { data: existingUser } = await supabase
+                const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
                     .select('username')
                     .eq('username', username)
                     .maybeSingle();
 
+                if (checkError) {
+                    console.error("Username check error:", checkError);
+                }
+
                 if (existingUser) {
-                    throw new Error("Bu kullanıcı adı zaten alınmış.");
+                    throw new Error("Bu kullanıcı adı zaten alınmış. Lütfen başka bir tane dene.");
                 }
 
                 const { error } = await supabase.auth.signUp({
