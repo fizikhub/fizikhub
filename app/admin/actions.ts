@@ -313,52 +313,75 @@ export async function deleteQuiz(id: string) {
     return { success: true };
 }
 
+const COBALT_INSTANCES = [
+    "https://cobalt-api.meowing.de/",
+    "https://cobalt-backend.canine.tools/",
+    "https://kityune.imput.net/",
+    "https://nachos.imput.net/",
+    "https://sunny.imput.net/",
+    "https://blossom.imput.net/",
+    "https://cobalt.qwedl.com/",
+    "https://api.cobalt.tools/" // Keep official as last resort
+];
+
 export async function getYoutubeDownloadUrl(url: string) {
     const adminCheck = await verifyAdmin();
     if (!adminCheck.isAdmin) {
         return { success: false, error: adminCheck.error };
     }
 
-    try {
-        const response = await fetch("https://api.cobalt.tools/", {
-            method: "POST",
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                url: url,
-                videoQuality: "1080",
-                audioFormat: "mp3",
-                downloadMode: "auto",
-                youtubeVideoCodec: "h264",
-                youtubeBetterAudio: true,
-                filenameStyle: "pretty"
-            })
-        });
+    let lastError = "Video bilgisi alınamadı.";
 
-        const data = await response.json();
-        console.log("Cobalt API Response Status:", response.status);
-        console.log("Cobalt API Response Data:", data);
+    for (const instance of COBALT_INSTANCES) {
+        try {
+            console.log(`Trying Cobalt instance: ${instance}`);
+            const response = await fetch(instance, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    url: url,
+                    videoQuality: "1080",
+                    audioFormat: "mp3",
+                    downloadMode: "auto",
+                    youtubeVideoCodec: "h264",
+                    youtubeBetterAudio: true,
+                    filenameStyle: "pretty"
+                }),
+                signal: AbortSignal.timeout(8000) // 8 second timeout per instance
+            });
 
-        if (data.status === "error") {
-            console.error("Cobalt API Error Text:", data.text);
-            return { success: false, error: data.text || "Video bilgisi alınamadı (API Hatası)." };
+            if (!response.ok) {
+                console.warn(`Instance ${instance} returned status ${response.status}`);
+                continue;
+            }
+
+            const data = await response.json();
+            console.log(`Response from ${instance}:`, data.status);
+
+            if (data.status === "error") {
+                lastError = data.text || "Video kısıtlı veya bulunamadı.";
+                continue;
+            }
+
+            if (data.status === "redirect" || data.status === "tunnel") {
+                return { success: true, url: data.url, instanceUsed: instance };
+            }
+
+            if (data.status === "picker") {
+                return { success: true, url: data.picker[0].url, instanceUsed: instance };
+            }
+        } catch (error) {
+            console.error(`Error with instance ${instance}:`, error);
         }
-
-        if (data.status === "redirect" || data.status === "tunnel") {
-            return { success: true, url: data.url };
-        }
-
-        if (data.status === "picker") {
-            // Pick the first one for now or handle picker logic in UI
-            return { success: true, url: data.picker[0].url };
-        }
-
-        return { success: false, error: "Beklenmedik bir yanıt alındı." };
-    } catch (error) {
-        console.error("Youtube Download API Error:", error);
-        return { success: false, error: "Sunucu ile iletişim kurulamadı." };
     }
+
+    return {
+        success: false,
+        error: `${lastError} (Tüm indirme sunucuları denendi, lütfen daha sonra tekrar deneyin veya farklı bir link kullanın.)`
+    };
 }
+
 
