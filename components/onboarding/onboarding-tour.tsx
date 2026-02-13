@@ -302,7 +302,7 @@ export function OnboardingTour() {
 
     const handleComplete = async () => {
         setIsVisible(false);
-        await completeOnboarding();
+        await completeOnboarding(new FormData());
     };
 
     if (!isVisible) return null;
