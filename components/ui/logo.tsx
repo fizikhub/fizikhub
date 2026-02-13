@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { SiteLogo } from "@/components/icons/site-logo";
+import { cn } from "@/lib/utils";
 
-export function Logo() {
+export function Logo({ className }: { className?: string }) {
     return (
-        <Link href="/" className="flex items-center gap-2.5 group select-none">
+        <Link href="/" className={cn("flex items-center gap-2.5 group select-none", className)}>
             <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="relative z-10 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110">
