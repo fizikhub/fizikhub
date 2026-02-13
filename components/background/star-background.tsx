@@ -3,67 +3,197 @@
 import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { Points, PointMaterial } from "@react-three/drei";
 
-function Stars({ count = 10000 }) {
-  const ref = useRef<THREE.Points>(null!);
-  
-  // Create stars positions and randomness
-  const [positions, phases] = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const pha = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      // Sphere distribution for depth
-      const r = 500 + Math.random() * 500;
-      const theta = 2 * Math.PI * Math.random();
-      const phi = Math.acos(2 * Math.random() - 1);
-      
-      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      pos[i * 3 + 2] = r * Math.cos(phi);
-      
-      pha[i] = Math.random() * Math.PI * 2;
-    }
-    return [pos, pha];
-  }, [count]);
+// --- CUSTOM SHADERS ---
+
+const starVertexShader = `
+  uniform float uTime;
+  attribute float aSize;
+  attribute vec3 aColor;
+  attribute float aPhase;
+  varying vec3 vColor;
+  varying float vOpacity;
+
+  void main() {
+    vColor = aColor;
+    
+    // Twinkle effect based on time and individual phase
+    float twinkle = 0.5 + 0.5 * sin(uTime * 2.0 + aPhase);
+    vOpacity = twinkle;
+
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = aSize * (300.0 / -mvPosition.z);
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const starFragmentShader = `
+  varying vec3 vColor;
+  varying float vOpacity;
+
+  void main() {
+    float r = distance(gl_PointCoord, vec2(0.5));
+    if (r > 0.5) discard;
+    
+    // Soft glow effect
+    float strength = pow(1.0 - r * 2.0, 2.0);
+    gl_FragColor = vec4(vColor, strength * vOpacity);
+  }
+`;
+
+const nebulaVertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const nebulaFragmentShader = `
+  uniform float uTime;
+  varying vec2 vUv;
+
+  float noise(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+  }
+
+  void main() {
+    vec2 uv = vUv * 1.5;
+    float n = noise(uv + uTime * 0.02);
+    
+    float dist = distance(vUv, vec2(0.5));
+    float alpha = smoothstep(0.8, 0.1, dist) * 0.25;
+    
+    // Improved Nebula Colors: Cosmic Purple & Deep Space Blue
+    vec3 color1 = vec3(0.1, 0.05, 0.2); // Purple base
+    vec3 color2 = vec3(0.02, 0.08, 0.15); // Deep blue base
+    vec3 color3 = vec3(0.0, 0.0, 0.02); // Darkest void
+    
+    vec3 mixedColor = mix(color1, color2, sin(uTime * 0.15) * 0.5 + 0.5);
+    vec3 finalColor = mix(mixedColor, color3, dist * 1.2);
+    
+    gl_FragColor = vec4(finalColor, alpha);
+  }
+`;
+
+function Nebula() {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
   useFrame((state) => {
-    if (!ref.current) return;
-    // Slow rotation
-    ref.current.rotation.x -= 0.0001;
-    ref.current.rotation.y -= 0.0001;
-    
-    // Shimmer effect (opacity/size can be handled in fragment shader if custom, 
-    // but for simple Points we can just rotate)
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
   });
 
   return (
-    <group rotation={[0, 0, Math.PI / 4]}>
-      <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
-        <PointMaterial
-          transparent
-          color="#ffffff"
-          size={1.5}
-          sizeAttenuation={true}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
+    <mesh ref={meshRef} position={[0, 0, -150]}>
+      <planeGeometry args={[2000, 2000]} />
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={nebulaVertexShader}
+        fragmentShader={nebulaFragmentShader}
+        uniforms={{ uTime: { value: 0 } }}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  );
+}
+
+function Stars({ count = 40000 }) {
+  const ref = useRef<THREE.Points>(null!);
+  const materialRef = useRef<THREE.ShaderMaterial>(null!);
+
+  const { positions, sizes, colors, phases } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const sz = new Float32Array(count);
+    const col = new Float32Array(count * 3);
+    const pha = new Float32Array(count);
+
+    const palette = [
+      new THREE.Color("#ffffff"), // Pure white
+      new THREE.Color("#dbeafe"), // Soft blue
+      new THREE.Color("#fef3c7"), // Soft yellow
+      new THREE.Color("#fff7ed"), // Warm white
+      new THREE.Color("#60a5fa"), // Brighter blue
+    ];
+
+    for (let i = 0; i < count; i++) {
+      const r = 200 + Math.random() * 800; // Wider range
+      const theta = 2 * Math.PI * Math.random();
+      const phi = Math.acos(2 * Math.random() - 1);
+
+      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      pos[i * 3 + 2] = r * Math.cos(phi);
+
+      sz[i] = Math.random() * 2.5 + 0.8;
+      pha[i] = Math.random() * Math.PI * 2;
+
+      const randomColor = palette[Math.floor(Math.random() * palette.length)];
+      col[i * 3] = randomColor.r;
+      col[i * 3 + 1] = randomColor.g;
+      col[i * 3 + 2] = randomColor.b;
+    }
+    return { positions: pos, sizes: sz, colors: col, phases: pha };
+  }, [count]);
+
+  useFrame((state) => {
+    if (ref.current) {
+      // Very slow complex rotation
+      ref.current.rotation.y = state.clock.elapsedTime * 0.01;
+      ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.005) * 0.1;
+    }
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    }
+  });
+
+  return (
+    <points ref={ref} frustumCulled={false}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[positions, 3]}
         />
-      </Points>
-    </group>
+        <bufferAttribute
+          attach="attributes-aSize"
+          args={[sizes, 1]}
+        />
+        <bufferAttribute
+          attach="attributes-aColor"
+          args={[colors, 3]}
+        />
+        <bufferAttribute
+          attach="attributes-aPhase"
+          args={[phases, 1]}
+        />
+      </bufferGeometry>
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={starVertexShader}
+        fragmentShader={starFragmentShader}
+        uniforms={{ uTime: { value: 0 } }}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
   );
 }
 
 export function StarBackground() {
   return (
-    <div className="fixed inset-0 z-0 bg-black pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 1] }}>
-        <color attach="background" args={["#000000"]} />
+    <div className="fixed inset-0 z-0 bg-[#020205] pointer-events-none">
+      <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
+        <fog attach="fog" args={["#020205", 10, 1000]} />
+        <Nebula />
         <Stars />
-        {/* Subtle fog for depth */}
-        <fog attach="fog" args={["#000000", 1, 1500]} />
       </Canvas>
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-[#000000]/40 backdrop-blur-[1px]" />
+      {/* Visual Depth Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
     </div>
   );
 }
