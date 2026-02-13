@@ -29,7 +29,7 @@ export const RealisticBlackHole = () => {
             uniforms: {
                 iTime: { value: 0 },
                 iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
-                iMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                iCameraZoom: { value: 1.0 }, // New uniform for responsive zoom
             },
             vertexShader: `
         varying vec2 vUv;
@@ -41,7 +41,7 @@ export const RealisticBlackHole = () => {
             fragmentShader: `
         uniform float iTime;
         uniform vec2 iResolution;
-        uniform vec2 iMouse;
+        uniform float iCameraZoom;
         varying vec2 vUv;
 
         // Constants
@@ -77,12 +77,15 @@ export const RealisticBlackHole = () => {
         void main() {
             vec2 uv = (vUv - 0.5) * iResolution / iResolution.y;
             
+            // Zoom adjustment based on screen ratio (passed via uniform)
+            uv *= iCameraZoom;
+            
             // Camera Setup
-            vec3 ro = vec3(0.0, 2.0, -8.0); // Camera position
+            vec3 ro = vec3(0.0, 1.5, -8.0); // Camera position
             vec3 rd = normalize(vec3(uv, 1.5)); // Ray direction
             
             // Camera Rotation (Tilt)
-            float tiltAngle = -0.2; // Look down slightly
+            float tiltAngle = -0.15; // Look down slightly
             mat2 tilt = mat2(cos(tiltAngle), -sin(tiltAngle), sin(tiltAngle), cos(tiltAngle));
             ro.yz *= tilt;
             rd.yz *= tilt;
@@ -94,18 +97,17 @@ export const RealisticBlackHole = () => {
             vec3 dir = rd;
             
             // Black Hole Params
-            float bhRadius = 1.0;     // Event Horizon Radius (Schwarzschild radius)
-            float diskInner = 2.6;    // ISCO (Innermost Stable Circular Orbit) ~3Rg usually, 1.5 for rotating
-            float diskOuter = 8.0;    // Disk extent
+            float bhRadius = 1.0;     // Event Horizon Radius
+            float diskInner = 2.6;    // ISCO
+            float diskOuter = 9.0;    // Extended Disk
             
             float accumulatedAlpha = 0.0;
             vec3 accumulatedColor = vec3(0.0);
             
             // --- RAY MARCHING LOOP ---
-            // Simulating curved space-time
             
             float stepSize = 0.1;
-            const int MAX_STEPS = 100;
+            const int MAX_STEPS = 120; // More steps for smoothness
             
             for(int i = 0; i < MAX_STEPS; i++) {
                 float r = length(p);
@@ -117,12 +119,9 @@ export const RealisticBlackHole = () => {
                     break; 
                 }
                 
-                // 2. GRAVITATIONAL BENDING (Newtonian approx direction change)
-                // Force ~ 1/r^2 directed to center
-                // This simulates the lensing effect
-                
+                // 2. GRAVITATIONAL BENDING
                 vec3 forceDir = normalize(-p);
-                float force = 0.3 / (r * r); // Bending strength constant
+                float force = 0.45 / (r * r); // Stronger bending for visual impact
                 dir = normalize(dir + forceDir * force * stepSize);
                 
                 // 3. MOVE RAY
@@ -130,78 +129,75 @@ export const RealisticBlackHole = () => {
                 p += dir * stepSize;
                 
                 // 4. ACCRETION DISK INTERSECTION
-                // Check if we crossed the Y=0 plane
                 if(prevP.y * p.y < 0.0) {
-                    // Exact intersection point
                     float t = -prevP.y / dir.y; 
                     vec3 hitPos = prevP + dir * t;
                     float dist = length(hitPos);
                     
                     if(dist > diskInner && dist < diskOuter) {
-                        // We hit the disk!
-                        
                         // Disk Coordinates
                         float angle = atan(hitPos.z, hitPos.x);
                         float radius = dist;
                         
-                        // TEXTURE / NOISE GENERATION
-                        // Animated rotation based on radius (Keplerian velocity: v ~ 1/sqrt(r))
-                        float speed = 5.0 * pow(radius, -1.5);
-                        vec3 noisePos = vec3(angle * 3.0 + iTime * speed, radius * 2.0, iTime * 0.5);
+                        // TEXTURE / NOISE
+                        float speed = 6.0 * pow(radius, -1.5);
+                        vec3 noisePos = vec3(angle * 3.0 + iTime * speed * 0.5, radius * 1.5, iTime * 0.3);
                         float dust = fbm(noisePos);
                         
-                        // Color Ramp (Temperature)
-                        // Hotter inner -> White/Blue
-                        // Cooler outer -> Orange/Red
+                        // COLOR RAMP (Reference: White Hot -> Salmon -> Reddish)
                         vec3 diskCol;
-                        if(radius < diskInner + 0.5) {
-                             diskCol = vec3(1.0, 0.9, 0.8); // White hot
-                        } else if (radius < diskInner + 2.0) {
-                             diskCol = vec3(1.0, 0.6, 0.1); // Bright Orange
+                        
+                        // Normalized radius for color ramp (0.0 at inner, 1.0 at outer)
+                        float nRadius = (radius - diskInner) / (diskOuter - diskInner);
+                        
+                        if(nRadius < 0.15) {
+                             // Core: Blinding White
+                             diskCol = mix(vec3(1.0, 1.0, 1.0), vec3(1.0, 0.9, 0.8), nRadius * 6.0);
+                        } else if (nRadius < 0.4) {
+                             // Mid: Salmon / Light Orange
+                             diskCol = mix(vec3(1.0, 0.9, 0.8), vec3(1.0, 0.6, 0.4), (nRadius - 0.15) * 4.0);
                         } else {
-                             diskCol = vec3(0.8, 0.2, 0.05); // Reddish/Brown
+                             // Outer: Red / Dark Red
+                             diskCol = mix(vec3(1.0, 0.6, 0.4), vec3(0.4, 0.05, 0.02), (nRadius - 0.4) * 1.6);
                         }
                         
                         // Variations
-                        diskCol += dust * 0.8;
+                        diskCol += dust * 0.4;
                         
-                        // DOPPLER BEAMING (Asymmetry)
-                        // Approaching side (left) is brighter/bluer
-                        // Receding side (right) is dimmer/redder
-                        // Simple logic: dot product of disk velocity and view direction
-                        // Velocity is tangent to circle. At (x,0,z), velocity dir is (-z, 0, x) (CCW)
+                        // DOPPLER BEAMING
                         vec3 velocity = normalize(vec3(-hitPos.z, 0.0, hitPos.x));
                         float doppler = dot(velocity, normalize(ro - hitPos)); 
-                        float beamInv = 1.0 + doppler * 0.6; // Beaming factor
+                        float beamInv = 1.0 + doppler * 0.5;
                         
                         diskCol *= beamInv;
                         
-                        // Alpha/Density falloff
-                        float alpha = smoothstep(diskOuter, diskOuter - 1.0, radius) * smoothstep(diskInner, diskInner + 0.2, radius);
-                        alpha *= (0.5 + 0.5 * dust); // Cloudiness
+                        // Alpha/Density
+                        float alpha = smoothstep(diskOuter, diskOuter - 2.0, radius) * smoothstep(diskInner, diskInner + 0.5, radius);
+                        alpha *= (0.4 + 0.6 * dust); // Cloudiness
                         
-                        // Add to buffer (Additive blending ideal for glowing matter)
-                        accumulatedColor += diskCol * alpha * 0.8;
-                        accumulatedAlpha += alpha * 0.5;
+                        // SOFT GLOW ACCUMULATION
+                        accumulatedColor += diskCol * alpha * 0.6;
+                        accumulatedAlpha += alpha * 0.4;
                         
                         if(accumulatedAlpha > 1.0) break;
                     }
                 }
                 
-                // Escape condition
-                if(r > 20.0) break;
+                if(r > 25.0) break;
             }
             
             // Background Stars
             if(accumulatedAlpha < 1.0) {
-                float stars = pow(hash(dot(dir, vec3(12.3, 45.6, 78.9))), 50.0);
+                float stars = pow(hash(dot(dir, vec3(12.3, 45.6, 78.9))), 80.0) * 0.8;
                 accumulatedColor += vec3(stars) * (1.0 - accumulatedAlpha);
             }
             
-            // Final adjustments
-            // Glow / Bloom fake
+            // Final Bloom / Glow (Reference: Soft White/Salmon Glow)
             float centerDist = length(uv);
-            accumulatedColor += vec3(1.0, 0.5, 0.1) * 0.01 / (centerDist * centerDist + 0.01);
+            // Outer glow
+            accumulatedColor += vec3(1.0, 0.8, 0.6) * 0.005 / (centerDist * centerDist + 0.001);
+            // Inner core glow
+            accumulatedColor += vec3(1.0, 0.9, 0.8) * 0.01 / (centerDist * centerDist * centerDist + 0.01);
 
             gl_FragColor = vec4(accumulatedColor, 1.0);
         }
@@ -221,21 +217,39 @@ export const RealisticBlackHole = () => {
         };
         requestAnimationFrame(animate);
 
-        // --- RESIZE ---
+        // --- RESIZE & RESPONSIVE LOGIC ---
         const handleResize = () => {
             if (!container) return;
             const w = container.clientWidth;
             const h = container.clientHeight;
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
+
+            // RESPONSIVE ZOOM
+            // If width < height (Portrait), we need to zoom out (increase UV scale)
+            // to fit the black hole width-wise.
+            // Base zoom is 1.0 for Landscape (16:9).
+            const aspect = w / h;
+            if (aspect < 1.0) {
+                // Portrait mode: Increase zoom value to shrink the BH
+                // e.g., aspect 0.5 -> zoom 2.0
+                material.uniforms.iCameraZoom.value = 1.0 / aspect * 0.8;
+            } else {
+                // Landscape mode
+                material.uniforms.iCameraZoom.value = 0.9; // Slight zoom in for impact
+            }
         };
+
         window.addEventListener("resize", handleResize);
+        handleResize(); // Initial call
 
         return () => {
             window.removeEventListener("resize", handleResize);
             cancelAnimationFrame(frameId);
             container.removeChild(renderer.domElement);
             renderer.dispose();
+            geometry.dispose();
+            material.dispose();
         };
     }, []);
 
