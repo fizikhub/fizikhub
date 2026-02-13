@@ -212,19 +212,20 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (REFINED v8) ---
+            // --- RESPONSIVE LOGIC (REFINED v9) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v8: User said v7 was "too big".
-                // Increasing value means zooming OUT (shrinking object).
-                // Old (v7): ~ 1.0/aspect * 0.6
-                // New (v8): ~ 1.0/aspect * 1.1 (Significantly smaller)
+                // v9: User said BH is not clear in mobile.
+                // We move it UP significantly so the Event Horizon is ABOVE the card.
 
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 1.1;
+                // Zoom Factor: 0.85 (Balanced)
+                // 1.0/aspect * 0.85 
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 0.85;
 
-                // v8: Slightly reduce offset since it's smaller now
-                material.uniforms.iVerticalOffset.value = 0.10;
+                // Vertical Offset: 0.35
+                // This moves the BH up by 35% of the screen height (approx).
+                material.uniforms.iVerticalOffset.value = 0.35;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
