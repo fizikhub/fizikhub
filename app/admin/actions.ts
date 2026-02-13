@@ -320,7 +320,7 @@ export async function getYoutubeDownloadUrl(url: string) {
     }
 
     try {
-        const response = await fetch("https://api.cobalt.tools/api/json", {
+        const response = await fetch("https://api.cobalt.tools/", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
@@ -331,6 +331,8 @@ export async function getYoutubeDownloadUrl(url: string) {
                 videoQuality: "1080",
                 audioFormat: "mp3",
                 downloadMode: "auto",
+                youtubeVideoCodec: "h264",
+                youtubeBetterAudio: true,
                 filenameStyle: "pretty"
             })
         });
