@@ -338,9 +338,12 @@ export async function getYoutubeDownloadUrl(url: string) {
         });
 
         const data = await response.json();
+        console.log("Cobalt API Response Status:", response.status);
+        console.log("Cobalt API Response Data:", data);
 
         if (data.status === "error") {
-            return { success: false, error: data.text || "Video bilgisi alınamadı." };
+            console.error("Cobalt API Error Text:", data.text);
+            return { success: false, error: data.text || "Video bilgisi alınamadı (API Hatası)." };
         }
 
         if (data.status === "redirect" || data.status === "tunnel") {
