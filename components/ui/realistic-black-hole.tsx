@@ -99,7 +99,7 @@ export const RealisticBlackHole = () => {
             
             float bhRadius = 1.0; 
             float diskInner = 2.6; 
-            // v13/v14: Tight rings (5.0)
+            // v13/v14/v15: Tight rings (5.0)
             float diskOuter = 5.0; 
             
             float accumulatedAlpha = 0.0;
@@ -213,18 +213,19 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (v14 Logo Replacement) ---
+            // --- RESPONSIVE LOGIC (v15 Header Positioning) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v14: Logo removed. BH takes its place.
+                // v15: "Put it ON TOP of the card".
+                // We interpret this as visually ABOVE the card, like a header image.
 
-                // Zoom Factor: 2.0 (Iconic size, fits well above text)
+                // Zoom Factor: 2.0 (Iconic size)
                 material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
 
-                // Vertical Offset: 0.35
-                // Sits exactly where the logo was.
-                material.uniforms.iVerticalOffset.value = 0.35;
+                // Vertical Offset: 0.55
+                // Pushes it way up, clearing the card background entirely.
+                material.uniforms.iVerticalOffset.value = 0.55;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
