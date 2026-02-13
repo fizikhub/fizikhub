@@ -99,7 +99,8 @@ export const RealisticBlackHole = () => {
             
             float bhRadius = 1.0; 
             float diskInner = 2.6; 
-            float diskOuter = 9.0;
+            // v11 UPDATE: Reduced diskOuter from 9.0 to 6.0 to tighten the rings
+            float diskOuter = 6.0; 
             
             float accumulatedAlpha = 0.0;
             vec3 accumulatedColor = vec3(0.0);
@@ -212,18 +213,17 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (REFINED v10) ---
+            // --- RESPONSIVE LOGIC (v11 Aggressive Compact) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v10: "Shrink Completely".
-                // Zoom Out factor increased to 1.5. This will make the Black Hole much smaller.
+                // v11: "Shrink rings too".
+                // Zoom Factor: 2.2 (Very Far/Small)
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.2;
 
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 1.5;
-
-                // Vertical Offset: 0.25
-                // Centered nicely above the card with the new size.
-                material.uniforms.iVerticalOffset.value = 0.25;
+                // Vertical Offset: 0.30
+                // Adjusted for the new small size.
+                material.uniforms.iVerticalOffset.value = 0.30;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
