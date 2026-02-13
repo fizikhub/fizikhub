@@ -1,36 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Mail, ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowLeft, Mail, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { sendPasswordResetEmail } from "./actions";
 import { toast } from "sonner";
+import { StarBackground } from "@/components/background/star-background";
+import { DankLogo } from "@/components/brand/dank-logo";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
-
-    // Stars
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
-
-    useEffect(() => {
-        const newStars = [];
-        for (let i = 0; i < 100; i++) {
-            newStars.push({
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 2 + 0.5,
-                opacity: Math.random() * 0.5 + 0.2,
-                delay: Math.random() * 5,
-            });
-        }
-        setStars(newStars);
-    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -49,131 +34,109 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Stars */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {stars.map((star, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute bg-white rounded-full"
-                        style={{
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                        }}
-                        animate={{
-                            opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: star.delay,
-                            ease: "easeInOut",
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Grid */}
-            <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                    backgroundSize: '60px 60px'
-                }}
-            />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-transparent font-sans selection:bg-orange-500/30 selection:text-orange-200">
+            {/* Universal Star Background */}
+            <StarBackground />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: -20 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
                 className="w-full max-w-[420px] relative z-10"
             >
                 {/* Back Link */}
-                <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 text-white/40 hover:text-primary transition-colors mb-8 text-xs font-bold uppercase tracking-widest"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Giriş Sayfası
-                </Link>
+                <div className="mb-4">
+                    <Link
+                        href="/login"
+                        className="inline-flex items-center gap-2 text-white/40 hover:text-orange-500 transition-colors text-[10px] font-black uppercase tracking-[0.2em]"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Geri Dön
+                    </Link>
+                </div>
 
-                {/* Card */}
-                <div className="bg-zinc-950 border-2 border-white/10 p-8 relative">
-                    {/* Corner Accents */}
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary -translate-x-px -translate-y-px" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary translate-x-px -translate-y-px" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary -translate-x-px translate-y-px" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-px translate-y-px" />
+                {/* The Card Structure */}
+                <div className="relative group">
+                    {/* Neo-Brutalist Shadow Layer */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                    {!sent ? (
-                        <>
-                            <div className="text-center mb-8">
-                                <div className="w-14 h-14 mx-auto bg-primary/10 border border-primary/30 flex items-center justify-center mb-4">
-                                    <Mail className="h-6 w-6 text-primary" />
+                    {/* The Card Itself */}
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-6 sm:p-8 rounded-[2.5rem] relative overflow-hidden">
+
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
+
+                        {!sent ? (
+                            <>
+                                <div className="text-center mb-6 relative">
+                                    <div className="inline-flex justify-center mb-1 transform hover:scale-110 transition-transform duration-500">
+                                        <DankLogo />
+                                    </div>
+                                    <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-2" />
+                                    <h1 className="text-lg font-black text-white uppercase tracking-[0.1em] mt-6">
+                                        Şifreni Sıfırla
+                                    </h1>
+                                    <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-2">
+                                        E-posta adresine bir sıfırlama linki göndereceğiz.
+                                    </p>
                                 </div>
-                                <h1 className="text-2xl font-black text-white uppercase tracking-tight">
-                                    Şifreni Sıfırla
+
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">E-Posta</Label>
+                                        <Input
+                                            type="email"
+                                            placeholder="mail@ornek.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
+                                        />
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
+                                    >
+                                        {loading ? (
+                                            <Loader2 className="h-6 w-6 animate-spin text-white" />
+                                        ) : (
+                                            <>
+                                                Link Gönder
+                                                <ArrowRight className="h-4 w-4" />
+                                            </>
+                                        )}
+                                    </Button>
+                                </form>
+                            </>
+                        ) : (
+                            <div className="text-center py-4">
+                                <div className="w-16 h-16 mx-auto bg-green-500/10 border-2 border-green-500/30 rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+                                    <CheckCircle className="h-8 w-8 text-green-500" />
+                                </div>
+                                <h1 className="text-xl font-black text-white uppercase tracking-tight mb-2">
+                                    E-posta Gönderildi
                                 </h1>
-                                <p className="text-white/40 text-sm mt-2">
-                                    E-posta adresini gir, link gönderelim.
+                                <p className="text-white/40 text-xs font-bold leading-relaxed mb-8 px-4">
+                                    <span className="text-orange-500">{email}</span> adresine bir şifre sıfırlama linki gönderdik. Lütfen gelen kutunu kontrol et.
                                 </p>
+
+                                <Link href="/login">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full h-12 bg-white/5 border-2 border-white/10 text-white hover:bg-white/10 hover:border-white/30 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all"
+                                    >
+                                        Giriş Sayfasına Dön
+                                    </Button>
+                                </Link>
                             </div>
-
-                            <form onSubmit={handleSubmit} className="space-y-5">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                        E-posta
-                                    </Label>
-                                    <Input
-                                        type="email"
-                                        placeholder="ornek@mail.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="h-12 bg-black border-2 border-white/20 text-white placeholder:text-white/20 focus:border-primary rounded-none transition-all"
-                                    />
-                                </div>
-
-                                <Button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full h-12 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-wide rounded-none border-2 border-primary hover:border-white transition-all group"
-                                >
-                                    {loading ? (
-                                        <div className="h-5 w-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                                    ) : (
-                                        <span className="flex items-center gap-2">
-                                            Link Gönder
-                                            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                        </span>
-                                    )}
-                                </Button>
-                            </form>
-                        </>
-                    ) : (
-                        <div className="text-center py-4">
-                            <div className="w-16 h-16 mx-auto bg-green-500/10 border border-green-500/30 flex items-center justify-center mb-6">
-                                <CheckCircle className="h-8 w-8 text-green-500" />
-                            </div>
-                            <h2 className="text-xl font-black text-white uppercase mb-2">
-                                E-posta Gönderildi
-                            </h2>
-                            <p className="text-white/40 text-sm mb-6">
-                                <span className="text-primary font-bold">{email}</span> adresine şifre sıfırlama linki gönderdik.
-                            </p>
-
-                            <Link href="/login">
-                                <Button
-                                    variant="outline"
-                                    className="w-full h-12 bg-transparent border-2 border-white/20 text-white hover:bg-white hover:text-black rounded-none font-bold uppercase transition-all"
-                                >
-                                    Giriş Sayfasına Dön
-                                </Button>
-                            </Link>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </motion.div>
         </div>

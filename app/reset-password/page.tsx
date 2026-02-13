@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, ArrowRight, Shield } from "lucide-react";
+import { Eye, EyeOff, Lock, ArrowRight, Shield, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updatePassword } from "./actions";
 import { toast } from "sonner";
+import { StarBackground } from "@/components/background/star-background";
+import { DankLogo } from "@/components/brand/dank-logo";
 
 export default function ResetPasswordPage() {
     const [newPassword, setNewPassword] = useState("");
@@ -17,23 +19,6 @@ export default function ResetPasswordPage() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-
-    // Stars
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
-
-    useEffect(() => {
-        const newStars = [];
-        for (let i = 0; i < 100; i++) {
-            newStars.push({
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 2 + 0.5,
-                opacity: Math.random() * 0.5 + 0.2,
-                delay: Math.random() * 5,
-            });
-        }
-        setStars(newStars);
-    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,156 +50,130 @@ export default function ResetPasswordPage() {
     };
 
     const passwordStrength = (password: string) => {
-        if (password.length === 0) return { strength: 0, label: "", color: "" };
+        if (password.length === 0) return { strength: 0, label: "", color: "bg-white/10" };
         if (password.length < 6) return { strength: 1, label: "Zayıf", color: "bg-red-500" };
         if (password.length < 10) return { strength: 2, label: "Orta", color: "bg-yellow-500" };
         if (password.length < 14) return { strength: 3, label: "İyi", color: "bg-green-500" };
-        return { strength: 4, label: "Güçlü", color: "bg-primary" };
+        return { strength: 4, label: "Güçlü", color: "bg-orange-500" };
     };
 
     const strength = passwordStrength(newPassword);
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black">
-            {/* Stars */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {stars.map((star, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute bg-white rounded-full"
-                        style={{
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                        }}
-                        animate={{
-                            opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: star.delay,
-                            ease: "easeInOut",
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Grid */}
-            <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-                    backgroundSize: '60px 60px'
-                }}
-            />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-transparent font-sans selection:bg-orange-500/30 selection:text-orange-200">
+            {/* Universal Star Background */}
+            <StarBackground />
 
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: -20 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
                 className="w-full max-w-[420px] relative z-10"
             >
-                {/* Card */}
-                <div className="bg-zinc-950 border-2 border-white/10 p-8 relative">
-                    {/* Corner Accents */}
-                    <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary -translate-x-px -translate-y-px" />
-                    <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary translate-x-px -translate-y-px" />
-                    <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary -translate-x-px translate-y-px" />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-px translate-y-px" />
+                {/* The Card Structure */}
+                <div className="relative group">
+                    {/* Neo-Brutalist Shadow Layer */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                    <div className="text-center mb-8">
-                        <div className="w-14 h-14 mx-auto bg-primary/10 border border-primary/30 flex items-center justify-center mb-4">
-                            <Shield className="h-6 w-6 text-primary" />
-                        </div>
-                        <h1 className="text-2xl font-black text-white uppercase tracking-tight">
-                            Yeni Şifre Belirle
-                        </h1>
-                        <p className="text-white/40 text-sm mt-2">
-                            Güçlü bir şifre seç.
-                        </p>
-                    </div>
+                    {/* The Card Itself */}
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-6 sm:p-8 rounded-[2.5rem] relative overflow-hidden">
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-orange-600/10 blur-[100px] rounded-full pointer-events-none" />
+
+                        <div className="text-center mb-6 relative">
+                            <div className="inline-flex justify-center mb-1 transform hover:scale-110 transition-transform duration-500">
+                                <DankLogo />
+                            </div>
+                            <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-2" />
+                            <h1 className="text-lg font-black text-white uppercase tracking-[0.1em] mt-6">
                                 Yeni Şifre
-                            </Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
-                                <Input
-                                    type={showPassword ? "text" : "password"}
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                    className="h-12 bg-black border-2 border-white/20 text-white focus:border-primary pl-10 pr-12 rounded-none transition-all"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
-                                >
-                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
-                            </div>
+                            </h1>
+                            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-2">
+                                Hesabın için güçlü bir şifre belirle.
+                            </p>
+                        </div>
 
-                            {/* Strength Indicator */}
-                            {newPassword.length > 0 && (
-                                <div className="space-y-1">
-                                    <div className="flex gap-1">
-                                        {[1, 2, 3, 4].map((level) => (
-                                            <div
-                                                key={level}
-                                                className={`h-1 flex-1 transition-all ${level <= strength.strength ? strength.color : "bg-white/10"}`}
-                                            />
-                                        ))}
-                                    </div>
-                                    <p className={`text-xs font-bold uppercase ${strength.color.replace('bg-', 'text-')}`}>
-                                        {strength.label}
-                                    </p>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Yeni Şifre</Label>
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        required
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 pr-12 rounded-2xl transition-all font-mono text-sm pl-4"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
                                 </div>
-                            )}
-                        </div>
 
-                        <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                Şifreyi Onayla
-                            </Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
-                                <Input
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                    className="h-12 bg-black border-2 border-white/20 text-white focus:border-primary pl-10 pr-12 rounded-none transition-all"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
-                                >
-                                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                </button>
+                                {/* Strength Indicator */}
+                                {newPassword.length > 0 && (
+                                    <div className="space-y-1 px-1">
+                                        <div className="flex gap-1.5">
+                                            {[1, 2, 3, 4].map((level) => (
+                                                <div
+                                                    key={level}
+                                                    className={`h-1 flex-1 rounded-full transition-all duration-500 ${level <= strength.strength ? strength.color : "bg-white/5"}`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <p className={`text-[9px] font-black uppercase tracking-tighter ${strength.color.replace('bg-', 'text-')}`}>
+                                                Güvenlik: {strength.label}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        </div>
 
-                        <Button
-                            type="submit"
-                            disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
-                            className="w-full h-12 bg-primary hover:bg-primary/90 text-black font-black uppercase tracking-wide rounded-none border-2 border-primary hover:border-white transition-all group disabled:opacity-50"
-                        >
-                            {loading ? (
-                                <div className="h-5 w-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                            ) : (
-                                <span className="flex items-center gap-2">
-                                    Şifreyi Güncelle
-                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            )}
-                        </Button>
-                    </form>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Şifre Onay</Label>
+                                <div className="relative">
+                                    <Input
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 pr-12 rounded-2xl transition-all font-mono text-sm pl-4"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
+                                className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                            >
+                                {loading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                                ) : (
+                                    <>
+                                        Şifreyi Güncelle
+                                        <ArrowRight className="h-4 w-4" />
+                                    </>
+                                )}
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </motion.div>
         </div>
