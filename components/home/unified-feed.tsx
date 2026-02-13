@@ -21,9 +21,7 @@ const CommunityInviteBanner = dynamic(() => import("@/components/explore/communi
 const ForumTeaserCard = dynamic(() => import("@/components/blog/forum-teaser-card").then(mod => mod.ForumTeaserCard), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
-const ScienceStories = dynamic(() => import("@/components/science-cards/science-stories").then(mod => mod.ScienceStories), {
-    loading: () => <div className="h-64 bg-muted/20 animate-pulse rounded-2xl" />
-});
+
 const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-the-week").then(mod => mod.QuestionOfTheWeek), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
@@ -117,12 +115,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {/* Rapid Science Stories Injection - 7th position visually */}
-                        {index === 6 && (
-                            <div className="mt-8 mb-8 -mx-4 sm:mx-0">
-                                <ScienceStories />
-                            </div>
-                        )}
+
 
                         {index === 8 && (
                             <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">

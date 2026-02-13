@@ -5,9 +5,7 @@ import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
 
-import { ScienceStories } from "@/components/science-cards/science-stories";
-
-
+import { QuickScienceRail } from "@/components/home/quick-science-rail";
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -15,6 +13,7 @@ export const metadata: Metadata = {
   title: "Ana Sayfa",
   description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   openGraph: {
+    // ... (rest of metadata stays same)
     title: "Fizikhub | Bilim Platformu",
     description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
     type: "website",
@@ -61,9 +60,6 @@ const getCachedFeedData = unstable_cache(
   ['feed-data-v3'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
-
-
-
 
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
@@ -115,7 +111,7 @@ export default async function Home() {
       <ScrollProgress />
       <BackToTop />
 
-      <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+      <div className="container max-w-7xl mx-auto px-0 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
 
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
@@ -125,8 +121,13 @@ export default async function Home() {
             <CompactHero />
           </div>
 
+          {/* [NEW] Hızlı Bilim / Rapid Science Rail */}
+          <div className="lg:col-span-12 mt-4 px-0 block md:hidden">
+            <QuickScienceRail />
+          </div>
+
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-2xl md:mx-auto xl:mx-0 mt-4 md:mt-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 

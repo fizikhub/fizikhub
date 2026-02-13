@@ -6,12 +6,39 @@ import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useSpring, useTransform } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
+    const { scrollY } = useScroll();
+    const scrollVelocity = useVelocity(scrollY);
+
+    // Smoothly track the visibility state
     const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+
+    // Physics-based transition settings
+    const [dynamicDuration, setDynamicDuration] = useState(0.4);
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const velocity = scrollVelocity.get();
+        const previous = scrollY.getPrevious() || 0;
+        const diff = latest - previous;
+
+        // Determine visibility based on direction and minimum threshold
+        if (latest < 50) {
+            setIsVisible(true);
+        } else if (diff > 5) { // Significant scroll down
+            setIsVisible(false);
+        } else if (diff < -5) { // Significant scroll up
+            setIsVisible(true);
+        }
+
+        // Adjust duration based on velocity (faster scroll = shorter duration)
+        // Velocity is in pixels per second. 
+        const absVelocity = Math.abs(velocity);
+        const newDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
+        setDynamicDuration(newDuration);
+    });
 
     // Haptic feedback helper
     const vibrate = () => {
@@ -20,27 +47,18 @@ export function BottomNav() {
         }
     };
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            if (currentScrollY < 50 || currentScrollY < lastScrollY) {
-                setIsVisible(true);
-            }
-            else if (currentScrollY > lastScrollY && currentScrollY > 50) {
-                setIsVisible(false);
-            }
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
-
     return (
-        <div className={cn(
-            "fixed bottom-0 left-0 right-0 z-[50] md:hidden transition-all duration-500 ease-out font-sans",
-            isVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
-        )}>
+        <motion.div
+            initial={false}
+            animate={{
+                y: isVisible ? 0 : 120,
+            }}
+            transition={{
+                duration: dynamicDuration,
+                ease: [0.32, 0.72, 0, 1] // Custom refined ease for snappier motion
+            }}
+            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
+        >
             <nav className="
                 w-full
                 h-[50px]
@@ -51,7 +69,7 @@ export function BottomNav() {
                 px-2
                 pb-safe
                 relative
-                shadow-sm
+                shadow-[0_-4px_16px_rgba(0,0,0,0.05)]
             ">
                 {/* Noise Texture */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
@@ -138,15 +156,23 @@ export function BottomNav() {
                     onInteract={vibrate}
                 />
             </nav>
-        </div>
+        </motion.div>
     );
 }
 
 function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
+    const handleNavItemClick = (e: React.MouseEvent) => {
+        onInteract();
+        if (isActive) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
+
     return (
         <ViewTransitionLink
             href={href}
-            onClick={onInteract}
+            onClick={handleNavItemClick}
             className={cn(
                 "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
@@ -177,7 +203,7 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
                 )}>
                     <motion.div
                         initial={false}
-                        animate={isActive ? { scale: [1, 1.25, 1.05] } : { scale: 1 }}
+                        animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                         transition={{ type: "spring", stiffness: 500, damping: 15 }}
                     >
                         <Icon
