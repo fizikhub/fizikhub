@@ -99,8 +99,8 @@ export const RealisticBlackHole = () => {
             
             float bhRadius = 1.0; 
             float diskInner = 2.6; 
-            // v11: Reduced diskOuter to 6.0
-            float diskOuter = 6.0; 
+            // v13: Tightened diskOuter to 5.0 (was 6.0 in v11, 9.0 originally)
+            float diskOuter = 5.0; 
             
             float accumulatedAlpha = 0.0;
             vec3 accumulatedColor = vec3(0.0);
@@ -213,19 +213,20 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (v12 Separation) ---
+            // --- RESPONSIVE LOGIC (v13 Emergency Fix) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v12: User showed screenshot where BH overlaps with logo text.
-                // Solution: Move it UP (Separation) and slightly shrink.
+                // v13: User says "nothing is visible".
+                // Cause: Offset 0.42 was too high, pushed it out of viewport probably or behind header.
+                // Cause: Zoom 2.4 was too small.
 
-                // Zoom Factor: 2.4 (Slightly smaller than v11)
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.4;
+                // Zoom Factor: 1.9 (Bigger than v12/2.4, Smaller than v10/1.5)
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 1.9;
 
-                // Vertical Offset: 0.42
-                // Moves BH significantly higher, clearing the logo area.
-                material.uniforms.iVerticalOffset.value = 0.42;
+                // Vertical Offset: 0.32
+                // Lowered from 0.42 to bring it back into view, but still above card (hopefully).
+                material.uniforms.iVerticalOffset.value = 0.32;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
