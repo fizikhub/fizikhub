@@ -1,300 +1,243 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect } from "react";
+import * as THREE from "three";
 
-export function RealisticBlackHole() {
-    const [isMobile, setIsMobile] = useState(false);
+export const RealisticBlackHole = () => {
+    const mountRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        setIsMobile(window.innerWidth < 768);
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        if (!mountRef.current) return;
+
+        // --- SCENE SETUP ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        const renderer = new THREE.WebGLRenderer({
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: false
+        });
+
+        const container = mountRef.current;
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // --- SHADER ---
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                iTime: { value: 0 },
+                iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
+                iMouse: { value: new THREE.Vector2(0.5, 0.5) },
+            },
+            vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position, 1.0);
+        }
+      `,
+            fragmentShader: `
+        uniform float iTime;
+        uniform vec2 iResolution;
+        uniform vec2 iMouse;
+        varying vec2 vUv;
+
+        // Constants
+        #define PI 3.14159265359
+
+        // --- NOISE FUNCTIONS ---
+        // 3D Noise for disk texture
+        float hash(float n) { return fract(sin(n) * 43758.5453123); }
+        float noise(vec3 x) {
+            vec3 p = floor(x);
+            vec3 f = fract(x);
+            f = f * f * (3.0 - 2.0 * f);
+            float n = p.x + p.y * 57.0 + 113.0 * p.z;
+            return mix(mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                           mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y),
+                       mix(mix(hash(n + 113.0), hash(n + 114.0), f.x),
+                           mix(hash(n + 170.0), hash(n + 171.0), f.x), f.y), f.z);
+        }
+        
+        float fbm(vec3 p) {
+            float f = 0.0;
+            float w = 0.5;
+            for(int i = 0; i < 5; i++) {
+                f += w * noise(p);
+                p *= 2.0;
+                w *= 0.5;
+            }
+            return f;
+        }
+
+        // --- BLACK HOLE RENDERING ---
+
+        void main() {
+            vec2 uv = (vUv - 0.5) * iResolution / iResolution.y;
+            
+            // Camera Setup
+            vec3 ro = vec3(0.0, 2.0, -8.0); // Camera position
+            vec3 rd = normalize(vec3(uv, 1.5)); // Ray direction
+            
+            // Camera Rotation (Tilt)
+            float tiltAngle = -0.2; // Look down slightly
+            mat2 tilt = mat2(cos(tiltAngle), -sin(tiltAngle), sin(tiltAngle), cos(tiltAngle));
+            ro.yz *= tilt;
+            rd.yz *= tilt;
+
+            vec3 col = vec3(0.0);
+            
+            // Ray Marching / Tracing Variables
+            vec3 p = ro;
+            vec3 dir = rd;
+            
+            // Black Hole Params
+            float bhRadius = 1.0;     // Event Horizon Radius (Schwarzschild radius)
+            float diskInner = 2.6;    // ISCO (Innermost Stable Circular Orbit) ~3Rg usually, 1.5 for rotating
+            float diskOuter = 8.0;    // Disk extent
+            
+            float accumulatedAlpha = 0.0;
+            vec3 accumulatedColor = vec3(0.0);
+            
+            // --- RAY MARCHING LOOP ---
+            // Simulating curved space-time
+            
+            float stepSize = 0.1;
+            const int MAX_STEPS = 100;
+            
+            for(int i = 0; i < MAX_STEPS; i++) {
+                float r = length(p);
+                
+                // 1. EVENT HORIZON CHECK
+                if(r < bhRadius) {
+                    accumulatedColor = vec3(0.0); // Black hole core
+                    accumulatedAlpha = 1.0; 
+                    break; 
+                }
+                
+                // 2. GRAVITATIONAL BENDING (Newtonian approx direction change)
+                // Force ~ 1/r^2 directed to center
+                // This simulates the lensing effect
+                
+                vec3 forceDir = normalize(-p);
+                float force = 0.3 / (r * r); // Bending strength constant
+                dir = normalize(dir + forceDir * force * stepSize);
+                
+                // 3. MOVE RAY
+                vec3 prevP = p;
+                p += dir * stepSize;
+                
+                // 4. ACCRETION DISK INTERSECTION
+                // Check if we crossed the Y=0 plane
+                if(prevP.y * p.y < 0.0) {
+                    // Exact intersection point
+                    float t = -prevP.y / dir.y; 
+                    vec3 hitPos = prevP + dir * t;
+                    float dist = length(hitPos);
+                    
+                    if(dist > diskInner && dist < diskOuter) {
+                        // We hit the disk!
+                        
+                        // Disk Coordinates
+                        float angle = atan(hitPos.z, hitPos.x);
+                        float radius = dist;
+                        
+                        // TEXTURE / NOISE GENERATION
+                        // Animated rotation based on radius (Keplerian velocity: v ~ 1/sqrt(r))
+                        float speed = 5.0 * pow(radius, -1.5);
+                        vec3 noisePos = vec3(angle * 3.0 + iTime * speed, radius * 2.0, iTime * 0.5);
+                        float dust = fbm(noisePos);
+                        
+                        // Color Ramp (Temperature)
+                        // Hotter inner -> White/Blue
+                        // Cooler outer -> Orange/Red
+                        vec3 diskCol;
+                        if(radius < diskInner + 0.5) {
+                             diskCol = vec3(1.0, 0.9, 0.8); // White hot
+                        } else if (radius < diskInner + 2.0) {
+                             diskCol = vec3(1.0, 0.6, 0.1); // Bright Orange
+                        } else {
+                             diskCol = vec3(0.8, 0.2, 0.05); // Reddish/Brown
+                        }
+                        
+                        // Variations
+                        diskCol += dust * 0.8;
+                        
+                        // DOPPLER BEAMING (Asymmetry)
+                        // Approaching side (left) is brighter/bluer
+                        // Receding side (right) is dimmer/redder
+                        // Simple logic: dot product of disk velocity and view direction
+                        // Velocity is tangent to circle. At (x,0,z), velocity dir is (-z, 0, x) (CCW)
+                        vec3 velocity = normalize(vec3(-hitPos.z, 0.0, hitPos.x));
+                        float doppler = dot(velocity, normalize(ro - hitPos)); 
+                        float beamInv = 1.0 + doppler * 0.6; // Beaming factor
+                        
+                        diskCol *= beamInv;
+                        
+                        // Alpha/Density falloff
+                        float alpha = smoothstep(diskOuter, diskOuter - 1.0, radius) * smoothstep(diskInner, diskInner + 0.2, radius);
+                        alpha *= (0.5 + 0.5 * dust); // Cloudiness
+                        
+                        // Add to buffer (Additive blending ideal for glowing matter)
+                        accumulatedColor += diskCol * alpha * 0.8;
+                        accumulatedAlpha += alpha * 0.5;
+                        
+                        if(accumulatedAlpha > 1.0) break;
+                    }
+                }
+                
+                // Escape condition
+                if(r > 20.0) break;
+            }
+            
+            // Background Stars
+            if(accumulatedAlpha < 1.0) {
+                float stars = pow(hash(dot(dir, vec3(12.3, 45.6, 78.9))), 50.0);
+                accumulatedColor += vec3(stars) * (1.0 - accumulatedAlpha);
+            }
+            
+            // Final adjustments
+            // Glow / Bloom fake
+            float centerDist = length(uv);
+            accumulatedColor += vec3(1.0, 0.5, 0.1) * 0.01 / (centerDist * centerDist + 0.01);
+
+            gl_FragColor = vec4(accumulatedColor, 1.0);
+        }
+      `
+        });
+
+        const geometry = new THREE.PlaneGeometry(2, 2);
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // --- ANIMATION ---
+        let frameId: number;
+        const animate = (time: number) => {
+            material.uniforms.iTime.value = time * 0.001;
+            renderer.render(scene, camera);
+            frameId = requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+
+        // --- RESIZE ---
+        const handleResize = () => {
+            if (!container) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            renderer.setSize(w, h);
+            material.uniforms.iResolution.value.set(w, h);
+        };
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            cancelAnimationFrame(frameId);
+            container.removeChild(renderer.domElement);
+            renderer.dispose();
+        };
     }, []);
 
-    // Particle system - matter spiraling into the singularity
-    const particles = useMemo(() => {
-        const count = isMobile ? 40 : 80;
-        return Array.from({ length: count }, (_, i) => ({
-            id: i,
-            startAngle: Math.random() * 360,
-            startDistance: 100 + Math.random() * 150,
-            duration: 6 + Math.random() * 8,
-            size: 1 + Math.random() * 2.5,
-            delay: Math.random() * 6,
-            brightness: 0.5 + Math.random() * 0.5,
-        }));
-    }, [isMobile]);
-
-    // Background stars
-    const stars = useMemo(() => {
-        return Array.from({ length: isMobile ? 30 : 60 }, (_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            size: 0.5 + Math.random() * 1.5,
-            duration: 2 + Math.random() * 3,
-        }));
-    }, [isMobile]);
-
-    const size = isMobile ? 320 : 500;
-    const coreSize = isMobile ? 40 : 60;
-
-    return (
-        <div
-            className="relative flex items-center justify-center"
-            style={{ width: size, height: size }}
-        >
-            {/* Background Stars */}
-            {stars.map((star) => (
-                <motion.div
-                    key={`star-${star.id}`}
-                    className="absolute rounded-full bg-white"
-                    style={{
-                        left: `${star.x}%`,
-                        top: `${star.y}%`,
-                        width: star.size,
-                        height: star.size,
-                    }}
-                    animate={{
-                        opacity: [0.2, 0.8, 0.2],
-                        scale: [1, 1.2, 1],
-                    }}
-                    transition={{
-                        duration: star.duration,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                />
-            ))}
-
-            {/* Gravitational Lensing - Outer Distortion Glow */}
-            <motion.div
-                className="absolute rounded-full"
-                animate={{
-                    scale: [1, 1.05, 1],
-                    opacity: [0.4, 0.6, 0.4],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    width: size * 0.9,
-                    height: size * 0.9,
-                    background: 'radial-gradient(circle, rgba(255,120,50,0.2) 0%, rgba(255,80,20,0.1) 30%, transparent 60%)',
-                    filter: 'blur(30px)',
-                }}
-            />
-
-            {/* ACCRETION DISK - Tilted Perspective */}
-            <div
-                className="absolute"
-                style={{
-                    width: size * 0.8,
-                    height: size * 0.8,
-                    transform: 'rotateX(75deg)',
-                    transformStyle: 'preserve-3d',
-                }}
-            >
-                {/* Outer Ring - Slower */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                        background: `conic-gradient(
-                            from 0deg,
-                            rgba(80,30,0,0.3) 0%,
-                            rgba(150,60,10,0.5) 15%,
-                            rgba(220,100,30,0.7) 30%,
-                            rgba(255,150,50,0.9) 45%,
-                            rgba(255,200,100,1) 50%,
-                            rgba(255,150,50,0.9) 55%,
-                            rgba(220,100,30,0.7) 70%,
-                            rgba(150,60,10,0.5) 85%,
-                            rgba(80,30,0,0.3) 100%
-                        )`,
-                        boxShadow: '0 0 80px rgba(255,120,50,0.5)',
-                        filter: 'blur(3px)',
-                    }}
-                />
-
-                {/* Inner Ring - Faster, Brighter */}
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute rounded-full"
-                    style={{
-                        top: '15%',
-                        left: '15%',
-                        width: '70%',
-                        height: '70%',
-                        background: `conic-gradient(
-                            from 180deg,
-                            rgba(255,200,150,0.2) 0%,
-                            rgba(255,220,180,0.8) 20%,
-                            rgba(255,255,220,1) 35%,
-                            rgba(255,255,255,1) 50%,
-                            rgba(255,255,220,1) 65%,
-                            rgba(255,220,180,0.8) 80%,
-                            rgba(255,200,150,0.2) 100%
-                        )`,
-                        filter: 'blur(2px)',
-                    }}
-                />
-
-                {/* Disk Center Cutout */}
-                <div
-                    className="absolute rounded-full"
-                    style={{
-                        top: '32%',
-                        left: '32%',
-                        width: '36%',
-                        height: '36%',
-                        background: 'radial-gradient(circle, #000 60%, transparent 100%)',
-                    }}
-                />
-            </div>
-
-            {/* Doppler Beaming - Asymmetric Brightness (left side brighter) */}
-            <motion.div
-                className="absolute rounded-full"
-                animate={{ opacity: [0.3, 0.5, 0.3] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    width: size * 0.6,
-                    height: size * 0.15,
-                    left: '5%',
-                    top: '42%',
-                    background: 'linear-gradient(90deg, rgba(255,200,150,0.6) 0%, transparent 60%)',
-                    filter: 'blur(15px)',
-                    transform: 'rotate(-10deg)',
-                }}
-            />
-
-            {/* Photon Sphere - The bright ring at the edge of visibility */}
-            <motion.div
-                className="absolute rounded-full"
-                animate={{
-                    boxShadow: [
-                        '0 0 20px rgba(255,180,120,0.6), inset 0 0 15px rgba(255,150,100,0.3)',
-                        '0 0 35px rgba(255,180,120,0.8), inset 0 0 20px rgba(255,150,100,0.5)',
-                        '0 0 20px rgba(255,180,120,0.6), inset 0 0 15px rgba(255,150,100,0.3)',
-                    ],
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    width: coreSize + 25,
-                    height: coreSize + 25,
-                    border: '2px solid rgba(255,200,150,0.5)',
-                }}
-            />
-
-            {/* EVENT HORIZON - The 3D Black Sphere */}
-            <div
-                className="absolute rounded-full z-20"
-                style={{
-                    width: coreSize,
-                    height: coreSize,
-                    background: `radial-gradient(
-                        circle at 35% 35%,
-                        #1a1a1a 0%,
-                        #0a0a0a 30%,
-                        #000000 60%,
-                        #000000 100%
-                    )`,
-                    boxShadow: `
-                        inset 5px 5px 20px rgba(40,40,40,0.3),
-                        0 0 50px rgba(0,0,0,1),
-                        0 0 100px rgba(0,0,0,0.8)
-                    `,
-                }}
-            />
-
-            {/* Einstein Ring Arc - Light bent around the back */}
-            <motion.div
-                className="absolute rounded-full z-10"
-                animate={{ opacity: [0.3, 0.6, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    width: coreSize + 35,
-                    height: coreSize + 35,
-                    borderTop: '3px solid rgba(255,220,180,0.5)',
-                    borderLeft: '2px solid rgba(255,200,150,0.3)',
-                    borderRight: '2px solid rgba(255,200,150,0.3)',
-                    borderBottom: 'none',
-                    filter: 'blur(2px)',
-                    transform: 'rotate(-25deg)',
-                }}
-            />
-
-            {/* PARTICLE SYSTEM - Matter Spiraling In */}
-            {particles.map((particle) => (
-                <motion.div
-                    key={particle.id}
-                    className="absolute rounded-full z-30"
-                    style={{
-                        width: particle.size,
-                        height: particle.size,
-                        background: `radial-gradient(circle, rgba(255,200,150,${particle.brightness}) 0%, rgba(255,120,50,${particle.brightness * 0.7}) 100%)`,
-                        boxShadow: `0 0 ${particle.size * 3}px rgba(255,150,80,${particle.brightness})`,
-                    }}
-                    animate={{
-                        x: [
-                            Math.cos((particle.startAngle) * Math.PI / 180) * particle.startDistance,
-                            Math.cos((particle.startAngle + 120) * Math.PI / 180) * (particle.startDistance * 0.65),
-                            Math.cos((particle.startAngle + 240) * Math.PI / 180) * (particle.startDistance * 0.35),
-                            Math.cos((particle.startAngle + 360) * Math.PI / 180) * (particle.startDistance * 0.1),
-                            0,
-                        ],
-                        y: [
-                            Math.sin((particle.startAngle) * Math.PI / 180) * particle.startDistance,
-                            Math.sin((particle.startAngle + 120) * Math.PI / 180) * (particle.startDistance * 0.65),
-                            Math.sin((particle.startAngle + 240) * Math.PI / 180) * (particle.startDistance * 0.35),
-                            Math.sin((particle.startAngle + 360) * Math.PI / 180) * (particle.startDistance * 0.1),
-                            0,
-                        ],
-                        scale: [1, 1.3, 1, 0.6, 0],
-                        opacity: [0, particle.brightness, particle.brightness, particle.brightness * 0.5, 0],
-                    }}
-                    transition={{
-                        duration: particle.duration,
-                        repeat: Infinity,
-                        ease: [0.4, 0, 0.2, 1], // Accelerating as it gets closer
-                        delay: particle.delay,
-                        times: [0, 0.3, 0.6, 0.85, 1],
-                    }}
-                />
-            ))}
-
-            {/* Jet Streams (Optional polar outflows) */}
-            <motion.div
-                className="absolute"
-                animate={{ opacity: [0.1, 0.25, 0.1], scaleY: [1, 1.1, 1] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    width: 4,
-                    height: size * 0.35,
-                    bottom: '60%',
-                    left: '50%',
-                    marginLeft: -2,
-                    background: 'linear-gradient(to top, rgba(255,150,100,0.4) 0%, transparent 100%)',
-                    filter: 'blur(3px)',
-                }}
-            />
-            <motion.div
-                className="absolute"
-                animate={{ opacity: [0.1, 0.25, 0.1], scaleY: [1, 1.1, 1] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                style={{
-                    width: 4,
-                    height: size * 0.35,
-                    top: '60%',
-                    left: '50%',
-                    marginLeft: -2,
-                    background: 'linear-gradient(to bottom, rgba(255,150,100,0.4) 0%, transparent 100%)',
-                    filter: 'blur(3px)',
-                }}
-            />
-        </div>
-    );
-}
+    return <div ref={mountRef} className="fixed inset-0 z-0 bg-black" />;
+};
