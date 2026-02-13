@@ -1,15 +1,84 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Eye, EyeOff, ArrowRight, ShieldCheck, Lock } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowRight, ShieldCheck, Lock, Check } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+// --- Cosmic Assets ---
+const Stars = () => {
+    return (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Layer 1: Small/Slow */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+                className="absolute inset-0"
+            >
+                {Array.from({ length: 50 }).map((_, i) => (
+                    <motion.div
+                        key={`s1-${i}`}
+                        className="absolute bg-white rounded-full opacity-40"
+                        style={{
+                            width: Math.random() * 2 + 1 + "px",
+                            height: Math.random() * 2 + 1 + "px",
+                            top: Math.random() * 100 + "%",
+                            left: Math.random() * 100 + "%",
+                        }}
+                        animate={{
+                            y: [0, -100],
+                            opacity: [0.2, 0.5, 0.2],
+                        }}
+                        transition={{
+                            duration: Math.random() * 10 + 20,
+                            repeat: Infinity,
+                            ease: "linear",
+                        }}
+                    />
+                ))}
+            </motion.div>
+
+            {/* Layer 2: Medium/Faster */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="absolute inset-0"
+            >
+                {Array.from({ length: 25 }).map((_, i) => (
+                    <motion.div
+                        key={`s2-${i}`}
+                        className="absolute bg-emerald-400 rounded-full opacity-60 mix-blend-screen"
+                        style={{
+                            width: Math.random() * 3 + 2 + "px",
+                            height: Math.random() * 3 + 2 + "px",
+                            top: Math.random() * 100 + "%",
+                            left: Math.random() * 100 + "%",
+                            boxShadow: "0 0 4px #34d399",
+                        }}
+                        animate={{
+                            y: [0, -150],
+                            opacity: [0.4, 0.8, 0.4],
+                        }}
+                        transition={{
+                            duration: Math.random() * 15 + 15,
+                            repeat: Infinity,
+                            ease: "linear",
+                        }}
+                    />
+                ))}
+            </motion.div>
+        </div>
+    );
+};
 
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
@@ -20,28 +89,9 @@ export function ModernLogin() {
     const [isSignUp, setIsSignUp] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [supabase] = useState(() => createClient());
-
-    // Turnstile Token
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-    // Stars Background
-    const [stars, setStars] = useState<{ x: number; y: number; size: number; opacity: number; delay: number }[]>([]);
-
-    useEffect(() => {
-        const newStars = [];
-        for (let i = 0; i < 150; i++) {
-            newStars.push({
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 2 + 0.5,
-                opacity: Math.random() * 0.6 + 0.2,
-                delay: Math.random() * 5,
-            });
-        }
-        setStars(newStars);
-    }, []);
-
-    // Initialize Turnstile
+    // Initialize Turnstile - keeping existing logic
     useEffect(() => {
         const script = document.createElement('script');
         script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
@@ -49,14 +99,14 @@ export function ModernLogin() {
         script.defer = true;
         document.body.appendChild(script);
 
-        // Listen for token success via global callback
-        // Note: The widget requires a global function name string
         (window as any).onTurnstileSuccess = (token: string) => {
             setTurnstileToken(token);
         };
 
         return () => {
-            document.body.removeChild(script);
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
             delete (window as any).onTurnstileSuccess;
         };
     }, []);
@@ -88,15 +138,14 @@ export function ModernLogin() {
             if (isSignUp) {
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
 
+                // Check username uniqueness
                 const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
                     .select('username')
                     .eq('username', username)
                     .maybeSingle();
 
-                if (checkError) {
-                    console.error("Username check error:", checkError);
-                }
+                if (checkError) console.error("Username check error:", checkError);
 
                 if (existingUser) {
                     throw new Error("Bu kullanıcı adı zaten alınmış. Lütfen başka bir tane dene.");
@@ -139,138 +188,153 @@ export function ModernLogin() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-black/90">
-            {/* Stars Background */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {stars.map((star, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute bg-white rounded-full"
-                        style={{
-                            left: `${star.x}%`,
-                            top: `${star.y}%`,
-                            width: star.size,
-                            height: star.size,
-                        }}
-                        animate={{
-                            opacity: [star.opacity * 0.5, star.opacity, star.opacity * 0.5],
-                        }}
-                        transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: star.delay,
-                            ease: "easeInOut",
-                        }}
-                    />
-                ))}
-            </div>
+        <div className="min-h-screen w-full flex items-center justify-center p-4 relative bg-[#050505] selection:bg-emerald-400/30 selection:text-emerald-200 overflow-hidden font-sans">
+            {/* --- COSMIC BACKGROUND --- */}
 
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+            {/* Grid Floor - Perspective */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_bottom,transparent_0%,rgba(16,185,129,0.05)_100%)] pointer-events-none" />
+            <div
+                className="absolute inset-0 opacity-[0.07] pointer-events-none"
+                style={{
+                    backgroundImage: `linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)`,
+                    backgroundSize: '40px 40px',
+                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
+                }}
+            />
 
-            {/* Glassmorphism Card */}
+            <Stars />
+
+            {/* Glowing Orbs */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
+
+
+            {/* --- MAIN CARD --- */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="w-full max-w-[400px] relative z-10"
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="relative z-10 w-full max-w-[420px]"
             >
-                <div className="backdrop-blur-xl bg-black/40 border border-white/10 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/5">
-                    {/* Header Section */}
-                    <div className="pt-8 pb-6 px-6 text-center bg-white/5 border-b border-white/5">
-                        <div className="flex justify-center mb-4 transform hover:scale-105 transition-transform duration-300">
-                            <Logo />
-                        </div>
-                        <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
-                            {isSignUp ? "Aramıza Katıl" : "Tekrar Hoşgeldin"}
-                        </h1>
-                        <p className="text-white/60 text-sm flex items-center justify-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                            <span>Bilim dolu güvenli bölge</span>
-                        </p>
-                    </div>
+                {/* Brutalist Container */}
+                <div className="bg-[#0a0a0a] border-2 border-white/20 shadow-[8px_8px_0px_#10b981] sm:shadow-[12px_12px_0px_#10b981] p-1 relative group transition-all duration-300 hover:shadow-[10px_10px_0px_#10b981]">
 
-                    <div className="p-6 sm:p-8 space-y-6">
-                        {/* Google Button - Full Width */}
+                    {/* Corner Accents */}
+                    <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border border-black z-20" />
+                    <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border border-black z-20" />
+                    <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border border-black z-20" />
+                    <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border border-black z-20" />
+
+                    <div className="bg-[#050505] p-6 sm:p-8 border border-white/5 relative overflow-hidden">
+
+                        {/* Header */}
+                        <div className="text-center mb-8 relative">
+                            <motion.div
+                                className="inline-flex justify-center mb-4 relative"
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full" />
+                                <div className="relative z-10 transform scale-125">
+                                    <Logo />
+                                </div>
+                            </motion.div>
+
+                            <h1 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                                {isSignUp ? "GÖREV BAŞLIYOR" : "GERİ DÖNÜŞ"}
+                            </h1>
+                            <p className="text-white/50 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                                Güvenli Frekans
+                            </p>
+                        </div>
+
+                        {/* Social Login */}
                         <Button
                             type="button"
-                            variant="outline"
                             onClick={() => handleOAuthLogin('google')}
                             disabled={loading}
-                            className="w-full h-11 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all font-medium text-sm flex items-center justify-center"
+                            className="w-full h-12 bg-white text-black font-extrabold uppercase tracking-wide border-2 border-transparent hover:border-black hover:bg-emerald-400 hover:scale-[1.02] shadow-[4px_4px_0px_#222] hover:shadow-[2px_2px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mb-6 group/google"
                         >
-                            <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                            <svg className="h-5 w-5 mr-3 group-hover/google:animate-bounce" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="currentColor" className="text-blue-500 group-hover/google:text-black" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="currentColor" className="text-green-500 group-hover/google:text-black" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="currentColor" className="text-yellow-500 group-hover/google:text-black" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="currentColor" className="text-red-500 group-hover/google:text-black" />
                             </svg>
-                            Google ile Devam Et
+                            Google İle Bağlan
                         </Button>
 
-                        <div className="relative">
+                        <div className="relative mb-6">
                             <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-white/10" />
+                                <span className="w-full border-t-2 border-white/10" />
                             </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-transparent px-2 text-white/40 backdrop-blur-sm">veya e-posta ile</span>
+                            <div className="relative flex justify-center text-xs uppercase font-bold tracking-wider">
+                                <span className="bg-[#050505] px-4 text-white/40">veya</span>
                             </div>
                         </div>
 
-                        <form onSubmit={handleEmailAuth} className="space-y-4">
-                            {isSignUp && (
-                                <>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-xs font-semibold text-white/70 ml-1">Kullanıcı Adı</Label>
-                                        <div className="relative">
-                                            <Input
-                                                placeholder="kullaniciadi"
-                                                value={username}
-                                                onChange={(e) => {
-                                                    let value = e.target.value.toLowerCase();
-                                                    value = value.replace(/[^a-z0-9_.-]/g, '');
-                                                    setUsername(value);
-                                                }}
-                                                required
-                                                className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all pl-10"
-                                            />
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30">@</div>
+                        {/* Form */}
+                        <form onSubmit={handleEmailAuth} className="space-y-5">
+                            <AnimatePresence mode="popLayout">
+                                {isSignUp && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="space-y-4 overflow-hidden"
+                                    >
+                                        <div className="space-y-1 group">
+                                            <Label className="text-[10px] font-black uppercase text-white/60 ml-1 group-focus-within:text-emerald-400 transition-colors">Kullanıcı Adı</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    placeholder="KOD ADIN"
+                                                    value={username}
+                                                    onChange={(e) => {
+                                                        let value = e.target.value.toLowerCase();
+                                                        value = value.replace(/[^a-z0-9_.-]/g, '');
+                                                        setUsername(value);
+                                                    }}
+                                                    required
+                                                    className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400 focus:bg-white/10 focus:ring-0 focus:shadow-[4px_4px_0px_#10b981] rounded-none transition-all font-mono text-sm pl-10"
+                                                />
+                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 font-mono">@</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-xs font-semibold text-white/70 ml-1">Ad Soyad</Label>
-                                        <Input
-                                            placeholder="Adınız Soyadınız"
-                                            value={fullName}
-                                            onChange={(e) => setFullName(e.target.value)}
-                                            required
-                                            className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all"
-                                        />
-                                    </div>
-                                </>
-                            )}
+                                        <div className="space-y-1 group">
+                                            <Label className="text-[10px] font-black uppercase text-white/60 ml-1 group-focus-within:text-emerald-400 transition-colors">Ad Soyad</Label>
+                                            <Input
+                                                placeholder="GERÇEK İSMİN"
+                                                value={fullName}
+                                                onChange={(e) => setFullName(e.target.value)}
+                                                required
+                                                className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400 focus:bg-white/10 focus:ring-0 focus:shadow-[4px_4px_0px_#10b981] rounded-none transition-all font-mono text-sm"
+                                            />
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                            <div className="space-y-1.5">
-                                <Label className="text-xs font-semibold text-white/70 ml-1">E-posta</Label>
+                            <div className="space-y-1 group">
+                                <Label className="text-[10px] font-black uppercase text-white/60 ml-1 group-focus-within:text-emerald-400 transition-colors">E-posta</Label>
                                 <Input
                                     type="email"
-                                    placeholder="ornek@mail.com"
+                                    placeholder="ORNEK@MAIL.COM"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 rounded-xl transition-all"
+                                    className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400 focus:bg-white/10 focus:ring-0 focus:shadow-[4px_4px_0px_#10b981] rounded-none transition-all font-mono text-sm"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
+                            <div className="space-y-1 group">
                                 <div className="flex justify-between items-center ml-1">
-                                    <Label className="text-xs font-semibold text-white/70">Şifre</Label>
+                                    <Label className="text-[10px] font-black uppercase text-white/60 group-focus-within:text-emerald-400 transition-colors">Şifre</Label>
                                     {!isSignUp && (
                                         <Link
                                             href="/forgot-password"
-                                            className="text-[10px] text-white/40 hover:text-emerald-400 transition-colors"
+                                            className="text-[10px] uppercase font-bold text-white/40 hover:text-emerald-400 transition-colors"
                                         >
-                                            Şifremi unuttum?
+                                            Şifreni mi unuttun?
                                         </Link>
                                     )}
                                 </div>
@@ -280,86 +344,96 @@ export function ModernLogin() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-11 bg-black/20 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400/50 focus:bg-black/40 focus:ring-1 focus:ring-emerald-400/50 pr-10 rounded-xl transition-all"
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/20 focus:border-emerald-400 focus:bg-white/10 focus:ring-0 focus:shadow-[4px_4px_0px_#10b981] rounded-none transition-all font-mono text-sm pr-10"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-emerald-400 transition-colors"
                                     >
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Turnstile Widget */}
-                            <div className="flex justify-center my-4">
-                                <div className="cf-turnstile text-center flex justify-center w-full"
+                            {/* Terms Checkbox */}
+                            <AnimatePresence>
+                                {isSignUp && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="flex items-start gap-3 py-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="terms"
+                                            className="appearance-none w-5 h-5 border-2 border-white/20 bg-transparent checked:bg-emerald-500 checked:border-emerald-500 transition-colors cursor-pointer mt-0.5"
+                                            required
+                                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
+                                            onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
+                                        />
+                                        <label htmlFor="terms" className="text-[10px] text-white/50 leading-tight font-medium cursor-pointer select-none">
+                                            <span className="text-emerald-400 font-bold">Kullanım Şartları</span>'nı okudum ve kabul ediyorum. Verilerimin güvende olduğunu biliyorum.
+                                        </label>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            {/* Turnstile */}
+                            <div className="flex justify-center my-2 opacity-80 hover:opacity-100 transition-opacity">
+                                <div className="cf-turnstile"
                                     data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
                                     data-callback="onTurnstileSuccess"
                                     data-theme="dark"
                                 />
                             </div>
 
-                            {/* Terms & Privacy Checkbox (Only for SignUp) */}
-                            {isSignUp && (
-                                <div className="flex items-start space-x-2 mb-4 px-1">
-                                    <input
-                                        type="checkbox"
-                                        id="terms"
-                                        className="mt-1 w-4 h-4 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-500/50"
-                                        required
-                                        onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
-                                        onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
-                                    />
-                                    <label htmlFor="terms" className="text-xs text-white/60 leading-tight select-none cursor-pointer">
-                                        <Link href="/kullanim-sartlari" className="text-emerald-400 hover:underline" target="_blank">Kullanım Şartları</Link>'nı ve{" "}
-                                        <Link href="/gizlilik-politikasi" className="text-emerald-400 hover:underline" target="_blank">Gizlilik Politikası</Link>'nı okudum, kabul ediyorum. Verilerimde gözünüz olmadığını anladım.
-                                    </label>
-                                </div>
-                            )}
-
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-11 bg-[#86efac] hover:bg-[#4ade80] text-black font-black uppercase tracking-wide rounded-xl shadow-[0_0_15px_rgba(134,239,172,0.3)] hover:shadow-[0_0_25px_rgba(134,239,172,0.5)] transition-all active:scale-[0.98] mt-2 group"
+                                className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest text-sm rounded-none border-2 border-transparent hover:border-white shadow-[4px_4px_0px_#fff] hover:shadow-[6px_6px_0px_#fff] hover:-translate-y-1 active:translate-y-0 active:shadow-none transition-all group relative overflow-hidden"
                             >
-                                {loading ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        <Lock className="w-4 h-4" />
-                                        {isSignUp ? "Aramıza Katıl" : "Giriş Yap"}
-                                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                )}
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                    {loading ? (
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Lock className="w-4 h-4" />
+                                            {isSignUp ? "GÖREVİ BAŞLAT (KAYIT OL)" : "SİSTEME GİRİŞ YAP"}
+                                            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </>
+                                    )}
+                                </span>
+                                {/* Shine Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
                             </Button>
                         </form>
-                    </div>
 
-                    {/* Footer / Toggle */}
-                    <div className="p-4 bg-white/5 border-t border-white/5 text-center">
-                        <p className="text-sm text-white/60">
-                            {isSignUp ? "Zaten hesabın var mı?" : "Fizikhub'da yeni misin?"}
+                        {/* Footer Link */}
+                        <div className="mt-8 text-center">
                             <button
                                 type="button"
                                 onClick={() => setIsSignUp(!isSignUp)}
-                                className="ml-2 text-emerald-400 hover:text-emerald-300 font-bold transition-colors"
+                                className="text-xs font-bold uppercase tracking-wider text-white/40 hover:text-white transition-colors group"
                             >
-                                {isSignUp ? "Giriş Yap" : "Hemen Katıl"}
+                                {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz bir hesabın yok mu?"}
+                                <span className="block mt-1 text-emerald-400 group-hover:underline decoration-2 underline-offset-4">
+                                    {isSignUp ? "Giriş Yap >" : "Hemen Kaydol >"}
+                                </span>
                             </button>
-                        </p>
-                    </div>
-                </div>
+                        </div>
 
-                {/* Secure Badge */}
-                <div className="mt-8 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[10px] text-white/40 uppercase tracking-widest font-medium">
-                        <ShieldCheck className="w-3 h-3" />
-                        Bot koruması aktif
                     </div>
+
+                    {/* Bottom Decorative Strip */}
+                    <div className="h-1.5 w-full bg-stripes-white/10 mt-1" />
                 </div>
             </motion.div>
+
+            {/* Background Noise Texture (Subtle) */}
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
         </div>
     );
 }
+
