@@ -22,7 +22,7 @@ const starVertexShader = `
     vOpacity = twinkle;
 
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = aSize * (300.0 / -mvPosition.z);
+    gl_PointSize = aSize * (500.0 / -mvPosition.z); // Boosted size multiplier
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
@@ -35,9 +35,9 @@ const starFragmentShader = `
     float r = distance(gl_PointCoord, vec2(0.5));
     if (r > 0.5) discard;
     
-    // Soft glow effect
-    float strength = pow(1.0 - r * 2.0, 2.0);
-    gl_FragColor = vec4(vColor, strength * vOpacity);
+    // Extra soft glow effect - Boosted strength
+    float strength = pow(1.0 - r * 2.0, 1.5); 
+    gl_FragColor = vec4(vColor, strength * vOpacity * 1.5); // Boosted opacity multiplier
   }
 `;
 
@@ -102,7 +102,7 @@ function Nebula() {
   );
 }
 
-function Stars({ count = 40000 }) {
+function Stars({ count = 10000 }) {
   const ref = useRef<THREE.Points>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
@@ -129,7 +129,7 @@ function Stars({ count = 40000 }) {
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       pos[i * 3 + 2] = r * Math.cos(phi);
 
-      sz[i] = Math.random() * 2.5 + 0.8;
+      sz[i] = Math.random() * 4.0 + 1.2; // Significantly larger stars
       pha[i] = Math.random() * Math.PI * 2;
 
       const randomColor = palette[Math.floor(Math.random() * palette.length)];
