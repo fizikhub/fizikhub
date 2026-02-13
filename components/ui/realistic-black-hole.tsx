@@ -11,7 +11,6 @@ export const RealisticBlackHole = () => {
 
         // --- SCENE SETUP ---
         const scene = new THREE.Scene();
-        // Orthographic Camera is used, but we calculate rays manually in fragment shader
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
         const renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
@@ -31,7 +30,7 @@ export const RealisticBlackHole = () => {
                 iTime: { value: 0 },
                 iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
                 iCameraZoom: { value: 1.0 },
-                iVerticalOffset: { value: 0.0 }, // New uniform for vertical positioning
+                iVerticalOffset: { value: 0.0 },
             },
             vertexShader: `
         varying vec2 vUv;
@@ -79,8 +78,8 @@ export const RealisticBlackHole = () => {
         void main() {
             vec2 uv = (vUv - 0.5) * iResolution / iResolution.y;
             
-            // Apply Vertical Offset (to move BH up/down) before Zoom
-            uv.y -= iVerticalOffset; // Negative moves the coordinate center down -> BH moves UP on screen
+            // Apply Vertical Offset
+            uv.y -= iVerticalOffset; 
             
             // Zoom adjustment
             uv *= iCameraZoom;
@@ -89,7 +88,6 @@ export const RealisticBlackHole = () => {
             vec3 ro = vec3(0.0, 1.5, -8.0);
             vec3 rd = normalize(vec3(uv, 1.5));
             
-            // Simple camera tilt
             float tiltAngle = -0.15;
             mat2 tilt = mat2(cos(tiltAngle), -sin(tiltAngle), sin(tiltAngle), cos(tiltAngle));
             ro.yz *= tilt;
@@ -107,7 +105,7 @@ export const RealisticBlackHole = () => {
             vec3 accumulatedColor = vec3(0.0);
             
             float stepSize = 0.1;
-            const int MAX_STEPS = 100; // Optimal steps for performance/quality
+            const int MAX_STEPS = 100;
             
             for(int i = 0; i < MAX_STEPS; i++) {
                 float r = length(p);
@@ -214,24 +212,23 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (REFINED) ---
+            // --- RESPONSIVE LOGIC (REFINED v8) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // 1. Zoom Adjustment:
-                // Previous: 1.0/aspect * 0.8 (Too small/distant)
-                // New: 1.0/aspect * 0.6 (Bigger, closer)
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 0.6;
+                // v8: User said v7 was "too big".
+                // Increasing value means zooming OUT (shrinking object).
+                // Old (v7): ~ 1.0/aspect * 0.6
+                // New (v8): ~ 1.0/aspect * 1.1 (Significantly smaller)
 
-                // 2. Vertical Offset:
-                // Move Black Hole UP so it peeks above the card.
-                // Positive value in shader logic (uv.y -= offset) moves image UP.
-                // We want to move it UP by about 15-20% of screen height.
-                material.uniforms.iVerticalOffset.value = 0.20;
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 1.1;
+
+                // v8: Slightly reduce offset since it's smaller now
+                material.uniforms.iVerticalOffset.value = 0.10;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
-                material.uniforms.iVerticalOffset.value = 0.0; // Center it
+                material.uniforms.iVerticalOffset.value = 0.0;
             }
         };
 
