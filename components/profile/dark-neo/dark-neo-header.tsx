@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
@@ -137,6 +137,26 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                     Mesajlar
                                 </button>
                             </Link>
+                            {/* Write Article Button - For authors */}
+                            {profile.is_writer && (
+                                <Link href="/yazar/yeni">
+                                    <button className="flex items-center justify-center gap-1.5 bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                        <PenSquare className="w-3.5 h-3.5" />
+                                        Makale Yaz
+                                    </button>
+                                </Link>
+                            )}
+
+                            {/* Write Article Button - For authors */}
+                            {profile?.is_writer && (
+                                <Link href="/yazar/yeni">
+                                    <button className="flex items-center justify-center gap-1.5 bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2.5 rounded-lg font-bold text-xs border-2 border-black shadow-[2px_2px_0_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all active:scale-95">
+                                        <PenSquare className="w-3.5 h-3.5" />
+                                        Makale Yaz
+                                    </button>
+                                </Link>
+                            )}
+
                             {/* Admin Panel Button - Only for @baranbozkurt */}
                             {isAdmin && (
                                 <Link href="/admin">
