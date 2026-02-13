@@ -11,36 +11,7 @@ import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-
-// --- Stars Component ---
-const Stars = () => {
-    return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {[...Array(50)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute bg-white rounded-full opacity-70"
-                    style={{
-                        width: Math.random() * 2 + 1 + "px",
-                        height: Math.random() * 2 + 1 + "px",
-                        top: Math.random() * 100 + "%",
-                        left: Math.random() * 100 + "%",
-                    }}
-                    animate={{
-                        opacity: [0.2, 0.8, 0.2],
-                        scale: [1, 1.5, 1],
-                    }}
-                    transition={{
-                        duration: Math.random() * 3 + 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: Math.random() * 2,
-                    }}
-                />
-            ))}
-        </div>
-    );
-};
+import { BlackHole } from "@/components/ui/black-hole"; // Custom Black Hole Component
 
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
@@ -146,46 +117,43 @@ export function ModernLogin() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-[#050505] font-sans relative overflow-hidden selection:bg-violet-500/30 selection:text-violet-200">
-            {/* --- COSMIC BACKGROUND --- */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-[#050505] to-[#050505]" />
-            <Stars />
+        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent font-sans relative overflow-hidden selection:bg-violet-500/30 selection:text-violet-200">
+            {/* --- REALISTIC BLACK HOLE BACKGROUND --- */}
+            <BlackHole />
 
-            {/* Subtle Grid */}
-            <div
-                className="absolute inset-0 opacity-[0.15] pointer-events-none"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
-                    backgroundSize: '40px 40px',
-                    maskImage: 'radial-gradient(circle at center, black 40%, transparent 100%)'
-                }}
-            />
+            {/* Vignette Overlay to focus on center */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_100%)] pointer-events-none opacity-80 z-0" />
 
-            {/* Main Card */}
+            {/* Main Card - Floating in front of the Event Horizon */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full max-w-[350px] relative z-10"
+                transition={{ duration: 0.8, ease: "circOut" }}
+                className="w-full max-w-[360px] relative z-10"
             >
-                {/* Dark Brutalist Shadow Box */}
-                <div className="bg-black border-[2px] border-white/20 shadow-[0px_0px_40px_-10px_rgba(139,92,246,0.3)] relative backdrop-blur-sm">
-                    {/* Hard Neon Shadow Effect (CSS Border trick or box-shadow) */}
-                    <div className="absolute -inset-[2px] bg-gradient-to-r from-violet-600 to-indigo-600 rounded-lg opacity-0 lg:opacity-0 -z-10 blur-none" />
-                    {/* Using simple hard shadow via standard class */}
-                    <div className="absolute inset-0 border-[2px] border-white shadow-[6px_6px_0px_#8b5cf6] pointer-events-none" />
+                {/* Glassmorphism Container blending with Black Hole Light */}
+                <div className="relative group perspective-1000">
 
-                    {/* Content Container */}
-                    <div className="relative bg-[#0a0a0a] border border-white/10 p-6 overflow-hidden">
+                    {/* Dynamic Glow behind the card */}
+                    <div className="absolute -inset-4 bg-gradient-to-r from-violet-600/30 via-fuchsia-600/30 to-orange-600/30 rounded-xl blur-2xl opacity-50 group-hover:opacity-70 transition-opacity duration-1000 animate-pulse" />
+
+                    {/* The Card Itself */}
+                    <div className="bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-xl shadow-2xl relative overflow-hidden">
+
+                        {/* Inner shiny border */}
+                        <div className="absolute inset-0 rounded-xl border border-white/5 pointer-events-none" />
 
                         {/* Header */}
-                        <div className="text-center mb-6">
-                            <div className="inline-flex justify-center mb-4 transform hover:scale-105 transition-transform duration-200">
-                                <Logo className="text-white h-8 w-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+                        <div className="text-center mb-6 relative">
+                            <div className="inline-flex justify-center mb-4 transform hover:scale-105 transition-transform duration-300">
+                                <Logo className="text-white h-9 w-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]" />
                             </div>
-                            <h1 className="text-lg font-black text-white uppercase tracking-wider leading-none">
-                                {isSignUp ? <span className="text-violet-400">Kayıt Terminali</span> : <span className="text-white">Sisteme Giriş</span>}
+                            <h1 className="text-xl font-black text-white uppercase tracking-wider leading-none drop-shadow-md">
+                                {isSignUp ? "Katılım Ufku" : "Olay Ufku"}
                             </h1>
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 mt-1 font-bold">
+                                {isSignUp ? "Etkinlik Başlangıcı" : "Sisteme Erişim"}
+                            </p>
                         </div>
 
                         {/* Social Login */}
@@ -193,9 +161,9 @@ export function ModernLogin() {
                             type="button"
                             onClick={() => handleOAuthLogin('google')}
                             disabled={loading}
-                            className="w-full h-10 bg-white text-black font-bold border-2 border-transparent hover:border-violet-500 hover:text-violet-600 transition-all rounded-none mb-5 flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+                            className="w-full h-10 bg-white/10 hover:bg-white/20 text-white font-bold border border-white/20 hover:border-white/40 backdrop-blur-sm transition-all rounded-lg mb-5 flex items-center justify-center gap-2 text-xs uppercase tracking-wider group/btn"
                         >
-                            <svg className="h-4 w-4" viewBox="0 0 24 24">
+                            <svg className="h-4 w-4 transition-transform group-hover/btn:scale-110" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -209,7 +177,7 @@ export function ModernLogin() {
                                 <span className="w-full border-t border-white/10" />
                             </div>
                             <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                                <span className="bg-[#0a0a0a] px-2 text-white/30">veya</span>
+                                <span className="bg-transparent px-2 text-white/30 backdrop-blur-md">veya</span>
                             </div>
                         </div>
 
@@ -224,7 +192,7 @@ export function ModernLogin() {
                                         className="space-y-3 overflow-hidden"
                                     >
                                         <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold uppercase text-white/50 pl-1">Kod Adın</Label>
+                                            <Label className="text-[10px] font-bold uppercase text-white/60 pl-1">Kod Adın</Label>
                                             <Input
                                                 placeholder="username"
                                                 value={username}
@@ -234,17 +202,17 @@ export function ModernLogin() {
                                                     setUsername(value);
                                                 }}
                                                 required
-                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 rounded-none transition-all font-mono text-xs"
+                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-0 rounded-lg transition-all font-mono text-xs"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <Label className="text-[10px] font-bold uppercase text-white/50 pl-1">Kimlik Adı</Label>
+                                            <Label className="text-[10px] font-bold uppercase text-white/60 pl-1">Kimlik Adı</Label>
                                             <Input
                                                 placeholder="Ad Soyad"
                                                 value={fullName}
                                                 onChange={(e) => setFullName(e.target.value)}
                                                 required
-                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 rounded-none transition-all font-mono text-xs"
+                                                className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-0 rounded-lg transition-all font-mono text-xs"
                                             />
                                         </div>
                                     </motion.div>
@@ -252,24 +220,24 @@ export function ModernLogin() {
                             </AnimatePresence>
 
                             <div className="space-y-1">
-                                <Label className="text-[10px] font-bold uppercase text-white/50 pl-1">E-Posta Frekansı</Label>
+                                <Label className="text-[10px] font-bold uppercase text-white/60 pl-1">E-Posta Frekansı</Label>
                                 <Input
                                     type="email"
                                     placeholder="mail@ornek.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 rounded-none transition-all font-mono text-xs"
+                                    className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-0 rounded-lg transition-all font-mono text-xs"
                                 />
                             </div>
 
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center pl-1">
-                                    <Label className="text-[10px] font-bold uppercase text-white/50">Şifre Protokolü</Label>
+                                    <Label className="text-[10px] font-bold uppercase text-white/60">Şifre Protokolü</Label>
                                     {!isSignUp && (
                                         <Link
                                             href="/forgot-password"
-                                            className="text-[10px] font-bold text-violet-400 hover:text-violet-300 transition-colors"
+                                            className="text-[10px] font-bold text-violet-300 hover:text-white transition-colors"
                                         >
                                             Unuttum?
                                         </Link>
@@ -281,7 +249,7 @@ export function ModernLogin() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
-                                        className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 pr-9 rounded-none transition-all font-mono text-xs"
+                                        className="h-10 bg-white/5 border border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-white/30 focus:ring-0 pr-9 rounded-lg transition-all font-mono text-xs"
                                     />
                                     <button
                                         type="button"
@@ -305,13 +273,13 @@ export function ModernLogin() {
                                         <input
                                             type="checkbox"
                                             id="terms"
-                                            className="appearance-none w-4 h-4 border border-white/30 bg-white/5 checked:bg-violet-500 checked:border-violet-500 transition-colors cursor-pointer mt-0.5 shrink-0"
+                                            className="appearance-none w-4 h-4 border border-white/30 bg-white/5 rounded-sm checked:bg-violet-500 checked:border-violet-500 transition-colors cursor-pointer mt-0.5 shrink-0"
                                             required
                                             onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
                                             onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
                                         <label htmlFor="terms" className="text-[10px] text-white/50 leading-tight font-medium cursor-pointer select-none">
-                                            <span className="text-violet-400 font-bold hover:text-violet-300 transition-colors">Kuralları</span> onaylıyorum.
+                                            <span className="text-violet-300 font-bold hover:text-white transition-colors">Kuralları</span> onaylıyorum.
                                         </label>
                                     </motion.div>
                                 )}
@@ -329,13 +297,13 @@ export function ModernLogin() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full h-10 bg-violet-600 hover:bg-violet-500 text-white font-black uppercase tracking-widest text-xs rounded-none border border-transparent hover:border-white/50 shadow-[0px_0px_20px_rgba(139,92,246,0.3)] hover:shadow-[0px_0px_30px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center gap-2"
+                                className="w-full h-10 bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-xs rounded-lg border border-transparent shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all flex items-center justify-center gap-2"
                             >
                                 {loading ? (
-                                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                                    <Loader2 className="h-4 w-4 animate-spin text-black" />
                                 ) : (
                                     <>
-                                        {isSignUp ? "Görevi Başlat" : "Sisteme Gir"}
+                                        {isSignUp ? "Görevi Başlat" : "Işınla"}
                                         <ArrowRight className="h-3.5 w-3.5" />
                                     </>
                                 )}
