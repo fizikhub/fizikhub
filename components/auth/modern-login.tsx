@@ -119,11 +119,12 @@ export function ModernLogin() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent font-sans relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
-            {/* --- REALISTIC BLACK HOLE BACKGROUND (Three.js) --- */}
-            <RealisticBlackHole />
+            {/* --- STATIC BACKGROUND (Replaces full screen black hole) --- */}
+            <div className="fixed inset-0 z-0 bg-black bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/50 via-[#050505] to-black" />
+            <div className="fixed inset-0 z-0 opacity-40 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
             {/* Vignette Overlay for focus */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_100%)] pointer-events-none opacity-60 z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,#000000_100%)] pointer-events-none opacity-80 z-0" />
 
             {/* Main Card */}
             <motion.div
@@ -144,8 +145,14 @@ export function ModernLogin() {
                         {/* Subtle Header Highlight */}
                         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-                        {/* Header */}
-                        <div className="text-center mb-8 relative">
+                        {/* Header with Contained Black Hole */}
+                        <div className="text-center mb-6 relative">
+                            {/* Black Hole Container */}
+                            <div className="w-full h-32 mb-4 rounded-xl overflow-hidden relative border border-white/5 shadow-inner bg-black/50">
+                                <RealisticBlackHole variant="contained" />
+                                {/* Inner Shadow for depth */}
+                                <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] pointer-events-none" />
+                            </div>
 
                             <h1 className="text-xl font-bold text-white uppercase tracking-[0.2em] leading-none drop-shadow-md font-mono">
                                 {isSignUp ? "Kayıt Terminali" : "Giriş Modülü"}

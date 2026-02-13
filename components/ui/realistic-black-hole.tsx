@@ -3,7 +3,11 @@
 import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 
-export const RealisticBlackHole = () => {
+interface RealisticBlackHoleProps {
+    variant?: "fullscreen" | "contained";
+}
+
+export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant = "fullscreen" }) => {
     const mountRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -14,9 +18,10 @@ export const RealisticBlackHole = () => {
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
         const renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
-            antialias: false,
+            antialias: true, // Enable antialias for smaller contained view
             stencil: false,
-            depth: false
+            depth: false,
+            alpha: true // Enable alpha for transparency
         });
 
         const container = mountRef.current;
@@ -99,8 +104,7 @@ export const RealisticBlackHole = () => {
             
             float bhRadius = 1.0; 
             float diskInner = 2.6; 
-            // v13/v14/v15: Tight rings (5.0)
-            float diskOuter = 5.0; 
+            float diskOuter = 5.0; // Keep compact
             
             float accumulatedAlpha = 0.0;
             vec3 accumulatedColor = vec3(0.0);
@@ -108,6 +112,9 @@ export const RealisticBlackHole = () => {
             float stepSize = 0.1;
             const int MAX_STEPS = 100;
             
+            // Pre-calculation for star fading
+            bool hitBH = false;
+
             for(int i = 0; i < MAX_STEPS; i++) {
                 float r = length(p);
                 
@@ -115,6 +122,7 @@ export const RealisticBlackHole = () => {
                 if(r < bhRadius) {
                     accumulatedColor = vec3(0.0);
                     accumulatedAlpha = 1.0; 
+                    hitBH = true;
                     break; 
                 }
                 
@@ -176,7 +184,11 @@ export const RealisticBlackHole = () => {
                 if(r > 25.0) break;
             }
             
-            // Stars
+            // Stars (Only if fullscreen or if alpha < 1.0)
+            // In 'contained' mode, we might want a transparent background if not hitting the BH
+            // But let's keep stars for now as it adds depth, or maybe remove them for clean logo look?
+            // Let's keep stars internal to the BH viewport for 'contained'.
+            
             if(accumulatedAlpha < 1.0) {
                 float stars = pow(hash(dot(dir, vec3(12.3, 45.6, 78.9))), 80.0) * 0.8;
                 accumulatedColor += vec3(stars) * (1.0 - accumulatedAlpha);
@@ -186,6 +198,9 @@ export const RealisticBlackHole = () => {
             float centerDist = length(uv);
             accumulatedColor += vec3(1.0, 0.8, 0.6) * 0.005 / (centerDist * centerDist + 0.001);
             accumulatedColor += vec3(1.0, 0.9, 0.8) * 0.01 / (centerDist * centerDist * centerDist + 0.01);
+            
+            // For contained mode, we might want to mask the corners or keep it rectangular.
+            // The container div will handle overflow hidden.
 
             gl_FragColor = vec4(accumulatedColor, 1.0);
         }
@@ -213,23 +228,24 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (v15 Header Positioning) ---
+            // --- RESPONSIVE LOGIC ---
             const aspect = w / h;
 
-            if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v15: "Put it ON TOP of the card".
-                // We interpret this as visually ABOVE the card, like a header image.
-
-                // Zoom Factor: 2.0 (Iconic size)
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
-
-                // Vertical Offset: 0.55
-                // Pushes it way up, clearing the card background entirely.
-                material.uniforms.iVerticalOffset.value = 0.55;
-
-            } else { // LANDSCAPE (Desktop)
-                material.uniforms.iCameraZoom.value = 0.9;
+            if (variant === 'contained') {
+                // FIXED ZOOM for contained logo mode
+                // We want it to be fully visible within the small box
+                // Scale 3.5 means "zoom out" significant for small box
+                material.uniforms.iCameraZoom.value = 3.5;
                 material.uniforms.iVerticalOffset.value = 0.0;
+            } else {
+                // Fullscreen Logic (Fallback)
+                if (aspect < 1.0) { // Portrait
+                    material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
+                    material.uniforms.iVerticalOffset.value = 0.55;
+                } else { // Landscape
+                    material.uniforms.iCameraZoom.value = 0.9;
+                    material.uniforms.iVerticalOffset.value = 0.0;
+                }
             }
         };
 
@@ -244,7 +260,12 @@ export const RealisticBlackHole = () => {
             geometry.dispose();
             material.dispose();
         };
-    }, []);
+    }, [variant]); // Re-run if variant changes
 
-    return <div ref={mountRef} className="fixed inset-0 z-0 bg-black" />;
+    return (
+        <div
+            ref={mountRef}
+            className={variant === 'fullscreen' ? "fixed inset-0 z-0 bg-black" : "w-full h-full bg-black"} // contained: fills parent
+        />
+    );
 };
