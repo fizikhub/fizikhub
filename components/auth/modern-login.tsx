@@ -146,9 +146,7 @@ export function ModernLogin() {
 
                         {/* Header */}
                         <div className="text-center mb-8 relative">
-                            <div className="inline-flex justify-center mb-5 transform hover:scale-105 transition-transform duration-300">
-                                <Logo className="text-white h-8 w-auto drop-shadow-[0_0_15px_rgba(255,165,0,0.5)]" />
-                            </div>
+
                             <h1 className="text-xl font-bold text-white uppercase tracking-[0.2em] leading-none drop-shadow-md font-mono">
                                 {isSignUp ? "Kayıt Terminali" : "Giriş Modülü"}
                             </h1>

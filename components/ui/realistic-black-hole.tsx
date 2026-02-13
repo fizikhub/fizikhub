@@ -99,7 +99,7 @@ export const RealisticBlackHole = () => {
             
             float bhRadius = 1.0; 
             float diskInner = 2.6; 
-            // v13: Tightened diskOuter to 5.0 (was 6.0 in v11, 9.0 originally)
+            // v13/v14: Tight rings (5.0)
             float diskOuter = 5.0; 
             
             float accumulatedAlpha = 0.0;
@@ -213,20 +213,18 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC (v13 Emergency Fix) ---
+            // --- RESPONSIVE LOGIC (v14 Logo Replacement) ---
             const aspect = w / h;
 
             if (aspect < 1.0) { // PORTRAIT (Mobile)
-                // v13: User says "nothing is visible".
-                // Cause: Offset 0.42 was too high, pushed it out of viewport probably or behind header.
-                // Cause: Zoom 2.4 was too small.
+                // v14: Logo removed. BH takes its place.
 
-                // Zoom Factor: 1.9 (Bigger than v12/2.4, Smaller than v10/1.5)
-                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 1.9;
+                // Zoom Factor: 2.0 (Iconic size, fits well above text)
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
 
-                // Vertical Offset: 0.32
-                // Lowered from 0.42 to bring it back into view, but still above card (hopefully).
-                material.uniforms.iVerticalOffset.value = 0.32;
+                // Vertical Offset: 0.35
+                // Sits exactly where the logo was.
+                material.uniforms.iVerticalOffset.value = 0.35;
 
             } else { // LANDSCAPE (Desktop)
                 material.uniforms.iCameraZoom.value = 0.9;
