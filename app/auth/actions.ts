@@ -89,14 +89,19 @@ export async function completeOnboarding(formData: FormData) {
         return { success: false, error: "Kullanıcı bulunamadı." };
     }
 
+    const username = formData.get("username") as string;
+    const fullName = formData.get("fullName") as string;
+    const avatarUrl = formData.get("avatarUrl") as string;
     const bio = formData.get("bio") as string;
-    const interests = formData.getAll("interests") as string[];
 
     const { error } = await supabase
         .from('profiles')
         .update({
+            username,
+            full_name: fullName,
+            avatar_url: avatarUrl,
             bio,
-            interests,
+            onboarding_completed: true,
             has_seen_onboarding: true
         })
         .eq('id', user.id);
@@ -106,7 +111,8 @@ export async function completeOnboarding(formData: FormData) {
     }
 
     revalidatePath("/", "layout");
-    redirect("/");
+    revalidatePath("/profil", "layout");
+    return { success: true };
 }
 
 export async function signOut() {
