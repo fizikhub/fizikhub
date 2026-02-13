@@ -5,8 +5,6 @@ import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { FeedSidebar } from "@/components/home/feed-sidebar";
 import { CompactHero } from "@/components/home/compact-hero";
 
-import { QuickScienceRail } from "@/components/home/quick-science-rail";
-
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
 export const metadata: Metadata = {
@@ -119,11 +117,6 @@ export default async function Home() {
           {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
-          </div>
-
-          {/* [NEW] Hızlı Bilim / Rapid Science Rail */}
-          <div className="lg:col-span-12 mt-4 px-0 block md:hidden">
-            <QuickScienceRail />
           </div>
 
           {/* Main Feed Column */}
