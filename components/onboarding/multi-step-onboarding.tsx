@@ -283,8 +283,8 @@ export function MultiStepOnboarding({ onComplete, loading }: { onComplete: (data
             <AnimatePresence mode="wait">
                 <motion.div
                     key={step}
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: -40 }}
                     exit={{ opacity: 0, scale: 1.05, y: -20 }}
                     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 p-8 sm:p-10 rounded-[3rem] relative overflow-hidden"
