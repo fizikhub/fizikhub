@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { getYoutubeDownloadUrl } from "../actions";
+import NextImage from "next/image";
 
 export default function YoutubeDownloadPage() {
     const [url, setUrl] = useState("");
