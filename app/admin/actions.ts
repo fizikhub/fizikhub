@@ -314,6 +314,7 @@ export async function deleteQuiz(id: string) {
 }
 
 const COBALT_INSTANCES = [
+    "https://api.qwkuns.me/",
     "https://cobalt-api.meowing.de/",
     "https://cobalt-backend.canine.tools/",
     "https://kityune.imput.net/",
@@ -321,7 +322,7 @@ const COBALT_INSTANCES = [
     "https://sunny.imput.net/",
     "https://blossom.imput.net/",
     "https://cobalt.qwedl.com/",
-    "https://api.cobalt.tools/" // Keep official as last resort
+    "https://api.cobalt.tools/"
 ];
 
 export async function getYoutubeDownloadUrl(url: string) {
@@ -339,7 +340,8 @@ export async function getYoutubeDownloadUrl(url: string) {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                 },
                 body: JSON.stringify({
                     url: url,
