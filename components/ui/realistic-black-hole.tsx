@@ -11,6 +11,7 @@ export const RealisticBlackHole = () => {
 
         // --- SCENE SETUP ---
         const scene = new THREE.Scene();
+        // Orthographic Camera is used, but we calculate rays manually in fragment shader
         const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
         const renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
@@ -29,7 +30,8 @@ export const RealisticBlackHole = () => {
             uniforms: {
                 iTime: { value: 0 },
                 iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
-                iCameraZoom: { value: 1.0 }, // New uniform for responsive zoom
+                iCameraZoom: { value: 1.0 },
+                iVerticalOffset: { value: 0.0 }, // New uniform for vertical positioning
             },
             vertexShader: `
         varying vec2 vUv;
@@ -42,13 +44,13 @@ export const RealisticBlackHole = () => {
         uniform float iTime;
         uniform vec2 iResolution;
         uniform float iCameraZoom;
+        uniform float iVerticalOffset;
         varying vec2 vUv;
 
         // Constants
         #define PI 3.14159265359
 
         // --- NOISE FUNCTIONS ---
-        // 3D Noise for disk texture
         float hash(float n) { return fract(sin(n) * 43758.5453123); }
         float noise(vec3 x) {
             vec3 p = floor(x);
@@ -77,105 +79,94 @@ export const RealisticBlackHole = () => {
         void main() {
             vec2 uv = (vUv - 0.5) * iResolution / iResolution.y;
             
-            // Zoom adjustment based on screen ratio (passed via uniform)
+            // Apply Vertical Offset (to move BH up/down) before Zoom
+            uv.y -= iVerticalOffset; // Negative moves the coordinate center down -> BH moves UP on screen
+            
+            // Zoom adjustment
             uv *= iCameraZoom;
             
             // Camera Setup
-            vec3 ro = vec3(0.0, 1.5, -8.0); // Camera position
-            vec3 rd = normalize(vec3(uv, 1.5)); // Ray direction
+            vec3 ro = vec3(0.0, 1.5, -8.0);
+            vec3 rd = normalize(vec3(uv, 1.5));
             
-            // Camera Rotation (Tilt)
-            float tiltAngle = -0.15; // Look down slightly
+            // Simple camera tilt
+            float tiltAngle = -0.15;
             mat2 tilt = mat2(cos(tiltAngle), -sin(tiltAngle), sin(tiltAngle), cos(tiltAngle));
             ro.yz *= tilt;
             rd.yz *= tilt;
 
-            vec3 col = vec3(0.0);
-            
-            // Ray Marching / Tracing Variables
+            // --- RAY MARCHING SETUP ---
             vec3 p = ro;
             vec3 dir = rd;
             
-            // Black Hole Params
-            float bhRadius = 1.0;     // Event Horizon Radius
-            float diskInner = 2.6;    // ISCO
-            float diskOuter = 9.0;    // Extended Disk
+            float bhRadius = 1.0; 
+            float diskInner = 2.6; 
+            float diskOuter = 9.0;
             
             float accumulatedAlpha = 0.0;
             vec3 accumulatedColor = vec3(0.0);
             
-            // --- RAY MARCHING LOOP ---
-            
             float stepSize = 0.1;
-            const int MAX_STEPS = 120; // More steps for smoothness
+            const int MAX_STEPS = 100; // Optimal steps for performance/quality
             
             for(int i = 0; i < MAX_STEPS; i++) {
                 float r = length(p);
                 
-                // 1. EVENT HORIZON CHECK
+                // EVENT HORIZON
                 if(r < bhRadius) {
-                    accumulatedColor = vec3(0.0); // Black hole core
+                    accumulatedColor = vec3(0.0);
                     accumulatedAlpha = 1.0; 
                     break; 
                 }
                 
-                // 2. GRAVITATIONAL BENDING
+                // GRAVITATIONAL BENDING
                 vec3 forceDir = normalize(-p);
-                float force = 0.45 / (r * r); // Stronger bending for visual impact
+                float force = 0.45 / (r * r);
                 dir = normalize(dir + forceDir * force * stepSize);
                 
-                // 3. MOVE RAY
+                // MOVE RAY
                 vec3 prevP = p;
                 p += dir * stepSize;
                 
-                // 4. ACCRETION DISK INTERSECTION
+                // DISK INTERSECTION
                 if(prevP.y * p.y < 0.0) {
                     float t = -prevP.y / dir.y; 
                     vec3 hitPos = prevP + dir * t;
                     float dist = length(hitPos);
                     
                     if(dist > diskInner && dist < diskOuter) {
-                        // Disk Coordinates
                         float angle = atan(hitPos.z, hitPos.x);
                         float radius = dist;
                         
-                        // TEXTURE / NOISE
+                        // Texture
                         float speed = 6.0 * pow(radius, -1.5);
                         vec3 noisePos = vec3(angle * 3.0 + iTime * speed * 0.5, radius * 1.5, iTime * 0.3);
                         float dust = fbm(noisePos);
                         
-                        // COLOR RAMP (Reference: White Hot -> Salmon -> Reddish)
+                        // Color Ramp (White-Hot -> Salmon -> Red)
                         vec3 diskCol;
-                        
-                        // Normalized radius for color ramp (0.0 at inner, 1.0 at outer)
                         float nRadius = (radius - diskInner) / (diskOuter - diskInner);
                         
                         if(nRadius < 0.15) {
-                             // Core: Blinding White
-                             diskCol = mix(vec3(1.0, 1.0, 1.0), vec3(1.0, 0.9, 0.8), nRadius * 6.0);
+                             diskCol = mix(vec3(1.0), vec3(1.0, 0.9, 0.8), nRadius * 6.0);
                         } else if (nRadius < 0.4) {
-                             // Mid: Salmon / Light Orange
                              diskCol = mix(vec3(1.0, 0.9, 0.8), vec3(1.0, 0.6, 0.4), (nRadius - 0.15) * 4.0);
                         } else {
-                             // Outer: Red / Dark Red
                              diskCol = mix(vec3(1.0, 0.6, 0.4), vec3(0.4, 0.05, 0.02), (nRadius - 0.4) * 1.6);
                         }
                         
-                        // Variations
                         diskCol += dust * 0.4;
                         
-                        // DOPPLER BEAMING
+                        // Doppler
                         vec3 velocity = normalize(vec3(-hitPos.z, 0.0, hitPos.x));
                         float doppler = dot(velocity, normalize(ro - hitPos)); 
                         float beamInv = 1.0 + doppler * 0.5;
-                        
                         diskCol *= beamInv;
                         
-                        // Alpha/Density
+                        // Alpha
                         float alpha = smoothstep(diskOuter, diskOuter - 2.0, radius) * smoothstep(diskInner, diskInner + 0.5, radius);
-                        alpha *= (0.4 + 0.6 * dust); // Cloudiness
+                        alpha *= (0.4 + 0.6 * dust);
                         
-                        // SOFT GLOW ACCUMULATION
                         accumulatedColor += diskCol * alpha * 0.6;
                         accumulatedAlpha += alpha * 0.4;
                         
@@ -186,17 +177,15 @@ export const RealisticBlackHole = () => {
                 if(r > 25.0) break;
             }
             
-            // Background Stars
+            // Stars
             if(accumulatedAlpha < 1.0) {
                 float stars = pow(hash(dot(dir, vec3(12.3, 45.6, 78.9))), 80.0) * 0.8;
                 accumulatedColor += vec3(stars) * (1.0 - accumulatedAlpha);
             }
             
-            // Final Bloom / Glow (Reference: Soft White/Salmon Glow)
+            // Final Glow
             float centerDist = length(uv);
-            // Outer glow
             accumulatedColor += vec3(1.0, 0.8, 0.6) * 0.005 / (centerDist * centerDist + 0.001);
-            // Inner core glow
             accumulatedColor += vec3(1.0, 0.9, 0.8) * 0.01 / (centerDist * centerDist * centerDist + 0.01);
 
             gl_FragColor = vec4(accumulatedColor, 1.0);
@@ -217,7 +206,7 @@ export const RealisticBlackHole = () => {
         };
         requestAnimationFrame(animate);
 
-        // --- RESIZE & RESPONSIVE LOGIC ---
+        // --- RESIZE ---
         const handleResize = () => {
             if (!container) return;
             const w = container.clientWidth;
@@ -225,23 +214,29 @@ export const RealisticBlackHole = () => {
             renderer.setSize(w, h);
             material.uniforms.iResolution.value.set(w, h);
 
-            // RESPONSIVE ZOOM
-            // If width < height (Portrait), we need to zoom out (increase UV scale)
-            // to fit the black hole width-wise.
-            // Base zoom is 1.0 for Landscape (16:9).
+            // --- RESPONSIVE LOGIC (REFINED) ---
             const aspect = w / h;
-            if (aspect < 1.0) {
-                // Portrait mode: Increase zoom value to shrink the BH
-                // e.g., aspect 0.5 -> zoom 2.0
-                material.uniforms.iCameraZoom.value = 1.0 / aspect * 0.8;
-            } else {
-                // Landscape mode
-                material.uniforms.iCameraZoom.value = 0.9; // Slight zoom in for impact
+
+            if (aspect < 1.0) { // PORTRAIT (Mobile)
+                // 1. Zoom Adjustment:
+                // Previous: 1.0/aspect * 0.8 (Too small/distant)
+                // New: 1.0/aspect * 0.6 (Bigger, closer)
+                material.uniforms.iCameraZoom.value = (1.0 / aspect) * 0.6;
+
+                // 2. Vertical Offset:
+                // Move Black Hole UP so it peeks above the card.
+                // Positive value in shader logic (uv.y -= offset) moves image UP.
+                // We want to move it UP by about 15-20% of screen height.
+                material.uniforms.iVerticalOffset.value = 0.20;
+
+            } else { // LANDSCAPE (Desktop)
+                material.uniforms.iCameraZoom.value = 0.9;
+                material.uniforms.iVerticalOffset.value = 0.0; // Center it
             }
         };
 
         window.addEventListener("resize", handleResize);
-        handleResize(); // Initial call
+        handleResize();
 
         return () => {
             window.removeEventListener("resize", handleResize);
