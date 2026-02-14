@@ -11,7 +11,7 @@ export function CompactHero() {
     // The user explicitly wanted the "Bilimi Ti'ye Alıyoruz" card to be the new animated one.
     // So we simply return the MemeCorner here, effectively replacing the old static banner.
     return (
-        <div className="mb-8 sm:mb-10">
+        <div className="mb-4 sm:mb-6">
             <MemeCorner />
         </div>
     );
