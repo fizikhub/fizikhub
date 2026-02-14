@@ -88,36 +88,38 @@ export function NexusStories() {
     };
 
     return (
-        <section className="w-full py-4 mt-[-10px] mb-4">
-            <div className="flex overflow-x-auto gap-5 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
+        <section className="w-full py-6 mt-[-10px] mb-4">
+            <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
                 {storiesData.map((story, index) => (
                     <motion.div
                         key={story.name}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 20 }}
-                        className="flex-shrink-0 snap-start flex flex-col items-center gap-2 group cursor-pointer"
+                        className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer"
                         onClick={() => openViewer(index)}
                     >
                         {/* Outer Gradient Ring (Instagram-like) */}
                         <div className={cn(
-                            "w-[72px] h-[72px] rounded-full p-[3px]",
+                            "w-[82px] h-[82px] rounded-full p-[3px]",
                             "bg-gradient-to-tr",
                             story.color,
-                            "border-2 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] group-hover:shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] active:shadow-none transition-all duration-300"
+                            "border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] group-hover:shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[4px] group-hover:translate-y-[4px] active:shadow-none transition-all duration-300"
                         )}>
                             {/* Inner Content Container */}
-                            <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-2 border-black flex items-center justify-center overflow-hidden relative">
+                            <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[2px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
                                 <Image
                                     src={story.image}
                                     alt={story.name}
                                     fill
-                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                    className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                                 />
+                                {/* Subtle Inner Glow Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
                             </div>
                         </div>
 
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                        <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                             {story.name}
                         </span>
                     </motion.div>
