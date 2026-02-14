@@ -50,94 +50,78 @@ export function MobileMenu() {
                     <SheetDescription>Ana Menü</SheetDescription>
                 </div>
 
-                {/* 1. HEADER SECTION (Mimics Article Image Area) */}
-                <div className="relative h-24 bg-zinc-100 dark:bg-zinc-800 border-b-[3px] border-black flex items-end p-4 overflow-hidden">
-                    {/* Noise */}
-                    <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply"></div>
-
-                    {/* "Category Tag" Style Title */}
-                    <div className="relative z-10 transform -rotate-1">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-lg uppercase shadow-[2px_2px_0px_0px_#000] tracking-tighter">
+                {/* 1. HEADER SECTION */}
+                <div className="relative h-24 bg-[#121212] flex items-center justify-between px-6 border-b-2 border-neo-black">
+                    {/* "MENÜ" Badge */}
+                    <div className="bg-[#FFC800] border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] px-4 py-2">
+                        <span className="font-black text-2xl uppercase tracking-tighter text-neo-black">
                             MENÜ
                         </span>
                     </div>
 
-                    {/* Custom Close Button */}
+                    {/* Close Button */}
                     <button
                         onClick={() => setOpen(false)}
-                        className="absolute top-4 right-4 w-8 h-8 bg-white border-[2px] border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all z-20 rounded-md"
+                        className="w-10 h-10 bg-white border-[3px] border-neo-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-md"
                     >
-                        <X className="w-5 h-5 stroke-[3]" />
+                        <X className="w-6 h-6 stroke-[3] text-neo-black" />
                     </button>
                 </div>
 
-                {/* 2. BODY SECTION (Mimics Content Area) */}
-                <div className="flex-1 overflow-y-auto bg-white dark:bg-[#27272a] p-4">
-                    {/* Motion Wrapper for staggered effect */}
-                    <div className="flex flex-col gap-3">
-                        {menuItems.map((item, i) => (
-                            <motion.div
-                                key={item.href}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.1 + (i * 0.05), duration: 0.3, type: "spring", stiffness: 300, damping: 24 }}
+                {/* 2. BODY SECTION */}
+                <div className="flex-1 overflow-y-auto bg-[#1a1a1a] p-6 space-y-4">
+                    {menuItems.map((item, i) => (
+                        <motion.div
+                            key={item.href}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                        >
+                            <Link
+                                href={item.href}
+                                onClick={() => setOpen(false)}
+                                className="block"
                             >
-                                <Link
-                                    href={item.href}
-                                    onClick={() => setOpen(false)}
-                                    className="group block relative"
-                                >
-                                    <div className={cn(
-                                        "flex items-center justify-between p-3 border-[2px] border-black bg-white dark:bg-[#18181b] rounded-lg transition-all duration-200",
-                                        // Interaction State
-                                        "hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[3px_3px_0px_0px_#000] active:translate-x-0 active:translate-y-0 active:shadow-[1px_1px_0px_0px_#000]"
-                                    )}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 flex items-center justify-center bg-zinc-50 dark:bg-zinc-800 border-[2px] border-black rounded-md text-black dark:text-white group-hover:bg-[#FFC800] group-hover:text-black transition-colors duration-300">
-                                                <item.icon className="w-4 h-4 stroke-[2.5]" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-black text-base uppercase tracking-tight leading-none text-black dark:text-white">
-                                                    {item.label}
-                                                </span>
-                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">
-                                                    {item.sub}
-                                                </span>
-                                            </div>
+                                <div className="flex items-center justify-between p-4 bg-[#121212] border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 flex items-center justify-center bg-[#1a1a1a] border-2 border-neo-black rounded-lg">
+                                            <item.icon className="w-6 h-6 text-white" />
                                         </div>
-
-                                        <ChevronRight className="w-4 h-4 stroke-[3] text-zinc-300 group-hover:text-black dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
+                                        <span className="font-black text-xl uppercase tracking-tight text-white group-hover:text-[#FFC800] transition-colors">
+                                            {item.label}
+                                        </span>
                                     </div>
-                                </Link>
-                            </motion.div>
-                        ))}
-                    </div>
+                                    <ChevronRight className="w-6 h-6 text-white/30 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+                                </div>
+                            </Link>
+                        </motion.div>
+                    ))}
 
-                    {/* SEPARATOR */}
-                    <div className="h-px w-full border-t-[2px] border-dashed border-black/10 my-4"></div>
-
-                    {/* ACCOUNT BUTTONS */}
-                    <div className="space-y-2">
+                    <div className="pt-4">
                         <Link href="/giris" onClick={() => setOpen(false)}>
-                            <button className="w-full py-2.5 font-bold border-[2px] border-black bg-black text-white hover:bg-zinc-800 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] dark:border-white dark:shadow-none rounded-lg uppercase tracking-wide text-xs">
+                            <button className="w-full py-4 font-black text-lg border-[3px] border-neo-black bg-white text-neo-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-xl uppercase">
                                 Giriş Yap
                             </button>
                         </Link>
                     </div>
                 </div>
 
-                {/* 3. FOOTER (Mimics Author/Actions) */}
-                <div className="p-4 border-t-[3px] border-black bg-zinc-50 dark:bg-zinc-900">
-                    <div className="flex justify-center gap-3">
+                {/* 3. FOOTER */}
+                <div className="p-8 bg-[#121212] border-t-2 border-neo-black flex flex-col items-center gap-6">
+                    <div className="flex gap-4">
                         {[Twitter, Instagram, Github].map((Icon, i) => (
-                            <a key={i} href="#" className="w-9 h-9 flex items-center justify-center border-[2px] border-black bg-white hover:bg-[#FFC800] transition-colors shadow-[2px_2px_0px_0px_#000] rounded-md">
-                                <Icon className="w-4 h-4 stroke-[2.5]" />
+                            <a
+                                key={i}
+                                href="#"
+                                className="w-12 h-12 flex items-center justify-center bg-white border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-lg"
+                            >
+                                <Icon className="w-6 h-6 text-neo-black" />
                             </a>
                         ))}
                     </div>
-                    <div className="mt-3 text-center">
-                        <p className="text-[9px] font-black uppercase text-zinc-300 tracking-widest">FIZIKHUB © 2026</p>
-                    </div>
+                    <p className="font-black text-xs uppercase text-zinc-500 tracking-[0.2em]">
+                        FIZIKHUB © 2026
+                    </p>
                 </div>
 
             </SheetContent>
