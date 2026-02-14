@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { completeOnboarding } from "@/app/auth/actions";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { createClient } from "@/lib/supabase";
-import { StarBackground } from "@/components/background/star-background";
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 import { MultiStepOnboarding } from "@/components/onboarding/multi-step-onboarding";
 
 export default function OnboardingPage() {

@@ -9,7 +9,8 @@ import { ArrowLeft, Mail, ArrowRight, CheckCircle, Loader2 } from "lucide-react"
 import Link from "next/link";
 import { sendPasswordResetEmail } from "./actions";
 import { toast } from "sonner";
-import { StarBackground } from "@/components/background/star-background";
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 import { DankLogo } from "@/components/brand/dank-logo";
 
 export default function ForgotPasswordPage() {

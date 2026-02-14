@@ -6,6 +6,7 @@ import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
+import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 // Revalidate every 2 minutes for active active forum
 export const revalidate = 120;
@@ -130,6 +131,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
     return (
         <>
+            <BreadcrumbJsonLd items={[{ name: 'Forum', href: '/forum' }]} />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { verifyOtp, resendOtp } from "@/app/auth/actions";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { motion } from "framer-motion";
-import { StarBackground } from "@/components/background/star-background";
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 
 function VerifyContent() {
     const searchParams = useSearchParams();

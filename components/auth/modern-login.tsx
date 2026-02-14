@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo"; // Swapped to DankLogo
-import { StarBackground } from "@/components/background/star-background"; // Added StarBackground
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

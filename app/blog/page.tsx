@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { ModernExploreView } from "@/components/explore/modern-explore-view";
+import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 // ISR Removed for accurate auth state
 // export const revalidate = 0;
@@ -92,15 +93,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     }
 
     return (
-        <div className="container md:px-16 px-0 py-4 md:py-8 max-w-[1600px] mx-auto min-h-screen">
-            <ModernExploreView
-                initialArticles={articles || []}
-                currentCategory={category}
-                categories={VALID_CATEGORIES}
-                searchQuery={query}
-                totalPages={totalPages}
-                currentPage={page}
-            />
-        </div>
+        <>
+            <BreadcrumbJsonLd items={[{ name: 'Keşfet', href: '/blog' }]} />
+            <div className="container md:px-16 px-0 py-4 md:py-8 max-w-[1600px] mx-auto min-h-screen">
+                <ModernExploreView
+                    initialArticles={articles || []}
+                    currentCategory={category}
+                    categories={VALID_CATEGORIES}
+                    searchQuery={query}
+                    totalPages={totalPages}
+                    currentPage={page}
+                />
+            </div>
+        </>
     );
 }

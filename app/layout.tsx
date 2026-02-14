@@ -279,6 +279,8 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        {/* RSS Feed Autodiscovery */}
+        <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
         {/* DNS prefetch & preconnect for external resources */}
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -302,7 +304,13 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
-
+        {/* Skip to content — keyboard accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-bold focus:shadow-lg"
+        >
+          İçeriğe atla
+        </a>
 
         <UserActivityTracker />
         <ThemeProvider
@@ -318,7 +326,9 @@ export default async function RootLayout({
                   <OnboardingCheck />
                 </Suspense>
                 <SmoothScrollProvider>
-                  {children}
+                  <main id="main-content" role="main">
+                    {children}
+                  </main>
                 </SmoothScrollProvider>
               </NavigationWrapper>
 

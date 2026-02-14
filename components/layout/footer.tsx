@@ -95,7 +95,7 @@ export function Footer() {
     if (isMessagesPage) return null;
 
     return (
-        <footer className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end [mask-image:linear-gradient(to_bottom,transparent_0%,black_30%)]">
+        <footer role="contentinfo" aria-label="Site bilgileri" className="relative bg-[#000000] pt-1 overflow-hidden min-h-[600px] md:min-h-[800px] flex flex-col justify-end [mask-image:linear-gradient(to_bottom,transparent_0%,black_30%)]">
 
             {/* 1. BACKGROUND */}
             <div className="absolute inset-0 z-0 bg-black" />
@@ -188,7 +188,7 @@ export function Footer() {
                             <div className="w-1 h-4 bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
                             <h4 className="text-xs font-bold text-blue-100 uppercase tracking-widest">Keşif Modülü</h4>
                         </div>
-                        <nav className="flex flex-col gap-2">
+                        <nav aria-label="Keşif bağlantıları" className="flex flex-col gap-2">
                             <Link href="/kesfet" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Keşfet</Link>
                             <Link href="/testler" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Testler</Link>
                             <Link href="/sozluk" className="text-sm text-zinc-400 hover:text-white transition-colors hover:translate-x-1 duration-300">Sözlük</Link>

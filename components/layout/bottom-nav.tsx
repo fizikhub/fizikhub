@@ -59,7 +59,7 @@ export function BottomNav() {
             }}
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
-            <nav className="
+            <nav aria-label="Mobil navigasyon" className="
                 w-full
                 h-[50px]
                 bg-white/80 dark:bg-[#121212]/80
@@ -173,6 +173,8 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
         <ViewTransitionLink
             href={href}
             onClick={handleNavItemClick}
+            aria-label={label}
+            aria-current={isActive ? 'page' : undefined}
             className={cn(
                 "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"

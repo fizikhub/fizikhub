@@ -114,7 +114,7 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
-                                    <Image src={currentStory.image} alt="" fill className="object-cover" />
+                                    <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill className="object-cover" />
                                 </div>
                             </div>
                             <div className="flex flex-col">
@@ -128,6 +128,7 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
                         </div>
                         <button
                             onClick={onClose}
+                            aria-label="Hikayeyi kapat"
                             className="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95"
                         >
                             <X className="w-6 h-6" />
@@ -153,12 +154,12 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
 
                         {/* Navigation Arrows (Visible on Desktop) */}
                         <div className="absolute inset-y-0 left-4 hidden sm:flex items-center z-50">
-                            <button onClick={prevStory} disabled={currentIndex === 0} className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors disabled:opacity-0">
+                            <button onClick={prevStory} disabled={currentIndex === 0} aria-label="Önceki hikaye" className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors disabled:opacity-0">
                                 <ChevronLeft className="w-8 h-8" />
                             </button>
                         </div>
                         <div className="absolute inset-y-0 right-4 hidden sm:flex items-center z-50">
-                            <button onClick={nextStory} className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors">
+                            <button onClick={nextStory} aria-label="Sonraki hikaye" className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors">
                                 <ChevronRight className="w-8 h-8" />
                             </button>
                         </div>

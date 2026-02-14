@@ -77,7 +77,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16" role="banner">
                 <div
                     className={cn(
                         "h-full",
@@ -131,7 +131,7 @@ export function Navbar() {
                     <div className="relative z-50 flex items-center gap-2">
 
                         {/* Desktop Links */}
-                        <div className="hidden md:flex items-center gap-2 mr-6">
+                        <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
                             {navItems.map((item) => (
                                 <ViewTransitionLink
                                     key={item.href}
@@ -145,11 +145,12 @@ export function Navbar() {
                                     {item.label}
                                 </ViewTransitionLink>
                             ))}
-                        </div>
+                        </nav>
 
                         {/* 1. SEARCH - OPTIMIZED (32px) */}
                         <button
                             onClick={() => setIsSearchOpen(true)}
+                            aria-label="Ara"
                             className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
                         >
                             <Search className="w-4 h-4 text-black stroke-[3px]" />
@@ -158,6 +159,7 @@ export function Navbar() {
                         {/* 2. ZAP - OPTIMIZED (32px) */}
                         <button
                             onClick={() => window.location.href = '/ozel'}
+                            aria-label="Premium özellikler"
                             className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
                             <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
