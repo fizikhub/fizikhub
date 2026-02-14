@@ -15,21 +15,66 @@ import {
 } from "@/components/icons/category-icons";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import Image from "next/image";
+import { StoryViewer } from "./story-viewer";
 
-const stories = [
-    { name: "Kuantum", icon: QuantumIcon, href: "/blog?kategori=Kuantum", color: "from-blue-500 to-indigo-600" },
-    { name: "Astrofizik", icon: AstroIcon, href: "/blog?kategori=Astrofizik", color: "from-orange-500 to-red-600" },
-    { name: "Teknoloji", icon: TechIcon, href: "/blog?kategori=Teknoloji", color: "from-purple-500 to-pink-600" },
-    { name: "Doğa", icon: NatureIcon, href: "/blog?kategori=Doga", color: "from-green-500 to-emerald-600" },
-    { name: "Biyoloji", icon: BioIcon, href: "/blog?kategori=Biyoloji", color: "from-teal-500 to-cyan-600" },
-    { name: "Kimya", icon: ChemIcon, href: "/blog?kategori=Kimya", color: "from-yellow-400 to-orange-500" },
-    { name: "Eğitim", icon: EduIcon, href: "/blog?kategori=Egitim", color: "from-indigo-400 to-blue-500" },
-    { name: "Fizik", icon: PhysicsIcon, href: "/blog?kategori=Fizik", color: "from-rose-500 to-pink-600" },
-    { name: "Keşfet", icon: ExploreIcon, href: "/kesfet", color: "from-amber-400 to-orange-600" },
+const storiesData = [
+    {
+        name: "Kuantum",
+        image: "/stories/quantum.png",
+        href: "/blog?kategori=Kuantum",
+        color: "from-blue-500 to-indigo-600",
+        content: "Kuantum mekaniği, atom altı parçacıkların tuhaf dünyasını inceler. Dalga-parçacık ikiliği ve dolanıklık gibi kavramlar modern teknolojinin temelidir.",
+        author: "FizikHub"
+    },
+    {
+        name: "Astrofizik",
+        image: "/stories/blackhole.png",
+        href: "/blog?kategori=Astrofizik",
+        color: "from-orange-500 to-red-600",
+        content: "Kara delikler, evrenin en gizemli ve güçlü yapılarından biridir. Işığın bile kaçamadığı bu devler, zaman ve uzayın sınırlarını zorlar.",
+        author: "FizikHub"
+    },
+    {
+        name: "Mars",
+        image: "/stories/mars.png",
+        href: "/blog?kategori=Teknoloji",
+        color: "from-red-500 to-orange-700",
+        content: "Kızıl gezegende insanlık için yeni bir yuva kurma hayali gerçeğe dönüşüyor. Mars kolonizasyonu ve keşif görevleri tüm hızıyla devam ediyor.",
+        author: "FizikHub"
+    },
+    {
+        name: "Biyoloji",
+        image: "/stories/dna.png",
+        href: "/blog?kategori=Biyoloji",
+        color: "from-teal-500 to-emerald-600",
+        content: "Yaşamın şifresi DNA sarmalları arasında gizlidir. Genetik mühendisliği ve biyoteknoloji, geleceğin tıp dünyasını şekillendiriyor.",
+        author: "FizikHub"
+    },
+    {
+        name: "Kimya",
+        icon: ChemIcon,
+        image: "/stories/quantum.png",
+        href: "/blog?kategori=Kimya",
+        color: "from-yellow-400 to-orange-500",
+        content: "Maddenin yapısını ve etkileşimlerini keşfedin. Reaksiyonlar dünyasında yolculuğa çıkın.",
+        author: "FizikHub"
+    },
+    {
+        name: "Fizik",
+        icon: PhysicsIcon,
+        image: "/stories/blackhole.png",
+        href: "/blog?kategori=Fizik",
+        color: "from-rose-500 to-pink-600",
+        content: "Evrenin temel yasalarını öğrenin. Hareket, kuvvet ve enerji arasındaki devasa ilişki.",
+        author: "FizikHub"
+    },
 ];
 
 export function NexusStories() {
     const [mounted, setMounted] = useState(false);
+    const [viewerOpen, setViewerOpen] = useState(false);
+    const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
     useEffect(() => {
         setMounted(true);
@@ -37,31 +82,40 @@ export function NexusStories() {
 
     if (!mounted) return null;
 
+    const openViewer = (index: number) => {
+        setSelectedStoryIndex(index);
+        setViewerOpen(true);
+    };
+
     return (
         <section className="w-full py-4 mt-[-10px] mb-4">
             <div className="flex overflow-x-auto gap-5 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
-                {stories.map((story, index) => (
+                {storiesData.map((story, index) => (
                     <motion.div
                         key={story.name}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 20 }}
-                        className="flex-shrink-0 snap-start flex flex-col items-center gap-2 group"
+                        className="flex-shrink-0 snap-start flex flex-col items-center gap-2 group cursor-pointer"
+                        onClick={() => openViewer(index)}
                     >
-                        <Link href={story.href} className="relative block">
-                            {/* Outer Gradient Ring (Instagram-like) */}
-                            <div className={cn(
-                                "w-[72px] h-[72px] rounded-full p-[3px]",
-                                "bg-gradient-to-tr",
-                                story.color,
-                                "border-2 border-black shadow-[4px_4px_0px_0px_#000] group-hover:shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] active:shadow-none transition-all duration-300"
-                            )}>
-                                {/* Inner Content Container */}
-                                <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-2 border-black flex items-center justify-center overflow-hidden">
-                                    <story.icon className="w-10 h-10 group-hover:scale-110 transition-transform duration-300" />
-                                </div>
+                        {/* Outer Gradient Ring (Instagram-like) */}
+                        <div className={cn(
+                            "w-[72px] h-[72px] rounded-full p-[3px]",
+                            "bg-gradient-to-tr",
+                            story.color,
+                            "border-2 border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] group-hover:shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] active:shadow-none transition-all duration-300"
+                        )}>
+                            {/* Inner Content Container */}
+                            <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-2 border-black flex items-center justify-center overflow-hidden relative">
+                                <Image
+                                    src={story.image}
+                                    alt={story.name}
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
                             </div>
-                        </Link>
+                        </div>
 
                         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                             {story.name}
@@ -69,6 +123,19 @@ export function NexusStories() {
                     </motion.div>
                 ))}
             </div>
+
+            <StoryViewer
+                stories={storiesData.map(s => ({
+                    id: s.name,
+                    title: s.name,
+                    image: s.image,
+                    content: s.content,
+                    author: s.author
+                }))}
+                initialIndex={selectedStoryIndex}
+                isOpen={viewerOpen}
+                onClose={() => setViewerOpen(false)}
+            />
         </section>
     );
 }
