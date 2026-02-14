@@ -61,6 +61,7 @@ const getCachedFeedData = unstable_cache(
 
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { NexusStories } from "@/components/home/nexus-stories";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
@@ -117,6 +118,7 @@ export default async function Home() {
           {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
+            <NexusStories />
           </div>
 
           {/* Main Feed Column */}
