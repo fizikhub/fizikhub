@@ -3,7 +3,14 @@ import { Mail, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "İletişim | Fizikhub",
-    description: "Bizimle iletişime geçin.",
+    description: "Fizikhub ekibiyle iletişime geçin. Soru, görüş ve önerileriniz için bize ulaşın.",
+    openGraph: {
+        title: "İletişim — Fizikhub",
+        description: "Fizikhub ekibiyle iletişime geçin. Soru, görüş ve önerileriniz için bize ulaşın.",
+        type: "website",
+        url: "https://fizikhub.com/iletisim",
+    },
+    alternates: { canonical: "https://fizikhub.com/iletisim" },
 };
 
 export default function ContactPage() {

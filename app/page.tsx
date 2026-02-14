@@ -9,12 +9,23 @@ import { CompactHero } from "@/components/home/compact-hero";
 
 export const metadata: Metadata = {
   title: "Ana Sayfa",
-  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+  keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik soruları", "bilim sözlüğü"],
   openGraph: {
-    // ... (rest of metadata stays same)
-    title: "Fizikhub | Bilim Platformu",
-    description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+    title: "Fizikhub — Bilimi Ti'ye Alıyoruz",
+    description: "Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar. Türkçe bilim platformu.",
     type: "website",
+    url: "https://fizikhub.com",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Ti'ye Alıyoruz" }],
+    locale: "tr_TR",
+    siteName: "Fizikhub",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fizikhub — Bilimi Ti'ye Alıyoruz",
+    description: "Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar.",
+    images: ["/og-image.jpg"],
+    creator: "@fizikhub",
   },
 };
 

@@ -5,7 +5,19 @@ import { LeaderboardHeaderIcon } from "@/components/leaderboard/leaderboard-head
 
 export const metadata = {
     title: "Liderlik Tablosu | Fizikhub",
-    description: "Fizikhub topluluğunun en aktif ve başarılı üyeleri.",
+    description: "Fizikhub topluluğunun en aktif ve başarılı üyeleri. Soru sorarak, cevap vererek ve test çözerek sıralamada yüksel!",
+    openGraph: {
+        title: "Liderlik Tablosu — Fizikhub",
+        description: "Topluluğun en aktif ve başarılı üyeleri. Sıralamada yerinizi alın!",
+        type: "website",
+        url: "https://fizikhub.com/siralamalar",
+    },
+    twitter: {
+        card: "summary",
+        title: "Liderlik Tablosu — Fizikhub",
+        description: "Topluluğun en aktif ve başarılı üyeleri.",
+    },
+    alternates: { canonical: "https://fizikhub.com/siralamalar" },
 };
 
 export default async function LeaderboardPage() {

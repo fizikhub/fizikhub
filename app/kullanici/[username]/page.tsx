@@ -13,8 +13,40 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { username } = await params;
+    const supabase = await createClient();
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('username, full_name, avatar_url, bio')
+        .eq('username', username)
+        .single();
+
+    const displayName = profile?.full_name || `@${username}`;
+    const description = profile?.bio
+        ? `${displayName} — ${profile.bio.substring(0, 140)}`
+        : `${displayName} adlı kullanıcının FizikHub profili. Makaleler, sorular ve bilimsel katkılar.`;
+
     return {
-        title: `@${username} - FizikHub Profil`,
+        title: `${displayName} (@${username})`,
+        description,
+        openGraph: {
+            title: `${displayName} — FizikHub Profil`,
+            description,
+            type: 'profile',
+            url: `https://fizikhub.com/kullanici/${username}`,
+            ...(profile?.avatar_url && {
+                images: [{ url: profile.avatar_url, width: 200, height: 200, alt: displayName }]
+            }),
+        },
+        twitter: {
+            card: 'summary',
+            title: `${displayName} — FizikHub`,
+            description,
+            ...(profile?.avatar_url && { images: [profile.avatar_url] }),
+        },
+        robots: {
+            index: true,
+            follow: true,
+        },
     };
 }
 

@@ -7,8 +7,22 @@ import { ModernExploreView } from "@/components/explore/modern-explore-view";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-    title: "Blog | Fizikhub",
-    description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
+    title: "Keşfet | Fizikhub",
+    description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin. Kuantum, astrofizik, biyoloji ve daha fazlası.",
+    openGraph: {
+        title: "Keşfet — Fizikhub",
+        description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",
+        type: "website",
+        url: "https://fizikhub.com/blog",
+        images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Keşfet" }],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Keşfet — Fizikhub",
+        description: "Fizik dünyasındaki en son makaleleri keşfedin.",
+        images: ["/og-image.jpg"],
+    },
+    alternates: { canonical: "https://fizikhub.com/blog" },
 };
 
 const VALID_CATEGORIES = ["Tümü", "Blog", "Kitap İncelemesi", "Deney", "Terim"];

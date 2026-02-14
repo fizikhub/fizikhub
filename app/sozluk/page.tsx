@@ -5,7 +5,20 @@ import { DictionaryList } from "@/components/dictionary/dictionary-list";
 
 export const metadata = {
     title: "Bilim Sözlüğü | Fizikhub",
-    description: "Fizik ve astronomi terimleri sözlüğü. Karmaşık kavramların anlaşılır açıklamaları.",
+    description: "Fizik, astronomi ve bilim terimlerinin Türkçe açıklamaları. Karmaşık kavramları anlaşılır bir dille öğrenin.",
+    keywords: ["fizik terimleri", "bilim sözlüğü", "astronomi terimleri", "kuantum terimleri", "fizik kavramları"],
+    openGraph: {
+        title: "Bilim Sözlüğü — Fizikhub",
+        description: "Fizik ve bilim terimlerinin Türkçe açıklamaları. Karmaşık kavramları anlaşılır bir dille öğrenin.",
+        type: "website",
+        url: "https://fizikhub.com/sozluk",
+    },
+    twitter: {
+        card: "summary",
+        title: "Bilim Sözlüğü — Fizikhub",
+        description: "Fizik ve bilim terimlerinin Türkçe açıklamaları.",
+    },
+    alternates: { canonical: "https://fizikhub.com/sozluk" },
 };
 
 export default async function DictionaryPage() {

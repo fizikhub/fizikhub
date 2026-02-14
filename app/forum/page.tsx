@@ -13,6 +13,21 @@ export const revalidate = 120;
 export const metadata = {
     title: "Bilim Forumu | Fizikhub",
     description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren. TYT/AYT fizik, kuantum, astrofizik ve daha fazlası.",
+    keywords: ["fizik forumu", "bilim soruları", "fizik soru cevap", "TYT fizik soruları", "bilimsel tartışma"],
+    openGraph: {
+        title: "Bilim Forumu — Fizikhub",
+        description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
+        type: "website",
+        url: "https://fizikhub.com/forum",
+        images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Bilim Forumu" }],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Bilim Forumu — Fizikhub",
+        description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
+        images: ["/og-image.jpg"],
+    },
+    alternates: { canonical: "https://fizikhub.com/forum" },
 };
 
 interface ForumPageProps {

@@ -6,8 +6,21 @@ import { Badge } from "@/components/ui/badge";
 import { BrainCircuit, ArrowRight, Clock, Trophy } from "lucide-react";
 
 export const metadata = {
-    title: "Fizik Testleri | Fizikhub",
-    description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
+    title: "Fizik Testleri & Quizler | Fizikhub",
+    description: "Fizik bilgini test et, puan kazan ve liderlik tablosunda yüksel. TYT, AYT ve genel fizik quizleri.",
+    keywords: ["fizik testi", "fizik quiz", "TYT fizik test", "AYT fizik test", "bilim sınavı"],
+    openGraph: {
+        title: "Fizik Testleri — Fizikhub",
+        description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
+        type: "website",
+        url: "https://fizikhub.com/testler",
+    },
+    twitter: {
+        card: "summary",
+        title: "Fizik Testleri — Fizikhub",
+        description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
+    },
+    alternates: { canonical: "https://fizikhub.com/testler" },
 };
 
 export default async function QuizzesPage() {

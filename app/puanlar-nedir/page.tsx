@@ -1,5 +1,17 @@
-
+import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+    title: "Hub Puan Sistemi | Fizikhub",
+    description: "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.",
+    openGraph: {
+        title: "Hub Puan Sistemi — Fizikhub",
+        description: "Puan kazanarak rütbenizi yükseltin ve toplulukta yerinizi alın.",
+        type: "website",
+        url: "https://fizikhub.com/puanlar-nedir",
+    },
+    alternates: { canonical: "https://fizikhub.com/puanlar-nedir" },
+};
 import { Badge } from "@/components/ui/badge";
 import {
     Trophy,

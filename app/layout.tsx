@@ -152,12 +152,21 @@ export const metadata: Metadata = {
   }
 };
 
-const jsonLd = {
+const jsonLdOrg = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': ['Organization', 'EducationalOrganization'],
+  '@id': 'https://fizikhub.com/#organization',
   name: 'Fizikhub',
+  alternateName: 'FizikHub',
   url: 'https://fizikhub.com',
-  logo: 'https://fizikhub.com/icon-512.png',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://fizikhub.com/icon-512.png',
+    width: 512,
+    height: 512,
+  },
+  description: 'Bilimi Ti\'ye Alıyoruz Ama Ciddi Şekilde. Fizik, astronomi, kuantum ve daha fazlası — Türkçe bilim platformu.',
+  foundingDate: '2024',
   sameAs: [
     'https://twitter.com/fizikhub',
     'https://instagram.com/fizikhub'
@@ -165,7 +174,27 @@ const jsonLd = {
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'customer support',
-    email: 'iletisim@fizikhub.com'
+    email: 'iletisim@fizikhub.com',
+    availableLanguage: 'Turkish'
+  }
+};
+
+const jsonLdWebsite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://fizikhub.com/#website',
+  name: 'Fizikhub',
+  url: 'https://fizikhub.com',
+  description: 'Türkçe bilim platformu: fizik makaleleri, forum, sözlük, testler ve simülasyonlar.',
+  publisher: { '@id': 'https://fizikhub.com/#organization' },
+  inLanguage: 'tr-TR',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://fizikhub.com/blog?q={search_term_string}'
+    },
+    'query-input': 'required name=search_term_string'
   }
 };
 
@@ -265,7 +294,11 @@ export default async function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
       </head>
       <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
