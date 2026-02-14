@@ -120,15 +120,17 @@ export default async function Home() {
             <CompactHero />
             <NexusStories />
             <LatestArticlesSlider
-              articles={articles.map((a: any) => ({
-                id: a.id,
-                title: a.title,
-                image: a.image_url || a.image,
-                slug: a.slug,
-                category: a.category,
-                author_name: a.author?.full_name || 'FizikHub',
-                created_at: a.created_at
-              }))}
+              articles={articles
+                .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
+                .map((a: any) => ({
+                  id: a.id,
+                  title: a.title,
+                  image: a.image_url || a.image,
+                  slug: a.slug,
+                  category: a.category,
+                  author_name: a.author?.full_name || 'FizikHub',
+                  created_at: a.created_at
+                }))}
             />
           </div>
 
