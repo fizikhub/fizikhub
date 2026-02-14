@@ -51,10 +51,10 @@ export function MobileMenu() {
                 </div>
 
                 {/* 1. HEADER SECTION */}
-                <div className="relative h-24 bg-[#121212] flex items-center justify-between px-6 border-b-2 border-neo-black">
+                <div className="relative h-16 bg-[#121212] flex items-center justify-between px-6 border-b-2 border-neo-black">
                     {/* "MENÜ" Badge */}
-                    <div className="bg-[#FFC800] border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] px-4 py-2">
-                        <span className="font-black text-2xl uppercase tracking-tighter text-neo-black">
+                    <div className="bg-[#FFC800] border-2 border-neo-black shadow-[3px_3px_0px_0px_#000] px-3 py-1">
+                        <span className="font-black text-lg uppercase tracking-tighter text-neo-black">
                             MENÜ
                         </span>
                     </div>
@@ -62,14 +62,14 @@ export function MobileMenu() {
                     {/* Close Button */}
                     <button
                         onClick={() => setOpen(false)}
-                        className="w-10 h-10 bg-white border-[3px] border-neo-black flex items-center justify-center shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-md"
+                        className="w-9 h-9 bg-white border-2 border-neo-black flex items-center justify-center shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-md"
                     >
-                        <X className="w-6 h-6 stroke-[3] text-neo-black" />
+                        <X className="w-5 h-5 stroke-[3] text-neo-black" />
                     </button>
                 </div>
 
                 {/* 2. BODY SECTION */}
-                <div className="flex-1 overflow-y-auto bg-[#1a1a1a] p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto bg-[#1a1a1a] p-4 space-y-3">
                     {menuItems.map((item, i) => (
                         <motion.div
                             key={item.href}
@@ -82,24 +82,24 @@ export function MobileMenu() {
                                 onClick={() => setOpen(false)}
                                 className="block"
                             >
-                                <div className="flex items-center justify-between p-4 bg-[#121212] border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 flex items-center justify-center bg-[#1a1a1a] border-2 border-neo-black rounded-lg">
-                                            <item.icon className="w-6 h-6 text-white" />
+                                <div className="flex items-center justify-between p-3 bg-[#121212] border-2 border-neo-black shadow-[3px_3px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all rounded-xl group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 flex items-center justify-center bg-[#1a1a1a] border-2 border-neo-black rounded-lg">
+                                            <item.icon className="w-5 h-5 text-white" />
                                         </div>
-                                        <span className="font-black text-xl uppercase tracking-tight text-white group-hover:text-[#FFC800] transition-colors">
+                                        <span className="font-black text-lg uppercase tracking-tight text-white group-hover:text-[#FFC800] transition-colors">
                                             {item.label}
                                         </span>
                                     </div>
-                                    <ChevronRight className="w-6 h-6 text-white/30 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+                                    <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white transition-all transform group-hover:translate-x-1" />
                                 </div>
                             </Link>
                         </motion.div>
                     ))}
 
-                    <div className="pt-4">
+                    <div className="pt-2">
                         <Link href="/giris" onClick={() => setOpen(false)}>
-                            <button className="w-full py-4 font-black text-lg border-[3px] border-neo-black bg-white text-neo-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-xl uppercase">
+                            <button className="w-full py-3 font-black text-base border-2 border-neo-black bg-white text-neo-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-xl uppercase">
                                 Giriş Yap
                             </button>
                         </Link>
@@ -107,19 +107,19 @@ export function MobileMenu() {
                 </div>
 
                 {/* 3. FOOTER */}
-                <div className="p-8 bg-[#121212] border-t-2 border-neo-black flex flex-col items-center gap-6">
-                    <div className="flex gap-4">
+                <div className="p-6 bg-[#121212] border-t-2 border-neo-black flex flex-col items-center gap-4">
+                    <div className="flex gap-3">
                         {[Twitter, Instagram, Github].map((Icon, i) => (
                             <a
                                 key={i}
                                 href="#"
-                                className="w-12 h-12 flex items-center justify-center bg-white border-[3px] border-neo-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all rounded-lg"
+                                className="w-10 h-10 flex items-center justify-center bg-white border-2 border-neo-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-lg"
                             >
-                                <Icon className="w-6 h-6 text-neo-black" />
+                                <Icon className="w-5 h-5 text-neo-black" />
                             </a>
                         ))}
                     </div>
-                    <p className="font-black text-xs uppercase text-zinc-500 tracking-[0.2em]">
+                    <p className="font-black text-[10px] uppercase text-zinc-500 tracking-[0.2em]">
                         FIZIKHUB © 2026
                     </p>
                 </div>
