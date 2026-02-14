@@ -7,26 +7,19 @@
 
 /* Smooth scrolling everywhere */
 html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
 }
 
-/* GPU acceleration for main layout */
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
 }
 
 /* ========== GLOBAL TRANSITIONS ========== */
 
-/* Default smooth transition for ALL elements */
-*,
-*::before,
-*::after {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* NOTE: Wildcard * transition removed — it caused scroll jank by forcing
+   the browser to calculate transitions on every DOM element during paint. */
 
 /* Smooth transitions for common elements */
 a,
@@ -99,13 +92,12 @@ select {
 
 /* ========== SCROLL PERFORMANCE ========== */
 
-/* Smooth momentum scrolling */
+/* Native momentum scrolling (no smooth — it conflicts with touch inertia) */
 .overflow-y-auto,
 .overflow-x-auto,
 .overflow-auto,
 [class*="scroll"] {
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
 }
 
 /* Content stability */
@@ -144,6 +136,7 @@ article,
 
 /* ========== AGGRESSIVE MOBILE OPTIMIZATIONS ========== */
 @media (max-width: 767px) {
+
     /* Reduce backdrop blur on mobile for performance */
     .backdrop-blur-xl,
     .backdrop-blur-lg,
@@ -188,6 +181,7 @@ article,
 
 /* Ultra-low-end device optimizations */
 @media (max-width: 767px) and (hover: none) {
+
     /* Completely disable animations on low-end touch devices */
     [class*="animate-"] {
         animation: none !important;
@@ -696,5 +690,104 @@ iframe {
 @media (max-width: 767px) {
     .star-trail {
         display: none;
+    }
+
+    /* Disable MemeCorner CSS animations on mobile */
+    .animate-\[shimmer_4s_ease-in-out_infinite\],
+    .animate-\[pulse-glow_3s_ease-in-out_infinite\],
+    .animate-\[badge-wiggle_3s_ease-in-out_infinite\] {
+        animation: none !important;
+    }
+}
+
+/* ========== FEED & COMPONENT ANIMATIONS ========== */
+/* These replace framer-motion JS animations for better mobile perf */
+
+@keyframes feedItemAppear {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes storyItemPop {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes articleSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.feed-item-appear {
+    animation: feedItemAppear 0.3s ease-out both;
+}
+
+.story-item {
+    animation: storyItemPop 0.25s ease-out both;
+}
+
+.article-slide-item {
+    animation: articleSlideIn 0.3s ease-out both;
+}
+
+/* On mobile, simplify animations to pure opacity for max perf */
+@media (max-width: 767px) {
+
+    .feed-item-appear,
+    .story-item,
+    .article-slide-item {
+        animation-duration: 0.15s;
+        transform: none !important;
+    }
+
+    @keyframes feedItemAppear {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes storyItemPop {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes articleSlideIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 }

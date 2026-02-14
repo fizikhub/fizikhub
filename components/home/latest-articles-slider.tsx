@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Clock, User } from "lucide-react";
@@ -38,15 +37,13 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
 
             <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x snap-mandatory px-1">
                 {articles.slice(0, 6).map((article, index) => (
-                    <motion.div
+                    <div
                         key={article.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start"
+                        className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start article-slide-item"
+                        style={{ animationDelay: `${index * 80}ms` }}
                     >
                         <Link href={`/blog/${article.slug}`}>
-                            <div className="group relative bg-white dark:bg-zinc-900 border-4 border-black shadow-[8px_8px_0px_0px_#000] hover:shadow-[4px_4px_0px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] transition-all duration-300 rounded-3xl overflow-hidden aspect-[4/3]">
+                            <div className="group relative bg-white dark:bg-zinc-900 border-4 border-black shadow-[8px_8px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] transition-shadow duration-200 rounded-3xl overflow-hidden aspect-[4/3]">
                                 {/* Image Background */}
                                 <div className="absolute inset-0 z-0">
                                     {article.image ? (
@@ -54,7 +51,9 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                             src={article.image}
                                             alt={article.title}
                                             fill
-                                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out grayscale-[0.2] group-hover:grayscale-0"
+                                            sizes="(max-width: 640px) 280px, 320px"
+                                            className="object-cover"
+                                            loading={index < 2 ? "eager" : "lazy"}
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
@@ -73,7 +72,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                         </span>
                                     </div>
 
-                                    <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter leading-tight line-clamp-2 mb-3 drop-shadow-lg group-hover:text-yellow-400 transition-colors">
+                                    <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter leading-tight line-clamp-2 mb-3 drop-shadow-lg">
                                         {article.title}
                                     </h3>
 
@@ -90,7 +89,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                 </div>
                             </div>
                         </Link>
-                    </motion.div>
+                    </div>
                 ))}
             </div>
         </section>

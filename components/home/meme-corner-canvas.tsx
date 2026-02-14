@@ -1,13 +1,10 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 
 // --- TEXTURES ---
-
-// 1. STAR TEXTURE: Hard center for visibility
 function getStarTexture() {
     if (typeof document === 'undefined') return new THREE.Texture();
     const canvas = document.createElement('canvas');
@@ -31,171 +28,56 @@ function getStarTexture() {
     return texture;
 }
 
-// 2. NEBULA TEXTURE: Pure soft cloud
-function getNebulaTexture() {
-    if (typeof document === 'undefined') return new THREE.Texture();
-    const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return new THREE.Texture();
-
-    const center = 32;
-    const gradient = ctx.createRadialGradient(center, center, 0, center, center, 32);
-    // Soft puffy cloud
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-    gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.1)');
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 64, 64);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.premultiplyAlpha = true;
-    return texture;
-}
-
-// --- GALAXY DUST ( The Haze ) ---
-function GalaxyDust({ count = 30000 }) {
-    const pointsRef = useRef<THREE.Points>(null!);
-    const texture = useMemo(() => getStarTexture(), []); // Use same texture, just smaller
-
-    const geometry = useMemo(() => {
-        const positions = new Float32Array(count * 3);
-        const colors = new Float32Array(count * 3);
-
-        const c_Inner = new THREE.Color('#66aaff'); // Dusty Blue
-        const c_Outer = new THREE.Color('#3355aa'); // Deep Dust
-
-        const arms = 2;
-        const spin = 3.5;
-
-        for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-            // Dust is mostly in the arms
-            const rRandom = Math.pow(Math.random(), 1.5);
-            const radius = 1.0 + rRandom * 10;
-
-            const branchAngle = ((i % arms) / arms) * Math.PI * 2;
-            const spinAngle = radius * 0.6 * spin;
-
-            // More scatter for dust = "Cloud/Haze" effect
-            const scatterBase = 0.4 + (radius * 0.15);
-            const randomX = (Math.random() - 0.5) * scatterBase * 2;
-            const randomY = (Math.random() - 0.5) * (0.1 + radius * 0.02); // Flat
-            const randomZ = (Math.random() - 0.5) * scatterBase * 2;
-
-            const finalAngle = branchAngle + spinAngle;
-            const x = Math.cos(finalAngle) * radius + randomX;
-            const z = Math.sin(finalAngle) * radius + randomZ;
-
-            positions[i3] = x;
-            positions[i3 + 1] = randomY;
-            positions[i3 + 2] = z;
-
-            const color = new THREE.Color();
-            color.copy(c_Inner).lerp(c_Outer, radius / 10);
-            color.multiplyScalar(0.6); // Dimmer than stars
-
-            colors[i3] = color.r;
-            colors[i3 + 1] = color.g;
-            colors[i3 + 2] = color.b;
-        }
-
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        return geo;
-    }, [count]);
-
-    useFrame((state, delta) => {
-        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.05;
-    });
-
-    return (
-        <points ref={pointsRef}>
-            <primitive object={geometry} />
-            <pointsMaterial
-                map={texture}
-                size={0.12} // Very small points
-                sizeAttenuation={true}
-                depthWrite={false}
-                blending={THREE.AdditiveBlending}
-                vertexColors
-                transparent
-                opacity={0.6}
-            />
-        </points>
-    );
-}
-
-// --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 10000 }) {
+// --- COMBINED GALAXY (single geometry, single draw call) ---
+function CombinedGalaxy({ isMobile }: { isMobile: boolean }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
+    // Mobile: 5K particles, Desktop: 15K - single pass
+    const count = isMobile ? 5000 : 15000;
+
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        const c_Core = new THREE.Color('#fff5c2');    // Golden Core
-        const c_Inner = new THREE.Color('#d4f1ff');   // White-Blue
-        const c_Outer = new THREE.Color('#5599ff');   // Electric Blue
+        const c_Core = new THREE.Color('#fff5c2');
+        const c_Inner = new THREE.Color('#d4f1ff');
+        const c_Outer = new THREE.Color('#5599ff');
 
         const arms = 2;
         const spin = 3.5;
-        const bulgeCount = 4000;
+        const bulgeCount = Math.floor(count * 0.3);
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             const color = new THREE.Color();
 
             if (i < bulgeCount) {
-                // Bulge
                 const r = Math.pow(Math.random(), 3) * 3.0;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
-
-                const x = r * Math.sin(phi) * Math.cos(theta);
-                const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.7;
-                const z = r * Math.cos(phi);
-
-                positions[i3] = x;
-                positions[i3 + 1] = y;
-                positions[i3 + 2] = z;
-
+                positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = (r * Math.sin(phi) * Math.sin(theta)) * 0.7;
+                positions[i3 + 2] = r * Math.cos(phi);
                 color.copy(c_Core);
-                // Core brilliance
                 if (Math.random() > 0.7) color.multiplyScalar(1.5);
-
             } else {
-                // Arms
                 const rRandom = Math.pow(Math.random(), 1.5);
                 const radius = 2.5 + rRandom * 8;
-
                 const branchAngle = ((i % arms) / arms) * Math.PI * 2;
                 const spinAngle = radius * 0.6 * spin;
-
-                // Tighter scatter for main stars = "Structure"
-                const scatterBase = 0.15 + (radius * 0.05);
+                const scatterBase = 0.3 + (radius * 0.1);
                 const randomX = (Math.random() - 0.5) * scatterBase * 2;
-                const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.05);
+                const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.04);
                 const randomZ = (Math.random() - 0.5) * scatterBase * 2;
-
                 const finalAngle = branchAngle + spinAngle;
-                const x = Math.cos(finalAngle) * radius + randomX;
-                const z = Math.sin(finalAngle) * radius + randomZ;
-
-                positions[i3] = x;
+                positions[i3] = Math.cos(finalAngle) * radius + randomX;
                 positions[i3 + 1] = randomY;
-                positions[i3 + 2] = z;
-
+                positions[i3 + 2] = Math.sin(finalAngle) * radius + randomZ;
                 color.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
-
-                // Occasional Red Giants / Bright Stars
                 const rand = Math.random();
-                if (rand > 0.95) color.set('#ffffff').multiplyScalar(2.0); // Super bright
-                else if (rand > 0.90) color.set('#ffccaa'); // Red/Orange giant
+                if (rand > 0.95) color.set('#ffffff').multiplyScalar(2.0);
+                else if (rand > 0.90) color.set('#ffccaa');
             }
 
             colors[i3] = color.r;
@@ -209,8 +91,8 @@ function MainStars({ count = 10000 }) {
         return geo;
     }, [count]);
 
-    useFrame((state, delta) => {
-        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.05;
+    useFrame((_, delta) => {
+        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.04;
     });
 
     return (
@@ -218,7 +100,7 @@ function MainStars({ count = 10000 }) {
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={0.35} // Larger, distinct stars
+                size={isMobile ? 0.4 : 0.35}
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
@@ -230,76 +112,8 @@ function MainStars({ count = 10000 }) {
     );
 }
 
-// --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 8000 }) {
-    const pointsRef = useRef<THREE.Points>(null!);
-    const texture = useMemo(() => getNebulaTexture(), []);
-
-    const geometry = useMemo(() => {
-        const positions = new Float32Array(count * 3);
-        const colors = new Float32Array(count * 3);
-
-        // Deep Navy & Purple Theme
-        const c_Pink = new THREE.Color('#aa00ff');   // Violet highlights
-        const c_Purple = new THREE.Color('#4400ff'); // Deep Indigo
-        const c_Blue = new THREE.Color('#001155');   // Very Dark Navy
-
-        for (let i = 0; i < count; i++) {
-            const i3 = i * 3;
-            const radius = 1 + Math.random() * 10;
-            const angle = Math.random() * Math.PI * 2;
-
-            const x = Math.cos(angle) * radius;
-            const z = Math.sin(angle) * radius;
-            const y = (Math.random() - 0.5) * 3.0; // Volume
-
-            positions[i3] = x;
-            positions[i3 + 1] = y;
-            positions[i3 + 2] = z;
-
-            const color = new THREE.Color();
-            const mix = Math.random();
-            if (mix < 0.33) color.copy(c_Pink);
-            else if (mix < 0.66) color.copy(c_Purple);
-            else color.copy(c_Blue);
-
-            // Boost brightness
-            color.multiplyScalar(1.2);
-
-            colors[i3] = color.r;
-            colors[i3 + 1] = color.g;
-            colors[i3 + 2] = color.b;
-        }
-
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        return geo;
-    }, [count]);
-
-    useFrame((state, delta) => {
-        if (pointsRef.current) pointsRef.current.rotation.y += delta * 0.02;
-    });
-
-    return (
-        <points ref={pointsRef}>
-            <primitive object={geometry} />
-            <pointsMaterial
-                map={texture}
-                size={3.0} // Large volumetric look
-                sizeAttenuation={true}
-                depthWrite={false}
-                blending={THREE.AdditiveBlending}
-                vertexColors
-                transparent
-                opacity={0.5}
-            />
-        </points>
-    );
-}
-
-// --- DISTANT BACKGROUND STARS ---
-function BackgroundStars({ count = 2000 }) {
+// --- BACKGROUND STARS (kept separate, minimal count) ---
+function BackgroundStars({ count = 800 }: { count?: number }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -311,22 +125,14 @@ function BackgroundStars({ count = 2000 }) {
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-            // Distant Sphere
             const r = 20 + Math.random() * 20;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(2 * Math.random() - 1);
-
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
-
-            positions[i3] = x;
-            positions[i3 + 1] = y;
-            positions[i3 + 2] = z;
-
+            positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i3 + 2] = r * Math.cos(phi);
             const color = new THREE.Color();
             color.copy(Math.random() > 0.5 ? c_White : c_Blue);
-
             colors[i3] = color.r;
             colors[i3 + 1] = color.g;
             colors[i3 + 2] = color.b;
@@ -338,53 +144,63 @@ function BackgroundStars({ count = 2000 }) {
         return geo;
     }, [count]);
 
-    useFrame((state, delta) => {
-        if (pointsRef.current) pointsRef.current.rotation.y -= delta * 0.005; // Very slow counter-rotation
-    });
+    // No useFrame for background stars — they're static. Saves a raf callback.
 
     return (
         <points ref={pointsRef}>
             <primitive object={geometry} />
             <pointsMaterial
                 map={texture}
-                size={0.15} // Tiny distant dots
+                size={0.15}
                 sizeAttenuation={true}
                 depthWrite={false}
                 blending={THREE.AdditiveBlending}
                 vertexColors
                 transparent
-                opacity={0.6} // Faint
+                opacity={0.5}
             />
         </points>
     );
 }
 
 export default function MemeCornerCanvas() {
-    return (
-        <Canvas
-            camera={{ position: [0, 5, 7], fov: 50 }}
-            gl={{
-                antialias: false,
-                powerPreference: "high-performance",
-                alpha: true
-            }}
-            dpr={[1, 2]}
-        >
-            <group>
-                <BackgroundStars />
-                <GalaxyDust />
-                <MainStars />
-                <NebulaClouds />
-            </group>
+    const [isMobile, setIsMobile] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-            <EffectComposer enableNormalPass={false}>
-                <Bloom
-                    luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
-                    mipmapBlur
-                    intensity={1.1}
-                    radius={0.4} // Sharper glow
-                />
-            </EffectComposer>
-        </Canvas>
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    }, []);
+
+    // Pause canvas when not visible (IntersectionObserver)
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => setIsVisible(entry.isIntersecting),
+            { threshold: 0.1 }
+        );
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    return (
+        <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+            {isVisible && (
+                <Canvas
+                    camera={{ position: [0, 5, 7], fov: 50 }}
+                    gl={{
+                        antialias: false,
+                        powerPreference: isMobile ? "low-power" : "high-performance",
+                        alpha: true,
+                    }}
+                    dpr={isMobile ? 1 : [1, 1.5]}
+                    frameloop={isVisible ? "always" : "never"}
+                >
+                    <BackgroundStars count={isMobile ? 400 : 800} />
+                    <CombinedGalaxy isMobile={isMobile} />
+                    {/* REMOVED: EffectComposer + Bloom — massive GPU overhead on mobile */}
+                </Canvas>
+            )}
+        </div>
     );
 }

@@ -1,18 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-    QuantumIcon,
-    AstroIcon,
-    TechIcon,
-    NatureIcon,
-    BioIcon,
-    ChemIcon,
-    EduIcon,
-    PhysicsIcon,
-    ExploreIcon
-} from "@/components/icons/category-icons";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -53,7 +41,6 @@ const storiesData = [
     },
     {
         name: "Kimya",
-        icon: ChemIcon,
         image: "/stories/quantum.png",
         href: "/blog?kategori=Kimya",
         color: "from-yellow-400 to-orange-500",
@@ -62,7 +49,6 @@ const storiesData = [
     },
     {
         name: "Fizik",
-        icon: PhysicsIcon,
         image: "/stories/blackhole.png",
         href: "/blog?kategori=Fizik",
         color: "from-rose-500 to-pink-600",
@@ -91,12 +77,10 @@ export function NexusStories() {
         <section className="w-full py-4 mt-[-20px] mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
                 {storiesData.map((story, index) => (
-                    <motion.div
+                    <div
                         key={story.name}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 20 }}
-                        className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer"
+                        className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer story-item"
+                        style={{ animationDelay: `${index * 50}ms` }}
                         onClick={() => openViewer(index)}
                     >
                         {/* Outer Gradient Ring (Instagram-like) */}
@@ -104,7 +88,7 @@ export function NexusStories() {
                             "w-[82px] h-[82px] rounded-full p-[3px]",
                             "bg-gradient-to-tr",
                             story.color,
-                            "border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] group-hover:shadow-[2px_2px_0px_0px_#000] group-hover:translate-x-[4px] group-hover:translate-y-[4px] active:shadow-none transition-all duration-300"
+                            "border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
                         )}>
                             {/* Inner Content Container */}
                             <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[2px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
@@ -112,17 +96,19 @@ export function NexusStories() {
                                     src={story.image}
                                     alt={story.name}
                                     fill
-                                    className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                                    sizes="82px"
+                                    className="object-cover"
+                                    loading={index < 3 ? "eager" : "lazy"}
                                 />
                                 {/* Subtle Inner Glow Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
                             </div>
                         </div>
 
-                        <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                        <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400">
                             {story.name}
                         </span>
-                    </motion.div>
+                    </div>
                 ))}
             </div>
 

@@ -3,8 +3,6 @@
 import dynamic from "next/dynamic";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { QuestionCard } from "@/components/forum/question-card";
-import { motion } from "framer-motion";
-
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { TermCard } from "@/components/term/term-card";
@@ -40,17 +38,13 @@ interface UnifiedFeedProps {
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
-            {/* Feed Container - Clean cards with subtle shadows */}
+            {/* Feed Container - Clean cards */}
             <div className="flex flex-col gap-5 sm:gap-6">
                 {items.map((item, index) => (
-                    <motion.div
+                    <div
                         key={`${item.type}-${item.data.id}`}
-
-                        initial={index < 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                        whileInView={index < 3 ? undefined : { opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "100px" }}
-                        transition={{ duration: 0.4, delay: index < 3 ? 0 : 0.05, ease: "easeOut" }}
-                        className="group"
+                        className="feed-item-appear"
+                        style={{ animationDelay: index < 5 ? `${index * 60}ms` : undefined }}
                     >
                         {item.type === 'article' && (
                             <NeoArticleCard
@@ -93,7 +87,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-all">
+                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-colors">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
@@ -102,7 +96,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {/* Injected Content - Soft styling */}
+                        {/* Injected Content */}
                         {index === 2 && (
                             <div className="mt-6">
                                 <CommunityInviteBanner />
@@ -115,8 +109,6 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-
-
                         {index === 8 && (
                             <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
                                 <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
@@ -125,11 +117,11 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                                 <QuestionOfTheWeek />
                             </div>
                         )}
-                    </motion.div>
+                    </div>
                 ))}
             </div>
 
-            {/* Suggested Users Footer - Rounded and soft */}
+            {/* Suggested Users Footer */}
             <div className="mt-8 rounded-2xl bg-muted/30 border border-border/50 p-6">
                 <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 text-center">
                     Önerilen Araştırmacılar
