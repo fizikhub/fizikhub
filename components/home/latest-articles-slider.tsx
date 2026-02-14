@@ -43,7 +43,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                         style={{ animationDelay: `${index * 80}ms` }}
                     >
                         <Link href={`/blog/${article.slug}`}>
-                            <div className="group relative bg-white dark:bg-zinc-900 border-4 border-black shadow-[8px_8px_0px_0px_#000] active:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] transition-shadow duration-200 rounded-3xl overflow-hidden aspect-[4/3]">
+                            <div className="group relative bg-white dark:bg-zinc-900 border-[3px] border-black shadow-[5px_5px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] hover:scale-[1.02] transition-all duration-300 rounded-3xl overflow-hidden aspect-[4/3]">
                                 {/* Image Background */}
                                 <div className="absolute inset-0 z-0">
                                     {article.image ? (
@@ -67,7 +67,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                 {/* Content Overlay */}
                                 <div className="absolute inset-0 z-10 p-5 flex flex-col justify-end">
                                     <div className="mb-3">
-                                        <span className="px-3 py-1 bg-yellow-400 border-2 border-black text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]">
+                                        <span className="px-3 py-1 bg-yellow-400 border-[1.5px] border-black text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]">
                                             {article.category}
                                         </span>
                                     </div>

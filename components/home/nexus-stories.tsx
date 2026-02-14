@@ -85,13 +85,13 @@ export function NexusStories() {
                     >
                         {/* Outer Gradient Ring (Instagram-like) */}
                         <div className={cn(
-                            "w-[82px] h-[82px] rounded-full p-[3px]",
+                            "w-[82px] h-[82px] rounded-full p-[2px]",
                             "bg-gradient-to-tr",
                             story.color,
-                            "border-[2.5px] border-black shadow-[6px_6px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
+                            "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
                         )}>
                             {/* Inner Content Container */}
-                            <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[2px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
+                            <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[1.5px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
                                 <Image
                                     src={story.image}
                                     alt={story.name}
