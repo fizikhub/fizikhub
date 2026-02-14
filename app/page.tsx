@@ -140,7 +140,7 @@ export default async function Home() {
           </div>
 
           {/* Sidebar Column */}
-          <div className="hidden xl:block xl:col-span-12 xl:col-span-5 relative">
+          <div className="hidden xl:block xl:col-span-5 relative">
             <FeedSidebar />
           </div>
         </div>

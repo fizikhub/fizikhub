@@ -77,8 +77,8 @@ const archivoBlack = Archivo_Black({
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#0a0a0a' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
@@ -146,10 +146,6 @@ export const metadata: Metadata = {
     },
   },
   category: 'science',
-  verification: {
-    google: "yVbS-q4y0y... (User to provide)", // Placeholder
-    yandex: "yandex...",
-  },
   other: {
     "apple-mobile-web-app-capable": "yes",
     "mobile-web-app-capable": "yes",
@@ -254,18 +250,17 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://fizikhub.com" />
-        {/* KaTeX CSS - Using preload hint for faster loading */}
-        <link
-          rel="preload"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-          as="style"
-          crossOrigin="anonymous"
-        />
-        {/* KaTeX Support for Mathematical Formulas - High Priority Load */}
+        {/* DNS prefetch & preconnect for external resources */}
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        {/* KaTeX Support for Mathematical Formulas */}
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
           crossOrigin="anonymous"
         />
         <script

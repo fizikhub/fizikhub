@@ -1,17 +1,26 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import Lenis from "lenis";
 
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    }, []);
+
     useLayoutEffect(() => {
+        // Skip Lenis on mobile — native scrolling is smoother and less memory-intensive
+        if (isMobile) return;
+
         const lenis = new Lenis({
-            duration: 0.6, // Snappy response (was 1.2)
+            duration: 0.6,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             orientation: "vertical",
             gestureOrientation: "vertical",
             smoothWheel: true,
-            wheelMultiplier: 1.2, // More responsive (was 1)
+            wheelMultiplier: 1.2,
             touchMultiplier: 2,
         });
 
@@ -25,7 +34,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
         return () => {
             lenis.destroy();
         };
-    }, []);
+    }, [isMobile]);
 
     return <>{children}</>;
 }

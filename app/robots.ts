@@ -6,20 +6,49 @@ export default function robots(): MetadataRoute.Robots {
     return {
         rules: [
             {
-                userAgent: '*',
+                userAgent: 'Googlebot',
                 allow: '/',
                 disallow: [
                     '/api/',
-                    '/profil/', // Private profile settings
+                    '/profil/',
                     '/login/',
-                    '/register/',
                     '/forgot-password/',
                     '/reset-password/',
                     '/onboarding/',
                     '/admin/',
+                    '/mesajlar/',
+                ],
+            },
+            {
+                userAgent: 'Bingbot',
+                allow: '/',
+                disallow: [
+                    '/api/',
+                    '/profil/',
+                    '/login/',
+                    '/forgot-password/',
+                    '/reset-password/',
+                    '/onboarding/',
+                    '/admin/',
+                    '/mesajlar/',
+                ],
+            },
+            {
+                userAgent: '*',
+                allow: '/',
+                disallow: [
+                    '/api/',
+                    '/profil/',
+                    '/login/',
+                    '/forgot-password/',
+                    '/reset-password/',
+                    '/onboarding/',
+                    '/admin/',
+                    '/mesajlar/',
                 ],
             },
         ],
         sitemap: `${baseUrl}/sitemap.xml`,
+        host: baseUrl,
     };
 }

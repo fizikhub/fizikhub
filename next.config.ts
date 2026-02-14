@@ -31,7 +31,21 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    optimizePackageImports: ['lucide-react', 'date-fns', 'framer-motion', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'framer-motion',
+      '@phosphor-icons/react',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      'sonner',
+      'react-hook-form',
+    ],
     serverActions: {
       bodySizeLimit: '5mb',
     },
@@ -44,8 +58,9 @@ const nextConfig: NextConfig = {
   // Security & Caching Headers
   async headers() {
     return [
+      // Immutable static assets (fonts, images, etc.)
       {
-        source: '/:all*(svg|jpg|png|gif|ico|webp|avif)',
+        source: '/:all*(svg|jpg|png|gif|ico|webp|avif|woff|woff2)',
         headers: [
           {
             key: 'Cache-Control',
@@ -53,6 +68,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // JS/CSS bundles
       {
         source: '/:all*(js|css)',
         headers: [
@@ -62,19 +78,21 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Global security headers for all routes
       {
         source: '/(.*)',
         headers: [
-          // Existing security headers
+          // Prevent MIME type sniffing
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          // Clickjacking protection
           {
             key: 'X-Frame-Options',
-            // Changed from DENY to SAMEORIGIN to prevent issues with in-app browsers
             value: 'SAMEORIGIN',
           },
+          // XSS protection
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
@@ -84,22 +102,22 @@ const nextConfig: NextConfig = {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
           },
-          // CSP - Content Security Policy
+          // CSP - Content Security Policy (Google bots, analytics, and Supabase allowed)
           {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com",
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
               "img-src 'self' data: blob: https: http:",
               "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com *.vercel-analytics.com *.vercel-insights.com",
-              "frame-src 'self' https://challenges.cloudflare.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com *.vercel-analytics.com *.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com",
+              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com",
               "media-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
-              "frame-ancestors 'self'", // Changed from none to self for better compatibility
+              "frame-ancestors 'self'",
               "upgrade-insecure-requests",
             ].join('; '),
           },
@@ -112,6 +130,11 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          // X-DNS-Prefetch-Control
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
           },
         ],
       },
@@ -132,4 +155,3 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 export default withBundleAnalyzer(withPWA(nextConfig));
-

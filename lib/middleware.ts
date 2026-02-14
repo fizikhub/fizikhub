@@ -27,11 +27,15 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // Refreshing the auth token
-    // OPTIMIZATION: Skip auth check for homepage and public static pages to improve TTFB.
-    // The homepage is cached and doesn't use server-side user data.
-    // Navbar fetches user status on the client side.
-    if (request.nextUrl.pathname === '/' || request.nextUrl.pathname === '/hakkimizda' || request.nextUrl.pathname === '/gizlilik-politikasi') {
+    // OPTIMIZATION: Skip auth check for public static pages to improve TTFB.
+    // These pages are cached/public and don't need server-side user data.
+    const publicPaths = ['/', '/hakkimizda', '/gizlilik-politikasi', '/kullanim-sartlari', '/iletisim', '/puanlar-nedir'];
+    const publicPrefixes = ['/blog', '/forum', '/sozluk', '/testler', '/simulasyonlar', '/siralamalar', '/deney', '/kitap-inceleme', '/kullanici', '/yazar'];
+
+    const isPublicPage = publicPaths.includes(request.nextUrl.pathname) ||
+        publicPrefixes.some(prefix => request.nextUrl.pathname.startsWith(prefix));
+
+    if (isPublicPage) {
         return supabaseResponse;
     }
 

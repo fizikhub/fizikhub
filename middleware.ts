@@ -1,12 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/middleware'
 
-// Simple in-memory rate limiting (for Vercel Edge, use KV for production)
+// Simple in-memory rate limiting with automatic cleanup
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS_AUTH = 5; // Max 5 auth requests per minute
 const MAX_REQUESTS_API = 30; // Max 30 API requests per minute
+const MAX_MAP_SIZE = 10000; // Prevent unbounded memory growth
 
 function getClientIP(request: NextRequest): string {
     const forwarded = request.headers.get('x-forwarded-for');
@@ -17,6 +18,17 @@ function getClientIP(request: NextRequest): string {
 function isRateLimited(ip: string, maxRequests: number): boolean {
     const now = Date.now();
     const record = rateLimitMap.get(ip);
+
+    // Cleanup old entries to prevent memory leak
+    if (rateLimitMap.size > MAX_MAP_SIZE) {
+        const keysToDelete: string[] = [];
+        rateLimitMap.forEach((val, key) => {
+            if (now - val.timestamp > RATE_LIMIT_WINDOW) {
+                keysToDelete.push(key);
+            }
+        });
+        keysToDelete.forEach(key => rateLimitMap.delete(key));
+    }
 
     if (!record || now - record.timestamp > RATE_LIMIT_WINDOW) {
         rateLimitMap.set(ip, { count: 1, timestamp: now });
@@ -30,9 +42,6 @@ function isRateLimited(ip: string, maxRequests: number): boolean {
     record.count++;
     return false;
 }
-
-// Note: Cleanup happens naturally via time-based expiry check in isRateLimited()
-// setInterval is not supported in Edge Runtime
 
 export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
@@ -80,8 +89,8 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - public folder
+         * - Static assets (images, fonts, etc.)
          */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!_next/static|_next/image|favicon.ico|sw.js|workbox-.*\\.js|manifest\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|woff|woff2|ico)$).*)',
     ],
 }
