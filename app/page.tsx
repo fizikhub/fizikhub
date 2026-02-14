@@ -62,6 +62,7 @@ const getCachedFeedData = unstable_cache(
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { NexusStories } from "@/components/home/nexus-stories";
+import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
@@ -115,10 +116,20 @@ export default async function Home() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
-          {/* Kompakt Hero Banner - Slogan + UFO */}
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
             <NexusStories />
+            <LatestArticlesSlider
+              articles={articles.map((a: any) => ({
+                id: a.id,
+                title: a.title,
+                image: a.image_url || a.image,
+                slug: a.slug,
+                category: a.category,
+                author_name: a.author?.full_name || 'FizikHub',
+                created_at: a.created_at
+              }))}
+            />
           </div>
 
           {/* Main Feed Column */}
