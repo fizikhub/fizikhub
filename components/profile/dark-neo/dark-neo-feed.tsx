@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutList, MessageCircle, Bookmark, FileText } from "lucide-react";
+import { LayoutList, MessageCircle, Bookmark, FileText, FolderOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 
@@ -35,11 +35,11 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutList },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle },
+        { id: "posts", label: "GÖNDERİLER", icon: LayoutList, color: "var(--pop-pink)" },
+        { id: "replies", label: "YANITLAR", icon: MessageCircle, color: "var(--pop-lime)" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: Bookmark },
-            { id: "drafts", label: "Taslaklar", icon: FileText }
+            { id: "saved", label: "KAYITLI", icon: Bookmark, color: "var(--pop-cyan)" },
+            { id: "drafts", label: "TASLAKLAR", icon: FileText, color: "var(--pop-yellow)" }
         ] : [])
     ];
 
@@ -62,43 +62,58 @@ export function DarkNeoFeed({
     const feedItems = getFeedItems(activeTab);
 
     return (
-        <div className="w-full space-y-6">
-            {/* TABS - Custom "Switch" Style */}
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+        <div className="w-full space-y-0">
+            {/* FOLDER TABS - Physical Tab Look */}
+            <div className="flex flex-wrap items-end px-4 gap-1">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            data-state={activeTab === tab.id ? "active" : "inactive"}
-                            className="neo-tab flex-1 sm:flex-none min-w-[100px]"
+                            className={cn(
+                                "relative px-4 py-2 text-xs font-black tracking-widest uppercase transition-all flex items-center gap-2",
+                                isActive
+                                    ? "bg-white text-black border-3 border-black border-b-0 z-10 translate-y-[3px] py-3 rounded-t-lg shadow-none"
+                                    : "bg-gray-200 text-gray-500 border-b-3 border-black hover:bg-gray-300 translate-y-0 rounded-t-md hover:-translate-y-1"
+                            )}
+                            style={{
+                                backgroundColor: isActive ? "#FFF" : undefined
+                            }}
                         >
-                            <Icon className="w-4 h-4 mr-2" />
+                            <Icon className={cn("w-4 h-4", isActive && "text-black")} style={{ color: isActive ? tab.color : undefined }} />
                             {tab.label}
-                            <span className="ml-2 opacity-60 text-[10px] scale-90">
-                                {counts[tab.id as keyof typeof counts]}
-                            </span>
+                            {counts[tab.id as keyof typeof counts] > 0 && (
+                                <span className={cn(
+                                    "ml-1 w-5 h-5 flex items-center justify-center rounded-full text-[9px] border-2 border-black",
+                                    isActive ? "opacity-100" : "opacity-50"
+                                )}
+                                    style={{ backgroundColor: tab.color }}
+                                >
+                                    {counts[tab.id as keyof typeof counts]}
+                                </span>
+                            )}
                         </button>
                     );
                 })}
             </div>
 
-            {/* CONTENT AREA */}
-            <div className="min-h-[300px]">
+            {/* MAIN CONTENT BOX - The "Folder" Body */}
+            <div className="border-3 border-black bg-white dark:bg-black min-h-[400px] shadow-[8px_8px_0_0_#000] p-4 sm:p-6 relative z-0">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.15 }}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2 }}
                     >
                         {activeTab === "posts" && (
                             feedItems.length > 0 ? (
                                 <UnifiedFeed items={feedItems} />
                             ) : (
-                                <EmptyNeoState label="Henüz Gönderi Yok" description="Bir şeyler paylaşmaya başla." />
+                                <EmptyPopState label="BOMBOŞ!" description="Burada henüz hiçbir şey yok." color="var(--pop-pink)" />
                             )
                         )}
 
@@ -106,29 +121,27 @@ export function DarkNeoFeed({
                             <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="neo-box p-4 md:p-6 group cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors">
-                                            <div className="flex items-center justify-between mb-3">
-                                                <div className="flex items-center gap-2 text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-                                                    <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
-                                                    <span>•</span>
-                                                    <span>Soruya Yanıt</span>
-                                                </div>
+                                        <div key={answer.id} className="neo-box-lime p-4 group cursor-pointer hover:bg-[hsl(var(--pop-lime))] transition-colors border-2 border-black shadow-[4px_4px_0_0_#000]">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-black/60">
+                                                    {new Date(answer.created_at).toLocaleDateString("tr-TR")}
+                                                </span>
                                                 {answer.is_accepted && (
-                                                    <div className="bg-green-400 text-black px-2 py-0.5 text-[10px] font-black border border-black uppercase shadow-[2px_2px_0_0_#000]">
+                                                    <div className="bg-black text-white px-2 py-0.5 text-[10px] font-bold uppercase transform rotate-2">
                                                         Kabul Edildi
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-black text-lg text-foreground mb-3 group-hover:underline decoration-2 underline-offset-4">
+                                            <h4 className="font-black text-lg text-black mb-2 group-hover:underline">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-muted-foreground text-sm pl-4 border-l-4 border-black dark:border-white opacity-80 line-clamp-3">
+                                            <div className="text-black text-sm pl-3 border-l-4 border-black line-clamp-3 font-medium">
                                                 {answer.content.replace(/<[^>]*>?/gm, "")}
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <EmptyNeoState label="Henüz Yanıt Yok" description="Verdiğin cevaplar burada görünür." />
+                                    <EmptyPopState label="SES YOK" description="Henüz kimseye yanıt vermemişsin." color="var(--pop-lime)" />
                                 )}
                             </div>
                         )}
@@ -137,7 +150,7 @@ export function DarkNeoFeed({
                             feedItems.length > 0 ? (
                                 <UnifiedFeed items={feedItems} />
                             ) : (
-                                <EmptyNeoState label="Kayıtlı İçerik Yok" description="Beğendiğin şeyleri kaydet." />
+                                <EmptyPopState label="KASA BOŞ" description="Henüz bir şey kaydetmedin." color="var(--pop-cyan)" />
                             )
                         )}
 
@@ -145,7 +158,7 @@ export function DarkNeoFeed({
                             feedItems.length > 0 ? (
                                 <UnifiedFeed items={feedItems} />
                             ) : (
-                                <EmptyNeoState label="Taslak Yok" description="Fikirlerini taslak olarak kaydet." />
+                                <EmptyPopState label="KAĞITLAR BOŞ" description="Taslaklarında bir şey yok." color="var(--pop-yellow)" />
                             )
                         )}
                     </motion.div>
@@ -155,11 +168,14 @@ export function DarkNeoFeed({
     );
 }
 
-function EmptyNeoState({ label, description }: { label: string; description: string }) {
+function EmptyPopState({ label, description, color }: { label: string; description: string; color: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 border-3 border-dashed border-black/10 dark:border-white/10 rounded-none bg-black/5 dark:bg-white/5">
-            <h3 className="text-xl font-black uppercase tracking-tight text-foreground/50 mb-1">{label}</h3>
-            <p className="text-sm font-medium text-muted-foreground/80">{description}</p>
+        <div className="flex flex-col items-center justify-center py-20 border-3 border-dashed border-black rounded-lg bg-gray-50/50">
+            <div className="w-16 h-16 mb-4 rounded-full border-3 border-black flex items-center justify-center shadow-[4px_4px_0_0_#000]" style={{ backgroundColor: color }}>
+                <FolderOpen className="w-8 h-8 text-black" />
+            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tighter text-black mb-1">{label}</h3>
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">{description}</p>
         </div>
     );
 }
