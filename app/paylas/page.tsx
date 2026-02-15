@@ -1,24 +1,82 @@
 "use client";
 
-import { CompactShareGrid } from "@/components/share/compact-share-grid";
+import { NeoGridCard } from "@/components/share/neo-grid-card";
+import {
+    FileText,
+    MessageCircle,
+    FlaskConical,
+    BookOpen,
+    Library,
+    PenTool
+} from "lucide-react";
 
 export default function PaylasPage() {
     return (
-        <div className="min-h-screen bg-background pt-16 md:pt-20 px-4 font-sans pb-24">
-            <div className="max-w-[800px] mx-auto">
+        <div className="min-h-[calc(100vh-80px)] w-full bg-background font-sans flex flex-col items-center justify-center p-4">
 
-                {/* Simple Header - No Massive Marquees */}
-                <div className="mb-6 flex items-center justify-between border-b-2 border-border pb-4">
-                    <h1 className="font-heading text-2xl md:text-3xl font-black uppercase tracking-tight text-foreground">
-                        Paylaşım Merkezi
+            <div className="w-full max-w-md space-y-6">
+
+                {/* Minimal Header */}
+                <div className="flex items-center justify-between px-2">
+                    <h1 className="font-heading text-xl font-black uppercase tracking-tight text-foreground">
+                        Paylaş
                     </h1>
-                    <div className="inline-block px-3 py-1 rounded-md border-2 border-black dark:border-white bg-primary text-black font-bold text-xs uppercase shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]">
-                        v2.1
+                    <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-xs font-bold text-muted-foreground">ONLINE</span>
                     </div>
                 </div>
 
-                {/* The Grid */}
-                <CompactShareGrid />
+                {/* Ultra-Compact Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                    {/* 1. Article - Yellow */}
+                    <NeoGridCard
+                        title="MAKALE"
+                        href="/makale/yeni"
+                        icon={FileText}
+                        color="bg-[#FACC15]"
+                    />
+
+                    {/* 2. Question - Pink */}
+                    <NeoGridCard
+                        title="SORU"
+                        href="/forum"
+                        icon={MessageCircle}
+                        color="bg-[#FB7185]"
+                    />
+
+                    {/* 3. Experiment - Green */}
+                    <NeoGridCard
+                        title="DENEY"
+                        href="/deney/yeni"
+                        icon={FlaskConical}
+                        color="bg-[#4ADE80]"
+                    />
+
+                    {/* 4. Blog - Orange */}
+                    <NeoGridCard
+                        title="BLOG"
+                        href="/blog"
+                        icon={PenTool}
+                        color="bg-orange-400"
+                    />
+
+                    {/* 5. Book - Blue */}
+                    <NeoGridCard
+                        title="KİTAP"
+                        href="/kitap-inceleme/yeni"
+                        icon={Library}
+                        color="bg-[#60A5FA]"
+                    />
+
+                    {/* 6. Term - Purple */}
+                    <NeoGridCard
+                        title="TERİM"
+                        href="/sozluk"
+                        icon={BookOpen}
+                        color="bg-[#C084FC]"
+                    />
+                </div>
             </div>
         </div>
     );
