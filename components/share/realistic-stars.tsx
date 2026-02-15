@@ -161,34 +161,35 @@ function Meteors({ count = 15, isDark }: { count?: number, isDark: boolean }) {
         const end = new Float32Array(count * 3);
 
         for (let i = 0; i < count; i++) {
-            d[i] = Math.random() * 5.0; // Random delay up to 5s
-            s[i] = 1.0 + Math.random(); // Speed multiplier
+            d[i] = Math.random() * 8.0; // Longer spread (8s)
+            s[i] = 1.2 + Math.random() * 0.5; // Slightly faster base
 
             // STRICT GEOMETRY: TOP-LEFT to BOTTOM-RIGHT
-            // Left of screen (-600 to -200) || Top of screen (300 to 600)
-            const fromLeft = Math.random() > 0.5;
+            // Start: Top Edge (-400 to 800 X, 600 Y) OR Left Edge (-600 X, -200 to 600 Y)
+
+            const fromTop = Math.random() > 0.4; // 60% from Top
             let sx, sy;
 
-            if (fromLeft) {
-                sx = -500 - Math.random() * 300;
-                sy = (Math.random() - 0.5) * 600;
+            if (fromTop) {
+                sx = (Math.random() - 0.5) * 1200; // Wide top spread
+                sy = 700 + Math.random() * 200; // Above screen
             } else {
-                sx = (Math.random() - 0.5) * 600;
-                sy = 500 + Math.random() * 300;
+                sx = -900 - Math.random() * 300; // Far left
+                sy = (Math.random() - 0.5) * 1000;
             }
 
-            // End Point: Add robust diagonal vector
-            // Vector: (+1000, -800)
-            const ex = sx + 1200 + Math.random() * 400;
-            const ey = sy - 1000 - Math.random() * 400;
+            // End: Steep Diagonal Down-Right
+            // Vector: (+0.8, -1.2) -> Steep
+            const ex = sx + (1000 + Math.random() * 500);
+            const ey = sy - (1500 + Math.random() * 500);
 
             start[i * 3] = sx;
             start[i * 3 + 1] = sy;
-            start[i * 3 + 2] = -50; // In front of stars
+            start[i * 3 + 2] = -10; // Closer to camera (Z=-10)
 
             end[i * 3] = ex;
             end[i * 3 + 1] = ey;
-            end[i * 3 + 2] = -50;
+            end[i * 3 + 2] = -10;
         }
 
         return { delays: d, speeds: s, starts: start, ends: end };
@@ -202,7 +203,7 @@ function Meteors({ count = 15, isDark }: { count?: number, isDark: boolean }) {
 
     return (
         <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-            <planeGeometry args={[150, 4]} /> {/* 300 unit long, 3 unit thick trail */}
+            <planeGeometry args={[60, 2]} /> {/* 60 unit long (smaller), 2 unit thick */}
             <shaderMaterial
                 ref={materialRef}
                 vertexShader={meteorVertexShader}
@@ -211,7 +212,7 @@ function Meteors({ count = 15, isDark }: { count?: number, isDark: boolean }) {
                 transparent
                 depthWrite={false}
                 side={THREE.DoubleSide}
-                blending={THREE.NormalBlending}
+                blending={THREE.AdditiveBlending} // Additive for GLOW
             />
 
             {/* Attributes */}
