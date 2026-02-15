@@ -288,12 +288,9 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        {/* KaTeX Support for Mathematical Formulas */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-          crossOrigin="anonymous"
-        />
+        {/* Google Verification */}
+        <meta name="google-site-verification" content="google-site-verification-code-here" />
+        {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}

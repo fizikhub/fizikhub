@@ -4,15 +4,14 @@ import { useLayoutEffect, useState, useEffect } from "react";
 import Lenis from "lenis";
 
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
-    const [isMobile, setIsMobile] = useState(false);
 
-    useEffect(() => {
-        setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
-    }, []);
 
     useLayoutEffect(() => {
-        // Skip Lenis on mobile — native scrolling is smoother and less memory-intensive
-        if (isMobile) return;
+        // Feature detection for mobile/touch devices
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isSmallScreen = window.innerWidth < 1024;
+
+        if (isTouchDevice && isSmallScreen) return;
 
         const lenis = new Lenis({
             duration: 0.6,
@@ -34,7 +33,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
         return () => {
             lenis.destroy();
         };
-    }, [isMobile]);
+    }, []);
 
     return <>{children}</>;
 }

@@ -78,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     // Fetch all data in parallel for speed
-    const [questionsResult, articlesResult, profilesResult, termsResult, quizzesResult] = await Promise.all([
+    const [questionsResult, articlesResult, profilesResult, termsResult, quizzesResult, simulationsResult] = await Promise.all([
         supabase
             .from('questions')
             .select('id, updated_at')
@@ -111,6 +111,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .eq('is_published', true)
             .order('created_at', { ascending: false })
             .limit(200),
+            .limit(200),
+
+        supabase
+            .from('simulations')
+            .select('slug, updated_at')
+            .eq('is_published', true)
+            .order('created_at', { ascending: false })
+            .limit(100),
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
@@ -162,5 +170,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...profilePages,
         ...termPages,
         ...quizPages,
+        ...simulationPages,
     ];
 }
