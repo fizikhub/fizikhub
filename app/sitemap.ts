@@ -111,7 +111,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .eq('is_published', true)
             .order('created_at', { ascending: false })
             .limit(200),
-            .limit(200),
+
 
         supabase
             .from('simulations')
