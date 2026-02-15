@@ -137,14 +137,26 @@ function ShootingStars({ count = 10, isDark }: { count?: number, isDark: boolean
         const dir = new Float32Array(count * 3);
 
         for (let i = 0; i < count; i++) {
-            pos[i * 3] = (Math.random() - 0.5) * 800;
-            pos[i * 3 + 1] = (Math.random() - 0.5) * 800;
-            pos[i * 3 + 2] = -200;
+            // Spawn in a wide band above and to the left of the screen
+            // x: -100 to 800 (mostly left/center)
+            // y: 0 to 600 (mostly top)
+            // z: -100 to 100 (depth variance)
+            pos[i * 3] = (Math.random() - 0.5) * 1200;
+            pos[i * 3 + 1] = (Math.random() - 0.5) * 1200;
+            pos[i * 3 + 2] = (Math.random() - 0.5) * 200;
 
-            spd[i] = 150 + Math.random() * 250;
-            del[i] = Math.random() * 6.0;
+            spd[i] = 300 + Math.random() * 400; // Faster speed
+            del[i] = Math.random() * 4.0;
 
-            const d = new THREE.Vector3(Math.random() - 0.5, -0.5 - Math.random() * 0.5, 0).normalize();
+            // Direction: Top-Left to Bottom-Right
+            // X: Positive (Right)
+            // Y: Negative (Down)
+            const d = new THREE.Vector3(
+                0.8 + Math.random() * 0.4, // Mostly Right
+                -0.6 - Math.random() * 0.4, // Mostly Down
+                0
+            ).normalize();
+
             dir[i * 3] = d.x;
             dir[i * 3 + 1] = d.y;
             dir[i * 3 + 2] = d.z;
