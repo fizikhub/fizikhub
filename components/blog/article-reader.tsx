@@ -85,7 +85,7 @@ export function ArticleReader({
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-tight prose-headings:text-foreground",
                             "prose-h1:text-4xl prose-h1:mb-8",
-                            "prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-[6px] prose-h2:border-[#FFC800] prose-h2:pl-4",
+                            "prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-[3px] prose-h2:border-[#FFC800] prose-h2:pl-4",
                             "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:font-bold",
                             // Content
                             "prose-p:text-foreground/90 prose-p:leading-[1.9] prose-p:mb-6 prose-p:font-medium",
@@ -113,7 +113,7 @@ export function ArticleReader({
                         {!isZenMode && (
                             <div className="mt-12 space-y-16">
                                 {/* Control Panel (Action Bar) */}
-                                <div className="p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[2px] border-black/10 dark:border-white/10 flex flex-wrap items-center justify-between gap-6">
+                                <div className="p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[1.5px] border-black/10 dark:border-white/10 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.05)] flex flex-wrap items-center justify-between gap-6">
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center p-1 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg shadow-sm">
                                             <LikeButton
@@ -145,7 +145,7 @@ export function ArticleReader({
                                 {relatedArticles.length > 0 && (
                                     <div className="space-y-8">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-2 h-8 bg-[#FFC800]" />
+                                            <div className="w-1 h-8 bg-[#FFC800]" />
                                             <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Benzer Makaleler</h3>
                                         </div>
                                         <RelatedArticles articles={relatedArticles} />
@@ -155,7 +155,7 @@ export function ArticleReader({
                                 {/* Comments */}
                                 <div className="space-y-8">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-2 h-8 bg-black dark:bg-white" />
+                                        <div className="w-1 h-8 bg-black dark:bg-white" />
                                         <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">
                                             Yorumlar {comments.length > 0 && `(${comments.length})`}
                                         </h3>

@@ -92,7 +92,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                     {[...Array(10)].map((_, i) => (
                                         <div
                                             key={i}
-                                            className={`w-1 sm:w-1.5 h-4 sm:h-6 rounded-full transition-all ${i < rating ? "bg-emerald-500" : "bg-muted-foreground/20"
+                                            className={`w-[3px] sm:w-[4px] h-4 sm:h-6 rounded-full transition-all ${i < rating ? "bg-emerald-500" : "bg-muted-foreground/20"
                                                 }`}
                                         />
                                     ))}
@@ -159,7 +159,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                     <div className="container max-w-4xl mx-auto px-4 mt-8">
                         {/* Category */}
                         <div className="mb-4">
-                            <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
+                            <span className="inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 border-[1.5px] border-primary/20 rounded-full">
                                 {article.category || "Genel"}
                             </span>
                         </div>
