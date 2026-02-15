@@ -53,18 +53,6 @@
     --shadow-lg: 8px 8px 0px 0px #000;
     --shadow-xl: 12px 12px 0px 0px #000;
     --shadow-2xl: 16px 16px 0px 0px #000;
-
-    /* Pop Brutalist Colors */
-    --pop-pink: 326 100% 74%;
-    /* #FF7AF5 */
-    --pop-lime: 85 100% 74%;
-    /* #C9FF4D */
-    --pop-cyan: 180 100% 74%;
-    /* #7AFFFF */
-    --pop-purple: 260 100% 74%;
-    /* #9D7AFF */
-    --pop-yellow: 54 100% 65%;
-    /* #FFDE59 */
   }
 
   .dark {
@@ -130,63 +118,50 @@
 }
 
 @layer utilities {
+  .neo-box {
+    @apply border-2 border-black bg-white text-black shadow-[4px_4px_0_0_#000] dark:border-white dark:bg-[#1A1A1A] dark:text-white dark:shadow-[4px_4px_0_0_#FFF];
+  }
+
+  .neo-card {
+    @apply border-3 border-black bg-white text-black shadow-[6px_6px_0_0_#000] dark:border-white dark:bg-[#1A1A1A] dark:text-white dark:shadow-[6px_6px_0_0_#FFF];
+  }
+
+  .neo-box-yellow {
+    @apply border-2 border-black bg-primary text-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  .neo-input {
+    @apply flex h-12 w-full rounded-none border-2 border-black bg-white px-4 py-3 text-base font-bold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-black dark:text-white dark:placeholder:text-zinc-500;
+  }
+
+  /* Neo-Brutalist Primary Button */
+  .neo-button-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-black uppercase tracking-wider text-black bg-primary border-2 border-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Neo-Brutalist Secondary Button */
+  .neo-button-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-black uppercase tracking-wider text-black bg-white border-2 border-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:bg-[#1A1A1A] dark:text-white dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Neo-Brutalist Small Button */
+  .neo-button-sm {
+    @apply inline-flex items-center justify-center px-4 py-2 text-xs font-black uppercase tracking-wide text-black bg-white border-2 border-black shadow-[3px_3px_0_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all dark:bg-[#1A1A1A] dark:text-white dark:border-white dark:shadow-[3px_3px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Neo-Brutalist Badge */
+  .neo-badge {
+    @apply inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black bg-white text-black shadow-[2px_2px_0_0_#000] dark:bg-black dark:text-white dark:border-white dark:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Tab Button */
+  .neo-tab {
+    @apply relative flex items-center justify-center px-4 py-2 text-xs font-black uppercase tracking-wide border-2 border-black bg-white text-muted-foreground transition-all hover:bg-gray-50 data-[state=active]:bg-black data-[state=active]:text-white dark:bg-black dark:text-muted-foreground dark:border-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black;
+  }
 
   /* 3px Border Utility */
   .border-3 {
     border-width: 3px;
-  }
-
-  .neo-box {
-    @apply border-3 border-black bg-white text-black shadow-[4px_4px_0_0_#000] dark:border-white dark:bg-black dark:text-white dark:shadow-[4px_4px_0_0_#FFF];
-  }
-
-  /* Pop Variants */
-  .neo-box-pink {
-    @apply border-3 border-black bg-[hsl(var(--pop-pink))] text-black shadow-[4px_4px_0_0_#000];
-  }
-
-  .neo-box-lime {
-    @apply border-3 border-black bg-[hsl(var(--pop-lime))] text-black shadow-[4px_4px_0_0_#000];
-  }
-
-  .neo-box-cyan {
-    @apply border-3 border-black bg-[hsl(var(--pop-cyan))] text-black shadow-[4px_4px_0_0_#000];
-  }
-
-  .neo-box-purple {
-    @apply border-3 border-black bg-[hsl(var(--pop-purple))] text-black shadow-[4px_4px_0_0_#000];
-  }
-
-  .neo-box-yellow {
-    @apply border-3 border-black bg-[hsl(var(--pop-yellow))] text-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all;
-  }
-
-  .neo-card {
-    @apply border-3 border-black bg-white p-4 shadow-[5px_5px_0_0_rgba(0, 0, 0, 1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0_0_rgba(0, 0, 0, 1)] dark:border-white dark:bg-black dark:shadow-[5px_5px_0_0_rgba(255, 255, 255, 1)] dark:hover:shadow-[8px_8px_0_0_rgba(255, 255, 255, 1)];
-  }
-
-  .neo-button-primary {
-    @apply inline-flex items-center justify-center border-3 border-black bg-[hsl(var(--pop-lime))] px-6 py-3 font-black text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_0_#000] disabled:opacity-50 disabled:pointer-events-none;
-  }
-
-  .neo-button-secondary {
-    @apply inline-flex items-center justify-center border-3 border-black bg-white px-6 py-3 font-bold text-black shadow-[4px_4px_0_0_#000] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0_0_#000] hover:bg-gray-50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_0_#000] dark:bg-black dark:text-white dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[6px_6px_0_0_#FFF] dark:active:shadow-[2px_2px_0_0_#FFF];
-  }
-
-  .neo-button-sm {
-    @apply px-4 py-2 text-sm;
-  }
-
-  .neo-badge {
-    @apply inline-flex items-center border-2 border-black bg-[hsl(var(--pop-cyan))] px-2.5 py-0.5 text-xs font-bold text-black shadow-[2px_2px_0_0_#000] dark:border-white dark:shadow-[2px_2px_0_0_#FFF];
-  }
-
-  .neo-input {
-    @apply w-full border-3 border-black bg-white p-3 font-bold text-black shadow-[4px_4px_0_0_#000] outline-none transition-all placeholder:text-gray-500 focus:shadow-[6px_6px_0_0_#000] focus:translate-x-[-1px] focus:translate-y-[-1px] dark:border-white dark:bg-black dark:text-white dark:shadow-[4px_4px_0_0_#FFF] dark:focus:shadow-[6px_6px_0_0_#FFF];
-  }
-
-  .neo-tab {
-    @apply border-3 border-black bg-white dark:bg-black px-4 py-2 font-bold text-sm shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_#FFF] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0_0_#000] dark:hover:shadow-[4px_4px_0_0_#FFF] data-[state=active]:bg-[hsl(var(--pop-pink))] data-[state=active]:text-black data-[state=active]:translate-x-[2px] data-[state=active]:translate-y-[2px] data-[state=active]:shadow-none;
   }
 }
 
@@ -278,3 +253,8 @@
 .dynamic-island-toast[data-state="closed"] {
   animation: island-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
+
+/* Optional: Slide-over pattern for simpler card-to-page feeling override
+   You can toggle specific classes on the root to change named transitions.
+   For now, we stick to a clean fade-up/down "app-like" feel.
+*/
