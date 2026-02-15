@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
-import { BottomNav } from "@/components/layout/bottom-nav";
+
 
 
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
@@ -24,10 +24,7 @@ const GlobalEffects = dynamic(
     { ssr: false }
 );
 
-const SlimeEffects = dynamic(
-    () => import("@/components/effects/slime-effects").then(mod => mod.SlimeEffects),
-    { ssr: false }
-);
+
 
 const HubGPTButton = dynamic(
     () => import("@/components/ai/hub-gpt-button").then(mod => mod.HubGPTButton),
@@ -46,7 +43,6 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
     return (
         <>
             <GlobalEffects />
-            <SlimeEffects />
             <GlobalAdminNotification />
             <Navbar />
             {children}

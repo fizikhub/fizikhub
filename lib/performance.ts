@@ -48,7 +48,10 @@ export function useIsLowEndDevice(): boolean {
         const memory = (navigator as any).deviceMemory || 4;
 
         // Low-end: less than 4 cores or less than 4GB RAM
-        setIsLowEnd(cores < 4 || memory < 4);
+        // Use requestAnimationFrame to avoid "synchronous update in effect" warning
+        requestAnimationFrame(() => {
+            setIsLowEnd(cores < 4 || memory < 4);
+        });
     }, []);
 
     return isLowEnd;

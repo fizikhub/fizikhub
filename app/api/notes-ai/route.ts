@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     try {
         const { type, message, audio, noteTitle, noteContent, history } = await request.json();
 
-        let audioData = audio ? { inlineData: { mimeType: "audio/webm", data: audio } } : null;
+        const audioData = audio ? { inlineData: { mimeType: "audio/webm", data: audio } } : null;
         const systemContext = SYSTEM_PROMPT.replace("{noteTitle}", noteTitle || "Untitled").replace("{noteContent}", noteContent || "Empty");
 
         const promptParts: any[] = [{ text: systemContext }];

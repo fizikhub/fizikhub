@@ -74,48 +74,13 @@ import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { NexusStories } from "@/components/home/nexus-stories";
 import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
+import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
 
   // Process and Merge Data
-  const feedItems: FeedItem[] = [];
-
-  // Add Articles
-  articles.forEach((a: { author?: { is_writer?: boolean }; category?: string; created_at: string;[key: string]: any }) => {
-    let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
-    if (a.category === 'Deney') {
-      type = 'experiment';
-    } else if (a.category === 'Kitap İncelemesi') {
-      type = 'book-review';
-    } else if (a.category === 'Terim') {
-      type = 'term';
-    }
-
-    feedItems.push({
-      type: type,
-      data: {
-        ...a,
-        likes_count: 0,
-        comments_count: 0
-      },
-      sortDate: a.created_at
-    });
-  });
-
-  questions.forEach((q: { id: string; answers?: { count: number }[]; created_at: string;[key: string]: any }) => {
-    feedItems.push({
-      type: 'question',
-      data: {
-        ...q,
-        answer_count: q.answers?.[0]?.count || 0
-      },
-      sortDate: q.created_at
-    });
-  });
-
-  // Sort by date descending
-  feedItems.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
+  const feedItems = processFeedData(articles, questions);
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
@@ -131,17 +96,7 @@ export default async function Home() {
             <CompactHero />
             <NexusStories />
             <LatestArticlesSlider
-              articles={articles
-                .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
-                .map((a: any) => ({
-                  id: a.id,
-                  title: a.title,
-                  image: a.image_url || a.image,
-                  slug: a.slug,
-                  category: a.category,
-                  author_name: a.author?.full_name || 'FizikHub',
-                  created_at: a.created_at
-                }))}
+              articles={formatSliderArticles(articles)}
             />
           </div>
 
