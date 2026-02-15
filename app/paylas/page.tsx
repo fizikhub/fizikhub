@@ -16,12 +16,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, Variants } from "framer-motion";
-import { Meteors } from "@/components/magicui/meteors";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase-client";
 import { TiltCard } from "@/components/magicui/tilt-card";
+import { RealisticStars } from "@/components/share/realistic-stars";
 
 const container: Variants = {
     hidden: { opacity: 0 },
@@ -152,18 +152,22 @@ export default function PaylasPage() {
         fetchUser();
     }, [supabase]);
 
+    // ... inside component
+
     return (
         <div className="min-h-screen bg-background pb-24 pt-4 md:pt-20 px-4 font-sans relative overflow-hidden">
 
-            {/* TEXTURED PAPER BACKGROUND - Subtle grain on site bg */}
-            <div className="absolute inset-0 opacity-50 dark:opacity-20 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-overlay"
+            {/* REALISTIC STARS - Behind texture */}
+            <RealisticStars />
+
+            {/* TEXTURED PAPER BACKGROUND - Stronger grain */}
+            <div className="absolute inset-0 opacity-60 dark:opacity-30 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-overlay"
                 style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.5'/%3E%3C/svg%3E")`,
                 }}
             ></div>
 
-            {/* METEORS - Subtle Background Motion */}
-            <Meteors number={15} />
+
 
             <div className="max-w-[900px] mx-auto relative z-10">
 
