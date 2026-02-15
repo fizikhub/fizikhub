@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
@@ -204,13 +204,18 @@ function ShootingStars({ count = 10, isDark }: { count?: number, isDark: boolean
 
 export function RealisticStars() {
     const { resolvedTheme } = useTheme();
-    const isDark = resolvedTheme === "dark";
+    // Default to strict check, but handle hydration
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    // If not mounted, assume dark (ssr safe default for this page style) or check system
+    const isDark = mounted ? resolvedTheme === "dark" : true;
 
     return (
         <div className="absolute inset-0 z-0 pointer-events-none">
             <Canvas camera={{ position: [0, 0, 1], fov: 75 }} gl={{ alpha: true }}>
-                <Stars count={800} isDark={isDark} />
-                <ShootingStars count={8} isDark={isDark} />
+                <Stars count={1200} isDark={isDark} />
+                <ShootingStars count={25} isDark={isDark} />
             </Canvas>
         </div>
     );
