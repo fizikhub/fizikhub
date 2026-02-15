@@ -88,7 +88,7 @@ export function NexusStories() {
                             "w-[82px] h-[82px] rounded-full p-[2px]",
                             "bg-gradient-to-tr",
                             story.color,
-                            "border-[1.5px] border-black/80 dark:border-white/20 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] active:shadow-none transition-shadow duration-200"
+                            "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
                         )}>
                             {/* Inner Content Container */}
                             <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[1.5px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
