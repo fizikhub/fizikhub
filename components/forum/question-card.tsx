@@ -99,12 +99,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             <ViewTransitionLink
                 href={`/forum/${question.id}`}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[8px]",
-                    // CONTAINER STYLE (MATCHING TERM CARD)
-                    "bg-white dark:bg-[#27272a]",
-                    "border-[3px] border-black",
-                    "shadow-[4px_4px_0px_0px_#000]",
-                    "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-xl",
+                    // CONTAINER STYLE (MATCHING NEW NEO ARTICLE)
+                    "bg-card border border-border/50",
+                    "shadow-sm hover:shadow-md hover:border-border/80"
                 )}
             >
                 {/* NOISE TEXTURE (If desired, consistent with Term) */}
@@ -113,7 +111,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-[#FFBD2E] z-10 relative">
                     <span className="font-black text-xs uppercase tracking-widest text-black">
                         {question.category || "GENEL"}
                     </span>
@@ -181,7 +179,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 3. Footer (Term Style) */}
-                <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
+                <div className="mt-auto px-5 py-3 border-t border-border/50 bg-muted/50 flex items-center justify-between z-10 relative">
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2 z-20">
@@ -193,7 +191,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             }}
                             className="flex items-center gap-2 group/author cursor-pointer"
                         >
-                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
+                            <div className="w-6 h-6 rounded-full border border-border overflow-hidden bg-muted">
                                 <OptimizedAvatar
                                     src={question.profiles?.avatar_url}
                                     alt={question.profiles?.username || "?"}
@@ -211,19 +209,19 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     <div className="flex items-center gap-3">
 
                         {/* Vote Pod */}
-                        <div className="flex items-center gap-1 border-2 border-black bg-white dark:bg-black rounded-md overflow-hidden shadow-[2px_2px_0px_0px_#000]" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1 border border-border bg-background rounded-md overflow-hidden shadow-sm" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={(e) => handleVote(e, 1)}
-                                className={cn("px-1.5 py-0.5 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border-r border-black", voteState === 1 && "bg-green-100 dark:bg-green-900")}>
-                                <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-600" : "text-black dark:text-zinc-400")} />
+                                className={cn("px-1.5 py-0.5 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border-r border-border", voteState === 1 && "bg-green-100 dark:bg-green-900")}>
+                                <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-600" : "text-foreground/70")} />
                             </button>
-                            <span className={cn("px-1 min-w-[16px] text-center text-[10px] font-black", votes > 0 ? "text-green-600" : (votes < 0 ? "text-red-500" : "text-black dark:text-zinc-300"))}>
+                            <span className={cn("px-1 min-w-[16px] text-center text-[10px] font-black", votes > 0 ? "text-green-600" : (votes < 0 ? "text-red-500" : "text-foreground"))}>
                                 {votes}
                             </span>
                             <button
                                 onClick={(e) => handleVote(e, -1)}
-                                className={cn("px-1.5 py-0.5 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border-l border-black", voteState === -1 && "bg-red-100 dark:bg-red-900")}>
-                                <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-600" : "text-black dark:text-zinc-400")} />
+                                className={cn("px-1.5 py-0.5 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border-l border-border", voteState === -1 && "bg-red-100 dark:bg-red-900")}>
+                                <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-600" : "text-foreground/70")} />
                             </button>
                         </div>
 

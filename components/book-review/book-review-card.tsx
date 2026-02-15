@@ -52,10 +52,8 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
             <article className={cn(
                 "relative flex flex-row h-full overflow-hidden transition-all duration-300",
                 // NEO-BRUTALIST V9 CONTAINER
-                "bg-white dark:bg-[#27272a]",
-                "border-[3px] border-black rounded-[8px]",
-                "shadow-[4px_4px_0px_0px_#000]",
-                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                "bg-card border border-border/50 rounded-xl",
+                "shadow-sm hover:shadow-md hover:border-border/80 hover:translate-x-[2px] hover:translate-y-[2px]"
             )}>
                 {/* NOISE TEXTURE */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
@@ -63,7 +61,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                 />
 
                 {/* LEFT SIDEBAR (30%) - PURE BLACK for Premium Contrast */}
-                <div className="w-[120px] sm:w-[140px] shrink-0 bg-black flex items-center justify-center p-4 border-r-[3px] border-black relative z-10">
+                <div className="w-[120px] sm:w-[140px] shrink-0 bg-black flex items-center justify-center p-4 border-r border-border/50 relative z-10">
                     <div className="relative w-full aspect-[2/3] shadow-[0px_0px_20px_rgba(255,255,255,0.1)] border border-white/10 group-hover:-rotate-2 transition-transform duration-300">
                         {article.cover_url ? (
                             <Image
@@ -85,7 +83,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
 
                     {/* RED RIBBON (Neo-Brutalist Bookmark) */}
                     <div className="absolute top-0 right-4">
-                        <div className="bg-[#E11D48] text-white text-[12px] font-black uppercase py-2.5 px-1.5 w-9 flex flex-col items-center shadow-[3px_3px_0px_0px_#000] group-hover:-translate-y-1 transition-transform z-20">
+                        <div className="bg-[#E11D48] text-white text-[12px] font-black uppercase py-2.5 px-1.5 w-9 flex flex-col items-center shadow-sm group-hover:-translate-y-1 transition-transform z-20">
                             <div className="w-full h-2 absolute bottom-[-8px] left-0 border-l-[18px] border-r-[18px] border-t-[8px] border-l-transparent border-r-transparent border-t-[#E11D48]" />
                             <Star className="w-4 h-4 fill-white stroke-none mb-1" />
                             <span className="leading-none">{rating}</span>

@@ -38,11 +38,10 @@ export function TermCard({ article, index }: TermCardProps) {
                     className={cn(
                         "flex flex-col h-full relative overflow-hidden",
                         // CONTAINER STYLE (V9 Standard)
-                        "bg-white dark:bg-[#27272a]",
-                        "border-[3px] border-black rounded-[8px]",
-                        "shadow-[4px_4px_0px_0px_#000]",
+                        "bg-card border border-border/50 rounded-xl",
+                        "shadow-sm hover:shadow-md hover:border-border/80",
                         // HOVER
-                        "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]"
+                        "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px]"
                     )}
                 >
                     {/* NOISE TEXTURE */}
@@ -51,7 +50,7 @@ export function TermCard({ article, index }: TermCardProps) {
                     />
 
                     {/* HEADER: Term Type / Category - NEO BLUE (#23A9FA) UPDATE */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#23A9FA] z-10 relative">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-[#23A9FA] z-10 relative">
                         <span className="font-black text-xs uppercase tracking-widest text-black">
                             {relatedField}
                         </span>
@@ -82,9 +81,9 @@ export function TermCard({ article, index }: TermCardProps) {
                     </div>
 
                     {/* FOOTER - Simple */}
-                    <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
+                    <div className="mt-auto px-5 py-3 border-t border-border/50 bg-muted/50 flex items-center justify-between z-10 relative">
                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white">
+                            <div className="w-6 h-6 rounded-full border border-border overflow-hidden bg-muted">
                                 {article.author?.avatar_url ? (
                                     <img src={article.author.avatar_url} alt="A" className="w-full h-full object-cover" />
                                 ) : (

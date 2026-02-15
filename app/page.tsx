@@ -73,7 +73,6 @@ const getCachedFeedData = unstable_cache(
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { NexusStories } from "@/components/home/nexus-stories";
-import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers } = await getCachedFeedData();
@@ -122,37 +121,35 @@ export default async function Home() {
       <ScrollProgress />
       <BackToTop />
 
-      <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
+      <div className="container max-w-[1250px] mx-auto px-0 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-20">
 
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
-
-          <div className="lg:col-span-12 mt-0 sm:px-0">
-            <CompactHero />
-            <NexusStories />
-            <LatestArticlesSlider
-              articles={articles
-                .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
-                .map((a: any) => ({
-                  id: a.id,
-                  title: a.title,
-                  image: a.image_url || a.image,
-                  slug: a.slug,
-                  category: a.category,
-                  author_name: a.author?.full_name || 'FizikHub',
-                  created_at: a.created_at
-                }))}
-            />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-0">
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-4 md:mt-0">
-            <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
+          <div className="lg:col-span-12 xl:col-span-7 min-h-screen w-full md:max-w-[650px] md:mx-auto xl:mx-0">
+
+            {/* Mobile/Desktop Stories - Sticky-ish or just top */}
+            <div className="pt-2 sm:pt-0">
+              <NexusStories />
+            </div>
+
+            {/* Meme/Welcome Card */}
+            <div className="px-2 sm:px-0">
+              <CompactHero />
+            </div>
+
+            {/* Main Content Feed */}
+            <div className="space-y-6 border-r-0 border-foreground/5 md:pr-0 mt-4 md:mt-0 px-2 sm:px-0 bg-background/50 backdrop-blur-sm rounded-xl">
+              <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
+            </div>
           </div>
 
           {/* Sidebar Column */}
           <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar />
+            <div className="sticky top-24">
+              <FeedSidebar />
+            </div>
           </div>
         </div>
       </div>
