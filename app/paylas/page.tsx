@@ -70,13 +70,13 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
                 <TiltCard className="h-full" rotationFactor={12}>
                     <div className="
                         relative h-full 
-                        bg-white dark:bg-zinc-900
-                        border-[3px] border-black dark:border-zinc-200
-                        rounded-xl 
-                        shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_#fff]
-                        group-hover:shadow-[6px_6px_0px_0px_#000] dark:group-hover:shadow-[6px_6px_0px_0px_#fff]
-                        group-hover:-translate-y-0.5 group-hover:translate-x-0.5
-                        transition-all duration-200 ease-out
+                        bg-white 
+                        border-[3px] border-black 
+                        rounded-2xl 
+                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+                        group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
+                        group-hover:-translate-y-1 group-hover:translate-x-1
+                        transition-all duration-300 ease-out
                         flex flex-col
                         overflow-hidden
                     ">
@@ -92,29 +92,29 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
                         )}
 
                         {/* Decorative top bar */}
-                        <div className={cn("h-4 w-full border-b-[3px] border-black dark:border-zinc-200", color)}></div>
+                        <div className={cn("h-5 w-full border-b-[3px] border-black", color)}></div>
 
-                        <div className="px-5 py-5 flex flex-col justify-between h-full">
-                            <div className="flex items-start justify-between mb-3">
+                        <div className="px-6 py-6 flex flex-col justify-between h-full">
+                            <div className="flex items-start justify-between mb-4">
                                 <div className={cn(
-                                    "w-12 h-12 flex items-center justify-center rounded-lg border-[3px] border-black dark:border-zinc-200 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff]",
+                                    "w-12 h-12 flex items-center justify-center rounded-xl border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
                                     color
                                 )}>
                                     <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
                                 </div>
                                 <div className="
-                                    w-7 h-7 rounded-full border-[2px] border-black dark:border-zinc-200 flex items-center justify-center
-                                    bg-transparent group-hover:bg-black dark:group-hover:bg-white transition-colors duration-200
+                                    w-8 h-8 rounded-full border-[2px] border-black flex items-center justify-center
+                                    bg-transparent group-hover:bg-black transition-colors duration-200
                                 ">
-                                    <ArrowRight className="w-4 h-4 text-black dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors" />
+                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
                                 </div>
                             </div>
 
                             <div>
-                                <h3 className="text-xl md:text-2xl font-black text-black dark:text-white uppercase mb-1 leading-none tracking-tight">
+                                <h3 className="text-2xl md:text-3xl font-black text-black uppercase mb-1 leading-none tracking-tight">
                                     <GlitchText text={title} className="block" />
                                 </h3>
-                                <p className="text-zinc-600 dark:text-zinc-400 font-bold text-xs md:text-sm leading-snug">
+                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
                                     {description}
                                 </p>
                             </div>
@@ -153,10 +153,10 @@ export default function PaylasPage() {
     }, [supabase]);
 
     return (
-        <div className="min-h-screen bg-background pb-32 pt-16 md:pt-20 px-4 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-[#f0f0f0] pb-24 pt-4 md:pt-20 px-4 font-sans relative overflow-hidden">
 
-            {/* TEXTURED PAPER BACKGROUND */}
-            <div className="absolute inset-0 opacity-20 dark:opacity-5 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-overlay"
+            {/* TEXTURED PAPER BACKGROUND - Enhanced opacity */}
+            <div className="absolute inset-0 opacity-40 pointer-events-none z-0 mix-blend-multiply"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
                 }}
@@ -167,21 +167,21 @@ export default function PaylasPage() {
 
             <div className="max-w-[900px] mx-auto relative z-10">
 
-                {/* Header */}
+                {/* Header - Compact */}
                 <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-8 md:mb-10 pt-4 relative"
+                    className="mb-6 md:mb-10 pt-2 relative"
                 >
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <div className="flex flex-col">
-                            <h1 className="text-4xl md:text-6xl font-black text-foreground leading-[0.9] tracking-tighter uppercase">
+                            <h1 className="text-5xl md:text-7xl font-black text-black leading-[0.85] tracking-tighter uppercase drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
                                 Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
                                 <HyperText
                                     text="MERKEZİ"
-                                    className="text-4xl md:text-6xl font-black text-[#FACC15] leading-[0.9] tracking-tighter uppercase text-stroke-black dark:text-stroke-white drop-shadow-[3px_3px_0px_#000] dark:drop-shadow-[3px_3px_0px_#fff]"
+                                    className="text-5xl md:text-7xl font-black text-[#FACC15] leading-[0.85] tracking-tighter uppercase text-stroke-black drop-shadow-[4px_4px_0px_#000]"
                                     duration={1200}
                                 />
                             </div>
@@ -189,7 +189,7 @@ export default function PaylasPage() {
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="text-foreground font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-background/80 backdrop-blur-sm p-3 rounded-lg border-2 border-border/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
+                            className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-white p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                         >
                             {loaded ? (
                                 userName ?
@@ -202,14 +202,14 @@ export default function PaylasPage() {
                     </div>
                 </motion.div>
 
-                {/* Grid - Optimizing for Mobile 2x3 Layout */}
+                {/* Grid - Respecting Original Layout but Higher Quality */}
                 <motion.div
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
+                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
                 >
-                    {/* 1. Article - Yellow (1x1 on Mobile, 2x1 on Desktop if needed, but let's keep it uniform for mobile compactness) */}
+                    {/* 1. Article - Yellow (Full Width Mobile - Preserved) */}
                     <FreshCard
                         title="MAKALE"
                         description="Derinlemesine içerik üret."
@@ -217,7 +217,7 @@ export default function PaylasPage() {
                         icon={FileText}
                         color="bg-[#FACC15]"
                         accentColor="#FACC15"
-                        colSpan="col-span-1 md:col-span-2 lg:col-span-2" // 1x1 on mobile!
+                        colSpan="col-span-2 lg:col-span-2"
                         showBorderBeam={true}
                     />
 
@@ -281,13 +281,13 @@ export default function PaylasPage() {
                     className="mt-6 md:mt-8 pb-8"
                 >
                     <Link href="/ara" className="block group">
-                        <div className="bg-black dark:bg-white text-white dark:text-black h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black dark:border-white hover:bg-[#1a1a1a] dark:hover:bg-zinc-200 transition-colors shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)]">
+                        <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] transition-all">
                             <span className="font-bold text-sm md:text-lg flex items-center gap-3">
                                 <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full shadow-[0_0_8px_#22c55e]"></div>
-                                <span className="font-mono text-gray-300 dark:text-gray-600">_komut_satiri:</span>
-                                <span className="text-white dark:text-black">Daha fazlasını ara...</span>
+                                <span className="font-mono text-gray-300">_komut_satiri:</span>
+                                <span className="text-white">Daha fazlasını ara...</span>
                             </span>
-                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff] dark:shadow-[2px_2px_0px_0px_#000]">
+                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff]">
                                 ENTER
                             </div>
                         </div>
@@ -300,15 +300,9 @@ export default function PaylasPage() {
                 .text-stroke-black {
                     -webkit-text-stroke: 1.5px black;
                 }
-                .dark .text-stroke-white {
-                     -webkit-text-stroke: 1.5px white;
-                }
                 @media (min-width: 768px) {
                     .text-stroke-black {
                         -webkit-text-stroke: 2px black;
-                    }
-                    .dark .text-stroke-white {
-                         -webkit-text-stroke: 2px white;
                     }
                 }
             `}</style>
