@@ -163,6 +163,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.5,
     }));
 
+    const simulationPages: MetadataRoute.Sitemap = (simulationsResult?.data || []).map((sim: any) => ({
+        url: `${baseUrl}/simulasyonlar/${sim.slug}`,
+        lastModified: new Date(sim.updated_at),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+    }));
+
     return [
         ...staticPages,
         ...questionPages,
