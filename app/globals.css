@@ -119,32 +119,44 @@
 
 @layer utilities {
   .neo-box {
-    @apply border-2 border-black bg-white text-black shadow-neo dark:border-white dark:bg-black dark:text-white dark:shadow-neo-dark;
+    @apply border-2 border-black bg-white text-black shadow-[4px_4px_0_0_#000] dark:border-white dark:bg-[#1A1A1A] dark:text-white dark:shadow-[4px_4px_0_0_#FFF];
+  }
+
+  .neo-card {
+    @apply border-3 border-black bg-white text-black shadow-[6px_6px_0_0_#000] dark:border-white dark:bg-[#1A1A1A] dark:text-white dark:shadow-[6px_6px_0_0_#FFF];
   }
 
   .neo-box-yellow {
-    @apply border-2 border-black bg-primary text-black shadow-neo hover:shadow-neo-hover active:translate-x-[2px] active:translate-y-[2px] active:shadow-neo-active transition-all dark:border-white dark:shadow-neo-dark;
+    @apply border-2 border-black bg-primary text-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
   }
 
-
-
   .neo-input {
-    @apply flex h-10 w-full rounded-md border-2 border-black bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-black dark:text-white dark:placeholder:text-zinc-400;
+    @apply flex h-12 w-full rounded-none border-2 border-black bg-white px-4 py-3 text-base font-bold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-black dark:text-white dark:placeholder:text-zinc-500;
   }
 
   /* Neo-Brutalist Primary Button */
   .neo-button-primary {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-black bg-white border-2 border-black rounded-lg shadow-[4px_4px_0_0_#000] hover:shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all dark:bg-zinc-800 dark:text-white dark:border-white dark:shadow-[4px_4px_0_0_#fff] dark:hover:shadow-[2px_2px_0_0_#fff];
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-black uppercase tracking-wider text-black bg-primary border-2 border-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Neo-Brutalist Secondary Button */
+  .neo-button-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-sm font-black uppercase tracking-wider text-black bg-white border-2 border-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all dark:bg-[#1A1A1A] dark:text-white dark:border-white dark:shadow-[4px_4px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
   }
 
   /* Neo-Brutalist Small Button */
   .neo-button-sm {
-    @apply inline-flex items-center justify-center p-2 font-bold text-black border-2 border-black rounded-lg shadow-[3px_3px_0_0_#000] hover:shadow-[1px_1px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all dark:border-white dark:shadow-[3px_3px_0_0_#fff] dark:hover:shadow-[1px_1px_0_0_#fff];
+    @apply inline-flex items-center justify-center px-4 py-2 text-xs font-black uppercase tracking-wide text-black bg-white border-2 border-black shadow-[3px_3px_0_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all dark:bg-[#1A1A1A] dark:text-white dark:border-white dark:shadow-[3px_3px_0_0_#FFF] dark:hover:shadow-[2px_2px_0_0_#FFF];
   }
 
   /* Neo-Brutalist Badge */
   .neo-badge {
-    @apply inline-flex items-center px-2 py-0.5 text-[10px] font-black uppercase tracking-wider border-2 border-black rounded-md dark:border-white;
+    @apply inline-flex items-center px-2.5 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black bg-white text-black shadow-[2px_2px_0_0_#000] dark:bg-black dark:text-white dark:border-white dark:shadow-[2px_2px_0_0_#FFF];
+  }
+
+  /* Tab Button */
+  .neo-tab {
+    @apply relative flex items-center justify-center px-4 py-2 text-xs font-black uppercase tracking-wide border-2 border-black bg-white text-muted-foreground transition-all hover:bg-gray-50 data-[state=active]:bg-black data-[state=active]:text-white dark:bg-black dark:text-muted-foreground dark:border-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black;
   }
 
   /* 3px Border Utility */
