@@ -203,38 +203,43 @@ export async function getFollowStatus(targetUserId: string) {
 }
 
 export async function getFollowStats(userId: string) {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
 
-    // Get real followers count
-    const { count: followersCount } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('following_id', userId);
+        // Get real followers count
+        const { count: followersCount } = await supabase
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('following_id', userId);
 
-    // Get real following count
-    const { count: followingCount } = await supabase
-        .from('follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('follower_id', userId);
+        // Get real following count
+        const { count: followingCount } = await supabase
+            .from('follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('follower_id', userId);
 
-    // Admin boost logic (check username)
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', userId)
-        .single();
+        // Admin boost logic (check username)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', userId)
+            .maybeSingle();
 
-    let finalFollowers = followersCount || 0;
+        let finalFollowers = followersCount || 0;
 
-    // Admin username check (barannnbozkurttb)
-    if (profile?.username === 'barannnbozkurttb') {
-        finalFollowers += 28000;
+        // Admin username check (barannnbozkurttb)
+        if (profile?.username === 'barannnbozkurttb') {
+            finalFollowers += 28000;
+        }
+
+        return {
+            followersCount: finalFollowers,
+            followingCount: followingCount || 0
+        };
+    } catch (error) {
+        console.error("Error fetching follow stats:", error);
+        return { followersCount: 0, followingCount: 0 };
     }
-
-    return {
-        followersCount: finalFollowers,
-        followingCount: followingCount || 0
-    };
 }
 
 export async function uploadAvatar(file: File) {

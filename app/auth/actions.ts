@@ -123,18 +123,23 @@ export async function signOut() {
 }
 
 export async function getOnboardingStatus() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    try {
+        const supabase = await createClient();
+        const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (!user) return { shouldShowOnboarding: false };
+        if (error || !user) return { shouldShowOnboarding: false };
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('has_seen_onboarding')
-        .eq('id', user.id)
-        .maybeSingle();
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('has_seen_onboarding')
+            .eq('id', user.id)
+            .maybeSingle();
 
-    return {
-        shouldShowOnboarding: profile && !profile.has_seen_onboarding
-    };
+        return {
+            shouldShowOnboarding: profile && !profile.has_seen_onboarding
+        };
+    } catch (error) {
+        console.error("Onboarding status check failed:", error);
+        return { shouldShowOnboarding: false };
+    }
 }
