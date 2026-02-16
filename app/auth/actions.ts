@@ -132,7 +132,7 @@ export async function getOnboardingStatus() {
         .from('profiles')
         .select('has_seen_onboarding')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
     return {
         shouldShowOnboarding: profile && !profile.has_seen_onboarding
