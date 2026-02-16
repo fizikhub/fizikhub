@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 
 
 
-import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
+
 import dynamic from "next/dynamic";
 
 // Lazy load components for better initial page load performance

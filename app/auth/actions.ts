@@ -121,3 +121,20 @@ export async function signOut() {
     revalidatePath("/");
     redirect("/login");
 }
+
+export async function getOnboardingStatus() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { shouldShowOnboarding: false };
+
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('has_seen_onboarding')
+        .eq('id', user.id)
+        .single();
+
+    return {
+        shouldShowOnboarding: profile && !profile.has_seen_onboarding
+    };
+}

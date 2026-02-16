@@ -1,21 +1,11 @@
-import { createClient } from "@/lib/supabase-server";
-import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
+import { PremiumTour } from "@/components/onboarding/premium-tour";
+import { getOnboardingStatus } from "@/app/auth/actions";
 
 export async function OnboardingCheck() {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const status = await getOnboardingStatus();
 
-    if (!user) return null;
+    // Güvenlik kontrolü: Eğer status veya shouldShowOnboarding yoksa gösterme
+    if (!status || !status.shouldShowOnboarding) return null;
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('has_seen_onboarding')
-        .eq('id', user.id)
-        .single();
-
-    if (profile && !profile.has_seen_onboarding) {
-        return <OnboardingTour />;
-    }
-
-    return null;
+    return <PremiumTour />;
 }
