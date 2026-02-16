@@ -49,6 +49,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
+    // @ts-ignore
+    turbopack: {},
   },
 
   compiler: {

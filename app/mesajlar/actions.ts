@@ -383,13 +383,17 @@ export async function getTotalUnreadCount(): Promise<number> {
     const conversationIds = participations.map(p => p.conversation_id);
 
     // Count unread messages in these conversations sent by OTHERS
-    const { count, error } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .in('conversation_id', conversationIds)
-        .neq('sender_id', user.id)
-        .eq('is_read', false);
+    try {
+        const { count, error } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .in('conversation_id', conversationIds)
+            .neq('sender_id', user.id)
+            .eq('is_read', false);
 
-    if (error) return 0;
-    return count || 0;
+        if (error) return 0;
+        return count || 0;
+    } catch (error) {
+        return 0;
+    }
 }
