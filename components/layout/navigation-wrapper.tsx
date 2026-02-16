@@ -31,6 +31,11 @@ const HubGPTButton = dynamic(
     { ssr: false }
 );
 
+const BottomNav = dynamic(
+    () => import("@/components/layout/bottom-nav").then(mod => mod.BottomNav),
+    { ssr: false }
+);
+
 export function NavigationWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     // Hide navigation on onboarding and auth pages (login, verify) for a cleaner focus
