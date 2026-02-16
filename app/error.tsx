@@ -59,6 +59,13 @@ export default function Error({
                         <p className="text-slate-500">
                             Bu sorunu ya çözmeye çalışıyoruz ya da hiç farkında bile değiliz.
                         </p>
+
+                        {/* DEBUGGING INFO */}
+                        <div className="mt-8 p-4 bg-red-950/30 border border-red-500/20 rounded-lg text-xs font-mono text-red-200 overflow-auto max-h-40 text-left">
+                            <p className="font-bold border-b border-red-500/20 pb-1 mb-2">HATA DETAYI (Bunu geliştiriciye ilet):</p>
+                            <p>{error.message || "Bilinmeyen Hata"}</p>
+                            {error.digest && <p className="mt-1 text-red-400">Digest: {error.digest}</p>}
+                        </div>
                     </div>
                 </div>
 
