@@ -14,43 +14,65 @@ export default function GlobalAdminNotification() {
     const [adminNotification, setAdminNotification] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
     const { width, height } = useWindowSize();
-    // Fix: Initialize supabase client once
+    // Initialize state for client-side only usage
     const [supabase] = useState(() => createClient());
     const router = useRouter();
 
     useEffect(() => {
-        const checkNotifications = async () => {
-            const notifications = await getNotifications();
-            const adminNote = notifications?.find((n: any) =>
-                !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
-            );
+        // Safety check for window/browser environment
+        if (typeof window === 'undefined') return;
 
-            if (adminNote) {
-                setAdminNotification(adminNote);
-                setIsVisible(true);
+        let channel: any = null;
+
+        const setupRealtime = async () => {
+            try {
+                // Initial check
+                await checkNotifications();
+
+                // Subscribe to real-time updates
+                channel = supabase
+                    .channel('global-admin-notification')
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'INSERT',
+                            schema: 'public',
+                            table: 'notifications',
+                        },
+                        () => {
+                            checkNotifications();
+                        }
+                    )
+                    .subscribe((status) => {
+                        if (status === 'SUBSCRIBED') {
+                            // Connection established
+                        }
+                    });
+            } catch (error) {
+                console.error("Realtime subscription error:", error);
             }
         };
 
-        checkNotifications();
+        const checkNotifications = async () => {
+            try {
+                const notifications = await getNotifications();
+                const adminNote = notifications?.find((n: any) =>
+                    !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
+                );
 
-        // Subscribe to real-time updates
-        const channel = supabase
-            .channel('global-admin-notification')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                },
-                () => {
-                    checkNotifications();
+                if (adminNote) {
+                    setAdminNotification(adminNote);
+                    setIsVisible(true);
                 }
-            )
-            .subscribe();
+            } catch (e) {
+                console.error("Notification check failed", e);
+            }
+        };
+
+        setupRealtime();
 
         return () => {
-            supabase.removeChannel(channel);
+            if (channel) supabase.removeChannel(channel);
         };
     }, []);
 
