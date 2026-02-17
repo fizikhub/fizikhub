@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { NeoMagazineHero } from "@/components/articles/neo-magazine-hero";
 import Link from "next/link";
-import { Clock, PenTool, ArrowRight, Ticket, Atom, Telescope, Cpu, Dna, FlaskConical, Globe, Star } from "lucide-react";
+import { Clock, Atom, Telescope, Cpu, Dna, FlaskConical, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
+import { GoldenTicketCTA } from "@/components/ui/golden-ticket-cta";
 
 interface ArticleFeedProps {
     articles: any[];
@@ -182,51 +183,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                 )}
 
                 {/* 4. GOLDEN TICKET WRITER CTA */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40, rotate: 1 }}
-                    whileInView={{ opacity: 1, y: 0, rotate: -1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 80 }}
-                    whileHover={{ rotate: 0, scale: 1.02 }}
-                    className="mt-32 mb-16 max-w-4xl mx-auto"
-                >
-                    <Link
-                        href="/yazar"
-                        className="group block relative overflow-visible"
-                    >
-                        {/* Golden Ticket Container */}
-                        <div className="relative bg-[#FFC800] p-8 md:p-12 rounded-[1rem] border-[4px] border-black shadow-[12px_12px_0px_0px_#000] flex flex-col md:flex-row items-center justify-between gap-8">
+                <GoldenTicketCTA />
 
-                            {/* Decorative Perforations (Circles at sides) */}
-                            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#27272a] rounded-full border-[4px] border-black" />
-                            <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#27272a] rounded-full border-[4px] border-black" />
-
-                            {/* Content */}
-                            <div className="flex-1 text-center md:text-left z-10">
-                                <div className="inline-flex items-center gap-2 bg-black text-[#FFC800] px-4 py-1.5 rounded-full font-black uppercase tracking-widest mb-4 text-xs border-2 border-black">
-                                    <Star className="w-3.5 h-3.5 fill-[#FFC800]" />
-                                    Yazar Bileti
-                                </div>
-                                <h3 className="text-5xl md:text-6xl font-black text-black leading-[0.9] mb-4 uppercase drop-shadow-sm">
-                                    Altın Bilet.
-                                </h3>
-                                <p className="text-lg md:text-xl text-black font-bold leading-relaxed max-w-lg">
-                                    FizikHub bir topluluk dergisidir. Senin de anlatacak bilimsel bir hikayen varsa, sayfalarımız sana açık.
-                                </p>
-                            </div>
-
-                            {/* Action Visual */}
-                            <div className="flex-shrink-0 relative">
-                                <div className="w-32 h-32 bg-black rounded-full flex items-center justify-center border-[4px] border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:rotate-12 transition-transform duration-300">
-                                    <PenTool className="w-12 h-12 text-white" />
-                                </div>
-                                <div className="absolute -bottom-4 -right-4 bg-white text-black font-black text-xs uppercase px-3 py-1 border-2 border-black -rotate-12 shadow-[2px_2px_0px_0px_#000]">
-                                    Başvur
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </motion.div>
             </div>
         </main>
     );

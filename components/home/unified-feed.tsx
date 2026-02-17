@@ -10,15 +10,17 @@ import { TermCard } from "@/components/term/term-card";
 const SuggestedUsersCard = dynamic(() => import("@/components/home/suggested-users-card").then(mod => mod.SuggestedUsersCard), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
-const WriterApplicationCard = dynamic(() => import("@/components/home/writer-application-card").then(mod => mod.WriterApplicationCard));
+
+// Replaced WriterApplicationCard with GoldenTicketCTA
+const GoldenTicketCTA = dynamic(() => import("@/components/ui/golden-ticket-cta").then(mod => mod.GoldenTicketCTA));
 
 // Lazy load heavy injected components
 const CommunityInviteBanner = dynamic(() => import("@/components/explore/community-invite-banner").then(mod => mod.CommunityInviteBanner), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
-const ForumTeaserCard = dynamic(() => import("@/components/blog/forum-teaser-card").then(mod => mod.ForumTeaserCard), {
-    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
-});
+
+// Formerly ForumTeaserCard, now removed/replaced
+// const ForumTeaserCard = ...
 
 const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-the-week").then(mod => mod.QuestionOfTheWeek), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
@@ -103,9 +105,10 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
+                        {/* REPLACED "Kafanda Soru mu Var?" (ForumTeaserCard) with GOLDEN TICKET */}
                         {index === 5 && (
-                            <div className="mt-6 rounded-2xl overflow-hidden">
-                                <ForumTeaserCard />
+                            <div className="mt-6">
+                                <GoldenTicketCTA />
                             </div>
                         )}
 
