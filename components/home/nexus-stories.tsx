@@ -57,10 +57,17 @@ const storiesData = [
     },
 ];
 
-export function NexusStories() {
+interface NexusStoriesProps {
+    initialStories?: any[];
+}
+
+export function NexusStories({ initialStories = [] }: NexusStoriesProps) {
     const [mounted, setMounted] = useState(false);
     const [viewerOpen, setViewerOpen] = useState(false);
     const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+
+    // Merge dynamic stories with static categories, putting dynamic ones first
+    const displayStories = [...initialStories, ...storiesData];
 
     useEffect(() => {
         setMounted(true);
@@ -76,7 +83,7 @@ export function NexusStories() {
     return (
         <section className="w-full py-4 mt-[-20px] mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
-                {storiesData.map((story, index) => (
+                {displayStories.map((story, index) => (
                     <div
                         key={story.name}
                         className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer story-item"
@@ -113,7 +120,7 @@ export function NexusStories() {
             </div>
 
             <StoryViewer
-                stories={storiesData.map(s => ({
+                stories={displayStories.map(s => ({
                     id: s.name,
                     title: s.name,
                     image: s.image,

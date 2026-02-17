@@ -37,7 +37,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const [articlesResult, questionsResult, profilesResult] = await Promise.all([
+    const [articlesResult, questionsResult, profilesResult, storiesResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
       supabase
         .from('articles')
@@ -57,13 +57,30 @@ const getCachedFeedData = unstable_cache(
       supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, is_writer, is_verified, bio')
-        .limit(10) // Ideally random or by popularity, for now just first 10
+        .limit(10), // Ideally random or by popularity, for now just first 10
+
+      // Fetch Active Stories (Admin only for now as per policy)
+      supabase
+        .from('stories')
+        .select('*')
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
     ]);
 
     return {
       articles: articlesResult.data || [],
       questions: questionsResult.data || [],
-      suggestedUsers: profilesResult.data || []
+      suggestedUsers: profilesResult.data || [],
+      // Map stories to match NexusStories expected format temporarily or update component to handle both
+      stories: (storiesResult?.data || []).map((s: any) => ({
+        name: "Admin", // Or fetch author name
+        image: s.media_url,
+        href: "#",
+        color: "from-purple-500 to-pink-500", // Default gradient for now
+        content: "Admin story content", // or logic to handle
+        author: "FizikHub",
+        isDynamic: true // Flag to distinguish
+      }))
     };
   },
   ['feed-data-v3'], // Bump version to invalidate cache
@@ -77,7 +94,7 @@ import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 
 export default async function Home() {
-  const { articles, questions, suggestedUsers } = await getCachedFeedData();
+  const { articles, questions, suggestedUsers, stories } = await getCachedFeedData();
 
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
@@ -94,7 +111,7 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
-            <NexusStories />
+            <NexusStories initialStories={stories} />
             <LatestArticlesSlider
               articles={formatSliderArticles(articles)}
             />

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare } from "lucide-react";
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
@@ -172,12 +172,20 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                         </Link>
                                     )}
                                     {isAdmin && (
-                                        <Link href="/admin">
-                                            <button className="flex items-center gap-2 bg-[#FF3366] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#E6004C] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
-                                                <Settings className="w-3.5 h-3.5 stroke-[2.5px]" />
-                                                Admin
-                                            </button>
-                                        </Link>
+                                        <>
+                                            <Link href="/yonetim/hikaye-olustur">
+                                                <button className="flex items-center gap-2 bg-[#9333EA] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#7E22CE] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+                                                    <PlusCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
+                                                    Hikaye Ekle
+                                                </button>
+                                            </Link>
+                                            <Link href="/admin">
+                                                <button className="flex items-center gap-2 bg-[#FF3366] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#E6004C] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+                                                    <Settings className="w-3.5 h-3.5 stroke-[2.5px]" />
+                                                    Admin
+                                                </button>
+                                            </Link>
+                                        </>
                                     )}
                                 </>
                             ) : (
