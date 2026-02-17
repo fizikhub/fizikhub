@@ -139,37 +139,58 @@ export function StoryEditor() {
     // 7. Publish
     const handlePublish = async () => {
         if (!canvasRef.current || !image) return;
-        setIsUploading(true);
 
         try {
+            setIsUploading(true);
+
+            // 0. Check Auth First
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                toast.error("Hikaye paylaşmak için giriş yapmalısınız.");
+                return;
+            }
+
             setSelectedId(null); // Clear selection specific borders
 
-            // Wait for render cycle
+            // Wait for render cycle to clear borders
             await new Promise(resolve => setTimeout(resolve, 100));
 
+            // 1. Generate Canvas (Lower scale for mobile performance)
             const canvas = await html2canvas(canvasRef.current, {
                 useCORS: true,
-                scale: 3, // High Quality
+                scale: 2, // Reduced from 3 to 2 for better mobile stability
                 backgroundColor: "#000000",
                 logging: false,
             });
 
-            const blob = await new Promise<Blob>((resolve) => canvas.toBlob(blob => resolve(blob!), 'image/jpeg', 0.95));
+            // 2. Convert to Blob with timeout protection
+            const blob = await new Promise<Blob | null>((resolve) => {
+                const timeout = setTimeout(() => resolve(null), 5000); // 5s timeout
+                canvas.toBlob(blob => {
+                    clearTimeout(timeout);
+                    resolve(blob);
+                }, 'image/jpeg', 0.90);
+            });
+
+            if (!blob) throw new Error("Görsel oluşturulamadı (Zaman aşımı).");
+
             const fileName = `story-${Date.now()}.jpg`;
 
+            // 3. Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
                 .from('stories')
                 .upload(fileName, blob);
 
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error("Upload Error:", uploadError);
+                throw new Error(`Yükleme hatası: ${uploadError.message}`);
+            }
 
             const { data: { publicUrl } } = supabase.storage
                 .from('stories')
                 .getPublicUrl(fileName);
 
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) throw new Error("Oturum açılmamış");
-
+            // 4. Save Metadata to DB
             const { error: dbError } = await supabase
                 .from('stories')
                 .insert({
@@ -179,15 +200,18 @@ export function StoryEditor() {
                     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
                 });
 
-            if (dbError) throw dbError;
+            if (dbError) {
+                console.error("DB Error:", dbError);
+                throw new Error(`Veritabanı hatası: ${dbError.message}`);
+            }
 
             toast.success("Hikaye başarıyla paylaşıldı!");
             router.push("/");
             router.refresh();
 
-        } catch (error) {
-            console.error(error);
-            toast.error("Hikaye paylaşılırken hata oluştu.");
+        } catch (error: any) {
+            console.error("Publish Error:", error);
+            toast.error(error.message || "Hikaye paylaşılırken bir hata oluştu.");
         } finally {
             setIsUploading(false);
         }
@@ -205,7 +229,7 @@ export function StoryEditor() {
                 {/* DEVICE FRAME */}
                 <div
                     ref={canvasRef}
-                    className="relative w-full max-w-[400px] aspect-[9/16] bg-black shadow-2xl overflow-hidden ring-1 ring-white/10"
+                    className="relative w-full max-w-[400px] aspect-[9/16] bg-black shadow-2xl overflow-hidden ring-1 ring-white/10 touch-none"
                     onWheel={handleWheel}
                     onClick={() => setSelectedId(null)}
                 >
