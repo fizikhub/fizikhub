@@ -94,16 +94,19 @@ export async function completeOnboarding(formData: FormData) {
     const avatarUrl = formData.get("avatarUrl") as string;
     const bio = formData.get("bio") as string;
 
+    const updateData: any = {
+        onboarding_completed: true,
+        has_seen_onboarding: true
+    };
+
+    if (username) updateData.username = username;
+    if (fullName) updateData.full_name = fullName;
+    if (avatarUrl) updateData.avatar_url = avatarUrl;
+    if (bio) updateData.bio = bio;
+
     const { error } = await supabase
         .from('profiles')
-        .update({
-            username,
-            full_name: fullName,
-            avatar_url: avatarUrl,
-            bio,
-            onboarding_completed: true,
-            has_seen_onboarding: true
-        })
+        .update(updateData)
         .eq('id', user.id);
 
     if (error) {

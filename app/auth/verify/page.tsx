@@ -35,7 +35,7 @@ function VerifyContent() {
 
             if (result.success) {
                 toast.success("Erişim izni onaylandı.");
-                router.push("/onboarding");
+                router.push("/");
             } else {
                 toast.error(result.error);
             }
