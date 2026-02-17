@@ -8,8 +8,24 @@ alter table public.stories add column if not exists expires_at timestamp with ti
 -- Make title nullable if it exists (fix for legacy schema issue)
 do $$
 begin
+  -- Fix 'title'
   if exists (select 1 from information_schema.columns where table_name = 'stories' and column_name = 'title') then
     alter table public.stories alter column title drop not null;
+  end if;
+
+  -- Fix 'image_url' (Legacy column causing errors)
+  if exists (select 1 from information_schema.columns where table_name = 'stories' and column_name = 'image_url') then
+    alter table public.stories alter column image_url drop not null;
+  end if;
+
+  -- Fix 'content' (Potential legacy column)
+  if exists (select 1 from information_schema.columns where table_name = 'stories' and column_name = 'content') then
+    alter table public.stories alter column content drop not null;
+  end if;
+  
+  -- Fix 'description' (Potential legacy column)
+  if exists (select 1 from information_schema.columns where table_name = 'stories' and column_name = 'description') then
+    alter table public.stories alter column description drop not null;
   end if;
 end $$;
 
