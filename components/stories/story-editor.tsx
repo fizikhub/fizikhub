@@ -92,14 +92,17 @@ export function StoryEditor() {
         }
     };
 
-    // 3. Add Text Layer
+    // 3. Add Text Layer (Centered)
     const addTextLayer = () => {
+        if (!canvasRef.current) return;
+        const rect = canvasRef.current.getBoundingClientRect();
+
         const newLayer: TextLayer = {
             id: `text-${Date.now()}`,
-            text: "Metin",
-            x: 100,
-            y: 300,
-            fontSize: 28,
+            text: "METİN EKLE",
+            x: rect.width / 2 - 60, // Approx center for "METİN EKLE"
+            y: rect.height / 2 - 20,
+            fontSize: 32,
             color: "#ffffff",
             rotation: 0,
             nodeRef: React.createRef<HTMLDivElement>() as React.RefObject<HTMLDivElement>
