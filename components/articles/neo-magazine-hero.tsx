@@ -62,7 +62,7 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                                 rotateY,
                                 transformStyle: "preserve-3d",
                             }}
-                            className="relative h-[500px] lg:h-[600px] w-full rounded-3xl overflow-hidden border-[3px] border-black shadow-[8px_8px_0px_0px_#000] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,0.5)] transition-shadow duration-300 bg-[#27272a]"
+                            className="relative h-[400px] sm:h-[500px] lg:h-[600px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border-[2px] sm:border-[3px] border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,0.5)] transition-shadow duration-300 bg-[#27272a]"
                         >
                             {/* Image Background */}
                             <div className="absolute inset-0 z-0 transform-style-3d translate-z-[-20px]">
@@ -77,17 +77,17 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                             </div>
 
                             {/* Floating Badge - Popping out */}
-                            <div className="absolute top-6 left-6 z-20 transform translate-z-[40px]">
-                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#FACC15] border-[3px] border-black text-black text-sm font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#000] -rotate-2 group-hover:rotate-0 transition-transform">
-                                    <Sparkles className="w-4 h-4" />
+                            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 transform translate-z-[40px]">
+                                <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#FACC15] border-[2px] sm:border-[3px] border-black text-black text-xs sm:text-sm font-black uppercase tracking-widest shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] -rotate-2 group-hover:rotate-0 transition-transform">
+                                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                     Kapak Konusu
                                 </span>
                             </div>
 
                             {/* Content Overlay - Popping out more */}
-                            <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 z-20 flex flex-col gap-4 transform translate-z-[30px]">
-                                <div className="flex items-center gap-3 text-white/90 text-xs font-black uppercase tracking-widest mb-1">
-                                    <span className="text-[#FACC15] px-2 py-1 bg-black/50 backdrop-blur-md rounded border border-white/20">
+                            <div className="absolute bottom-0 left-0 w-full p-5 sm:p-10 z-20 flex flex-col gap-2 sm:gap-4 transform translate-z-[30px]">
+                                <div className="flex items-center gap-2 sm:gap-3 text-white/90 text-[10px] sm:text-xs font-black uppercase tracking-widest mb-1">
+                                    <span className="text-[#FACC15] px-1.5 py-0.5 sm:px-2 sm:py-1 bg-black/50 backdrop-blur-md rounded border border-white/20">
                                         {featured.category}
                                     </span>
                                     <span>•</span>
@@ -95,19 +95,19 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                                 </div>
 
                                 <motion.h2
-                                    className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tight uppercase drop-shadow-xl group-hover:text-[#FACC15] transition-colors duration-300"
+                                    className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tight uppercase drop-shadow-xl group-hover:text-[#FACC15] transition-colors duration-300"
                                 >
                                     {featured.title}
                                 </motion.h2>
 
-                                <p className="text-white/80 line-clamp-2 max-w-2xl text-base sm:text-lg font-medium leading-relaxed drop-shadow-md">
+                                <p className="hidden sm:block text-white/80 line-clamp-2 max-w-2xl text-base sm:text-lg font-medium leading-relaxed drop-shadow-md">
                                     {featured.excerpt || (featured.content ? featured.content.substring(0, 150).replace(/<[^>]*>?/gm, '') + "..." : "")}
                                 </p>
 
-                                <div className="mt-4 flex items-center gap-4">
+                                <div className="mt-2 sm:mt-4 flex items-center gap-4">
                                     {/* Author Avatar */}
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full border-2 border-white bg-black/50 overflow-hidden">
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white bg-black/50 overflow-hidden">
                                             <Image
                                                 src={featured.author?.avatar_url || "/images/default-avatar.png"}
                                                 alt={featured.author?.full_name || "Yazar"}
@@ -116,7 +116,7 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                                                 className="object-cover"
                                             />
                                         </div>
-                                        <span className="font-bold text-white text-sm">{featured.author?.full_name}</span>
+                                        <span className="font-bold text-white text-xs sm:text-sm">{featured.author?.full_name}</span>
                                     </div>
 
                                     <div className="flex-1" />
@@ -131,10 +131,10 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                 </div>
 
                 {/* SECONDARY FEATURES (Right Column) */}
-                <div className="lg:col-span-4 flex flex-col gap-6 h-full">
+                <div className="lg:col-span-4 flex flex-col gap-4 sm:gap-6 h-full">
                     {subFeatured.map((article, i) => (
                         <Link key={article.id} href={`/blog/${article.slug}`} className="block flex-1 group h-full">
-                            <article className="relative h-full min-h-[280px] w-full rounded-3xl overflow-hidden border-[3px] border-black shadow-[6px_6px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0px_0px_#000] transition-all bg-[#27272a]">
+                            <article className="relative h-full min-h-[220px] sm:min-h-[280px] w-full rounded-2xl sm:rounded-3xl overflow-hidden border-[2px] sm:border-[3px] border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[3px_3px_0px_0px_#000] transition-all bg-[#27272a]">
 
                                 {/* Image */}
                                 <div className="absolute inset-0 z-0">

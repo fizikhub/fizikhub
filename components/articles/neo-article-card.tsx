@@ -150,7 +150,7 @@ export function NeoArticleCard({
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-2.5 sm:p-5 gap-2 sm:gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
                     <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">

@@ -8,6 +8,8 @@ import { Clock, Atom, Telescope, Cpu, Dna, FlaskConical, Globe } from "lucide-re
 import { cn } from "@/lib/utils";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { GoldenTicketCTA } from "@/components/ui/golden-ticket-cta";
+import { useEffect, useState } from "react";
+import { getScienceNews, type ScienceNewsItem } from "@/lib/rss";
 
 interface ArticleFeedProps {
     articles: any[];
@@ -54,6 +56,16 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
     const heroArticles = articles.slice(0, 3);
     const gridArticles = articles.slice(3);
 
+    const [newsItems, setNewsItems] = useState<ScienceNewsItem[]>([]);
+
+    useEffect(() => {
+        const fetchNews = async () => {
+            const data = await getScienceNews();
+            setNewsItems(data);
+        }
+        fetchNews();
+    }, []);
+
     return (
         <main className="min-h-screen bg-[#27272a] relative selection:bg-yellow-500/30 overflow-x-hidden">
             {/* NOISE TEXTURE */}
@@ -61,7 +73,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
             />
 
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-12 relative z-10">
 
                 {/* 1. MAGAZINE HERO (Cover Story) */}
                 {!activeCategory && sortParam === 'latest' && (
@@ -71,8 +83,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                         transition={{ duration: 0.6 }}
                         className="mb-8"
                     >
-                        <div className="mb-10 flex items-center justify-between">
-                            <h1 className="text-4xl sm:text-7xl font-black text-white tracking-tighter uppercase drop-shadow-[4px_4px_0px_#000]">
+                        <div className="mb-6 sm:mb-10 flex items-center justify-between">
+                            <h1 className="text-3xl sm:text-7xl font-black text-white tracking-tighter uppercase drop-shadow-[4px_4px_0px_#000]">
                                 MAKALELER
                             </h1>
                             <div className="hidden md:block w-32 h-1 bg-white/20 rounded-full" />
@@ -84,8 +96,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                         <NeoMagazineHero articles={heroArticles} />
 
                         {/* NEW: TRENDING MARQUEE */}
-                        <div className="my-12">
-                            <TrendingMarquee />
+                        <div className="my-8 sm:my-12">
+                            <TrendingMarquee items={newsItems} />
                         </div>
                     </motion.div>
                 )}
@@ -96,35 +108,35 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
-                    className="mb-20"
+                    className="mb-12 sm:mb-20"
                 >
-                    <div className="flex items-center gap-4 mb-8">
+                    <div className="flex items-center gap-4 mb-6 sm:mb-8">
                         <div className="h-px flex-1 bg-zinc-800" />
-                        <h2 className="text-xl font-black text-zinc-500 uppercase tracking-[0.2em]">Konuları Keşfet</h2>
+                        <h2 className="text-sm sm:text-xl font-black text-zinc-500 uppercase tracking-[0.2em] whitespace-nowrap">Konuları Keşfet</h2>
                         <div className="h-px flex-1 bg-zinc-800" />
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
                         {TOPICS.map((topic, i) => (
                             <Link key={topic.id} href={`/makale?category=${topic.label}`} className="group block">
                                 <motion.div
                                     variants={itemVariants}
                                     whileHover={{ y: -5, transition: { duration: 0.2 } }}
                                     className={cn(
-                                        "relative h-36 rounded-3xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] transition-all flex flex-col items-center justify-center gap-3 overflow-hidden",
+                                        "relative h-24 sm:h-36 rounded-2xl sm:rounded-3xl border-[2px] sm:border-[3px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[5px_5px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] sm:hover:shadow-[6px_6px_0px_0px_#000] transition-all flex flex-col items-center justify-center gap-2 sm:gap-3 overflow-hidden",
                                         activeCategory === topic.label ? "bg-white" : "bg-[#202023] group-hover:bg-[#2a2a2d]"
                                     )}
                                 >
                                     {/* Icon Circle */}
                                     <div className={cn(
-                                        "w-12 h-12 rounded-full border-[2.5px] border-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-12",
+                                        "w-8 h-8 sm:w-12 sm:h-12 rounded-full border-[2px] sm:border-[2.5px] border-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-12",
                                         topic.color
                                     )}>
-                                        <topic.icon className="w-6 h-6 text-black stroke-[2.5px]" />
+                                        <topic.icon className="w-4 h-4 sm:w-6 sm:h-6 text-black stroke-[2.5px]" />
                                     </div>
 
                                     <span className={cn(
-                                        "font-black uppercase tracking-wide text-sm transition-colors",
+                                        "font-black uppercase tracking-wide text-xs sm:text-sm transition-colors",
                                         activeCategory === topic.label ? "text-black" : "text-zinc-400 group-hover:text-white"
                                     )}>
                                         {topic.label}
@@ -132,7 +144,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
 
                                     {/* Active Indicator */}
                                     {activeCategory === topic.label && (
-                                        <div className="absolute inset-x-0 bottom-0 h-1.5 bg-[#FACC15]" />
+                                        <div className="absolute inset-x-0 bottom-0 h-1 sm:h-1.5 bg-[#FACC15]" />
                                     )}
                                 </motion.div>
                             </Link>
@@ -141,15 +153,15 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                 </motion.section>
 
                 {/* 3. EDITORIAL GRID (Mixed Layout) */}
-                <div className="flex items-center gap-4 mb-8">
-                    <Clock className="w-6 h-6 text-[#FACC15]" />
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tight">
+                <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-[#FACC15]" />
+                    <h2 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tight">
                         {activeCategory ? `${activeCategory} Arşivi` : "En Yeniler / Akış"}
                     </h2>
                 </div>
 
                 {articles.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
                         {(activeCategory || sortParam !== 'latest' ? articles : gridArticles).map((article, index) => (
                             <motion.div
                                 key={article.id}
@@ -171,7 +183,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="py-24 text-center bg-[#202023] border-[3px] border-dashed border-zinc-700 rounded-3xl"
+                        className="py-16 sm:py-24 text-center bg-[#202023] border-[3px] border-dashed border-zinc-700 rounded-3xl"
                     >
                         <p className="text-zinc-400 font-bold text-lg mb-4">Bu sayıda içerik bulunamadı.</p>
                         <Link href="/makale">
