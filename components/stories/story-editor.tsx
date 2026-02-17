@@ -46,6 +46,7 @@ export function StoryEditor() {
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const bgImageRef = useRef<HTMLImageElement>(null);
+    const bgDragRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const stickerInputRef = useRef<HTMLInputElement>(null);
 
@@ -211,11 +212,12 @@ export function StoryEditor() {
                     {/* BACKGROUND IMAGE WITH PAN/ZOOM */}
                     {image ? (
                         <Draggable
+                            nodeRef={bgDragRef}
                             position={position}
                             onStop={(e, data) => setPosition({ x: data.x, y: data.y })}
                             scale={1} // We handle scale via transform manually
                         >
-                            <div className="w-full h-full cursor-grab active:cursor-grabbing origin-center" style={{ transform: `scale(${scale})` }}>
+                            <div ref={bgDragRef} className="w-full h-full cursor-grab active:cursor-grabbing origin-center" style={{ transform: `scale(${scale})` }}>
                                 <img
                                     ref={bgImageRef}
                                     src={image}
