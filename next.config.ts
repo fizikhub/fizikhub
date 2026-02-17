@@ -49,8 +49,6 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '5mb',
     },
-    // @ts-ignore
-    turbopack: {},
   },
 
   compiler: {
@@ -156,4 +154,6 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   skipWaiting: true,
 });
 
-export default withBundleAnalyzer(withPWA(nextConfig));
+// Temporarily disabled PWA to fix Vercel Edge Deployment error
+// export default withBundleAnalyzer(withPWA(nextConfig));
+export default withBundleAnalyzer(nextConfig);
