@@ -51,20 +51,10 @@ const TOPICS = [
     { id: 'genel', label: 'Genel', icon: Globe, color: 'bg-white' },          // White
 ];
 
-export function ArticleFeed({ articles, categories, activeCategory, sortParam }: ArticleFeedProps) {
+export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems }: ArticleFeedProps) {
     // Split articles for Magazine Layout
     const heroArticles = articles.slice(0, 3);
     const gridArticles = articles.slice(3);
-
-    const [newsItems, setNewsItems] = useState<ScienceNewsItem[]>([]);
-
-    useEffect(() => {
-        const fetchNews = async () => {
-            const data = await getScienceNews();
-            setNewsItems(data);
-        }
-        fetchNews();
-    }, []);
 
     return (
         <main className="min-h-screen bg-[#27272a] relative selection:bg-yellow-500/30 overflow-x-hidden">
