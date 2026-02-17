@@ -1,9 +1,8 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Trophy, Medal, User, Star, Crown, Cat } from "lucide-react";
+import { Trophy, Star, Crown } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -30,6 +29,16 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
     const isCurrentUser = user.id === currentUserId;
     const isSilginim = user.username === 'silginim' && user.rank === 1;
 
+    // Deterministic vivid colors based on rank/index for hover
+    const hoverColors = [
+        "hover:shadow-[#FACC15] hover:border-[#FACC15]", // Yellow
+        "hover:shadow-[#4169E1] hover:border-[#4169E1]", // Blue
+        "hover:shadow-[#16A34A] hover:border-[#16A34A]", // Green
+        "hover:shadow-[#FF0080] hover:border-[#FF0080]", // Pink
+    ];
+    // Rotate through colors based on rank
+    const hoverColorClass = hoverColors[(user.rank - 1) % hoverColors.length];
+
     const getRankIcon = (rank: number) => {
         switch (rank) {
             case 1:
@@ -39,7 +48,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
             case 3:
                 return <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-white fill-white transition-transform group-hover:scale-110" />;
             default:
-                return <span className="text-lg sm:text-xl font-black text-muted-foreground w-8 text-center tabular-nums">#{rank}</span>;
+                return <span className="text-lg sm:text-xl font-black text-zinc-500 w-8 text-center tabular-nums">#{rank}</span>;
         }
     };
 
@@ -61,21 +70,23 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
             >
                 <Link href={`/kullanici/${user.username}`}>
                     <div className={cn(
-                        "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-[3px] transition-all duration-200 group relative overflow-hidden",
-                        // NEO BRUTALIST SHADOWS & BORDERS
-                        "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
-                        // Silginim Special Styling
-                        isSilginim ? "bg-gradient-to-r from-pink-200 via-pink-300 to-rose-200 border-pink-500 text-pink-950" :
-                            // Rank 1
-                            user.rank === 1 ? "bg-[#FFC800] border-black text-black" :
-                                // Rank 2
-                                user.rank === 2 ? "bg-zinc-200 border-black text-black" :
-                                    // Rank 3
-                                    user.rank === 3 ? "bg-orange-400 border-black text-black" :
-                                        // Others
-                                        "bg-white dark:bg-zinc-900 border-black dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                        "flex items-center gap-3 sm:gap-4 p-4 rounded-xl border-[3px] transition-all duration-300 group relative overflow-hidden",
+                        // Base Shadow (Hard Black)
+                        "border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                        // Active State (Press)
+                        "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+                        // Hover State (Vivid Color Shift)
+                        hoverColorClass,
+                        "hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
+
+                        // Backgrounds & Text Colors
+                        isSilginim ? "bg-gradient-to-r from-pink-200 via-pink-300 to-rose-200 text-pink-950" :
+                            user.rank === 1 ? "bg-[#FFC800] text-black" :
+                                user.rank === 2 ? "bg-zinc-200 text-black" :
+                                    user.rank === 3 ? "bg-orange-400 text-black" :
+                                        "bg-white dark:bg-[#27272a] text-black dark:text-zinc-100" // Lighter dark background
                     )}>
-                        {/* NOISE TEXTURE */}
+                        {/* NOISE TEXTURE (re-added for texture) */}
                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
                             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                         />
@@ -111,10 +122,10 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                         <div className="flex-1 min-w-0 z-10">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2">
                                 <h3 className={cn(
-                                    "font-black truncate text-base sm:text-lg flex items-center gap-1 uppercase tracking-tight leading-none",
+                                    "font-black truncate text-base sm:text-lg flex items-center gap-1 uppercase tracking-tight leading-none group-hover:underline decoration-2 underline-offset-2",
                                     isSilginim ? "text-pink-950" :
                                         user.rank <= 3 ? "text-black" :
-                                            "text-zinc-900 dark:text-zinc-100"
+                                            "text-black dark:text-zinc-100"
                                 )}>
                                     {user.full_name || user.username}
                                     {isSilginim && <Crown className="h-4 w-4 text-pink-600 fill-pink-300 inline-block ml-1" />}
@@ -157,7 +168,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                                 <div className={cn("text-[10px] font-black uppercase tracking-wide opacity-60 mb-0.5 sm:block hidden",
                                     isSilginim ? "text-pink-900" : user.rank <= 3 ? "text-black" : "text-zinc-500"
                                 )}>Puan</div>
-                                <div className={cn("text-lg sm:text-2xl font-black bg-white border-2 border-black px-2 py-1 sm:shadow-[2px_2px_0px_0px_#000] rotate-[2deg]",
+                                <div className={cn("text-lg sm:text-2xl font-black bg-white border-2 border-black px-2 py-1 sm:shadow-[2px_2px_0px_0px_#000] rotate-[2deg] group-hover:rotate-0 transition-transform",
                                     isSilginim ? "text-pink-600 border-pink-500 shadow-pink-900" : "text-black"
                                 )}>
                                     {user.reputation}
