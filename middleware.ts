@@ -84,12 +84,12 @@ export async function middleware(request: NextRequest) {
     // Context Security Policy (CSP)
     const cspHeader = `
         default-src 'self';
-        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com https://cdn.jsdelivr.net;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com https://cdn.jsdelivr.net https://challenges.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://challenges.cloudflare.com;
         img-src 'self' blob: data: https://*.supabase.co https://*.google-analytics.com https://*.googletagmanager.com;
         font-src 'self' https://fonts.gstatic.com;
-        connect-src 'self' https://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;
-        frame-src 'self';
+        connect-src 'self' https://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://challenges.cloudflare.com;
+        frame-src 'self' https://challenges.cloudflare.com;
         object-src 'none';
         base-uri 'self';
         form-action 'self';
