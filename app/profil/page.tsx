@@ -6,6 +6,7 @@ import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
+import { ProfileSetupHint } from "@/components/profile/profile-setup-hint";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -63,6 +64,7 @@ export default async function ProfilePage() {
 
                 {/* HERO SECTION */}
                 <div className="mb-4 sm:mb-6 lg:mb-8">
+                    <ProfileSetupHint />
                     <DarkNeoHeader
                         profile={profile}
                         user={user}
