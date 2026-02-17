@@ -19,33 +19,33 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             transition={{ delay: 0.3 }}
             className="space-y-6 sticky top-24"
         >
-            {/* ABOUT CARD - Lighter Dark & Refined */}
-            <div className="bg-[#121212] border border-zinc-800 p-5 relative shadow-sm rounded-xl overflow-hidden group hover:border-zinc-700 transition-colors">
-                {/* Subtle Inner Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            {/* ABOUT CARD - Vivid & Soft */}
+            <div className="bg-[#27272a] border-[2px] border-black p-5 relative shadow-[4px_4px_0px_0px_#000] rounded-xl overflow-hidden group hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                {/* Yellow Accent Bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform scale-x-100 transition-transform" />
 
-                <h3 className="font-bold text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-zinc-400 border-b border-zinc-800 pb-2 relative z-10">
-                    <span className="w-5 h-5 bg-zinc-900 text-zinc-500 flex items-center justify-center border border-zinc-800 rounded shadow-inner">
-                        <User className="w-3 h-3" />
+                <h3 className="font-black text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10">
+                    <span className="w-6 h-6 bg-[#FFC800] text-black flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000]">
+                        <User className="w-3.5 h-3.5 stroke-[3px]" />
                     </span>
                     Hakkında
                 </h3>
 
-                <div className="space-y-3 font-medium relative z-10">
-                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="text-zinc-400" />
-                    <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="text-zinc-400" />
-                    <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="text-zinc-400" />
+                <div className="space-y-3 font-bold relative z-10">
+                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="text-zinc-400 group-hover:text-white transition-colors" />
+                    <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="text-zinc-400 group-hover:text-white transition-colors" />
+                    <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="text-zinc-400 group-hover:text-white transition-colors" />
                 </div>
 
                 {profile?.level !== undefined && profile?.xp_current !== undefined && (
-                    <div className="mt-5 pt-3 border-t border-zinc-800 relative z-10">
+                    <div className="mt-5 pt-3 border-t-2 border-black/20 relative z-10">
                         <div className="flex justify-between items-center mb-2">
-                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Seviye</p>
-                            <p className="text-lg font-black text-white drop-shadow-sm">LVL {profile.level}</p>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Seviye</p>
+                            <p className="text-xl font-black text-white drop-shadow-md">LVL {profile.level}</p>
                         </div>
-                        <div className="w-full h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800/50">
+                        <div className="w-full h-3 bg-black rounded-lg overflow-hidden border-2 border-black shadow-inner">
                             <div
-                                className="h-full bg-gradient-to-r from-orange-600 to-amber-500 shadow-[0_0_10px_rgba(255,107,0,0.3)]"
+                                className="h-full bg-gradient-to-r from-[#FFC800] to-orange-500 striped-pattern"
                                 style={{ width: `${(profile.xp_current / (profile.xp_next || 100)) * 100}%` }}
                             />
                         </div>
@@ -53,13 +53,13 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                 )}
             </div>
 
-            {/* BADGES CARD - Neo Grid */}
-            <div className="bg-[#121212] border border-zinc-800 p-5 relative shadow-sm rounded-xl group hover:border-zinc-700 transition-colors">
-                <div className="absolute inset-0 bg-gradient-to-bl from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            {/* BADGES CARD - Vivid Grid */}
+            <div className="bg-[#27272a] border-[2px] border-black p-5 relative shadow-[4px_4px_0px_0px_#000] rounded-xl group hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
 
-                <h3 className="font-bold text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-zinc-400 border-b border-zinc-800 pb-2 relative z-10">
-                    <span className="w-5 h-5 bg-zinc-900 text-zinc-500 flex items-center justify-center border border-zinc-800 rounded shadow-inner">
-                        <Award className="w-3 h-3" />
+                <h3 className="font-black text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10">
+                    <span className="w-6 h-6 bg-[#23A9FA] text-white flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000]">
+                        <Award className="w-3.5 h-3.5 stroke-[3px]" />
                     </span>
                     Rozetler
                 </h3>
@@ -71,46 +71,45 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                             return (
                                 <div
                                     key={index}
-                                    className="aspect-square bg-zinc-900/40 border border-zinc-800/60 rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-zinc-800 hover:border-zinc-600 transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                                    className="aspect-square bg-zinc-900 border-2 border-black rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
                                     title={badge.name}
                                 >
                                     {badge.icon ? (
-                                        <div className="text-lg grayscale group-hover/badge:grayscale-0 transition-all opacity-70 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-300">{badge.icon}</div>
+                                        <div className="text-xl grayscale group-hover/badge:grayscale-0 transition-all opacity-80 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200">{badge.icon}</div>
                                     ) : (
-                                        <Shield className="w-4 h-4 text-zinc-600 group-hover/badge:text-zinc-300" />
+                                        <Shield className="w-5 h-5 text-zinc-600 group-hover/badge:text-white stroke-[2.5px]" />
                                     )}
-                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[9px] font-bold uppercase px-2 py-1 rounded border border-zinc-700 opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-xl translate-y-2 group-hover/badge:translate-y-0">
+                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[9px] font-black uppercase px-2 py-1 rounded border-2 border-white opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] translate-y-2 group-hover/badge:translate-y-0">
                                         {badge.name}
                                     </div>
                                 </div>
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-zinc-950/30 border border-zinc-900/30 rounded-lg flex items-center justify-center">
-                                <div className="w-1 h-1 bg-zinc-800 rounded-full" />
+                            <div key={`empty-${i}`} className="aspect-square bg-zinc-900/50 border-2 border-dashed border-black/20 rounded-lg flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 bg-black/20 rounded-full" />
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-6 border border-dashed border-zinc-900 rounded-lg relative z-10">
-                        <div className="w-8 h-8 bg-zinc-900/50 flex items-center justify-center mx-auto mb-2 rounded-full border border-zinc-800/50">
-                            <AlertCircle className="w-4 h-4 text-zinc-700" />
+                    <div className="text-center py-6 border-2 border-dashed border-black/20 rounded-lg relative z-10 bg-black/5">
+                        <div className="w-10 h-10 bg-zinc-800 flex items-center justify-center mx-auto mb-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                            <AlertCircle className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
                         </div>
-                        <p className="text-[10px] font-medium text-zinc-600 uppercase">Henüz rozet yok.</p>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase">Henüz rozet yok.</p>
                     </div>
                 )}
             </div>
 
-            {/* COMMUNITY LINK - Elegant Pop */}
-            <div className="bg-gradient-to-br from-orange-600 to-red-600 border border-transparent p-1 shadow-lg rounded-xl relative overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="bg-[#121212] rounded-[10px] p-3 flex items-center justify-between relative z-10 h-full border border-white/5 group-hover:border-white/10 transition-colors">
+            {/* COMMUNITY LINK - Green Pop */}
+            <div className="bg-[#00F050] border-[2px] border-black p-1 shadow-[4px_4px_0px_0px_#000] rounded-xl relative overflow-hidden group cursor-pointer hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="bg-[#27272a] rounded-[10px] p-4 flex items-center justify-between relative z-10 h-full border-2 border-black group-hover:bg-[#00F050] transition-colors duration-300">
                     <div>
-                        <p className="text-[9px] font-bold uppercase text-orange-500 mb-0.5 tracking-wider">Topluluk</p>
-                        <h3 className="text-sm font-black text-white group-hover:text-orange-100 transition-colors">Katkı Kuralları</h3>
+                        <p className="text-[9px] font-black uppercase text-[#00F050] mb-0.5 tracking-wider group-hover:text-black transition-colors">Topluluk</p>
+                        <h3 className="text-base font-black text-white group-hover:text-black transition-colors">Katkı Kuralları</h3>
                     </div>
-                    <div className="bg-orange-500/10 p-2 rounded-lg text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-all duration-300 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
-                        <GraduationCap className="w-4 h-4" />
+                    <div className="bg-black/20 p-2.5 rounded-lg text-[#00F050] group-hover:bg-black group-hover:text-[#00F050] transition-all border-2 border-transparent group-hover:border-black shadow-inner">
+                        <GraduationCap className="w-5 h-5 stroke-[2.5px]" />
                     </div>
                 </div>
             </div>
@@ -121,11 +120,11 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
 function StatRow({ icon: Icon, label, value, color }: any) {
     return (
         <div className="flex justify-between items-center text-xs group/row">
-            <span className="flex items-center gap-2 text-zinc-500 font-medium group-hover/row:text-zinc-400 transition-colors">
-                <Icon className={cn("w-3.5 h-3.5", color)} />
+            <span className="flex items-center gap-2 text-zinc-500 font-bold group-hover/row:text-zinc-300 transition-colors">
+                <Icon className={cn("w-4 h-4 stroke-[2.5px]", color)} />
                 {label}
             </span>
-            <span className="text-zinc-300 font-bold group-hover/row:text-white transition-colors">
+            <span className="text-zinc-300 font-black group-hover/row:text-white transition-colors text-sm">
                 {formatNumber(value)}
             </span>
         </div>

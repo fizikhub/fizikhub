@@ -38,11 +38,11 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-white text-black" },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-orange-500 text-white" },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#23A9FA] text-black" }, // Vivid Blue
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-[#FFC800] text-black" }, // Vivid Yellow
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-zinc-800 text-white" },
-            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-amber-400 text-black" }
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-[#FF3366] text-white" }, // Vivid Pink
+            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-[#00F050] text-black" } // Vivid Green
         ] : [])
     ];
 
@@ -66,8 +66,8 @@ export function DarkNeoFeed({
 
     return (
         <div className="w-full space-y-6">
-            {/* TABS - Refined & Lighter */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 border-b border-zinc-800/50">
+            {/* TABS - Vivid & Chunky */}
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-3 border-b-2 border-dashed border-black/20">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -77,18 +77,18 @@ export function DarkNeoFeed({
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "relative flex items-center gap-2 px-3.5 py-2 border rounded-xl font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group",
+                                "relative flex items-center gap-2 px-4 py-2 border-2 rounded-xl font-black text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group",
                                 isActive
-                                    ? `${tab.color} border-transparent shadow-md ring-2 ring-white/10 ring-offset-2 ring-offset-[#121212]`
-                                    : "bg-zinc-900/40 border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700 hover:bg-zinc-800/60"
+                                    ? `${tab.color} border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
+                                    : "bg-white dark:bg-[#27272a] border-black text-zinc-500 hover:text-white hover:border-black hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
                         >
-                            <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
+                            <Icon className={cn("w-3.5 h-3.5 stroke-[2.5px]", isActive && "stroke-current")} />
                             {tab.label}
                             {counts[tab.id as keyof typeof counts] > 0 && (
                                 <span className={cn(
-                                    "text-[9px] px-1.5 py-0.5 rounded-md ml-1.5 font-black",
-                                    isActive ? "bg-black/20 text-current" : "bg-zinc-800 text-zinc-600 group-hover:text-zinc-400"
+                                    "text-[9px] px-1.5 py-0.5 rounded-md ml-1.5 font-black border border-black/10",
+                                    isActive ? "bg-black/20 text-current" : "bg-black/5 text-zinc-500 group-hover:text-zinc-400 group-hover:bg-black/20"
                                 )}>
                                     {counts[tab.id as keyof typeof counts]}
                                 </span>
@@ -114,25 +114,25 @@ export function DarkNeoFeed({
                             <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-[#121212] border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all cursor-pointer group hover:bg-zinc-900/50 relative overflow-hidden shadow-sm">
-                                            {/* Inner Glow on Hover */}
-                                            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                        <div key={answer.id} className="bg-[#27272a] border-2 border-black rounded-xl p-5 hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group hover:bg-[#2a2a2d] shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] relative overflow-hidden">
+                                            {/* Top Line Accent */}
+                                            <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
                                             <div className="flex items-start justify-between mb-3 relative z-10">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
-                                                    <MessageCircle className="w-3.5 h-3.5 text-zinc-600 group-hover:text-amber-500 transition-colors" />
+                                                <div className="flex items-center gap-2 text-[10px] font-black text-zinc-500 uppercase tracking-wider">
+                                                    <MessageCircle className="w-3.5 h-3.5 text-[#FFC800] stroke-[2.5px]" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
-                                                    <div className="flex items-center gap-1 bg-green-500/10 text-green-500 px-2 py-0.5 rounded border border-green-500/20 text-[9px] font-bold uppercase shadow-[0_0_10px_rgba(34,197,94,0.1)]">
+                                                    <div className="flex items-center gap-1 bg-green-500 text-black px-2 py-0.5 rounded border-2 border-black text-[9px] font-black uppercase shadow-[2px_2px_0px_0px_#000]">
                                                         ✓ Kabul
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-semibold text-base text-zinc-200 mb-2 group-hover:text-white transition-colors leading-snug relative z-10">
+                                            <h4 className="font-black text-base text-zinc-100 mb-2 group-hover:text-[#FFC800] transition-colors leading-snug relative z-10">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-800 group-hover:border-amber-500 transition-colors relative z-10">
+                                            <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#FFC800] transition-colors relative z-10">
                                                 {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
                                             </div>
                                         </div>
@@ -179,12 +179,12 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
-            <div className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center mb-4 border border-zinc-800 shadow-inner">
-                <Icon className="w-5 h-5 text-zinc-600" />
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/20">
+            <div className="w-12 h-12 bg-zinc-900 rounded-lg flex items-center justify-center mb-4 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                <Icon className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
             </div>
-            <p className="text-zinc-300 font-bold text-base mb-1">{label}</p>
-            <p className="text-zinc-500 text-xs max-w-[250px] leading-relaxed">{description}</p>
+            <p className="text-zinc-300 font-black text-base mb-1">{label}</p>
+            <p className="text-zinc-500 text-xs max-w-[250px] leading-relaxed font-bold">{description}</p>
         </div>
     );
 }
