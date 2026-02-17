@@ -1,72 +1,158 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { completeOnboarding } from "@/app/auth/actions";
-import { Sparkles, Menu, User, X, Zap, ArrowRight, Rocket } from "lucide-react";
+import { Sparkles, X, ArrowRight, ArrowUp, ArrowDown, ArrowLeft, ArrowRight as ArrowRightIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const tourSteps = [
+// Screen break point for mobile check
+const MOBILE_BREAKPOINT = 768;
+
+type TourStep = {
+    id: string;
+    targetId?: string; // If 'none', it's a modal. If string, it's a spotlight.
+    title: string;
+    description: string;
+    position?: "top" | "bottom" | "left" | "right" | "center";
+    arrow?: "up" | "down" | "left" | "right" | "none";
+};
+
+const STEPS: TourStep[] = [
     {
         id: "intro",
-        title: "Hoş Geldin.",
-        subtitle: "Yolculuk Başlıyor",
+        title: "HOŞ GELDİN ÇAYLAK.",
         description: "Burası FizikHub. Bilimin en samimi, bazen de en kaotik köşesi. Seni burada görmek güzel. Hadi, kısa bir turla evini gezdirelim.",
-        icon: Sparkles,
-        position: "center" as const,
-        highlight: "none"
+        position: "center",
+        arrow: "none"
+    },
+    // MOBILE STEPS
+    {
+        id: "mobile-home",
+        targetId: "nav-item-home",
+        title: "ANA ÜS",
+        description: "Kaybolursan buraya bas. Seni eve, güvenli bölgeye ışınlar.",
+        position: "top",
+        arrow: "down"
     },
     {
-        id: "bottom-nav",
-        title: "Pusulan Burada.",
-        subtitle: "Hızlı Erişim",
-        description: "Aşağıdaki bar senin ana portalın. Akış, forum ve makaleler arasında tek tıkla ışınlanabilirsin. Kaybolursan 'Ev' ikonu seni kurtarır.",
-        icon: Rocket,
-        position: "bottom" as const,
-        highlight: "bottom-bar"
+        id: "mobile-forum",
+        targetId: "nav-item-forum",
+        title: "KAOS ALANI",
+        description: "Burası Forum. Soru sor, tartış, ama saçmalama. Bilim ciddi iştir (bazen).",
+        position: "top",
+        arrow: "down"
     },
     {
-        id: "menu",
-        title: "Detaylarda Gizli.",
-        subtitle: "Hazine Sandığı",
-        description: "Sağ üstteki menüde sözlükten sıralamalara kadar her şey saklı. Orayı kurcalamayı sakın unutma.",
-        icon: Menu,
-        position: "top" as const,
-        highlight: "top-right"
+        id: "mobile-share",
+        targetId: "nav-item-share",
+        title: "DÜNYAYI KURTAR",
+        description: "Ya da sadece bir şeyler paylaş. Makale, soru, ne varsa. Sahne senin.",
+        position: "top",
+        arrow: "down"
     },
     {
-        id: "profile",
-        title: "Senin İmzan.",
-        subtitle: "Dijital Kimlik",
-        description: "Profilin senin evrendeki izin. Avatarını ve biyografini ekle, bilim dünyasında yerini al. Her şey senin elinde.",
-        icon: User,
-        position: "bottom" as const,
-        highlight: "bottom-right"
+        id: "mobile-profile",
+        targetId: "nav-item-profile",
+        title: "KİMLİK KARTI",
+        description: "Profilin senin izin. Avatarını koy, biyografini yaz. Anonim takılma.",
+        position: "top",
+        arrow: "down"
+    },
+    {
+        id: "mobile-menu",
+        targetId: "mobile-menu-trigger",
+        title: "ZULA",
+        description: "Gizli bölme burada. Sıralamalar, sözlük ve diğer ıvır zıvırlar.",
+        position: "bottom",
+        arrow: "up"
+    },
+    // DESKTOP STEPS
+    {
+        id: "desktop-nav-home",
+        targetId: "desktop-nav-home",
+        title: "ANA ÜS",
+        description: "Geri dönmek istersen adres belli.",
+        position: "bottom",
+        arrow: "up"
+    },
+    {
+        id: "desktop-search",
+        targetId: "desktop-search-trigger",
+        title: "HER ŞEYİ BUL",
+        description: "Evrenin sırlarını ya da sadece o kaçırdığın makaleyi ara.",
+        position: "bottom",
+        arrow: "up"
+    },
+    {
+        id: "desktop-zap",
+        targetId: "desktop-zap-trigger",
+        title: "PREMIUM GÜÇ",
+        description: "Özel içerikler ve havalı özellikler için portaldan geç.",
+        position: "bottom",
+        arrow: "up"
     },
     {
         id: "outro",
-        title: "Sahne Senin.",
-        subtitle: "Her Şey Hazır",
-        description: "Tur bitti. Şimdi merakına güven ve keşfetmeye başla. Bir sorun olursa buralardayız. Görüşürüz!",
-        icon: Zap,
-        position: "center" as const,
-        highlight: "none"
+        title: "SAHNE SENİN.",
+        description: "Tur bitti. Artık bizden birisin. Git ve bir şeyler keşfet. Ya da boz. Sorun değil.",
+        position: "center",
+        arrow: "none"
     }
 ];
 
 export function PremiumTour() {
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
+    const [rect, setRect] = useState<DOMRect | null>(null);
+    const [filteredSteps, setFilteredSteps] = useState<TourStep[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
 
-    const step = tourSteps[currentStep];
-    const isLastStep = currentStep === tourSteps.length - 1;
-    const Icon = step.icon;
+    // Initial Filter based on visible elements
+    useEffect(() => {
+        setIsMounted(true);
+        // Small delay to ensure layout is settled
+        const timer = setTimeout(() => {
+            const availableSteps = STEPS.filter(step => {
+                if (!step.targetId) return true; // Always show modals (intro/outro)
+                const el = document.getElementById(step.targetId);
+                // Check if element exists and is visible (width > 0)
+                return el && el.getBoundingClientRect().width > 0;
+            });
+            setFilteredSteps(availableSteps);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const currentStep = filteredSteps[currentStepIndex];
+
+    // Update rect when step changes or resize
+    const updateRect = useCallback(() => {
+        if (!currentStep?.targetId) {
+            setRect(null);
+            return;
+        }
+        const el = document.getElementById(currentStep.targetId);
+        if (el) {
+            setRect(el.getBoundingClientRect());
+        }
+    }, [currentStep]);
+
+    useEffect(() => {
+        updateRect();
+        window.addEventListener("resize", updateRect);
+        window.addEventListener("scroll", updateRect);
+        return () => {
+            window.removeEventListener("resize", updateRect);
+            window.removeEventListener("scroll", updateRect);
+        };
+    }, [updateRect, currentStep]);
 
     const handleNext = () => {
-        if (isLastStep) {
+        if (currentStepIndex >= filteredSteps.length - 1) {
             handleComplete();
         } else {
-            setCurrentStep((prev) => prev + 1);
+            setCurrentStepIndex(prev => prev + 1);
         }
     };
 
@@ -76,117 +162,155 @@ export function PremiumTour() {
         await completeOnboarding(formData);
     };
 
-    if (!isVisible) return null;
+    if (!isVisible || !isMounted || !currentStep) return null;
+
+    const isModal = !currentStep.targetId;
 
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                key="overlay"
-                className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-[12px]"
+                key="tour-container"
+                className="fixed inset-0 z-[100] isolate pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-            />
-
-            <motion.div
-                key={step.id}
-                className={cn(
-                    "fixed z-[101] w-full px-4 md:w-auto md:max-w-[400px]",
-                    step.position === "center" && "inset-0 flex items-center justify-center pointer-events-none",
-                    step.position === "bottom" && "bottom-28 left-0 right-0 md:left-1/2 md:-translate-x-1/2",
-                    step.position === "top" && "top-28 left-0 right-0 md:left-1/2 md:-translate-x-1/2"
-                )}
-                initial={{ opacity: 0, scale: 0.95, y: 10, filter: "blur(10px)" }}
-                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 0.98, y: -10, filter: "blur(10px)" }}
-                transition={{
-                    type: "spring",
-                    stiffness: 260,
-                    damping: 20,
-                    duration: 0.4
-                }}
             >
-                {/* Spotlight Shadows */}
-                {step.highlight !== "none" && (
+                {/* BACKDROP WITH HOLE (CLIP PATH) */}
+                {rect ? (
+                    <div className="absolute inset-0 z-0 overflow-hidden">
+                        <svg className="w-full h-full">
+                            <defs>
+                                <mask id="spotlight-mask">
+                                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
+                                    <rect
+                                        x={rect.left - 8}
+                                        y={rect.top - 8}
+                                        width={rect.width + 16}
+                                        height={rect.height + 16}
+                                        rx="12"
+                                        fill="black"
+                                    />
+                                </mask>
+                            </defs>
+                            <rect
+                                x="0"
+                                y="0"
+                                width="100%"
+                                height="100%"
+                                fill="rgba(0,0,0,0.85)"
+                                mask="url(#spotlight-mask)"
+                            />
+                        </svg>
+                        {/* Glow effect around the hole */}
+                        <motion.div
+                            className="absolute border-2 border-[#FACC15] rounded-xl shadow-[0_0_30px_rgba(250,204,21,0.5)] bg-transparent"
+                            style={{
+                                left: rect.left - 8,
+                                top: rect.top - 8,
+                                width: rect.width + 16,
+                                height: rect.height + 16
+                            }}
+                            initial={{ scale: 1.1, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: "spring", damping: 20 }}
+                        />
+                    </div>
+                ) : (
                     <motion.div
-                        className={cn(
-                            "fixed pointer-events-none z-[-1]",
-                            step.highlight === "bottom-bar" && "bottom-0 left-0 right-0 h-32 bg-orange-500/10 blur-[120px]",
-                            step.highlight === "top-right" && "top-0 right-0 w-48 h-48 bg-orange-500/10 blur-[120px]",
-                            step.highlight === "bottom-right" && "bottom-0 right-0 w-48 h-48 bg-orange-500/10 blur-[120px]"
-                        )}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-black/80 backdrop-blur-md z-0 pointer-events-auto"
                     />
                 )}
 
-                {/* The Card */}
-                <div className="bg-[#0D0D0D]/80 backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] pointer-events-auto relative overflow-hidden">
-                    {/* Neo-Brutalist Border Accent */}
-                    <div className="absolute inset-0 border-2 border-white/5 rounded-[32px] pointer-events-none" />
-
-                    {/* Subtle Grain Overlay */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none mix-blend-overlay" />
-
-                    {/* Content Section */}
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                        <motion.div
-                            className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6"
-                            initial={{ rotate: -5, scale: 0.9 }}
-                            animate={{ rotate: 0, scale: 1 }}
-                            transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
-                        >
-                            <Icon className="w-6 h-6 text-white" />
-                        </motion.div>
-
-                        <h2 className="text-2xl font-black text-white tracking-tight mb-2">
-                            {step.title}
-                        </h2>
-                        <h3 className="text-[11px] font-black text-orange-500/80 uppercase tracking-[0.3em] mb-4">
-                            {step.subtitle}
-                        </h3>
-                        <p className="text-white/50 text-sm leading-relaxed mb-8 max-w-[260px] font-medium">
-                            {step.description}
-                        </p>
-
-                        {/* Controls Container */}
-                        <div className="flex items-center gap-6 w-full pt-2">
-                            {/* Progress Dots */}
-                            <div className="flex gap-2">
-                                {tourSteps.map((_, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={cn(
-                                            "h-1 rounded-full transition-all duration-500",
-                                            idx === currentStep ? "w-6 bg-white" : "w-1 bg-white/10"
-                                        )}
-                                    />
-                                ))}
-                            </div>
-
-                            {/* Action Button */}
-                            <button
-                                onClick={handleNext}
-                                className="ml-auto group relative flex items-center"
+                {/* CONTENT */}
+                <div className="absolute inset-0 z-10 w-full h-full pointer-events-auto">
+                    {/* Modal Centered Content */}
+                    {isModal && (
+                        <div className="flex items-center justify-center w-full h-full p-4">
+                            <motion.div
+                                key={currentStep.id}
+                                layoutId="modal-card"
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                className="bg-[#121212] border-2 border-white/20 p-8 rounded-[32px] max-w-sm w-full text-center shadow-2xl relative overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-white/10 blur-xl group-hover:bg-white/20 transition-all rounded-full" />
-                                <div className="relative h-12 px-6 bg-white text-black font-black text-[11px] uppercase tracking-widest rounded-full flex items-center gap-2 transition-transform active:scale-95">
-                                    {isLastStep ? "Bitir" : "Devam Et"}
-                                    <ArrowRight className="w-4 h-4" />
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#FACC15] to-[#ff00ff]" />
+                                <div className="w-16 h-16 bg-white/5 rounded-2xl mx-auto mb-6 flex items-center justify-center border border-white/10">
+                                    <Sparkles className="w-8 h-8 text-[#FACC15]" />
                                 </div>
-                            </button>
+                                <h2 className="text-2xl font-black text-white mb-2 tracking-tight uppercase">{currentStep.title}</h2>
+                                <p className="text-zinc-400 font-medium leading-relaxed mb-8">{currentStep.description}</p>
+                                <button
+                                    onClick={handleNext}
+                                    className="w-full py-4 bg-white text-black font-black uppercase text-sm tracking-widest rounded-xl hover:bg-zinc-200 transition-colors"
+                                >
+                                    {currentStepIndex === filteredSteps.length - 1 ? "BAŞLA" : "DEVAM ET"}
+                                </button>
+                            </motion.div>
                         </div>
-                    </div>
-                </div>
+                    )}
 
-                {/* Skip Option */}
-                <button
-                    onClick={handleComplete}
-                    className="mt-6 mx-auto flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white/20 hover:text-white/60 transition-colors pointer-events-auto"
-                >
-                    Turu Atla <X className="w-3 h-3" />
-                </button>
+                    {/* Spotlight Positioning */}
+                    {!isModal && rect && (
+                        <motion.div
+                            key={currentStep.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            style={{
+                                position: "absolute",
+                                ...(currentStep.position === 'top' && {
+                                    top: rect.top - 200, // Moved up to clear element
+                                    left: 0, right: 0,
+                                    margin: "0 auto",
+                                    width: "90%",
+                                    maxWidth: "320px"
+                                }),
+                                ...(currentStep.position === 'bottom' && {
+                                    top: rect.bottom + 20,
+                                    left: rect.left + rect.width / 2 - 160,
+                                    width: "320px"
+                                }),
+                                ...(currentStep.position === 'center' && { // Fallback
+                                    top: "50%", left: "50%", transform: "translate(-50%, -50%)"
+                                })
+                            }}
+                            className="bg-[#121212] border border-white/20 p-6 rounded-2xl shadow-xl flex flex-col gap-3 relative"
+                        >
+                            {/* Arrow Pointer */}
+                            {currentStep.arrow === 'down' && (
+                                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-[#FACC15] animate-bounce">
+                                    <ArrowDown className="w-8 h-8" />
+                                </div>
+                            )}
+                            {currentStep.arrow === 'up' && (
+                                <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[#FACC15] animate-bounce">
+                                    <ArrowUp className="w-8 h-8" />
+                                </div>
+                            )}
+
+                            <div className="flex items-start justify-between">
+                                <h3 className="text-lg font-black text-white uppercase">{currentStep.title}</h3>
+                                <button onClick={handleComplete} className="text-zinc-500 hover:text-white"><X className="w-4 h-4" /></button>
+                            </div>
+                            <p className="text-sm text-zinc-400 font-medium leading-relaxed">{currentStep.description}</p>
+
+                            <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/10">
+                                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Adım {currentStepIndex + 1}/{filteredSteps.length}</span>
+                                <button
+                                    onClick={handleNext}
+                                    className="flex items-center gap-2 text-xs font-black bg-white text-black px-4 py-2 rounded-lg uppercase hover:scale-105 transition-transform"
+                                >
+                                    {currentStepIndex === filteredSteps.length - 1 ? "BİTİR" : "İLERİ"}
+                                    <ArrowRightIcon className="w-3 h-3" />
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </div>
             </motion.div>
         </AnimatePresence>
     );

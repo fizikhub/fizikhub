@@ -135,6 +135,7 @@ export function Navbar() {
                             {navItems.map((item) => (
                                 <ViewTransitionLink
                                     key={item.href}
+                                    id={`desktop-nav-${item.href === '/' ? 'home' : item.href.replace('/', '')}`}
                                     href={item.href}
                                     className={cn(
                                         "px-4 py-1.5 text-xs font-black uppercase border border-white/10 transition-all bg-white/5 text-zinc-300 hover:bg-white hover:text-black rounded-lg",
@@ -149,6 +150,7 @@ export function Navbar() {
 
                         {/* 1. SEARCH - OPTIMIZED (32px) */}
                         <button
+                            id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
                             className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
@@ -158,6 +160,7 @@ export function Navbar() {
 
                         {/* 2. ZAP - OPTIMIZED (32px) */}
                         <button
+                            id="desktop-zap-trigger"
                             onClick={() => window.location.href = '/ozel'}
                             aria-label="Premium özellikler"
                             className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"

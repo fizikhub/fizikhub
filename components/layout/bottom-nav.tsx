@@ -80,6 +80,7 @@ export function BottomNav() {
                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-10 opacity-50" />
 
                 <NavItem
+                    id="nav-item-home"
                     href="/"
                     icon={Home}
                     label="Akış"
@@ -88,6 +89,7 @@ export function BottomNav() {
                 />
 
                 <NavItem
+                    id="nav-item-feed"
                     href="/makale"
                     icon={BookOpen}
                     label="Blog"
@@ -97,6 +99,7 @@ export function BottomNav() {
 
                 <div className="relative -top-3.5 z-20">
                     <ViewTransitionLink
+                        id="nav-item-share"
                         href="/paylas"
                         className="relative block"
                         onClick={vibrate}
@@ -141,6 +144,7 @@ export function BottomNav() {
                 </div>
 
                 <NavItem
+                    id="nav-item-forum"
                     href="/forum"
                     icon={MessageCircle}
                     label="Forum"
@@ -149,6 +153,7 @@ export function BottomNav() {
                 />
 
                 <NavItem
+                    id="nav-item-profile"
                     href="/profil"
                     icon={User}
                     label="Profil"
@@ -160,7 +165,7 @@ export function BottomNav() {
     );
 }
 
-function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
+function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
     const handleNavItemClick = (e: React.MouseEvent) => {
         onInteract();
         if (isActive) {
@@ -171,6 +176,7 @@ function NavItem({ href, icon: Icon, label, isActive, onInteract }: { href: stri
 
     return (
         <ViewTransitionLink
+            id={id}
             href={href}
             onClick={handleNavItemClick}
             aria-label={label}
