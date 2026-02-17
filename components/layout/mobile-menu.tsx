@@ -8,13 +8,13 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 const menuItems = [
-    { href: '/', label: 'Akış', icon: Home, color: 'hover:bg-[#FFC800] hover:text-black', iconBg: 'bg-[#FFC800]' },
-    { href: '/kesfet', label: 'Keşfet', icon: Compass, color: 'hover:bg-[#FF90E8] hover:text-black', iconBg: 'bg-[#FF90E8]' },
-    { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'hover:bg-[#23A9FA] hover:text-black', iconBg: 'bg-[#23A9FA]' },
-    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'hover:bg-[#FFC800] hover:text-black', iconBg: 'bg-[#FFC800]' },
-    { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'hover:bg-[#00F0A0] hover:text-black', iconBg: 'bg-[#00F0A0]' },
-    { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'hover:bg-zinc-200 hover:text-black', iconBg: 'bg-zinc-200' },
-    { href: "/ozel", label: "ÖZEL İÇERİK", sub: "Premium Alan", icon: Zap, color: 'hover:bg-[#FACC15] hover:text-black', iconBg: 'bg-[#FACC15] border-black shadow-[2px_2px_0px_#000]' },
+    { href: '/', label: 'Akış', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
+    { href: '/kesfet', label: 'Keşfet', icon: Compass, color: 'group-hover:text-[#FF90E8]', iconColor: 'text-[#FF90E8]' },
+    { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
+    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
+    { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'group-hover:text-[#00F0A0]', iconColor: 'text-[#00F0A0]' },
+    { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'group-hover:text-zinc-200', iconColor: 'text-zinc-200' },
+    { href: "/ozel", label: "ÖZEL İÇERİK", sub: "Premium Alan", icon: Zap, color: 'group-hover:text-[#FACC15]', iconColor: 'text-[#FACC15]' },
 ];
 
 export function MobileMenu() {
@@ -32,10 +32,10 @@ export function MobileMenu() {
             </SheetTrigger>
 
             {/* 
-               VIVID & SOFT MOBILE MENU
+               REFINED MOBILE MENU (VIVID & MATURE)
                - Background: #27272a (Lighter Dark)
                - Borders: 3px Black
-               - Interactions: Vivid Colors
+               - Interactions: Vivid Colors on Text/Icons (No Childish Backgrounds)
             */}
             <SheetContent
                 side="right"
@@ -84,28 +84,26 @@ export function MobileMenu() {
                                 className="block"
                             >
                                 <div className={cn(
-                                    "flex items-center justify-between p-3 bg-[#27272a] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group",
-                                    item.color
+                                    "flex items-center justify-between p-3 bg-[#27272a] border-2 border-black shadow-[4px_4px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group hover:bg-[#3f3f46]/50" // Subtle hover bg
                                 )}>
                                     <div className="flex items-center gap-4">
                                         <div className={cn(
-                                            "w-10 h-10 flex items-center justify-center border-2 border-black rounded-lg shadow-[1px_1px_0px_0px_rgba(0,0,0,0.5)]",
-                                            item.iconBg
+                                            "w-10 h-10 flex items-center justify-center border-2 border-black rounded-lg shadow-[1px_1px_0px_0px_rgba(0,0,0,0.5)] bg-[#18181b]", // Darker bg for icon
                                         )}>
-                                            <item.icon className="w-5 h-5 text-black stroke-[2.5px]" />
+                                            <item.icon className={cn("w-5 h-5 stroke-[2.5px]", item.iconColor)} />
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="font-black text-lg uppercase tracking-tight text-zinc-100 group-hover:text-black transition-colors">
+                                            <span className={cn("font-black text-lg uppercase tracking-tight text-zinc-100 transition-colors", item.color)}>
                                                 {item.label}
                                             </span>
                                             {item.sub && (
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15] group-hover:text-black/70">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15] opacity-80 group-hover:opacity-100">
                                                     {item.sub}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-6 h-6 text-zinc-600 group-hover:text-black transition-all transform group-hover:translate-x-1 stroke-[3px]" />
+                                    <ChevronRight className={cn("w-6 h-6 text-zinc-600 transition-all transform group-hover:translate-x-1 stroke-[3px]", item.color)} />
                                 </div>
                             </Link>
                         </motion.div>
