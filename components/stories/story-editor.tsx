@@ -197,6 +197,7 @@ export function StoryEditor() {
                     media_url: publicUrl,
                     author_id: user.id,
                     type: 'image',
+                    title: 'Hikaye', // Legacy schema requires title
                     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
                 });
 
