@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { getFollowStatus, getFollowStats } from "@/app/profil/actions";
 import { Metadata } from "next";
-import { NeoProfileHero } from "@/components/profile/neo/neo-profile-hero";
-import { NeoProfileFeedWrapper } from "@/components/profile/neo/neo-profile-feed-wrapper";
-import { NeoProfileSidebar } from "@/components/profile/neo/neo-profile-sidebar";
+import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
+import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
+import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 interface PageProps {
@@ -112,6 +112,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
             .select('id, content, created_at, is_accepted, questions(id, title, slug)')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false })
+            .limit(10) // Limit answers for performance
     ]);
 
     const { isFollowing } = followStatus;
@@ -141,9 +142,9 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
                 {/* 1. HERO SECTION (Full Width) */}
                 <div className="mb-8">
-                    <NeoProfileHero
+                    <DarkNeoHeader
                         profile={profile}
-                        user={user || { created_at: profile.created_at }} // Fallback if no user
+                        user={user || { created_at: profile.created_at }} // Fallback
                         isOwnProfile={isOwnProfile}
                         isFollowing={isFollowing}
                         stats={stats}
@@ -155,7 +156,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
                     {/* LEFT: MAIN FEED (7 Columns) */}
                     <div className="lg:col-span-12 xl:col-span-7 space-y-6">
-                        <NeoProfileFeedWrapper
+                        <DarkNeoFeed
                             articles={articles || []}
                             questions={questions || []}
                             answers={answers || []}
@@ -168,7 +169,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
                     {/* RIGHT: SIDEBAR (5 Columns) */}
                     <div className="hidden xl:block xl:col-span-5 relative">
-                        <NeoProfileSidebar
+                        <DarkNeoSidebar
                             profile={profile}
                             user={user || { created_at: profile.created_at }}
                             stats={stats}
