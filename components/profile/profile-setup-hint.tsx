@@ -2,25 +2,23 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { X, Sparkles, Camera, Edit2 } from "lucide-react";
+import { X, ArrowRight, UserCog } from "lucide-react";
 import Link from "next/link";
 
 export function ProfileSetupHint() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Check if user has seen this hint before
-        const hasSeen = localStorage.getItem("has_seen_profile_hint");
+        const hasSeen = localStorage.getItem("has_seen_profile_hint_v2");
         if (!hasSeen) {
-            // Delay slightly to not overwhelm
-            const timer = setTimeout(() => setIsVisible(true), 1000);
+            const timer = setTimeout(() => setIsVisible(true), 1500);
             return () => clearTimeout(timer);
         }
     }, []);
 
     const handleDismiss = () => {
         setIsVisible(false);
-        localStorage.setItem("has_seen_profile_hint", "true");
+        localStorage.setItem("has_seen_profile_hint_v2", "true");
     };
 
     if (!isVisible) return null;
@@ -29,49 +27,49 @@ export function ProfileSetupHint() {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ type: "spring", bounce: 0.3 }}
-                    className="w-full mb-6 relative z-10"
+                    initial={{ y: 200, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 200, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="fixed bottom-4 left-4 right-4 z-[9999] md:left-auto md:right-8 md:w-[400px]"
                 >
-                    <div className="relative overflow-hidden rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-black to-black p-1 shadow-2xl">
-                        {/* Animated Glow Border Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/10 to-transparent animate-shimmer" style={{ backgroundSize: "200% 100%" }} />
-
-                        <div className="relative bg-[#0a0a0a]/90 backdrop-blur-xl rounded-xl p-5 flex flex-col sm:flex-row items-center gap-5">
-                            {/* Icon/Visual */}
-                            <div className="shrink-0 w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.2)]">
-                                <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
-                            </div>
-
-                            {/* Text Content */}
-                            <div className="flex-1 text-center sm:text-left">
-                                <h3 className="text-white font-black uppercase tracking-tight text-lg mb-1">
-                                    Profilini Özelleştir
+                    <div className="relative bg-[#FF6B00] border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 flex flex-col gap-3">
+                        {/* Header & Dismiss */}
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="bg-black text-[#FF6B00] p-1.5 border border-black">
+                                    <UserCog className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-black text-black tracking-tighter text-lg uppercase leading-none">
+                                    Profilini<br />Özelleştir
                                 </h3>
-                                <p className="text-zinc-400 text-xs sm:text-sm font-medium leading-relaxed">
-                                    Kapak fotoğrafını, avatarını ve biyografini düzenleyerek tarzını yansıt. Kimliğin, senin imzan.
-                                </p>
                             </div>
-
-                            {/* Action Button */}
-                            <Link href="/profil/duzenle" onClick={handleDismiss}>
-                                <button className="group relative px-6 py-3 bg-white text-black font-black uppercase tracking-widest text-xs rounded-lg hover:bg-zinc-200 transition-all overflow-hidden">
-                                    <span className="relative z-10 flex items-center gap-2">
-                                        Düzenle
-                                        <Edit2 className="w-3 h-3 group-hover:rotate-12 transition-transform" />
-                                    </span>
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                                </button>
-                            </Link>
-
-                            {/* Close Button */}
                             <button
                                 onClick={handleDismiss}
-                                className="absolute top-2 right-2 text-zinc-600 hover:text-white transition-colors p-1"
+                                className="p-1 hover:bg-black hover:text-[#FF6B00] transition-colors border border-transparent hover:border-black"
                             >
-                                <X className="w-4 h-4" />
+                                <X className="w-6 h-6 text-black hover:text-[#FF6B00]" />
+                            </button>
+                        </div>
+
+                        {/* Description - Larger as requested */}
+                        <p className="text-black font-bold text-sm leading-snug">
+                            Kapak fotoğrafını, avatarını ve biyografini düzenleyerek tarzını herkese göster.
+                        </p>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 mt-1">
+                            <Link href="/profil/duzenle" onClick={handleDismiss} className="flex-1">
+                                <button className="w-full py-2 bg-black text-white font-black uppercase tracking-wider text-sm hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 group">
+                                    Düzenle
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </Link>
+                            <button
+                                onClick={handleDismiss}
+                                className="px-4 py-2 border-2 border-black text-black font-bold uppercase text-sm hover:bg-black/10 transition-colors"
+                            >
+                                Sonra
                             </button>
                         </div>
                     </div>

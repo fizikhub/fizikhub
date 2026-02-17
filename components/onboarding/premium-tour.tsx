@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { completeOnboarding } from "@/app/auth/actions";
 import { X, ArrowRight, ArrowUp, ArrowDown } from "lucide-react";
@@ -71,7 +71,6 @@ const STEPS: TourStep[] = [
         description: "Evrenin sırlarını ya da o kaçırdığın makaleyi bul.",
         forcePosition: "bottom"
     },
-    // Removed Premium Step as requested
     {
         id: "outro",
         title: "HAZIRSIN.",
@@ -86,15 +85,18 @@ export function PremiumTour() {
     const [filteredSteps, setFilteredSteps] = useState<TourStep[]>([]);
     const [isMounted, setIsMounted] = useState(false);
 
+    // For smart positioning
+    const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
     // Initial Filter based on visible elements
     useEffect(() => {
         setIsMounted(true);
-        // Small delay to ensure layout is settled
+        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+
         const timer = setTimeout(() => {
             const availableSteps = STEPS.filter(step => {
                 if (!step.targetId) return true; // Always show modals (intro/outro)
                 const el = document.getElementById(step.targetId);
-                // Check if element exists and is visible (width > 0)
                 return el && el.getBoundingClientRect().width > 0;
             });
             setFilteredSteps(availableSteps);
@@ -106,6 +108,7 @@ export function PremiumTour() {
 
     // Update rect when step changes or resize
     const updateRect = useCallback(() => {
+        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
         if (!currentStep?.targetId) {
             setRect(null);
             return;
@@ -144,43 +147,50 @@ export function PremiumTour() {
 
     const isModal = !currentStep.targetId;
 
-    // Calculate Position
-    let top = "50%";
-    let left = "50%";
-    let transform = "translate(-50%, -50%)";
+    // --- POSITIONING LOGIC ---
+    const CARD_WIDTH = 320; // Fixed width for calculation
+    const MARGIN = 10;
+
+    let top = 0;
+    let left = 0;
+    let xOffset = 0; // For arrow positioning relative to card
     let arrowDirection = "none";
+    let isPositioned = false;
 
     if (rect && !isModal) {
-        // Default logic: if element is in top half, show bottom. If in bottom half, show top.
-        const isTopHalf = rect.top < window.innerHeight / 2;
+        // 1. Determine Vertical Position (Top or Bottom)
+        const isTopHalf = rect.top < windowSize.height / 2;
+        const showOnTop = currentStep.forcePosition === "top" || (!currentStep.forcePosition && !isTopHalf);
 
-        if (currentStep.forcePosition === "top" || (!currentStep.forcePosition && !isTopHalf)) {
-            // SHOW ABOVE ELEMENT
-            top = `${rect.top - 24}px`; // 24px gap
-            left = `${rect.left + rect.width / 2}px`;
-            transform = "translate(-50%, -100%)";
+        if (showOnTop) {
+            top = rect.top - 16; // 16px gap above target
+            // We'll translate Y -100% in CSS to sit above
             arrowDirection = "down";
         } else {
-            // SHOW BELOW ELEMENT
-            top = `${rect.bottom + 24}px`; // 24px gap
-            left = `${rect.left + rect.width / 2}px`;
-            transform = "translate(-50%, 0)";
+            top = rect.bottom + 16; // 16px gap below target
+            // We'll translate Y 0 in CSS
             arrowDirection = "up";
         }
 
-        // Horizontal Clamping to prevent cut-off
-        // We do this via CSS max-width/left clamping usually, but let's be smarter
-        // If left is too close to edge?
-        // Actually, let's use a simpler "Center relative to screen horizontally" approach for mobile bottom nav
-        // IF it's a mobile nav item (usually spans width), centering on element is fine.
-        // But if it's the right-most element (Profile), it might clip.
+        // 2. Determine Horizontal Position with Clamping
+        // Start by centering on the target
+        const targetCenter = rect.left + (rect.width / 2);
+        left = targetCenter - (CARD_WIDTH / 2);
 
-        // Dynamic Edge Detection
-        /* 
-           We will use standard positioning but verify constraints in render style.
-           For now, let's rely on `left` + translate.
-           If `rect.left` is > window.width - 160 (`w-80` = 320px / 2 = 160), we need to shift.
-        */
+        // Clamp to screen edges
+        if (left < MARGIN) {
+            left = MARGIN;
+        } else if (left + CARD_WIDTH > windowSize.width - MARGIN) {
+            left = windowSize.width - CARD_WIDTH - MARGIN;
+        }
+
+        // Calculate where the arrow should point relative to the card's 0,0
+        // Arrow needs to point to 'targetCenter'.
+        // Card starts at 'left'. 
+        // Arrow X = targetCenter - left.
+        xOffset = targetCenter - left;
+
+        isPositioned = true;
     }
 
     return (
@@ -192,44 +202,28 @@ export function PremiumTour() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
             >
-                {/* BACKDROP WITH HOLE (CLIP PATH) */}
-                {rect ? (
+                {/* BACKDROP WITH HOLE */}
+                {rect && isPositioned ? (
                     <div className="absolute inset-0 z-0 overflow-hidden transition-all duration-500 ease-out">
-                        <svg className="w-full h-full">
-                            <defs>
-                                <mask id="spotlight-mask">
-                                    <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                                    <rect
-                                        x={rect.left - 4} // Tighter fit
-                                        y={rect.top - 4}
-                                        width={rect.width + 8}
-                                        height={rect.height + 8}
-                                        rx="12"
-                                        fill="black"
-                                    />
-                                </mask>
-                            </defs>
-                            <rect
-                                x="0"
-                                y="0"
-                                width="100%"
-                                height="100%"
-                                fill="rgba(0,0,0,0.8)"
-                                mask="url(#spotlight-mask)"
-                            />
-                        </svg>
-                        {/* Pulse Ring */}
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+                        {/* We can't easily do a true 'hole' with simpler React without a heavy library. 
+                             Instead, let's just highlight the target with a border overlay. 
+                             The user can see the target through the semi-transparent black.
+                          */}
+
+                        {/* Target Highlighter */}
                         <motion.div
-                            className="absolute rounded-xl border-2 border-orange-500/50 shadow-[0_0_50px_rgba(249,115,22,0.4)]"
+                            className="absolute border-4 border-[#FF6B00] bg-transparent shadow-[0_0_0_9999px_rgba(0,0,0,0.7)]"
                             style={{
                                 left: rect.left - 4,
                                 top: rect.top - 4,
                                 width: rect.width + 8,
-                                height: rect.height + 8
+                                height: rect.height + 8,
+                                borderRadius: currentStep.targetId?.includes('profile') ? '9999px' : '12px'
                             }}
-                            initial={{ scale: 1.05, opacity: 0 }}
+                            initial={{ scale: 1.1, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            transition={{ duration: 0.4 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         />
                     </div>
                 ) : (
@@ -241,102 +235,97 @@ export function PremiumTour() {
                     />
                 )}
 
-                {/* CONTENT */}
-                <div className="absolute inset-0 z-10 w-full h-full pointer-events-auto">
-                    {/* Modal Centered Content */}
-                    {isModal && (
-                        <div className="flex items-center justify-center w-full h-full p-6">
-                            <motion.div
-                                key={currentStep.id}
-                                layoutId="modal-card"
-                                initial={{ scale: 0.95, opacity: 0, y: 10 }}
-                                animate={{ scale: 1, opacity: 1, y: 0 }}
-                                exit={{ scale: 0.95, opacity: 0 }}
-                                className="bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl relative overflow-hidden"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/5 via-transparent to-transparent pointer-events-none" />
-
-                                <h2 className="text-3xl font-black text-white mb-4 tracking-tighter uppercase italic">
-                                    {currentStep.title}
-                                </h2>
-                                <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-                                    {currentStep.description}
-                                </p>
-
-                                <button
-                                    onClick={handleNext}
-                                    className="w-full py-4 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                                >
-                                    {currentStepIndex === filteredSteps.length - 1 ? "Keşfetmeye Başla" : "Başlayalım"}
-                                </button>
-                            </motion.div>
-                        </div>
-                    )}
-
-                    {/* Spotlight Positioning */}
-                    {!isModal && rect && (
+                {/* MODAL CONTENT (Intro/Outro) */}
+                {isModal && (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center p-6 pointer-events-auto">
                         <motion.div
                             key={currentStep.id}
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                            style={{
-                                position: "absolute",
-                                top: top,
-                                left: left,
-                                transform: transform,
-                                width: "300px",  // Fixed width for consistency
-                                maxWidth: "90vw" // Fallback for tiny screens
-                            }}
-                            className="group"
+                            initial={{ scale: 0.9, opacity: 0, rotate: -2 }}
+                            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white border-4 border-black p-8 max-w-sm w-full shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative"
                         >
-                            {/* The Card */}
-                            <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 p-5 rounded-2xl shadow-2xl relative">
-                                {/* Arrow Pointer */}
-                                {arrowDirection === 'down' && (
-                                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full">
-                                        <ArrowDown className="w-6 h-6 text-orange-500 animate-bounce" />
-                                    </div>
-                                )}
-                                {arrowDirection === 'up' && (
-                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full">
-                                        <ArrowUp className="w-6 h-6 text-orange-500 animate-bounce" />
-                                    </div>
-                                )}
+                            {/* Decorative Tape */}
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#FF6B00]/20 rotate-1 border border-black/10" />
 
-                                <div className="flex items-start justify-between mb-2">
-                                    <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">
-                                        {currentStep.title}
-                                    </h3>
-                                    <button
-                                        onClick={handleComplete}
-                                        className="text-zinc-600 hover:text-white transition-colors p-1"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
+                            <h2 className="text-4xl font-black text-black mb-4 uppercase leading-[0.9] tracking-tighter">
+                                {currentStep.title}
+                            </h2>
+                            <p className="text-black text-lg font-bold leading-tight mb-8">
+                                {currentStep.description}
+                            </p>
 
-                                <p className="text-zinc-400 text-sm font-medium leading-relaxed mb-6">
-                                    {currentStep.description}
-                                </p>
-
-                                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                                    <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-                                        {currentStepIndex + 1} / {filteredSteps.length}
-                                    </span>
-                                    <button
-                                        onClick={handleNext}
-                                        className="flex items-center gap-2 text-xs font-black bg-white text-black px-5 py-2.5 rounded-lg uppercase hover:bg-zinc-200 transition-colors"
-                                    >
-                                        {currentStepIndex === filteredSteps.length - 1 ? "BİTİR" : "İLERİ"}
-                                        <ArrowRight className="w-3 h-3" />
-                                    </button>
-                                </div>
-                            </div>
+                            <button
+                                onClick={handleNext}
+                                className="w-full py-4 bg-black text-white font-black uppercase text-xl transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(255,107,0,1)] border-2 border-transparent"
+                            >
+                                {currentStepIndex === filteredSteps.length - 1 ? "Keşfetmeye Başla" : "Başlayalım"}
+                            </button>
                         </motion.div>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* SPOTLIGHT CARD */}
+                {!isModal && isPositioned && (
+                    <motion.div
+                        key={currentStep.id}
+                        layoutId="tour-card"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        style={{
+                            position: "absolute",
+                            top: top,
+                            left: left,
+                            width: CARD_WIDTH,
+                            // Transform Y only for positioning above/below
+                            y: arrowDirection === 'down' ? '-100%' : '0%'
+                        }}
+                        className="pointer-events-auto z-20"
+                    >
+                        <div className="bg-white border-2 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative">
+                            {/* Arrow */}
+                            {arrowDirection === 'down' && (
+                                <div
+                                    className="absolute bottom-0 w-4 h-4 bg-white border-b-2 border-r-2 border-black rotate-45 translate-y-1/2 z-10"
+                                    style={{ left: xOffset - 8 }} // Center arrow roughly
+                                />
+                            )}
+                            {arrowDirection === 'up' && (
+                                <div
+                                    className="absolute top-0 w-4 h-4 bg-white border-t-2 border-l-2 border-black rotate-45 -translate-y-1/2 z-10"
+                                    style={{ left: xOffset - 8 }}
+                                />
+                            )}
+
+                            <div className="flex justify-between items-start mb-2 relative z-20">
+                                <div className="inline-block bg-[#FF6B00] text-black text-xs font-black px-2 py-1 border border-black mb-1 rotate-1">
+                                    ADIM {currentStepIndex + 1}/{filteredSteps.length}
+                                </div>
+                                <button onClick={handleComplete} className="text-black hover:scale-110 transition-transform">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <h3 className="text-2xl font-black text-black uppercase leading-none tracking-tighter mb-2">
+                                {currentStep.title}
+                            </h3>
+                            <p className="text-black text-sm font-bold leading-snug mb-4">
+                                {currentStep.description}
+                            </p>
+
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={handleNext}
+                                    className="bg-black text-white px-6 py-2 font-black uppercase text-sm hover:bg-[#FF6B00] hover:text-black transition-colors border-2 border-black"
+                                >
+                                    {currentStepIndex === filteredSteps.length - 1 ? "BİTİR" : "İLERİ"}
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
             </motion.div>
         </AnimatePresence>
     );
