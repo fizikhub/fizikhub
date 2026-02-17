@@ -38,11 +38,11 @@ export function DarkNeoFeed({
     };
 
     const tabs = [
-        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#1E3A5F]" },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-cyan-600" },
+        { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-white text-black" },
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-[#FF6B00] text-black" },
         ...(isOwnProfile ? [
-            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-pink-600" },
-            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-500" }
+            { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-zinc-800 text-white" },
+            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-400 text-black" }
         ] : [])
     ];
 
@@ -65,39 +65,37 @@ export function DarkNeoFeed({
     const feedItems = getFeedItems(activeTab);
 
     return (
-        <div className="w-full space-y-4">
-            {/* MOBILE OPTIMIZED TABS - Horizontal scroll */}
-            <div className="bg-card border border-border/20 rounded-xl p-1.5 shadow-sm">
-                <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
+        <div className="w-full space-y-6">
+            {/* TABS - Sharp Buttons */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+                {tabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const isActive = activeTab === tab.id;
 
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={cn(
-                                    "relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all whitespace-nowrap flex-shrink-0",
-                                    isActive
-                                        ? `${tab.color} text-white shadow-sm`
-                                        : "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
-                                )}
-                            >
-                                <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
-                                {tab.label}
-                                {counts[tab.id as keyof typeof counts] > 0 && (
-                                    <span className={cn(
-                                        "text-[10px] px-1.5 py-0.5 rounded",
-                                        isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
-                                    )}>
-                                        {counts[tab.id as keyof typeof counts]}
-                                    </span>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={cn(
+                                "relative flex items-center gap-2 px-4 py-2 border-2 border-black font-black uppercase tracking-wide text-xs transition-all whitespace-nowrap flex-shrink-0",
+                                isActive
+                                    ? `${tab.color} shadow-[4px_4px_0px_0px_#000] -translate-y-1`
+                                    : "bg-[#0a0a0a] text-zinc-500 hover:text-white hover:border-zinc-500"
+                            )}
+                        >
+                            <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
+                            {tab.label}
+                            {counts[tab.id as keyof typeof counts] > 0 && (
+                                <span className={cn(
+                                    "text-[9px] px-1.5 py-0.5 border border-black",
+                                    isActive ? "bg-black text-white" : "bg-zinc-800 text-zinc-400"
+                                )}>
+                                    {counts[tab.id as keyof typeof counts]}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
             {/* CONTENT */}
@@ -113,26 +111,26 @@ export function DarkNeoFeed({
                         {activeTab === "posts" && <UnifiedFeed items={feedItems} />}
 
                         {activeTab === "replies" && (
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-card border border-border/20 rounded-xl p-4 hover:border-cyan-500/30 transition-all cursor-pointer group active:scale-[0.99]">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase">
-                                                    <MessageCircle className="w-3.5 h-3.5 text-cyan-500" />
+                                        <div key={answer.id} className="bg-[#0a0a0a] border-2 border-zinc-900 p-5 hover:border-white/50 transition-all cursor-pointer group">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div className="flex items-center gap-2 text-[10px] font-black text-zinc-500 uppercase tracking-wider">
+                                                    <MessageCircle className="w-3.5 h-3.5 text-[#FF6B00]" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
-                                                    <div className="flex items-center gap-1 bg-green-500/20 text-green-600 dark:text-green-400 px-2 py-0.5 rounded text-[10px] font-black uppercase">
+                                                    <div className="flex items-center gap-1 bg-green-500 text-black px-2 py-0.5 border border-black text-[9px] font-black uppercase shadow-[2px_2px_0px_0px_#000]">
                                                         ✓ Kabul
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-bold text-sm text-foreground mb-2 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors line-clamp-2">
+                                            <h4 className="font-bold text-base text-white mb-3 group-hover:text-[#FF6B00] transition-colors leading-snug">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-muted-foreground text-xs line-clamp-2 pl-3 border-l-2 border-border">
-                                                {answer.content.replace(/<[^>]*>?/gm, "")}
+                                            <div className="text-zinc-400 text-sm leading-relaxed pl-4 border-l-4 border-zinc-800 group-hover:border-[#FF6B00] transition-colors">
+                                                {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
                                             </div>
                                         </div>
                                     ))
@@ -178,12 +176,12 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-border/30 rounded-xl bg-muted/30">
-            <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-4 border border-border/20">
-                <Icon className="w-6 h-6 text-muted-foreground" />
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-800 bg-zinc-900/20">
+            <div className="w-16 h-16 bg-black border-2 border-zinc-800 flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
+                <Icon className="w-6 h-6 text-zinc-500" />
             </div>
-            <p className="text-foreground font-black text-base mb-1">{label}</p>
-            <p className="text-muted-foreground text-xs max-w-[200px] leading-relaxed">{description}</p>
+            <p className="text-white font-black text-lg mb-2 uppercase tracking-wide">{label}</p>
+            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed font-medium">{description}</p>
         </div>
     );
 }
