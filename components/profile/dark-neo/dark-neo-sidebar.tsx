@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Award, Shield, BookOpen, HelpCircle, MessageCircle, Zap, AlertCircle, GraduationCap, User } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 
 interface DarkNeoSidebarProps {
     profile: any;
