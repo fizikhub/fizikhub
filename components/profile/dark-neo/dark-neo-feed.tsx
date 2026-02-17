@@ -39,10 +39,10 @@ export function DarkNeoFeed({
 
     const tabs = [
         { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-white text-black" },
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-[#FF6B00] text-black" },
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-orange-500 text-white" },
         ...(isOwnProfile ? [
             { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-zinc-800 text-white" },
-            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-yellow-400 text-black" }
+            { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-amber-400 text-black" }
         ] : [])
     ];
 
@@ -66,8 +66,8 @@ export function DarkNeoFeed({
 
     return (
         <div className="w-full space-y-6">
-            {/* TABS - Sharp Buttons */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+            {/* TABS - Sleek & Modern */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-zinc-900/50">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -77,18 +77,18 @@ export function DarkNeoFeed({
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={cn(
-                                "relative flex items-center gap-2 px-4 py-2 border-2 border-black font-black uppercase tracking-wide text-xs transition-all whitespace-nowrap flex-shrink-0",
+                                "relative flex items-center gap-2 px-3.5 py-1.5 border rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95",
                                 isActive
-                                    ? `${tab.color} shadow-[4px_4px_0px_0px_#000] -translate-y-1`
-                                    : "bg-[#0a0a0a] text-zinc-500 hover:text-white hover:border-zinc-500"
+                                    ? `${tab.color} border-transparent shadow-sm`
+                                    : "bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
                             )}
                         >
                             <Icon className={cn("w-3.5 h-3.5", isActive && "stroke-[2.5px]")} />
                             {tab.label}
                             {counts[tab.id as keyof typeof counts] > 0 && (
                                 <span className={cn(
-                                    "text-[9px] px-1.5 py-0.5 border border-black",
-                                    isActive ? "bg-black text-white" : "bg-zinc-800 text-zinc-400"
+                                    "text-[9px] px-1.5 py-0.5 rounded-md ml-1",
+                                    isActive ? "bg-black/20 text-current" : "bg-zinc-800 text-zinc-500"
                                 )}>
                                     {counts[tab.id as keyof typeof counts]}
                                 </span>
@@ -106,7 +106,7 @@ export function DarkNeoFeed({
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.15 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
                     >
                         {activeTab === "posts" && <UnifiedFeed items={feedItems} />}
 
@@ -114,22 +114,22 @@ export function DarkNeoFeed({
                             <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-[#0a0a0a] border-2 border-zinc-900 p-5 hover:border-white/50 transition-all cursor-pointer group">
+                                        <div key={answer.id} className="bg-[#0a0a0a] border border-zinc-800 rounded-xl p-5 hover:border-zinc-600 transition-all cursor-pointer group hover:bg-zinc-900/30">
                                             <div className="flex items-start justify-between mb-3">
-                                                <div className="flex items-center gap-2 text-[10px] font-black text-zinc-500 uppercase tracking-wider">
-                                                    <MessageCircle className="w-3.5 h-3.5 text-[#FF6B00]" />
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                                                    <MessageCircle className="w-3.5 h-3.5 text-orange-500" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
-                                                    <div className="flex items-center gap-1 bg-green-500 text-black px-2 py-0.5 border border-black text-[9px] font-black uppercase shadow-[2px_2px_0px_0px_#000]">
+                                                    <div className="flex items-center gap-1 bg-green-500/10 text-green-500 px-2 py-0.5 rounded border border-green-500/20 text-[9px] font-bold uppercase">
                                                         ✓ Kabul
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-bold text-base text-white mb-3 group-hover:text-[#FF6B00] transition-colors leading-snug">
+                                            <h4 className="font-semibold text-base text-zinc-200 mb-2 group-hover:text-white transition-colors leading-snug">
                                                 {answer.questions?.title}
                                             </h4>
-                                            <div className="text-zinc-400 text-sm leading-relaxed pl-4 border-l-4 border-zinc-800 group-hover:border-[#FF6B00] transition-colors">
+                                            <div className="text-zinc-400 text-sm leading-relaxed pl-4 border-l-2 border-zinc-800 group-hover:border-orange-500 transition-colors">
                                                 {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
                                             </div>
                                         </div>
@@ -176,12 +176,12 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-800 bg-zinc-900/20">
-            <div className="w-16 h-16 bg-black border-2 border-zinc-800 flex items-center justify-center mb-6 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]">
-                <Icon className="w-6 h-6 text-zinc-500" />
+        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-800 rounded-xl bg-zinc-900/10">
+            <div className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center mb-4 border border-zinc-800">
+                <Icon className="w-5 h-5 text-zinc-500" />
             </div>
-            <p className="text-white font-black text-lg mb-2 uppercase tracking-wide">{label}</p>
-            <p className="text-zinc-500 text-sm max-w-[250px] leading-relaxed font-medium">{description}</p>
+            <p className="text-zinc-300 font-bold text-base mb-1">{label}</p>
+            <p className="text-zinc-500 text-xs max-w-[250px] leading-relaxed">{description}</p>
         </div>
     );
 }
