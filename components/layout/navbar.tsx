@@ -73,23 +73,22 @@ export function Navbar() {
     return (
         <>
             {/* 
-                V32: VIVID & SOFT NAVBAR
-                - Background: #27272a (Lighter Dark)
-                - Borders: 3px Black (Neo-Brutalist)
-                - Rounded: Corners maintained where possible inside
+                V31: PREMIUM GLASS HUD (DARK MODE RESTORED)
+                - Height: h-14 (56px) - Optimized for Mobile
+                - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[60px] sm:h-20" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16" role="banner">
                 <div
                     className={cn(
                         "h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#27272a]/90 backdrop-blur-xl border-b-[3px] border-black",
+                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
                         "shadow-lg",
                         "w-full relative"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-20 rounded-b-xl">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
                         {raindrops.map((drop, i) => (
                             <motion.div
                                 key={i}
@@ -129,7 +128,7 @@ export function Navbar() {
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-3">
+                    <div className="relative z-50 flex items-center gap-2">
 
                         {/* Desktop Links */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
@@ -139,9 +138,9 @@ export function Navbar() {
                                     id={`desktop-nav-${item.href === '/' ? 'home' : item.href.replace('/', '')}`}
                                     href={item.href}
                                     className={cn(
-                                        "px-4 py-2 text-xs font-black uppercase border-2 border-transparent transition-all rounded-xl",
-                                        "text-zinc-400 hover:text-white hover:bg-white/10 hover:border-white/20",
-                                        pathname === item.href && "bg-[#FACC15] text-black border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:text-black hover:bg-[#FACC15] hover:border-black"
+                                        "px-4 py-1.5 text-xs font-black uppercase border border-white/10 transition-all bg-white/5 text-zinc-300 hover:bg-white hover:text-black rounded-lg",
+                                        "hover:shadow-[0px_0px_15px_rgba(255,255,255,0.2)]",
+                                        pathname === item.href && "bg-white text-black shadow-[0px_0px_10px_rgba(255,255,255,0.3)]"
                                     )}
                                 >
                                     {item.label}
@@ -149,27 +148,27 @@ export function Navbar() {
                             ))}
                         </nav>
 
-                        {/* 1. SEARCH - VIVID BLUE */}
+                        {/* 1. SEARCH - OPTIMIZED (32px) */}
                         <button
                             id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
-                            className="no-min-size flex items-center justify-center w-10 h-10 box-border bg-[#4169E1] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all p-0 group"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
                         >
-                            <Search className="w-5 h-5 text-white stroke-[3px] group-hover:scale-110 transition-transform" />
+                            <Search className="w-4 h-4 text-black stroke-[3px]" />
                         </button>
 
-                        {/* 2. ZAP - VIVID YELLOW */}
+                        {/* 2. ZAP - OPTIMIZED (32px) */}
                         <button
                             id="desktop-zap-trigger"
                             onClick={() => window.location.href = '/ozel'}
                             aria-label="Premium özellikler"
-                            className="no-min-size flex items-center justify-center w-10 h-10 box-border bg-[#FACC15] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all mr-1 p-0 group"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
-                            <Zap className="w-5 h-5 text-black fill-black stroke-[3px] group-hover:rotate-12 transition-transform" />
+                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
                         </button>
 
-                        {/* 3. MOBILE MENU */}
+                        {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
                         <div className="md:hidden relative z-[100]">
                             <MobileMenu />
                         </div>
@@ -177,7 +176,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[60px] sm:h-20" />
+            <div className="h-[53px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
