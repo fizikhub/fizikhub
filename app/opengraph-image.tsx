@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 
-export const runtime = 'edge';
+// export const runtime = 'edge'; // Disabled for stability
 
 // Image metadata
 export const alt = 'FizikHub | Bilim Platformu';
