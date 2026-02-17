@@ -68,17 +68,24 @@ export function ModernLogin() {
         }
 
         setLoading(true);
+        const toastId = toast.loading("İşlem yapılıyor...");
+
         try {
             if (isSignUp) {
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
 
+                // Validate username uniqueness
                 const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
                     .select('username')
                     .eq('username', username)
                     .maybeSingle();
 
-                if (checkError) console.error("Username check error:", checkError);
+                if (checkError) {
+                    console.error("Username check error:", checkError);
+                    // We don't block registration on this error, let the server handle unique constraint if needed
+                    // or throw if critical. For now, let's proceed but log it.
+                }
 
                 if (existingUser) throw new Error("Bu kullanıcı adı zaten alınmış.");
 
@@ -95,27 +102,46 @@ export function ModernLogin() {
                         }
                     },
                 });
+
                 if (error) throw error;
-                window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
+
+                toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
+                // Short delay to let user see the success message
+                setTimeout(() => {
+                    window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
+                }, 1000);
+
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
                     options: { captchaToken: turnstileToken }
                 });
+
                 if (error) throw error;
-                window.location.href = "/";
+
+                toast.success("Giriş başarılı! Yönlendiriliyorsunuz...", { id: toastId });
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000);
             }
         } catch (error: any) {
-            if (error.message.includes("already registered")) {
-                toast.error("Bu e-posta zaten kayıtlı.");
-            } else if (error.message.includes("Invalid login")) {
-                toast.error("Kullanıcı adı veya şifre hatalı.");
-            } else {
-                toast.error(error.message);
-            }
+            console.error("Auth error:", error);
+
+            // Clear loading state immediately on error
             setLoading(false);
+
+            if (error.message.includes("already registered")) {
+                toast.error("Bu e-posta zaten kayıtlı.", { id: toastId });
+            } else if (error.message.includes("Invalid login")) {
+                toast.error("Kullanıcı adı veya şifre hatalı.", { id: toastId });
+            } else if (error.message.includes("Database error")) {
+                toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
+            } else {
+                toast.error(error.message || "Bir hata oluştu.", { id: toastId });
+            }
         }
+        // Note: We don't set loading(false) in success case to prevent interaction during redirect
     };
 
     return (
