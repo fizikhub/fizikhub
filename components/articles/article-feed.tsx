@@ -16,6 +16,7 @@ interface ArticleFeedProps {
     categories: string[];
     activeCategory?: string;
     sortParam: string;
+    newsItems: ScienceNewsItem[];
 }
 
 const containerVariants = {
