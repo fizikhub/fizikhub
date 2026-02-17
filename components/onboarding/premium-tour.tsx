@@ -284,17 +284,14 @@ export function PremiumTour() {
                 {!isModal && isPositioned && (
                     <motion.div
                         key={currentStep.id}
-                        layoutId="tour-card"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, scale: 0.9, y: arrowDirection === 'down' ? '-90%' : '10%' }}
+                        animate={{ opacity: 1, scale: 1, y: arrowDirection === 'down' ? '-100%' : '0%' }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         style={{
                             position: "absolute",
                             top: top,
                             left: left,
                             width: CARD_WIDTH,
-                            // Transform Y only for positioning above/below
-                            y: arrowDirection === 'down' ? '-100%' : '0%'
                         }}
                         className="pointer-events-auto z-20"
                     >
