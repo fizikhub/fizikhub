@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
+import { NeoMagazineHero } from "@/components/articles/neo-magazine-hero";
 import Link from "next/link";
-import { Flame, Clock, PenTool, ArrowRight, Zap } from "lucide-react";
+import { Flame, Clock, PenTool, ArrowRight, Zap, Atom, Telescope, Cpu, Dna, FlaskConical, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ArticleFeedProps {
@@ -37,168 +38,175 @@ const itemVariants = {
     },
 } as const;
 
+const TOPICS = [
+    { id: 'fizik', label: 'Fizik', icon: Atom, color: 'bg-[#FACC15]' },      // Yellow
+    { id: 'uzay', label: 'Uzay', icon: Telescope, color: 'bg-[#FF0080]' },   // Pink
+    { id: 'teknoloji', label: 'Teknoloji', icon: Cpu, color: 'bg-[#23A9FA]' }, // Blue
+    { id: 'biyoloji', label: 'Biyoloji', icon: Dna, color: 'bg-[#F472B6]' },    // Light Pink
+    { id: 'kimya', label: 'Kimya', icon: FlaskConical, color: 'bg-[#4ADE80]' }, // Green
+    { id: 'genel', label: 'Genel', icon: Globe, color: 'bg-white' },          // White
+];
+
 export function ArticleFeed({ articles, categories, activeCategory, sortParam }: ArticleFeedProps) {
+    // Split articles for Magazine Layout
+    const heroArticles = articles.slice(0, 3);
+    const gridArticles = articles.slice(3);
+
     return (
-        <main className="min-h-screen bg-[#27272a] relative selection:bg-yellow-500/30">
+        <main className="min-h-screen bg-[#27272a] relative selection:bg-yellow-500/30 overflow-x-hidden">
             {/* NOISE TEXTURE */}
             <div className="fixed inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
             />
 
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
 
-                {/* VIVID HEADER */}
-                <motion.header
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-                    className="mb-8 flex items-start gap-4 md:gap-6"
-                >
-                    <div className="hidden sm:flex items-center justify-center w-16 h-16 bg-[#FACC15] border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] rotate-[-3deg]">
-                        <Clock className="w-8 h-8 text-black stroke-[2.5px]" />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                            <span className="sm:hidden flex items-center justify-center w-10 h-10 bg-[#FACC15] border-[3px] border-black rounded-lg shadow-[2px_2px_0px_0px_#000]">
-                                <Clock className="w-5 h-5 text-black stroke-[2.5px]" />
-                            </span>
-                            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-none text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] uppercase">
-                                Makaleler
+                {/* 1. MAGAZINE HERO (Cover Story) */}
+                {!activeCategory && sortParam === 'latest' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <div className="mb-10 flex items-center justify-between">
+                            <h1 className="text-4xl sm:text-7xl font-black text-white tracking-tighter uppercase drop-shadow-[4px_4px_0px_#000]">
+                                MAKALELER
                             </h1>
+                            <div className="hidden md:block w-32 h-1 bg-white/20 rounded-full" />
+                            <p className="hidden md:block text-zinc-400 font-bold text-right text-sm tracking-widest uppercase">
+                                Sayı #42 • 2026
+                            </p>
                         </div>
-                        <p className="text-zinc-400 font-bold text-lg max-w-lg leading-relaxed">
-                            Bilim, teknoloji ve fizik dünyasından en güncel ve derinlemesine içerikler.
-                        </p>
-                    </div>
-                </motion.header>
 
-                {/* VIVID FILTER BAR */}
-                <motion.nav
+                        <NeoMagazineHero articles={heroArticles} />
+                    </motion.div>
+                )}
+
+                {/* 2. TOPIC CLUSTERS (Discovery) */}
+                <motion.section
                     variants={containerVariants}
                     initial="hidden"
-                    animate="visible"
-                    className="flex flex-wrap gap-2 mb-10"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="mb-20"
                 >
-                    <motion.div variants={itemVariants}>
-                        <VividFilterPill
-                            href="/makale"
-                            active={!activeCategory && sortParam === 'latest'}
-                            color="bg-[#FACC15]" // Yellow
-                        >
-                            <Clock className="w-3.5 h-3.5" /> Son Eklenenler
-                        </VividFilterPill>
-                    </motion.div>
-                    <motion.div variants={itemVariants}>
-                        <VividFilterPill
-                            href="/makale?sort=popular"
-                            active={sortParam === 'popular'}
-                            color="bg-[#FF0080]" // Pink
-                        >
-                            <Flame className="w-3.5 h-3.5" /> Trend
-                        </VividFilterPill>
-                    </motion.div>
+                    <div className="flex items-center gap-4 mb-8">
+                        <div className="h-px flex-1 bg-zinc-800" />
+                        <h2 className="text-xl font-black text-zinc-500 uppercase tracking-[0.2em]">Konuları Keşfet</h2>
+                        <div className="h-px flex-1 bg-zinc-800" />
+                    </div>
 
-                    {categories.length > 0 && (
-                        <div className="w-px h-8 bg-zinc-700 mx-1 self-center hidden sm:block" />
-                    )}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                        {TOPICS.map((topic, i) => (
+                            <Link key={topic.id} href={`/makale?category=${topic.label}`} className="group block">
+                                <motion.div
+                                    variants={itemVariants}
+                                    className={cn(
+                                        "relative h-32 rounded-2xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex flex-col items-center justify-center gap-2 overflow-hidden",
+                                        activeCategory === topic.label ? "bg-white" : "bg-[#202023] group-hover:bg-[#2a2a2d]"
+                                    )}
+                                >
+                                    {/* Icon Circle */}
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-full border-2 border-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-110",
+                                        topic.color
+                                    )}>
+                                        <topic.icon className="w-5 h-5 text-black stroke-[2.5px]" />
+                                    </div>
 
-                    {categories.map((cat, i) => (
-                        <motion.div key={cat} variants={itemVariants}>
-                            <VividFilterPill
-                                href={`/makale?category=${cat}`}
-                                active={activeCategory === cat}
-                                color={i % 2 === 0 ? "bg-[#23A9FA]" : "bg-[#16A34A]"} // Blue / Green
-                            >
-                                {cat}
-                            </VividFilterPill>
-                        </motion.div>
-                    ))}
-                </motion.nav>
+                                    <span className={cn(
+                                        "font-black uppercase tracking-wide text-sm transition-colors",
+                                        activeCategory === topic.label ? "text-black" : "text-zinc-400 group-hover:text-white"
+                                    )}>
+                                        {topic.label}
+                                    </span>
 
-                {/* ARTICLE GRID */}
+                                    {/* Active Indicator */}
+                                    {activeCategory === topic.label && (
+                                        <div className="absolute inset-x-0 bottom-0 h-1.5 bg-[#FACC15]" />
+                                    )}
+                                </motion.div>
+                            </Link>
+                        ))}
+                    </div>
+                </motion.section>
+
+                {/* 3. EDITORIAL GRID (Mixed Layout) */}
+                <div className="flex items-center gap-4 mb-8">
+                    <Clock className="w-6 h-6 text-[#FACC15]" />
+                    <h2 className="text-3xl font-black text-white uppercase tracking-tight">
+                        {activeCategory ? `${activeCategory} Arşivi` : "En Yeniler / Akış"}
+                    </h2>
+                </div>
+
                 {articles.length > 0 ? (
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="flex flex-col gap-6"
-                    >
-                        {articles.map((article) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        {(activeCategory || sortParam !== 'latest' ? articles : gridArticles).map((article, index) => (
                             <motion.div
                                 key={article.id}
-                                variants={itemVariants}
-                                whileHover={{ scale: 1.01 }}
-                                transition={{ type: "spring", stiffness: 300 }}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.05 }}
+                                // Make every 4th item span 2 columns if on large screen (Pseudo-magazine layout)
+                                className={cn(
+                                    "col-span-1",
+                                    index % 7 === 0 && index !== 0 ? "md:col-span-2 lg:col-span-2" : ""
+                                )}
                             >
                                 <NeoArticleCard article={article} />
                             </motion.div>
                         ))}
-                    </motion.div>
+                    </div>
                 ) : (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="py-24 text-center bg-[#202023] border-[3px] border-dashed border-zinc-700 rounded-2xl"
+                        className="py-24 text-center bg-[#202023] border-[3px] border-dashed border-zinc-700 rounded-3xl"
                     >
-                        <p className="text-zinc-400 font-bold text-lg mb-4">Bu kategoride henüz içerik yok.</p>
+                        <p className="text-zinc-400 font-bold text-lg mb-4">Bu sayıda içerik bulunamadı.</p>
                         <Link href="/makale">
                             <button className="px-6 py-3 bg-white text-black font-black uppercase tracking-wide rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
-                                Tümüne Dön
+                                Kapağa Dön
                             </button>
                         </Link>
                     </motion.div>
                 )}
 
-                {/* WRITER CTA (Refined) */}
+                {/* WRITER CTA (Ad Break) */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 80 }}
-                    className="mt-20 mb-10"
+                    className="mt-24 mb-10"
                 >
                     <Link
                         href="/yazar"
-                        className="group block relative overflow-hidden p-8 rounded-3xl bg-gradient-to-br from-[#FFC800] to-[#FFD54F] border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all duration-300 transform"
+                        className="group block relative overflow-hidden p-10 rounded-[2.5rem] bg-gradient-to-br from-[#FF0080] to-[#FF4D4D] border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all duration-300 transform"
                     >
-                        <div className="absolute right-[-20px] top-[-20px] w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute right-[-20px] top-[-20px] w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none mix-blend-overlay" />
 
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10">
-                            <div className="text-center sm:text-left">
-                                <div className="inline-flex items-center gap-2 bg-white/30 backdrop-blur-sm px-3 py-1 rounded-full border border-black/10 text-black/80 text-xs font-black uppercase tracking-widest mb-3">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                            <div className="text-center md:text-left max-w-2xl">
+                                <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10 text-white font-black uppercase tracking-widest mb-4 text-xs">
                                     <PenTool className="w-3.5 h-3.5" />
-                                    Yazarlık Programı
+                                    Yazarlık Başvurusu
                                 </div>
-                                <h3 className="text-3xl sm:text-4xl font-black text-black leading-none mb-2">
-                                    SEN DE YAZAR OL.
+                                <h3 className="text-4xl md:text-5xl font-black text-white leading-[0.9] mb-4 uppercase drop-shadow-md">
+                                    Kendi Köşeni Yaz.
                                 </h3>
-                                <p className="text-base sm:text-lg text-black/80 font-bold max-w-sm">
-                                    Araştırmalarını binlerce okuyucuyla paylaş, topluluğa yön ver.
+                                <p className="text-lg md:text-xl text-white/90 font-bold leading-relaxed">
+                                    FizikHub bir topluluk dergisidir. Senin de anlatacak bilimsel bir hikayen varsa, sayfalarımız sana açık.
                                 </p>
                             </div>
-                            <div className="flex-shrink-0 w-16 h-16 rounded-full bg-black flex items-center justify-center group-hover:scale-110 group-hover:rotate-[-10deg] transition-all duration-300 border-[3px] border-white shadow-xl">
-                                <ArrowRight className="w-8 h-8 text-[#FFC800]" />
+                            <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-white flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                                <ArrowRight className="w-8 h-8 text-[#FF0080]" />
                             </div>
                         </div>
                     </Link>
                 </motion.div>
             </div>
         </main>
-    );
-}
-
-function VividFilterPill({ href, active, children, color }: { href: string; active: boolean; children: React.ReactNode, color: string }) {
-    return (
-        <Link
-            href={href}
-            className={cn(
-                "inline-flex items-center gap-2 px-5 py-2.5 text-sm font-black uppercase tracking-wide rounded-xl border-2 transition-all active:scale-95 select-none",
-                active
-                    ? cn("border-black text-black shadow-[4px_4px_0px_0px_#000] -translate-y-1", color)
-                    : "bg-[#18181b] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white hover:bg-[#202023]"
-            )}
-        >
-            {children}
-        </Link>
     );
 }
