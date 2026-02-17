@@ -148,8 +148,9 @@ export function PremiumTour() {
     const isModal = !currentStep.targetId;
 
     // --- POSITIONING LOGIC ---
-    const CARD_WIDTH = 320; // Fixed width for calculation
-    const MARGIN = 10;
+    const isMobile = windowSize.width < 768; // Simple mobile check
+    const MARGIN = 16;
+    const CARD_WIDTH = isMobile ? windowSize.width - (MARGIN * 2) : 320;
 
     let top = 0;
     let left = 0;
@@ -172,23 +173,37 @@ export function PremiumTour() {
             arrowDirection = "up";
         }
 
-        // 2. Determine Horizontal Position with Clamping
-        // Start by centering on the target
-        const targetCenter = rect.left + (rect.width / 2);
-        left = targetCenter - (CARD_WIDTH / 2);
-
-        // Clamp to screen edges
-        if (left < MARGIN) {
+        // 2. Determine Horizontal Position
+        if (isMobile) {
+            // MOBILE: Always center the card horizontally with fixed margins
             left = MARGIN;
-        } else if (left + CARD_WIDTH > windowSize.width - MARGIN) {
-            left = windowSize.width - CARD_WIDTH - MARGIN;
-        }
 
-        // Calculate where the arrow should point relative to the card's 0,0
-        // Arrow needs to point to 'targetCenter'.
-        // Card starts at 'left'. 
-        // Arrow X = targetCenter - left.
-        xOffset = targetCenter - left;
+            // Calculate arrow position based on target center relative to screen
+            const targetCenter = rect.left + (rect.width / 2);
+            // Arrow needs to be at 'targetCenter' relative to screen
+            // Card starts at 'MARGIN' (16px) relative to screen
+            // xOffset (inside card) = targetCenter - cardLeft
+            xOffset = targetCenter - MARGIN;
+
+            // Clamp arrow so it doesn't detach from card
+            if (xOffset < 10) xOffset = 10;
+            if (xOffset > CARD_WIDTH - 10) xOffset = CARD_WIDTH - 10;
+
+        } else {
+            // DESKTOP: Center on target with clamping
+            const targetCenter = rect.left + (rect.width / 2);
+            left = targetCenter - (CARD_WIDTH / 2);
+
+            // Clamp to screen edges
+            if (left < MARGIN) {
+                left = MARGIN;
+            } else if (left + CARD_WIDTH > windowSize.width - MARGIN) {
+                left = windowSize.width - CARD_WIDTH - MARGIN;
+            }
+
+            // Arrow X = targetCenter - left.
+            xOffset = targetCenter - left;
+        }
 
         isPositioned = true;
     }
