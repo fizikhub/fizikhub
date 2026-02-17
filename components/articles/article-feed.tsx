@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { NeoMagazineHero } from "@/components/articles/neo-magazine-hero";
 import Link from "next/link";
-import { Flame, Clock, PenTool, ArrowRight, Zap, Atom, Telescope, Cpu, Dna, FlaskConical, Globe } from "lucide-react";
+import { Clock, PenTool, ArrowRight, Ticket, Atom, Telescope, Cpu, Dna, FlaskConical, Globe, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TrendingMarquee } from "@/components/ui/trending-marquee";
 
 interface ArticleFeedProps {
     articles: any[];
@@ -67,6 +68,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
+                        className="mb-8"
                     >
                         <div className="mb-10 flex items-center justify-between">
                             <h1 className="text-4xl sm:text-7xl font-black text-white tracking-tighter uppercase drop-shadow-[4px_4px_0px_#000]">
@@ -79,6 +81,11 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                         </div>
 
                         <NeoMagazineHero articles={heroArticles} />
+
+                        {/* NEW: TRENDING MARQUEE */}
+                        <div className="my-12">
+                            <TrendingMarquee />
+                        </div>
                     </motion.div>
                 )}
 
@@ -101,17 +108,18 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                             <Link key={topic.id} href={`/makale?category=${topic.label}`} className="group block">
                                 <motion.div
                                     variants={itemVariants}
+                                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
                                     className={cn(
-                                        "relative h-32 rounded-2xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all flex flex-col items-center justify-center gap-2 overflow-hidden",
+                                        "relative h-36 rounded-3xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-[6px_6px_0px_0px_#000] transition-all flex flex-col items-center justify-center gap-3 overflow-hidden",
                                         activeCategory === topic.label ? "bg-white" : "bg-[#202023] group-hover:bg-[#2a2a2d]"
                                     )}
                                 >
                                     {/* Icon Circle */}
                                     <div className={cn(
-                                        "w-10 h-10 rounded-full border-2 border-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-110",
+                                        "w-12 h-12 rounded-full border-[2.5px] border-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-12",
                                         topic.color
                                     )}>
-                                        <topic.icon className="w-5 h-5 text-black stroke-[2.5px]" />
+                                        <topic.icon className="w-6 h-6 text-black stroke-[2.5px]" />
                                     </div>
 
                                     <span className={cn(
@@ -173,35 +181,48 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam }:
                     </motion.div>
                 )}
 
-                {/* WRITER CTA (Ad Break) */}
+                {/* 4. GOLDEN TICKET WRITER CTA */}
                 <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 40, rotate: 1 }}
+                    whileInView={{ opacity: 1, y: 0, rotate: -1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 80 }}
-                    className="mt-24 mb-10"
+                    whileHover={{ rotate: 0, scale: 1.02 }}
+                    className="mt-32 mb-16 max-w-4xl mx-auto"
                 >
                     <Link
                         href="/yazar"
-                        className="group block relative overflow-hidden p-10 rounded-[2.5rem] bg-gradient-to-br from-[#FF0080] to-[#FF4D4D] border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[4px] hover:translate-y-[4px] transition-all duration-300 transform"
+                        className="group block relative overflow-visible"
                     >
-                        <div className="absolute right-[-20px] top-[-20px] w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none mix-blend-overlay" />
+                        {/* Golden Ticket Container */}
+                        <div className="relative bg-[#FFC800] p-8 md:p-12 rounded-[1rem] border-[4px] border-black shadow-[12px_12px_0px_0px_#000] flex flex-col md:flex-row items-center justify-between gap-8">
 
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-                            <div className="text-center md:text-left max-w-2xl">
-                                <div className="inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/10 text-white font-black uppercase tracking-widest mb-4 text-xs">
-                                    <PenTool className="w-3.5 h-3.5" />
-                                    Yazarlık Başvurusu
+                            {/* Decorative Perforations (Circles at sides) */}
+                            <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#27272a] rounded-full border-[4px] border-black" />
+                            <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#27272a] rounded-full border-[4px] border-black" />
+
+                            {/* Content */}
+                            <div className="flex-1 text-center md:text-left z-10">
+                                <div className="inline-flex items-center gap-2 bg-black text-[#FFC800] px-4 py-1.5 rounded-full font-black uppercase tracking-widest mb-4 text-xs border-2 border-black">
+                                    <Star className="w-3.5 h-3.5 fill-[#FFC800]" />
+                                    Yazar Bileti
                                 </div>
-                                <h3 className="text-4xl md:text-5xl font-black text-white leading-[0.9] mb-4 uppercase drop-shadow-md">
-                                    Kendi Köşeni Yaz.
+                                <h3 className="text-5xl md:text-6xl font-black text-black leading-[0.9] mb-4 uppercase drop-shadow-sm">
+                                    Altın Bilet.
                                 </h3>
-                                <p className="text-lg md:text-xl text-white/90 font-bold leading-relaxed">
+                                <p className="text-lg md:text-xl text-black font-bold leading-relaxed max-w-lg">
                                     FizikHub bir topluluk dergisidir. Senin de anlatacak bilimsel bir hikayen varsa, sayfalarımız sana açık.
                                 </p>
                             </div>
-                            <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-white flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
-                                <ArrowRight className="w-8 h-8 text-[#FF0080]" />
+
+                            {/* Action Visual */}
+                            <div className="flex-shrink-0 relative">
+                                <div className="w-32 h-32 bg-black rounded-full flex items-center justify-center border-[4px] border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:rotate-12 transition-transform duration-300">
+                                    <PenTool className="w-12 h-12 text-white" />
+                                </div>
+                                <div className="absolute -bottom-4 -right-4 bg-white text-black font-black text-xs uppercase px-3 py-1 border-2 border-black -rotate-12 shadow-[2px_2px_0px_0px_#000]">
+                                    Başvur
+                                </div>
                             </div>
                         </div>
                     </Link>

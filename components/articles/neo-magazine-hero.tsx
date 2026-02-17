@@ -7,6 +7,8 @@ import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { MouseEvent } from "react";
 
 interface NeoMagazineHeroProps {
     articles: Article[];
@@ -18,37 +20,72 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
     const featured = articles[0]; // Covers Story
     const subFeatured = articles.slice(1, 3); // Top Stories
 
+    // 3D Tilt Logic
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
+    const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
+
+    const rotateX = useTransform(mouseY, [-0.5, 0.5], ["7deg", "-7deg"]);
+    const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+    function onMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
+        const { left, top, width, height } = currentTarget.getBoundingClientRect();
+        x.set((clientX - left) / width - 0.5);
+        y.set((clientY - top) / height - 0.5);
+    }
+
+    function onMouseLeave() {
+        x.set(0);
+        y.set(0);
+    }
+
+    /* Mobile check or simple return for sub-featured to avoid hooks issues? 
+       Actually hooks are fine, just css media queries handle layout. 
+       We only apply tilt to the main card container. */
+
     return (
         <section className="mb-16">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
 
-                {/* PRIMARY FEATURE (Cover Story) */}
-                <div className="lg:col-span-8 group relative perspective-1000">
-                    <Link href={`/blog/${featured.slug}`} className="block h-full">
-                        <article className="relative h-[500px] lg:h-[600px] w-full rounded-3xl overflow-hidden border-[3px] border-black shadow-[8px_8px_0px_0px_#000] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-[4px_4px_0px_0px_#000] transition-all duration-300 bg-[#27272a]">
-
+                {/* PRIMARY FEATURE (Cover Story) - 3D TILT ENABLED */}
+                <div
+                    className="lg:col-span-8 relative perspective-1000 group z-10"
+                    onMouseMove={onMouseMove}
+                    onMouseLeave={onMouseLeave}
+                >
+                    <Link href={`/blog/${featured.slug}`} className="block h-full relative z-20">
+                        <motion.article
+                            style={{
+                                rotateX,
+                                rotateY,
+                                transformStyle: "preserve-3d",
+                            }}
+                            className="relative h-[500px] lg:h-[600px] w-full rounded-3xl overflow-hidden border-[3px] border-black shadow-[8px_8px_0px_0px_#000] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,0.5)] transition-shadow duration-300 bg-[#27272a]"
+                        >
                             {/* Image Background */}
-                            <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 z-0 transform-style-3d translate-z-[-20px]">
                                 <Image
                                     src={featured.cover_url || featured.image_url || "/images/placeholder-hero.jpg"}
                                     alt={featured.title}
                                     fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                                     priority
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
                             </div>
 
-                            {/* Floating Badge */}
-                            <div className="absolute top-6 left-6 z-20">
+                            {/* Floating Badge - Popping out */}
+                            <div className="absolute top-6 left-6 z-20 transform translate-z-[40px]">
                                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#FACC15] border-[3px] border-black text-black text-sm font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_#000] -rotate-2 group-hover:rotate-0 transition-transform">
                                     <Sparkles className="w-4 h-4" />
                                     Kapak Konusu
                                 </span>
                             </div>
 
-                            {/* Content Overlay */}
-                            <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 z-20 flex flex-col gap-4">
+                            {/* Content Overlay - Popping out more */}
+                            <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 z-20 flex flex-col gap-4 transform translate-z-[30px]">
                                 <div className="flex items-center gap-3 text-white/90 text-xs font-black uppercase tracking-widest mb-1">
                                     <span className="text-[#FACC15] px-2 py-1 bg-black/50 backdrop-blur-md rounded border border-white/20">
                                         {featured.category}
@@ -57,9 +94,11 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                                     <span>{formatDistanceToNow(new Date(featured.created_at), { addSuffix: true, locale: tr })}</span>
                                 </div>
 
-                                <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tight uppercas drop-shadow-xl group-hover:text-[#FACC15] transition-colors duration-300">
+                                <motion.h2
+                                    className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tight uppercase drop-shadow-xl group-hover:text-[#FACC15] transition-colors duration-300"
+                                >
                                     {featured.title}
-                                </h2>
+                                </motion.h2>
 
                                 <p className="text-white/80 line-clamp-2 max-w-2xl text-base sm:text-lg font-medium leading-relaxed drop-shadow-md">
                                     {featured.excerpt || (featured.content ? featured.content.substring(0, 150).replace(/<[^>]*>?/gm, '') + "..." : "")}
@@ -87,7 +126,7 @@ export function NeoMagazineHero({ articles }: NeoMagazineHeroProps) {
                                     </span>
                                 </div>
                             </div>
-                        </article>
+                        </motion.article>
                     </Link>
                 </div>
 
