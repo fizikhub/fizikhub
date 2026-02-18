@@ -1,10 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Trash2, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { createBrowserClient } from "@supabase/ssr";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Story {
     id: string;
@@ -12,6 +15,7 @@ interface Story {
     image: string;
     content: string;
     author: string;
+    author_id?: string;
 }
 
 interface StoryViewerProps {
@@ -21,20 +25,38 @@ interface StoryViewerProps {
     onClose: () => void;
 }
 
-export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryViewerProps) {
+export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onClose }: StoryViewerProps) {
+    // Local state to handle deletions immediately
+    const [stories, setStories] = useState(initialStories);
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [progress, setProgress] = useState(0);
     const [mounted, setMounted] = useState(false);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const STORY_DURATION = 5000; // 5 seconds per story
+
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const router = useRouter();
+
+    useEffect(() => {
+        setStories(initialStories);
+        setCurrentIndex(initialIndex);
+    }, [initialStories, initialIndex]);
 
     useEffect(() => {
         setMounted(true);
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUserId(user?.id || null);
+        };
+        getUser();
+
         return () => setMounted(false);
     }, []);
-
-    useEffect(() => {
-        setCurrentIndex(initialIndex);
-    }, [initialIndex]);
 
     useEffect(() => {
         if (isOpen) {
@@ -63,8 +85,47 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
         }
     }, [currentIndex]);
 
+    const handleDelete = async () => {
+        const currentStory = stories[currentIndex];
+        if (!currentStory?.id || !userId) return; // Should not happen if button is visible
+
+        if (!confirm("Bu hikayeyi silmek istediğinize emin misiniz?")) return;
+
+        try {
+            setIsDeleting(true);
+            const { error } = await supabase
+                .from('stories')
+                .delete()
+                .eq('id', currentStory.id)
+                .eq('author_id', userId); // Extra safety
+
+            if (error) throw error;
+
+            toast.success("Hikaye silindi.");
+
+            // Remove from local list
+            const newStories = stories.filter(s => s.id !== currentStory.id);
+            if (newStories.length === 0) {
+                onClose();
+            } else {
+                setStories(newStories);
+                if (currentIndex >= newStories.length) {
+                    setCurrentIndex(newStories.length - 1);
+                }
+                setProgress(0);
+            }
+            router.refresh();
+
+        } catch (error: any) {
+            toast.error("Silme işlemi başarısız oldu.");
+            console.error(error);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen || stories.length === 0) return;
 
         const interval = setInterval(() => {
             setProgress(prev => {
@@ -77,11 +138,12 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
         }, 100);
 
         return () => clearInterval(interval);
-    }, [isOpen, currentIndex, nextStory]);
+    }, [isOpen, currentIndex, nextStory, stories.length]);
 
-    if (!isOpen || !mounted) return null;
+    if (!isOpen || !mounted || stories.length === 0) return null;
 
     const currentStory = stories[currentIndex];
+    const isOwner = userId && currentStory.author_id === userId;
 
     const content = (
         <AnimatePresence>
@@ -126,13 +188,24 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
                                 </span>
                             </div>
                         </div>
-                        <button
-                            onClick={onClose}
-                            aria-label="Hikayeyi kapat"
-                            className="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {isOwner && (
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(); }}
+                                    disabled={isDeleting}
+                                    className="w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-xl border border-white/10 rounded-full text-red-500 hover:bg-red-500/20 transition-all active:scale-95 z-[101]"
+                                >
+                                    {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                aria-label="Hikayeyi kapat"
+                                className="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95 z-[101]"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Story Content */}

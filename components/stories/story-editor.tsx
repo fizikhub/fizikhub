@@ -49,6 +49,7 @@ export function StoryEditor() {
     // Metadata State
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [category, setCategory] = useState("Genel");
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const bgImageRef = useRef<HTMLImageElement>(null);
@@ -219,6 +220,7 @@ export function StoryEditor() {
                     type: 'image',
                     title: title.trim(),
                     content: content.trim() || undefined, // Only send if set
+                    category: category,
                     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
                 });
 
@@ -540,8 +542,24 @@ export function StoryEditor() {
                             exit={{ opacity: 0 }}
                             className="space-y-6"
                         >
-                            {/* STORY INFO */}
+                            {/* CATEGORY & TITLE */}
                             <div className="space-y-4 p-4 bg-zinc-900/50 rounded-xl border border-white/5">
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-400 font-bold uppercase">Kategori</Label>
+                                    <select
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        className="w-full bg-black/50 border border-white/10 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFC800] transition-colors"
+                                    >
+                                        <option value="Genel">Genel</option>
+                                        <option value="Kuantum">Kuantum</option>
+                                        <option value="Astrofizik">Astrofizik</option>
+                                        <option value="Mars">Mars</option>
+                                        <option value="Biyoloji">Biyoloji</option>
+                                        <option value="Kimya">Kimya</option>
+                                        <option value="Fizik">Fizik</option>
+                                    </select>
+                                </div>
                                 <div className="space-y-2">
                                     <Label className="text-xs text-zinc-400 font-bold uppercase">Hikaye Başlığı</Label>
                                     <Input
