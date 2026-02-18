@@ -3,8 +3,9 @@ import { simulations } from "@/components/simulations/data";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { ArrowLeft } from "lucide-react";
 
-// Import simulation components (lazy loading would be better but keeping simple for now)
+// Import simulation components
 import { ProjectileSim } from "@/components/simulations/ProjectileSim";
+import { OpticsSim } from "@/components/simulations/OpticsSim";
 import { PendulumSim } from "@/components/simulations/PendulumSim";
 import { WaveSim } from "@/components/simulations/WaveSim";
 import { SpringMassSim } from "@/components/simulations/SpringMassSim";
@@ -31,6 +32,9 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
         case "projectile":
             Component = ProjectileSim;
             break;
+        case "optics":
+            Component = OpticsSim;
+            break;
         case "pendulum":
             Component = PendulumSim;
             break;
@@ -49,21 +53,32 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
 
     return (
         <div className="min-h-screen bg-background flex flex-col font-[family-name:var(--font-outfit)]">
-            {/* Compact Simulation Header */}
-            <div className="border-b-[3px] border-black sticky top-0 z-50 py-2 sm:py-3 px-4" style={{ backgroundColor: sim.color }}>
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <ViewTransitionLink href="/simulasyonlar">
-                            <div className="flex items-center justify-center w-8 h-8 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                                <ArrowLeft className="w-4 h-4 text-black" />
-                            </div>
-                        </ViewTransitionLink>
-                        <h1 className="text-sm sm:text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
-                            {sim.title}
-                        </h1>
+            {/* 
+               We're removing the header here because SimWrapper (used inside ProjectileSim and OpticsSim) 
+               provides its own full-screen layout. 
+               However, older simulations might still need it.
+               We can conditionally render it if the component is NOT one of the new wrapped ones.
+               But for consistency, it's better if ALL sims use the wrapper or we unify the layout.
+               
+               For now, since SimWrapper has a back button, we can hide the header for specific IDs.
+            */}
+
+            {(sim.id !== "projectile" && sim.id !== "optics") && (
+                <div className="border-b-[3px] border-black sticky top-0 z-50 py-2 sm:py-3 px-4" style={{ backgroundColor: sim.color }}>
+                    <div className="max-w-7xl mx-auto flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <ViewTransitionLink href="/simulasyonlar">
+                                <div className="flex items-center justify-center w-8 h-8 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                                    <ArrowLeft className="w-4 h-4 text-black" />
+                                </div>
+                            </ViewTransitionLink>
+                            <h1 className="text-sm sm:text-lg font-black text-black uppercase tracking-tight flex items-center gap-2">
+                                {sim.title}
+                            </h1>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Main Content Area */}
             <div className="flex-1 relative">

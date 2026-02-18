@@ -5,7 +5,8 @@ import {
     Target,
     Magnet,
     Atom,
-    Dna
+    Dna,
+    Lightbulb // Import Lightbulb for Optics
 } from "lucide-react";
 
 export type Simulation = {
@@ -31,6 +32,17 @@ export const simulations: Simulation[] = [
         formula: "R = v²sin(2θ)/g",
         difficulty: "Kolay",
         tags: ["Mekanik", "Kinematik", "Vektörler"]
+    },
+    {
+        id: "optics",
+        slug: "optik-laboratuvari",
+        title: "Optik Laboratuvarı",
+        description: "Işığın kırılma (Snell Yasası) ve tam yansıma olaylarını interaktif olarak keşfedin.",
+        icon: Lightbulb,
+        color: "#38BDF8", // Sky Blue
+        formula: "n₁sinθ₁ = n₂sinθ₂",
+        difficulty: "Orta",
+        tags: ["Optik", "Kırılma", "Yansıma"]
     },
     {
         id: "pendulum",
