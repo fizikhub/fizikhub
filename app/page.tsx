@@ -56,7 +56,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const [articlesResult, questionsResult, profilesResult, storiesResult] = await Promise.all([
+    const [articlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
       supabase
         .from('articles')
@@ -84,6 +84,13 @@ const getCachedFeedData = unstable_cache(
         .select('*, author:profiles(username, full_name, avatar_url)')
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }),
+
+      // Fetch Story Groups
+      supabase
+        .from('story_groups')
+        .select('*')
+        .order('created_at', { ascending: false })
     ]);
 
     return {
@@ -98,7 +105,18 @@ const getCachedFeedData = unstable_cache(
         color: "from-purple-500 to-pink-500", // Default gradient for now
         content: s.content || "", // Empty if no content
         author: s.author?.username || "FizikHub",
-        isDynamic: true // Flag to distinguish
+        isDynamic: true, // Flag to distinguish
+        group_id: s.group_id,
+        category: s.category
+      })),
+      groups: (groupsResult?.data || []).map((g: any) => ({
+        id: g.id,
+        name: g.title,
+        image: g.cover_url || "/placeholder.png",
+        href: "#",
+        color: "from-zinc-800 to-zinc-900",
+        content: "",
+        author: "FizikHub"
       }))
     };
   },
@@ -107,7 +125,7 @@ const getCachedFeedData = unstable_cache(
 );
 
 export default async function Home() {
-  const { articles, questions, suggestedUsers, stories } = await getCachedFeedData();
+  const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
 
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
@@ -124,7 +142,7 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
-            <NexusStories initialStories={stories} />
+            <NexusStories initialStories={stories} initialGroups={groups} />
             <LatestArticlesSlider
               articles={formatSliderArticles(articles)}
             />
