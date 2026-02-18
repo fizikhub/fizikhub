@@ -33,6 +33,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
     const [mounted, setMounted] = useState(false);
     const [userId, setUserId] = useState<string | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
 
     const STORY_DURATION = 5000; // 5 seconds per story
 
@@ -125,7 +126,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
     };
 
     useEffect(() => {
-        if (!isOpen || stories.length === 0) return;
+        if (!isOpen || stories.length === 0 || isPaused) return;
 
         const interval = setInterval(() => {
             setProgress(prev => {
@@ -138,7 +139,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
         }, 100);
 
         return () => clearInterval(interval);
-    }, [isOpen, currentIndex, nextStory, stories.length]);
+    }, [isOpen, currentIndex, nextStory, stories.length, isPaused]);
 
     if (!isOpen || !mounted || stories.length === 0) return null;
 
@@ -153,10 +154,16 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[99999] bg-black flex items-center justify-center"
             >
-                <div className="relative w-full h-full sm:max-w-md sm:h-[90vh] sm:rounded-3xl overflow-hidden bg-zinc-900 flex flex-col">
+                <div
+                    className="relative w-full h-full sm:max-w-md sm:h-[90vh] sm:rounded-3xl overflow-hidden bg-zinc-900 flex flex-col"
+                    onMouseDown={() => setIsPaused(true)}
+                    onMouseUp={() => setIsPaused(false)}
+                    onTouchStart={() => setIsPaused(true)}
+                    onTouchEnd={() => setIsPaused(false)}
+                >
 
                     {/* Progress Bars */}
-                    <div className="absolute top-0 left-0 right-0 z-[100] p-4 pt-6 flex gap-1.5 px-4 sm:px-6">
+                    <div className="absolute top-0 left-0 right-0 z-[100] p-4 pt-6 flex gap-1.5 px-4 sm:px-6 pointer-events-none">
                         {stories.map((_, index) => (
                             <div key={index} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
                                 <motion.div
@@ -172,8 +179,8 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                     </div>
 
                     {/* Header */}
-                    <div className="absolute top-10 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
+                    <div className="absolute top-10 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
+                        <div className="flex items-center gap-3 pointer-events-auto">
                             <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
                                     <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill className="object-cover" />
@@ -188,7 +195,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                                 </span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 pointer-events-auto">
                             {isOwner && (
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleDelete(); }}
@@ -216,14 +223,15 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                             fill
                             className="object-cover"
                             priority
+                            draggable={false}
                         />
 
                         {/* Dark Gradient Overlay for Legibility */}
                         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
 
                         {/* Tap Zones for Navigation */}
-                        <div className="absolute inset-y-0 left-0 w-1/3 z-10" onClick={prevStory} />
-                        <div className="absolute inset-y-0 right-0 w-1/3 z-10" onClick={nextStory} />
+                        <div className="absolute inset-y-0 left-0 w-1/3 z-10" onClick={!isPaused ? prevStory : undefined} />
+                        <div className="absolute inset-y-0 right-0 w-1/3 z-10" onClick={!isPaused ? nextStory : undefined} />
 
                         {/* Navigation Arrows (Visible on Desktop) */}
                         <div className="absolute inset-y-0 left-4 hidden sm:flex items-center z-50">

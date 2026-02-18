@@ -24,17 +24,6 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
     const openGroup = (groupIndex: number) => {
         const group = initialGroups[groupIndex];
 
-        // 1. Get the "Intro" story for the group
-        const introStory = {
-            id: `intro-${group.id}`,
-            title: group.name,
-            image: group.image,
-            content: group.content || `${group.name} hikayeleri`,
-            author: group.author,
-            category: group.name,
-            isIntro: true
-        };
-
         // 2. Filter dynamic stories for this group
         const groupStories = initialStories.filter(s =>
             s.group_id === group.id
@@ -48,10 +37,8 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
             author_id: s.author_id
         }));
 
-        // 3. Combine them
-        const playlist = [introStory, ...groupStories];
-
-        setActiveStories(playlist);
+        // 3. Just use the group stories
+        setActiveStories(groupStories);
         setViewerOpen(true);
     };
 
