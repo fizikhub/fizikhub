@@ -1,9 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
-import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
-import { FeedSidebar } from "@/components/home/feed-sidebar";
+import dynamic from "next/dynamic";
 import { CompactHero } from "@/components/home/compact-hero";
+import { NexusStories } from "@/components/home/nexus-stories";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { BackToTop } from "@/components/ui/back-to-top";
+import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
+
+// Lazy Load Heavy Components
+const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {
+  loading: () => <div className="h-screen w-full animate-pulse bg-muted/20 rounded-xl" />,
+  ssr: true // Keep SSR for SEO, but chunk it
+});
+
+const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
+  loading: () => <div className="h-96 w-full animate-pulse bg-muted/20 rounded-xl" />,
+  ssr: true
+});
+
+const LatestArticlesSlider = dynamic(() => import("@/components/home/latest-articles-slider").then(mod => mod.LatestArticlesSlider), {
+  loading: () => <div className="h-48 w-full animate-pulse bg-muted/20 rounded-xl" />,
+  ssr: true
+});
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -86,12 +105,6 @@ const getCachedFeedData = unstable_cache(
   ['feed-data-v3-fixed'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
-
-import { ScrollProgress } from "@/components/ui/scroll-progress";
-import { BackToTop } from "@/components/ui/back-to-top";
-import { NexusStories } from "@/components/home/nexus-stories";
-import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
-import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 
 export default async function Home() {
   const { articles, questions, suggestedUsers, stories } = await getCachedFeedData();

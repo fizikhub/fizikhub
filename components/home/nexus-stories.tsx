@@ -82,7 +82,7 @@ export function NexusStories({ initialStories = [] }: NexusStoriesProps) {
 
     return (
         <section className="w-full py-4 mt-[-20px] mb-4">
-            <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
+            <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {displayStories.map((story, index) => (
                     <div
                         key={story.name + index}
