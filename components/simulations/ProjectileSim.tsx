@@ -1,111 +1,113 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Play } from "lucide-react";
+import { Move, RotateCcw, Play, Pause } from "lucide-react";
 import { SimWrapper, SimTask } from "./sim-wrapper";
 
 interface ProjectileSimProps {
     className?: string;
 }
 
-export function ProjectileSim({ className = "" }: ProjectileSimProps) {
+// Physics State (Mutable Ref)
+type GameState = {
+    // Projectile
+    x: number; y: number; vx: number; vy: number;
+    active: boolean;
+    path: { x: number; y: number }[];
+    // Cannon
+    angle: number;
+    power: number;
+    // Environment
+    g: number;
+    scale: number; // pixels per simulation meter
+    // Target
+    target: { x: number; y: number; w: number; h: number; hit: boolean };
+};
+
+export function ProjectileSim({ className }: ProjectileSimProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    // UI Sync State
+    const [isRunning, setIsRunning] = useState(false);
+    const [uiAngle, setUiAngle] = useState(45);
+    const [uiPower, setUiPower] = useState(50);
+    const [simData, setSimData] = useState({ range: 0, height: 0, time: 0 });
+
     // Tasks
     const [tasks, setTasks] = useState<SimTask[]>([
-        { id: "t1", description: "50 metre menzile (+/- 2m) atış yap", hint: "45° açı en uzun menzili verir.", isCompleted: false },
-        { id: "t2", description: "Maksimum yüksekliği 40m üzerine çıkar", hint: "Açıyı dikleştirip (75°+) hızı arttır.", isCompleted: false },
-        { id: "t3", description: "Topun havada kalma süresini 8 saniyeye çıkar", hint: "Yüksek açı ve yüksek hız gerekli.", isCompleted: false },
+        { id: "p1", description: "Hedefi vur!", hint: "Açıyı ve gücü ayarla.", isCompleted: false },
+        { id: "p2", description: "Maksimum menzile ulaş (45°).", hint: "Açıyı 45 derece yap ve tam güçle ateşle.", isCompleted: false },
+        { id: "p3", description: "Yüksek bir atış yap (>150m).", hint: "Açıyı dikleştir (75°+).", isCompleted: false },
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    // Simulation State
-    const [angle, setAngle] = useState(45);
-    const [velocity, setVelocity] = useState(50);
-    const [isDragging, setIsDragging] = useState(false);
-    const [lastResult, setLastResult] = useState<{ range: number; maxHeight: number; time: number; x: number } | null>(null);
+    // Physics Engine
+    const state = useRef<GameState>({
+        x: 0, y: 0, vx: 0, vy: 0,
+        active: false,
+        path: [],
+        angle: 45,
+        power: 50,
+        g: 9.81,
+        scale: 4, // 1m = 4px
+        target: { x: 600, y: 0, w: 50, h: 10, hit: false }
+    });
 
-    // Physics Engine Refs
-    const projRef = useRef<{ x: number; y: number; vx: number; vy: number; active: boolean } | null>(null);
-    const trailRef = useRef<{ x: number; y: number }[]>([]);
-    const particlesRef = useRef<{ x: number; y: number; vx: number; vy: number; life: number; color: string }[]>([]);
+    // Reset Logic
+    const resetSim = useCallback(() => {
+        const s = state.current;
+        s.active = false;
+        s.x = 50; s.y = containerRef.current ? containerRef.current.clientHeight - 50 : 500;
+        s.vx = 0; s.vy = 0;
+        s.path = [];
+        s.target.hit = false;
+        // Randomize target for fun if task 0
+        if (currentTaskIndex === 0 && containerRef.current) {
+            s.target.x = 300 + Math.random() * (containerRef.current.clientWidth - 400);
+        }
+        setIsRunning(false);
+        setSimData({ range: 0, height: 0, time: 0 });
+    }, [currentTaskIndex]);
 
-    const g = 9.81;
-    const timeStep = 0.016 * 1.5;
-    const scale = 3.5; // Pixels per meter
+    const fire = () => {
+        const s = state.current;
+        if (s.active) return; // Already flying
 
-    // Resize Handler
-    useEffect(() => {
-        const resize = () => {
-            if (containerRef.current && canvasRef.current) {
-                const rect = containerRef.current.getBoundingClientRect();
-                canvasRef.current.width = rect.width;
-                canvasRef.current.height = rect.height;
-            }
-        };
-        resize();
-        window.addEventListener("resize", resize);
-        return () => window.removeEventListener("resize", resize);
+        const rad = s.angle * Math.PI / 180;
+        const v = s.power * 2; // Arbitrary power multiplier
+
+        s.active = true;
+        s.path = [];
+        s.target.hit = false;
+
+        // Reset Pos
+        if (containerRef.current) {
+            s.y = containerRef.current.clientHeight - 50;
+        }
+        s.x = 50;
+
+        s.vx = v * Math.cos(rad);
+        s.vy = -v * Math.sin(rad); // Up is negative Y in canvas
+        setIsRunning(true);
+    };
+
+    // Task Completion
+    const completeTask = useCallback((index: number) => {
+        setTasks(prev => {
+            if (prev[index].isCompleted) return prev;
+            const newTasks = [...prev];
+            newTasks[index].isCompleted = true;
+            return newTasks;
+        });
+        setTimeout(() => {
+            setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
+        }, 1500);
     }, []);
 
-    const launch = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
 
-        const groundY = canvas.height - 60;
-        const startX = 60;
-        const angleRad = (angle * Math.PI) / 180;
-
-        projRef.current = {
-            x: startX,
-            y: groundY,
-            vx: velocity * Math.cos(angleRad) * scale,
-            vy: -velocity * Math.sin(angleRad) * scale,
-            active: true
-        };
-        trailRef.current = [];
-        setLastResult(null);
-    };
-
-    const resetSim = () => {
-        setAngle(45);
-        setVelocity(50);
-        setLastResult(null);
-        projRef.current = null;
-        trailRef.current = [];
-        particlesRef.current = [];
-    };
-
-    const checkTaskCompletion = (result: { range: number; maxHeight: number; time: number }) => {
-        if (currentTaskIndex >= tasks.length) return;
-
-        let completed = false;
-        if (currentTaskIndex === 0) {
-            // Task 1: 50m range (+/- 2m)
-            if (result.range >= 48 && result.range <= 52) completed = true;
-        } else if (currentTaskIndex === 1) {
-            // Task 2: Max height > 40m
-            if (result.maxHeight > 40) completed = true;
-        } else if (currentTaskIndex === 2) {
-            // Task 3: Flight time > 8s
-            if (result.time > 8) completed = true;
-        }
-
-        if (completed) {
-            const newTasks = [...tasks];
-            newTasks[currentTaskIndex].isCompleted = true;
-            setTasks(newTasks);
-            setTimeout(() => {
-                if (currentTaskIndex < tasks.length - 1) {
-                    setCurrentTaskIndex(prev => prev + 1);
-                }
-            }, 1000);
-        }
-    };
-
-    // Main Loop
+    // Game Loop
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -113,274 +115,193 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
         if (!ctx) return;
 
         let animationId: number;
+        let lastTime = performance.now();
 
-        const draw = () => {
-            const width = canvas.width;
-            const height = canvas.height;
-            const groundY = height - 60;
-            const startX = 60;
+        // Initial Layout
+        if (containerRef.current) {
+            canvas.width = containerRef.current.clientWidth;
+            canvas.height = containerRef.current.clientHeight;
+            resetSim();
+        }
 
-            // Clear
+        const loop = (time: number) => {
+            const output = canvasRef.current; // access fresh ref
+            if (!output || !containerRef.current) return;
+
+            // Auto Resize
+            if (output.width !== containerRef.current.clientWidth || output.height !== containerRef.current.clientHeight) {
+                output.width = containerRef.current.clientWidth;
+                output.height = containerRef.current.clientHeight;
+                // Keep ground relative
+                if (!state.current.active) state.current.y = output.height - 50;
+            }
+
+            const dt = Math.min((time - lastTime) / 1000, 0.1); // Cap dt
+            lastTime = time;
+            const s = state.current;
+
+            // Update Physics
+            if (s.active) {
+                s.vy += s.g * s.scale * dt * 2; // *2 for visual speedup
+                s.x += s.vx * s.scale * dt * 2;
+                s.y += s.vy * s.scale * dt * 2;
+
+                s.path.push({ x: s.x, y: s.y });
+
+                // Ground Collision
+                const groundY = output.height - 50;
+                if (s.y >= groundY) {
+                    s.y = groundY;
+                    s.active = false;
+                    setIsRunning(false);
+
+                    // Results
+                    const range = (s.x - 50) / s.scale;
+                    const maxH = Math.abs(Math.min(...s.path.map(p => p.y)) - groundY) / s.scale;
+                    setSimData({
+                        range,
+                        height: maxH,
+                        time: s.path.length * 0.016 // rough approx
+                    });
+
+                    // Check Tasks
+                    if (currentTaskIndex === 0 && s.target.hit) completeTask(0);
+                    if (currentTaskIndex === 1 && Math.abs(s.angle - 45) < 2 && s.power > 90) completeTask(1);
+                    if (currentTaskIndex === 2 && maxH > 150) completeTask(2);
+                }
+
+                // Target Collision
+                const groundLevel = output.height - 50;
+                // Target is on ground
+                if (s.x > s.target.x && s.x < s.target.x + s.target.w && s.y >= groundLevel - s.target.h) {
+                    s.target.hit = true;
+                }
+            }
+
+            // Draw
             ctx.fillStyle = "#09090b";
-            ctx.fillRect(0, 0, width, height);
+            ctx.fillRect(0, 0, output.width, output.height);
 
             // Grid
             ctx.strokeStyle = "rgba(255,255,255,0.05)";
             ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 50) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
-            for (let j = 0; j < height; j += 50) {
-                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(width, j); ctx.stroke();
-            }
-
-            // Target Visualization
-            if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
-                const targetStart = startX + 48 * scale;
-                const targetWidth = 4 * scale;
-                ctx.fillStyle = "rgba(74, 222, 128, 0.1)";
-                ctx.fillRect(targetStart, 0, targetWidth, groundY);
-
-                ctx.strokeStyle = "#4ADE80";
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
-                ctx.strokeRect(targetStart, 0, targetWidth, groundY);
-                ctx.setLineDash([]);
-
-                ctx.fillStyle = "#4ADE80";
-                ctx.font = "bold 12px sans-serif";
-                ctx.textAlign = "center";
-                ctx.fillText("HEDEF", targetStart + targetWidth / 2, groundY - 20);
-            }
+            for (let i = 0; i < output.width; i += 50) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, output.height); ctx.stroke(); }
 
             // Ground
-            ctx.fillStyle = "#18181b";
-            ctx.fillRect(0, groundY, width, height - groundY);
-            ctx.strokeStyle = "#27272a";
-            ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(width, groundY); ctx.stroke();
+            ctx.fillStyle = "#222";
+            ctx.fillRect(0, output.height - 50, output.width, 50);
+            ctx.fillStyle = "#4ADE80"; // Grass line
+            ctx.fillRect(0, output.height - 50, output.width, 2);
 
-            // Distance Markers
-            for (let i = 0; i < width; i += 50) {
-                const meters = Math.round((i - startX) / scale);
-                if (meters >= 0 && meters % 10 === 0) {
-                    ctx.fillStyle = "#52525b";
-                    ctx.font = "10px monospace";
-                    ctx.textAlign = "center";
-                    ctx.fillText(`${meters}m`, i, groundY + 20);
-                    ctx.fillRect(i, groundY, 1, 6);
-                }
+            // Target
+            if (currentTaskIndex === 0) {
+                const ty = output.height - 50;
+                ctx.fillStyle = s.target.hit ? "#EF4444" : "#FBBF24";
+                ctx.fillRect(s.target.x, ty - 10, s.target.w, 10);
+            }
+
+            // Path
+            if (s.path.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(s.path[0].x, s.path[0].y);
+                for (let p of s.path) ctx.lineTo(p.x, p.y);
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
             }
 
             // Cannon
-            const angleRad = (angle * Math.PI) / 180;
+            const cx = 50;
+            const cy = output.height - 50;
             ctx.save();
-            ctx.translate(startX, groundY);
-            ctx.rotate(-angleRad);
-
-            // Barrel
-            const barrelGrad = ctx.createLinearGradient(0, -10, 0, 10);
-            barrelGrad.addColorStop(0, "#52525b");
-            barrelGrad.addColorStop(1, "#3f3f46");
-            ctx.fillStyle = barrelGrad;
-            ctx.fillRect(0, -10, 60, 20);
-            ctx.strokeStyle = "#18181b";
-            ctx.strokeRect(0, -10, 60, 20);
+            ctx.translate(cx, cy);
+            ctx.rotate(-s.angle * Math.PI / 180);
+            ctx.fillStyle = "#666";
+            ctx.fillRect(0, -10, 60, 20); // Barrel
             ctx.restore();
 
-            // Base
-            ctx.fillStyle = "#27272a";
-            ctx.beginPath(); ctx.arc(startX, groundY, 20, Math.PI, 0); ctx.fill();
-            ctx.strokeStyle = "#000"; ctx.stroke();
-
-            // Preview Lines
-            if (!projRef.current?.active) {
-                const previewVX = velocity * Math.cos(angleRad) * scale;
-                const previewVY = -velocity * Math.sin(angleRad) * scale;
-                ctx.beginPath();
-                ctx.moveTo(startX, groundY);
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-                ctx.setLineDash([4, 4]);
-                for (let t = 0; t < 2.0; t += 0.1) {
-                    const px = startX + previewVX * t;
-                    const py = groundY + previewVY * t + 0.5 * g * scale * t * t;
-                    if (py > groundY) break;
-                    ctx.lineTo(px, py);
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-            }
+            ctx.beginPath(); ctx.arc(cx, cy, 15, 0, Math.PI * 2); ctx.fillStyle = "#333"; ctx.fill(); // Wheel
 
             // Projectile
-            const proj = projRef.current;
-            if (proj && proj.active) {
-                proj.vy += g * scale * timeStep;
-                proj.x += proj.vx * timeStep;
-                proj.y += proj.vy * timeStep;
-                trailRef.current.push({ x: proj.x, y: proj.y });
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#FFF";
+            ctx.fill();
 
-                // Ball
-                ctx.fillStyle = "#FFC800";
-                ctx.shadowColor = "#FFC800";
-                ctx.shadowBlur = 10;
-                ctx.beginPath(); ctx.arc(proj.x, proj.y, 8, 0, Math.PI * 2); ctx.fill();
-                ctx.shadowBlur = 0;
-                ctx.strokeStyle = "black"; ctx.lineWidth = 1; ctx.stroke();
-
-                // Trail
-                ctx.beginPath();
-                ctx.strokeStyle = "rgba(255, 200, 0, 0.3)";
-                ctx.lineWidth = 3;
-                trailRef.current.forEach((p, i) => {
-                    if (i === 0) ctx.moveTo(p.x, p.y);
-                    else ctx.lineTo(p.x, p.y);
-                });
-                ctx.stroke();
-
-                // Collision
-                if (proj.y >= groundY) {
-                    proj.active = false;
-                    const range = (proj.x - startX) / scale;
-                    const maxH = Math.max(...trailRef.current.map(p => groundY - p.y)) / scale;
-                    const flightTime = trailRef.current.length * timeStep;
-
-                    const result = { range, maxHeight: maxH, time: flightTime, x: proj.x };
-                    setLastResult(result);
-                    checkTaskCompletion(result);
-
-                    // Debris
-                    for (let k = 0; k < 10; k++) {
-                        particlesRef.current.push({
-                            x: proj.x, y: groundY,
-                            vx: (Math.random() - 0.5) * 8,
-                            vy: -(Math.random() * 4 + 1),
-                            life: 1.0,
-                            color: Math.random() > 0.5 ? "#FFC800" : "#FFFFFF"
-                        });
-                    }
-                }
-            }
-
-            // Render Particles
-            if (particlesRef.current.length > 0) {
-                particlesRef.current = particlesRef.current.filter(p => p.life > 0);
-                particlesRef.current.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.2;
-                    p.life -= 0.05;
-                    ctx.globalAlpha = p.life;
-                    ctx.fillStyle = p.color;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
-                    ctx.globalAlpha = 1;
-                });
-            }
-
-            // Flag / Result Marker
-            if (lastResult) {
-                ctx.fillStyle = "#FF5757";
-                ctx.beginPath();
-                ctx.moveTo(lastResult.x, groundY);
-                ctx.lineTo(lastResult.x - 5, groundY - 15);
-                ctx.lineTo(lastResult.x + 5, groundY - 15);
-                ctx.fill();
-
-                ctx.textAlign = "center";
-                ctx.fillStyle = "white";
-                ctx.font = "12px sans-serif";
-                ctx.fillText(`${lastResult.range.toFixed(1)}m`, lastResult.x, groundY - 20);
-            }
-
-            animationId = requestAnimationFrame(draw);
+            animationId = requestAnimationFrame(loop);
         };
-
-        draw();
+        animationId = requestAnimationFrame(loop);
         return () => cancelAnimationFrame(animationId);
-    }, [angle, velocity, currentTaskIndex, tasks]); // Re-bind on task summary change
-
-    // Touch/Mouse Interaction
-    const handleInteraction = (clientX: number, clientY: number) => {
-        if (!canvasRef.current) return;
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        const groundY = canvasRef.current.height - 60;
-        const startX = 60;
-
-        const dx = x - startX;
-        const dy = groundY - y;
-
-        if (dx > 0 && dy > -20) {
-            const newAngle = Math.atan2(dy, dx) * 180 / Math.PI;
-            const newVel = Math.min(100, Math.max(10, Math.sqrt(dx * dx + dy * dy) / scale));
-
-            setAngle(Math.min(90, Math.max(0, newAngle)));
-            setVelocity(newVel);
-        }
-    };
+    }, [currentTaskIndex, completeTask, resetSim]);
 
     return (
         <SimWrapper
-            title="Atış Hareketi"
-            description="Yerçekimi altında hareket eden bir cismin yörüngesini incele. Açı ve hızı değiştirerek hedefleri vurmaya çalış."
+            title="Eğik Atış Laboratuvarı"
+            description="Yerçekimi altında cisimlerin hareketini incele."
             tasks={tasks}
             currentTaskIndex={currentTaskIndex}
             onReset={resetSim}
             controls={
                 <div className="space-y-6">
-                    {/* Angle Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
-                            <span className="text-zinc-500 font-black text-[10px] uppercase tracking-wider">Atış Açısı</span>
-                            <span className="text-white font-mono text-sm font-bold">{angle.toFixed(1)}°</span>
-                        </div>
-                        <input
-                            type="range" min="0" max="90" step="0.5" value={angle}
-                            onChange={(e) => setAngle(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FFC800] hover:accent-[#FF90E8] transition-all"
-                        />
+                    <div className="flex gap-2">
+                        <button
+                            onClick={fire}
+                            disabled={isRunning}
+                            className={cn(
+                                "flex-1 py-3 px-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-all",
+                                isRunning ? "bg-zinc-800 text-zinc-500 cursor-not-allowed" : "bg-white text-black hover:bg-zinc-200"
+                            )}
+                        >
+                            {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                            {isRunning ? "Simülasyon Aktif" : "ATEŞLE"}
+                        </button>
                     </div>
 
-                    {/* Velocity Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
-                            <span className="text-zinc-500 font-black text-[10px] uppercase tracking-wider">İlk Hız</span>
-                            <span className="text-[#FFC800] font-mono text-sm font-bold">{velocity.toFixed(1)} m/s</span>
+                    <div className="space-y-4 bg-zinc-900/50 p-4 rounded-xl border border-white/5">
+                        <div>
+                            <div className="flex justify-between mb-2">
+                                <span className="text-xs font-bold text-zinc-400">AÇI</span>
+                                <span className="text-sm font-mono font-bold text-white">{uiAngle}°</span>
+                            </div>
+                            <input
+                                type="range" min="0" max="90" value={uiAngle}
+                                onChange={(e) => {
+                                    const v = parseInt(e.target.value);
+                                    setUiAngle(v);
+                                    state.current.angle = v;
+                                }}
+                                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
+                            />
                         </div>
-                        <input
-                            type="range" min="10" max="100" step="1" value={velocity}
-                            onChange={(e) => setVelocity(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FFC800] hover:accent-[#FF90E8] transition-all"
-                        />
+                        <div>
+                            <div className="flex justify-between mb-2">
+                                <span className="text-xs font-bold text-zinc-400">GÜÇ</span>
+                                <span className="text-sm font-mono font-bold text-white">{uiPower}m/s</span>
+                            </div>
+                            <input
+                                type="range" min="10" max="100" value={uiPower}
+                                onChange={(e) => {
+                                    const v = parseInt(e.target.value);
+                                    setUiPower(v);
+                                    state.current.power = v;
+                                }}
+                                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#4ADE80]"
+                            />
+                        </div>
                     </div>
 
-                    {/* Launch Button */}
-                    <button
-                        onClick={launch}
-                        disabled={projRef.current?.active}
-                        className={cn(
-                            "w-full h-14 rounded-xl border-2 border-black flex items-center justify-center gap-3 transition-all active:scale-95 shadow-[4px_4px_0px_#000]",
-                            "bg-[#FFC800] text-black hover:bg-white disabled:opacity-50 disabled:shadow-none"
-                        )}
-                    >
-                        <Play className="w-5 h-5 fill-current" />
-                        <span className="font-black text-lg uppercase italic tracking-tighter">ATEŞLE</span>
-                    </button>
-
-                    {/* Stats */}
-                    {lastResult && (
-                        <div className="grid grid-cols-2 gap-2 mt-4 animate-in slide-in-from-bottom-2 fade-in">
-                            <div className="bg-zinc-900 p-3 rounded-xl border border-white/5">
-                                <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-black">MENZİL</div>
-                                <div className="text-lg font-mono text-white font-bold">{lastResult.range.toFixed(1)}m</div>
+                    {/* Results */}
+                    {simData.range > 0 && (
+                        <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-4">
+                            <div className="bg-zinc-900 p-3 rounded-xl border border-white/10">
+                                <div className="text-[10px] text-zinc-500 uppercase font-black">Menzil</div>
+                                <div className="text-lg font-mono font-bold text-white">{simData.range.toFixed(1)}m</div>
                             </div>
-                            <div className="bg-zinc-900 p-3 rounded-xl border border-white/5">
-                                <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-black">YÜKSEKLİK</div>
-                                <div className="text-lg font-mono text-white font-bold">{lastResult.maxHeight.toFixed(1)}m</div>
-                            </div>
-                            <div className="col-span-2 bg-zinc-900 p-3 rounded-xl border border-white/5">
-                                <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-black">UÇUŞ SÜRESİ</div>
-                                <div className="text-lg font-mono text-white font-bold">{lastResult.time.toFixed(2)}s</div>
+                            <div className="bg-zinc-900 p-3 rounded-xl border border-white/10">
+                                <div className="text-[10px] text-zinc-500 uppercase font-black">Yükseklik</div>
+                                <div className="text-lg font-mono font-bold text-white">{simData.height.toFixed(1)}m</div>
                             </div>
                         </div>
                     )}
@@ -389,14 +310,7 @@ export function ProjectileSim({ className = "" }: ProjectileSimProps) {
         >
             <div
                 ref={containerRef}
-                className="w-full h-full relative touch-none"
-                onMouseDown={(e) => { setIsDragging(true); handleInteraction(e.clientX, e.clientY); }}
-                onMouseMove={(e) => { if (isDragging) handleInteraction(e.clientX, e.clientY); }}
-                onMouseUp={() => setIsDragging(false)}
-                onMouseLeave={() => setIsDragging(false)}
-                onTouchStart={(e) => { setIsDragging(true); handleInteraction(e.touches[0].clientX, e.touches[0].clientY); }}
-                onTouchMove={(e) => { if (isDragging) handleInteraction(e.touches[0].clientX, e.touches[0].clientY); }}
-                onTouchEnd={() => setIsDragging(false)}
+                className="w-full h-full relative"
             >
                 <canvas ref={canvasRef} className="w-full h-full block" />
             </div>

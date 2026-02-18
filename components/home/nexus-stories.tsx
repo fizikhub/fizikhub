@@ -85,7 +85,7 @@ export function NexusStories({ initialStories = [] }: NexusStoriesProps) {
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory">
                 {displayStories.map((story, index) => (
                     <div
-                        key={story.name}
+                        key={story.name + index}
                         className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer story-item"
                         style={{ animationDelay: `${index * 50}ms` }}
                         onClick={() => openViewer(index)}
@@ -107,12 +107,11 @@ export function NexusStories({ initialStories = [] }: NexusStoriesProps) {
                                     className="object-cover"
                                     loading={index < 3 ? "eager" : "lazy"}
                                 />
-                                {/* Subtle Inner Glow Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
+                                {/* Clean look, no dark overlay */}
                             </div>
                         </div>
 
-                        <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400">
+                        <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 max-w-[80px] truncate text-center">
                             {story.name}
                         </span>
                     </div>

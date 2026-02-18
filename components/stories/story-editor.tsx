@@ -46,6 +46,10 @@ export function StoryEditor() {
     const [isUploading, setIsUploading] = useState(false);
     const [showHelp, setShowHelp] = useState(true); // Default show help on load
 
+    // Metadata State
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+
     const canvasRef = useRef<HTMLDivElement>(null);
     const bgImageRef = useRef<HTMLImageElement>(null);
     const bgDragRef = useRef<HTMLDivElement>(null);
@@ -144,6 +148,10 @@ export function StoryEditor() {
     // 7. Publish (Optimized for Quality and Ratio)
     const handlePublish = async () => {
         if (!canvasRef.current || !image) return;
+        if (!title.trim()) {
+            toast.error("Lütfen hikayenize bir başlık ekleyin.");
+            return;
+        }
 
         try {
             setIsUploading(true);
@@ -209,7 +217,8 @@ export function StoryEditor() {
                     media_url: publicUrl,
                     author_id: user.id,
                     type: 'image',
-                    title: 'Hikaye', // Legacy schema requires title
+                    title: title.trim(),
+                    content: content.trim() || undefined, // Only send if set
                     expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
                 });
 
@@ -390,7 +399,7 @@ export function StoryEditor() {
             </div>
 
             {/* CONTROLS AREA (BOTTOM/SIDE) */}
-            <div className="w-full lg:w-[400px] bg-[#121212] border-t lg:border-t-0 lg:border-l border-white/10 p-6 flex flex-col gap-6 z-20 shadow-2xl">
+            <div className="w-full lg:w-[400px] bg-[#121212] border-t lg:border-t-0 lg:border-l border-white/10 p-6 flex flex-col gap-6 z-20 shadow-2xl overflow-y-auto">
 
                 {/* BRAND HEADER */}
                 <div className="flex items-center justify-between lg:hidden mb-2">
@@ -410,50 +419,160 @@ export function StoryEditor() {
                     </Button>
                 </div>
 
-                {/* TOOLBAR */}
-                <div className="grid grid-cols-4 gap-2">
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FFC800] transition-all hover:scale-105 active:scale-95" onClick={() => fileInputRef.current?.click()}>
-                        <ImageIcon className="w-6 h-6" />
-                        <span className="text-[10px] font-bold">Arkaplan</span>
-                    </Button>
-                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                {/* LAYER PROPERTIES - OR - METADATA */}
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#23A9FA] transition-all hover:scale-105 active:scale-95" onClick={addTextLayer}>
-                        <Type className="w-6 h-6" />
-                        <span className="text-[10px] font-bold">Metin</span>
-                    </Button>
+                <AnimatePresence mode="popLayout">
+                    {/* EDITING A LAYER */}
+                    {selectedId ? (
+                        <div className="space-y-6">
+                            {/* TEXT SETTINGS */}
+                            {activeTextLayer && (
+                                <motion.div
+                                    key="text-settings"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-4"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="font-bold text-sm text-[#23A9FA] uppercase tracking-wider flex items-center gap-2">
+                                            <Type className="w-3 h-3" /> Metin Düzenle
+                                        </h3>
+                                        <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeTextLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
+                                    </div>
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FF3366] transition-all hover:scale-105 active:scale-95" onClick={() => stickerInputRef.current?.click()}>
-                        <Sticker className="w-6 h-6" />
-                        <span className="text-[10px] font-bold">Sticker</span>
-                    </Button>
-                    <input type="file" ref={stickerInputRef} className="hidden" accept="image/*" onChange={handleStickerUpload} />
+                                    <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
+                                        <Input
+                                            value={activeTextLayer.text}
+                                            onChange={(e) => updateTextLayer(activeTextLayer.id, { text: e.target.value })}
+                                            className="bg-black border-zinc-800 focus:border-[#23A9FA] font-bold"
+                                        />
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-green-500 transition-all hover:scale-105 active:scale-95" onClick={handlePublish} disabled={!image || isUploading}>
-                        {isUploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <CheckCircle className="w-6 h-6" />}
-                        <span className="text-[10px] font-bold">Paylaş</span>
-                    </Button>
-                </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">Boyut</Label>
+                                            <Slider
+                                                value={[activeTextLayer.fontSize]}
+                                                min={12}
+                                                max={120}
+                                                step={1}
+                                                onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { fontSize: vals[0] })}
+                                            />
+                                        </div>
 
-                {/* LAYER PROPERTIES */}
-                <div className="flex-1 overflow-y-auto pr-2 space-y-6 scrollbar-hide">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">Renk</Label>
+                                            <div className="flex gap-2 flex-wrap">
+                                                {['#ffffff', '#000000', '#FFC800', '#23A9FA', '#FF3366', '#4CAF50', '#9333EA'].map(color => (
+                                                    <button
+                                                        key={color}
+                                                        className={`w-8 h-8 rounded-full border-2 transition-transform ${activeTextLayer.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`}
+                                                        style={{ backgroundColor: color }}
+                                                        onClick={() => updateTextLayer(activeTextLayer.id, { color })}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
 
-                    <AnimatePresence mode="popLayout">
-                        {/* BACKGROUND SETTINGS */}
-                        {image && !selectedId && (
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-4"
-                            >
-                                <h3 className="font-bold text-sm text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-                                    <ImageIcon className="w-3 h-3" /> Arkaplan Ayarları
-                                </h3>
-                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                    <div className="space-y-2">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">Döndürme</Label>
+                                            <Slider
+                                                value={[activeTextLayer.rotation]}
+                                                min={-180}
+                                                max={180}
+                                                step={5}
+                                                onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { rotation: vals[0] })}
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* STICKER SETTINGS */}
+                            {activeStickerLayer && (
+                                <motion.div
+                                    key="sticker-settings"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-4"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <h3 className="font-bold text-sm text-[#FF3366] uppercase tracking-wider flex items-center gap-2">
+                                            <Sticker className="w-3 h-3" /> Sticker Düzenle
+                                        </h3>
+                                        <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeStickerLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
+                                    </div>
+
+                                    <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">Boyut</Label>
+                                            <Slider
+                                                value={[activeStickerLayer.scale]}
+                                                min={0.2}
+                                                max={3}
+                                                step={0.1}
+                                                onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { scale: vals[0] })}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label className="text-xs">Döndürme</Label>
+                                            <Slider
+                                                value={[activeStickerLayer.rotation]}
+                                                min={-180}
+                                                max={180}
+                                                step={5}
+                                                onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { rotation: vals[0] })}
+                                            />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            <Button variant="ghost" onClick={() => setSelectedId(null)} className="w-full mt-2">
+                                Düzenlemeyi Bitir
+                            </Button>
+                        </div>
+                    ) : (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="space-y-6"
+                        >
+                            {/* STORY INFO */}
+                            <div className="space-y-4 p-4 bg-zinc-900/50 rounded-xl border border-white/5">
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-400 font-bold uppercase">Hikaye Başlığı</Label>
+                                    <Input
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        maxLength={20}
+                                        placeholder="Kısa ve etkileyici bir başlık..."
+                                        className="bg-black/50 border-white/10 focus:border-[#FFC800] transition-colors"
+                                    />
+                                    <p className="text-[10px] text-zinc-600 text-right">{title.length}/20</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-400 font-bold uppercase">Açıklama / İçerik</Label>
+                                    <Input
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        maxLength={120}
+                                        placeholder="Görüntüleyenler için açıklama..."
+                                        className="bg-black/50 border-white/10 focus:border-[#FFC800] transition-colors"
+                                    />
+                                    <p className="text-[10px] text-zinc-600 text-right">{content.length}/120</p>
+                                </div>
+                            </div>
+
+                            {/* BG SETTINGS */}
+                            {image && (
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-zinc-400 font-bold uppercase">Görsel Ayarları</Label>
+                                    <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
                                         <div className="flex justify-between">
-                                            <Label className="text-xs">Zoom Seviyesi</Label>
+                                            <Label className="text-xs">Zoom</Label>
                                             <span className="text-xs text-zinc-500">{scale.toFixed(1)}x</span>
                                         </div>
                                         <Slider
@@ -465,118 +584,40 @@ export function StoryEditor() {
                                             className="cursor-pointer"
                                         />
                                     </div>
-                                    <p className="text-[10px] text-zinc-500 border-l-2 border-zinc-700 pl-2">
-                                        * Fotoğrafı sürükleyerek veya iki parmakla konumlandırabilirsiniz.
-                                    </p>
                                 </div>
-                            </motion.div>
-                        )}
+                            )}
 
-                        {/* TEXT SETTINGS */}
-                        {activeTextLayer && (
-                            <motion.div
-                                key="text-settings"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-4"
+                            {/* ADD NEW */}
+                            <div className="grid grid-cols-3 gap-2">
+                                <Button variant="outline" className="h-24 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FFC800] hover:scale-105 transition-all text-xs" onClick={() => fileInputRef.current?.click()}>
+                                    <ImageIcon className="w-5 h-5 mb-1" />
+                                    {image ? "Değiştir" : "Fotoğraf"}
+                                </Button>
+                                <Button variant="outline" className="h-24 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#23A9FA] hover:scale-105 transition-all text-xs" onClick={addTextLayer}>
+                                    <Type className="w-5 h-5 mb-1" />
+                                    Metin
+                                </Button>
+                                <Button variant="outline" className="h-24 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FF3366] hover:scale-105 transition-all text-xs" onClick={() => stickerInputRef.current?.click()}>
+                                    <Sticker className="w-5 h-5 mb-1" />
+                                    Sticker
+                                </Button>
+                            </div>
+
+                            <Button
+                                onClick={handlePublish}
+                                disabled={!image || isUploading || !title.trim()}
+                                className="w-full bg-[#FFC800] text-black hover:bg-[#FFD700] font-black uppercase tracking-wide py-6 text-sm shadow-xl shadow-yellow-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-bold text-sm text-[#23A9FA] uppercase tracking-wider flex items-center gap-2">
-                                        <Type className="w-3 h-3" /> Metin Düzenle
-                                    </h3>
-                                    <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeTextLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
-                                </div>
+                                {isUploading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <CheckCircle className="w-5 h-5 mr-2" />}
+                                {isUploading ? "Paylaşılıyor..." : "HİKAYEYİ PAYLAŞ"}
+                            </Button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                    <Input
-                                        value={activeTextLayer.text}
-                                        onChange={(e) => updateTextLayer(activeTextLayer.id, { text: e.target.value })}
-                                        className="bg-black border-zinc-800 focus:border-[#23A9FA] font-bold"
-                                    />
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
+                <input type="file" ref={stickerInputRef} className="hidden" accept="image/*" onChange={handleStickerUpload} />
 
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Boyut</Label>
-                                        <Slider
-                                            value={[activeTextLayer.fontSize]}
-                                            min={12}
-                                            max={120}
-                                            step={1}
-                                            onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { fontSize: vals[0] })}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Renk</Label>
-                                        <div className="flex gap-2 flex-wrap">
-                                            {['#ffffff', '#000000', '#FFC800', '#23A9FA', '#FF3366', '#4CAF50', '#9333EA'].map(color => (
-                                                <button
-                                                    key={color}
-                                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${activeTextLayer.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`}
-                                                    style={{ backgroundColor: color }}
-                                                    onClick={() => updateTextLayer(activeTextLayer.id, { color })}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Döndürme</Label>
-                                        <Slider
-                                            value={[activeTextLayer.rotation]}
-                                            min={-180}
-                                            max={180}
-                                            step={5}
-                                            onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { rotation: vals[0] })}
-                                        />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* STICKER SETTINGS */}
-                        {activeStickerLayer && (
-                            <motion.div
-                                key="sticker-settings"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-4"
-                            >
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-bold text-sm text-[#FF3366] uppercase tracking-wider flex items-center gap-2">
-                                        <Sticker className="w-3 h-3" /> Sticker Düzenle
-                                    </h3>
-                                    <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeStickerLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
-                                </div>
-
-                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Boyut</Label>
-                                        <Slider
-                                            value={[activeStickerLayer.scale]}
-                                            min={0.2}
-                                            max={3}
-                                            step={0.1}
-                                            onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { scale: vals[0] })}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-xs">Döndürme</Label>
-                                        <Slider
-                                            value={[activeStickerLayer.rotation]}
-                                            min={-180}
-                                            max={180}
-                                            step={5}
-                                            onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { rotation: vals[0] })}
-                                        />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase-server";
 
 const GEMINI_WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
 const MODEL_NAME = "models/gemini-2.5-flash-native-audio-preview-09-2025";
@@ -6,6 +7,13 @@ const MODEL_NAME = "models/gemini-2.5-flash-native-audio-preview-09-2025";
 export async function POST(request: NextRequest) {
     const requestId = Math.random().toString(36).substring(7);
     console.log(`[LIVE-API][${requestId}] Starting Native Audio Dialog session`);
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
         const { audio, noteTitle, noteContent } = await request.json();

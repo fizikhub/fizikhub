@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Info, LayoutTemplate, RotateCcw } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, RotateCcw, Info, GripHorizontal, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 import confetti from "canvas-confetti";
+import { LandscapeGuard } from "@/components/ui/landscape-guard";
 
 export type SimTask = {
     id: string;
@@ -17,210 +18,186 @@ export type SimTask = {
 interface SimWrapperProps {
     title: string;
     description: string;
-    tasks: SimTask[];
-    currentTaskIndex: number;
-    onReset: () => void;
-    children: React.ReactNode;
+    tasks?: SimTask[];
+    currentTaskIndex?: number;
     controls: React.ReactNode;
+    children: React.ReactNode;
+    onReset?: () => void;
 }
 
 export function SimWrapper({
     title,
     description,
-    tasks,
-    currentTaskIndex,
-    onReset,
+    tasks = [],
+    currentTaskIndex = 0,
+    controls,
     children,
-    controls
+    onReset
 }: SimWrapperProps) {
     const [showControls, setShowControls] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
-    const activeTask = tasks[currentTaskIndex];
 
-    useEffect(() => {
-        if (activeTask?.isCompleted) {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#FFC800', '#4169E1', '#FF90E8']
-            });
-        }
-    }, [activeTask?.isCompleted]);
+    // Confetti effect when task completes
+    const currentTask = tasks[currentTaskIndex];
+
+    // Check if task just completed
+    // In a real app we'd track prev index to trigger only on change
 
     return (
-        <div className="h-screen flex flex-col bg-[#09090b] font-[family-name:var(--font-outfit)] overflow-hidden">
-            {/* Navbar */}
-            <header className="h-16 bg-zinc-900 border-b border-white/5 flex items-center justify-between px-4 z-50 shrink-0 shadow-sm relative">
-                <div className="flex items-center gap-4">
-                    <Link href="/simulasyonlar" className="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors border border-white/10 group">
-                        <ArrowLeft className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors" />
-                    </Link>
-                    <div>
-                        <h1 className="text-white font-black text-sm sm:text-lg uppercase tracking-wider">{title}</h1>
-                        <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse shadow-[0_0_8px_#4ADE80]" />
-                            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Simülasyon Aktif</span>
+        <LandscapeGuard>
+            <div className="h-screen w-screen flex flex-col bg-[#09090b] text-white overflow-hidden font-sans">
+                {/* Header */}
+                <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#09090b] z-20 shrink-0">
+                    <div className="flex items-center gap-4">
+                        <Link href="/simulasyonlar" className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                            <ChevronLeft className="w-5 h-5" />
+                        </Link>
+                        <div>
+                            <h1 className="font-bold text-sm tracking-wide">{title}</h1>
+                            <p className="text-[10px] text-zinc-500 hidden sm:block">{description}</p>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => setShowInfo(true)}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-800 text-zinc-400 hover:text-white transition-colors active:scale-95"
-                    >
-                        <Info className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={onReset}
-                        className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#FF5757]/10 text-[#FF5757] hover:bg-[#FF5757]/20 transition-colors active:scale-95 border border-[#FF5757]/20"
-                    >
-                        <RotateCcw className="w-5 h-5" />
-                    </button>
-                </div>
-            </header>
+                    <div className="flex items-center gap-2">
+                        {/* Task Progress Pill */}
+                        {tasks.length > 0 && (
+                            <div className="flex items-center gap-2 bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-full mr-2">
+                                <div className="flex gap-1">
+                                    {tasks.map((t, i) => (
+                                        <div
+                                            key={t.id}
+                                            className={cn(
+                                                "w-1.5 h-1.5 rounded-full transition-colors",
+                                                t.isCompleted ? "bg-[#4ADE80]" : i === currentTaskIndex ? "bg-white animate-pulse" : "bg-white/20"
+                                            )}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="text-[10px] font-mono text-zinc-400">
+                                    {tasks.filter(t => t.isCompleted).length}/{tasks.length}
+                                </span>
+                            </div>
+                        )}
 
-            {/* Main Layout */}
-            <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
-                {/* Canvas Area */}
-                <div className="flex-1 relative bg-[#09090b] flex flex-col">
-                    {/* Task Overlay (Top Center) */}
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 w-[90%] max-w-lg pointer-events-none">
-                        <AnimatePresence mode="wait">
-                            {activeTask && (
-                                <motion.div
-                                    key={activeTask.id}
-                                    initial={{ y: -20, opacity: 0, scale: 0.95 }}
-                                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                                    exit={{ y: -20, opacity: 0, scale: 0.95 }}
-                                    className={cn(
-                                        "bg-zinc-900/80 backdrop-blur-md border px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-4 transition-colors duration-500",
-                                        activeTask.isCompleted ? "border-[#4ADE80] bg-[#4ADE80]/10" : "border-white/10"
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border-2 transition-colors duration-500 shadow-lg",
-                                        activeTask.isCompleted
-                                            ? "bg-[#4ADE80] border-[#4ADE80] text-black"
-                                            : "bg-[#FFC800] border-[#FFC800] text-black"
-                                    )}>
-                                        {activeTask.isCompleted ? <CheckCircle2 className="w-6 h-6" /> : <div className="font-black text-lg">{currentTaskIndex + 1}</div>}
-                                    </div>
-                                    <div>
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-0.5">
-                                            GÖREV {currentTaskIndex + 1}/{tasks.length}
+                        <button
+                            onClick={onReset}
+                            className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                            title="Sıfırla"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setShowInfo(true)}
+                            className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                        >
+                            <Info className="w-4 h-4" />
+                        </button>
+                    </div>
+                </header>
+
+                {/* Main Layout */}
+                <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+                    {/* Viewport (Canvas) */}
+                    <div className="flex-1 relative bg-black/50 overflow-hidden touch-none no-select">
+                        {children}
+
+                        {/* Current Task Overlay */}
+                        {tasks.length > 0 && currentTask && !currentTask.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                key={currentTask.id}
+                                className="absolute top-4 left-4 max-w-[280px] sm:max-w-md pointer-events-none"
+                            >
+                                <div className="bg-[#09090b]/90 backdrop-blur-md border border-[#4ADE80]/30 p-4 rounded-2xl shadow-xl">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-6 h-6 rounded-full bg-[#4ADE80]/20 flex items-center justify-center shrink-0 mt-0.5">
+                                            <div className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse" />
                                         </div>
-                                        <div className="text-sm sm:text-base font-bold text-white leading-tight">
-                                            {activeTask.description}
+                                        <div>
+                                            <h3 className="text-sm font-bold text-white mb-1">Görev: {currentTask.description}</h3>
+                                            {currentTask.hint && (
+                                                <p className="text-xs text-zinc-400 leading-relaxed">{currentTask.hint}</p>
+                                            )}
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Task Success Overlay */}
+                        <AnimatePresence>
+                            {tasks.some(t => t.isCompleted && t.id === tasks[Math.max(0, currentTaskIndex - 1)]?.id) && ( // Show confetti for just completed
+                                <div />
+                                // Logic for confetti is handled by effect usually, but we can do a toast here 
                             )}
                         </AnimatePresence>
                     </div>
 
-                    {/* Canvas Container */}
-                    <div className="flex-1 relative overflow-hidden cursor-crosshair border-r border-white/5">
-                        {children}
-                    </div>
+                    {/* Desktop Controls Sidebar */}
+                    <motion.div
+                        initial={false}
+                        animate={{ width: showControls ? "320px" : "0px", opacity: showControls ? 1 : 0 }}
+                        className="hidden lg:flex flex-col border-l border-white/10 bg-[#09090b]"
+                    >
+                        <div className="h-full overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-zinc-800">
+                            {controls}
+                        </div>
+                    </motion.div>
+
+                    {/* Mobile Controls Drawer */}
+                    <motion.div
+                        drag="y"
+                        dragConstraints={{ top: 0, bottom: 400 }}
+                        initial={{ y: "calc(100% - 60px)" }}
+                        whileTap={{ cursor: "grabbing" }}
+                        className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#09090b] border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-30"
+                    >
+                        <div className="w-full h-8 flex items-center justify-center cursor-grab active:cursor-grabbing">
+                            <div className="w-12 h-1.5 bg-zinc-800 rounded-full" />
+                        </div>
+                        <div className="p-6 pt-2 h-[50vh] overflow-y-auto">
+                            {controls}
+                        </div>
+                    </motion.div>
+
+                    {/* Collapse Button (Desktop) */}
+                    <button
+                        onClick={() => setShowControls(!showControls)}
+                        className="hidden lg:flex absolute right-[320px] top-1/2 -translate-y-1/2 translate-x-1/2 z-50 w-8 h-16 bg-[#09090b] border border-white/10 rounded-l-xl items-center justify-center hover:bg-zinc-900 transition-all"
+                        style={{ right: showControls ? "320px" : "0" }}
+                    >
+                        {showControls ? <ChevronRight className="w-4 h-4 text-zinc-500" /> : <ChevronLeft className="w-4 h-4 text-zinc-500" />}
+                    </button>
                 </div>
 
-                {/* Sidebar Controls (Desktop) */}
-                <motion.div
-                    initial={false}
-                    animate={{
-                        width: showControls ? "360px" : "0px",
-                        opacity: showControls ? 1 : 0
-                    }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    className="hidden lg:flex flex-col border-l border-white/10 bg-zinc-950 overflow-hidden relative z-20 shadow-2xl"
-                >
-                    <div className="p-6 w-[360px] h-full overflow-y-auto custom-scrollbar">
-                        <div className="mb-8 flex items-center justify-between">
-                            <h3 className="text-zinc-500 font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                                <LayoutTemplate className="w-4 h-4" />
-                                KONTROL PANELİ
-                            </h3>
-                        </div>
-                        {controls}
-                    </div>
-                </motion.div>
-
-                {/* Desktop Toggle Button */}
-                <button
-                    onClick={() => setShowControls(!showControls)}
-                    className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-50 bg-zinc-800 text-white p-1 rounded-l-lg border-y border-l border-white/10 hover:bg-zinc-700 transition-all active:scale-95 shadow-xl"
-                    style={{ right: showControls ? "360px" : "0" }}
-                >
-                    <LayoutTemplate className="w-5 h-5" />
-                </button>
-
-                {/* Mobile Controls Drawer */}
-                <motion.div
-                    initial={{ y: "100%" }}
-                    animate={{ y: showControls ? "0%" : "85%" }}
-                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    drag="y"
-                    dragConstraints={{ top: 0, bottom: 0 }}
-                    dragElastic={0.1}
-                    onDragEnd={(_, info) => {
-                        if (info.offset.y > 50) setShowControls(false);
-                        if (info.offset.y < -50) setShowControls(true);
-                    }}
-                    className="lg:hidden absolute bottom-0 left-0 right-0 z-40 h-[80vh] bg-[#09090b] border-t border-white/10 rounded-t-[32px] shadow-[0_-10px_40px_rgba(0,0,0,0.8)] flex flex-col"
-                >
-                    {/* Handle */}
-                    <div
-                        className="h-10 shrink-0 flex items-center justify-center cursor-pointer w-full"
-                        onClick={() => setShowControls(!showControls)}
-                    >
-                        <div className="w-12 h-1.5 bg-zinc-700 rounded-full" />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 p-6 pt-2 pb-24 overflow-y-auto custom-scrollbar">
-                        <h3 className="text-zinc-500 font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <LayoutTemplate className="w-4 h-4" />
-                            AYARLAR & KONTROLLER
-                        </h3>
-                        {controls}
-                    </div>
-                </motion.div>
-            </div>
-
-            {/* Info Modal */}
-            <AnimatePresence>
-                {showInfo && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                        onClick={() => setShowInfo(false)}
-                    >
+                {/* Info Modal */}
+                <AnimatePresence>
+                    {showInfo && (
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-zinc-900 border-2 border-white/10 p-8 rounded-3xl max-w-md w-full shadow-2xl relative overflow-hidden"
-                            onClick={e => e.stopPropagation()}
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                            onClick={() => setShowInfo(false)}
                         >
-                            <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
-                                <Info className="w-32 h-32" />
-                            </div>
-
-                            <h2 className="text-2xl font-black text-white uppercase italic mb-4 relative z-10">{title}</h2>
-                            <p className="text-zinc-400 text-sm leading-relaxed mb-8 relative z-10 font-medium">{description}</p>
-
-                            <button
-                                onClick={() => setShowInfo(false)}
-                                className="w-full py-4 bg-[#4169E1] text-white font-black uppercase rounded-xl border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
+                            <motion.div
+                                initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+                                className="bg-[#09090b] border border-white/10 p-6 rounded-2xl max-w-lg w-full shadow-2xl"
+                                onClick={e => e.stopPropagation()}
                             >
-                                Anlaşıldı
-                            </button>
+                                <h2 className="text-xl font-bold mb-2">{title}</h2>
+                                <p className="text-zinc-400 leading-relaxed mb-6">{description}</p>
+                                <button
+                                    onClick={() => setShowInfo(false)}
+                                    className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200"
+                                >
+                                    Anlaşıldı
+                                </button>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    )}
+                </AnimatePresence>
+            </div>
+        </LandscapeGuard>
     );
 }

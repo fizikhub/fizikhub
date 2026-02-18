@@ -122,7 +122,7 @@ export function StoryViewer({ stories, initialIndex, isOpen, onClose }: StoryVie
                                     {currentStory.title}
                                 </span>
                                 <span className="text-white/60 text-[10px] uppercase font-bold tracking-widest mt-0.5">
-                                    FizikHub
+                                    {currentStory.author || "FizikHub"}
                                 </span>
                             </div>
                         </div>

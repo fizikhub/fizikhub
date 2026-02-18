@@ -1,11 +1,19 @@
 import { google } from '@ai-sdk/google';
 import { streamText, convertToModelMessages } from 'ai';
 import { FIZIKHUB_KNOWLEDGE_BASE } from '@/lib/ai-knowledge-base';
+import { createClient } from "@/lib/supabase-server";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+
     const { messages } = await req.json();
     const coreMessages = await convertToModelMessages(messages);
 

@@ -1,83 +1,91 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Move, Plus, Trash2 } from "lucide-react";
+import { Move, Plus, Trash2, RefreshCcw, Maximize2 } from "lucide-react";
 import { SimWrapper, SimTask } from "./sim-wrapper";
 
 interface OpticsSimProps {
     className?: string;
 }
 
+// Types for Physics Engine (Ref-based, no React state overhead)
 type Vector = { x: number; y: number };
-type Material = { id: string; x: number; y: number; w: number; h: number; n: number; name: "Cam" | "Su" | "Hava", color: string };
+type Material = { id: string; x: number; y: number; w: number; h: number; n: number; name: "Cam" | "Su" | "Hava"; color: string };
 type Ray = { start: Vector; dir: Vector; intensity: number };
+type GameState = {
+    source: { x: number; y: number; angle: number };
+    materials: Material[];
+    target: { x: number; y: number; hit: boolean };
+    dragging: { type: "source" | "material" | null; id?: string; offset?: Vector };
+};
 
 export function OpticsSim({ className = "" }: OpticsSimProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // Initial Material Setup
-    const [materials, setMaterials] = useState<Material[]>([
-        { id: "m1", x: 300, y: 200, w: 200, h: 100, n: 1.5, name: "Cam", color: "rgba(200, 230, 255, 0.3)" },
-        { id: "m2", x: 300, y: 350, w: 200, h: 100, n: 1.33, name: "Su", color: "rgba(100, 180, 255, 0.3)" }
-    ]);
-    const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
-
-    // Light Source
-    const [source, setSource] = useState({ x: 100, y: 300, angle: 0 });
-    const [isDraggingSource, setIsDraggingSource] = useState(false);
-    const [isDraggingMat, setIsDraggingMat] = useState<string | null>(null);
-
-    // Tasks
+    // UI State (Only for React Overlay)
     const [tasks, setTasks] = useState<SimTask[]>([
-        { id: "o1", description: "Lazer ışığını hedefe ulaştır.", hint: "Blokların yerini veya lazerin açısını değiştir.", isCompleted: false },
-        { id: "o2", description: "Tam yansıma olayını gözlemle.", hint: "Işığı çok yoğun ortamdan (Cam) az yoğun ortama (Hava) kritik açıdan büyük bir açıyla gönder.", isCompleted: false },
-        { id: "o3", description: "İki bloğu kullanarak ışığı 'Z' şeklinde kır.", hint: "Blokları çapraz yerleştirip ışığın yolunu uzat.", isCompleted: false },
+        { id: "o1", description: "Lazer ışığını hedefe ulaştır.", hint: "Kaynağı veya blokları hareket ettir.", isCompleted: false },
+        { id: "o2", description: "Tam yansıma (TIR) olayını gözlemle.", hint: "Yoğun ortamdan (Cam) az yoğun ortama (Hava) geniş açıyla gönder.", isCompleted: false },
+        { id: "o3", description: "Işığı 'Z' şeklinde kır.", hint: "İki bloğu çapraz yerleştir.", isCompleted: false },
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+    const [selectedMatId, setSelectedMatId] = useState<string | null>(null);
+    const [uiSourceAngle, setUiSourceAngle] = useState(0); // Sync for slider
 
-    // Target (Random position for Task 1)
-    const [target, setTarget] = useState({ x: 600, y: 300, hit: false });
-
-    // reset logic
-    const resetSim = () => {
-        setSource({ x: 100, y: 300, angle: 0 });
-        setMaterials([
+    // Physics State (Mutable Ref)
+    const state = useRef<GameState>({
+        source: { x: 100, y: 300, angle: 0 },
+        materials: [
             { id: "m1", x: 300, y: 200, w: 200, h: 100, n: 1.5, name: "Cam", color: "rgba(200, 230, 255, 0.3)" },
             { id: "m2", x: 300, y: 350, w: 200, h: 100, n: 1.33, name: "Su", color: "rgba(100, 180, 255, 0.3)" }
-        ]);
-        setTarget({ x: 600, y: 300, hit: false });
-    };
+        ],
+        target: { x: 600, y: 300, hit: false },
+        dragging: { type: null }
+    });
 
-    // Helper: Normalize Vector
-    const normalize = (v: Vector) => {
-        const len = Math.sqrt(v.x * v.x + v.y * v.y);
-        return { x: v.x / len, y: v.y / len };
-    };
-
-    // Helper: Dot Product
+    // Helper Math
     const dot = (v1: Vector, v2: Vector) => v1.x * v2.x + v1.y * v2.y;
+    const pointLineDist = (p: Vector, a: Vector, b: Vector) => {
+        const atob = { x: b.x - a.x, y: b.y - a.y };
+        const atop = { x: p.x - a.x, y: p.y - a.y };
+        const len = atob.x * atob.x + atob.y * atob.y;
+        let dotVal = atop.x * atob.x + atop.y * atob.y;
+        const t = Math.min(1, Math.max(0, dotVal / len));
+        return Math.sqrt((a.x + atob.x * t - p.x) ** 2 + (a.y + atob.y * t - p.y) ** 2);
+    };
 
-    // Ray Tracing Logic
+    // Task Completion Logic
+    const completeTask = useCallback((index: number) => {
+        setTasks(prev => {
+            if (prev[index].isCompleted) return prev;
+            const newTasks = [...prev];
+            newTasks[index].isCompleted = true;
+            return newTasks;
+        });
+        setTimeout(() => {
+            setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
+        }, 1500);
+    }, [tasks.length]);
+
+    // Ray Tracing Engine
     const traceRay = (ray: Ray, depth: number, ctx: CanvasRenderingContext2D) => {
         if (depth > 5 || ray.intensity < 0.1) return;
 
         let bestHit: { pt: Vector; norm: Vector; mat: Material } | null = null;
         let closestDist = Infinity;
 
-        // Check intersections with all materials
-        for (const mat of materials) {
-            // Check 4 sides
+        // Intersection Check
+        for (const mat of state.current.materials) {
             const lines = [
-                { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y }, n: { x: 0, y: -1 } }, // Top
-                { p1: { x: mat.x, y: mat.y + mat.h }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 0, y: 1 } }, // Bottom
-                { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x, y: mat.y + mat.h }, n: { x: -1, y: 0 } }, // Left
-                { p1: { x: mat.x + mat.w, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 1, y: 0 } }, // Right
+                { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y }, n: { x: 0, y: -1 } },
+                { p1: { x: mat.x, y: mat.y + mat.h }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 0, y: 1 } },
+                { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x, y: mat.y + mat.h }, n: { x: -1, y: 0 } },
+                { p1: { x: mat.x + mat.w, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 1, y: 0 } },
             ];
 
             for (const line of lines) {
-                // Ray-Line Intersection
                 const x1 = line.p1.x, y1 = line.p1.y;
                 const x2 = line.p2.x, y2 = line.p2.y;
                 const x3 = ray.start.x, y3 = ray.start.y;
@@ -90,13 +98,13 @@ export function OpticsSim({ className = "" }: OpticsSimProps) {
                 const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
                 if (t >= 0 && t <= 1 && u > 0) {
-                    const intersectX = x1 + t * (x2 - x1);
-                    const intersectY = y1 + t * (y2 - y1);
-                    const dist = Math.sqrt((intersectX - x3) ** 2 + (intersectY - y3) ** 2);
+                    const ix = x1 + t * (x2 - x1);
+                    const iy = y1 + t * (y2 - y1);
+                    const dist = Math.sqrt((ix - x3) ** 2 + (iy - y3) ** 2);
 
-                    if (dist < closestDist && dist > 1) { // Avoid self-intersection
+                    if (dist < closestDist && dist > 1) {
                         closestDist = dist;
-                        bestHit = { pt: { x: intersectX, y: intersectY }, norm: line.n, mat };
+                        bestHit = { pt: { x: ix, y: iy }, norm: line.n, mat };
                     }
                 }
             }
@@ -107,108 +115,67 @@ export function OpticsSim({ className = "" }: OpticsSimProps) {
             y: ray.start.y + ray.dir.y * 2000
         };
 
-        // Draw Ray Segment
+        // Draw Ray
         ctx.beginPath();
         ctx.moveTo(ray.start.x, ray.start.y);
         ctx.lineTo(endPos.x, endPos.y);
         ctx.strokeStyle = `rgba(255, 50, 50, ${ray.intensity})`;
-        ctx.lineWidth = 2;
-        ctx.shadowColor = "#FF0000";
-        ctx.shadowBlur = 10;
+        ctx.lineWidth = Math.max(1, 3 * ray.intensity);
         ctx.stroke();
-        ctx.shadowBlur = 0;
 
-        // Logic for Target Hit
-        if (currentTaskIndex === 0 && !target.hit) {
-            const d = pointLineDist(target, ray.start, endPos);
-            if (d < 15) {
-                setTarget(prev => ({ ...prev, hit: true }));
+        // Check Target Hit (Only task 0)
+        if (currentTaskIndex === 0 && !state.current.target.hit) {
+            if (pointLineDist(state.current.target, ray.start, endPos) < 15) {
+                state.current.target.hit = true;
                 completeTask(0);
             }
         }
 
         if (bestHit) {
-            const { pt: intersection, norm: normal, mat: hitMaterial } = bestHit;
-
-            // Calculate Refraction / Reflection
-            const dp = dot(ray.dir, normal);
+            const { norm, mat } = bestHit;
+            const dp = dot(ray.dir, norm);
             const entering = dp < 0;
 
-            const n1 = entering ? 1.0 : hitMaterial.n; // Assuming air outside
-            const n2 = entering ? hitMaterial.n : 1.0;
+            const n1 = entering ? 1.0 : mat.n;
+            const n2 = entering ? mat.n : 1.0;
             const eta = n1 / n2;
-
             const k = 1.0 - eta * eta * (1.0 - dp * dp);
 
-            if (k < 0) {
-                // Total Internal Reflection
-                const reflectDir = {
-                    x: ray.dir.x - 2 * dp * normal.x,
-                    y: ray.dir.y - 2 * dp * normal.y
+            if (k < 0) { // TIR
+                const rDir = { x: ray.dir.x - 2 * dp * norm.x, y: ray.dir.y - 2 * dp * norm.y };
+                traceRay({ start: bestHit.pt, dir: rDir, intensity: ray.intensity * 0.95 }, depth + 1, ctx);
+                if (currentTaskIndex === 1 && !tasks[1].isCompleted) completeTask(1);
+            } else { // Refract + Reflect
+                const refrDir = {
+                    x: eta * ray.dir.x - (eta * dp + Math.sqrt(k)) * norm.x,
+                    y: eta * ray.dir.y - (eta * dp + Math.sqrt(k)) * norm.y
                 };
-                traceRay({ start: intersection, dir: reflectDir, intensity: ray.intensity * 0.9 }, depth + 1, ctx);
+                traceRay({ start: bestHit.pt, dir: refrDir, intensity: ray.intensity * 0.8 }, depth + 1, ctx);
 
-                if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-                    completeTask(1); // Task 2: Observe TIR
-                }
-
-            } else {
-                // Refraction
-                const refractDir = {
-                    x: eta * ray.dir.x - (eta * dp + Math.sqrt(k)) * normal.x,
-                    y: eta * ray.dir.y - (eta * dp + Math.sqrt(k)) * normal.y
-                };
-                traceRay({ start: intersection, dir: refractDir, intensity: ray.intensity * 0.8 }, depth + 1, ctx);
-
-                // Fresnel Reflection (Partial)
-                const reflectDir = {
-                    x: ray.dir.x - 2 * dp * normal.x,
-                    y: ray.dir.y - 2 * dp * normal.y
-                };
-                traceRay({ start: intersection, dir: reflectDir, intensity: ray.intensity * 0.2 }, depth + 1, ctx);
+                // Fresnel Reflection
+                const reflDir = { x: ray.dir.x - 2 * dp * norm.x, y: ray.dir.y - 2 * dp * norm.y };
+                traceRay({ start: bestHit.pt, dir: reflDir, intensity: ray.intensity * 0.15 }, depth + 1, ctx);
             }
         }
     };
 
-    const pointLineDist = (p: Vector, a: Vector, b: Vector) => {
-        const atob = { x: b.x - a.x, y: b.y - a.y };
-        const atop = { x: p.x - a.x, y: p.y - a.y };
-        const len = atob.x * atob.x + atob.y * atob.y;
-        let dot = atop.x * atob.x + atop.y * atob.y;
-        const t = Math.min(1, Math.max(0, dot / len));
-        dot = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x);
-        return Math.sqrt((a.x + atob.x * t - p.x) ** 2 + (a.y + atob.y * t - p.y) ** 2);
-    };
-
-    const completeTask = (index: number) => {
-        if (tasks[index].isCompleted) return;
-
-        const newTasks = [...tasks];
-        newTasks[index].isCompleted = true;
-        setTasks(newTasks);
-        setTimeout(() => {
-            if (currentTaskIndex < tasks.length - 1) {
-                setCurrentTaskIndex(prev => prev + 1);
-            }
-        }, 1500);
-    }
-
-    // Main Draw Loop
+    // Main Loop
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const resize = () => {
-            if (containerRef.current) {
+        let animationId: number;
+
+        const render = () => {
+            // Resize if needed
+            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
                 canvas.width = containerRef.current.clientWidth;
                 canvas.height = containerRef.current.clientHeight;
             }
-        };
-        resize(); // Initial call
 
-        const loop = () => {
+            // Clear
             ctx.fillStyle = "#09090b";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -218,224 +185,187 @@ export function OpticsSim({ className = "" }: OpticsSimProps) {
             for (let i = 0; i < canvas.width; i += 40) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
             for (let j = 0; j < canvas.height; j += 40) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
 
+            const s = state.current;
+
             // Draw Target
             if (currentTaskIndex === 0) {
-                ctx.beginPath();
-                ctx.arc(target.x, target.y, 15, 0, Math.PI * 2);
-                ctx.fillStyle = target.hit ? "#4ADE80" : "rgba(74, 222, 128, 0.2)";
-                ctx.fill();
-                ctx.strokeStyle = "#4ADE80";
-                ctx.stroke();
-                // Crosshair
-                ctx.beginPath(); ctx.moveTo(target.x - 10, target.y); ctx.lineTo(target.x + 10, target.y); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(target.x, target.y - 10); ctx.lineTo(target.x, target.y + 10); ctx.stroke();
+                ctx.beginPath(); ctx.arc(s.target.x, s.target.y, 15, 0, Math.PI * 2);
+                ctx.fillStyle = s.target.hit ? "#4ADE80" : "rgba(74, 222, 128, 0.2)";
+                ctx.fill(); ctx.strokeStyle = "#4ADE80"; ctx.stroke();
             }
 
             // Draw Materials
-            materials.forEach(mat => {
+            s.materials.forEach(mat => {
                 ctx.fillStyle = mat.color;
                 ctx.fillRect(mat.x, mat.y, mat.w, mat.h);
-                ctx.strokeStyle = selectedMaterial === mat.id ? "#FFC800" : "rgba(255,255,255,0.2)";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = selectedMatId === mat.id ? "#FFC800" : "rgba(255,255,255,0.2)";
+                ctx.lineWidth = selectedMatId === mat.id ? 2 : 1;
                 ctx.strokeRect(mat.x, mat.y, mat.w, mat.h);
 
-                // Label
-                ctx.fillStyle = "white";
+                ctx.fillStyle = "rgba(255,255,255,0.8)";
                 ctx.font = "bold 12px sans-serif";
-                ctx.fillText(`${mat.name} (n=${mat.n})`, mat.x + 10, mat.y + 20);
-
-                // Handles
-                if (selectedMaterial === mat.id) {
-                    ctx.fillStyle = "#FFC800";
-                    ctx.fillRect(mat.x + mat.w - 8, mat.y + mat.h - 8, 8, 8); // Resize handle mockup
-                }
+                ctx.fillText(`${mat.name} (n=${mat.n})`, mat.x + 5, mat.y + 15);
             });
 
             // Draw Source
             ctx.save();
-            ctx.translate(source.x, source.y);
-            ctx.rotate(source.angle * Math.PI / 180);
-
-            // Source Body
-            ctx.fillStyle = "#333";
-            ctx.fillRect(-10, -10, 40, 20);
-            ctx.strokeStyle = "#999";
-            ctx.strokeRect(-10, -10, 40, 20);
-
-            // Laser Emitter
-            ctx.fillStyle = "#FF0000";
-            ctx.beginPath(); ctx.arc(30, 0, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.translate(s.source.x, s.source.y);
+            ctx.rotate(s.source.angle * Math.PI / 180);
+            ctx.fillStyle = "#333"; ctx.fillRect(-10, -10, 40, 20);
+            ctx.strokeStyle = "#999"; ctx.strokeRect(-10, -10, 40, 20);
+            ctx.fillStyle = "#FF0000"; ctx.beginPath(); ctx.arc(30, 0, 4, 0, Math.PI * 2); ctx.fill();
             ctx.restore();
 
-            // Trace Rays
-            const rad = source.angle * Math.PI / 180;
-            const dir = { x: Math.cos(rad), y: Math.sin(rad) };
-            // Start ray slightly offset from source center to allow dragging source without self-hit issues if complex
+            // Trace
+            const rad = s.source.angle * Math.PI / 180;
             const start = {
-                x: source.x + dir.x * 30,
-                y: source.y + dir.y * 30
+                x: s.source.x + Math.cos(rad) * 35,
+                y: s.source.y + Math.sin(rad) * 35
             };
-            traceRay({ start, dir, intensity: 1.0 }, 0, ctx);
+            traceRay({ start, dir: { x: Math.cos(rad), y: Math.sin(rad) }, intensity: 1.0 }, 0, ctx);
 
-            requestAnimationFrame(loop);
+            animationId = requestAnimationFrame(render);
+            setUiSourceAngle(s.source.angle); // Sync UI occasionally if needed, or better, bind UI to state updates
         };
-        const anim = requestAnimationFrame(loop);
-        return () => cancelAnimationFrame(anim);
-    }, [materials, source, target, selectedMaterial, tasks, currentTaskIndex]);
+        render();
+        return () => cancelAnimationFrame(animationId);
+    }, [currentTaskIndex, selectedMatId, completeTask]); // Dependencies minimal to avoid re-renders
 
-
-    // Interaction Logic
+    // Input Handlers
     const handlePointerDown = (e: React.PointerEvent) => {
         const rect = containerRef.current!.getBoundingClientRect();
-        const px = e.clientX - rect.left;
-        const py = e.clientY - rect.top;
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const s = state.current;
 
-        // Check Source Hit
-        if (Math.hypot(px - source.x, py - source.y) < 20) {
-            setIsDraggingSource(true);
+        // Check Source
+        if (Math.hypot(x - s.source.x, y - s.source.y) < 25) {
+            s.dragging = { type: "source", offset: { x: x - s.source.x, y: y - s.source.y } };
             return;
         }
 
-        // Check Materials Hit
-        const mat = materials.find(m => px >= m.x && px <= m.x + m.w && py >= m.y && py <= m.y + m.h);
-        if (mat) {
-            setSelectedMaterial(mat.id);
-            setIsDraggingMat(mat.id);
-        } else {
-            setSelectedMaterial(null);
+        // Check Materials
+        // Reverse iterate to pick top-most
+        for (let i = s.materials.length - 1; i >= 0; i--) {
+            const m = s.materials[i];
+            if (x >= m.x && x <= m.x + m.w && y >= m.y && y <= m.y + m.h) {
+                s.dragging = { type: "material", id: m.id, offset: { x: x - m.x, y: y - m.y } };
+                setSelectedMatId(m.id);
+                return;
+            }
         }
+
+        setSelectedMatId(null);
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        const px = e.clientX - rect.left;
-        const py = e.clientY - rect.top;
+        if (!state.current.dragging.type) return;
 
-        if (isDraggingSource) {
-            // If dragging near edge, rotate instead? 
-            // Simple: Left button drag moves position. Right click rotates? 
-            // Let's just update position for now, and have a slider for angle.
-            setSource(prev => ({ ...prev, x: px, y: py }));
-        }
+        const rect = containerRef.current!.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const s = state.current;
+        const off = s.dragging.offset || { x: 0, y: 0 };
 
-        if (isDraggingMat) {
-            setMaterials(prev => prev.map(m => {
-                if (m.id === isDraggingMat) {
-                    return { ...m, x: px - m.w / 2, y: py - m.h / 2 };
-                }
-                return m;
-            }));
+        if (s.dragging.type === "source") {
+            s.source.x = x - off.x;
+            s.source.y = y - off.y;
+        } else if (s.dragging.type === "material" && s.dragging.id) {
+            const mat = s.materials.find(m => m.id === s.dragging.id);
+            if (mat) {
+                mat.x = x - off.x;
+                mat.y = y - off.y;
+            }
         }
     };
 
     const handlePointerUp = () => {
-        setIsDraggingSource(false);
-        setIsDraggingMat(null);
+        state.current.dragging = { type: null };
     };
 
     return (
         <SimWrapper
             title="Optik Laboratuvarı"
-            description="Işığın kırılma ve yansıma yasalarını keşfet. Lazer kaynağını ve mercekleri hareket ettir."
+            description="Lazerler ve lensler ile ışığın davranışını araştır."
             tasks={tasks}
             currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
+            onReset={() => {
+                state.current.source = { x: 100, y: 300, angle: 0 };
+                state.current.target.hit = false;
+                // Re-init visuals
+            }}
             controls={
                 <div className="space-y-6">
-                    {/* Source Controls */}
                     <div className="space-y-3">
                         <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/5">
-                            <span className="text-zinc-500 font-black text-[10px] uppercase tracking-wider">Lazer Açısı</span>
-                            <span className="text-white font-mono text-sm font-bold">{source.angle.toFixed(0)}°</span>
+                            <span className="text-zinc-500 font-bold text-[10px] uppercase">Lazer Açısı</span>
+                            <span className="text-white font-mono text-sm">{uiSourceAngle.toFixed(0)}°</span>
                         </div>
                         <input
-                            type="range" min="0" max="360" value={source.angle}
-                            onChange={(e) => setSource(prev => ({ ...prev, angle: parseInt(e.target.value) }))}
+                            type="range" min="0" max="360" value={uiSourceAngle}
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                setUiSourceAngle(val);
+                                state.current.source.angle = val;
+                            }}
                             className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#FF5757]"
                         />
                     </div>
 
-                    {/* Material Controls */}
-                    <div className="space-y-3">
-                        <div className="text-zinc-500 font-black text-[10px] uppercase tracking-wider mb-2">Materyaller</div>
-                        <div className="grid grid-cols-2 gap-2">
-                            <button
-                                onClick={() => setMaterials(prev => [...prev, {
-                                    id: `m-${Date.now()}`, x: 100, y: 100, w: 150, h: 80,
-                                    n: 1.5, name: "Cam", color: "rgba(200, 230, 255, 0.3)"
-                                }])}
-                                className="flex items-center justify-center gap-2 bg-zinc-800 p-3 rounded-xl hover:bg-zinc-700 transition-colors border border-white/5"
-                            >
-                                <Plus className="w-4 h-4 text-white" />
-                                <span className="text-xs text-white font-bold">Cam Ekle</span>
-                            </button>
-                            <button
-                                onClick={() => setMaterials(prev => [...prev, {
-                                    id: `mw-${Date.now()}`, x: 150, y: 150, w: 150, h: 80,
-                                    n: 1.33, name: "Su", color: "rgba(100, 180, 255, 0.3)"
-                                }])}
-                                className="flex items-center justify-center gap-2 bg-zinc-800 p-3 rounded-xl hover:bg-zinc-700 transition-colors border border-white/5"
-                            >
-                                <Plus className="w-4 h-4 text-white" />
-                                <span className="text-xs text-white font-bold">Su Ekle</span>
-                            </button>
-                        </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <button
+                            onClick={() => {
+                                state.current.materials.push({
+                                    id: `m-${Date.now()}`, x: 150, y: 150, w: 150, h: 80, n: 1.5, name: "Cam", color: "rgba(200, 230, 255, 0.3)"
+                                });
+                            }}
+                            className="flex items-center justify-center gap-2 bg-zinc-800 p-3 rounded-xl border border-white/5 hover:bg-zinc-700"
+                        >
+                            <Plus className="w-4 h-4 text-white" />
+                            <span className="text-xs text-white font-bold">Cam</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                state.current.materials.push({
+                                    id: `m-${Date.now()}`, x: 150, y: 250, w: 150, h: 80, n: 1.33, name: "Su", color: "rgba(100, 180, 255, 0.3)"
+                                });
+                            }}
+                            className="flex items-center justify-center gap-2 bg-zinc-800 p-3 rounded-xl border border-white/5 hover:bg-zinc-700"
+                        >
+                            <Plus className="w-4 h-4 text-white" />
+                            <span className="text-xs text-white font-bold">Su</span>
+                        </button>
                     </div>
 
-                    {/* Selected Material Props */}
-                    {selectedMaterial && (
-                        <div className="animate-in slide-in-from-right fade-in bg-zinc-900 p-4 rounded-xl border border-white/10">
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-white font-bold text-sm">Seçili Blok</span>
+                    {selectedMatId && (
+                        <div className="bg-zinc-900 p-4 rounded-xl border border-white/10 animate-in fade-in slide-in-from-right">
+                            <div className="flex justify-between mb-4">
+                                <span className="text-xs font-bold text-white">Seçili Obje</span>
                                 <button
                                     onClick={() => {
-                                        setMaterials(prev => prev.filter(m => m.id !== selectedMaterial));
-                                        setSelectedMaterial(null);
+                                        state.current.materials = state.current.materials.filter(m => m.id !== selectedMatId);
+                                        setSelectedMatId(null);
                                     }}
                                     className="text-red-500 hover:text-red-400"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
-
-                            {(() => {
-                                const mat = materials.find(m => m.id === selectedMaterial);
-                                if (!mat) return null;
-                                return (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="text-[10px] text-zinc-500 font-black uppercase mb-2 block">Kırılma İndisi (n)</label>
-                                            <input
-                                                type="range" min="1" max="2.5" step="0.01" value={mat.n}
-                                                onChange={(e) => setMaterials(prev => prev.map(m => m.id === selectedMaterial ? { ...m, n: parseFloat(e.target.value) } : m))}
-                                                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#4ADE80]"
-                                            />
-                                            <div className="text-right text-xs text-white font-mono mt-1">{mat.n.toFixed(2)}</div>
-                                        </div>
-
-                                        <div>
-                                            <label className="text-[10px] text-zinc-500 font-black uppercase mb-2 block">Döndürme (Basic)</label>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => setMaterials(prev => prev.map(m => m.id === selectedMaterial ? { ...m, w: m.h, h: m.w } : m))}
-                                                    className="flex-1 py-2 bg-zinc-800 rounded-lg text-xs font-bold text-white hover:bg-zinc-700"
-                                                >
-                                                    90° Çevir
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })()}
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => {
+                                        const m = state.current.materials.find(mat => mat.id === selectedMatId);
+                                        if (m) {
+                                            const temp = m.w; m.w = m.h; m.h = temp;
+                                        }
+                                    }}
+                                    className="w-full py-2 bg-zinc-800 rounded text-xs font-bold text-zinc-300 hover:text-white"
+                                >
+                                    90° Döndür
+                                </button>
+                            </div>
                         </div>
                     )}
-
-                    <div className="bg-[#FFD700]/5 border border-[#FFD700]/20 rounded-xl p-4">
-                        <p className="text-[#FFD700] text-[10px] leading-relaxed font-bold italic uppercase tracking-wider">
-                            ✨ İpucu: Lazer kaynağını (kırmızı nokta) ve cam/su bloklarını sürükleyerek hareket ettirebilirsin.
-                        </p>
-                    </div>
                 </div>
             }
         >
@@ -448,13 +378,9 @@ export function OpticsSim({ className = "" }: OpticsSimProps) {
                 onPointerLeave={handlePointerUp}
             >
                 <canvas ref={canvasRef} className="w-full h-full block touch-none" />
-
-                {/* Drag Hint Overlay */}
-                <div className="absolute top-4 right-4 pointer-events-none opacity-50">
-                    <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/10">
-                        <Move className="w-3 h-3 text-white" />
-                        <span className="text-[10px] text-white">Sürükle & Bırak</span>
-                    </div>
+                <div className="absolute top-4 right-4 pointer-events-none opacity-40 flex items-center gap-2 bg-black/60 px-3 py-1 rounded-full border border-white/10">
+                    <Move className="w-3 h-3 text-white" />
+                    <span className="text-[10px] text-white">Sürükle</span>
                 </div>
             </div>
         </SimWrapper>

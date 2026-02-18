@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase-server";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!);
 
@@ -48,6 +49,13 @@ async function tryGenerateContent(requestId: string, modelName: string, parts: a
 
 export async function POST(request: NextRequest) {
     const requestId = Math.random().toString(36).substring(7);
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
         const { type, message, audio, noteTitle, noteContent, history } = await request.json();
