@@ -248,7 +248,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                                 <h2 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter leading-tight drop-shadow-xl">
                                     {currentStory.title}
                                 </h2>
-                                <p className="text-zinc-200 text-sm sm:text-base leading-relaxed font-medium drop-shadow-md">
+                                <p className="text-zinc-100 text-base sm:text-lg leading-relaxed font-medium drop-shadow-md font-grotesk tracking-wide">
                                     {currentStory.content}
                                 </p>
                                 <div className="pt-6">

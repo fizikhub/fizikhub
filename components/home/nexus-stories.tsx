@@ -40,8 +40,8 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
             s.group_id === group.id
         ).map(s => ({
             id: s.id,
-            title: s.title || "Hikaye",
-            image: s.media_url,
+            title: s.name || s.title || "Hikaye",
+            image: s.image,
             content: s.content || "",
             author: s.author,
             category: group.name, // Display group name as category

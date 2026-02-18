@@ -450,7 +450,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                                     onChange={(e) => setContent(e.target.value)}
                                     placeholder="İsteğe bağlı açıklama..."
                                     className="bg-black border-zinc-800 placeholder:text-zinc-600"
-                                    maxLength={100}
+                                    maxLength={200}
                                 />
                             </div>
                         </div>
