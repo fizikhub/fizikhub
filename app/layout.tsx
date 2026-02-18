@@ -211,6 +211,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
 import { Suspense } from "react";
+import { CloudflareAnalytics } from "@/components/analytics/cloudflare-analytics";
 
 export default async function RootLayout({
   children,
@@ -344,6 +345,7 @@ export default async function RootLayout({
           />
           <Analytics />
           <SpeedInsights />
+          <CloudflareAnalytics />
         </ThemeProvider>
       </body>
     </html>
