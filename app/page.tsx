@@ -62,7 +62,7 @@ const getCachedFeedData = unstable_cache(
       // Fetch Active Stories (Admin only for now as per policy)
       supabase
         .from('stories')
-        .select('*')
+        .select('*, author:profiles(username, full_name, avatar_url)')
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
     ]);
@@ -73,17 +73,17 @@ const getCachedFeedData = unstable_cache(
       suggestedUsers: profilesResult.data || [],
       // Map stories to match NexusStories expected format temporarily or update component to handle both
       stories: (storiesResult?.data || []).map((s: any) => ({
-        name: "Admin", // Or fetch author name
+        name: s.title || "Hikaye",
         image: s.media_url,
         href: "#",
         color: "from-purple-500 to-pink-500", // Default gradient for now
-        content: "Admin story content", // or logic to handle
-        author: "FizikHub",
+        content: s.content || "", // Empty if no content
+        author: s.author?.username || "FizikHub",
         isDynamic: true // Flag to distinguish
       }))
     };
   },
-  ['feed-data-v3'], // Bump version to invalidate cache
+  ['feed-data-v3-fixed'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 
