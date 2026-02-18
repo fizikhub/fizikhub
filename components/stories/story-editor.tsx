@@ -746,4 +746,6 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                     </div>
                 )}
             </AnimatePresence>
+        </div>
+    );
 }
