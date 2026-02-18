@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Upload, Type, Move, Image as ImageIcon, CheckCircle, XCircle, ZoomIn, ZoomOut, Plus, Sticker } from "lucide-react";
+import { Loader2, Upload, Type, Move, Image as ImageIcon, CheckCircle, XCircle, ZoomIn, ZoomOut, Plus, Sticker, HelpCircle, X } from "lucide-react";
 import Draggable from "react-draggable";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Types
 interface TextLayer {
@@ -43,6 +44,7 @@ export function StoryEditor() {
     const [stickerLayers, setStickerLayers] = useState<StickerLayer[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null); // Layer ID
     const [isUploading, setIsUploading] = useState(false);
+    const [showHelp, setShowHelp] = useState(true); // Default show help on load
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const bgImageRef = useRef<HTMLImageElement>(null);
@@ -139,7 +141,7 @@ export function StoryEditor() {
         }
     };
 
-    // 7. Publish
+    // 7. Publish (Optimized for Quality and Ratio)
     const handlePublish = async () => {
         if (!canvasRef.current || !image) return;
 
@@ -156,33 +158,40 @@ export function StoryEditor() {
             setSelectedId(null); // Clear selection specific borders
 
             // Wait for render cycle to clear borders
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 300)); // Longer wait for render
 
-            // 1. Generate Canvas (Lower scale for mobile performance)
+            // Get exact dimensions for 9:16 ratio preservation
+            const { offsetWidth, offsetHeight } = canvasRef.current;
+
+            // Generate Canvas with forced dimensions and high scale
             const canvas = await html2canvas(canvasRef.current, {
                 useCORS: true,
-                scale: 2, // Reduced from 3 to 2 for better mobile stability
+                scale: 3, // High Quality (approx 1080p+)
                 backgroundColor: "#000000",
+                width: offsetWidth,
+                height: offsetHeight,
+                scrollX: 0,
+                scrollY: 0,
                 logging: false,
             });
 
-            // 2. Convert to Blob with timeout protection
+            // High quality JPEG
             const blob = await new Promise<Blob | null>((resolve) => {
-                const timeout = setTimeout(() => resolve(null), 5000); // 5s timeout
-                canvas.toBlob(blob => {
-                    clearTimeout(timeout);
-                    resolve(blob);
-                }, 'image/jpeg', 0.90);
+                canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
             });
 
-            if (!blob) throw new Error("Görsel oluşturulamadı (Zaman aşımı).");
+            if (!blob) throw new Error("Görsel oluşturulamadı.");
 
             const fileName = `story-${Date.now()}.jpg`;
 
             // 3. Upload to Supabase Storage
             const { error: uploadError } = await supabase.storage
                 .from('stories')
-                .upload(fileName, blob);
+                .upload(fileName, blob, {
+                    contentType: 'image/jpeg',
+                    cacheControl: '3600',
+                    upsert: false
+                });
 
             if (uploadError) {
                 console.error("Upload Error:", uploadError);
@@ -225,10 +234,63 @@ export function StoryEditor() {
     const activeStickerLayer = stickerLayers.find(l => l.id === selectedId);
 
     return (
-        <div className="flex flex-col lg:flex-row h-[100dvh] bg-[#121212] text-white overflow-hidden">
+        <div className="flex flex-col lg:flex-row h-[100dvh] bg-[#121212] text-white overflow-hidden font-outfit">
 
             {/* CANVAS AREA (CENTER) */}
             <div className="flex-1 relative flex items-center justify-center bg-[#1a1a1a] p-4 lg:p-8 overflow-hidden select-none">
+
+                {/* TUTORIAL OVERLAY */}
+                <AnimatePresence>
+                    {showHelp && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6"
+                            onClick={() => setShowHelp(false)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }}
+                                animate={{ scale: 1, y: 0 }}
+                                exit={{ scale: 0.9, y: 20 }}
+                                className="bg-[#1e1e1e] border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="flex justify-between items-start">
+                                    <h2 className="text-xl font-bold bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
+                                        Hikaye Oluşturucu
+                                    </h2>
+                                    <Button variant="ghost" size="icon" onClick={() => setShowHelp(false)} className="hover:bg-white/5 rounded-full -mt-2 -mr-2">
+                                        <X className="w-5 h-5 text-white/50" />
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-3 text-sm text-zinc-400">
+                                    <p className="flex items-center gap-3">
+                                        <Move className="w-4 h-4 text-[#23A9FA]" />
+                                        <span>Öğeleri sürükleyerek taşıyın.</span>
+                                    </p>
+                                    <p className="flex items-center gap-3">
+                                        <Upload className="w-4 h-4 text-[#FFC800]" />
+                                        <span>Kendi fotoğrafınızı yükleyin.</span>
+                                    </p>
+                                    <p className="flex items-center gap-3">
+                                        <Type className="w-4 h-4 text-[#FF3366]" />
+                                        <span>Yazı ve sticker ekleyip süsleyin.</span>
+                                    </p>
+                                    <p className="flex items-center gap-3">
+                                        <ZoomIn className="w-4 h-4 text-green-500" />
+                                        <span>Arkaplana zoom yapabilirsiniz.</span>
+                                    </p>
+                                </div>
+
+                                <Button className="w-full bg-white text-black hover:bg-zinc-200 font-bold" onClick={() => setShowHelp(false)}>
+                                    Anladım, Başla! 🚀
+                                </Button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* DEVICE FRAME */}
                 <div
@@ -256,11 +318,13 @@ export function StoryEditor() {
                         </Draggable>
                     ) : (
                         <div
-                            className="w-full h-full flex flex-col items-center justify-center text-zinc-600 cursor-pointer hover:bg-zinc-900/50 transition-colors"
+                            className="w-full h-full flex flex-col items-center justify-center text-zinc-600 cursor-pointer hover:bg-zinc-900/50 transition-colors group"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            <Upload className="w-12 h-12 mb-4 opacity-50" />
-                            <span className="font-bold text-sm">Fotoğraf Seç</span>
+                            <div className="p-6 rounded-full bg-zinc-900 border border-zinc-800 group-hover:border-[#23A9FA] group-hover:scale-110 transition-all mb-4">
+                                <Upload className="w-8 h-8 opacity-50 group-hover:opacity-100 group-hover:text-[#23A9FA] transition-all" />
+                            </div>
+                            <span className="font-bold text-sm text-zinc-500 group-hover:text-white transition-colors">Fotoğraf Seç</span>
                             <span className="text-xs opacity-50 mt-1">Sürükle veya Tıkla</span>
                         </div>
                     )}
@@ -318,7 +382,7 @@ export function StoryEditor() {
                     {/* LOGO OVERLAY (Optional) */}
                     <div className="absolute top-6 left-6 pointer-events-none opacity-80">
                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-[#FFC800] rounded-full" />
+                            <div className="w-6 h-6 bg-[#FFC800] rounded-full shadow-[0_0_15px_rgba(255,200,0,0.5)]" />
                             <span className="font-black text-xs tracking-widest uppercase drop-shadow-md">FizikHub</span>
                         </div>
                     </div>
@@ -328,124 +392,190 @@ export function StoryEditor() {
             {/* CONTROLS AREA (BOTTOM/SIDE) */}
             <div className="w-full lg:w-[400px] bg-[#121212] border-t lg:border-t-0 lg:border-l border-white/10 p-6 flex flex-col gap-6 z-20 shadow-2xl">
 
+                {/* BRAND HEADER */}
+                <div className="flex items-center justify-between lg:hidden mb-2">
+                    <span className="font-black text-lg tracking-tight">KONTROL PANELİ</span>
+                    <Button variant="ghost" size="icon" onClick={() => setShowHelp(true)}>
+                        <HelpCircle className="w-5 h-5 text-zinc-500" />
+                    </Button>
+                </div>
+
+                <div className="hidden lg:flex items-center justify-between mb-4 border-b border-white/5 pb-4">
+                    <div>
+                        <h2 className="font-black text-xl tracking-tight">HİKAYE STÜDYOSU</h2>
+                        <p className="text-xs text-zinc-500">Kendi bilimsel hikayeni tasarla.</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="hover:bg-white/5 rounded-full" onClick={() => setShowHelp(true)}>
+                        <HelpCircle className="w-5 h-5 text-zinc-500" />
+                    </Button>
+                </div>
+
                 {/* TOOLBAR */}
                 <div className="grid grid-cols-4 gap-2">
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FFC800]" onClick={() => fileInputRef.current?.click()}>
+                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FFC800] transition-all hover:scale-105 active:scale-95" onClick={() => fileInputRef.current?.click()}>
                         <ImageIcon className="w-6 h-6" />
                         <span className="text-[10px] font-bold">Arkaplan</span>
                     </Button>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#23A9FA]" onClick={addTextLayer}>
+                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#23A9FA] transition-all hover:scale-105 active:scale-95" onClick={addTextLayer}>
                         <Type className="w-6 h-6" />
                         <span className="text-[10px] font-bold">Metin</span>
                     </Button>
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FF3366]" onClick={() => stickerInputRef.current?.click()}>
+                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-[#FF3366] transition-all hover:scale-105 active:scale-95" onClick={() => stickerInputRef.current?.click()}>
                         <Sticker className="w-6 h-6" />
                         <span className="text-[10px] font-bold">Sticker</span>
                     </Button>
                     <input type="file" ref={stickerInputRef} className="hidden" accept="image/*" onChange={handleStickerUpload} />
 
-                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-green-500" onClick={handlePublish} disabled={!image || isUploading}>
+                    <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:bg-zinc-900 hover:text-green-500 transition-all hover:scale-105 active:scale-95" onClick={handlePublish} disabled={!image || isUploading}>
                         {isUploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <CheckCircle className="w-6 h-6" />}
                         <span className="text-[10px] font-bold">Paylaş</span>
                     </Button>
                 </div>
 
                 {/* LAYER PROPERTIES */}
-                <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+                <div className="flex-1 overflow-y-auto pr-2 space-y-6 scrollbar-hide">
 
-                    {/* BACKGROUND SETTINGS */}
-                    {image && !selectedId && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                            <h3 className="font-bold text-sm text-zinc-500 uppercase tracking-wider">Arkaplan Ayarları</h3>
-                            <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                        <Label className="text-xs">Zoom Seviyesi</Label>
-                                        <span className="text-xs text-zinc-500">{scale.toFixed(1)}x</span>
+                    <AnimatePresence mode="popLayout">
+                        {/* BACKGROUND SETTINGS */}
+                        {image && !selectedId && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-4"
+                            >
+                                <h3 className="font-bold text-sm text-zinc-500 uppercase tracking-wider flex items-center gap-2">
+                                    <ImageIcon className="w-3 h-3" /> Arkaplan Ayarları
+                                </h3>
+                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between">
+                                            <Label className="text-xs">Zoom Seviyesi</Label>
+                                            <span className="text-xs text-zinc-500">{scale.toFixed(1)}x</span>
+                                        </div>
+                                        <Slider
+                                            value={[scale]}
+                                            min={1}
+                                            max={3}
+                                            step={0.1}
+                                            onValueChange={(vals) => setScale(vals[0])}
+                                            className="cursor-pointer"
+                                        />
                                     </div>
-                                    <Slider
-                                        value={[scale]}
-                                        min={1}
-                                        max={3}
-                                        step={0.1}
-                                        onValueChange={(vals) => setScale(vals[0])}
-                                    />
+                                    <p className="text-[10px] text-zinc-500 border-l-2 border-zinc-700 pl-2">
+                                        * Fotoğrafı sürükleyerek veya iki parmakla konumlandırabilirsiniz.
+                                    </p>
                                 </div>
-                                <p className="text-[10px] text-zinc-500">
-                                    * Fotoğrafı sürükleyerek konumlandırabilirsiniz.
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                            </motion.div>
+                        )}
 
-                    {/* TEXT SETTINGS */}
-                    {activeTextLayer && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-bold text-sm text-[#23A9FA] uppercase tracking-wider">Metin Düzenle</h3>
-                                <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeTextLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10">Sil</Button>
-                            </div>
-
-                            <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                <Input
-                                    value={activeTextLayer.text}
-                                    onChange={(e) => updateTextLayer(activeTextLayer.id, { text: e.target.value })}
-                                    className="bg-black border-zinc-800 focus:border-[#23A9FA]"
-                                />
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs">Boyut</Label>
-                                    <Slider
-                                        value={[activeTextLayer.fontSize]}
-                                        min={12}
-                                        max={120}
-                                        step={1}
-                                        onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { fontSize: vals[0] })}
-                                    />
+                        {/* TEXT SETTINGS */}
+                        {activeTextLayer && (
+                            <motion.div
+                                key="text-settings"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-4"
+                            >
+                                <div className="flex justify-between items-center">
+                                    <h3 className="font-bold text-sm text-[#23A9FA] uppercase tracking-wider flex items-center gap-2">
+                                        <Type className="w-3 h-3" /> Metin Düzenle
+                                    </h3>
+                                    <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeTextLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-xs">Renk</Label>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {['#ffffff', '#000000', '#FFC800', '#23A9FA', '#FF3366', '#4CAF50', '#9333EA'].map(color => (
-                                            <button
-                                                key={color}
-                                                className={`w-8 h-8 rounded-full border-2 transition-transform ${activeTextLayer.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`}
-                                                style={{ backgroundColor: color }}
-                                                onClick={() => updateTextLayer(activeTextLayer.id, { color })}
-                                            />
-                                        ))}
+                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
+                                    <Input
+                                        value={activeTextLayer.text}
+                                        onChange={(e) => updateTextLayer(activeTextLayer.id, { text: e.target.value })}
+                                        className="bg-black border-zinc-800 focus:border-[#23A9FA] font-bold"
+                                    />
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Boyut</Label>
+                                        <Slider
+                                            value={[activeTextLayer.fontSize]}
+                                            min={12}
+                                            max={120}
+                                            step={1}
+                                            onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { fontSize: vals[0] })}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Renk</Label>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {['#ffffff', '#000000', '#FFC800', '#23A9FA', '#FF3366', '#4CAF50', '#9333EA'].map(color => (
+                                                <button
+                                                    key={color}
+                                                    className={`w-8 h-8 rounded-full border-2 transition-transform ${activeTextLayer.color === color ? 'border-white scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`}
+                                                    style={{ backgroundColor: color }}
+                                                    onClick={() => updateTextLayer(activeTextLayer.id, { color })}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Döndürme</Label>
+                                        <Slider
+                                            value={[activeTextLayer.rotation]}
+                                            min={-180}
+                                            max={180}
+                                            step={5}
+                                            onValueChange={(vals) => updateTextLayer(activeTextLayer.id, { rotation: vals[0] })}
+                                        />
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    )}
+                            </motion.div>
+                        )}
 
-                    {/* STICKER SETTINGS */}
-                    {activeStickerLayer && (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-                            <div className="flex justify-between items-center">
-                                <h3 className="font-bold text-sm text-[#FF3366] uppercase tracking-wider">Sticker Düzenle</h3>
-                                <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeStickerLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10">Sil</Button>
-                            </div>
-
-                            <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs">Boyut</Label>
-                                    <Slider
-                                        value={[activeStickerLayer.scale]}
-                                        min={0.2}
-                                        max={3}
-                                        step={0.1}
-                                        onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { scale: vals[0] })}
-                                    />
+                        {/* STICKER SETTINGS */}
+                        {activeStickerLayer && (
+                            <motion.div
+                                key="sticker-settings"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-4"
+                            >
+                                <div className="flex justify-between items-center">
+                                    <h3 className="font-bold text-sm text-[#FF3366] uppercase tracking-wider flex items-center gap-2">
+                                        <Sticker className="w-3 h-3" /> Sticker Düzenle
+                                    </h3>
+                                    <Button variant="ghost" size="sm" onClick={() => deleteLayer(activeStickerLayer.id)} className="h-6 text-red-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">Sil</Button>
                                 </div>
-                            </div>
-                        </div>
-                    )}
+
+                                <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5 space-y-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Boyut</Label>
+                                        <Slider
+                                            value={[activeStickerLayer.scale]}
+                                            min={0.2}
+                                            max={3}
+                                            step={0.1}
+                                            onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { scale: vals[0] })}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs">Döndürme</Label>
+                                        <Slider
+                                            value={[activeStickerLayer.rotation]}
+                                            min={-180}
+                                            max={180}
+                                            step={5}
+                                            onValueChange={(vals) => updateStickerLayer(activeStickerLayer.id, { rotation: vals[0] })}
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>

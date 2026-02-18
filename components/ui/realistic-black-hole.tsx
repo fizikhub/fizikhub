@@ -36,6 +36,7 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
                 iResolution: { value: new THREE.Vector2(container.clientWidth, container.clientHeight) },
                 iCameraZoom: { value: 1.0 },
                 iVerticalOffset: { value: 0.0 },
+                iMouse: { value: new THREE.Vector2(0.5, 0.5) }, // Normalized mouse position
             },
             vertexShader: `
         varying vec2 vUv;
@@ -49,6 +50,7 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
         uniform vec2 iResolution;
         uniform float iCameraZoom;
         uniform float iVerticalOffset;
+        uniform vec2 iMouse;
         varying vec2 vUv;
 
         // Constants
@@ -91,12 +93,27 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
             
             // Camera Setup
             vec3 ro = vec3(0.0, 1.5, -8.0);
+            
+            // Mouse Interaction: Subtle Parallax
+            float mouseX = (iMouse.x - 0.5) * 2.0; // -1 to 1
+            float mouseY = (iMouse.y - 0.5) * 2.0; // -1 to 1
+            
+            ro.x += mouseX * 2.0;
+            ro.y += mouseY * 1.0;
+            
             vec3 rd = normalize(vec3(uv, 1.5));
             
-            float tiltAngle = -0.15;
+            float tiltAngle = -0.15 + (mouseY * 0.1); // Dynamic Tilt
             mat2 tilt = mat2(cos(tiltAngle), -sin(tiltAngle), sin(tiltAngle), cos(tiltAngle));
             ro.yz *= tilt;
             rd.yz *= tilt;
+            
+            // Rotate camera horizontally based on mouse X
+            float rotX = -mouseX * 0.2;
+            mat2 rot = mat2(cos(rotX), -sin(rotX), sin(rotX), cos(rotX));
+            ro.xz *= rot;
+            rd.xz *= rot;
+
 
             // --- RAY MARCHING SETUP ---
             vec3 p = ro;
@@ -252,8 +269,32 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
         window.addEventListener("resize", handleResize);
         handleResize();
 
+        // --- MOUSE & TOUCH INTERACTION ---
+        const handleInteraction = (x: number, y: number) => {
+            const normX = x / window.innerWidth;
+            const normY = 1.0 - (y / window.innerHeight); // Invert Y
+            material.uniforms.iMouse.value.set(normX, normY);
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            handleInteraction(e.clientX, e.clientY);
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            if (e.touches.length > 0) {
+                // Prevent scrolling while interacting with the black hole
+                // e.preventDefault(); 
+                handleInteraction(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("touchmove", handleTouchMove, { passive: true });
+
         return () => {
             window.removeEventListener("resize", handleResize);
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("touchmove", handleTouchMove);
             cancelAnimationFrame(frameId);
             container.removeChild(renderer.domElement);
             renderer.dispose();
