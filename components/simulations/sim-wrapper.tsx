@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, ChevronDown, RotateCcw, Info, CheckCircle2, X } from "lucide-react";
+import { RotateCcw, Info, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { LandscapeGuard } from "@/components/ui/landscape-guard";
 import confetti from "canvas-confetti";
@@ -35,7 +35,6 @@ export function SimWrapper({
     children,
     onReset,
 }: SimWrapperProps) {
-    const [isMobileControlsOpen, setIsMobileControlsOpen] = useState(false); // Mobile bottom sheet state
     const [showInfo, setShowInfo] = useState(false);
     const [showExplanation, setShowExplanation] = useState<string | null>(null);
 
@@ -55,7 +54,7 @@ export function SimWrapper({
                 // Show Explanation if available (DELAYED 7 Seconds)
                 if (completedTask.explanation) {
                     const timer = setTimeout(() => {
-                        setShowExplanation(completedTask.explanation);
+                        setShowExplanation(completedTask.explanation!);
                     }, 7000);
                     return () => clearTimeout(timer);
                 }
@@ -114,7 +113,7 @@ export function SimWrapper({
 
                 {/* --- MAIN CONTENT WRAPPER --- */}
                 {/* On Mobile: flex-col and overflow-auto to allow scrolling. On Desktop: flex-row and overflow-hidden. */}
-                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden">
+                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden pb-64 lg:pb-0">
 
                     {/* CANVAS AREA */}
                     {/* Mobile: Fixed height (60vh) so it's large but allows controls below. Desktop: flex-1, full height. */}
@@ -177,8 +176,8 @@ export function SimWrapper({
                         </div>
                     </div>
 
-                    {/* --- MOBILE CONTROLS (Static Block) --- */}
-                    <div className="lg:hidden w-full p-6 bg-[#09090b] pb-24">
+                    {/* --- MOBILE CONTROLS (Fixed Bottom) --- */}
+                    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 w-full p-6 bg-[#09090b] border-t border-white/10 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.8)]">
                         <h2 className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                             Kontrol Paneli
                             <div className="h-px flex-1 bg-zinc-800" />
