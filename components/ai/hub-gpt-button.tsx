@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { HubGPTChat } from "@/components/ai/hub-gpt-chat";
-import { HubGPTLogo } from "@/components/ui/nano-icons"; // [NEW]
+import { Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -71,9 +71,7 @@ export function HubGPTButton() {
                             className="w-14 h-14 md:w-16 md:h-16 bg-[#FFC800] text-black rounded-full border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center relative overflow-hidden group pointer-events-auto"
                         >
                             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full" />
-                            <div className="w-8 h-8 md:w-9 md:h-9 relative z-10 text-black">
-                                <HubGPTLogo />
-                            </div>
+                            <Bot className="w-8 h-8 md:w-9 md:h-9 relative z-10 stroke-[2.5px]" />
 
                             {/* Badge */}
                             <div className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-[2px] border-black animate-pulse" />
