@@ -2,26 +2,35 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Move, Plus, Trash2, RotateCcw, MousePointer2 } from "lucide-react";
 import { SimWrapper, SimTask } from "./sim-wrapper";
+import { MousePointer2, Move, RotateCw, Plus, Trash2 } from "lucide-react";
 
-interface OpticsSimProps {
-    className?: string;
-}
+// --- Types & Physics Interfaces ---
 
-// -- Physics Engine Types --
 type Vector = { x: number; y: number };
-type MaterialType = "Glass" | "Water" | "Air" | "Diamond" | "Custom";
-type OpticalMaterial = {
+const vec = (x: number, y: number) => ({ x, y });
+const add = (v1: Vector, v2: Vector) => ({ x: v1.x + v2.x, y: v1.y + v2.y });
+const sub = (v1: Vector, v2: Vector) => ({ x: v1.x - v2.x, y: v1.y - v2.y });
+const scale = (v: Vector, s: number) => ({ x: v.x * s, y: v.y * s });
+const dot = (v1: Vector, v2: Vector) => v1.x * v2.x + v1.y * v2.y;
+const len = (v: Vector) => Math.sqrt(v.x * v.x + v.y * v.y);
+const norm = (v: Vector) => { const l = len(v); return l === 0 ? vec(0, 0) : scale(v, 1 / l); };
+const rot = (v: Vector, angle: number) => ({
+    x: v.x * Math.cos(angle) - v.y * Math.sin(angle),
+    y: v.x * Math.sin(angle) + v.y * Math.cos(angle)
+});
+
+type OpticalElement = {
     id: string;
+    type: "block" | "mirror" | "target";
     x: number;
     y: number;
     w: number;
     h: number;
-    n: number; // Refractive Index
-    name: string;
+    rotation: number; // radians
+    n: number; // Refractive index (1.5 glass, 1.33 water, Infinity mirror)
+    dragging?: boolean;
     color: string;
-    rotation: number; // For rotating blocks
 };
 
 type RaySegment = {
@@ -30,235 +39,158 @@ type RaySegment = {
     intensity: number;
 };
 
-type GameState = {
-    source: { x: number; y: number; angle: number; active: boolean };
-    materials: OpticalMaterial[];
-    target: { x: number; y: number; r: number; hit: boolean };
-    dragging: { type: "source" | "material" | null; id?: string; offset?: Vector };
-    rays: RaySegment[]; // Store computed rays for debugging/rendering
-};
+// --- Physics Constants ---
+const MAX_BOUNCES = 10;
+const MIN_INTENSITY = 0.01;
 
-export function OpticsSim({ className }: OpticsSimProps) {
+export default function OpticsSim() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // -- UI State --
+    // -- State --
+    const [laser, setLaser] = useState({ x: 50, y: 300, angle: -0.2, dragging: false });
+    const [elements, setElements] = useState<OpticalElement[]>([]);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [rays, setRays] = useState<RaySegment[]>([]);
+
     const [tasks, setTasks] = useState<SimTask[]>([
-        { id: "o1", description: "Hedefi Vurmak", hint: "Lazer kaynağını veya cam bloğu hareket ettirerek ışığı hedefe ulaştır.", isCompleted: false },
-        { id: "o2", description: "Tam Yansıma", hint: "Işığı camdan havaya gönderirken açıyı genişlet (yaklaşık 42° üzeri).", isCompleted: false },
-        { id: "o3", description: "Prizma Etkisi", hint: "İki farklı ortamı kullanarak ışığı saptır.", isCompleted: false },
+        {
+            id: "o1", description: "Yansıma", hint: "Aynayı kullanarak lazeri hedefe vur.", isCompleted: false,
+            explanation: "Yansıma Yasası: Gelme açısı yansıma açısına eşittir (θi = θr)."
+        },
+        {
+            id: "o2", description: "Kırılma", hint: "Cam bloğu ışığın önüne koy ve sapmayı gözlemle.", isCompleted: false,
+            explanation: "Snell Yasası: Işık yoğun ortama girerken normale yaklaşır, çıkarken uzaklaşır."
+        },
+        {
+            id: "o3", description: "Tam İç Yansıma", hint: "Işığı camın içinden çok yatay bir açıyla gönder.", isCompleted: false,
+            explanation: "Kritik açı aşıldığında ışık dışarı çıkamaz ve %100 yansır. Fiber optik kablolar böyle çalışır."
+        }
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    // Controls State
-    const [selectedMatId, setSelectedMatId] = useState<string | null>(null);
-    const [uiSourceAngle, setUiSourceAngle] = useState(0);
-
-    // -- Physics State (Ref) --
-    const state = useRef<GameState>({
-        source: { x: 100, y: 300, angle: 0, active: true },
-        materials: [
-            { id: "glass-1", x: 300, y: 200, w: 150, h: 200, n: 1.5, name: "Cam (n=1.5)", color: "rgba(100, 200, 255, 0.2)", rotation: 0 }
-        ],
-        target: { x: 600, y: 300, r: 20, hit: false },
-        dragging: { type: null },
-        rays: []
-    });
-
-    // -- Reset --
-    const resetSim = useCallback(() => {
-        const s = state.current;
-        s.source = { x: 100, y: s.source.y, angle: 0, active: true }; // Keep Y mostly
-        s.target.hit = false;
-        s.materials = [
-            { id: "glass-default", x: 300, y: 200, w: 150, h: 200, n: 1.5, name: "Cam", color: "rgba(100, 200, 255, 0.2)", rotation: 0 }
-        ];
-        setSelectedMatId(null);
-        setUiSourceAngle(0);
-        setCurrentTaskIndex(0); // Optional: reset tasks? Maybe not.
+    // -- Init --
+    useEffect(() => {
+        resetSim();
     }, []);
 
-    // -- Physics Helper Functions --
-    const dot = (v1: Vector, v2: Vector) => v1.x * v2.x + v1.y * v2.y;
-    const normalize = (v: Vector) => {
-        const len = Math.sqrt(v.x * v.x + v.y * v.y);
-        return len === 0 ? { x: 0, y: 0 } : { x: v.x / len, y: v.y / len };
-    };
-
-    // -- Ray Tracing Core --
-    const computePhysics = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-        const s = state.current;
-        const rays: RaySegment[] = [];
-        const maxDepth = 6;
-
-        const castRay = (start: Vector, dir: Vector, intensity: number, depth: number) => {
-            if (depth > maxDepth || intensity < 0.05) return;
-
-            let closestT = Infinity;
-            let bestHit: { pt: Vector, norm: Vector, mat: OpticalMaterial | null } | null = null;
-
-            // 1. Intersect with Canvas Boundaries (Screen edges)
-            const bounds = [
-                { p1: { x: 0, y: 0 }, p2: { x: width, y: 0 }, n: { x: 0, y: 1 } },
-                { p1: { x: width, y: 0 }, p2: { x: width, y: height }, n: { x: -1, y: 0 } },
-                { p1: { x: width, y: height }, p2: { x: 0, y: height }, n: { x: 0, y: -1 } },
-                { p1: { x: 0, y: height }, p2: { x: 0, y: 0 }, n: { x: 1, y: 0 } }
-            ];
-
-            // 2. Intersect with Materials
-            // For now, assume Axis-Aligned Bounding Boxes (AABB) for simplicity, 
-            // but we might want rotation later. Treating as AABB.
-            for (const mat of s.materials) {
-                const rectLines = [
-                    { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y }, n: { x: 0, y: -1 } }, // Top
-                    { p1: { x: mat.x, y: mat.y + mat.h }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 0, y: 1 } }, // Bottom
-                    { p1: { x: mat.x, y: mat.y }, p2: { x: mat.x, y: mat.y + mat.h }, n: { x: -1, y: 0 } }, // Left
-                    { p1: { x: mat.x + mat.w, y: mat.y }, p2: { x: mat.x + mat.w, y: mat.y + mat.h }, n: { x: 1, y: 0 } }  // Right
-                ];
-
-                for (const line of rectLines) {
-                    const x1 = line.p1.x, y1 = line.p1.y;
-                    const x2 = line.p2.x, y2 = line.p2.y;
-                    const x3 = start.x, y3 = start.y;
-                    const x4 = start.x + dir.x, y4 = start.y + dir.y;
-
-                    const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-                    if (den === 0) continue;
-
-                    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-                    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
-
-                    // Avoid self-intersection: t must be slightly > 0
-                    if (t > 0.001 && t < closestT && u >= 0 && u <= 1) {
-                        const ix = x1 + t * (x2 - x1);
-                        const iy = y1 + t * (y2 - y1);
-                        // Check strictly greater than epsilon to avoid self-hits
-                        closestT = t;
-                        bestHit = { pt: { x: ix, y: iy }, norm: line.n, mat: mat };
-                    }
-                }
-            }
-
-            // Check canvas bounds as fallback if no material hit closer
-            for (const line of bounds) {
-                const x1 = line.p1.x, y1 = line.p1.y;
-                const x2 = line.p2.x, y2 = line.p2.y;
-                const x3 = start.x, y3 = start.y;
-                const x4 = start.x + dir.x, y4 = start.y + dir.y;
-
-                const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-                if (den === 0) continue;
-
-                const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-                const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
-
-                if (t > 0.001 && t < closestT && u >= 0 && u <= 1) {
-                    const ix = x1 + t * (x2 - x1);
-                    const iy = y1 + t * (y2 - y1);
-                    closestT = t;
-                    bestHit = { pt: { x: ix, y: iy }, norm: line.n, mat: null }; // Wall hit
-                }
-            }
-
-            if (!bestHit) {
-                // Should practically never happen with bounds, but strictly:
-                rays.push({ start, end: { x: start.x + dir.x * 1000, y: start.y + dir.y * 1000 }, intensity });
-                return;
-            }
-
-            // Record Ray
-            const hitPt = bestHit.pt;
-            rays.push({ start, end: hitPt, intensity });
-
-            // Check Target Hit (for task)
-            if (currentTaskIndex === 0 && !s.target.hit) {
-                // Point-line distance check for the target circle
-                // Simple approx: check if ray segment intersects circle
-                const dx = s.target.x - start.x;
-                const dy = s.target.y - start.y;
-                // If start is close or ray passes through... 
-                // Let's use simple distance from hit point for now.
-                if (Math.hypot(hitPt.x - s.target.x, hitPt.y - s.target.y) < s.target.r + 5) {
-                    s.target.hit = true;
-                    completeTask(0);
-                }
-            }
-
-            // Stop if hit wall (mat === null)
-            if (!bestHit.mat) return;
-
-            // Refraction / Reflection Logic
-            const mat = bestHit.mat;
-            const norm = bestHit.norm;
-
-            // Determine incident n1 and transmitted n2
-            const dotProd = dot(dir, norm);
-            const entering = dotProd < 0;
-
-            const n1 = entering ? 1.0 : mat.n; // Assuming air (1.0) outside
-            const n2 = entering ? mat.n : 1.0;
-            const eta = n1 / n2;
-
-            // Fresnel calculation setup
-            const cosTi = -dotProd; // Incident angle cosine (if entering, dotProd is neg, so neg dotProd is pos)
-            // Wait, standard geometric approach:
-            // I = -N if entering, else N
-            const normal = entering ? norm : { x: -norm.x, y: -norm.y };
-            const cosI = -dot(dir, normal);
-            const sinT2 = eta * eta * (1.0 - cosI * cosI);
-
-            if (sinT2 > 1.0) {
-                // Total Internal Reflection (TIR)
-                const reflDir = {
-                    x: dir.x + 2 * cosI * normal.x,
-                    y: dir.y + 2 * cosI * normal.y
-                };
-                // Task 2 check
-                if (currentTaskIndex === 1 && !tasks[1].isCompleted) completeTask(1);
-
-                castRay(hitPt, reflDir, intensity, depth + 1);
-            } else {
-                const cosT = Math.sqrt(1.0 - sinT2);
-                const refrDir = {
-                    x: eta * dir.x + (eta * cosI - cosT) * normal.x,
-                    y: eta * dir.y + (eta * cosI - cosT) * normal.y
-                };
-
-                // Fresnel Reflection (Partial)
-                // Simple approximation or Schlick's
-                const R0 = ((n1 - n2) / (n1 + n2)) ** 2;
-                const R = R0 + (1 - R0) * ((1 - cosI) ** 5);
-
-                castRay(hitPt, refrDir, intensity * (1 - R), depth + 1);
-                if (R > 0.05) {
-                    const reflDir = {
-                        x: dir.x + 2 * cosI * normal.x,
-                        y: dir.y + 2 * cosI * normal.y
-                    };
-                    castRay(hitPt, reflDir, intensity * R, depth + 1);
-                }
-            }
+    const resetSim = () => {
+        setLaser({ x: 50, y: 300, angle: -0.2, dragging: false });
+        const target: OpticalElement = {
+            id: "target", type: "target", x: 700, y: 300, w: 20, h: 20, rotation: 0, n: 1,
+            color: "#EF4444"
         };
-
-        // Start Ray
-        const rad = s.source.angle * Math.PI / 180;
-        const dir = { x: Math.cos(rad), y: Math.sin(rad) };
-        castRay({ x: s.source.x, y: s.source.y }, dir, 1.0, 0);
-
-        s.rays = rays;
+        const mirror: OpticalElement = {
+            id: "mirror1", type: "mirror", x: 400, y: 500, w: 100, h: 10, rotation: 0, n: Infinity,
+            color: "#94A3B8"
+        };
+        setElements([target, mirror]);
     };
 
-    const completeTask = (index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const n = [...prev];
-            n[index].isCompleted = true;
-            return n;
+    // -- Physics Engine (Ray Tracing) --
+    const traceRay = useCallback((start: Vector, dir: Vector, intensity: number, depth: number, excludeId?: string): RaySegment[] => {
+        if (depth > MAX_BOUNCES || intensity < MIN_INTENSITY) return [];
+
+        let nearestT = Infinity;
+        let hitPoint = add(start, scale(dir, 1000)); // Default end
+        let hitNormal = vec(0, 0);
+        let hitElement: OpticalElement | null = null;
+        let entering = true;
+
+        // Check intersections with all elements
+        // Simplified: Treat all as AABBs first for speed, or OBBs properly
+        // Let's do proper OBB (Oriented Bounding Box) intersection
+        elements.forEach(el => {
+            if (el.id === "target") return; // Targets don't reflect/refract physics-wise (detected separately)
+            if (el.id === excludeId) return;
+
+            // Transform ray to local space of the element
+            // 1. Translate ray start to relative
+            const relStart = sub(start, vec(el.x, el.y));
+            // 2. Rotate ray by -el.rotation
+            const localStart = rot(relStart, -el.rotation);
+            const localDir = rot(dir, -el.rotation);
+
+            // AABB Intersection in local space (-w/2, -h/2 to w/2, h/2)
+            const halfW = el.w / 2;
+            const halfH = el.h / 2;
+
+            // Cohen-Sutherland-like clipping or slab method
+            // Slab method for ray-AABB constants:
+            const tx1 = (-halfW - localStart.x) / localDir.x;
+            const tx2 = (halfW - localStart.x) / localDir.x;
+            const ty1 = (-halfH - localStart.y) / localDir.y;
+            const ty2 = (halfH - localStart.y) / localDir.y;
+
+            const tmin = Math.max(Math.min(tx1, tx2), Math.min(ty1, ty2));
+            const tmax = Math.min(Math.max(tx1, tx2), Math.max(ty1, ty2));
+
+            if (tmax < 0 || tmin > tmax) return; // No hit
+
+            const t = tmin > 0.001 ? tmin : tmax; // if inside, tmin < 0, take tmax
+            if (t > 0.001 && t < nearestT) {
+                nearestT = t;
+                hitElement = el;
+
+                // Calculate local normal
+                const localHit = add(localStart, scale(localDir, t));
+                let localN = vec(0, 0);
+                const eps = 0.01;
+                if (Math.abs(localHit.x - (-halfW)) < eps) localN = vec(-1, 0);
+                else if (Math.abs(localHit.x - halfW) < eps) localN = vec(1, 0);
+                else if (Math.abs(localHit.y - (-halfH)) < eps) localN = vec(0, -1);
+                else localN = vec(0, 1);
+
+                hitNormal = rot(localN, el.rotation); // Transform normal back to world
+                hitPoint = add(start, scale(dir, t));
+                entering = tmin > 0.001; // If tmin positive, we hit outside. If negative, we are inside exiting.
+            }
         });
-        setTimeout(() => setCurrentTaskIndex(i => Math.min(i + 1, tasks.length - 1)), 1500);
-    };
 
-    // -- Render Loop --
+        // Current Segment
+        const segment: RaySegment = { start, end: hitPoint, intensity };
+        const nextSegments: RaySegment[] = [];
+
+        if (hitElement && hitElement.type === "mirror") {
+            // Reflection: R = D - 2(D.N)N
+            const dDotN = dot(dir, hitNormal);
+            const reflectDir = sub(dir, scale(hitNormal, 2 * dDotN));
+            nextSegments.push(...traceRay(hitPoint, reflectDir, intensity * 0.9, depth + 1, hitElement.id));
+        } else if (hitElement && hitElement.type === "block") {
+            // Refraction (Snell's Law)
+            const n1 = entering ? 1.0 : hitElement.n;
+            const n2 = entering ? hitElement.n : 1.0;
+            const eta = n1 / n2;
+            const dDotN = dot(dir, hitNormal);
+
+            // Fresnel (simplified) checks for TIR
+            // cos(theta1) = -dot(D, N) (if N is pointing against D)
+            // Ensure Normal points against Ray
+            let N = hitNormal;
+            let c1 = -dot(dir, N);
+            if (c1 < 0) { c1 = -c1; N = scale(N, -1); } // Flip normal if inside
+
+            const k = 1.0 - eta * eta * (1.0 - c1 * c1);
+
+            if (k < 0) {
+                // Total Internal Reflection (TIR)
+                const reflectDir = sub(dir, scale(N, 2 * dot(dir, N)));
+                nextSegments.push(...traceRay(hitPoint, reflectDir, intensity, depth + 1, hitElement.id));
+            } else {
+                // Refraction
+                const refractDir = add(scale(dir, eta), scale(N, eta * c1 - Math.sqrt(k)));
+                nextSegments.push(...traceRay(hitPoint, norm(refractDir), intensity * 0.8, depth + 1, hitElement.id));
+
+                // Partial Reflection (Fresnel effect roughly)
+                const reflectDir = sub(dir, scale(N, 2 * dot(dir, N)));
+                nextSegments.push(...traceRay(hitPoint, reflectDir, intensity * 0.2, depth + 1, hitElement.id));
+            }
+        }
+
+        return [segment, ...nextSegments];
+    }, [elements]);
+
+    // -- Game Loop --
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas || !containerRef.current) return;
@@ -267,256 +199,255 @@ export function OpticsSim({ className }: OpticsSimProps) {
 
         let animationId: number;
 
-        const loop = () => {
-            const container = containerRef.current;
-            if (!container) return;
-
-            // Resize
-            if (canvas.width !== container.clientWidth || canvas.height !== container.clientHeight) {
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
+        const render = () => {
+            if (canvas.width !== containerRef.current!.clientWidth) {
+                canvas.width = containerRef.current!.clientWidth;
+                canvas.height = containerRef.current!.clientHeight;
             }
+            const width = canvas.width;
+            const height = canvas.height;
 
-            // Physics
-            computePhysics(ctx, canvas.width, canvas.height);
+            // Physics Calculation
+            const startDir = vec(Math.cos(laser.angle), Math.sin(laser.angle));
+            const calculatedRays = traceRay(vec(laser.x, laser.y), startDir, 1.0, 0);
+            setRays(calculatedRays);
 
             // Draw
-            ctx.fillStyle = "#09090b";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#020617"; // Slate 950
+            ctx.fillRect(0, 0, width, height);
 
             // Grid
             ctx.strokeStyle = "rgba(255,255,255,0.05)";
             ctx.lineWidth = 1;
-            const gridSize = 50;
-            for (let x = 0; x < canvas.width; x += gridSize) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
-            for (let y = 0; y < canvas.height; y += gridSize) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+            for (let x = 0; x < width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+            for (let y = 0; y < height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
 
-            const s = state.current;
+            // Laser Body
+            ctx.save();
+            ctx.translate(laser.x, laser.y);
+            ctx.rotate(laser.angle);
+            ctx.fillStyle = "#ef4444";
+            ctx.fillRect(-15, -8, 30, 16);
+            ctx.fillStyle = "#991b1b";
+            ctx.fillRect(10, -4, 5, 8); // Nozzle
+            ctx.restore();
 
-            // Target
-            if (currentTaskIndex === 0) {
-                ctx.beginPath();
-                ctx.arc(s.target.x, s.target.y, s.target.r, 0, Math.PI * 2);
-                ctx.fillStyle = s.target.hit ? "#4ADE80" : "rgba(74, 222, 128, 0.2)";
-                ctx.fill();
-                ctx.strokeStyle = "#4ADE80";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                // Glow
-                if (s.target.hit) {
-                    ctx.shadowColor = "#4ADE80";
-                    ctx.shadowBlur = 20;
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
+            // Elements
+            elements.forEach(el => {
+                ctx.save();
+                ctx.translate(el.x, el.y);
+                ctx.rotate(el.rotation);
+
+                if (el.type === "target") {
+                    ctx.fillStyle = el.color; // Red
+                    ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "white";
+                    ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = el.color;
+                    ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+
+                    // Hit Check
+                    const lastRay = calculatedRays[calculatedRays.length - 1];
+                    const dist = Math.sqrt((lastRay.end.x - el.x) ** 2 + (lastRay.end.y - el.y) ** 2);
+                    if (dist < 20) {
+                        // Hit logic in loop or effect? Doing visuals here.
+                        ctx.shadowColor = "#ef4444";
+                        ctx.shadowBlur = 20;
+                    }
+
+                } else {
+                    ctx.fillStyle = el.color;
+                    // Glass/Water transparency
+                    if (el.type === "block") ctx.globalAlpha = 0.3;
+
+                    ctx.fillRect(-el.w / 2, -el.h / 2, el.w, el.h);
+
+                    ctx.globalAlpha = 1.0;
+                    ctx.strokeStyle = el.id === selectedId ? "#FDB813" : "rgba(255,255,255,0.2)";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(-el.w / 2, -el.h / 2, el.w, el.h);
+
+                    // Rotation Handle
+                    if (el.id === selectedId) {
+                        ctx.fillStyle = "#FDB813";
+                        ctx.beginPath(); ctx.arc(0, -el.h / 2 - 15, 5, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.moveTo(0, -el.h / 2); ctx.lineTo(0, -el.h / 2 - 15); ctx.stroke();
+                    }
                 }
-            }
-
-            // Materials
-            s.materials.forEach(mat => {
-                const isSelected = selectedMatId === mat.id;
-                ctx.fillStyle = mat.color;
-                ctx.fillRect(mat.x, mat.y, mat.w, mat.h);
-
-                // Border
-                ctx.lineWidth = isSelected ? 3 : 1;
-                ctx.strokeStyle = isSelected ? "#FACC15" : "rgba(255,255,255,0.3)";
-                ctx.strokeRect(mat.x, mat.y, mat.w, mat.h);
-
-                // Label
-                ctx.fillStyle = "white";
-                ctx.font = "12px sans-serif";
-                ctx.fillText(`${mat.name} (n=${mat.n})`, mat.x + 5, mat.y - 5);
-
-                // Handles (if selected)
-                if (isSelected) {
-                    ctx.fillStyle = "#FACC15";
-                    ctx.fillRect(mat.x - 4, mat.y - 4, 8, 8); // TL
-                    ctx.fillRect(mat.x + mat.w - 4, mat.y + mat.h - 4, 8, 8); // BR
-                }
+                ctx.restore();
             });
 
             // Rays
-            s.rays.forEach(ray => {
+            ctx.lineCap = "round";
+            calculatedRays.forEach(ray => {
                 ctx.beginPath();
                 ctx.moveTo(ray.start.x, ray.start.y);
                 ctx.lineTo(ray.end.x, ray.end.y);
-                ctx.strokeStyle = `rgba(255, 50, 50, ${ray.intensity})`;
-                ctx.lineWidth = 2 * ray.intensity * (window.devicePixelRatio || 1);
+                ctx.strokeStyle = `rgba(239, 68, 68, ${ray.intensity})`;
+                ctx.lineWidth = 3 * ray.intensity;
+                ctx.shadowColor = "#ef4444";
+                ctx.shadowBlur = 10 * ray.intensity;
                 ctx.stroke();
-
-                // Arrow head for direction? Maybe.
+                ctx.shadowBlur = 0;
             });
 
-            // Source (Laser Pointer)
-            ctx.save();
-            ctx.translate(s.source.x, s.source.y);
-            ctx.rotate(s.source.angle * Math.PI / 180);
+            // Target Hit Check Logic for Tasks
+            const lastRay = calculatedRays[calculatedRays.length - 1];
+            if (lastRay) {
+                const target = elements.find(e => e.type === "target");
+                if (target) {
+                    const dist = Math.sqrt((lastRay.end.x - target.x) ** 2 + (lastRay.end.y - target.y) ** 2);
+                    if (dist < 20 && currentTaskIndex === 0 && !tasks[0].isCompleted) {
+                        completeTask(0);
+                    }
+                }
+                // Task 2 check (Refraction)
+                if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
+                    // Check if ray passed through a block? 
+                    const hasRefraction = calculatedRays.length > 2; // Simple heuristic
+                    if (hasRefraction) completeTask(1);
+                }
+                // Task 3 check (TIR)
+                if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
+                    // Check if rays are bouncing inside a block
+                    const bounces = calculatedRays.filter(r => r.intensity > 0.8).length;
+                    if (bounces > 4) completeTask(2);
+                }
+            }
 
-            // Body
-            ctx.fillStyle = "#27272a";
-            ctx.fillRect(-15, -10, 50, 20);
-            ctx.strokeStyle = "#52525b";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-15, -10, 50, 20);
-
-            // Output point
-            ctx.fillStyle = "#ef4444";
-            ctx.beginPath();
-            ctx.arc(35, 0, 4, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.restore();
-
-            animationId = requestAnimationFrame(loop);
+            animationId = requestAnimationFrame(render);
         };
-        animationId = requestAnimationFrame(loop);
-
+        render();
         return () => cancelAnimationFrame(animationId);
-    }, [currentTaskIndex, selectedMatId]);
+    }, [laser, elements, selectedId, traceRay, currentTaskIndex, tasks]);
+
+    const completeTask = (index: number) => {
+        setTasks(prev => {
+            if (prev[index].isCompleted) return prev;
+            const newTasks = [...prev];
+            newTasks[index].isCompleted = true;
+            return newTasks;
+        });
+        setTimeout(() => setCurrentTaskIndex(i => Math.min(i + 1, prev => tasks.length - 1)), 1500);
+    };
 
     // -- Interactions --
+    // Simplified for brevity in this prompt, handling drag of Laser and Elements
     const handlePointerDown = (e: React.PointerEvent) => {
         const rect = containerRef.current!.getBoundingClientRect();
-        // Handle touch vs mouse coordinates correctly if needed, but clientX is usually fine
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const s = state.current;
 
-        // 1. Check Source
-        if (Math.hypot(x - s.source.x, y - s.source.y) < 30) {
-            s.dragging = { type: "source", offset: { x: x - s.source.x, y: y - s.source.y } };
+        // Check Laser
+        if (Math.hypot(x - laser.x, y - laser.y) < 30) {
+            setLaser({ ...laser, dragging: true });
+            setSelectedId(null);
             return;
         }
 
-        // 2. Check Materials (Topmost first)
-        for (let i = s.materials.length - 1; i >= 0; i--) {
-            const mat = s.materials[i];
-            if (x >= mat.x && x <= mat.x + mat.w && y >= mat.y && y <= mat.y + mat.h) {
-                s.dragging = { type: "material", id: mat.id, offset: { x: x - mat.x, y: y - mat.y } };
-                setSelectedMatId(mat.id);
-                return;
-            }
+        // Check Elements
+        // Simple radius or box check
+        const clicked = elements.find(el => Math.hypot(x - el.x, y - el.y) < Math.max(el.w, el.h) / 2);
+        if (clicked) {
+            setSelectedId(clicked.id);
+            // Check rotation handle
+            // ...
+        } else {
+            setSelectedId(null);
         }
-
-        // Deselect
-        setSelectedMatId(null);
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        if (!state.current.dragging.type) return;
         const rect = containerRef.current!.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const s = state.current;
-        const off = s.dragging.offset || { x: 0, y: 0 };
 
-        if (s.dragging.type === "source") {
-            s.source.x = x - off.x;
-            s.source.y = y - off.y;
-        } else if (s.dragging.type === "material" && s.dragging.id) {
-            const mat = s.materials.find(m => m.id === s.dragging.id);
-            if (mat) {
-                mat.x = x - off.x;
-                mat.y = y - off.y;
+        if (laser.dragging) {
+            // If dragging near edge, rotate? Or separate rotate mode?
+            // Let's just move laser position for now
+            // Angle change logic:
+            const dx = x - laser.x;
+            const dy = y - laser.y;
+            if (Math.hypot(dx, dy) > 20) {
+                setLaser(prev => ({ ...prev, angle: Math.atan2(dy, dx) }));
             }
+            // setLaser(prev => ({ ...prev, x, y })); // Move vs Rotate? 
+            // Let's make it look at mouse
+            setLaser(prev => ({ ...prev, angle: Math.atan2(y - prev.y, x - prev.x) }));
+            return;
+        }
+
+        // Element dragging
+        if (selectedId && e.buttons === 1) {
+            setElements(prev => prev.map(el => {
+                if (el.id === selectedId) {
+                    return { ...el, x, y };
+                }
+                return el;
+            }));
         }
     };
 
     const handlePointerUp = () => {
-        state.current.dragging = { type: null };
+        setLaser(prev => ({ ...prev, dragging: false }));
     };
 
+    // Add Elements
+    const addElement = (type: "block" | "mirror") => {
+        const newEl: OpticalElement = {
+            id: Math.random().toString(36),
+            type,
+            x: 400 + Math.random() * 50,
+            y: 300 + Math.random() * 50,
+            w: type === "block" ? 100 : 120,
+            h: type === "block" ? 60 : 10,
+            rotation: 0,
+            n: type === "block" ? 1.5 : Infinity,
+            color: type === "block" ? "#93C5FD" : "#94A3B8"
+        };
+        setElements(prev => [...prev, newEl]);
+    };
 
     return (
         <SimWrapper
             layoutMode="split"
             title="Optik Laboratuvarı"
-            description="Işığın kırılma ve yansıma yasalarını keşfet."
+            description="Işığın yansıması, kırılması ve tam iç yansıma deneyleri."
             tasks={tasks}
             currentTaskIndex={currentTaskIndex}
             onReset={resetSim}
             controls={
-                <div className="space-y-6">
-                    {/* Source Control */}
-                    <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/10">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">LAZER KAYNAĞI</span>
-                            <span className="text-white font-mono font-bold bg-white/5 px-2 py-1 rounded">{uiSourceAngle}°</span>
-                        </div>
-                        <input
-                            type="range" min="0" max="360" value={uiSourceAngle}
-                            onChange={(e) => {
-                                const v = parseInt(e.target.value);
-                                setUiSourceAngle(v);
-                                state.current.source.angle = v;
-                            }}
-                            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500"
-                        />
-                    </div>
-
-                    {/* Tools Grid */}
+                <div className="space-y-4">
+                    <p className="text-xs text-zinc-400 font-bold uppercase mb-2">Araç Kutusu</p>
                     <div className="grid grid-cols-2 gap-3">
-                        <button
-                            onClick={() => {
-                                state.current.materials.push({
-                                    id: `glass-${Date.now()}`,
-                                    x: 100, y: 100, w: 120, h: 80,
-                                    n: 1.5, name: "Cam", color: "rgba(100, 200, 255, 0.2)", rotation: 0
-                                });
-                            }}
-                            className="flex items-center justify-center gap-2 bg-zinc-800 p-4 rounded-xl border border-white/5 hover:bg-zinc-700 active:scale-95 transition-all"
-                        >
-                            <Plus className="w-5 h-5 text-blue-400" />
-                            <span className="font-bold text-sm text-white">Cam Ekle</span>
+                        <button onClick={() => addElement("block")} className="flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 p-3 rounded-xl transition-all">
+                            <div className="w-8 h-6 bg-blue-400/50 rounded-sm" />
+                            <span className="text-xs font-bold">Cam Blok</span>
                         </button>
-
-                        <button
-                            onClick={() => {
-                                state.current.materials.push({
-                                    id: `water-${Date.now()}`,
-                                    x: 100, y: 200, w: 120, h: 80,
-                                    n: 1.33, name: "Su", color: "rgba(100, 255, 200, 0.2)", rotation: 0
-                                });
-                            }}
-                            className="flex items-center justify-center gap-2 bg-zinc-800 p-4 rounded-xl border border-white/5 hover:bg-zinc-700 active:scale-95 transition-all"
-                        >
-                            <Plus className="w-5 h-5 text-teal-400" />
-                            <span className="font-bold text-sm text-white">Su Ekle</span>
+                        <button onClick={() => addElement("mirror")} className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-600 p-3 rounded-xl transition-all">
+                            <div className="w-8 h-1 bg-zinc-400 rounded-full" />
+                            <span className="text-xs font-bold">Ayna</span>
                         </button>
                     </div>
 
-                    {/* Selection Context */}
-                    {selectedMatId && (
-                        <div className="animate-in slide-in-from-bottom-5 fade-in duration-300">
-                            <div className="p-4 bg-zinc-900 rounded-xl border border-amber-500/20 shadow-lg shadow-amber-900/10">
-                                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-3">
-                                    <span className="font-bold text-amber-400 text-sm flex items-center gap-2">
-                                        <MousePointer2 className="w-4 h-4" />
-                                        Seçili Obje
-                                    </span>
-                                    <button
-                                        onClick={() => {
-                                            state.current.materials = state.current.materials.filter(m => m.id !== selectedMatId);
-                                            setSelectedMatId(null);
-                                        }}
-                                        className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
+                    {selectedId && (
+                        <div className="bg-zinc-900 border border-white/10 p-4 rounded-xl space-y-3 mt-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-bold text-white">Seçili Obje</span>
+                                <button onClick={() => {
+                                    setElements(prev => prev.filter(e => e.id !== selectedId));
+                                    setSelectedId(null);
+                                }} className="text-red-500 hover:text-red-400">
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
 
-                                <button
-                                    onClick={() => {
-                                        const m = state.current.materials.find(mat => mat.id === selectedMatId);
-                                        if (m) {
-                                            // Simple swap w/h for 90 deg rotation roughly
-                                            const temp = m.w; m.w = m.h; m.h = temp;
-                                        }
-                                    }}
-                                    className="w-full py-3 bg-zinc-800 rounded-lg font-bold text-sm text-zinc-300 hover:text-white flex items-center justify-center gap-2"
-                                >
-                                    <RotateCcw className="w-4 h-4" />
-                                    90° Döndür
+                            <div className="flex gap-2">
+                                <button onClick={() => setElements(prev => prev.map(e => e.id === selectedId ? { ...e, rotation: e.rotation - 0.1 } : e))} className="flex-1 bg-black p-2 rounded text-zinc-400 hover:text-white">
+                                    <RotateCw className="w-4 h-4 mx-auto -scale-x-100" />
+                                </button>
+                                <button onClick={() => setElements(prev => prev.map(e => e.id === selectedId ? { ...e, rotation: e.rotation + 0.1 } : e))} className="flex-1 bg-black p-2 rounded text-zinc-400 hover:text-white">
+                                    <RotateCw className="w-4 h-4 mx-auto" />
                                 </button>
                             </div>
                         </div>
@@ -530,16 +461,11 @@ export function OpticsSim({ className }: OpticsSimProps) {
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
-                onPointerLeave={handlePointerUp}
             >
-                <canvas ref={canvasRef} className="w-full h-full block" />
-
-                {/* Visual Hint */}
-                {state.current.materials.length === 0 && (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/10 font-bold text-2xl pointer-events-none">
-                        Blok Ekle
-                    </div>
-                )}
+                <canvas ref={canvasRef} className="block w-full h-full" />
+                <div className="absolute top-4 right-4 text-xs text-zinc-500 font-mono pointer-events-none">
+                    Lazere tıklayıp çekerek nişan al
+                </div>
             </div>
         </SimWrapper>
     );
