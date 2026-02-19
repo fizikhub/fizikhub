@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Info, GripHorizontal, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, RotateCcw, Info, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
-import confetti from "canvas-confetti";
 import { LandscapeGuard } from "@/components/ui/landscape-guard";
 
 export type SimTask = {
@@ -13,6 +12,7 @@ export type SimTask = {
     description: string;
     hint?: string;
     isCompleted?: boolean;
+    explanation?: string; // New: Educational content after completion
 };
 
 interface SimWrapperProps {
@@ -23,6 +23,7 @@ interface SimWrapperProps {
     controls: React.ReactNode;
     children: React.ReactNode;
     onReset?: () => void;
+    layoutMode?: "drawer" | "split";
 }
 
 export function SimWrapper({
@@ -34,15 +35,22 @@ export function SimWrapper({
     children,
     onReset,
     layoutMode = "drawer"
-}: SimWrapperProps & { layoutMode?: "drawer" | "split" }) {
+}: SimWrapperProps) {
     const [showControls, setShowControls] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
+    const [showExplanation, setShowExplanation] = useState<string | null>(null);
 
-    // Confetti effect when task completes
+    // Watch for task completion to show explanation
+    useEffect(() => {
+        if (currentTaskIndex > 0) {
+            const prevTask = tasks[currentTaskIndex - 1];
+            if (prevTask && prevTask.isCompleted && prevTask.explanation) {
+                setShowExplanation(prevTask.explanation);
+            }
+        }
+    }, [currentTaskIndex, tasks]);
+
     const currentTask = tasks[currentTaskIndex];
-
-    // Check if task just completed
-    // In a real app we'd track prev index to trigger only on change
 
     return (
         <LandscapeGuard>
@@ -109,7 +117,7 @@ export function SimWrapper({
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 key={currentTask.id}
-                                className="absolute top-4 left-4 max-w-[280px] sm:max-w-md pointer-events-none"
+                                className="absolute top-4 left-4 max-w-[280px] sm:max-w-md pointer-events-none z-10"
                             >
                                 <div className="bg-[#09090b]/90 backdrop-blur-md border border-[#4ADE80]/30 p-4 rounded-2xl shadow-xl">
                                     <div className="flex items-start gap-3">
@@ -127,11 +135,43 @@ export function SimWrapper({
                             </motion.div>
                         )}
 
-                        {/* Task Success Overlay */}
+                        {/* Explanation Modal (Success) */}
                         <AnimatePresence>
-                            {tasks.some(t => t.isCompleted && t.id === tasks[Math.max(0, currentTaskIndex - 1)]?.id) && ( // Show confetti for just completed
-                                <div />
-                                // Logic for confetti is handled by effect usually, but we can do a toast here 
+                            {showExplanation && (
+                                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                        className="bg-zinc-900 border border-[#FFD700]/30 rounded-2xl p-6 max-w-md w-full shadow-[0_0_50px_rgba(255,215,0,0.1)] relative"
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-[#FFD700]/10 flex items-center justify-center shrink-0 border border-[#FFD700]/20">
+                                                <CheckCircle2 className="w-6 h-6 text-[#FFD700]" />
+                                            </div>
+                                            <div className="flex-1 space-y-2">
+                                                <h3 className="text-lg font-black text-white uppercase tracking-tight">Harika!</h3>
+                                                <p className="text-zinc-300 text-sm leading-relaxed">
+                                                    {showExplanation}
+                                                </p>
+                                            </div>
+                                            <button
+                                                onClick={() => setShowExplanation(null)}
+                                                className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+                                            >
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                        <div className="mt-6 flex justify-end">
+                                            <button
+                                                onClick={() => setShowExplanation(null)}
+                                                className="px-6 py-2.5 bg-[#FFD700] text-black font-bold rounded-xl text-sm hover:bg-[#FFC000] active:scale-95 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)]"
+                                            >
+                                                Devam Et
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                </div>
                             )}
                         </AnimatePresence>
                     </div>
@@ -156,7 +196,7 @@ export function SimWrapper({
                         </div>
                     </motion.div>
 
-                    {/* Mobile Controls Drawer */}
+                    {/* Mobile Controls Drawer (Legacy/Optional) */}
                     {layoutMode === "drawer" && (
                         <motion.div
                             drag="y"
