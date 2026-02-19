@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Trail, Stars } from "@react-three/drei";
 import * as THREE from "three";
-import { SimWrapper, SimTask } from "@/components/simulations/sim-wrapper";
-import { Play, Pause, RotateCcw, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { SimulationLayout } from "../core/simulation-layout";
+import { PhysicsSlider } from "../core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Planet Data Type
 type Planet = {
@@ -51,21 +52,20 @@ const INITIAL_PLANETS: Planet[] = [
     }
 ];
 
-// Inner Simulation Component
 function Scene({
     isPlaying,
     gravityConstant,
     timeScale,
     planets,
     setPlanets,
-    onTaskCheck
+    onPhysicsTick
 }: {
     isPlaying: boolean;
     gravityConstant: number;
     timeScale: number;
     planets: Planet[];
     setPlanets: React.Dispatch<React.SetStateAction<Planet[]>>;
-    onTaskCheck: (g: number, t: number, p: Planet[]) => void;
+    onPhysicsTick: () => void;
 }) {
     useFrame((state, delta) => {
         if (!isPlaying) return;
@@ -120,7 +120,6 @@ function Scene({
                 nextPositions[i][2] += nextVelocities[i][2] * dt;
             }
 
-            // Sync back
             currentPlanets = currentPlanets.map((p, idx) => ({
                 ...p,
                 position: nextPositions[idx],
@@ -129,20 +128,20 @@ function Scene({
         }
 
         setPlanets(currentPlanets);
-        onTaskCheck(gravityConstant, timeScale, currentPlanets);
+        onPhysicsTick();
     });
 
     return (
         <>
             <ambientLight intensity={0.2} />
-            <pointLight position={[0, 0, 0]} intensity={2} color="#FDB813" distance={100} decay={2} />
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+            <pointLight position={[0, 0, 0]} intensity={3} color="#FDB813" distance={200} decay={1.5} />
+            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={0.5} />
 
             {planets.map((planet) => (
                 <group key={planet.id} position={planet.position}>
                     <Trail
-                        width={1.5}
-                        length={20}
+                        width={planet.radius * 2}
+                        length={30}
                         color={new THREE.Color(planet.trailColor)}
                         attenuation={(t) => t * t}
                     >
@@ -152,6 +151,7 @@ function Scene({
                                 color={planet.color}
                                 emissive={planet.id === 0 ? planet.color : "#000000"}
                                 emissiveIntensity={planet.id === 0 ? 2 : 0}
+                                roughness={0.7}
                             />
                         </mesh>
                     </Trail>
@@ -163,63 +163,49 @@ function Scene({
     );
 }
 
-export default function SolarSystemSim() {
+export default function SolarSystemSim({ simData }: { simData: any }) {
     // -- State --
     const [isPlaying, setIsPlaying] = useState(true);
     const [gravityConstant, setGravityConstant] = useState(0.8);
     const [timeScale, setTimeScale] = useState(1);
     const [planets, setPlanets] = useState<Planet[]>(INITIAL_PLANETS);
 
-    // -- Tasks --
-    const [tasks, setTasks] = useState<SimTask[]>([
+    // -- Tasks / Missions --
+    const [missions, setMissions] = useState([
         {
-            id: "s1",
-            description: "Yörünge Mimarı",
-            hint: "Gezegenleri güneşe yakınlaştırmak için Çekim Sabitini (G) 2.0'ın üzerine çıkar.",
+            id: 1,
+            title: "Yörünge Mimarı",
+            desc: "Gezegenleri güneşe yakınlaştırmak için Çekim Sabitini (G) 2.0'ın üzerine çıkar.",
             isCompleted: false,
-            explanation: "Muazzam! Kütleçekim kuvveti arttıkça, gezegenler merkeze daha güçlü çekilir ve yörüngeleri daralır."
+            condition: () => gravityConstant > 2.0 && isPlaying,
+            successText: "Muazzam! Kütleçekim kuvveti arttıkça, gezegenler merkeze daha güçlü çekilir ve yörüngeleri daralır."
         },
         {
-            id: "s2",
-            description: "Zamanın Efendisi",
-            hint: "Evrenin dansını hızlandır! Zaman Hızını 2.0x'in üzerine getir.",
+            id: 2,
+            title: "Zamanın Efendisi",
+            desc: "Evrenin dansını hızlandır! Zaman Hızını 3.0x'in üzerine getir.",
             isCompleted: false,
-            explanation: "Zaman görecelidir! Simülasyon hızlandıkça gezegenlerin periyotlarını (güneş etrafındaki tur sürelerini) daha net görebilirsin."
+            condition: () => timeScale >= 3.0 && isPlaying,
+            successText: "Zaman görecelidir! Simülasyon hızlandıkça gezegenlerin periyotlarını (güneş etrafındaki tur sürelerini) daha net görebilirsin."
         },
         {
-            id: "s3",
-            description: "Kaos Teorisi",
-            hint: "Dengeyi boz! Çekim sabitini 0.5'in altına düşür ve gezegenleri serbest bırak.",
+            id: 3,
+            title: "Kaos Teorisi",
+            desc: "Dengeyi boz! Çekim sabitini 0.3'ün altına düşür ve gezegenleri serbest bırak.",
             isCompleted: false,
-            explanation: "Ve özgürlük! Çekim kuvveti azaldığında, gezegenlerin mevcut hızları onları yörüngeden koparıp uzay boşluğuna savurur."
+            condition: () => gravityConstant < 0.3 && isPlaying,
+            successText: "Ve özgürlük! Çekim kuvveti azaldığında, gezegenlerin mevcut hızları onları yörüngeden koparıp uzay boşluğuna savurur."
         }
     ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    // -- Task Logic --
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => {
-            setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
-        }, 1500);
-    }, [tasks.length]);
-
-    const handleTaskCheck = (g: number, t: number, p: Planet[]) => {
-        if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
-            if (g > 2.0) completeTask(0);
-        }
-        if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-            if (t >= 2.0) completeTask(1);
-        }
-        if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
-            if (g < 0.5) completeTask(2);
-        }
-    };
+    const onPhysicsTick = useCallback(() => {
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
+            }
+            return m;
+        }));
+    }, [gravityConstant, timeScale, isPlaying]);
 
     const resetSim = () => {
         setPlanets(INITIAL_PLANETS);
@@ -228,85 +214,125 @@ export default function SolarSystemSim() {
         setIsPlaying(true);
     };
 
-    return (
-        <SimWrapper
-            title="Güneş Sistemi"
-            description="Newton'un Evrensel Kütleçekim Yasası ve yörünge mekaniği."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={
-                <div className="space-y-6">
-                    {/* Gravity Slider */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-purple-500/30 transition-colors">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Çekim Sabiti (G)</span>
-                            <span className="text-lg font-mono font-bold text-purple-400">{gravityConstant.toFixed(1)}</span>
-                        </div>
-                        <input
-                            type="range" min="0.1" max="3.0" step="0.1" value={gravityConstant}
-                            onChange={(e) => setGravityConstant(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-                        />
-                    </div>
+    // -------------------------------------------------------------
+    // 5. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-2 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#A78BFA] text-black font-black py-3 rounded-lg hover:bg-[#C4B5FD] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "BAŞLAT"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
 
-                    {/* Time Scale Slider */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-blue-500/30 transition-colors">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Zaman Hızı</span>
-                            <span className="text-lg font-mono font-bold text-blue-400">{timeScale.toFixed(1)}x</span>
-                        </div>
-                        <input
-                            type="range" min="0" max="4.0" step="0.1" value={timeScale}
-                            onChange={(e) => setTimeScale(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                        />
-                    </div>
+            <div className="space-y-4">
+                <PhysicsSlider label="Çekim Sabiti (G)" value={gravityConstant} min={0.1} max={3.0} step={0.1} onChange={setGravityConstant} color="#A78BFA" />
+                <PhysicsSlider label="Zaman Çarpanı (t)" value={timeScale} min={0.1} max={5.0} step={0.1} unit="x" onChange={setTimeScale} color="#38BDF8" />
+            </div>
 
-                    {/* Play/Pause */}
-                    <button
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className={cn(
-                            "w-full py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
-                            isPlaying
-                                ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:bg-purple-500"
-                                : "bg-zinc-800 text-zinc-400 border border-white/5 hover:bg-zinc-700"
-                        )}
-                    >
-                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                        {isPlaying ? "DURAKLAT" : "BAŞLAT"}
-                    </button>
+            <div className="mt-4 p-4 rounded-xl border border-[#A78BFA]/30 bg-[#A78BFA]/5 flex gap-3">
+                <p className="text-xs text-[#A78BFA] leading-relaxed font-bold">
+                    Sol Tık: Döndür<br />Sağ Tık: Kaydır<br />Tekerlek: Yakınlaştır/Uzaklaştır
+                </p>
+            </div>
+        </div>
+    );
 
-                    {/* Info Box */}
-                    <div className="bg-purple-500/10 border border-purple-500/20 p-4 rounded-2xl flex gap-3">
-                        <TrendingUp className="w-5 h-5 text-purple-400 shrink-0" />
-                        <p className="text-[11px] text-purple-200/80 leading-relaxed font-bold">
-                            Newton'un yasasına göre kütleler birbirini çeker. Bu çekim kuvveti, gezegenleri yörüngede tutan merkezcil kuvvettir.
-                        </p>
-                    </div>
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">KÜTLEÇEKİM VE YÖRÜNGELER</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                Gezegenler, yıldızlarının kütleçekim kuvveti tarafından uzayda tutulurlar. Newton'un Evrensel Kütleçekim
+                yasasına göre her kütle diğerini çeker.
+            </p>
+
+            <div className="grid gap-4 mt-4">
+                <div className="p-4 rounded-xl bg-[#A78BFA]/10 border border-[#A78BFA]/30 shadow-[0_0_20px_rgba(167,139,250,0.1)] text-center">
+                    <span className="text-xs text-[#A78BFA] uppercase font-black block mb-2">Çekim Kuvveti</span>
+                    <p className="text-2xl font-mono text-[#A78BFA]">F = G·(m₁·m₂)/r²</p>
                 </div>
-            }
+
+                <ul className="space-y-2 mt-2 text-sm text-zinc-300">
+                    <li>• <strong>G:</strong> Evrensel çekim sabiti. Formüldeki simülasyon ayarlayıcısıdır. Artarsa, çekim güçlenir.</li>
+                    <li>• <strong>r (Mesafe):</strong> Mesafe karesiyle ters orantılıdır, gezegen yıldıza yaklaştıkça inanılmaz şekilde hızlanır.</li>
+                    <li>• Eylemsizlik ve Çekim arasındaki denge yörüngeyi oluşturur.</li>
+                </ul>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                            ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                            : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <SimulationLayout
+            title={simData?.title || "Güneş Sistemi (N-Body)"}
+            color={simData?.color || "#A78BFA"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
         >
-            <div className="flex-1 relative overflow-hidden bg-black h-full w-full">
-                <Canvas camera={{ position: [0, 20, 25], fov: 45 }}>
+            <div className="w-full h-full p-0 relative bg-black">
+                <Canvas camera={{ position: [0, 20, 30], fov: 45 }}>
                     <Scene
                         isPlaying={isPlaying}
                         gravityConstant={gravityConstant}
                         timeScale={timeScale}
                         planets={planets}
                         setPlanets={setPlanets}
-                        onTaskCheck={handleTaskCheck}
+                        onPhysicsTick={onPhysicsTick}
                     />
                 </Canvas>
 
-                {/* Overlay Text */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/20 text-[10px] uppercase font-bold tracking-widest pointer-events-none">
-                    N-Cisim Simülasyonu
-                </div>
-                <div className="absolute bottom-4 left-4 z-10 pointer-events-none text-white/40 font-mono text-[10px] hidden sm:block">
-                    Sol Tık: Döndür | Sağ Tık: Kaydır | Tekerlek: Yakınlaştır
+                <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]" />
+
+                <div className="absolute bottom-4 left-4 z-10 pointer-events-none text-[#A78BFA]/40 font-mono text-[10px] uppercase tracking-widest">
+                    N-BODY ENGINE v1.2
                 </div>
             </div>
-        </SimWrapper>
+        </SimulationLayout>
     );
 }

@@ -1,514 +1,361 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Play, Pause, RotateCcw } from "lucide-react";
-import { SimWrapper, SimTask } from "./sim-wrapper";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider, PhysicsToggle } from "./core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface ProjectileSimProps {
-    className?: string;
-}
+export function ProjectileSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. PHYSICS STATE
+    // -------------------------------------------------------------
+    const [velocity, setVelocity] = useState(20); // m/s
+    const [angle, setAngle] = useState(45); // degrees
+    const [gravity, setGravity] = useState(9.81); // m/s²
+    const [height, setHeight] = useState(0); // m
+    const [showVectors, setShowVectors] = useState(true);
 
-// Physics State (Mutable Ref)
-type GameState = {
-    // Projectile
-    x: number; y: number; vx: number; vy: number;
-    active: boolean;
-    path: { x: number; y: number }[];
-    // Cannon
-    angle: number;
-    power: number;
-    // Environment
-    g: number;
-    scale: number; // pixels per simulation meter
-    // Camera
-    camera: { x: number; y: number };
-    // Target
-    target: { x: number; y: number; w: number; h: number; hit: boolean };
-    // Visuals
-    landingSpot: { x: number; active: boolean } | null;
-};
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [time, setTime] = useState(0);
 
-export function ProjectileSim({ className }: ProjectileSimProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const animationRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
-    // UI Sync State
-    const [isRunning, setIsRunning] = useState(false);
-    const [uiAngle, setUiAngle] = useState(45);
-    const [uiPower, setUiPower] = useState(50);
-    const [simData, setSimData] = useState({ range: 0, height: 0, time: 0 });
+    // Derived values for static trajectory and UI
+    const thetaRad = angle * (Math.PI / 180);
+    const v0x = velocity * Math.cos(thetaRad);
+    const v0y = velocity * Math.sin(thetaRad);
 
-    // Tasks (Tutorial Mode)
-    // Tasks (Tutorial Mode) - Refined for "Gamified" feel
-    const [tasks, setTasks] = useState<SimTask[]>([
-        {
-            id: "p1",
-            description: "İlk Atışını Yap",
-            hint: "Sadece 'ATEŞLE' butonuna bas ve topun nereye düştüğünü gör.",
-            isCompleted: false,
-            explanation: "Tebrikler! Bir cisim fırlatıldığında hem yatay hem de dikey hareket eder."
-        },
-        {
-            id: "p2",
-            description: "En Uzağa Git (45°)",
-            hint: "Fiziğin altın kuralı: En uzun menzil için açıyı 45° yap ve Hızı 100m/s'ye ayarla.",
-            isCompleted: false,
-            explanation: "Harika! Hava sürtünmesi olmadığında 45 derece her zaman en uzun menzili verir."
-        },
-        {
-            id: "p3",
-            description: "Bulutlara Dokun (Yükseklik)",
-            hint: "Topu olabildiğince yükseğe at! Açıyı 80-90° arası yap ve Hızı 120m/s üstüne çıkar.",
-            isCompleted: false,
-            explanation: "Mükemmel! Dikey hız ne kadar fazlaysa, cisim o kadar yükseğe çıkar."
-        },
-        {
-            id: "p4",
-            description: "Hedefi Vur (Keskin Nişancı)",
-            hint: "Hedef uzakta belirdi! Deneme-yanılma yaparak tam isabet ettirmeye çalış.",
-            isCompleted: false,
-            explanation: "İşte bu! Fizik kurallarını kullanarak hedefi tam on ikiden vurdun."
-        },
-    ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+    // Calculate time of flight (quadratic formula: 0 = h + v0y*t - 0.5*g*t^2)
+    const timeOfFlight = useMemo(() => {
+        const a = -0.5 * gravity;
+        const b = v0y;
+        const c = height;
+        const discriminant = b * b - 4 * a * c;
+        if (discriminant < 0) return 0; // Should not happen
+        const t1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+        const t2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+        return Math.max(t1, t2); // We want the positive root
+    }, [v0y, gravity, height]);
 
-    // Physics Engine
-    const state = useRef<GameState>({
-        x: 0, y: 0, vx: 0, vy: 0,
-        active: false,
-        path: [],
-        angle: 45,
-        power: 50,
-        g: 9.81,
-        scale: 4, // Will be dynamic
-        camera: { x: 0, y: 0 },
-        target: { x: 300, y: 0, w: 50, h: 10, hit: false },
-        landingSpot: null
-    });
+    const maxRange = v0x * timeOfFlight;
+    const maxHeight = height + (v0y * v0y) / (2 * gravity);
 
-    // Initialize/Reset
-    const resetSim = useCallback(() => {
-        const s = state.current;
-        const container = containerRef.current;
-        if (!container) return;
-
-        // Reset Physics
-        s.active = false;
-        s.vx = 0; s.vy = 0;
-        s.path = [];
-        s.target.hit = false;
-        // Keep landing spot until fire? No, clear logic in fire.
-
-        // Reset Camera
-        s.camera.x = 0;
-        s.camera.y = 0;
-
-        // Reset Position (Ground level is always y=0 in physics, rendering handles offset)
-        // Let's use a coordinate system where (0,0) is the cannon muzzle for physics slightly easier,
-        // but traditionally we map (x,y) to canvas. 
-        // Let's stick to: y=0 is ground in physics.
-        s.x = 0;
-        s.y = 0;
-
-        // Determine Scale based on width
-        // Mobile: Show ~50m width -> scale = width / 50
-        // Desktop: Show ~100m width -> scale = width / 100
-        const isMobile = container.clientWidth < 640;
-        const visibleMeters = isMobile ? 60 : 120;
-        s.scale = container.clientWidth / visibleMeters;
-
-        // Randomize target based on visible range + some buffer
-        if (currentTaskIndex === 0) {
-            // Target between 20m and 80% of max visible range or just a reasonable random distance
-            const minRange = 30; // meters
-            const maxRange = isMobile ? 150 : 300; // meters
-            const targetDist = minRange + Math.random() * (maxRange - minRange);
-            s.target.x = targetDist;
-        }
-
-        setIsRunning(false);
-        setSimData({ range: 0, height: 0, time: 0 });
-    }, [currentTaskIndex]);
-
-    const fire = () => {
-        const s = state.current;
-        if (s.active) return;
-
-        const rad = s.angle * Math.PI / 180;
-        const v = s.power; // Direct m/s
-
-        s.active = true;
-        s.path = [];
-        s.target.hit = false;
-        s.landingSpot = null;
-        s.x = 0;
-        s.y = 0;
-
-        // Initial Velocity
-        s.vx = v * Math.cos(rad);
-        s.vy = v * Math.sin(rad);
-
-        setIsRunning(true);
+    // -------------------------------------------------------------
+    // 2. SIMULATION ENGINE
+    // -------------------------------------------------------------
+    const resetSim = () => {
+        setIsPlaying(false);
+        setTime(0);
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
-    // Task Completion
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => {
-            setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
-        }, 1500);
-    }, []);
+    const loop = (timestamp: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+        const dt = (timestamp - lastTimeRef.current) / 1000;
+        lastTimeRef.current = timestamp;
 
-    // Game Loop
+        if (isPlaying) {
+            setTime(prev => {
+                const nextTime = prev + (dt * 2); // 2x speed for better visual experience
+                if (nextTime >= timeOfFlight) {
+                    setIsPlaying(false);
+                    return timeOfFlight;
+                }
+                return nextTime;
+            });
+        }
+        animationRef.current = requestAnimationFrame(loop);
+    };
+
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !containerRef.current) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-        let lastTime = performance.now();
-
-        // Initial Reset
-        resetSim();
-
-        const loop = (time: number) => {
-            const output = canvasRef.current;
-            const container = containerRef.current;
-            if (!output || !container) return;
-
-            // Resize handling
-            if (output.width !== container.clientWidth || output.height !== container.clientHeight) {
-                output.width = container.clientWidth;
-                output.height = container.clientHeight;
-                // Re-calculate scale if needed, but maybe safer to keep consistent during flight?
-                // Let's re-calc scale if NOT active to avoid jump, otherwise keep.
-                if (!state.current.active) {
-                    const isMobile = container.clientWidth < 640;
-                    const visibleMeters = isMobile ? 60 : 120;
-                    state.current.scale = container.clientWidth / visibleMeters;
-                }
-            }
-
-            const dt = Math.min((time - lastTime) / 1000, 0.1);
-            lastTime = time;
-            const s = state.current;
-            const heightPx = output.height;
-            const groundY = heightPx - 100; // Ground is 100px from bottom
-
-            // Update Physics
-            if (s.active) {
-                const timeScale = 3.0; // Speed up simulation 3x
-                s.vy -= s.g * dt * timeScale;
-                s.x += s.vx * dt * timeScale;
-                s.y += s.vy * dt * timeScale;
-
-                s.path.push({ x: s.x, y: s.y });
-
-                // Ground Collision (y <= 0)
-                if (s.y <= 0) {
-                    s.y = 0;
-                    s.active = false;
-                    setIsRunning(false);
-
-                    // Results
-                    const range = s.x;
-                    const maxH = Math.max(...s.path.map(p => p.y));
-                    setSimData({
-                        range,
-                        height: maxH,
-                        time: s.path.length * 0.016
-                    });
-
-                    // Set Landing Spot
-                    s.landingSpot = { x: s.x, active: true };
-
-                    // Check Tasks
-                    if (currentTaskIndex === 0 && s.target.hit) completeTask(0);
-                    if (currentTaskIndex === 1 && Math.abs(s.angle - 45) < 3 && s.power >= 95) completeTask(1);
-                    if (currentTaskIndex === 2 && maxH > 150) completeTask(2);
-                }
-
-                // Target Collision
-                // Simple AABB. Target is at s.target.x (meters), width s.target.w (meters)
-                if (s.y <= s.target.h && s.x >= s.target.x && s.x <= s.target.x + 5) { // 5m generous hit box
-                    // Or strictly:
-                    // x overlap: [s.x - radius, s.x + radius] overlaps [target.x, target.x + w]
-                }
-                // Let's use scale for collision to be precise visually
-                // But physics-based is better.
-                // Target: x start: target.x, x end: target.x + target.w (converted from pixels/meters)
-                // Let's explicitly define target width in meters:
-                const targetWMeters = Math.max(10, s.target.w / s.scale); // ensure min size
-                if (s.x >= s.target.x && s.x <= s.target.x + targetWMeters && s.y <= 2) { // 2m height tolerance
-                    s.target.hit = true;
-                }
-            }
-
-            // Camera Logic (Follow projectile)
-            const projectileScreenX = s.x * s.scale - s.camera.x;
-            const outputWidth = output.width;
-
-            // Horizontal Follow
-            if (projectileScreenX > outputWidth * 0.6) {
-                s.camera.x += (projectileScreenX - outputWidth * 0.6) * 0.1;
-            }
-
-            // Vertical Follow (Y-axis)
-            // Physics Y is up, Canvas Y is down. Origin is at groundY + camera.y
-            // Screen Y of projectile = (groundY + camera.y) - (s.y * s.scale)
-            // We want projectile to stay below top 20% (e.g. 0.2 * height)
-            const targetScreenY = output.height * 0.3; // Aim to keep high projectiles here
-            const currentProjScreenY = (groundY + s.camera.y) - (s.y * s.scale);
-
-            if (currentProjScreenY < targetScreenY) {
-                // Projectile is too high, move camera UP (which means increasing camera.y, shifting ground down)
-                s.camera.y += (targetScreenY - currentProjScreenY) * 0.1;
-            } else if (s.camera.y > 0 && !s.active) {
-                // Return to ground level smoothly if active
-                s.camera.y += (0 - s.camera.y) * 0.05;
-            } else if (s.camera.y > 0 && currentProjScreenY > output.height * 0.6) {
-                // If dropping down and camera has offset, reduce offset
-                s.camera.y += (0 - s.camera.y) * 0.1;
-            }
-
-            // Clamp camera.y to not go below 0 (don't show underground)
-            // Actually camera.y > 0 means we looked up.
-            if (s.camera.y < 0) s.camera.y = 0;
-
-            // Idle return X
-            if (!s.active && s.x === 0 && Math.abs(s.camera.x) > 1) {
-                s.camera.x += (0 - s.camera.x) * 0.1;
-            }
-
-
-            // --- DRAWING ---
-            ctx.fillStyle = "#09090b"; // Canvas bg
-            ctx.fillRect(0, 0, output.width, output.height);
-
-            ctx.save();
-
-            // Apply Camera Transform
-            // We want y=0 to be at `groundY`
-            // and x=0 to be at 50px padding from left relative to camera
-            const startX = 50;
-            ctx.translate(startX - s.camera.x, groundY + s.camera.y);
-
-            // Draw Grid/Metrics
-            const stepMeters = 10;
-            const stepPx = stepMeters * s.scale;
-            ctx.textAlign = "center";
-            ctx.font = "10px monospace";
-            ctx.fillStyle = "#444";
-
-            // Calculate visible range for optimization
-            const camStartM = (s.camera.x - startX) / s.scale;
-            const camEndM = (s.camera.x - startX + output.width) / s.scale;
-            const startM = Math.floor(camStartM / 10) * 10;
-            const endM = Math.ceil(camEndM / 10) * 10;
-
-            for (let m = Math.max(0, startM); m <= endM; m += stepMeters) {
-                const x = m * s.scale;
-                ctx.strokeStyle = "rgba(255,255,255,0.1)";
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, -output.height);
-                ctx.stroke();
-
-                // Label
-                ctx.fillText(`${m}m`, x, 20);
-            }
-
-            // Draw Ground
-            ctx.fillStyle = "#18181b";
-            ctx.fillRect(camStartM * s.scale - 100, 0, (camEndM - camStartM) * s.scale + 200, 100); // Infinite ground illusion
-            ctx.fillStyle = "#22c55e"; // Grass
-            ctx.fillRect(camStartM * s.scale - 100, 0, (camEndM - camStartM) * s.scale + 200, 2);
-
-            // Draw Target
-            if (currentTaskIndex === 0) {
-                const tx = s.target.x * s.scale;
-                const tw = Math.max(40, s.target.w); // Min 40px visually
-                const th = 10;
-                ctx.fillStyle = s.target.hit ? "#ef4444" : "#eab308";
-                // Glow
-                ctx.shadowColor = s.target.hit ? "#ef4444" : "#eab308";
-                ctx.shadowBlur = 10;
-                ctx.fillRect(tx, -th, tw, th);
-                ctx.shadowBlur = 0;
-            }
-
-            // Draw Path
-            if (s.path.length > 1) {
-                ctx.beginPath();
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-                ctx.lineWidth = 2;
-                // Optimization: only draw visible part? Path is usually short enough.
-                ctx.moveTo(s.path[0].x * s.scale, -s.path[0].y * s.scale);
-                for (let i = 1; i < s.path.length; i++) {
-                    ctx.lineTo(s.path[i].x * s.scale, -s.path[i].y * s.scale);
-                }
-                ctx.stroke();
-            }
-
-            // Draw Cannon
-            ctx.save();
-            ctx.translate(0, -10); // Cannon wheel axis
-            ctx.rotate(-s.angle * Math.PI / 180);
-            ctx.fillStyle = "#71717a";
-            ctx.fillRect(0, -8, 40, 16); // Barrel
-            ctx.restore();
-
-            // Wheel
-            ctx.beginPath();
-            ctx.arc(0, -10, 12, 0, Math.PI * 2);
-            ctx.fillStyle = "#27272a";
-            ctx.fill();
-            ctx.strokeStyle = "#52525b";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Landing Marker
-            if (s.landingSpot && s.landingSpot.active) {
-                const lx = s.landingSpot.x * s.scale;
-                ctx.fillStyle = "white";
-                ctx.beginPath();
-                ctx.arc(lx, 0, 4, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = "white";
-                ctx.font = "bold 12px sans-serif";
-                ctx.textAlign = "center";
-                ctx.fillText(`${s.landingSpot.x.toFixed(1)}m`, lx, 20);
-            }
-
-            // Projectile
-            if (s.active || s.path.length > 0) {
-                const px = s.x * s.scale;
-                const py = -s.y * s.scale;
-                ctx.beginPath();
-                ctx.arc(px, py, 6, 0, Math.PI * 2);
-                ctx.fillStyle = "#fff";
-                ctx.fill();
-                // Trail effect
-                ctx.shadowColor = "white";
-                ctx.shadowBlur = 10;
-                ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            ctx.restore(); // Restore camera transform
-
-            animationId = requestAnimationFrame(loop);
+        animationRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
         };
-        animationId = requestAnimationFrame(loop);
-        return () => cancelAnimationFrame(animationId);
-    }, [currentTaskIndex, completeTask, resetSim]);
+    }, [isPlaying, timeOfFlight]);
+
+    // Reset when parameters change
+    useEffect(() => {
+        if (!isPlaying) {
+            setTime(0);
+        }
+    }, [velocity, angle, height, gravity, isPlaying]);
+
+    // -------------------------------------------------------------
+    // 3. RENDER CALCULATIONS (SVG)
+    // -------------------------------------------------------------
+    // We want the SVG to automatically scale to mostly fit the max height and max range.
+    // However, constant zooming can be dizzying. We'll set a generous static viewBox
+    // or slightly adaptive bounds.
+    const viewWidth = Math.max(100, maxRange * 1.2);
+    const viewHeight = Math.max(50, maxHeight * 1.5);
+
+    // Y-axis is inverted in SVG (0 is top). 
+    // We will draw standard physics coordinates and just use a transform in SVG.
+
+    // Generate the predicted trajectory path
+    const trajectoryPoints = useMemo(() => {
+        const points = [];
+        const steps = 50;
+        for (let i = 0; i <= steps; i++) {
+            const t = (i / steps) * timeOfFlight;
+            const px = v0x * t;
+            const py = height + (v0y * t) - 0.5 * gravity * t * t;
+            points.push(`${px},${py}`);
+        }
+        return points.join(" ");
+    }, [v0x, v0y, gravity, height, timeOfFlight]);
+
+    // Current projectile position
+    const currentX = v0x * time;
+    const currentY = height + (v0y * time) - 0.5 * gravity * time * time;
+
+    // Current velocity components mapping
+    const currentVx = v0x;
+    const currentVy = v0y - gravity * time;
+    const speed = Math.sqrt(currentVx * currentVx + currentVy * currentVy);
+
+    // -------------------------------------------------------------
+    // 4. PEDAGOGICAL MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
+        {
+            id: 1,
+            title: "Maksimum Menzil",
+            desc: "Aynı hızla bir topu yatayda en uzağa atmak için (maksimum R) açıyı kaç derece yapmalısın? Açıyı bul ve atışı tamamla.",
+            isCompleted: false,
+            condition: () => angle === 45 && time >= timeOfFlight - 0.1 && timeOfFlight > 0,
+            successText: "Harika! Hava sürtünmesi olmadığında 45°'lik açı yatayda (Menzil) maksimum mesafeyi verir."
+        },
+        {
+            id: 2,
+            title: "Dikine Atış",
+            desc: "Cismi doğrudan yukarı fırlatıp başlangıç noktasına yatay (X) ekseninde ilerlemeden düşmesini sağla.",
+            isCompleted: false,
+            condition: () => angle === 90 && time >= timeOfFlight - 0.1 && timeOfFlight > 0,
+            successText: "Tebrikler! 90° açıyla atış yaptığında yatay hız (Vx = 0) olduğu için cisim yatayda hiç yol almaz."
+        },
+        {
+            id: 3,
+            title: "Yörünge Zirvesi",
+            desc: "Maksimum yüksekliği (H) en az 40 metreye çıkar ve atışı izle.",
+            isCompleted: false,
+            condition: () => maxHeight >= 40 && time >= timeOfFlight - 0.1,
+            successText: "Çok iyi! Maksimum yükseklik; ilk hıza ve atış açısının sinüs değerine bağlıdır."
+        }
+    ]);
+
+    useEffect(() => {
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
+            }
+            return m;
+        }));
+    }, [angle, time, timeOfFlight, maxHeight]);
+
+    // -------------------------------------------------------------
+    // 5. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-4 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#FF6B6B] text-black font-black py-3 rounded-lg hover:bg-[#FF8E8E] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "ATEŞLE!"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
+
+            <PhysicsSlider label="İlk Hız (V₀)" value={velocity} min={5} max={50} step={1} unit="m/s" onChange={setVelocity} color="#FF6B6B" />
+            <PhysicsSlider label="Atış Açısı (θ)" value={angle} min={0} max={90} step={1} unit="°" onChange={setAngle} color="#38BDF8" />
+            <PhysicsSlider label="Yükseklik (h₀)" value={height} min={0} max={50} step={1} unit="m" onChange={setHeight} color="#A78BFA" />
+            <PhysicsSlider label="Yerçekimi (g)" value={gravity} min={1} max={25} step={0.1} unit="m/s²" onChange={setGravity} color="#FCD34D" />
+            <PhysicsToggle label="Hız Vektörlerini Göster" checked={showVectors} onChange={setShowVectors} color="#4ADE80" />
+
+            {/* Live Data Dashboard */}
+            <div className="mt-4 p-4 rounded-xl border border-white/10 bg-black/40 grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Havada Kalma</p>
+                    <p className="text-xl font-mono text-white">{time.toFixed(2)} / {timeOfFlight.toFixed(2)}s</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Maksimum Menzil</p>
+                    <p className="text-xl font-mono text-[#FF6B6B] drop-shadow-md">{maxRange.toFixed(1)}m</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Anlık Hız (v)</p>
+                    <p className="text-xl font-mono text-white">{speed.toFixed(1)} m/s</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Maks Yükseklik</p>
+                    <p className="text-xl font-mono text-[#38BDF8]">{maxHeight.toFixed(1)}m</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const Theory = (
+        <div className="space-y-5">
+            <h2 className="text-xl font-black text-white italic">EĞİK ATIŞ TEORİSİ</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                Eğik atış (Projectile Motion), yerçekimi etkisi altındaki bir cismin iki boyutlu düzlemde yaptığı harekettir.
+                <strong>Yatayda (X) hız sabittir, dikeyde (Y) ise yerçekiminden dolayı değişken ivmeli bir hareket vardır.</strong>
+            </p>
+
+            <div className="grid gap-3">
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Yatay Hız & Konum</span>
+                    <p className="text-sm font-mono text-[#FF6B6B]">Vₓ = V₀·cos(θ)</p>
+                    <p className="text-sm font-mono text-white mt-1">X = Vₓ·t</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold block mb-1">Dikey Hız & Konum</span>
+                    <p className="text-sm font-mono text-[#38BDF8]">V_y = V₀·sin(θ) - g·t</p>
+                    <p className="text-sm font-mono text-white mt-1">Y = Y₀ + V₀_y·t - ½g·t²</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/10 border border-[#FCD34D]/30 shadow-[0_0_15px_rgba(252,211,77,0.1)]">
+                    <span className="text-[11px] text-[#FCD34D] uppercase font-black block mb-1">Maksimum Menzil (R)</span>
+                    <p className="text-base font-mono text-[#FCD34D] drop-shadow-md">R = (V₀² · sin(2θ)) / g</p>
+                    <p className="text-xs text-zinc-400 mt-2 font-medium">Bu formüle göre hava sürtünmesiz ortamda maksimum menzil için <strong>sin(2θ) = 1</strong> olmalıdır, yani <strong>θ = 45°</strong> gerekir.</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                        ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                        : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
 
     return (
-        <SimWrapper
-            title="Eğik Atış Laboratuvarı"
-            description="Yerçekimi altında cisimlerin hareketini incele."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={
-                <div className="space-y-6">
-                    {/* Fire Button - Big & Accessible */}
-                    <button
-                        onClick={fire}
-                        disabled={isRunning}
-                        className={cn(
-                            "w-full py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg transition-all shadow-lg active:scale-95",
-                            isRunning
-                                ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5"
-                                : "bg-white text-black hover:bg-zinc-200 border border-transparent shadow-white/10"
-                        )}
-                    >
-                        {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 fill-current" />}
-                        {isRunning ? "SİMÜLASYON SÜRÜYOR..." : "ATEŞLE"}
-                    </button>
-
-                    {/* Controls Grid */}
-                    <div className="grid grid-cols-2 gap-3">
-                        {/* Angle Control */}
-                        <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-white/20 transition-colors">
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">AÇI</span>
-                                <span className="text-lg font-mono font-bold text-white bg-white/5 px-2 rounded">{uiAngle}°</span>
-                            </div>
-                            <div className="relative h-6 flex items-center">
-                                <input
-                                    type="range" min="0" max="90" value={uiAngle}
-                                    disabled={isRunning}
-                                    onChange={(e) => {
-                                        const v = parseInt(e.target.value);
-                                        setUiAngle(v);
-                                        state.current.angle = v;
-                                    }}
-                                    className="w-full h-1.5 bg-zinc-700 rounded-full appearance-none cursor-pointer accent-white disabled:opacity-50"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Power Control */}
-                        <div className="bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-[#4ADE80]/30 transition-colors">
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">HIZ</span>
-                                <span className="text-lg font-mono font-bold text-[#4ADE80] bg-[#4ADE80]/10 px-2 rounded">{uiPower}m/s</span>
-                            </div>
-                            <div className="relative h-6 flex items-center">
-                                <input
-                                    type="range" min="10" max="150" value={uiPower}
-                                    disabled={isRunning}
-                                    onChange={(e) => {
-                                        const v = parseInt(e.target.value);
-                                        setUiPower(v);
-                                        state.current.power = v;
-                                    }}
-                                    className="w-full h-1.5 bg-zinc-700 rounded-full appearance-none cursor-pointer accent-[#4ADE80] disabled:opacity-50"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Results Display */}
-                    <div className="grid grid-cols-3 gap-2">
-                        <div className="bg-zinc-950 p-3 rounded-xl border border-white/5 text-center">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black mb-1">Menzil</div>
-                            <div className="text-sm sm:text-base font-mono font-bold text-white">{simData.range.toFixed(1)}m</div>
-                        </div>
-                        <div className="bg-zinc-950 p-3 rounded-xl border border-white/5 text-center">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black mb-1">Yükseklik</div>
-                            <div className="text-sm sm:text-base font-mono font-bold text-white">{simData.height.toFixed(1)}m</div>
-                        </div>
-                        <div className="bg-zinc-950 p-3 rounded-xl border border-white/5 text-center">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black mb-1">Süre</div>
-                            <div className="text-sm sm:text-base font-mono font-bold text-white">{simData.time.toFixed(1)}s</div>
-                        </div>
-                    </div>
-                </div>
-            }
+        <SimulationLayout
+            title={simData.title || "Atış Hareketi"}
+            color={simData.color || "#FF6B6B"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
         >
-            <div
-                ref={containerRef}
-                className="w-full h-full relative bg-[#09090b]"
-            >
-                <canvas ref={canvasRef} className="w-full h-full block touch-none" />
+            {/* The SVG Canvas wrapper */}
+            {/* We apply a CSS transform scale(1, -1) to invert the Y-axis so standard Math applies exactly visually! */}
+            <div className="w-full h-full p-8 relative">
+                <svg
+                    width="100%"
+                    height="100%"
+                    viewBox={`-5 -5 ${viewWidth + 10} ${viewHeight + 10}`}
+                    preserveAspectRatio="xMidYMax meet"
+                    className="overflow-visible"
+                >
+                    <g transform={`translate(0, ${viewHeight}) scale(1, -1)`}>
+                        {/* Grid / Background aesthetics */}
+                        <g className="text-white/5" stroke="currentColor" strokeWidth={viewWidth / 100}>
+                            {[...Array(10)].map((_, i) => (
+                                <line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2={viewHeight} />
+                            ))}
+                            {[...Array(5)].map((_, i) => (
+                                <line key={`h${i}`} x1="0" y1={i * 20} x2={viewWidth} y2={i * 20} />
+                            ))}
+                        </g>
 
-                {/* Overlay Hint */}
-                {!isRunning && state.current.path.length === 0 && (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 text-sm font-bold pointer-events-none select-none animate-pulse">
-                        SİMÜLASYONU BAŞLAT
-                    </div>
-                )}
+                        {/* Ground Line */}
+                        <line x1="-10" y1="0" x2={viewWidth + 50} y2="0" stroke="#fff" strokeWidth={viewWidth / 150} opacity="0.3" />
+
+                        {/* Starting Platform (if height > 0) */}
+                        {height > 0 && (
+                            <rect x="-10" y="0" width="10" height={height} fill="#fff" opacity="0.1" />
+                        )}
+
+                        {/* Trajectory Prediction Path (Dashed) */}
+                        <polyline
+                            points={trajectoryPoints}
+                            fill="none"
+                            stroke="#FF6B6B"
+                            strokeWidth={viewWidth / 100}
+                            strokeDasharray="4 8"
+                            opacity="0.4"
+                        />
+
+                        {/* Max Height Indicator */}
+                        {maxHeight > 5 && (
+                            <g opacity="0.3">
+                                <line x1={maxRange / 2} y1="0" x2={maxRange / 2} y2={maxHeight} stroke="#38BDF8" strokeWidth={viewWidth / 150} strokeDasharray="3 3" />
+                            </g>
+                        )}
+
+                        {/* The Projectile Component */}
+                        <g transform={`translate(${currentX}, ${currentY})`}>
+                            {/* The Ball */}
+                            <circle
+                                r={viewWidth > 200 ? 3 : 2}
+                                fill="#FFF"
+                                style={{ filter: "drop-shadow(0px 0px 8px rgba(255, 107, 107, 1))" }}
+                            />
+                            <circle
+                                r={viewWidth > 200 ? 1.5 : 1}
+                                fill="#FF6B6B"
+                            />
+
+                            {/* Velocity Vectors */}
+                            {showVectors && time > 0 && time < timeOfFlight && (
+                                <g>
+                                    {/* X Velocity (Red) */}
+                                    <line x1="0" y1="0" x2={currentVx} y2="0" stroke="#FF6B6B" strokeWidth={viewWidth / 150} />
+                                    <polygon points={`${currentVx},0 ${currentVx - 3},-2 ${currentVx - 3},2`} fill="#FF6B6B" />
+
+                                    {/* Y Velocity (Blue) */}
+                                    {/* Note: since scale(1,-1) is active, positive Y points UP, which matches currentVy */}
+                                    <line x1="0" y1="0" x2="0" y2={currentVy} stroke="#38BDF8" strokeWidth={viewWidth / 150} />
+                                    <polygon points={`0,${currentVy} -2,${currentVy - Math.sign(currentVy) * 3} 2,${currentVy - Math.sign(currentVy) * 3}`} fill="#38BDF8" />
+
+                                    {/* Total Velocity (White) */}
+                                    <line x1="0" y1="0" x2={currentVx} y2={currentVy} stroke="#FFFFFF" strokeWidth={viewWidth / 200} opacity="0.5" />
+                                </g>
+                            )}
+                        </g>
+                    </g>
+                </svg>
             </div>
-        </SimWrapper>
+        </SimulationLayout>
     );
 }

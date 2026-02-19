@@ -1,474 +1,379 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { SimWrapper, SimTask } from "./sim-wrapper";
-import { MousePointer2, Move, RotateCw, Plus, Trash2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider } from "./core/ui";
+import { CheckCircle2, Eye, Focus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// --- Types & Physics Interfaces ---
+export function OpticsSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. STATE
+    // -------------------------------------------------------------
+    const canvasWidth = 800;
+    const canvasHeight = 600;
+    const centerY = canvasHeight / 2;
+    const centerX = canvasWidth / 2;
 
-type Vector = { x: number; y: number };
-const vec = (x: number, y: number) => ({ x, y });
-const add = (v1: Vector, v2: Vector) => ({ x: v1.x + v2.x, y: v1.y + v2.y });
-const sub = (v1: Vector, v2: Vector) => ({ x: v1.x - v2.x, y: v1.y - v2.y });
-const scale = (v: Vector, s: number) => ({ x: v.x * s, y: v.y * s });
-const dot = (v1: Vector, v2: Vector) => v1.x * v2.x + v1.y * v2.y;
-const len = (v: Vector) => Math.sqrt(v.x * v.x + v.y * v.y);
-const norm = (v: Vector) => { const l = len(v); return l === 0 ? vec(0, 0) : scale(v, 1 / l); };
-const rot = (v: Vector, angle: number) => ({
-    x: v.x * Math.cos(angle) - v.y * Math.sin(angle),
-    y: v.x * Math.sin(angle) + v.y * Math.cos(angle)
-});
+    const [f, setF] = useState(100); // Focal length (f > 0 Convex, f < 0 Concave)
+    const [do_val, setDoVal] = useState(250); // Object distance (positive, left side)
+    const [ho, setHo] = useState(80); // Object height
 
-type OpticalElement = {
-    id: string;
-    type: "block" | "mirror" | "target";
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    rotation: number; // radians
-    n: number; // Refractive index (1.5 glass, 1.33 water, Infinity mirror)
-    dragging?: boolean;
-    color: string;
-};
+    // -------------------------------------------------------------
+    // 2. OPTICS CALCULATIONS
+    // -------------------------------------------------------------
+    // 1/f = 1/do + 1/di  => di = (do * f) / (do - f)
+    // Magnification m = -di / do
+    // hi = m * ho
 
-type RaySegment = {
-    start: Vector;
-    end: Vector;
-    intensity: number;
-};
+    let di = 0;
+    let hi = 0;
+    let isReal = false;
+    let isInfinity = false;
 
-// --- Physics Constants ---
-const MAX_BOUNCES = 10;
-const MIN_INTENSITY = 0.01;
+    if (Math.abs(do_val - f) < 0.1) {
+        // Object at focal point -> Infinity
+        isInfinity = true;
+    } else {
+        di = (do_val * f) / (do_val - f);
+        const m = -di / do_val;
+        hi = m * ho;
+        // Real image if di > 0, Virtual if di < 0
+        isReal = di > 0;
+    }
 
-export function OpticsSim() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const objX = centerX - do_val;
+    const imgX = isInfinity ? -9999 : centerX + di;
 
-    // -- State --
-    const [laser, setLaser] = useState({ x: 50, y: 300, angle: -0.2, dragging: false });
-    const [elements, setElements] = useState<OpticalElement[]>([]);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [rays, setRays] = useState<RaySegment[]>([]);
+    // Lens Drawing
+    const lensRadiusX = 15;
+    const lensRadiusY = 150;
 
-    const [tasks, setTasks] = useState<SimTask[]>([
+    // -------------------------------------------------------------
+    // 3. RAYS CALCULATION
+    // -------------------------------------------------------------
+    // Ray 1: Parallel to principal axis -> Refracts through/from focal point
+    const r1StartX = objX;
+    const r1StartY = centerY - ho;
+    const r1LensX = centerX;
+    const r1LensY = centerY - ho;
+
+    let r1Slope = 0;
+    if (f !== 0) {
+        if (f > 0) {
+            // Convex: passes through focal point on right (centerX + f, centerY)
+            r1Slope = (centerY - r1LensY) / (centerX + f - centerX);
+        } else {
+            // Concave: diverges as if coming from focal point on left (centerX - |f|, centerY)
+            r1Slope = (r1LensY - centerY) / (centerX - (centerX + f));
+        }
+    }
+    const r1EndX = canvasWidth;
+    const r1EndY = r1LensY + r1Slope * (r1EndX - centerX);
+
+    // Backward extension for Virtual Images
+    const r1BackX = 0;
+    const r1BackY = r1LensY - r1Slope * centerX;
+
+    // Ray 2: Through optical center (centerX, centerY) -> Unrefracted
+    const r2StartX = objX;
+    const r2StartY = centerY - ho;
+    const r2LensX = centerX;
+    const r2LensY = centerY;
+
+    const r2Slope = (centerY - r2StartY) / (centerX - r2StartX);
+    const r2EndX = canvasWidth;
+    const r2EndY = centerY + r2Slope * (r2EndX - centerX);
+
+    // Backward extension for Virtual Images
+    const r2BackX = 0;
+    const r2BackY = centerY - r2Slope * centerX;
+
+
+    // Ray 3: Through/towards left focal point -> Refracts parallel to principal axis
+    const r3StartX = objX;
+    const r3StartY = centerY - ho;
+    let r3LensY = centerY;
+
+    if (f > 0) {
+        // Passes through left focal point (centerX - f, centerY)
+        const slopeF = (centerY - r3StartY) / (centerX - f - r3StartX);
+        r3LensY = r3StartY + slopeF * (centerX - r3StartX);
+    } else {
+        // Aims for right focal point (centerX + |f|, centerY)
+        const slopeF = (centerY - r3StartY) / (centerX - f - r3StartX);
+        r3LensY = r3StartY + slopeF * (centerX - r3StartX);
+    }
+    const r3EndX = canvasWidth;
+    const r3EndY = r3LensY;
+
+    const r3BackX = 0;
+    const r3BackY = r3LensY;
+
+
+    // -------------------------------------------------------------
+    // 4. MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
         {
-            id: "o1", description: "Hedefi Vur!", hint: "Aynayı sürükle ve açısını değiştirerek lazeri hedefe yansıt.", isCompleted: false,
-            explanation: "Yansıma Yasası: Işık aynaya hangi açıyla gelirse, aynı açıyla yansır."
+            id: 1,
+            title: "Ters ve Gerçek",
+            desc: "İnce kenarlı (f>0) mercekle ekranda gerçek bir görüntü oluştur (Cisim odağın dışında olsun).",
+            isCompleted: false,
+            condition: () => f > 0 && isReal && !isInfinity && do_val > f,
+            successText: "Harika! Cisim odak ile sonsuz arasındayken mercek ışınları birleştirerek karşı tarafta gerçek ve TERS bir görüntü oluşturur."
         },
         {
-            id: "o2", description: "Işığı Kır!", hint: "Cam bloğu ışığın yoluna koy. Işığın nasıl büküldüğünü gör.", isCompleted: false,
-            explanation: "Snell Yasası: Işık cam gibi yoğun bir ortama girerken yavaşlar ve yön değiştirir."
+            id: 2,
+            title: "Sanal Büyüteç",
+            desc: "İnce kenarlı merceği büyüteç gibi kullan! Cismi odak noktasıyla mercek arasına sok.",
+            isCompleted: false,
+            condition: () => f > 0 && !isReal && do_val < f && do_val > 0,
+            successText: "İşte büyüteç! Cisim odağın içindeyken ışınlar kesişemez, ancak uzantıları asıl cismin arkasında daha BÜYÜK ve DÜZ bir sanal görüntü oluşturur."
         },
         {
-            id: "o3", description: "Işığı Hapset!", hint: "Işığı camın içinden çok yatay gönder (veya lazeri camın içine sok). Işık dışarı çıkamasın!", isCompleted: false,
-            explanation: "Tebrikler! Kritik açıyı aştın ve ışık dışarı çıkamadı. Fiber internet kablosu da böyle çalışır."
+            id: 3,
+            title: "Küçülen Dünya",
+            desc: "Kalın kenarlı (ıraksak) bir mercek (negatif f) yap. Görüntüyü incele.",
+            isCompleted: false,
+            condition: () => f < -20,
+            successText: "Kusursuz! Kalın kenarlı mercek ışınları dağıtır. Görüntü HER ZAMAN cisim ile mercek arasındadır, SANALDIR, DÜZDÜR ve cisimden KÜÇÜKTÜR."
         }
     ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    // -- Init --
     useEffect(() => {
-        resetSim();
-    }, []);
-
-    const resetSim = () => {
-        setLaser({ x: 50, y: 300, angle: -0.2, dragging: false });
-        const target: OpticalElement = {
-            id: "target", type: "target", x: 700, y: 300, w: 20, h: 20, rotation: 0, n: 1,
-            color: "#EF4444"
-        };
-        const mirror: OpticalElement = {
-            id: "mirror1", type: "mirror", x: 400, y: 500, w: 100, h: 10, rotation: 0, n: Infinity,
-            color: "#94A3B8"
-        };
-        setElements([target, mirror]);
-    };
-
-    // -- Physics Engine (Ray Tracing) --
-    const traceRay = useCallback((start: Vector, dir: Vector, intensity: number, depth: number, excludeId?: string): RaySegment[] => {
-        if (depth > MAX_BOUNCES || intensity < MIN_INTENSITY) return [];
-
-        let nearestT = Infinity;
-        let hitPoint = add(start, scale(dir, 1000)); // Default end
-        let hitNormal = vec(0, 0);
-        let hitElement: OpticalElement | null = null;
-        let entering = true;
-
-        // Check intersections with all elements
-        // Simplified: Treat all as AABBs first for speed, or OBBs properly
-        // Let's do proper OBB (Oriented Bounding Box) intersection
-        for (const el of elements) {
-            if (el.id === "target") continue; // Targets don't reflect/refract physics-wise (detected separately)
-            if (el.id === excludeId) continue;
-
-            // Transform ray to local space of the element
-            // 1. Translate ray start to relative
-            const relStart = sub(start, vec(el.x, el.y));
-            // 2. Rotate ray by -el.rotation
-            const localStart = rot(relStart, -el.rotation);
-            const localDir = rot(dir, -el.rotation);
-
-            // AABB Intersection in local space (-w/2, -h/2 to w/2, h/2)
-            const halfW = el.w / 2;
-            const halfH = el.h / 2;
-
-            // Cohen-Sutherland-like clipping or slab method
-            // Slab method for ray-AABB constants:
-            const tx1 = (-halfW - localStart.x) / localDir.x;
-            const tx2 = (halfW - localStart.x) / localDir.x;
-            const ty1 = (-halfH - localStart.y) / localDir.y;
-            const ty2 = (halfH - localStart.y) / localDir.y;
-
-            const tmin = Math.max(Math.min(tx1, tx2), Math.min(ty1, ty2));
-            const tmax = Math.min(Math.max(tx1, tx2), Math.max(ty1, ty2));
-
-            if (tmax < 0 || tmin > tmax) continue; // No hit
-
-            const t = tmin > 0.001 ? tmin : tmax; // if inside, tmin < 0, take tmax
-            if (t > 0.001 && t < nearestT) {
-                nearestT = t;
-                hitElement = el;
-
-                // Calculate local normal
-                const localHit = add(localStart, scale(localDir, t));
-                let localN = vec(0, 0);
-                const eps = 0.01;
-                if (Math.abs(localHit.x - (-halfW)) < eps) localN = vec(-1, 0);
-                else if (Math.abs(localHit.x - halfW) < eps) localN = vec(1, 0);
-                else if (Math.abs(localHit.y - (-halfH)) < eps) localN = vec(0, -1);
-                else localN = vec(0, 1);
-
-                hitNormal = rot(localN, el.rotation); // Transform normal back to world
-                hitPoint = add(start, scale(dir, t));
-                entering = tmin > 0.001; // If tmin positive, we hit outside. If negative, we are inside exiting.
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
             }
-        }
+            return m;
+        }));
+    }, [f, do_val, isReal, isInfinity]);
 
-        // Current Segment
-        const segment: RaySegment = { start, end: hitPoint, intensity };
-        const nextSegments: RaySegment[] = [];
-
-        // Explicit null check for safety
-        if (!hitElement) return [segment];
-
-        if (hitElement.type === "mirror") {
-            // Reflection: R = D - 2(D.N)N
-            const dDotN = dot(dir, hitNormal);
-            const reflectDir = sub(dir, scale(hitNormal, 2 * dDotN));
-            nextSegments.push(...traceRay(hitPoint, reflectDir, intensity * 0.9, depth + 1, hitElement.id));
-        } else if (hitElement.type === "block") {
-            // Refraction (Snell's Law)
-            const n1 = entering ? 1.0 : hitElement.n;
-            const n2 = entering ? hitElement.n : 1.0;
-            const eta = n1 / n2;
-            const dDotN = dot(dir, hitNormal);
-
-            // Fresnel (simplified) checks for TIR
-            // cos(theta1) = -dot(D, N) (if N is pointing against D)
-            // Ensure Normal points against Ray
-            let N = hitNormal;
-            let c1 = -dot(dir, N);
-            if (c1 < 0) { c1 = -c1; N = scale(N, -1); } // Flip normal if inside
-
-            const k = 1.0 - eta * eta * (1.0 - c1 * c1);
-
-            if (k < 0) {
-                // Total Internal Reflection (TIR)
-                const reflectDir = sub(dir, scale(N, 2 * dot(dir, N)));
-                nextSegments.push(...traceRay(hitPoint, reflectDir, intensity, depth + 1, hitElement.id));
-            } else {
-                // Refraction
-                const refractDir = add(scale(dir, eta), scale(N, eta * c1 - Math.sqrt(k)));
-                nextSegments.push(...traceRay(hitPoint, norm(refractDir), intensity * 0.8, depth + 1, hitElement.id));
-
-                // Partial Reflection (Fresnel effect roughly)
-                const reflectDir = sub(dir, scale(N, 2 * dot(dir, N)));
-                nextSegments.push(...traceRay(hitPoint, reflectDir, intensity * 0.2, depth + 1, hitElement.id));
-            }
-        }
-
-        return [segment, ...nextSegments];
-    }, [elements]);
-
-    // -- Game Loop --
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !containerRef.current) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-
-        const render = () => {
-            if (canvas.width !== containerRef.current!.clientWidth) {
-                canvas.width = containerRef.current!.clientWidth;
-                canvas.height = containerRef.current!.clientHeight;
-            }
-            const width = canvas.width;
-            const height = canvas.height;
-
-            // Physics Calculation
-            const startDir = vec(Math.cos(laser.angle), Math.sin(laser.angle));
-            const calculatedRays = traceRay(vec(laser.x, laser.y), startDir, 1.0, 0);
-            setRays(calculatedRays);
-
-            // Draw
-            ctx.fillStyle = "#020617"; // Slate 950
-            ctx.fillRect(0, 0, width, height);
-
-            // Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            ctx.lineWidth = 1;
-            for (let x = 0; x < width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
-            for (let y = 0; y < height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
-
-            // Laser Body
-            ctx.save();
-            ctx.translate(laser.x, laser.y);
-            ctx.rotate(laser.angle);
-            ctx.fillStyle = "#ef4444";
-            ctx.fillRect(-15, -8, 30, 16);
-            ctx.fillStyle = "#991b1b";
-            ctx.fillRect(10, -4, 5, 8); // Nozzle
-            ctx.restore();
-
-            // Elements
-            elements.forEach(el => {
-                ctx.save();
-                ctx.translate(el.x, el.y);
-                ctx.rotate(el.rotation);
-
-                if (el.type === "target") {
-                    ctx.fillStyle = el.color; // Red
-                    ctx.beginPath(); ctx.arc(0, 0, 15, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = "white";
-                    ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = el.color;
-                    ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
-
-                    // Hit Check
-                    const lastRay = calculatedRays[calculatedRays.length - 1];
-                    const dist = Math.sqrt((lastRay.end.x - el.x) ** 2 + (lastRay.end.y - el.y) ** 2);
-                    if (dist < 20) {
-                        // Hit logic in loop or effect? Doing visuals here.
-                        ctx.shadowColor = "#ef4444";
-                        ctx.shadowBlur = 20;
-                    }
-
-                } else {
-                    ctx.fillStyle = el.color;
-                    // Glass/Water transparency
-                    if (el.type === "block") ctx.globalAlpha = 0.3;
-
-                    ctx.fillRect(-el.w / 2, -el.h / 2, el.w, el.h);
-
-                    ctx.globalAlpha = 1.0;
-                    ctx.strokeStyle = el.id === selectedId ? "#FDB813" : "rgba(255,255,255,0.2)";
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(-el.w / 2, -el.h / 2, el.w, el.h);
-
-                    // Rotation Handle
-                    if (el.id === selectedId) {
-                        ctx.fillStyle = "#FDB813";
-                        ctx.beginPath(); ctx.arc(0, -el.h / 2 - 15, 5, 0, Math.PI * 2); ctx.fill();
-                        ctx.beginPath(); ctx.moveTo(0, -el.h / 2); ctx.lineTo(0, -el.h / 2 - 15); ctx.stroke();
-                    }
-                }
-                ctx.restore();
-            });
-
-            // Rays
-            ctx.lineCap = "round";
-            calculatedRays.forEach(ray => {
-                ctx.beginPath();
-                ctx.moveTo(ray.start.x, ray.start.y);
-                ctx.lineTo(ray.end.x, ray.end.y);
-                ctx.strokeStyle = `rgba(239, 68, 68, ${ray.intensity})`;
-                ctx.lineWidth = 3 * ray.intensity;
-                ctx.shadowColor = "#ef4444";
-                ctx.shadowBlur = 10 * ray.intensity;
-                ctx.stroke();
-                ctx.shadowBlur = 0;
-            });
-
-            // Target Hit Check Logic for Tasks
-            const lastRay = calculatedRays[calculatedRays.length - 1];
-            if (lastRay) {
-                const target = elements.find(e => e.type === "target");
-                if (target) {
-                    const dist = Math.sqrt((lastRay.end.x - target.x) ** 2 + (lastRay.end.y - target.y) ** 2);
-                    if (dist < 20 && currentTaskIndex === 0 && !tasks[0].isCompleted) {
-                        completeTask(0);
-                    }
-                }
-                // Task 2 check (Refraction)
-                if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-                    // Check if ray passed through a block? 
-                    const hasRefraction = calculatedRays.length > 2; // Simple heuristic
-                    if (hasRefraction) completeTask(1);
-                }
-                // Task 3 check (TIR)
-                if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
-                    // Check if rays are bouncing inside a block
-                    const bounces = calculatedRays.filter(r => r.intensity > 0.8).length;
-                    if (bounces > 4) completeTask(2);
-                }
-            }
-
-            animationId = requestAnimationFrame(render);
-        };
-        render();
-        return () => cancelAnimationFrame(animationId);
-    }, [laser, elements, selectedId, traceRay, currentTaskIndex, tasks]);
-
-    const completeTask = (index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
-    };
-
-    // -- Interactions --
-    // Simplified for brevity in this prompt, handling drag of Laser and Elements
-    const handlePointerDown = (e: React.PointerEvent) => {
-        const rect = containerRef.current!.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        // Check Laser
-        if (Math.hypot(x - laser.x, y - laser.y) < 30) {
-            setLaser({ ...laser, dragging: true });
-            setSelectedId(null);
-            return;
-        }
-
-        // Check Elements
-        // Simple radius or box check
-        const clicked = elements.find(el => Math.hypot(x - el.x, y - el.y) < Math.max(el.w, el.h) / 2);
-        if (clicked) {
-            setSelectedId(clicked.id);
-            // Check rotation handle
-            // ...
-        } else {
-            setSelectedId(null);
-        }
-    };
-
-    const handlePointerMove = (e: React.PointerEvent) => {
-        const rect = containerRef.current!.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        if (laser.dragging) {
-            // If dragging near edge, rotate? Or separate rotate mode?
-            // Let's just move laser position for now
-            // Angle change logic:
-            const dx = x - laser.x;
-            const dy = y - laser.y;
-            if (Math.hypot(dx, dy) > 20) {
-                setLaser(prev => ({ ...prev, angle: Math.atan2(dy, dx) }));
-            }
-            // setLaser(prev => ({ ...prev, x, y })); // Move vs Rotate? 
-            // Let's make it look at mouse
-            setLaser(prev => ({ ...prev, angle: Math.atan2(y - prev.y, x - prev.x) }));
-            return;
-        }
-
-        // Element dragging
-        if (selectedId && e.buttons === 1) {
-            setElements(prev => prev.map(el => {
-                if (el.id === selectedId) {
-                    return { ...el, x, y };
-                }
-                return el;
-            }));
-        }
-    };
-
-    const handlePointerUp = () => {
-        setLaser(prev => ({ ...prev, dragging: false }));
-    };
-
-    // Add Elements
-    const addElement = (type: "block" | "mirror") => {
-        const newEl: OpticalElement = {
-            id: Math.random().toString(36),
-            type,
-            x: 400 + Math.random() * 50,
-            y: 300 + Math.random() * 50,
-            w: type === "block" ? 100 : 120,
-            h: type === "block" ? 60 : 10,
-            rotation: 0,
-            n: type === "block" ? 1.5 : Infinity,
-            color: type === "block" ? "#93C5FD" : "#94A3B8"
-        };
-        setElements(prev => [...prev, newEl]);
-    };
-
-    return (
-        <SimWrapper
-            title="Optik Laboratuvarı"
-            description="Işığın yansıması, kırılması ve tam iç yansıma deneyleri."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={
-                <div className="space-y-4">
-                    <p className="text-xs text-zinc-400 font-bold uppercase mb-2">Araç Kutusu</p>
-                    <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => addElement("block")} className="flex items-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 p-3 rounded-xl transition-all">
-                            <div className="w-8 h-6 bg-blue-400/50 rounded-sm" />
-                            <span className="text-xs font-bold">Cam Blok</span>
-                        </button>
-                        <button onClick={() => addElement("mirror")} className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-600 p-3 rounded-xl transition-all">
-                            <div className="w-8 h-1 bg-zinc-400 rounded-full" />
-                            <span className="text-xs font-bold">Ayna</span>
-                        </button>
+    // -------------------------------------------------------------
+    // 5. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="space-y-4">
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-4">
+                    <div className="flex justify-between items-center px-1">
+                        <span className="text-[10px] font-black text-white px-2 uppercase tracking-widest bg-[#14B8A6] rounded-full py-0.5">Mercek (Lens)</span>
+                        <span className="text-xs font-bold text-[#14B8A6]">{f > 0 ? "İnce Kenarlı (Yakınsak)" : f < 0 ? "Kalın Kenarlı (Iraksak)" : "Düz Cam"}</span>
                     </div>
-
-                    {selectedId && (
-                        <div className="bg-zinc-900 border border-white/10 p-4 rounded-xl space-y-3 mt-4">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-white">Seçili Obje</span>
-                                <button onClick={() => {
-                                    setElements(prev => prev.filter(e => e.id !== selectedId));
-                                    setSelectedId(null);
-                                }} className="text-red-500 hover:text-red-400">
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            </div>
-
-                            <div className="flex gap-2">
-                                <button onClick={() => setElements(prev => prev.map(e => e.id === selectedId ? { ...e, rotation: e.rotation - 0.1 } : e))} className="flex-1 bg-black p-2 rounded text-zinc-400 hover:text-white">
-                                    <RotateCw className="w-4 h-4 mx-auto -scale-x-100" />
-                                </button>
-                                <button onClick={() => setElements(prev => prev.map(e => e.id === selectedId ? { ...e, rotation: e.rotation + 0.1 } : e))} className="flex-1 bg-black p-2 rounded text-zinc-400 hover:text-white">
-                                    <RotateCw className="w-4 h-4 mx-auto" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <PhysicsSlider label="Odak Uzaklığı (f)" value={f} min={-200} max={200} step={5} unit="px" onChange={setF} color="#14B8A6" />
                 </div>
-            }
-        >
-            <div
-                ref={containerRef}
-                className="w-full h-full relative cursor-crosshair touch-none"
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-            >
-                <canvas ref={canvasRef} className="block w-full h-full" />
-                <div className="absolute top-4 right-4 text-xs text-zinc-500 font-mono pointer-events-none">
-                    Lazere tıklayıp çekerek nişan al
+
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-4">
+                    <span className="text-[10px] font-black text-black px-2 uppercase tracking-widest bg-[#FCD34D] rounded-full py-0.5">Cisim (Object)</span>
+                    <PhysicsSlider label="Cisme Uzaklık (do)" value={do_val} min={20} max={350} step={5} unit="px" onChange={setDoVal} color="#FCD34D" />
+                    <PhysicsSlider label="Cisim Boyu (ho)" value={ho} min={10} max={150} step={5} unit="px" onChange={setHo} color="#FDE68A" />
                 </div>
             </div>
-        </SimWrapper>
+
+            {/* Live Data Dashboard */}
+            <div className="mt-2 p-4 rounded-xl border border-white/10 bg-black/40 grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Görüntü Uzaklığı (di)</p>
+                    <p className="text-xl font-mono text-[#F472B6]">
+                        {isInfinity ? "Sonsuz" : di.toFixed(1)} <span className="text-sm">px</span>
+                    </p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Görüntü Boyu (hi)</p>
+                    <p className="text-xl font-mono text-[#F472B6]">
+                        {isInfinity ? "-" : Math.abs(hi).toFixed(1)} <span className="text-sm">px</span>
+                    </p>
+                </div>
+                <div className="col-span-2 pt-2 border-t border-white/10 flex justify-between items-center">
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Görüntü Tipi</p>
+                    <p className="text-sm font-black text-white px-2 py-1 bg-white/10 rounded tracking-widest uppercase">
+                        {isInfinity ? "Belirsiz" : isReal ? "Gerçek (Ters)" : "Sanal (Düz)"}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">MERCEKLER VE IŞIĞIN KIRILMASI</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                Işık farklı bir ortama girerken kırılır. Mercekler, özel kavisli yapıları sayesinde ışığı belli bir noktada (odak) toplamak veya dağıtmak için tasarlanmıştır.
+            </p>
+
+            <div className="grid gap-4 mt-4">
+                <div className="p-4 rounded-xl bg-[#14B8A6]/10 border border-[#14B8A6]/30 shadow-[0_0_20px_rgba(20,184,166,0.1)] text-center">
+                    <span className="text-xs text-[#14B8A6] uppercase font-black block mb-2">İnce Kenarlı Mercek Denklemi</span>
+                    <p className="text-xl font-mono text-[#14B8A6]">1/f = 1/di + 1/do</p>
+                </div>
+
+                <ul className="space-y-2 mt-2 text-sm text-zinc-300">
+                    <li>• <strong>Gerçek Görüntü:</strong> Işınların kendilerinin kesiştiği yerde oluşur (Perdeye yansıtılabilir).</li>
+                    <li>• <strong>Sanal Görüntü:</strong> Işınların uzantılarının kesiştiği yerde oluşur (Gözümüzle merceğin içinden bakarız).</li>
+                    <li>• <strong>Yakınsak (Convex - İnce Kenarlı):</strong> Işınları toplar. Odak dışındaki cisimleri ters çevirip büyütür veya küçültür. Odak içindeki cisimleri büyüteç gibi gösterir.</li>
+                    <li>• <strong>Iraksak (Concave - Kalın Kenarlı):</strong> Işınları saçar. Görüntüyü her zaman daha küçük, düz ve sanal yapar. (Örn: Miyop gözlüğü).</li>
+                </ul>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                            ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                            : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <SimulationLayout
+            title={simData?.title || "Geometrik Optik"}
+            color={simData?.color || "#14B8A6"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
+        >
+            <div className="w-full h-full p-0 relative flex items-center justify-center">
+                <svg
+                    width="100%"
+                    height="100%"
+                    viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="origin-center"
+                >
+                    {/* Background & Optical Axis */}
+                    <rect x="0" y="0" width={canvasWidth} height={canvasHeight} fill="#050510" />
+
+                    {/* Grid lines purely for aesthetics */}
+                    <g opacity="0.05">
+                        {Array.from({ length: 20 }).map((_, i) => (
+                            <line key={`v${i}`} x1={i * 40} y1="0" x2={i * 40} y2={canvasHeight} stroke="#fff" strokeWidth="1" />
+                        ))}
+                        {Array.from({ length: 15 }).map((_, i) => (
+                            <line key={`h${i}`} x1="0" y1={i * 40} x2={canvasWidth} y2={i * 40} stroke="#fff" strokeWidth="1" />
+                        ))}
+                    </g>
+
+                    {/* Principal Axis */}
+                    <line x1="0" y1={centerY} x2={canvasWidth} y2={centerY} stroke="#666" strokeWidth="2" strokeDasharray="10 5" />
+
+                    {/* Focal Points */}
+                    {Math.abs(f) > 0 && (
+                        <>
+                            <circle cx={centerX - Math.abs(f)} cy={centerY} r="4" fill="#14B8A6" />
+                            <text x={centerX - Math.abs(f)} y={centerY + 15} fill="#14B8A6" fontSize="12" textAnchor="middle" fontWeight="bold">F</text>
+
+                            <circle cx={centerX - 2 * Math.abs(f)} cy={centerY} r="4" fill="#14B8A6" />
+                            <text x={centerX - 2 * Math.abs(f)} y={centerY + 15} fill="#14B8A6" fontSize="12" textAnchor="middle" fontWeight="bold">2F</text>
+
+                            <circle cx={centerX + Math.abs(f)} cy={centerY} r="4" fill="#14B8A6" />
+                            <text x={centerX + Math.abs(f)} y={centerY + 15} fill="#14B8A6" fontSize="12" textAnchor="middle" fontWeight="bold">F'</text>
+
+                            <circle cx={centerX + 2 * Math.abs(f)} cy={centerY} r="4" fill="#14B8A6" />
+                            <text x={centerX + 2 * Math.abs(f)} y={centerY + 15} fill="#14B8A6" fontSize="12" textAnchor="middle" fontWeight="bold">2F'</text>
+                        </>
+                    )}
+
+                    {/* The Lens (Stylized) */}
+                    {f > 0 ? (
+                        // Convex Lens
+                        <path d={`M ${centerX} ${centerY - lensRadiusY} Q ${centerX + lensRadiusX * 2} ${centerY} ${centerX} ${centerY + lensRadiusY} Q ${centerX - lensRadiusX * 2} ${centerY} ${centerX} ${centerY - lensRadiusY} Z`} fill="#14B8A6" opacity="0.2" stroke="#14B8A6" strokeWidth="2" style={{ filter: "drop-shadow(0 0 10px rgba(20,184,166,0.5))" }} />
+                    ) : f < 0 ? (
+                        // Concave Lens (Drawn as a specialized shape)
+                        <path d={`M ${centerX - lensRadiusX} ${centerY - lensRadiusY} L ${centerX + lensRadiusX} ${centerY - lensRadiusY} Q ${centerX} ${centerY} ${centerX + lensRadiusX} ${centerY + lensRadiusY} L ${centerX - lensRadiusX} ${centerY + lensRadiusY} Q ${centerX} ${centerY} ${centerX - lensRadiusX} ${centerY - lensRadiusY} Z`} fill="#14B8A6" opacity="0.2" stroke="#14B8A6" strokeWidth="2" style={{ filter: "drop-shadow(0 0 10px rgba(20,184,166,0.5))" }} />
+                    ) : (
+                        <rect x={centerX - 5} y={centerY - lensRadiusY} width="10" height={lensRadiusY * 2} fill="#555" />
+                    )}
+
+
+                    {/* ---------------- RAYS ---------------- */}
+                    {Math.abs(f) > 0 && !isInfinity && (
+                        <g opacity="0.7">
+                            {/* Ray 1: Parallel to refracted */}
+                            <line x1={r1StartX} y1={r1StartY} x2={r1LensX} y2={r1LensY} stroke="#EF4444" strokeWidth="2" />
+                            <line x1={r1LensX} y1={r1LensY} x2={r1EndX} y2={r1EndY} stroke="#EF4444" strokeWidth="2" />
+
+                            {/* Ray 2: Optical Center */}
+                            <line x1={r2StartX} y1={r2StartY} x2={r2EndX} y2={r2EndY} stroke="#3B82F6" strokeWidth="2" />
+
+                            {/* Ray 3: Extraneous Ray just for flair */}
+                            <line x1={r3StartX} y1={r3StartY} x2={centerX} y2={r3LensY} stroke="#10B981" strokeWidth="2" />
+                            <line x1={centerX} y1={r3LensY} x2={canvasWidth} y2={r3LensY} stroke="#10B981" strokeWidth="2" />
+
+                            {/* Virtual Backward Extensions if Virtual Image */}
+                            {!isReal && (
+                                <>
+                                    <line x1={r1BackX} y1={r1BackY} x2={r1LensX} y2={r1LensY} stroke="#EF4444" strokeWidth="2" strokeDasharray="5 5" opacity="0.5" />
+                                    <line x1={r2BackX} y1={r2BackY} x2={r2LensX} y2={r2LensY} stroke="#3B82F6" strokeWidth="2" strokeDasharray="5 5" opacity="0.5" />
+                                    <line x1={r3BackX} y1={r3BackY} x2={centerX} y2={r3LensY} stroke="#10B981" strokeWidth="2" strokeDasharray="5 5" opacity="0.5" />
+                                </>
+                            )}
+                        </g>
+                    )}
+
+                    {/* ---------------- OBJECT ---------------- */}
+                    <g transform={`translate(${objX}, ${centerY})`}>
+                        <line x1="0" y1="0" x2="0" y2={-ho} stroke="#FCD34D" strokeWidth="6" strokeLinecap="round" />
+                        <polygon points={`0,${-ho - 8} -6,${-ho + 2} 6,${-ho + 2}`} fill="#FCD34D" />
+                    </g>
+
+                    {/* ---------------- IMAGE ---------------- */}
+                    {!isInfinity && Math.abs(di) < 2000 && (
+                        <g transform={`translate(${imgX}, ${centerY})`}>
+                            <line
+                                x1="0" y1="0" x2="0" y2={-hi}
+                                stroke="#F472B6"
+                                strokeWidth="6"
+                                strokeLinecap="round"
+                                strokeDasharray={!isReal ? "10 5" : "0"}
+                            />
+                            <polygon
+                                points={`0,${-hi + (hi > 0 ? -8 : 8)} -6,${-hi + (hi > 0 ? 2 : -2)} 6,${-hi + (hi > 0 ? 2 : -2)}`}
+                                fill="#F472B6"
+                            />
+
+                            <text x="0" y={hi > 0 ? -hi - 15 : -hi + 15} fill="#F472B6" fontSize="12" fontWeight="bold" textAnchor="middle">
+                                {isReal ? "Gerçek" : "Sanal"}
+                            </text>
+                        </g>
+                    )}
+
+                    {/* The Eye (Viewing from right) */}
+                    <g transform={`translate(${canvasWidth - 50}, ${centerY})`} opacity="0.5">
+                        <Eye className="w-12 h-12 text-white/50" />
+                        <text x="24" y="35" fill="#fff" fontSize="10" textAnchor="middle" opacity="0.5">GÖZ</text>
+                    </g>
+                </svg>
+            </div>
+        </SimulationLayout>
     );
 }

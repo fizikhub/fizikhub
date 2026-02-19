@@ -1,332 +1,382 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Play, Pause, RotateCcw, Bomb, Scale, ArrowRightLeft } from "lucide-react"; // Import icons
-import { SimWrapper, SimTask } from "./sim-wrapper";
 
-interface ParticleCollisionSimProps {
-    className?: string;
-}
+import React, { useState, useEffect, useRef } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider } from "./core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimProps) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
+export function ParticleCollisionSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. STATE
+    // -------------------------------------------------------------
+    const canvasWidth = 800;
+    const canvasHeight = 400;
+
     const [mass1, setMass1] = useState(2);
     const [mass2, setMass2] = useState(2);
-    const [isRunning, setIsRunning] = useState(false);
+    const [initV1, setInitV1] = useState(5);
+    const [initV2, setInitV2] = useState(-3);
+    const [restitution, setRestitution] = useState(1); // e = 1 (elastic), 0 (inelastic)
 
-    // Internal state to track validation results
-    const [collisionResult, setCollisionResult] = useState<{ pInitial: number, pFinal: number } | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
-    // Particles
-    const p1Ref = useRef({ x: 100, y: 150, vx: 3, vy: 0 });
-    const p2Ref = useRef({ x: 300, y: 150, vx: -2, vy: 0 });
+    // Physics Engine State
+    const [x1, setX1] = useState(200);
+    const [x2, setX2] = useState(600);
+    const [v1, setV1] = useState(initV1);
+    const [v2, setV2] = useState(initV2);
+    const [hasCollided, setHasCollided] = useState(false);
 
-    // -- Tasks --
-    const [tasks, setTasks] = useState<SimTask[]>([
-        {
-            id: "pc1", description: "Momentum Korunumu", hint: "Simülasyonu başlat ve çarpışmadan önceki toplam momentum ile sonrakini karşılaştır.", isCompleted: false,
-            explanation: "Sistem dışından net bir kuvvet etki etmediği sürece toplam momentum (P = m.v) daima korunur!"
-        },
-        {
-            id: "pc2", description: "Eşit Kütleler", hint: "Kütleleri eşitle (örn. 2kg - 2kg) ve hızların nasıl değiş tokuş edildiğini izle.", isCompleted: false,
-            explanation: "Esnek çarpışmada kütleler eşitse, cisimler hızlarını birbirine aktarır. Bilardo topları gibi!"
-        },
-        {
-            id: "pc3", description: "Farklı Kütleler", hint: "Bir kütleyi diğerinin 2 katı yap ve çarpışmayı gözlemle.", isCompleted: false,
-            explanation: "Ağır cisim hafif cisme çarptığında yoluna devam ederken, hafif cisim çok daha hızlı fırlar."
-        }
-    ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+    const animationRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
-    }, [tasks.length]);
-
-    // Check Tasks Logic
-    useEffect(() => {
-        if (!collisionResult) return;
-
-        if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
-            // Just verifying a collision happened and momentum was calculated
-            completeTask(0);
-        }
-        if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-            if (Math.abs(mass1 - mass2) < 0.1) completeTask(1);
-        }
-        if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
-            // Check for significant mass difference (e.g. ratio >= 2 or <= 0.5)
-            const ratio = mass1 / mass2;
-            if (ratio >= 2 || ratio <= 0.5) completeTask(2);
-        }
-    }, [collisionResult, mass1, mass2, currentTaskIndex, tasks, completeTask]);
-
-
+    // Initial / Reset
     const resetSim = () => {
-        p1Ref.current = { x: 100, y: 150, vx: 3, vy: 0 };
-        p2Ref.current = { x: 300, y: 150, vx: -2, vy: 0 };
-        setIsRunning(false);
-        setCollisionResult(null);
+        setIsPlaying(false);
+        setX1(200);
+        setX2(600);
+        setV1(initV1);
+        setV2(initV2);
+        setHasCollided(false);
+        lastTimeRef.current = 0;
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+
+    // Keep initial velocities synced when stopped
+    useEffect(() => {
+        if (!isPlaying && !hasCollided) {
+            setV1(initV1);
+            setV2(initV2);
+        }
+    }, [initV1, initV2, isPlaying, hasCollided]);
+
+    // -------------------------------------------------------------
+    // 2. SIMULATION ENGINE
+    // -------------------------------------------------------------
+    const radius1 = 20 + Math.sqrt(mass1) * 8;
+    const radius2 = 20 + Math.sqrt(mass2) * 8;
+
+    const loop = (timestamp: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+        const dt = (timestamp - lastTimeRef.current) / 1000;
+        lastTimeRef.current = timestamp;
+
+        if (isPlaying) {
+            // Speed factor
+            const tick = dt * 15;
+
+            setX1(prevX1 => {
+                let nextX1 = prevX1 + v1 * tick;
+                setX2(prevX2 => {
+                    let nextX2 = prevX2 + v2 * tick;
+
+                    // Check Wall Collisions
+                    // Wall 1 (Left)
+                    if (nextX1 - radius1 < 0) {
+                        nextX1 = radius1;
+                        setV1(v => Math.abs(v) * restitution);
+                    }
+                    // Wall 2 (Right)
+                    if (nextX2 + radius2 > canvasWidth) {
+                        nextX2 = canvasWidth - radius2;
+                        setV2(v => -Math.abs(v) * restitution);
+                    }
+
+                    // Same for crossed bounds (just in case they swap)
+                    if (nextX2 - radius2 < 0) {
+                        nextX2 = radius2;
+                        setV2(v => Math.abs(v) * restitution);
+                    }
+                    if (nextX1 + radius1 > canvasWidth) {
+                        nextX1 = canvasWidth - radius1;
+                        setV1(v => -Math.abs(v) * restitution);
+                    }
+
+                    // Check Particle Collision
+                    // Since it's 1D and Particle 1 is usually left of Particle 2:
+                    const dx = nextX2 - nextX1;
+                    const minDist = radius1 + radius2;
+
+                    if (Math.abs(dx) < minDist) {
+                        // They collided!
+                        setHasCollided(true);
+
+                        // Separate them so they don't get stuck
+                        const overlap = minDist - Math.abs(dx);
+                        const push1 = (mass2 / (mass1 + mass2)) * overlap;
+                        const push2 = (mass1 / (mass1 + mass2)) * overlap;
+
+                        // Assume X1 is actually on the left
+                        if (nextX1 < nextX2) {
+                            nextX1 -= push1;
+                            nextX2 += push2;
+                        } else {
+                            nextX1 += push1;
+                            nextX2 -= push2;
+                        }
+
+                        // Calculate new velocities (1D Collision Formula)
+                        const curV1 = v1;
+                        const curV2 = v2;
+                        const newV1 = ((mass1 - restitution * mass2) * curV1 + mass2 * (1 + restitution) * curV2) / (mass1 + mass2);
+                        const newV2 = (mass1 * (1 + restitution) * curV1 + (mass2 - restitution * mass1) * curV2) / (mass1 + mass2);
+                        setV1(newV1);
+                        setV2(newV2);
+                    }
+
+                    return nextX2;
+                });
+                return nextX1;
+            });
+        }
+        animationRef.current = requestAnimationFrame(loop);
     };
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !containerRef.current) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-        let hasCollided = false;
-        let collisionProcessed = false;
-
-
-        const draw = () => {
-            // Resize handling
-            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
-                canvas.width = containerRef.current.clientWidth;
-                canvas.height = containerRef.current.clientHeight;
-                // re-center y if needed, but we use fixed 150 mostly. Let's adapt y relative to height
-            }
-
-            const width = canvas.width;
-            const height = canvas.height;
-            const centerY = height / 2;
-
-            // Adjust particle Y to center dynamically
-            // p1Ref.current.y = centerY;
-            // p2Ref.current.y = centerY; 
-            // Better not reset Y constantly to avoid glitches, just set on reset.
-
-            const p1 = p1Ref.current;
-            const p2 = p2Ref.current;
-            // Ensure they stay on center line vertically if we resized
-            p1.y = centerY;
-            p2.y = centerY;
-
-            // Calculate momentum
-            const mom1 = mass1 * p1.vx;
-            const mom2 = mass2 * p2.vx;
-            const totalMom = mom1 + mom2;
-
-            // Clear
-            ctx.fillStyle = "#09090b";
-            ctx.fillRect(0, 0, width, height);
-
-            // Track line
-            ctx.strokeStyle = "rgba(255,255,255,0.1)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(width, centerY);
-            ctx.stroke();
-
-            // Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.03)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
-
-            // Physics
-            if (isRunning) {
-                p1.x += p1.vx;
-                p2.x += p2.vx;
-
-                // Collision detection
-                const r1 = 20 + mass1 * 5;
-                const r2 = 20 + mass2 * 5;
-                const dist = Math.abs(p2.x - p1.x);
-
-                if (dist < r1 + r2 && !hasCollided) {
-                    hasCollided = true;
-
-                    // Store Initial Momentum for validation/display just before impact changes velocities
-                    const pInitial = Math.abs(totalMom); // simplify comparison
-
-                    // Elastic collision 1D
-                    const v1 = ((mass1 - mass2) * p1.vx + 2 * mass2 * p2.vx) / (mass1 + mass2);
-                    const v2 = ((mass2 - mass1) * p2.vx + 2 * mass1 * p1.vx) / (mass1 + mass2);
-                    p1.vx = v1;
-                    p2.vx = v2;
-
-                    // Separate to prevent sticking
-                    const overlap = (r1 + r2 - dist) / 2;
-                    p1.x -= overlap + 1;
-                    p2.x += overlap + 1;
-
-                    // Trigger result update after a short delay to simulate "calculation"
-                    if (!collisionProcessed) {
-                        collisionProcessed = true;
-                        setTimeout(() => {
-                            const pFinal = Math.abs(mass1 * p1.vx + mass2 * p2.vx);
-                            setCollisionResult({ pInitial, pFinal });
-                        }, 200);
-                    }
-
-                } else if (dist > r1 + r2 + 10) {
-                    // Reset collision flag when separated
-                    hasCollided = false;
-                    // But don't reset collisionProcessed if we want to keep the result displayed
-                }
-
-                // Wall bounce
-                if (p1.x < r1) { p1.x = r1; p1.vx *= -1; }
-                if (p1.x > width - r1) { p1.x = width - r1; p1.vx *= -1; }
-                if (p2.x < r2) { p2.x = r2; p2.vx *= -1; }
-                if (p2.x > width - r2) { p2.x = width - r2; p2.vx *= -1; }
-            }
-
-            // Draw particles
-            const drawParticle = (p: typeof p1, m: number, color: string, label: string) => {
-                const r = 20 + m * 5;
-
-                ctx.fillStyle = color;
-                // ctx.strokeStyle = "#000";
-                // ctx.lineWidth = 3;
-
-                // Shadow / Glow
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 15;
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = "white"; // "rgba(255,255,255,0.9)";
-                ctx.font = "bold 12px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(`${m}kg`, p.x, p.y);
-
-                // Velocity Arrow
-                if (Math.abs(p.vx) > 0.1) {
-                    const arrowLen = p.vx * 10;
-                    ctx.strokeStyle = "rgba(255,255,255,0.8)";
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y - r - 10);
-                    ctx.lineTo(p.x + arrowLen, p.y - r - 10);
-                    ctx.stroke();
-                    // Arrow head logic... simplified
-                    ctx.fillStyle = "rgba(255,255,255,0.8)";
-                    ctx.beginPath();
-                    ctx.arc(p.x + arrowLen, p.y - r - 10, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            };
-
-            drawParticle(p1, mass1, "#3B82F6", `v₁=${p1.vx.toFixed(1)}`);
-            drawParticle(p2, mass2, "#EF4444", `v₂=${p2.vx.toFixed(1)}`);
-
-            animationId = requestAnimationFrame(draw);
+        animationRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
         };
+    }, [isPlaying, mass1, mass2, restitution, v1, v2]);
 
-        draw();
-        return () => cancelAnimationFrame(animationId);
-    }, [mass1, mass2, isRunning]);
+    // -------------------------------------------------------------
+    // 3. MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
+        {
+            id: 1,
+            title: "Mükemmel Aktarım",
+            desc: "Kütleleri eşitle (m1 = m2). Esneklik 1 olsun. Bir cismi durdur (hız=0) ve diğerini ona çarptır.",
+            isCompleted: false,
+            condition: () => mass1 === mass2 && restitution === 1 && (initV1 === 0 || initV2 === 0) && hasCollided && isPlaying,
+            successText: "Kütleleri eşit cisimler esnek çarpışırsa hızlarını birbirlerine aktarırlar! Duran cisim hareketlenir, çarpan durur."
+        },
+        {
+            id: 2,
+            title: "Kenetlenme (İnelastik)",
+            desc: "Çarpışma sonrasında cisimlerin yapışıp birlikte hareket etmesini sağla (e=0 ve zıt yönlü hızlar).",
+            isCompleted: false,
+            condition: () => restitution === 0 && hasCollided && isPlaying && Math.abs(v1 - v2) < 0.1,
+            successText: "Tamamen esnek olmayan çarpışmalarda cisimler kenetlenir (e=0). Kinetik enerjinin bir kısmı ısıya dönüşür."
+        },
+        {
+            id: 3,
+            title: "Ağır Sıklet Şoku",
+            desc: "m1'i devasa (10kg), m2'yi küçücük (1kg) yap. Esneklik 1 olsun. m1'i m2'ye hızlıca çarptır.",
+            isCompleted: false,
+            condition: () => mass1 >= 8 && mass2 <= 2 && initV1 > 3 && restitution > 0.8 && hasCollided,
+            successText: "Küçük cisim devasa bir hızla fırlar! Çünkü dev kütlenin momentumu kendini korumak isterken ufaklık bu enerjiyi taşımak için inanılmaz hızlanmak zorundadır."
+        }
+    ]);
 
-
-    return (
-        <SimWrapper
-            title="arpışma Laboratuvarı" // Fix typo if needed: Çarpışma. "arpışma" looks like typo.
-            description="Momentum korunumu ve esnek çarpışmaları incele."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={
-                <div className="space-y-6">
-                    {/* Live Momentum Data */}
-                    <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-4 space-y-2">
-                        <div className="flex justify-between items-center text-xs">
-                            <span className="text-zinc-500 font-bold uppercase tracking-widest">Toplam Momentum</span>
-                            {collisionResult && <span className="text-green-400 font-bold">KORUNDU ✓</span>}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl font-mono font-black text-white">
-                                {Math.abs((mass1 * p1Ref.current.vx) + (mass2 * p2Ref.current.vx)).toFixed(1)}
-                            </span>
-                            <span className="text-zinc-600 font-bold text-xs uppercase">kg·m/s</span>
-                        </div>
-                    </div>
-
-                    {/* Mass Controls */}
-                    <div className="space-y-4">
-                        {/* Mass 1 */}
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                                <span className="text-blue-400">Kütle 1 (Mavi)</span>
-                                <span>{mass1} kg</span>
-                            </div>
-                            <input
-                                type="range" min="1" max="5" value={mass1}
-                                onChange={(e) => { setMass1(Number(e.target.value)); resetSim(); }}
-                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                            />
-                        </div>
-
-                        {/* Mass 2 */}
-                        <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                                <span className="text-red-400">Kütle 2 (Kırmızı)</span>
-                                <span>{mass2} kg</span>
-                            </div>
-                            <input
-                                type="range" min="1" max="5" value={mass2}
-                                onChange={(e) => { setMass2(Number(e.target.value)); resetSim(); }}
-                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => setIsRunning(!isRunning)}
-                            className={cn(
-                                "flex-1 py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
-                                isRunning
-                                    ? "bg-zinc-800 text-zinc-400 border border-white/5"
-                                    : "bg-white text-black hover:bg-zinc-200"
-                            )}
-                        >
-                            {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                            {isRunning ? "Durdur" : "Başlat"}
-                        </button>
-                        <button
-                            onClick={resetSim}
-                            className="w-14 rounded-xl border border-white/10 flex items-center justify-center hover:bg-zinc-800 transition-colors"
-                        >
-                            <RotateCcw className="w-5 h-5 text-zinc-400" />
-                        </button>
-                    </div>
-
-                    {/* Result Message */}
-                    {collisionResult && (
-                        <div className="animate-in fade-in slide-in-from-bottom-2 bg-green-500/10 border border-green-500/30 p-3 rounded-lg">
-                            <p className="text-green-400 text-xs font-bold text-center">
-                                Momentum Korundu! <br />
-                                <span className="opacity-70 font-mono font-normal">P(önce) = {collisionResult.pInitial.toFixed(1)} ≈ P(sonra) = {collisionResult.pFinal.toFixed(1)}</span>
-                            </p>
-                        </div>
-                    )}
-                </div>
+    useEffect(() => {
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
             }
-        >
-            <div ref={containerRef} className="w-full h-full relative bg-[#09090b] touch-none">
-                <canvas ref={canvasRef} className="block w-full h-full" />
+            return m;
+        }));
+    }, [mass1, mass2, restitution, initV1, initV2, hasCollided, isPlaying, v1, v2]);
 
-                <div className="absolute top-4 right-4 text-[10px] text-zinc-600 font-mono pointer-events-none uppercase tracking-widest hidden sm:block">
-                    COLLISION LAB
+    // -------------------------------------------------------------
+    // 4. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-2 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#F87171] text-black font-black py-3 rounded-lg hover:bg-[#FCA5A5] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "BAŞLAT"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
+
+            <div className="space-y-4">
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-4">
+                    <span className="text-[10px] font-black text-white px-2 uppercase tracking-widest bg-[#3B82F6] rounded-full py-0.5">Cisim 1 (Mavi)</span>
+                    <PhysicsSlider label="Kütle (m1)" value={mass1} min={1} max={10} step={1} unit="kg" onChange={setMass1} color="#3B82F6" />
+                    <PhysicsSlider label="İlk Hız (v1)" value={initV1} min={-10} max={10} step={1} unit="m/s" onChange={setInitV1} color="#60A5FA" />
+                </div>
+
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-4">
+                    <span className="text-[10px] font-black text-black px-2 uppercase tracking-widest bg-[#FCD34D] rounded-full py-0.5">Cisim 2 (Sarı)</span>
+                    <PhysicsSlider label="Kütle (m2)" value={mass2} min={1} max={10} step={1} unit="kg" onChange={setMass2} color="#FCD34D" />
+                    <PhysicsSlider label="İlk Hız (v2)" value={initV2} min={-10} max={10} step={1} unit="m/s" onChange={setInitV2} color="#FDE68A" />
+                </div>
+
+                <div className="p-3 bg-[#10B981]/10 border border-[#10B981]/30 rounded-xl">
+                    <PhysicsSlider label="Esneklik (e)" value={restitution} min={0} max={1} step={0.1} onChange={setRestitution} color="#10B981" />
                 </div>
             </div>
-        </SimWrapper>
+
+            {/* Live Data Dashboard */}
+            <div className="mt-2 p-4 rounded-xl border border-white/10 bg-black/40 grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Momentum (1)</p>
+                    <p className="text-xl font-mono text-[#3B82F6]">{(mass1 * v1).toFixed(1)} Ns</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Momentum (2)</p>
+                    <p className="text-xl font-mono text-[#FCD34D]">{(mass2 * v2).toFixed(1)} Ns</p>
+                </div>
+                <div className="col-span-2 pt-2 border-t border-white/10">
+                    <p className="text-[10px] text-zinc-500 uppercase font-black text-center">Toplam Sistem Momentumu</p>
+                    <p className="text-2xl font-mono text-white text-center">{(mass1 * v1 + mass2 * v2).toFixed(1)} Ns</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">MOMENTUM KORUNUMU P(i) = P(f)</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                Dışarıdan net bir kuvvet etki etmediği sürece, bir sistemin toplam momentumu <strong>DAİMA</strong> korunur.
+            </p>
+
+            <div className="grid gap-4 mt-4">
+                <div className="p-4 rounded-xl bg-[#F87171]/10 border border-[#F87171]/30 shadow-[0_0_20px_rgba(248,113,113,0.1)] text-center">
+                    <span className="text-xs text-[#F87171] uppercase font-black block mb-2">Momentum Denklemı</span>
+                    <p className="text-lg font-mono text-[#F87171]">m₁·v₁i + m₂·v₂i = m₁·v₁f + m₂·v₂f</p>
+                </div>
+
+                <ul className="space-y-2 mt-2 text-sm text-zinc-300">
+                    <li>• <strong>Momentum (P = m·v):</strong> Kütle ve hızın çarpımıdır, vektöreldir (yönü vardır).</li>
+                    <li>• <strong>Esneklik (e):</strong> Çarpışmanın türünü belirler. <br /><br /><strong>e=1 (Esnek)</strong>: Kinetik enerji tamamen korunur.<br /><strong>e=0 (İnelastik)</strong>: Cisimler kenetlenir, kinetik enerji ısı/sese dönüşerek azalır.</li>
+                </ul>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                        ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                        : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    const P1MomentumSize = Math.max(10, Math.abs(mass1 * v1) * 2);
+    const P2MomentumSize = Math.max(10, Math.abs(mass2 * v2) * 2);
+
+    return (
+        <SimulationLayout
+            title={simData?.title || "1D Çarpışmalar"}
+            color={simData?.color || "#F87171"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
+        >
+            <div className="w-full h-full p-0 relative flex items-center justify-center">
+                <svg
+                    width="100%"
+                    height="100%"
+                    viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="origin-center"
+                >
+                    {/* Track/Ground */}
+                    <line x1="0" y1={canvasHeight / 2 + 50} x2={canvasWidth} y2={canvasHeight / 2 + 50} stroke="#333" strokeWidth="4" />
+                    <rect x="0" y={canvasHeight / 2 + 50} width={canvasWidth} height="20" fill="#111" />
+
+                    {/* Particle 1 */}
+                    <g transform={`translate(${x1}, ${canvasHeight / 2 + 50 - radius1})`}>
+                        <circle
+                            r={radius1}
+                            fill="#3B82F6"
+                            style={{ filter: "drop-shadow(0px 0px 10px rgba(59,130,246,0.6))" }}
+                        />
+                        <text x="0" y="5" fill="#fff" fontSize="14" fontWeight="bold" textAnchor="middle">{mass1}kg</text>
+
+                        {/* Velocity Vector */}
+                        {Math.abs(v1) > 0.1 && (
+                            <g opacity="0.8" transform={`translate(0, -${radius1 + 10})`}>
+                                <line x1="0" y1="0" x2={v1 * 10} y2="0" stroke="#fff" strokeWidth="3" />
+                                <polygon
+                                    points={`${v1 * 10},0 ${v1 * 10 - Math.sign(v1) * 8},-4 ${v1 * 10 - Math.sign(v1) * 8},4`}
+                                    fill="#fff"
+                                />
+                                <text x={v1 * 10 / 2} y="-10" fill="#fff" fontSize="12" textAnchor="middle">{Math.abs(v1).toFixed(1)}</text>
+                            </g>
+                        )}
+                    </g>
+
+                    {/* Particle 2 */}
+                    <g transform={`translate(${x2}, ${canvasHeight / 2 + 50 - radius2})`}>
+                        <circle
+                            r={radius2}
+                            fill="#FCD34D"
+                            style={{ filter: "drop-shadow(0px 0px 10px rgba(252,211,77,0.6))" }}
+                        />
+                        <text x="0" y="5" fill="#000" fontSize="14" fontWeight="bold" textAnchor="middle">{mass2}kg</text>
+
+                        {/* Velocity Vector */}
+                        {Math.abs(v2) > 0.1 && (
+                            <g opacity="0.8" transform={`translate(0, -${radius2 + 10})`}>
+                                <line x1="0" y1="0" x2={v2 * 10} y2="0" stroke="#fff" strokeWidth="3" />
+                                <polygon
+                                    points={`${v2 * 10},0 ${v2 * 10 - Math.sign(v2) * 8},-4 ${v2 * 10 - Math.sign(v2) * 8},4`}
+                                    fill="#fff"
+                                />
+                                <text x={v2 * 10 / 2} y="-10" fill="#fff" fontSize="12" textAnchor="middle">{Math.abs(v2).toFixed(1)}</text>
+                            </g>
+                        )}
+                    </g>
+
+                    {/* Collision Flash Effect */}
+                    <AnimatePresence>
+                        {hasCollided && isPlaying && Math.abs(x1 - x2) < radius1 + radius2 + 5 && (
+                            <motion.circle
+                                initial={{ opacity: 1, r: 0 }}
+                                animate={{ opacity: 0, r: 100 }}
+                                exit={{ opacity: 0 }}
+                                cx={(x1 + x2) / 2}
+                                cy={canvasHeight / 2 + 50 - Math.max(radius1, radius2)}
+                                fill="transparent"
+                                stroke="#FFF"
+                                strokeWidth="5"
+                            />
+                        )}
+                    </AnimatePresence>
+                </svg>
+            </div>
+        </SimulationLayout>
     );
 }
-

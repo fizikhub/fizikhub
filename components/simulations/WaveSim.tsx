@@ -1,294 +1,308 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Sparkles, Info, Play, Pause, RotateCcw, Activity, Waves } from "lucide-react"; // Import Waves icon
-import { SimWrapper, SimTask } from "./sim-wrapper";
 
-interface WaveSimProps {
-    className?: string;
-}
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider, PhysicsToggle } from "./core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export function WaveSim({ className = "" }: WaveSimProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [frequency, setFrequency] = useState(1.5);
-    const [amplitude, setAmplitude] = useState(40);
-    const [showSecondWave, setShowSecondWave] = useState(false);
-    const [freq2, setFreq2] = useState(1.8);
-    const [isPlaying, setIsPlaying] = useState(true);
+export function WaveSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. PHYSICS STATE
+    // -------------------------------------------------------------
+    // Wave 1
+    const [amp1, setAmp1] = useState(30);
+    const [freq1, setFreq1] = useState(2); // Hz visually
+    const [speed1, setSpeed1] = useState(50); // visual speed
 
-    const timeRef = useRef(0);
+    // Wave 2
+    const [amp2, setAmp2] = useState(30);
+    const [freq2, setFreq2] = useState(2);
+    const [speed2, setSpeed2] = useState(50);
+    const [phaseShift, setPhaseShift] = useState(0); // degrees
 
-    const wavelength = 200 / frequency;
+    const [showComponents, setShowComponents] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [time, setTime] = useState(0);
 
-    // -- Tasks --
-    const [tasks, setTasks] = useState<SimTask[]>([
-        {
-            id: "w1", description: "Frekans ve Dalga Boyu", hint: "Frekansı 2.5 Hz üzerine çıkar ve dalga boyunun (λ) nasıl kısaldığını gör.", isCompleted: false,
-            explanation: "Ters Orantı! Frekans (sıklık) arttıkça, dalgalar sıklaşır ve dalga boyu kısalır. (v = λ * f)"
-        },
-        {
-            id: "w2", description: "Genlik Etkisi", hint: "Genliği (A) 70'in üzerine çıkar. Dalga boyu değişiyor mu?", isCompleted: false,
-            explanation: "Genlik, dalganın tepe noktasının yüksekliğidir. Enerjiyi temsil eder ama hızı veya dalga boyunu etkilemez!"
-        },
-        {
-            id: "w3", description: "Girişim (Beat)", hint: "2. Dalgayı aktif et ve frekansları birbirine yaklaştır (Fark < 0.2 Hz).", isCompleted: false,
-            explanation: "Süperpozisyon! İki dalga üst üste bindiğinde bazen birbirini güçlendirir, bazen sönümler. Buna girişim denir."
-        }
-    ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+    const animationRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
-    }, [tasks.length]);
-
-    // Check Tasks
-    useEffect(() => {
-        if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
-            if (frequency > 2.5) completeTask(0);
-        }
-        if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-            if (amplitude > 70) completeTask(1);
-        }
-        if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
-            if (showSecondWave && Math.abs(frequency - freq2) < 0.2 && Math.abs(frequency - freq2) > 0) completeTask(2);
-        }
-    }, [frequency, amplitude, showSecondWave, freq2, currentTaskIndex, tasks, completeTask]);
-
-
-    // -- Canvas Logic --
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !containerRef.current) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-
-        const draw = () => {
-            // Resize handling
-            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
-                canvas.width = containerRef.current.clientWidth;
-                canvas.height = containerRef.current.clientHeight;
-            }
-
-            if (!isPlaying) {
-                animationId = requestAnimationFrame(draw);
-                return; // still loop to catch resize
-            }
-
-            const width = canvas.width;
-            const height = canvas.height;
-            const centerY = height / 2;
-
-            // Clear Background (#09090b matches sim wrapper default)
-            ctx.fillStyle = "#09090b";
-            ctx.fillRect(0, 0, width, height);
-
-            // Grid Pattern
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
-            ctx.beginPath();
-            ctx.moveTo(0, centerY);
-            ctx.lineTo(width, centerY);
-            ctx.strokeStyle = "rgba(255,255,255,0.1)";
-            ctx.stroke();
-
-            // Wave 1 (Main - Green)
-            ctx.strokeStyle = "#4ADE80"; // green-400
-            ctx.lineWidth = 4;
-            ctx.lineCap = "round";
-            ctx.beginPath();
-            for (let x = 0; x < width; x += 2) {
-                const y = centerY - amplitude * Math.sin((x * frequency * 0.02) - timeRef.current * frequency);
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-
-            // Wave 2 (Optional - Yellow)
-            if (showSecondWave) {
-                ctx.strokeStyle = "#FACC15"; // yellow-400
-                ctx.lineWidth = 4;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                for (let x = 0; x < width; x += 2) {
-                    const y = centerY - amplitude * Math.sin((x * freq2 * 0.02) - timeRef.current * freq2);
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-                ctx.setLineDash([]);
-
-                // Sum wave (Resultant - Red/Pink)
-                ctx.strokeStyle = "#eff6ff"; // whiteish to stand out? or Red
-                ctx.strokeStyle = "#F472B6"; // pink-400
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                for (let x = 0; x < width; x += 2) {
-                    const y1 = amplitude * Math.sin((x * frequency * 0.02) - timeRef.current * frequency);
-                    const y2 = amplitude * Math.sin((x * freq2 * 0.02) - timeRef.current * freq2);
-                    const y = centerY - (y1 + y2); // Constructive interference visual
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-
-            // Wavelength indicator (λ)
-            if (!showSecondWave) {
-                const wlStart = width / 2 - wavelength / 2;
-                ctx.strokeStyle = "rgba(255,255,255,0.5)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(wlStart, centerY + 80);
-                ctx.lineTo(wlStart + wavelength, centerY + 80);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(wlStart, centerY + 70); ctx.lineTo(wlStart, centerY + 90);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(wlStart + wavelength, centerY + 70); ctx.lineTo(wlStart + wavelength, centerY + 90);
-                ctx.stroke();
-
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
-                ctx.font = "bold 14px monospace";
-                ctx.textAlign = "center";
-                ctx.fillText(`λ = ${wavelength.toFixed(0)}`, wlStart + wavelength / 2, centerY + 105);
-            }
-
-            timeRef.current += 0.05;
-            animationId = requestAnimationFrame(draw);
-        };
-
-        draw();
-        return () => cancelAnimationFrame(animationId);
-    }, [frequency, amplitude, showSecondWave, freq2, isPlaying, wavelength]);
-
+    // -------------------------------------------------------------
+    // 2. SIMULATION ENGINE
+    // -------------------------------------------------------------
     const resetSim = () => {
-        setFrequency(1.5);
-        setAmplitude(40);
-        setShowSecondWave(false);
-        setFreq2(1.8);
-        setIsPlaying(true);
+        setIsPlaying(false);
+        setTime(0);
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
-    return (
-        <SimWrapper
-            title="Dalga Laboratuvarı"
-            description="Dalga boyu, frekans ve girişim desenlerini incele."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={
-                <div className="space-y-6">
-                    {/* Control 1 */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-green-500/30 transition-colors">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Frekans 1</span>
-                            <span className="text-lg font-mono font-bold text-green-400">{frequency.toFixed(1)} Hz</span>
-                        </div>
-                        <input
-                            type="range" min="0.5" max="3" step="0.1" value={frequency}
-                            onChange={(e) => setFrequency(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-green-500"
-                        />
-                    </div>
+    const loop = (timestamp: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+        const dt = (timestamp - lastTimeRef.current) / 1000;
+        lastTimeRef.current = timestamp;
 
-                    {/* Control 2 */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Genlik (A)</span>
-                            <span className="text-lg font-mono font-bold text-white">{amplitude}</span>
-                        </div>
-                        <input
-                            type="range" min="10" max="100" value={amplitude}
-                            onChange={(e) => setAmplitude(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
-                        />
-                    </div>
+        if (isPlaying) {
+            setTime(t => t + dt);
+        }
+        animationRef.current = requestAnimationFrame(loop);
+    };
 
-                    {/* Toggle Second Wave */}
-                    <button
-                        onClick={() => setShowSecondWave(!showSecondWave)}
-                        className={cn(
-                            "w-full p-4 rounded-xl border flex items-center justify-between transition-all",
-                            showSecondWave
-                                ? "bg-yellow-500/10 border-yellow-500 text-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.2)]"
-                                : "bg-zinc-900 border-white/10 text-zinc-500 hover:bg-zinc-800"
-                        )}
-                    >
-                        <span className="font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-                            <Waves className="w-4 h-4" /> 2. Dalga (Girişim)
-                        </span>
-                        <div className={cn("w-3 h-3 rounded-full border border-current", showSecondWave && "bg-current")} />
-                    </button>
+    useEffect(() => {
+        animationRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, [isPlaying]);
 
-                    {showSecondWave && (
-                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 pt-2">
-                            <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-yellow-500/30 transition-colors">
-                                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Frekans 2</span>
-                                <span className="text-lg font-mono font-bold text-yellow-500">{freq2.toFixed(1)} Hz</span>
-                            </div>
-                            <input
-                                type="range" min="0.5" max="3" step="0.1" value={freq2}
-                                onChange={(e) => setFreq2(Number(e.target.value))}
-                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
-                            />
-                        </div>
-                    )}
+    // -------------------------------------------------------------
+    // 3. RENDER CALCULATIONS (SVG)
+    // -------------------------------------------------------------
+    const viewWidth = 1000;
+    const viewHeight = 200;
+    const pointsCount = 200; // Resolution
+    const dx = viewWidth / pointsCount;
 
-                    {/* Play/Pause */}
-                    <button
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className={cn(
-                            "w-full py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
-                            isPlaying
-                                ? "bg-zinc-100 text-black hover:bg-white"
-                                : "bg-green-600 text-white hover:bg-green-500"
-                        )}
-                    >
-                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                        {isPlaying ? "DURAKLAT" : "DEVAM ET"}
-                    </button>
-                </div>
+    // We build the path strings memoized per frame
+    // Mathematically: y = A * sin(k*x - omega*t)
+    // Here we'll map k = freq * const, omega = speed * const
+    const phaseRad = phaseShift * (Math.PI / 180);
+
+    let path1 = "";
+    let path2 = "";
+    let pathResult = "";
+
+    for (let i = 0; i <= pointsCount; i++) {
+        const x = i * dx;
+
+        // k defines how many full cycles fit in viewWidth based on frequency
+        const k1 = (freq1 * Math.PI * 2) / viewWidth;
+        const omega1 = speed1;
+        const y1 = amp1 * Math.sin(k1 * x - omega1 * time);
+
+        const k2 = (freq2 * Math.PI * 2) / viewWidth;
+        const omega2 = speed2;
+        const y2 = amp2 * Math.sin(k2 * x - omega2 * time + phaseRad);
+
+        const yRes = y1 + y2;
+
+        const cmd = i === 0 ? "M" : "L";
+        path1 += `${cmd} ${x},${y1} `;
+        path2 += `${cmd} ${x},${y2} `;
+        pathResult += `${cmd} ${x},${yRes} `;
+    }
+
+    // Peak amplitude dynamically (naive max bounding box)
+    const maxPossAmp = amp1 + amp2;
+
+    // -------------------------------------------------------------
+    // 4. PEDAGOGICAL MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
+        {
+            id: 1,
+            title: "Tam Yıkıcı Girişim",
+            desc: "İki dalganın birbirini tamamen sönümlemesi (yok etmesi) için Faz Farkını ayarlayın. (İpucu: Dalgalar aynı genlik ve aynı frekansta ters gitmeli).",
+            isCompleted: false,
+            condition: () => amp1 === amp2 && freq1 === freq2 && phaseShift === 180 && isPlaying,
+            successText: "Harika! İki dalga arasında 180° faz farkı olduğunda, birinin tepesi diğerinin çukuruna denk gelir ve birbirlerini yok ederler. Buna 'Yıkıcı Girişim' (Destructive Interference) denir."
+        },
+        {
+            id: 2,
+            title: "Maksimum Yapıcı Girişim",
+            desc: "İki dalgayı da 30 birim genliğe getirip faz farkını 0 yapın, böylece 60 birimlik dev bir beyaz dalga elde edin!",
+            isCompleted: false,
+            condition: () => amp1 === 30 && amp2 === 30 && phaseShift === 0 && isPlaying,
+            successText: "Mükemmel! Genlikler aynı yönde üst üste bindiği için toplam genlik fırladı. Buna 'Yapıcı Girişim' (Constructive Interference) denir."
+        }
+    ]);
+
+    useEffect(() => {
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
             }
-        >
-            <div ref={containerRef} className="w-full h-full relative bg-[#09090b]">
-                <canvas ref={canvasRef} className="block w-full h-full touch-none" />
+            return m;
+        }));
+    }, [amp1, amp2, freq1, freq2, phaseShift, isPlaying]);
 
-                {/* Legend Overlay */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2 pointer-events-none">
-                    <div className="bg-black/40 backdrop-blur-md border border-white/5 p-3 rounded-xl flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                            <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Dalga 1</span>
-                        </div>
-                        {showSecondWave && (
-                            <>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.5)]" />
-                                    <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Dalga 2</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_rgba(244,114,182,0.5)]" />
-                                    <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Bileşke</span>
-                                </div>
-                            </>
-                        )}
-                    </div>
+    // -------------------------------------------------------------
+    // 5. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-2 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#4ADE80] text-black font-black py-3 rounded-lg hover:bg-[#6EE7B7] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "BAŞLAT"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
+
+            <div className="space-y-4">
+                <div className="p-4 rounded-xl border border-[#FF6B6B]/30 bg-[#FF6B6B]/5">
+                    <h3 className="text-xs font-black text-[#FF6B6B] uppercase mb-4 tracking-widest">1. Dalga (Kırmızı)</h3>
+                    <PhysicsSlider label="Genlik (A₁)" value={amp1} min={0} max={50} step={1} onChange={setAmp1} color="#FF6B6B" />
+                    <PhysicsSlider label="Frekans (f₁)" value={freq1} min={0.5} max={5} step={0.1} onChange={setFreq1} color="#FF6B6B" />
+                </div>
+
+                <div className="p-4 rounded-xl border border-[#38BDF8]/30 bg-[#38BDF8]/5">
+                    <h3 className="text-xs font-black text-[#38BDF8] uppercase mb-4 tracking-widest">2. Dalga (Mavi)</h3>
+                    <PhysicsSlider label="Genlik (A₂)" value={amp2} min={0} max={50} step={1} onChange={setAmp2} color="#38BDF8" />
+                    <PhysicsSlider label="Frekans (f₂)" value={freq2} min={0.5} max={5} step={0.1} onChange={setFreq2} color="#38BDF8" />
+                </div>
+
+                <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                    <h3 className="text-xs font-black text-white uppercase mb-4 tracking-widest">Etkileşim (Girişim)</h3>
+                    <PhysicsSlider label="Faz Farkı (Δφ)" value={phaseShift} min={0} max={360} step={15} unit="°" onChange={setPhaseShift} color="#A78BFA" />
+                    <PhysicsToggle label="Bileşen Dalgaları Göster" checked={showComponents} onChange={setShowComponents} color="#FCD34D" />
                 </div>
             </div>
-        </SimWrapper>
+        </div>
+    );
+
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">SÜPERPOZİSYON İLKESİ</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                İki veya daha fazla dalga aynı ortamda karşılaştıklarında birbirlerinin içinden geçerler. Kesiştikleri
+                noktalarda dalgaların anlık genliklerinin cebirsel toplamı, "Bileşke Dalga"yı oluşturur.
+            </p>
+
+            <div className="grid gap-4 mt-6">
+                <div className="p-4 rounded-xl bg-[#4ADE80]/10 border border-[#4ADE80]/30 shadow-[0_0_20px_rgba(74,222,128,0.1)]">
+                    <span className="text-xs text-[#4ADE80] uppercase font-black block mb-2">Yapıcı Girişim</span>
+                    <p className="text-sm text-zinc-300">
+                        Dalgalar <strong>aynı fazda (Δφ = 0°, 360°)</strong> karşılaştığında tepeler tepelerle, çukurlar çukurlarla üst üste biner. Sonuçta genlik maksimum olur.
+                    </p>
+                </div>
+                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30">
+                    <span className="text-xs text-red-500 uppercase font-black block mb-2">Yıkıcı Girişim</span>
+                    <p className="text-sm text-zinc-300">
+                        Dalgalar <strong>zıt fazda (Δφ = 180°)</strong> karşılaştığında birinin tepesi diğerinin çukuruna gelir. Genlikleri eşitse birbirlerini tamamen sönümlerler (toplam = 0).
+                    </p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+                    <p className="text-sm font-mono text-white">y(x,t) = y₁(x,t) + y₂(x,t)</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                        ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                        : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <SimulationLayout
+            title={simData.title || "Dalga Girişimi"}
+            color={simData.color || "#4ADE80"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
+        >
+            <div className="w-full h-full p-4 relative flex items-center justify-center">
+                <div className="w-full relative h-[400px]">
+                    {/* Max Envelope Indicator */}
+                    <div
+                        className="absolute inset-x-0 mx-auto border-t border-b border-white/10 transition-all duration-300"
+                        style={{
+                            top: `calc(50% - ${maxPossAmp}px)`,
+                            height: `${maxPossAmp * 2}px`,
+                            background: 'linear-gradient(to bottom, transparent 49%, rgba(255,255,255,0.05) 50%, transparent 51%)'
+                        }}
+                    />
+
+                    <svg
+                        width="100%"
+                        height="100%"
+                        viewBox={`0 -100 ${viewWidth} 200`}
+                        preserveAspectRatio="none"
+                        className="absolute inset-0 drop-shadow-2xl"
+                    >
+                        {/* Axis */}
+                        <line x1="0" y1="0" x2={viewWidth} y2="0" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="5 5" />
+
+                        <AnimatePresence>
+                            {showComponents && (
+                                <motion.g
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                >
+                                    {/* Wave 1 */}
+                                    <path
+                                        d={path1}
+                                        fill="none"
+                                        stroke="#FF6B6B"
+                                        strokeWidth="3"
+                                        opacity="0.6"
+                                        style={{ filter: "drop-shadow(0px 0px 5px rgba(255,107,107,0.5))" }}
+                                    />
+                                    {/* Wave 2 */}
+                                    <path
+                                        d={path2}
+                                        fill="none"
+                                        stroke="#38BDF8"
+                                        strokeWidth="3"
+                                        opacity="0.6"
+                                        style={{ filter: "drop-shadow(0px 0px 5px rgba(56,189,248,0.5))" }}
+                                    />
+                                </motion.g>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Resultant Wave */}
+                        <path
+                            d={pathResult}
+                            fill="none"
+                            stroke="#FFFFFF"
+                            strokeWidth="5"
+                            style={{ filter: "drop-shadow(0px 0px 10px rgba(255,255,255,0.8))" }}
+                        />
+                    </svg>
+                </div>
+            </div>
+        </SimulationLayout>
     );
 }

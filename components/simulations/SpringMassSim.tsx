@@ -1,342 +1,365 @@
 "use client";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Play, Pause, RotateCcw, Target, Info, Activity, Weight } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { SimWrapper, SimTask } from "./sim-wrapper";
-import { Simulation } from "./data";
 
-interface SpringMassSimProps {
-    className?: string;
-    content?: Simulation['content'];
-}
+import React, { useState, useEffect, useRef } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider, PhysicsToggle } from "./core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-export function SpringMassSim({ className = "", content }: SpringMassSimProps) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [springK, setSpringK] = useState(50);
-    const [mass, setMass] = useState(2);
-    const [isRunning, setIsRunning] = useState(true);
+export function SpringMassSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. PHYSICS STATE
+    // -------------------------------------------------------------
+    // Spring parameters
+    const [springConstant, setSpringConstant] = useState(20); // k (N/m)
+    const [mass, setMass] = useState(2); // m (kg)
+    const [damping, setDamping] = useState(0.5); // b (kg/s)
+    const [gravity, setGravity] = useState(9.81); // g (m/s²)
+    const [showForces, setShowForces] = useState(true);
 
-    // Chart Data
-    const [chartData, setChartData] = useState<{ t: number, x: number }[]>([]);
-    const frameCountRef = useRef(0);
-    const timeRef = useRef(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [time, setTime] = useState(0);
 
-    // Physics state
-    const posRef = useRef(60);
-    const velRef = useRef(0);
+    // Initial / Unstretched state
+    const unstretchedLength = 50;
+    const [y, setY] = useState(50); // Displacement from unstretched length (m)
+    const [velocity, setVelocity] = useState(0); // m/s
 
-    // Formulas
-    const omega = Math.sqrt(springK / mass);
-    const period = (2 * Math.PI) / omega;
-    const frequency = 1 / period;
+    const animationRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
-    // -- Tasks --
-    const [tasks, setTasks] = useState<SimTask[]>([
-        {
-            id: "sm1", description: "Yay Sabiti ve Hız", hint: "Yay sabitini (k) 100 N/m üzerine çıkar ve salınımın nasıl hızlandığını gör.", isCompleted: false,
-            explanation: "Sert yaylar (yüksek k) cismi daha hızlı geri çeker, bu da periyodu kısaltır ve frekansı artırır (f ∝ √k)."
-        },
-        {
-            id: "sm2", description: "Kütle ve Hantallık", hint: "Kütleyi (m) 5 kg üzerine çıkar. Hareketin nasıl yavaşladığını hisset.", isCompleted: false,
-            explanation: "Kütle eylemsizliktir. Kütle arttıkça cismin hızını değiştirmek zorlaşır, bu yüzden salınım yavaşlar (T ∝ √m)."
-        },
-        {
-            id: "sm3", description: "Hedef Frekans", hint: "Yaklaşık 1.0 Hz (±0.1) frekans elde etmeye çalış. (İpucu: k=40, m=1 civarı?)", isCompleted: false,
-            explanation: "Tebrikler! Doğal frekans, sistemin serbest bırakıldığında salınmak istediği frekanstır."
-        }
-    ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+    // -------------------------------------------------------------
+    // 2. SIMULATION ENGINE
+    // -------------------------------------------------------------
+    const equilibriumY = (mass * gravity) / springConstant;
+    const period = 2 * Math.PI * Math.sqrt(mass / springConstant);
 
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
-    }, [tasks.length]);
-
-    // Check Tasks
-    useEffect(() => {
-        if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
-            if (springK > 100) completeTask(0);
-        }
-        if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
-            if (mass > 5) completeTask(1);
-        }
-        if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
-            if (Math.abs(frequency - 1.0) < 0.1) completeTask(2);
-        }
-    }, [springK, mass, frequency, currentTaskIndex, tasks, completeTask]);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || !containerRef.current) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-        const damping = 0.998;
-        const restY = 80;
-
-        const draw = () => {
-            // Resize handling
-            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
-                canvas.width = containerRef.current.clientWidth;
-                canvas.height = containerRef.current.clientHeight;
-            }
-
-            const width = canvas.width;
-            const height = canvas.height;
-            const centerX = width / 2;
-
-            // Clear with site background color (#09090b matches sim wrapper)
-            ctx.fillStyle = "#09090b";
-            ctx.fillRect(0, 0, width, height);
-
-            // Grid lines (very subtle)
-            ctx.strokeStyle = "rgba(255,255,255,0.03)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
-            for (let j = 0; j < height; j += 40) {
-                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(width, j); ctx.stroke();
-            }
-
-            // Physics (Hooke's Law)
-            if (isRunning) {
-                const force = -(springK / 100) * posRef.current;
-                const acc = force / mass;
-                velRef.current += acc;
-                velRef.current *= damping;
-                posRef.current += velRef.current;
-
-                // Update Time
-                timeRef.current += 0.016; // Approx 60fps
-
-                // Update Chart Data (Throttle: every 5 frames)
-                frameCountRef.current++;
-                if (frameCountRef.current % 5 === 0) {
-                    setChartData(prev => {
-                        const newData = [...prev, { t: parseFloat(timeRef.current.toFixed(1)), x: Math.round(posRef.current) }];
-                        if (newData.length > 50) return newData.slice(newData.length - 50);
-                        return newData;
-                    });
-                }
-            }
-
-            const massY = restY + 120 + posRef.current; // Lowered a bit
-
-            // Draw ceiling
-            ctx.fillStyle = "#27272a";
-            ctx.fillRect(centerX - 60, 20, 120, 12);
-            ctx.strokeStyle = "#52525b";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(centerX - 60, 20, 120, 12);
-
-            // Draw spring (zigzag)
-            // Color based on tension?
-            const tension = Math.abs(posRef.current);
-            ctx.strokeStyle = posRef.current > 0 ? "#60A5FA" : "#F87171"; // Blue (stretch) / Red (compress)
-            ctx.lineWidth = 4;
-            ctx.lineJoin = "round";
-            ctx.lineCap = "round";
-            ctx.beginPath();
-            ctx.moveTo(centerX, 32);
-
-            const coils = 12;
-            const springLength = 120 + posRef.current;
-            const coilH = springLength / coils;
-
-            for (let i = 0; i < coils; i++) {
-                const y = 32 + (i + 0.5) * coilH;
-                const dir = i % 2 === 0 ? 1 : -1;
-                ctx.lineTo(centerX + dir * 20, y);
-            }
-            ctx.lineTo(centerX, massY - 25);
-            ctx.stroke();
-
-            // Draw mass
-            ctx.fillStyle = "#3B82F6"; // Blue-500
-            ctx.strokeStyle = "#1E3A8A"; // Blue-900
-            ctx.lineWidth = 3;
-            // Mass Shadow
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "rgba(59, 130, 246, 0.3)";
-            ctx.fillRect(centerX - 35, massY - 25, 70, 50);
-            ctx.shadowBlur = 0;
-            ctx.strokeRect(centerX - 35, massY - 25, 70, 50);
-
-            // Mass label
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 14px sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(`${mass} kg`, centerX, massY + 5);
-
-            // Equilibrium line
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 4]);
-            ctx.beginPath();
-            ctx.moveTo(centerX - 120, restY + 120);
-            ctx.lineTo(centerX + 120, restY + 120);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Labels
-            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.font = "10px monospace tracking-widest";
-            ctx.textAlign = "right";
-            ctx.fillText("DENGE KONUMU", centerX - 130, restY + 124);
-
-            animationId = requestAnimationFrame(draw);
-        };
-
-        draw();
-        return () => cancelAnimationFrame(animationId);
-    }, [springK, mass, isRunning]);
+    // Total stretch = y
+    // System energy
+    const kineticEnergy = 0.5 * mass * velocity * velocity;
+    const springPotentialEnergy = 0.5 * springConstant * y * y;
+    const gravityPotentialEnergy = mass * gravity * (100 - y); // Reference at bottom
+    const totalEnergy = kineticEnergy + springPotentialEnergy + gravityPotentialEnergy;
 
     const resetSim = () => {
-        setSpringK(50);
-        setMass(2);
-        setIsRunning(true);
-        posRef.current = 60;
-        velRef.current = 0;
-        setChartData([]);
-        timeRef.current = 0;
+        setIsPlaying(false);
+        setTime(0);
+        setY(equilibriumY + 30); // Start displaced from equilibrium!
+        setVelocity(0);
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
-    // Custom Chart Tooltip
-    const CustomTooltip = ({ active, payload, label }: any) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-zinc-900 border border-white/10 p-2 rounded-lg shadow-xl">
-                    <p className="text-[10px] text-zinc-400 font-mono mb-1">{label}s</p>
-                    <p className="text-xs font-bold text-blue-400">
-                        Konum: {payload[0].value}px
-                    </p>
-                </div>
-            );
+    const updatePhysics = (dt: number) => {
+        if (dt > 0.1) dt = 0.1; // cap
+
+        setY((prevY) => {
+            setVelocity((prevV) => {
+                // F_net = m*g - k*y - b*v
+                // a = g - (k/m)*y - (b/m)*v
+                const acceleration = gravity - (springConstant / mass) * prevY - (damping / mass) * prevV;
+                const newV = prevV + acceleration * dt;
+
+                const newY = prevY + newV * dt;
+                setY(newY);
+                return newV;
+            });
+            return prevY;
+        });
+        setTime(t => t + dt);
+    };
+
+    const loop = (timestamp: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+        const dt = (timestamp - lastTimeRef.current) / 1000;
+        lastTimeRef.current = timestamp;
+
+        if (isPlaying) {
+            updatePhysics(dt * 2); // 2x playback speed
         }
-        return null;
+        animationRef.current = requestAnimationFrame(loop);
     };
 
-    return (
-        <SimWrapper
-            title="Yay Sarkaç"
-            description="Hooke Yasası ve Basit Harmonik Hareket simülasyonu."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            content={content}
-            charts={
-                <div className="h-[300px] w-full mt-4">
-                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Zaman - Konum Grafiği</h3>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                            <XAxis
-                                dataKey="t"
-                                stroke="#52525b"
-                                tick={{ fontSize: 10 }}
-                                tickFormatter={(val: any) => val + 's'}
-                            />
-                            <YAxis
-                                stroke="#52525b"
-                                tick={{ fontSize: 10 }}
-                                domain={[-150, 150]}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Line
-                                type="monotone"
-                                dataKey="x"
-                                stroke="#60A5FA"
-                                strokeWidth={2}
-                                dot={false}
-                                isAnimationActive={false}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
+    useEffect(() => {
+        animationRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, [isPlaying, springConstant, mass, damping, gravity]);
+
+    // Force restart initially when params severely change while stopped (to prevent weird states)
+    useEffect(() => {
+        if (!isPlaying) {
+            // Keep current y, but update equilibrium visual hints
+        }
+    }, [mass, springConstant, isPlaying]);
+
+    // Initial setup
+    useEffect(() => {
+        resetSim();
+    }, []);
+
+    // -------------------------------------------------------------
+    // 3. RENDER CALCULATIONS (SVG)
+    // -------------------------------------------------------------
+    const canvasWidth = 800;
+    const canvasHeight = 600;
+
+    const scale = 3; // 1 meter = 3 pixels on SVG for y-axis
+
+    const visualPivotY = 50;
+    const visualMassY = visualPivotY + unstretchedLength + (y * scale);
+    const visualEquilibriumY = visualPivotY + unstretchedLength + (equilibriumY * scale);
+
+    // Spring drawing function (Zig-zag)
+    const generateSpringPath = (startY: number, endY: number) => {
+        const coils = 12;
+        const width = 20;
+        const height = endY - startY;
+        const coilHeight = height / coils;
+
+        // Straight part at top and bottom
+        let path = `M ${canvasWidth / 2} ${startY} `;
+
+        for (let i = 0; i < coils; i++) {
+            const currentY = startY + (i * coilHeight);
+            const nextY = startY + ((i + 1) * coilHeight);
+            const midY = (currentY + nextY) / 2;
+
+            if (i % 2 === 0) {
+                path += `L ${canvasWidth / 2 - width} ${midY} L ${canvasWidth / 2 + width} ${nextY} `;
+            } else {
+                path += `L ${canvasWidth / 2 + width} ${midY} L ${canvasWidth / 2 - width} ${nextY} `;
             }
-            controls={
-                <div className="space-y-6">
-                    {/* Live Data */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Periyot (T)</span>
-                            <span className="text-white font-mono text-xl font-bold">{period.toFixed(2)}s</span>
-                        </div>
-                        <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-3 flex flex-col gap-1">
-                            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Frekans (f)</span>
-                            <span className="text-green-400 font-mono text-xl font-bold">{frequency.toFixed(2)}Hz</span>
-                        </div>
-                    </div>
+        }
+        path += `L ${canvasWidth / 2} ${endY}`;
+        return path;
+    };
 
-                    {/* Spring Constant Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-blue-500/30 transition-colors">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-                                <Activity className="w-3 h-3" /> Yay Sabiti (k)
-                            </span>
-                            <span className="text-lg font-mono font-bold text-blue-400">{springK} N/m</span>
-                        </div>
-                        <input
-                            type="range" min="20" max="150" value={springK}
-                            onChange={(e) => setSpringK(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                        />
-                    </div>
+    const springPath = generateSpringPath(visualPivotY, visualMassY - 15); // -15 to attach to top of mass box
 
-                    {/* Mass Control */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-red-500/30 transition-colors">
-                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider flex items-center gap-2">
-                                <Weight className="w-3 h-3" /> Kütle (m)
-                            </span>
-                            <span className="text-lg font-mono font-bold text-red-400">{mass} kg</span>
-                        </div>
-                        <input
-                            type="range" min="0.5" max="10" step="0.5" value={mass}
-                            onChange={(e) => setMass(Number(e.target.value))}
-                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500"
-                        />
-                    </div>
+    // -------------------------------------------------------------
+    // 4. PEDAGOGICAL MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
+        {
+            id: 1,
+            title: "Yüksek Frekans",
+            desc: "Yay sarkacının çok hızlı titreşmesini sağla! (Yay sabiti 'k'yı maksimuma, kütleyi 'm'yi minimuma getir).",
+            isCompleted: false,
+            condition: () => springConstant >= 50 && mass <= 1.0 && isPlaying,
+            successText: "Mükemmel! Periyot formülü T=2π√(m/k) olduğuna göre, kütle azaldıkça ve yay sertleştikçe (k arttıkça) titreşim inanılmaz hızlanır."
+        },
+        {
+            id: 2,
+            title: "Sönümleme Etkisi",
+            desc: "Titreşen yaya bir hava/sıvı sürtünmesi (damping) uygula, katsayıyısını 2.0 yapıp yavaşça durmasını sağla.",
+            isCompleted: false,
+            condition: () => damping >= 2.0 && isPlaying,
+            successText: "Harika! Sönümleme kuvveti hız ile ters yönlü çalışarak sistemin mekanik enerjisini ısıya dönüştürür ve hareketi durdurur."
+        }
+    ]);
 
-                    {/* Play/Pause */}
-                    <button
-                        onClick={() => setIsRunning(!isRunning)}
-                        className={cn(
-                            "w-full py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
-                            isRunning
-                                ? "bg-zinc-100 text-black hover:bg-white"
-                                : "bg-green-600 text-white hover:bg-green-500"
-                        )}
-                    >
-                        {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                        {isRunning ? "DURAKLAT" : "DEVAM ET"}
-                    </button>
-                </div>
+    useEffect(() => {
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
             }
-        >
-            <div ref={containerRef} className="w-full h-full relative bg-[#09090b] touch-none">
-                <canvas ref={canvasRef} className="block w-full h-full" />
+            return m;
+        }));
+    }, [springConstant, mass, damping, isPlaying]);
 
-                {/* Overlay Info */}
-                <div className="absolute top-4 right-4 text-right pointer-events-none hidden sm:block">
-                    <div className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest mb-1">
-                        SIMPLE HARMONIC MOTION
-                    </div>
-                    <div className="text-[10px] text-zinc-700 font-mono">
-                        ω = √(k/m) = {omega.toFixed(2)} rad/s
-                    </div>
+    // -------------------------------------------------------------
+    // 5. UI COMPONENTS
+    // -------------------------------------------------------------
+    const Controls = (
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-2 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#60A5FA] text-black font-black py-3 rounded-lg hover:bg-[#93C5FD] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "BAŞLAT"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
+
+            <div className="space-y-4">
+                <PhysicsSlider label="Yay Sabiti (k)" value={springConstant} min={5} max={50} step={1} unit="N/m" onChange={setSpringConstant} color="#60A5FA" />
+                <PhysicsSlider label="Kütle (m)" value={mass} min={0.5} max={10} step={0.5} unit="kg" onChange={setMass} color="#FCD34D" />
+                <PhysicsSlider label="Sönümleme (b)" value={damping} min={0} max={3} step={0.1} unit="kg/s" onChange={setDamping} color="#FF6B6B" />
+                <PhysicsSlider label="Yerçekimi (g)" value={gravity} min={0} max={20} step={0.5} unit="m/s²" onChange={setGravity} color="#A78BFA" />
+                <PhysicsToggle label="Kuvvet Vektörlerini Göster" checked={showForces} onChange={setShowForces} color="#4ADE80" />
+            </div>
+
+            {/* Live Data Dashboard */}
+            <div className="mt-2 p-4 rounded-xl border border-white/10 bg-black/40 grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Teorik Periyot</p>
+                    <p className="text-xl font-mono text-white">{period.toFixed(2)}s</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Uzanım (y)</p>
+                    <p className="text-xl font-mono text-[#60A5FA] drop-shadow-md">{y.toFixed(2)}m</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Potansiyel Enerji</p>
+                    <p className="text-xl font-mono text-[#4ADE80]">{springPotentialEnergy.toFixed(0)} J</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Kinetik Enerji</p>
+                    <p className="text-xl font-mono text-[#FCD34D]">{kineticEnergy.toFixed(0)} J</p>
                 </div>
             </div>
-        </SimWrapper>
+        </div>
+    );
+
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">HOOKE YASASI VE ENERJİ</h2>
+            <p className="text-zinc-400 leading-relaxed text-sm">
+                Esnek bir yay, denge konumundan uzaklaştırıldığında, onu tekrar denge konumuna getirmeye çalışan bir <strong>geri çağırıcı kuvvet (Restoring Force)</strong> oluşur.
+            </p>
+
+            <div className="grid gap-4 mt-4">
+                <div className="p-4 rounded-xl bg-[#60A5FA]/10 border border-[#60A5FA]/30 shadow-[0_0_20px_rgba(96,165,250,0.1)] text-center">
+                    <span className="text-xs text-[#60A5FA] uppercase font-black block mb-2">Hooke Yasası</span>
+                    <p className="text-2xl font-mono text-[#60A5FA]">F = -k · y</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#FCD34D]/10 border border-[#FCD34D]/30 text-center">
+                    <span className="text-xs text-[#FCD34D] uppercase font-black block mb-2">Salınım Periyodu</span>
+                    <p className="text-xl font-mono text-[#FCD34D]">T = 2π √(m/k)</p>
+                </div>
+
+                <ul className="space-y-2 mt-2 text-sm text-zinc-300">
+                    <li>• <strong>k (Yay Sabiti):</strong> Yayın sertliğini belirler. K arttıkça yay zor uzar, hareket hızlanır (Periyot azalır).</li>
+                    <li>• <strong>m (Kütle):</strong> Eylemsizlik yaratır. Kütle arttıkça hareket yavaşlar (Periyot artar).</li>
+                    <li>• Sönümleme (Damping), mekanik enerjinin ısıya dönüşüp kaybolmasına yol açar, sistem zamanla durur.</li>
+                </ul>
+            </div>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                        ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                        : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    const forceGravity = mass * gravity;
+    const forceSpring = -springConstant * y;
+
+    return (
+        <SimulationLayout
+            title={simData.title || "Yay-Kütle Sistemi"}
+            color={simData.color || "#60A5FA"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
+        >
+            <div className="w-full h-full p-0 relative flex items-center justify-center">
+                <svg
+                    width="100%"
+                    height="100%"
+                    viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="origin-center"
+                >
+                    {/* Background Ceiling */}
+                    <rect x="0" y="0" width={canvasWidth} height={visualPivotY} fill="#111" />
+                    <line x1="0" y1={visualPivotY} x2={canvasWidth} y2={visualPivotY} stroke="#333" strokeWidth="4" />
+                    {/* Ceiling mount point */}
+                    <path d={`M ${canvasWidth / 2 - 20} ${visualPivotY} L ${canvasWidth / 2 + 20} ${visualPivotY} L ${canvasWidth / 2} ${visualPivotY + 10} Z`} fill="#444" />
+
+                    {/* The Spring */}
+                    <path
+                        d={springPath}
+                        fill="none"
+                        stroke="#60A5FA"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ filter: "drop-shadow(0px 0px 5px rgba(96,165,250,0.5))" }}
+                    />
+
+                    {/* Equilibrium Reference Line */}
+                    {y !== equilibriumY && (
+                        <g opacity="0.3">
+                            <line x1={canvasWidth / 2 - 100} y1={visualEquilibriumY} x2={canvasWidth / 2 + 100} y2={visualEquilibriumY} stroke="#fff" strokeWidth="1" strokeDasharray="5 5" />
+                            <text x={canvasWidth / 2 + 110} y={visualEquilibriumY + 4} fill="#fff" fontSize="12" fontFamily="monospace">Denge</text>
+                        </g>
+                    )}
+
+                    {/* The Mass Block */}
+                    <g transform={`translate(${canvasWidth / 2 - 25}, ${visualMassY - 15})`}>
+                        <rect
+                            width="50"
+                            height="50"
+                            rx="8"
+                            fill="#FCD34D"
+                            style={{ filter: "drop-shadow(0px 0px 10px rgba(252,211,77,0.4))" }}
+                        />
+                        <text x="25" y="30" fill="#000" fontSize="16" fontWeight="bold" textAnchor="middle">{mass.toFixed(1)}kg</text>
+
+                        {/* Force Vectors */}
+                        {showForces && (
+                            <g transform="translate(25, 25)">
+                                {/* Gravity Vector (Down) */}
+                                {forceGravity > 0 && (
+                                    <g opacity="0.8">
+                                        <line x1="15" y1="0" x2="15" y2={forceGravity * 1.5} stroke="#38BDF8" strokeWidth="3" />
+                                        <polygon points={`15,${forceGravity * 1.5 + 5} 12,${forceGravity * 1.5} 18,${forceGravity * 1.5}`} fill="#38BDF8" />
+                                    </g>
+                                )}
+
+                                {/* Spring Hooke Force Vector (Upwards if stretched, Downwards if compressed) */}
+                                {Math.abs(forceSpring) > 0.1 && (
+                                    <g opacity="0.8">
+                                        <line x1="-15" y1="0" x2="-15" y2={forceSpring * 1.5} stroke="#FF6B6B" strokeWidth="3" />
+                                        <polygon points={`-15,${forceSpring * 1.5 - Math.sign(forceSpring) * 5} -18,${forceSpring * 1.5} -12,${forceSpring * 1.5}`} fill="#FF6B6B" />
+                                    </g>
+                                )}
+                            </g>
+                        )}
+                    </g>
+                </svg>
+            </div>
+        </SimulationLayout>
     );
 }
-

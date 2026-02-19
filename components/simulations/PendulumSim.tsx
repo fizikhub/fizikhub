@@ -1,287 +1,307 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { cn } from "@/lib/utils";
-import { Activity, RotateCcw, Play, Pause, BarChart3 } from "lucide-react";
-import { SimWrapper, SimTask } from "./sim-wrapper";
+import React, { useState, useEffect, useRef } from "react";
+import { SimulationLayout } from "./core/simulation-layout";
+import { PhysicsSlider, PhysicsToggle } from "./core/ui";
+import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface PendulumSimProps {
-    className?: string;
-}
+export function PendulumSim({ simData }: { simData: any }) {
+    // -------------------------------------------------------------
+    // 1. PHYSICS STATE
+    // -------------------------------------------------------------
+    const [length, setLength] = useState(2.0); // meters (scaled for display)
+    const [gravity, setGravity] = useState(9.81); // m/s²
+    const [mass, setMass] = useState(1.0); // kg
+    const [damping, setDamping] = useState(0.0); // damping coefficient
+    const [initialAngle, setInitialAngle] = useState(45); // degrees
 
-export function PendulumSim({ className = "" }: PendulumSimProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [time, setTime] = useState(0);
+    const [angle, setAngle] = useState(initialAngle * (Math.PI / 180));
+    const [velocity, setVelocity] = useState(0);
 
-    // UI & Physics State
-    const [length, setLength] = useState(150);
-    const [isRunning, setIsRunning] = useState(true);
-    const [showVectors, setShowVectors] = useState(true);
-    const [isDragging, setIsDragging] = useState(false);
+    const animationRef = useRef<number>(0);
+    const lastTimeRef = useRef<number>(0);
 
-    // Mission State
-    const [tasks, setTasks] = useState<SimTask[]>([
+    // Derived physics values for display only
+    const period = 2 * Math.PI * Math.sqrt(length / gravity);
+
+    // -------------------------------------------------------------
+    // 2. SIMULATION ENGINE
+    // -------------------------------------------------------------
+    const resetSim = () => {
+        setIsPlaying(false);
+        setTime(0);
+        setAngle(initialAngle * (Math.PI / 180));
+        setVelocity(0);
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+
+    const updatePhysics = (dt: number) => {
+        // dt in seconds. Cap to avoid exploding if tab is inactive
+        if (dt > 0.1) dt = 0.1;
+
+        setAngle((prevAngle) => {
+            setVelocity((prevVel) => {
+                // simple verlet or euler: d^2(theta)/dt^2 = -(g/L)*sin(theta) - damping*v
+                const acceleration = -(gravity / length) * Math.sin(prevAngle) - damping * prevVel;
+                const newVel = prevVel + acceleration * dt;
+
+                // update angle directly inside the setState to ensure synchronous matching
+                const newAngle = prevAngle + newVel * dt;
+                setAngle(newAngle);
+                return newVel;
+            });
+            // We just updated via closure in setVelocity to prevent race conditions.
+            // Return prevAngle, but it gets overwritten instantly by the nested update.
+            return prevAngle;
+        });
+
+        setTime(t => t + dt);
+    };
+
+    const loop = (timestamp: number) => {
+        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+        const dt = (timestamp - lastTimeRef.current) / 1000;
+        lastTimeRef.current = timestamp;
+
+        if (isPlaying) {
+            updatePhysics(dt);
+        }
+        animationRef.current = requestAnimationFrame(loop);
+    };
+
+    useEffect(() => {
+        animationRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, [isPlaying, gravity, length, damping]); // Re-attach when physics configs change
+
+    // Restart when initial angle changes while stopped
+    useEffect(() => {
+        if (!isPlaying) {
+            setAngle(initialAngle * (Math.PI / 180));
+            setVelocity(0);
+            setTime(0);
+        }
+    }, [initialAngle, isPlaying]);
+
+    // -------------------------------------------------------------
+    // 3. PEDAGOGICAL MISSIONS
+    // -------------------------------------------------------------
+    const [missions, setMissions] = useState([
         {
-            id: "ped1",
-            description: "Hareketi Başlat",
-            hint: "Sarkacı tutup yana çek ve bırak. Salınımı gözlemle.",
+            id: 1,
+            title: "Galileo'nun Sırrı",
+            desc: "Fizikte periyot kütleye bağlı mıdır? Test etmek için kütleyi 5 kg yaparak simülasyonu başlat.",
             isCompleted: false,
-            explanation: "Süper! Sarkaç, potansiyel ve kinetik enerji arasında sürekli dönüşüm yaparak salınır."
+            condition: () => mass >= 5 && isPlaying,
+            successText: "Harika! Gördüğün gibi kütle değişse de salınım frekansı hiç değişmedi. Pendulum periyodu (T) sadece uzunluk ve yerçekimine bağlıdır."
         },
         {
-            id: "ped2",
-            description: "Kısa İp, Hızlı Tur",
-            hint: "İp uzunluğunu 100px altına düşür ve periyodun nasıl kısaldığını gör.",
+            id: 2,
+            title: "Dünya Dışı Fizik",
+            desc: "Sarkacın çok daha yavaş salınmasını istiyoruz! Yerçekimini Ay seviyesine (yaklaşık 1.6 m/s²) düşür.",
             isCompleted: false,
-            explanation: "Doğru! İp kısaldıkça sarkaç daha hızlı salınır (Periyot azalır)."
-        },
-        {
-            id: "ped3",
-            description: "Yavaş Çekim (2 Saniye)",
-            hint: "Periyodu yaklaşık 2 saniye yapmak için ipi uzatmayı dene (200px civarı).",
-            isCompleted: false,
-            explanation: "Harika! Uzun sarkaçlar daha yavaş salınır. T = 2π√(L/g) formülünü hatırladın mı?"
+            condition: () => gravity <= 2.0 && isPlaying,
+            successText: "Mükemmel! Periyot (T) yerçekimi (g) ile ters orantılı olduğu için, yerçekimi azaldığında sarkaç çok daha yavaş sallanır."
         }
     ]);
-    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    // Physics References
-    const angleRef = useRef(Math.PI / 4);
-    const velocityRef = useRef(0);
-    const accelerationRef = useRef(0);
-    const timeRef = useRef(0);
-
-    // Physics constants
-    const g_real = 9.81;
-    const gravity = 0.5; // Visual gravity scale
-    const damping = 0.998;
-    const bobRadius = 24;
-
-    // Task Completion Logic
-    const completeTask = useCallback((index: number) => {
-        setTasks(prev => {
-            if (prev[index].isCompleted) return prev;
-            const newTasks = [...prev];
-            newTasks[index].isCompleted = true;
-            return newTasks;
-        });
-        setTimeout(() => {
-            setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
-        }, 1500);
-    }, []);
-
-    const resetSim = () => {
-        setLength(150);
-        setIsRunning(true);
-        angleRef.current = Math.PI / 4;
-        velocityRef.current = 0;
-        timeRef.current = 0;
-    };
-
-    // Interaction Handlers
-    const handleInteraction = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const clientX = 'touches' in e ? (e as TouchEvent).touches[0].clientX : (e as MouseEvent).clientX;
-        const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
-
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
-        const originX = canvas.width / 2;
-        const originY = 20;
-
-        angleRef.current = Math.atan2(x - originX, y - originY);
-        velocityRef.current = 0;
-    };
-
-    // Game Loop
+    // Mission condition checker
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        let animationId: number;
-
-        const draw = () => {
-            const width = canvas.width;
-            const height = canvas.height;
-            const originX = width / 2;
-            const originY = 20;
-
-            // Update Dimensions if resized
-            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
-                canvas.width = containerRef.current.clientWidth;
-                canvas.height = containerRef.current.clientHeight;
+        setMissions(prev => prev.map(m => {
+            if (!m.isCompleted && m.condition()) {
+                return { ...m, isCompleted: true };
             }
+            return m;
+        }));
+    }, [mass, gravity, isPlaying]);
 
-            // Paint Background
-            ctx.fillStyle = "#09090b"; // Match theme
-            ctx.fillRect(0, 0, width, height);
+    // -------------------------------------------------------------
+    // 4. RENDERERS
+    // -------------------------------------------------------------
+    const pivot = { x: 50, y: 10 }; // SVG percentages
+    const visualLength = length * 15; // Scaling factor
+    const bobX = pivot.x + Math.sin(angle) * visualLength;
+    const bobY = pivot.y + Math.cos(angle) * visualLength;
+    const bobRadius = 2 + (mass * 0.5); // Visual size based on mass
 
-            // Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.05)";
-            ctx.lineWidth = 1;
-            for (let i = 0; i < width; i += 40) {
-                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-            }
-
-            // Physics Update
-            if (isRunning && !isDragging) {
-                accelerationRef.current = (-gravity / length) * Math.sin(angleRef.current);
-                velocityRef.current += accelerationRef.current;
-                velocityRef.current *= damping;
-                angleRef.current += velocityRef.current;
-                timeRef.current += 1 / 60; // Approx dt
-
-                // Task Checks
-                // Task 1: Just let it swing a bit properly
-                if (currentTaskIndex === 0 && Math.abs(velocityRef.current) > 0.05) {
-                    completeTask(0);
-                }
-                // Task 2: Short length (<100)
-                if (currentTaskIndex === 1 && length < 100) {
-                    completeTask(1);
-                }
-                // Task 3: Period approx 2s -> Length around 200-240 visual scale mapping is loose here, checking raw length
-                // In visual scale g=0.5. T = 2pi * sqrt(L/g). For T=2s -> 4 = 4pi^2 * L/0.5 -> L = 0.5/pi^2 ~ 0.05 (too small relative).
-                // Let's just rely on the user finding the "sweet spot" value defined in hint (200px)
-                if (currentTaskIndex === 2 && length > 190 && length < 230) {
-                    completeTask(2);
-                }
-            }
-
-            const bobX = originX + length * Math.sin(angleRef.current);
-            const bobY = originY + length * Math.cos(angleRef.current);
-
-            // Draw String
-            ctx.strokeStyle = "rgba(255,255,255,0.4)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(originX, originY);
-            ctx.lineTo(bobX, bobY);
-            ctx.stroke();
-
-            // Draw Pivot
-            ctx.fillStyle = "#27272a";
-            ctx.beginPath(); ctx.arc(originX, originY, 6, 0, Math.PI * 2); ctx.fill();
-            ctx.strokeStyle = "rgba(255,255,255,0.5)"; ctx.lineWidth = 2; ctx.stroke();
-
-            // Draw Bob
-            ctx.fillStyle = isDragging ? "#F59E0B" : "#FFD700"; // Amber-500 drag, Gold default
-            ctx.shadowBlur = isDragging ? 25 : 0;
-            ctx.shadowColor = "#F59E0B";
-            ctx.beginPath();
-            ctx.arc(bobX, bobY, bobRadius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = "#000"; ctx.lineWidth = 3; ctx.stroke();
-
-            // Vectors
-            if (showVectors && isRunning) {
-                // Velocity (Green)
-                const vLen = velocityRef.current * 1500;
-                if (Math.abs(vLen) > 1) {
-                    ctx.strokeStyle = "#4ade80"; ctx.lineWidth = 3;
-                    ctx.beginPath(); ctx.moveTo(bobX, bobY);
-                    ctx.lineTo(bobX + vLen * Math.cos(angleRef.current), bobY - vLen * Math.sin(angleRef.current));
-                    ctx.stroke();
-                }
-                // Gravity (Red)
-                ctx.strokeStyle = "#ef4444"; ctx.lineWidth = 3;
-                ctx.beginPath(); ctx.moveTo(bobX, bobY); ctx.lineTo(bobX, bobY + 40); ctx.stroke();
-            }
-
-            animationId = requestAnimationFrame(draw);
-        };
-        draw();
-        return () => cancelAnimationFrame(animationId);
-    }, [length, isRunning, isDragging, showVectors, currentTaskIndex, completeTask]);
-
-    const period = 2 * Math.PI * Math.sqrt(length / 100 / g_real); // Visual approx
-
-    // Controls component
     const Controls = (
-        <div className="space-y-6">
-            <div className="space-y-3">
-                <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 text-white">
-                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">UZUNLUK (L)</span>
-                    <span className="text-lg font-mono font-bold text-[#FFD700]">{length}px</span>
+        <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-2 justify-between mb-4 bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                <button
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-[#FCD34D] text-black font-black py-3 rounded-lg hover:bg-[#FDE68A] transition-all active:scale-95 uppercase tracking-wider"
+                >
+                    {isPlaying ? <Pause className="w-5 h-5 fill-black" /> : <Play className="w-5 h-5 fill-black" />}
+                    {isPlaying ? "DURDUR" : "BAŞLAT"}
+                </button>
+                <button
+                    onClick={resetSim}
+                    className="flex items-center justify-center w-12 h-12 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-white active:scale-95"
+                >
+                    <RotateCcw className="w-5 h-5" />
+                </button>
+            </div>
+
+            <PhysicsSlider
+                label="İp Uzunluğu (L)"
+                value={length} min={0.5} max={4.0} step={0.1} unit="m"
+                onChange={setLength} color="#FCD34D"
+            />
+            <PhysicsSlider
+                label="Yerçekimi (g)"
+                value={gravity} min={1.6} max={20.0} step={0.1} unit="m/s²"
+                onChange={setGravity} color="#FCD34D"
+            />
+            <PhysicsSlider
+                label="Kütle (m)"
+                value={mass} min={0.1} max={10.0} step={0.1} unit="kg"
+                onChange={setMass} color="#38BDF8"
+            />
+            <PhysicsSlider
+                label="Başlangıç Açısı"
+                value={initialAngle} min={-90} max={90} step={1} unit="°"
+                onChange={setInitialAngle} color="#A78BFA"
+            />
+            <PhysicsSlider
+                label="Hava Sürtünmesi"
+                value={damping} min={0} max={0.5} step={0.01} unit=""
+                onChange={setDamping} color="#F87171"
+            />
+
+            {/* Live Data Dashboard */}
+            <div className="mt-4 p-4 rounded-xl border border-white/10 bg-black/40 grid grid-cols-2 gap-4">
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Teorik Periyot (T)</p>
+                    <p className="text-xl font-mono text-[#FCD34D] drop-shadow-md">{period.toFixed(2)}s</p>
                 </div>
-                <input
-                    type="range" min="50" max="300" value={length}
-                    onChange={(e) => setLength(Number(e.target.value))}
-                    className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#FFD700]"
-                />
-            </div>
-
-            <button
-                onClick={() => setIsRunning(!isRunning)}
-                className={cn(
-                    "w-full py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg transition-all shadow-lg active:scale-95",
-                    isRunning
-                        ? "bg-zinc-800 text-zinc-400 border border-white/5"
-                        : "bg-[#FFD700] text-black border border-transparent"
-                )}
-            >
-                {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                {isRunning ? "DURAKLAT" : "DEVAM ET"}
-            </button>
-
-            <button
-                onClick={() => setShowVectors(!showVectors)}
-                className={cn(
-                    "w-full p-4 rounded-xl border flex items-center justify-between transition-all",
-                    showVectors ? "bg-white/5 border-white/20 text-white" : "bg-transparent border-zinc-800 text-zinc-500"
-                )}
-            >
-                <span className="font-bold text-xs uppercase tracking-widest">Kuvvet Vektörleri</span>
-                <div className={cn("w-4 h-4 rounded-full border-2 border-current transition-colors", showVectors && "bg-[#4ade80] border-[#4ade80]")} />
-            </button>
-
-            <div className="bg-zinc-950 p-4 rounded-xl border border-white/5 text-center">
-                <div className="text-[9px] text-zinc-500 uppercase font-black mb-1">Hesaplanan Periyot</div>
-                <div className="text-2xl font-mono font-bold text-white">{period.toFixed(2)}s</div>
-            </div>
-
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex gap-3">
-                <BarChart3 className="w-5 h-5 text-blue-400 shrink-0" />
-                <p className="text-blue-200/70 text-xs leading-relaxed font-medium">
-                    Basit sarkaçta periyot kütleden bağımsızdır, sadece ipin uzunluğuna ve yerçekimine bağlıdır.
-                </p>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Anlık Açı (θ)</p>
+                    <p className="text-xl font-mono text-white">{(angle * 180 / Math.PI).toFixed(1)}°</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Geçen Süre</p>
+                    <p className="text-xl font-mono text-white">{time.toFixed(1)}s</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-zinc-500 uppercase font-black">Açısal Hız (ω)</p>
+                    <p className="text-xl font-mono text-white">{velocity.toFixed(2)}</p>
+                </div>
             </div>
         </div>
     );
 
-    return (
-        <SimWrapper
-            title="Basit Sarkaç"
-            description="Periyodik hareketin temellerini keşfet."
-            tasks={tasks}
-            currentTaskIndex={currentTaskIndex}
-            onReset={resetSim}
-            controls={Controls}
-        >
-            <div
-                ref={containerRef}
-                className="w-full h-full relative"
-                onMouseDown={(e) => { setIsDragging(true); handleInteraction(e); }}
-                onMouseMove={(e) => { if (isDragging) handleInteraction(e); }}
-                onMouseUp={() => setIsDragging(false)}
-                onTouchStart={(e) => { setIsDragging(true); handleInteraction(e); }}
-                onTouchMove={(e) => { if (isDragging) handleInteraction(e); }}
-                onTouchEnd={() => setIsDragging(false)}
-            >
-                <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing touch-none" />
+    const Theory = (
+        <div className="space-y-6">
+            <h2 className="text-xl font-black text-white italic">BASİT SARKAÇ TEORİSİ</h2>
+            <p className="text-zinc-400 leading-relaxed">
+                Basit sarkaç, ağırlığı ihmal edilen bir ipe asılmış noktasal bir kütleden oluşur. Küçük açılarda (&lt;15°)
+                sarkacın hareketi <strong>Basit Harmonik Hareket (BHH)</strong> kabul edilir.
+            </p>
 
-                {!isRunning && !isDragging && (
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 text-sm font-bold pointer-events-none select-none animate-pulse">
-                        DURAKLATILDI
-                    </div>
-                )}
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 my-4 flex justify-center">
+                <p className="text-2xl font-mono text-[#FCD34D]">
+                    T = 2π √(L/g)
+                </p>
             </div>
-        </SimWrapper>
+
+            <ul className="space-y-3 text-zinc-300">
+                <li className="flex gap-2">
+                    <span className="text-[#FCD34D] font-bold">L:</span> İp uzunluğu (Metre) - Periyodu doğru orantılı olarak etkiler.
+                </li>
+                <li className="flex gap-2">
+                    <span className="text-[#FCD34D] font-bold">g:</span> Yerçekimi ivmesi - Periyodu ters orantılı olarak etkiler.
+                </li>
+                <li className="flex gap-2">
+                    <span className="text-[#FCD34D] font-bold">m:</span> Kütle - Periyoda HİÇBİR etkisi yoktur!
+                </li>
+            </ul>
+        </div>
+    );
+
+    const Missions = (
+        <div className="space-y-4">
+            {missions.map((m) => (
+                <div
+                    key={m.id}
+                    className={`relative p-4 rounded-2xl border transition-all duration-500 overflow-hidden ${m.isCompleted
+                        ? "bg-[#4ADE80]/10 border-[#4ADE80]/30"
+                        : "bg-black/20 border-white/10"
+                        }`}
+                >
+                    {m.isCompleted && (
+                        <div className="absolute top-4 right-4 text-[#4ADE80]">
+                            <CheckCircle2 className="w-5 h-5 shadow-inner" />
+                        </div>
+                    )}
+                    <h3 className={`font-black uppercase tracking-tight mb-2 ${m.isCompleted ? 'text-[#4ADE80]' : 'text-white'}`}>
+                        {m.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-4">{m.desc}</p>
+
+                    <AnimatePresence>
+                        {m.isCompleted && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                className="pt-3 mt-3 border-t border-[#4ADE80]/20 text-xs text-[#4ADE80] font-medium leading-relaxed"
+                            >
+                                {m.successText}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <SimulationLayout
+            title={simData.title || "Basit Sarkaç"}
+            color={simData.color || "#FCD34D"}
+            controlsArea={Controls}
+            theoryArea={Theory}
+            missionsArea={Missions}
+        >
+            {/* The SVG Canvas */}
+            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                {/* Pivot indicator */}
+                <rect x="40" y="5" width="20" height="2" fill="#333" rx="1" />
+                <circle cx={pivot.x} cy={pivot.y} r="1" fill="#666" />
+
+                {/* Center axis guide line */}
+                <line x1={pivot.x} y1={pivot.y} x2={pivot.x} y2="90" stroke="#ffffff10" strokeWidth="0.2" strokeDasharray="2 2" />
+
+                {/* Pendulum String */}
+                <line
+                    x1={pivot.x} y1={pivot.y}
+                    x2={bobX} y2={bobY}
+                    stroke="#fff"
+                    strokeWidth="0.5"
+                    opacity={0.7}
+                />
+
+                {/* Pendulum Bob / Mass */}
+                <circle
+                    cx={bobX} cy={bobY}
+                    r={bobRadius}
+                    fill="#FCD34D"
+                    style={{ filter: "drop-shadow(0px 0px 4px rgba(252, 211, 77, 0.5))" }}
+                />
+
+                {/* Highlight stroke for the bob */}
+                <circle
+                    cx={bobX} cy={bobY}
+                    r={bobRadius + 0.2}
+                    fill="transparent"
+                    stroke="#ffffff"
+                    strokeWidth="0.2"
+                />
+            </svg>
+        </SimulationLayout>
     );
 }

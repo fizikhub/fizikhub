@@ -6,7 +6,9 @@ import {
     Magnet,
     Atom,
     Dna,
-    Lightbulb // Import Lightbulb for Optics
+    Lightbulb, // Import Lightbulb for Optics
+    Orbit,
+    Combine
 } from "lucide-react";
 
 export type Simulation = {
@@ -133,5 +135,27 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         formula: "F = G(m₁m₂)/r²",
         difficulty: "Orta",
         tags: ["Astronomi", "Kütleçekim"]
+    },
+    {
+        id: "electric",
+        slug: "elektrik-alan",
+        title: "Elektrik Alan ve Konumları",
+        description: "Noktasal elektrik yüklerinin etrafında oluşan alan çizgilerini ve dipol yapısını inceleyin.",
+        icon: Orbit,
+        color: "#4ADE80", // Soft Green
+        formula: "E = k·q/r²",
+        difficulty: "Orta",
+        tags: ["Elektromanyetizma", "Alan Çizgileri"]
+    },
+    {
+        id: "collision",
+        slug: "1d-carpisma",
+        title: "Parçacık Çarpışmaları (1D)",
+        description: "Farklı kütle ve hızlara sahip cisimlerin esnek ve inelastik çarpışmalarını inceleyin.",
+        icon: Combine,
+        color: "#F87171", // Soft Red
+        formula: "P_i = P_f",
+        difficulty: "Orta",
+        tags: ["Mekanik", "Momentum", "Enerji"]
     }
 ];
