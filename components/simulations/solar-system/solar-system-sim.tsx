@@ -174,24 +174,24 @@ export default function SolarSystemSim() {
     const [tasks, setTasks] = useState<SimTask[]>([
         {
             id: "s1",
-            description: "Kütleçekimini Artır!",
-            hint: "Çekim sabitini (G) 2.0'ın üzerine çıkar! Gezegenlerin güneşe yapışmasını izle.",
+            description: "Yörünge Mimarı",
+            hint: "Gezegenleri güneşe yakınlaştırmak için Çekim Sabitini (G) 2.0'ın üzerine çıkar.",
             isCompleted: false,
-            explanation: "Formül: F = G*(m1*m2)/r². Sen G'yi artırınca çekim kuvveti arttı ve gezegenler merkeze düştü."
+            explanation: "Muazzam! Kütleçekim kuvveti arttıkça, gezegenler merkeze daha güçlü çekilir ve yörüngeleri daralır."
         },
         {
             id: "s2",
-            description: "Zamanı Hızlandır!",
-            hint: "Zaman hızını 2.0x veya üzerine getir! Yılların ne kadar hızlı geçtiğini gör.",
+            description: "Zamanın Efendisi",
+            hint: "Evrenin dansını hızlandır! Zaman Hızını 2.0x'in üzerine getir.",
             isCompleted: false,
-            explanation: "Kepler'in 3. Yasası: Gezegenler güneşten uzaklaştıkça yılları uzar. Hızlandırınca bunu daha net görürsün."
+            explanation: "Zaman görecelidir! Simülasyon hızlandıkça gezegenlerin periyotlarını (güneş etrafındaki tur sürelerini) daha net görebilirsin."
         },
         {
             id: "s3",
-            description: "Kaos Yarat!",
-            hint: "Çekim sabitini 0.5'in altına düşür! Gezegenlerin yörüngeden fırlayıp gitmesini izle.",
+            description: "Kaos Teorisi",
+            hint: "Dengeyi boz! Çekim sabitini 0.5'in altına düşür ve gezegenleri serbest bırak.",
             isCompleted: false,
-            explanation: "Yörüngede kalmak ince bir dengedir. Çekimi azalttığında savrulup gittiler!"
+            explanation: "Ve özgürlük! Çekim kuvveti azaldığında, gezegenlerin mevcut hızları onları yörüngeden koparıp uzay boşluğuna savurur."
         }
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
@@ -206,7 +206,7 @@ export default function SolarSystemSim() {
         });
         setTimeout(() => {
             setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1));
-        }, 1000);
+        }, 1500);
     }, [tasks.length]);
 
     const handleTaskCheck = (g: number, t: number, p: Planet[]) => {
@@ -230,7 +230,6 @@ export default function SolarSystemSim() {
 
     return (
         <SimWrapper
-            layoutMode="split"
             title="Güneş Sistemi"
             description="Newton'un Evrensel Kütleçekim Yasası ve yörünge mekaniği."
             tasks={tasks}
@@ -240,48 +239,48 @@ export default function SolarSystemSim() {
                 <div className="space-y-6">
                     {/* Gravity Slider */}
                     <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-zinc-400">Çekim Sabiti (G)</span>
-                            <span className="text-xs font-mono text-white bg-white/10 px-2 py-0.5 rounded border border-white/5">{gravityConstant.toFixed(1)}</span>
+                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-purple-500/30 transition-colors">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Çekim Sabiti (G)</span>
+                            <span className="text-lg font-mono font-bold text-purple-400">{gravityConstant.toFixed(1)}</span>
                         </div>
                         <input
                             type="range" min="0.1" max="3.0" step="0.1" value={gravityConstant}
                             onChange={(e) => setGravityConstant(Number(e.target.value))}
-                            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#A855F7]"
+                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
                         />
                     </div>
 
                     {/* Time Scale Slider */}
                     <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-zinc-400">Zaman Hızı</span>
-                            <span className="text-xs font-mono text-white bg-white/10 px-2 py-0.5 rounded border border-white/5">{timeScale.toFixed(1)}x</span>
+                        <div className="flex justify-between items-center bg-zinc-900/50 p-3 rounded-xl border border-white/10 group hover:border-blue-500/30 transition-colors">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Zaman Hızı</span>
+                            <span className="text-lg font-mono font-bold text-blue-400">{timeScale.toFixed(1)}x</span>
                         </div>
                         <input
                             type="range" min="0" max="4.0" step="0.1" value={timeScale}
                             onChange={(e) => setTimeScale(Number(e.target.value))}
-                            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-zinc-400"
+                            className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
                         />
                     </div>
 
                     {/* Play/Pause */}
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setIsPlaying(!isPlaying)}
-                            className={cn(
-                                "flex-1 h-12 rounded-xl font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95",
-                                isPlaying ? "bg-[#A855F7] text-white shadow-[0_4px_20px_rgba(168,85,247,0.3)]" : "bg-zinc-800 text-white border border-white/10"
-                            )}
-                        >
-                            {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
-                            {isPlaying ? "DURAKLAT" : "BAŞLAT"}
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setIsPlaying(!isPlaying)}
+                        className={cn(
+                            "w-full py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
+                            isPlaying
+                                ? "bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:bg-purple-500"
+                                : "bg-zinc-800 text-zinc-400 border border-white/5 hover:bg-zinc-700"
+                        )}
+                    >
+                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+                        {isPlaying ? "DURAKLAT" : "BAŞLAT"}
+                    </button>
 
                     {/* Info Box */}
-                    <div className="bg-[#A855F7]/10 border border-[#A855F7]/20 p-4 rounded-xl flex gap-3">
-                        <TrendingUp className="w-5 h-5 text-[#A855F7] shrink-0" />
-                        <p className="text-[11px] text-[#E9D5FF] leading-relaxed font-medium">
+                    <div className="bg-purple-500/10 border border-purple-500/20 p-4 rounded-2xl flex gap-3">
+                        <TrendingUp className="w-5 h-5 text-purple-400 shrink-0" />
+                        <p className="text-[11px] text-purple-200/80 leading-relaxed font-bold">
                             Newton'un yasasına göre kütleler birbirini çeker. Bu çekim kuvveti, gezegenleri yörüngede tutan merkezcil kuvvettir.
                         </p>
                     </div>

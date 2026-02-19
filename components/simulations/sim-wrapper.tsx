@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Info, CheckCircle2, X } from "lucide-react";
+import { ChevronUp, ChevronDown, RotateCcw, Info, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { LandscapeGuard } from "@/components/ui/landscape-guard";
+import confetti from "canvas-confetti";
 
 export type SimTask = {
     id: string;
     description: string;
-    hint?: string;
+    hint?: string; // Görev ipucu
     isCompleted?: boolean;
-    explanation?: string; // New: Educational content after completion
+    explanation?: string; // Görev tamamlanınca çıkacak kısa bilgi notu
 };
 
 interface SimWrapperProps {
@@ -23,7 +24,6 @@ interface SimWrapperProps {
     controls: React.ReactNode;
     children: React.ReactNode;
     onReset?: () => void;
-    layoutMode?: "drawer" | "split";
 }
 
 export function SimWrapper({
@@ -34,21 +34,28 @@ export function SimWrapper({
     controls,
     children,
     onReset,
-    layoutMode = "drawer"
 }: SimWrapperProps) {
-    const [showControls, setShowControls] = useState(true);
+    const [isMobileControlsOpen, setIsMobileControlsOpen] = useState(false); // Mobile bottom sheet state
     const [showInfo, setShowInfo] = useState(false);
     const [showExplanation, setShowExplanation] = useState<string | null>(null);
 
-    // Onboarding State
-    const [showOnboarding, setShowOnboarding] = useState(true);
-
-    // Watch for task completion to show explanation
+    // Confetti Effect on Task Completion
     useEffect(() => {
         if (currentTaskIndex > 0) {
-            const prevTask = tasks[currentTaskIndex - 1];
-            if (prevTask && prevTask.isCompleted && prevTask.explanation) {
-                setShowExplanation(prevTask.explanation);
+            const completedTask = tasks[currentTaskIndex - 1];
+            if (completedTask && completedTask.isCompleted) {
+                // Celebration!
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']
+                });
+
+                // Show Explanation if available
+                if (completedTask.explanation) {
+                    setShowExplanation(completedTask.explanation);
+                }
             }
         }
     }, [currentTaskIndex, tasks]);
@@ -57,219 +64,141 @@ export function SimWrapper({
 
     return (
         <LandscapeGuard>
-            <div className="h-screen w-screen flex flex-col bg-[#09090b] text-white overflow-hidden font-sans">
+            <div className="h-[100dvh] w-screen flex flex-col lg:flex-row bg-[#09090b] text-white overflow-hidden font-sans">
 
-                {/* Onboarding Overlay */}
-                <AnimatePresence>
-                    {showOnboarding && (
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
-                        >
-                            <motion.div
-                                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
-                                className="max-w-md w-full bg-zinc-900 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-
-                                <div className="mb-6">
-                                    <h1 className="text-3xl font-black text-white mb-2 tracking-tight">{title}</h1>
-                                    <p className="text-zinc-400 text-lg leading-relaxed">{description}</p>
-                                </div>
-
-                                <div className="bg-zinc-800/50 rounded-xl p-4 mb-8">
-                                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">GÖREVLERİN</h3>
-                                    <div className="space-y-3">
-                                        {tasks.slice(0, 3).map((t, i) => (
-                                            <div key={t.id} className="flex items-start gap-3">
-                                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                                                    {i + 1}
-                                                </div>
-                                                <p className="text-sm text-zinc-300">{t.description}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={() => setShowOnboarding(false)}
-                                    className="w-full py-4 bg-white text-black font-black text-lg rounded-2xl hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-                                >
-                                    SİMÜLASYONU BAŞLAT 🚀
-                                </button>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Header */}
-
-                <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#09090b] z-20 shrink-0">
-                    <div className="flex items-center gap-4">
+                {/* --- HEADER --- */}
+                <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#09090b]/80 backdrop-blur-md z-50 shrink-0">
+                    <div className="flex items-center gap-3">
                         <Link href="/simulasyonlar" className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                            <ChevronLeft className="w-5 h-5" />
+                            <span className="text-xl">🔙</span>
                         </Link>
                         <div>
-                            <h1 className="font-bold text-sm tracking-wide">{title}</h1>
-                            <p className="text-[10px] text-zinc-500 hidden sm:block">{description}</p>
+                            <h1 className="font-black text-sm tracking-wide uppercase">{title}</h1>
+                            {/* Desktop Description */}
+                            <p className="hidden lg:block text-[10px] text-zinc-500">{description}</p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                         {/* Task Progress Pill */}
                         {tasks.length > 0 && (
-                            <div className="flex items-center gap-2 bg-zinc-900 border border-white/10 px-3 py-1.5 rounded-full mr-2">
+                            <div className="flex items-center gap-2 bg-black/40 border border-white/10 px-3 py-1.5 rounded-full backdrop-blur-md">
                                 <div className="flex gap-1">
                                     {tasks.map((t, i) => (
                                         <div
                                             key={t.id}
                                             className={cn(
-                                                "w-1.5 h-1.5 rounded-full transition-colors",
-                                                t.isCompleted ? "bg-[#4ADE80]" : i === currentTaskIndex ? "bg-white animate-pulse" : "bg-white/20"
+                                                "w-1.5 h-1.5 rounded-full transition-all duration-500",
+                                                t.isCompleted ? "bg-green-500 scale-110" : i === currentTaskIndex ? "bg-white animate-pulse" : "bg-white/20"
                                             )}
                                         />
                                     ))}
                                 </div>
                                 <span className="text-[10px] font-mono text-zinc-400">
-                                    {tasks.filter(t => t.isCompleted).length}/{tasks.length}
+                                    {currentTaskIndex}/{tasks.length}
                                 </span>
                             </div>
                         )}
 
-                        <button
-                            onClick={onReset}
-                            className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-                            title="Sıfırla"
-                        >
+                        <button onClick={onReset} className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors" title="Sıfırla">
                             <RotateCcw className="w-4 h-4" />
                         </button>
-                        <button
-                            onClick={() => setShowInfo(true)}
-                            className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors"
-                        >
+                        <button onClick={() => setShowInfo(true)} className="p-2 hover:bg-white/5 rounded-lg text-zinc-400 hover:text-white transition-colors">
                             <Info className="w-4 h-4" />
                         </button>
                     </div>
                 </header>
 
-                {/* Main Layout */}
-                <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+                {/* --- MAIN CONTENT AREA --- */}
+                <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
 
-                    {/* Viewport (Canvas) */}
-                    <div className="flex-1 relative bg-black/50 overflow-hidden touch-none no-select">
+                    {/* CANVAS AREA (Takes full remaining height on mobile) */}
+                    <div className="flex-1 relative bg-black/50 touch-none no-select overflow-hidden">
                         {children}
 
-                        {/* Current Task Overlay */}
-                        {tasks.length > 0 && currentTask && !currentTask.isCompleted && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                key={currentTask.id}
-                                className="absolute top-4 left-4 max-w-[280px] sm:max-w-md pointer-events-none z-10"
-                            >
-                                <div className="bg-[#09090b]/90 backdrop-blur-md border border-[#4ADE80]/30 p-4 rounded-2xl shadow-xl">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-[#4ADE80]/20 flex items-center justify-center shrink-0 mt-0.5">
-                                            <div className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-sm font-bold text-white mb-1">Görev: {currentTask.description}</h3>
-                                            {currentTask.hint && (
-                                                <p className="text-xs text-zinc-400 leading-relaxed">{currentTask.hint}</p>
-                                            )}
-                                        </div>
+                        {/* Active Task Overlay */}
+                        <AnimatePresence>
+                            {currentTask && !currentTask.isCompleted && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20, x: "-50%" }}
+                                    animate={{ opacity: 1, y: 0, x: "-50%" }}
+                                    exit={{ opacity: 0, y: -20, x: "-50%" }}
+                                    className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] max-w-sm pointer-events-none z-10"
+                                >
+                                    <div className="bg-black/60 backdrop-blur-xl border border-green-500/30 p-4 rounded-xl shadow-lg relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-green-500" />
+                                        <h3 className="text-xs font-bold text-green-400 uppercase tracking-wider mb-1">GÖREV</h3>
+                                        <p className="text-sm font-medium text-white">{currentTask.description}</p>
+                                        {currentTask.hint && <p className="text-[10px] text-zinc-400 mt-1">{currentTask.hint}</p>}
                                     </div>
-                                </div>
-                            </motion.div>
-                        )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Explanation Modal (Success) */}
                         <AnimatePresence>
                             {showExplanation && (
                                 <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
                                     <motion.div
-                                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                        className="bg-zinc-900 border border-[#FFD700]/30 rounded-2xl p-6 max-w-md w-full shadow-[0_0_50px_rgba(255,215,0,0.1)] relative"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="bg-zinc-900 border border-yellow-500/30 rounded-2xl p-6 max-w-sm w-full shadow-[0_0_50px_rgba(234,179,8,0.2)] relative"
                                     >
-                                        <div className="flex items-start gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-[#FFD700]/10 flex items-center justify-center shrink-0 border border-[#FFD700]/20">
-                                                <CheckCircle2 className="w-6 h-6 text-[#FFD700]" />
-                                            </div>
-                                            <div className="flex-1 space-y-2">
-                                                <h3 className="text-lg font-black text-white uppercase tracking-tight">Harika!</h3>
-                                                <p className="text-zinc-300 text-sm leading-relaxed">
-                                                    {showExplanation}
-                                                </p>
-                                            </div>
-                                            <button
-                                                onClick={() => setShowExplanation(null)}
-                                                className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
-                                            >
-                                                <X className="w-5 h-5" />
-                                            </button>
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <CheckCircle2 className="w-6 h-6 text-yellow-500" />
+                                            <h3 className="text-lg font-black text-white uppercase">Harika!</h3>
                                         </div>
-                                        <div className="mt-6 flex justify-end">
-                                            <button
-                                                onClick={() => setShowExplanation(null)}
-                                                className="px-6 py-2.5 bg-[#FFD700] text-black font-bold rounded-xl text-sm hover:bg-[#FFC000] active:scale-95 transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)]"
-                                            >
-                                                Devam Et
-                                            </button>
-                                        </div>
+                                        <p className="text-zinc-300 text-sm leading-relaxed mb-6">{showExplanation}</p>
+                                        <button
+                                            onClick={() => setShowExplanation(null)}
+                                            className="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400 active:scale-95 transition-all"
+                                        >
+                                            Devam Et 🚀
+                                        </button>
                                     </motion.div>
                                 </div>
                             )}
                         </AnimatePresence>
                     </div>
 
-                    {/* Mobile Split View Controls */}
-                    {layoutMode === "split" && (
-                        <div className="lg:hidden h-[45vh] bg-[#09090b] border-t border-white/10 flex flex-col z-20">
-                            <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-zinc-800">
-                                {controls}
-                            </div>
+                    {/* --- DESKTOP SIDEBAR CONTROLS --- */}
+                    <div className="hidden lg:flex w-[320px] bg-[#09090b] border-l border-white/10 flex-col shrink-0 z-20">
+                        <div className="p-4 border-b border-white/10">
+                            <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Kontrol Paneli</h2>
                         </div>
-                    )}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            {controls}
+                        </div>
+                    </div>
 
-                    {/* Desktop Controls Sidebar */}
+                    {/* --- MOBILE BOTTOM SHEET CONTROLS --- */}
                     <motion.div
+                        className="lg:hidden absolute bottom-0 left-0 right-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col max-h-[60vh]"
                         initial={false}
-                        animate={{ width: showControls ? "320px" : "0px", opacity: showControls ? 1 : 0 }}
-                        className="hidden lg:flex flex-col border-l border-white/10 bg-[#09090b]"
+                        animate={{ height: isMobileControlsOpen ? "60vh" : "120px" }} // Default height shows primary controls
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     >
-                        <div className="h-full overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-zinc-800">
+                        {/* Drag Handle / Toggle */}
+                        <div
+                            className="w-full h-8 flex items-center justify-center cursor-pointer active:bg-white/5"
+                            onClick={() => setIsMobileControlsOpen(!isMobileControlsOpen)}
+                        >
+                            <div className="w-12 h-1.5 bg-zinc-700 rounded-full" />
+                        </div>
+
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto p-6 pt-0 pb-12">
+                            {/* Hint for interaction */}
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Ayarlar</span>
+                                <button onClick={() => setIsMobileControlsOpen(!isMobileControlsOpen)}>
+                                    {isMobileControlsOpen ? <ChevronDown className="w-4 h-4 text-zinc-500" /> : <ChevronUp className="w-4 h-4 text-zinc-500" />}
+                                </button>
+                            </div>
                             {controls}
                         </div>
                     </motion.div>
-
-                    {/* Mobile Controls Drawer (Legacy/Optional) */}
-                    {layoutMode === "drawer" && (
-                        <motion.div
-                            drag="y"
-                            dragConstraints={{ top: 0, bottom: 400 }}
-                            initial={{ y: "calc(100% - 60px)" }}
-                            whileTap={{ cursor: "grabbing" }}
-                            className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#09090b] border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-30"
-                        >
-                            <div className="w-full h-8 flex items-center justify-center cursor-grab active:cursor-grabbing">
-                                <div className="w-12 h-1.5 bg-zinc-800 rounded-full" />
-                            </div>
-                            <div className="p-6 pt-2 h-[50vh] overflow-y-auto">
-                                {controls}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Collapse Button (Desktop) */}
-                    <button
-                        onClick={() => setShowControls(!showControls)}
-                        className="hidden lg:flex absolute right-[320px] top-1/2 -translate-y-1/2 translate-x-1/2 z-50 w-8 h-16 bg-[#09090b] border border-white/10 rounded-l-xl items-center justify-center hover:bg-zinc-900 transition-all"
-                        style={{ right: showControls ? "320px" : "0" }}
-                    >
-                        {showControls ? <ChevronRight className="w-4 h-4 text-zinc-500" /> : <ChevronLeft className="w-4 h-4 text-zinc-500" />}
-                    </button>
                 </div>
 
                 {/* Info Modal */}
@@ -277,19 +206,19 @@ export function SimWrapper({
                     {showInfo && (
                         <motion.div
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+                            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
                             onClick={() => setShowInfo(false)}
                         >
                             <motion.div
-                                initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
-                                className="bg-[#09090b] border border-white/10 p-6 rounded-2xl max-w-lg w-full shadow-2xl"
+                                initial={{ scale: 0.9 }} animate={{ scale: 1 }}
+                                className="bg-[#09090b] border border-white/10 p-6 rounded-2xl max-w-sm w-full"
                                 onClick={e => e.stopPropagation()}
                             >
                                 <h2 className="text-xl font-bold mb-2">{title}</h2>
-                                <p className="text-zinc-400 leading-relaxed mb-6">{description}</p>
+                                <p className="text-zinc-400 text-sm leading-relaxed mb-6">{description}</p>
                                 <button
                                     onClick={() => setShowInfo(false)}
-                                    className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200"
+                                    className="w-full py-3 bg-white text-black font-bold rounded-xl"
                                 >
                                     Anlaşıldı
                                 </button>
@@ -297,6 +226,7 @@ export function SimWrapper({
                         </motion.div>
                     )}
                 </AnimatePresence>
+
             </div>
         </LandscapeGuard>
     );

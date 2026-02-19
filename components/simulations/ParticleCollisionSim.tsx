@@ -1,7 +1,8 @@
 "use client";
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { Play, Pause, RotateCcw, Bomb, Scale, ArrowRightLeft } from "lucide-react"; // Import icons
+import { SimWrapper, SimTask } from "./sim-wrapper";
 
 interface ParticleCollisionSimProps {
     className?: string;
@@ -9,43 +10,104 @@ interface ParticleCollisionSimProps {
 
 export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const [mass1, setMass1] = useState(2);
     const [mass2, setMass2] = useState(2);
     const [isRunning, setIsRunning] = useState(false);
-    const [challenge, setChallenge] = useState(0);
-    const [result, setResult] = useState<{ before: number; after: number } | null>(null);
+
+    // Internal state to track validation results
+    const [collisionResult, setCollisionResult] = useState<{ pInitial: number, pFinal: number } | null>(null);
 
     // Particles
     const p1Ref = useRef({ x: 100, y: 150, vx: 3, vy: 0 });
     const p2Ref = useRef({ x: 300, y: 150, vx: -2, vy: 0 });
 
-    const challenges = [
-        { question: "Çarpışmadan önce ve sonra toplam momentumu karşılaştır!", hint: "p = m×v, Σp değişmemeli" },
-        { question: "Kütleleri eşit yap - çarpışmadan sonra ne olur?", hint: "m₁ = m₂ = 2 kg" },
-        { question: "Ağır top hafif topa çarparsa ne olur?", hint: "m₁ = 4, m₂ = 1" },
-    ];
+    // -- Tasks --
+    const [tasks, setTasks] = useState<SimTask[]>([
+        {
+            id: "pc1", description: "Momentum Korunumu", hint: "Simülasyonu başlat ve çarpışmadan önceki toplam momentum ile sonrakini karşılaştır.", isCompleted: false,
+            explanation: "Sistem dışından net bir kuvvet etki etmediği sürece toplam momentum (P = m.v) daima korunur!"
+        },
+        {
+            id: "pc2", description: "Eşit Kütleler", hint: "Kütleleri eşitle (örn. 2kg - 2kg) ve hızların nasıl değiş tokuş edildiğini izle.", isCompleted: false,
+            explanation: "Esnek çarpışmada kütleler eşitse, cisimler hızlarını birbirine aktarır. Bilardo topları gibi!"
+        },
+        {
+            id: "pc3", description: "Farklı Kütleler", hint: "Bir kütleyi diğerinin 2 katı yap ve çarpışmayı gözlemle.", isCompleted: false,
+            explanation: "Ağır cisim hafif cisme çarptığında yoluna devam ederken, hafif cisim çok daha hızlı fırlar."
+        }
+    ]);
+    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
-    const reset = () => {
+    const completeTask = useCallback((index: number) => {
+        setTasks(prev => {
+            if (prev[index].isCompleted) return prev;
+            const newTasks = [...prev];
+            newTasks[index].isCompleted = true;
+            return newTasks;
+        });
+        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
+    }, [tasks.length]);
+
+    // Check Tasks Logic
+    useEffect(() => {
+        if (!collisionResult) return;
+
+        if (currentTaskIndex === 0 && !tasks[0].isCompleted) {
+            // Just verifying a collision happened and momentum was calculated
+            completeTask(0);
+        }
+        if (currentTaskIndex === 1 && !tasks[1].isCompleted) {
+            if (Math.abs(mass1 - mass2) < 0.1) completeTask(1);
+        }
+        if (currentTaskIndex === 2 && !tasks[2].isCompleted) {
+            // Check for significant mass difference (e.g. ratio >= 2 or <= 0.5)
+            const ratio = mass1 / mass2;
+            if (ratio >= 2 || ratio <= 0.5) completeTask(2);
+        }
+    }, [collisionResult, mass1, mass2, currentTaskIndex, tasks, completeTask]);
+
+
+    const resetSim = () => {
         p1Ref.current = { x: 100, y: 150, vx: 3, vy: 0 };
         p2Ref.current = { x: 300, y: 150, vx: -2, vy: 0 };
         setIsRunning(false);
-        setResult(null);
+        setCollisionResult(null);
     };
 
     useEffect(() => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas || !containerRef.current) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         let animationId: number;
         let hasCollided = false;
+        let collisionProcessed = false;
+
 
         const draw = () => {
+            // Resize handling
+            if (containerRef.current && (canvas.width !== containerRef.current.clientWidth || canvas.height !== containerRef.current.clientHeight)) {
+                canvas.width = containerRef.current.clientWidth;
+                canvas.height = containerRef.current.clientHeight;
+                // re-center y if needed, but we use fixed 150 mostly. Let's adapt y relative to height
+            }
+
             const width = canvas.width;
             const height = canvas.height;
+            const centerY = height / 2;
+
+            // Adjust particle Y to center dynamically
+            // p1Ref.current.y = centerY;
+            // p2Ref.current.y = centerY; 
+            // Better not reset Y constantly to avoid glitches, just set on reset.
+
             const p1 = p1Ref.current;
             const p2 = p2Ref.current;
+            // Ensure they stay on center line vertically if we resized
+            p1.y = centerY;
+            p2.y = centerY;
 
             // Calculate momentum
             const mom1 = mass1 * p1.vx;
@@ -53,16 +115,23 @@ export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimPro
             const totalMom = mom1 + mom2;
 
             // Clear
-            ctx.fillStyle = "#1a1a1a";
+            ctx.fillStyle = "#09090b";
             ctx.fillRect(0, 0, width, height);
 
             // Track line
-            ctx.strokeStyle = "#333";
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(50, 150);
-            ctx.lineTo(width - 50, 150);
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
             ctx.stroke();
+
+            // Grid
+            ctx.strokeStyle = "rgba(255,255,255,0.03)";
+            ctx.lineWidth = 1;
+            for (let i = 0; i < width; i += 40) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
+            }
 
             // Physics
             if (isRunning) {
@@ -76,30 +145,41 @@ export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimPro
 
                 if (dist < r1 + r2 && !hasCollided) {
                     hasCollided = true;
-                    const beforeMom = totalMom;
 
-                    // Elastic collision
+                    // Store Initial Momentum for validation/display just before impact changes velocities
+                    const pInitial = Math.abs(totalMom); // simplify comparison
+
+                    // Elastic collision 1D
                     const v1 = ((mass1 - mass2) * p1.vx + 2 * mass2 * p2.vx) / (mass1 + mass2);
                     const v2 = ((mass2 - mass1) * p2.vx + 2 * mass1 * p1.vx) / (mass1 + mass2);
                     p1.vx = v1;
                     p2.vx = v2;
 
-                    // Separate
+                    // Separate to prevent sticking
                     const overlap = (r1 + r2 - dist) / 2;
                     p1.x -= overlap + 1;
                     p2.x += overlap + 1;
 
-                    setTimeout(() => {
-                        const afterMom = mass1 * p1.vx + mass2 * p2.vx;
-                        setResult({ before: beforeMom, after: afterMom });
-                    }, 500);
+                    // Trigger result update after a short delay to simulate "calculation"
+                    if (!collisionProcessed) {
+                        collisionProcessed = true;
+                        setTimeout(() => {
+                            const pFinal = Math.abs(mass1 * p1.vx + mass2 * p2.vx);
+                            setCollisionResult({ pInitial, pFinal });
+                        }, 200);
+                    }
+
+                } else if (dist > r1 + r2 + 10) {
+                    // Reset collision flag when separated
+                    hasCollided = false;
+                    // But don't reset collisionProcessed if we want to keep the result displayed
                 }
 
                 // Wall bounce
-                if (p1.x < r1 + 50) { p1.x = r1 + 50; p1.vx *= -0.8; }
-                if (p1.x > width - r1 - 50) { p1.x = width - r1 - 50; p1.vx *= -0.8; }
-                if (p2.x < r2 + 50) { p2.x = r2 + 50; p2.vx *= -0.8; }
-                if (p2.x > width - r2 - 50) { p2.x = width - r2 - 50; p2.vx *= -0.8; }
+                if (p1.x < r1) { p1.x = r1; p1.vx *= -1; }
+                if (p1.x > width - r1) { p1.x = width - r1; p1.vx *= -1; }
+                if (p2.x < r2) { p2.x = r2; p2.vx *= -1; }
+                if (p2.x > width - r2) { p2.x = width - r2; p2.vx *= -1; }
             }
 
             // Draw particles
@@ -107,51 +187,43 @@ export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimPro
                 const r = 20 + m * 5;
 
                 ctx.fillStyle = color;
-                ctx.strokeStyle = "#000";
-                ctx.lineWidth = 3;
+                // ctx.strokeStyle = "#000";
+                // ctx.lineWidth = 3;
+
+                // Shadow / Glow
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15;
+
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.stroke();
 
-                // Velocity arrow
-                if (Math.abs(p.vx) > 0.1) {
-                    ctx.strokeStyle = "#fff";
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x + p.vx * 15, p.y);
-                    ctx.stroke();
-
-                    // Arrow head
-                    ctx.fillStyle = "#fff";
-                    ctx.beginPath();
-                    const dir = p.vx > 0 ? 1 : -1;
-                    ctx.moveTo(p.x + p.vx * 15, p.y);
-                    ctx.lineTo(p.x + p.vx * 15 - dir * 8, p.y - 5);
-                    ctx.lineTo(p.x + p.vx * 15 - dir * 8, p.y + 5);
-                    ctx.fill();
-                }
-
-                // Label
-                ctx.fillStyle = "#fff";
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = "white"; // "rgba(255,255,255,0.9)";
                 ctx.font = "bold 12px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(`${m}kg`, p.x, p.y + 5);
-                ctx.fillText(label, p.x, p.y + r + 20);
+                ctx.textBaseline = "middle";
+                ctx.fillText(`${m}kg`, p.x, p.y);
+
+                // Velocity Arrow
+                if (Math.abs(p.vx) > 0.1) {
+                    const arrowLen = p.vx * 10;
+                    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y - r - 10);
+                    ctx.lineTo(p.x + arrowLen, p.y - r - 10);
+                    ctx.stroke();
+                    // Arrow head logic... simplified
+                    ctx.fillStyle = "rgba(255,255,255,0.8)";
+                    ctx.beginPath();
+                    ctx.arc(p.x + arrowLen, p.y - r - 10, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             };
 
             drawParticle(p1, mass1, "#3B82F6", `v₁=${p1.vx.toFixed(1)}`);
             drawParticle(p2, mass2, "#EF4444", `v₂=${p2.vx.toFixed(1)}`);
-
-            // Momentum display
-            ctx.fillStyle = "#fff";
-            ctx.font = "12px monospace";
-            ctx.textAlign = "left";
-            ctx.fillText(`p₁ = m₁v₁ = ${mass1}×${p1.vx.toFixed(1)} = ${mom1.toFixed(1)}`, 20, 30);
-            ctx.fillText(`p₂ = m₂v₂ = ${mass2}×${p2.vx.toFixed(1)} = ${mom2.toFixed(1)}`, 20, 50);
-            ctx.fillStyle = "#4ADE80";
-            ctx.fillText(`Σp = ${totalMom.toFixed(1)} kg·m/s`, 20, 70);
 
             animationId = requestAnimationFrame(draw);
         };
@@ -160,102 +232,101 @@ export function ParticleCollisionSim({ className = "" }: ParticleCollisionSimPro
         return () => cancelAnimationFrame(animationId);
     }, [mass1, mass2, isRunning]);
 
+
     return (
-        <div className={cn("bg-neutral-900", className)}>
-            {/* Challenge */}
-            <div className="bg-blue-500/10 border-b-2 border-blue-500/30 p-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">🎯</span>
-                    <span className="text-blue-400 font-bold text-sm uppercase">Görev {challenge + 1}</span>
-                </div>
-                <p className="text-white text-sm font-medium">{challenges[challenge].question}</p>
-                <p className="text-neutral-400 text-xs mt-1">💡 {challenges[challenge].hint}</p>
-            </div>
-
-            {/* Canvas */}
-            <canvas ref={canvasRef} width={400} height={220} className="w-full" />
-
-            {/* Result */}
-            {result && (
-                <div className="bg-green-500/20 border-y border-green-500/50 p-3">
-                    <p className="text-green-400 text-sm font-bold text-center">
-                        ✓ Önce: Σp = {result.before.toFixed(1)} → Sonra: Σp = {result.after.toFixed(1)}
-                        {Math.abs(result.before - result.after) < 0.1 && " (Korundu! ✨)"}
-                    </p>
-                </div>
-            )}
-
-            {/* Formula Box */}
-            <div className="bg-black/50 p-3 border-y border-neutral-700">
-                <p className="text-orange-400 font-mono text-sm font-bold text-center">
-                    Σp<sub>önce</sub> = Σp<sub>sonra</sub> (Momentum Korunumu)
-                </p>
-            </div>
-
-            {/* Controls */}
-            <div className="p-4 space-y-3">
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-blue-400 font-bold text-sm">Kütle 1</span>
-                            <span className="text-blue-400 font-mono text-sm">{mass1} kg</span>
+        <SimWrapper
+            title="arpışma Laboratuvarı" // Fix typo if needed: Çarpışma. "arpışma" looks like typo.
+            description="Momentum korunumu ve esnek çarpışmaları incele."
+            tasks={tasks}
+            currentTaskIndex={currentTaskIndex}
+            onReset={resetSim}
+            controls={
+                <div className="space-y-6">
+                    {/* Live Momentum Data */}
+                    <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-4 space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                            <span className="text-zinc-500 font-bold uppercase tracking-widest">Toplam Momentum</span>
+                            {collisionResult && <span className="text-green-400 font-bold">KORUNDU ✓</span>}
                         </div>
-                        <input
-                            type="range" min="1" max="5" value={mass1}
-                            onChange={(e) => { setMass1(Number(e.target.value)); reset(); }}
-                            className="w-full h-2 rounded-lg accent-blue-400"
-                        />
-                    </div>
-                    <div>
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="text-red-400 font-bold text-sm">Kütle 2</span>
-                            <span className="text-red-400 font-mono text-sm">{mass2} kg</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl font-mono font-black text-white">
+                                {Math.abs((mass1 * p1Ref.current.vx) + (mass2 * p2Ref.current.vx)).toFixed(1)}
+                            </span>
+                            <span className="text-zinc-600 font-bold text-xs uppercase">kg·m/s</span>
                         </div>
-                        <input
-                            type="range" min="1" max="5" value={mass2}
-                            onChange={(e) => { setMass2(Number(e.target.value)); reset(); }}
-                            className="w-full h-2 rounded-lg accent-red-400"
-                        />
                     </div>
-                </div>
 
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setIsRunning(!isRunning)}
-                        className={cn(
-                            "flex-1 py-2 font-bold text-sm border-2 border-black",
-                            isRunning ? "bg-red-500 text-white" : "bg-green-500 text-white"
-                        )}
-                    >
-                        {isRunning ? "Durdur" : "Başlat"}
-                    </button>
-                    <button onClick={reset} className="flex-1 py-2 font-bold text-sm border-2 border-black bg-neutral-700 text-white">
-                        Sıfırla
-                    </button>
-                </div>
+                    {/* Mass Controls */}
+                    <div className="space-y-4">
+                        {/* Mass 1 */}
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
+                                <span className="text-blue-400">Kütle 1 (Mavi)</span>
+                                <span>{mass1} kg</span>
+                            </div>
+                            <input
+                                type="range" min="1" max="5" value={mass1}
+                                onChange={(e) => { setMass1(Number(e.target.value)); resetSim(); }}
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                            />
+                        </div>
 
-                <div className="flex gap-2">
-                    {challenges.map((_, i) => (
+                        {/* Mass 2 */}
+                        <div className="space-y-2">
+                            <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
+                                <span className="text-red-400">Kütle 2 (Kırmızı)</span>
+                                <span>{mass2} kg</span>
+                            </div>
+                            <input
+                                type="range" min="1" max="5" value={mass2}
+                                onChange={(e) => { setMass2(Number(e.target.value)); resetSim(); }}
+                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3">
                         <button
-                            key={i}
-                            onClick={() => { setChallenge(i); reset(); }}
+                            onClick={() => setIsRunning(!isRunning)}
                             className={cn(
-                                "flex-1 py-1 text-xs font-bold border-2 border-black",
-                                challenge === i ? "bg-blue-500 text-white" : "bg-neutral-800 text-neutral-400"
+                                "flex-1 py-4 rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg",
+                                isRunning
+                                    ? "bg-zinc-800 text-zinc-400 border border-white/5"
+                                    : "bg-white text-black hover:bg-zinc-200"
                             )}
                         >
-                            Görev {i + 1}
+                            {isRunning ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current" />}
+                            {isRunning ? "Durdur" : "Başlat"}
                         </button>
-                    ))}
-                </div>
+                        <button
+                            onClick={resetSim}
+                            className="w-14 rounded-xl border border-white/10 flex items-center justify-center hover:bg-zinc-800 transition-colors"
+                        >
+                            <RotateCcw className="w-5 h-5 text-zinc-400" />
+                        </button>
+                    </div>
 
-                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
-                    <p className="text-green-400 text-xs">
-                        ✨ <strong>Keşif:</strong> Toplam momentum (Σp) her zaman korunur!
-                        Ağır cisim hafif cisme çarpınca, hafif cisim hızla fırlar.
-                    </p>
+                    {/* Result Message */}
+                    {collisionResult && (
+                        <div className="animate-in fade-in slide-in-from-bottom-2 bg-green-500/10 border border-green-500/30 p-3 rounded-lg">
+                            <p className="text-green-400 text-xs font-bold text-center">
+                                Momentum Korundu! <br />
+                                <span className="opacity-70 font-mono font-normal">P(önce) = {collisionResult.pInitial.toFixed(1)} ≈ P(sonra) = {collisionResult.pFinal.toFixed(1)}</span>
+                            </p>
+                        </div>
+                    )}
+                </div>
+            }
+        >
+            <div ref={containerRef} className="w-full h-full relative bg-[#09090b] touch-none">
+                <canvas ref={canvasRef} className="block w-full h-full" />
+
+                <div className="absolute top-4 right-4 text-[10px] text-zinc-600 font-mono pointer-events-none uppercase tracking-widest hidden sm:block">
+                    COLLISION LAB
                 </div>
             </div>
-        </div>
+        </SimWrapper>
     );
 }
+

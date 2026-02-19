@@ -40,24 +40,35 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
     const [simData, setSimData] = useState({ range: 0, height: 0, time: 0 });
 
     // Tasks (Tutorial Mode)
+    // Tasks (Tutorial Mode) - Refined for "Gamified" feel
     const [tasks, setTasks] = useState<SimTask[]>([
         {
             id: "p1",
-            description: "Hedefi Vur!",
-            hint: "Deneyerek öğren! Açıyı ve Hızı değiştir, sonra ATEŞLE butonuna bas.",
-            isCompleted: false
+            description: "İlk Atışını Yap",
+            hint: "Sadece 'ATEŞLE' butonuna bas ve topun nereye düştüğünü gör.",
+            isCompleted: false,
+            explanation: "Tebrikler! Bir cisim fırlatıldığında hem yatay hem de dikey hareket eder."
         },
         {
             id: "p2",
-            description: "Açıyı 45° Yap!",
-            hint: "En uzağa gitmek için açıyı tam 45° yap ve Hızı 100m/s'ye getir.",
-            isCompleted: false
+            description: "En Uzağa Git (45°)",
+            hint: "Fiziğin altın kuralı: En uzun menzil için açıyı 45° yap ve Hızı 100m/s'ye ayarla.",
+            isCompleted: false,
+            explanation: "Harika! Hava sürtünmesi olmadığında 45 derece her zaman en uzun menzili verir."
         },
         {
             id: "p3",
-            description: "Yükseğe At!",
-            hint: "Açıyı 70° yap ve 120m/s hızla fırlat. Topun ne kadar yükseğe çıktığını gör.",
-            isCompleted: false
+            description: "Bulutlara Dokun (Yükseklik)",
+            hint: "Topu olabildiğince yükseğe at! Açıyı 80-90° arası yap ve Hızı 120m/s üstüne çıkar.",
+            isCompleted: false,
+            explanation: "Mükemmel! Dikey hız ne kadar fazlaysa, cisim o kadar yükseğe çıkar."
+        },
+        {
+            id: "p4",
+            description: "Hedefi Vur (Keskin Nişancı)",
+            hint: "Hedef uzakta belirdi! Deneme-yanılma yaparak tam isabet ettirmeye çalış.",
+            isCompleted: false,
+            explanation: "İşte bu! Fizik kurallarını kullanarak hedefi tam on ikiden vurdun."
         },
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
@@ -402,7 +413,6 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
 
     return (
         <SimWrapper
-            layoutMode="split"
             title="Eğik Atış Laboratuvarı"
             description="Yerçekimi altında cisimlerin hareketini incele."
             tasks={tasks}
