@@ -2,18 +2,26 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Play, Pause, RotateCcw, Target, Info, Activity, Weight } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { SimWrapper, SimTask } from "./sim-wrapper";
+import { Simulation } from "./data";
 
 interface SpringMassSimProps {
     className?: string;
+    content?: Simulation['content'];
 }
 
-export function SpringMassSim({ className = "" }: SpringMassSimProps) {
+export function SpringMassSim({ className = "", content }: SpringMassSimProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [springK, setSpringK] = useState(50);
     const [mass, setMass] = useState(2);
     const [isRunning, setIsRunning] = useState(true);
+
+    // Chart Data
+    const [chartData, setChartData] = useState<{ t: number, x: number }[]>([]);
+    const frameCountRef = useRef(0);
+    const timeRef = useRef(0);
 
     // Physics state
     const posRef = useRef(60);
@@ -106,6 +114,19 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
                 velRef.current += acc;
                 velRef.current *= damping;
                 posRef.current += velRef.current;
+
+                // Update Time
+                timeRef.current += 0.016; // Approx 60fps
+
+                // Update Chart Data (Throttle: every 5 frames)
+                frameCountRef.current++;
+                if (frameCountRef.current % 5 === 0) {
+                    setChartData(prev => {
+                        const newData = [...prev, { t: parseFloat(timeRef.current.toFixed(1)), x: Math.round(posRef.current) }];
+                        if (newData.length > 50) return newData.slice(newData.length - 50);
+                        return newData;
+                    });
+                }
             }
 
             const massY = restY + 120 + posRef.current; // Lowered a bit
@@ -185,6 +206,23 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
         setIsRunning(true);
         posRef.current = 60;
         velRef.current = 0;
+        setChartData([]);
+        timeRef.current = 0;
+    };
+
+    // Custom Chart Tooltip
+    const CustomTooltip = ({ active, payload, label }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-zinc-900 border border-white/10 p-2 rounded-lg shadow-xl">
+                    <p className="text-[10px] text-zinc-400 font-mono mb-1">{label}s</p>
+                    <p className="text-xs font-bold text-blue-400">
+                        Konum: {payload[0].value}px
+                    </p>
+                </div>
+            );
+        }
+        return null;
     };
 
     return (
@@ -194,6 +232,37 @@ export function SpringMassSim({ className = "" }: SpringMassSimProps) {
             tasks={tasks}
             currentTaskIndex={currentTaskIndex}
             onReset={resetSim}
+            content={content}
+            charts={
+                <div className="h-[300px] w-full mt-4">
+                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Zaman - Konum Grafiği</h3>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                            <XAxis
+                                dataKey="t"
+                                stroke="#52525b"
+                                tick={{ fontSize: 10 }}
+                                tickFormatter={(val: any) => val + 's'}
+                            />
+                            <YAxis
+                                stroke="#52525b"
+                                tick={{ fontSize: 10 }}
+                                domain={[-150, 150]}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Line
+                                type="monotone"
+                                dataKey="x"
+                                stroke="#60A5FA"
+                                strokeWidth={2}
+                                dot={false}
+                                isAnimationActive={false}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            }
             controls={
                 <div className="space-y-6">
                     {/* Live Data */}

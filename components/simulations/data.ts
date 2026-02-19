@@ -19,6 +19,16 @@ export type Simulation = {
     formula: string;
     difficulty: "Kolay" | "Orta" | "Zor";
     tags: string[];
+    seo?: {
+        title: string;
+        description: string;
+        keywords: string[];
+    };
+    content?: {
+        theory: string;
+        formulas: string[];
+        objectives: string[];
+    };
 };
 
 export const simulations: Simulation[] = [
@@ -64,7 +74,43 @@ export const simulations: Simulation[] = [
         color: "#60A5FA", // Soft Blue
         formula: "F = -kx",
         difficulty: "Orta",
-        tags: ["Enerji", "Harmonik Hareket"]
+        tags: ["Enerji", "Harmonik Hareket"],
+        seo: {
+            title: "Yay Kütle Sistemi Simülasyonu - Hooke Yasası | FizikHub",
+            description: "Yay sabiti ve kütle değişiminin basit harmonik harekete etkisini interaktif olarak inceleyin. Hooke yasası ve enerji dönüşümü simülasyonu.",
+            keywords: ["yay sarkacı", "hooke yasası", "basit harmonik hareket", "yay potansiyel enerjisi", "fizik simülasyonu"]
+        },
+        content: {
+            theory: `### Basit Harmonik Hareket ve Yaylar
+Esnek bir yay, denge konumundan uzaklaştırıldığında, onu tekrar denge konumuna getirmeye çalışan bir **geri çağırıcı kuvvet** (Restoring Force) oluşur. Bu kuvvet, uzama miktarı ile doğru orantılıdır ancak yönü terstir.
+
+Bu ilişki **Hooke Yasası** ile ifade edilir: **F = -k · x**
+
+Burada:
+*   **F**: Yay kuvveti (Newton)
+*   **k**: Yay sabiti (N/m) - Yayın sertliğini ifade eder.
+*   **x**: Denge konumundan uzaklaşma miktarı (metre)
+
+Cisim serbest bırakıldığında, bu kuvvetin etkisiyle **Basit Harmonik Hareket (BHH)** yapar. Sürtünmesiz ortamda bu hareket sonsuza kadar devam eder.
+
+### Periyot ve Frekans
+Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve yay sabitine bağlıdır, ancak **genliğe (uzama miktarına) bağlı değildir**.
+
+*   Kütle (m) artarsa, eylemsizlik artar ve periyot uzar (hareket yavaşlar).
+*   Yay sabiti (k) artarsa, geri çağırıcı kuvvet artar ve periyot kısalır (hareket hızlanır).`,
+            formulas: [
+                "F_{yay} = -k \\cdot x",
+                "T = 2\\pi \\sqrt{\\frac{m}{k}}",
+                "E_{pot} = \\frac{1}{2} k x^2",
+                "E_{kin} = \\frac{1}{2} m v^2"
+            ],
+            objectives: [
+                "Yay sabiti (k) arttığında periyodun nasıl değiştiğini gözlemlemek.",
+                "Kütle (m) arttığında hareketin nasıl yavaşladığını anlamak.",
+                "Maksimum uzanım noktalarında (genlik) hızın sıfır, ivmenin maksimum olduğunu görmek.",
+                "Denge noktasından geçerken hızın maksimum, ivmenin sıfır olduğunu keşfetmek."
+            ]
+        }
     },
     {
         id: "wave",

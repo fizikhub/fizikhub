@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCcw, Info, CheckCircle2, X } from "lucide-react";
+import { RotateCcw, Info, CheckCircle2, X, BookOpen, SlidersHorizontal, BarChart2 } from "lucide-react";
 import Link from "next/link";
 import { LandscapeGuard } from "@/components/ui/landscape-guard";
 import confetti from "canvas-confetti";
+import { Simulation } from "./data";
 
 export type SimTask = {
     id: string;
@@ -23,6 +24,8 @@ interface SimWrapperProps {
     currentTaskIndex?: number;
     controls: React.ReactNode;
     children: React.ReactNode;
+    content?: Simulation['content'];
+    charts?: React.ReactNode;
     onReset?: () => void;
 }
 
@@ -33,10 +36,13 @@ export function SimWrapper({
     currentTaskIndex = 0,
     controls,
     children,
+    content,
+    charts,
     onReset,
 }: SimWrapperProps) {
     const [showInfo, setShowInfo] = useState(false);
     const [showExplanation, setShowExplanation] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'controls' | 'theory' | 'stats'>('controls');
 
     // Confetti Effect on Task Completion
     useEffect(() => {
@@ -63,6 +69,21 @@ export function SimWrapper({
     }, [currentTaskIndex, tasks]);
 
     const currentTask = tasks[currentTaskIndex];
+
+    const TabButton = ({ id, icon: Icon, label }: { id: typeof activeTab, icon: any, label: string }) => (
+        <button
+            onClick={() => setActiveTab(id)}
+            className={cn(
+                "flex-1 flex flex-col items-center justify-center p-3 gap-1 transition-colors border-b-2",
+                activeTab === id
+                    ? "border-blue-500 text-blue-400 bg-white/5"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+            )}
+        >
+            <Icon className="w-5 h-5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
+        </button>
+    );
 
     return (
         <LandscapeGuard>
@@ -113,11 +134,11 @@ export function SimWrapper({
 
                 {/* --- MAIN CONTENT WRAPPER --- */}
                 {/* On Mobile: flex-col and overflow-auto to allow scrolling. On Desktop: flex-row and overflow-hidden. */}
-                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden pb-64 lg:pb-0">
+                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden pb-[40vh] lg:pb-0">
 
                     {/* CANVAS AREA */}
                     {/* Mobile: Fixed height (60vh) so it's large but allows controls below. Desktop: flex-1, full height. */}
-                    <div className="w-full h-[60vh] shrink-0 lg:h-full lg:flex-1 relative bg-black/50 touch-none no-select overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
+                    <div className="w-full h-[55vh] shrink-0 lg:h-full lg:flex-1 relative bg-black/50 touch-none no-select overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
                         {children}
 
                         {/* Active Task Overlay */}
@@ -166,24 +187,82 @@ export function SimWrapper({
                         </AnimatePresence>
                     </div>
 
-                    {/* --- DESKTOP SIDEBAR CONTROLS --- */}
-                    <div className="hidden lg:flex w-[320px] bg-[#09090b] flex-col shrink-0 z-20">
-                        <div className="p-4 border-b border-white/10">
-                            <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Kontrol Paneli</h2>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {controls}
-                        </div>
-                    </div>
+                    {/* --- RIGHT PANEL (Desktop Sidebar & Mobile Bottom Sheet) --- */}
+                    <div className="flex flex-col bg-[#09090b] z-20 
+                        lg:w-[360px] lg:border-l lg:border-white/10 shrink-0
+                        fixed bottom-0 left-0 right-0 h-[35vh] lg:static lg:h-auto border-t border-white/10 shadow-[0_-10px_40px_-5px_rgba(0,0,0,0.8)] lg:shadow-none
+                    ">
 
-                    {/* --- MOBILE CONTROLS (Fixed Bottom) --- */}
-                    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 w-full p-6 bg-[#09090b] border-t border-white/10 shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.8)]">
-                        <h2 className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            Kontrol Paneli
-                            <div className="h-px flex-1 bg-zinc-800" />
-                        </h2>
-                        <div className="space-y-6">
-                            {controls}
+                        {/* Tab Headers */}
+                        <div className="flex border-b border-white/10">
+                            <TabButton id="controls" icon={SlidersHorizontal} label="Kontrol" />
+                            {content && <TabButton id="theory" icon={BookOpen} label="Teori" />}
+                            <TabButton id="stats" icon={BarChart2} label="Veriler" />
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[#09090b]">
+                            {/* CONTROLS TAB */}
+                            {activeTab === 'controls' && (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                    {controls}
+                                </div>
+                            )}
+
+                            {/* THEORY TAB */}
+                            {activeTab === 'theory' && content && (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 text-zinc-300">
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-bold text-white mb-2">Konu Anlatımı</h3>
+                                        <div className="prose prose-invert prose-sm max-w-none">
+                                            <div className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-400">
+                                                {content.theory}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {content.formulas && (
+                                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Formüller</h4>
+                                            <div className="space-y-2">
+                                                {content.formulas.map((formula, i) => (
+                                                    <div key={i} className="font-mono text-center text-blue-400 bg-black/30 py-2 rounded-lg text-sm">
+                                                        {formula}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {content.objectives && (
+                                        <div>
+                                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Öğrenim Hedefleri</h4>
+                                            <ul className="space-y-2">
+                                                {content.objectives.map((obj, i) => (
+                                                    <li key={i} className="flex gap-2 text-sm text-zinc-400">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
+                                                        {obj}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* STATS TAB */}
+                            {activeTab === 'stats' && (
+                                <div className="h-full flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                    {charts ? (
+                                        charts
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-full text-center text-zinc-500">
+                                            <BarChart2 className="w-12 h-12 mb-4 opacity-20" />
+                                            <p className="text-sm font-medium">Detaylı grafikler bu simülasyon için mevcut değil.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

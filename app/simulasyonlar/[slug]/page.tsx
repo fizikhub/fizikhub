@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { type Metadata } from "next";
 import { simulations } from "@/components/simulations/data";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { ArrowLeft } from "lucide-react";
@@ -16,6 +17,30 @@ export function generateStaticParams() {
     return simulations.map((sim) => ({
         slug: sim.slug,
     }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const sim = simulations.find((s) => s.slug === slug);
+
+    if (!sim) {
+        return {
+            title: "Simülasyon Bulunamadı | FizikHub",
+        };
+    }
+
+    if (sim.seo) {
+        return {
+            title: sim.seo.title,
+            description: sim.seo.description,
+            keywords: sim.seo.keywords,
+        };
+    }
+
+    return {
+        title: `${sim.title} Simülasyonu | FizikHub`,
+        description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
+    };
 }
 
 export default async function SimulationPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -51,19 +76,19 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
             Component = () => <div className="p-8 text-center text-white">Bu simülasyon henüz yapım aşamasında.</div>;
     }
 
+    // Cast to any to allow passing new props (content) to components that might not have updated interfaces yet.
+    const SimComponent = Component as any;
+
     return (
         <div className="min-h-screen bg-background flex flex-col font-[family-name:var(--font-outfit)]">
             {/* 
                We're removing the header here because SimWrapper (used inside ProjectileSim and OpticsSim) 
                provides its own full-screen layout. 
                However, older simulations might still need it.
-               We can conditionally render it if the component is NOT one of the new wrapped ones.
-               But for consistency, it's better if ALL sims use the wrapper or we unify the layout.
-               
-               For now, since SimWrapper has a back button, we can hide the header for specific IDs.
+               For consistency, we will hide it for simulations that likely use SimWrapper.
             */}
 
-            {(sim.id !== "projectile" && sim.id !== "optics") && (
+            {(sim.id !== "projectile" && sim.id !== "optics" && sim.id !== "spring") && (
                 <div className="border-b-[3px] border-black sticky top-0 z-50 py-2 sm:py-3 px-4" style={{ backgroundColor: sim.color }}>
                     <div className="max-w-7xl mx-auto flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -82,7 +107,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
 
             {/* Main Content Area */}
             <div className="flex-1 relative">
-                <Component />
+                <SimComponent content={sim.content} />
             </div>
         </div>
     );
