@@ -43,7 +43,7 @@ type RaySegment = {
 const MAX_BOUNCES = 10;
 const MIN_INTENSITY = 0.01;
 
-export default function OpticsSim() {
+export function OpticsSim() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
