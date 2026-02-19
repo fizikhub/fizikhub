@@ -141,26 +141,26 @@ export function NeoArticleCard({
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
-                    {/* Category Label - slightly better positioning */}
-                    <div className="absolute top-4 left-4 z-20 perspective-500">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 font-black text-[10px] sm:text-xs uppercase shadow-[3px_3px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                    {/* Category Label */}
+                    <div className="absolute top-3 left-3 z-20 perspective-500">
+                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
                             {article.category || "GENEL"}
                         </span>
                     </div>
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-4 sm:p-6 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-2.5 sm:p-5 gap-2 sm:gap-3 z-10 relative">
 
-                    {/* Title - High Contrast White in Dark Mode - Increased Line Height */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tighter mb-1">
-                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm decoration-clone">
+                    {/* Title - High Contrast White in Dark Mode */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase tracking-tighter mb-0.5 sm:mb-1">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
                     </h3>
 
-                    {/* Preview Text - Lighter Grey for Contrast - Better Spacing */}
-                    <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 leading-relaxed tracking-normal">
+                    {/* Preview Text - Lighter Grey for Contrast */}
+                    <p className="font-[family-name:var(--font-inter)] text-xs sm:text-sm font-semibold text-neutral-600 dark:text-zinc-300 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
                         {previewText}
                     </p>
 
@@ -168,26 +168,26 @@ export function NeoArticleCard({
                     <div className="mt-auto"></div>
 
                     {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-white/10 my-3" />
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pt-1 sm:pt-2">
 
                         {/* Author */}
-                        <div className="flex items-center gap-3 min-w-0 group/author">
-                            <div className="relative w-9 h-9 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000] group-hover/author:scale-105 transition-transform">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 <OptimizedAvatar
                                     src={authorAvatar}
                                     alt={authorName}
-                                    size={36}
+                                    size={40}
                                     className="w-full h-full"
                                 />
                             </div>
-                            <div className="flex flex-col leading-none gap-1 min-w-0">
-                                <span className="text-xs font-black uppercase text-black dark:text-zinc-200 truncate tracking-wider max-w-[100px] group-hover/author:text-[#FFC800] transition-colors">
+                            <div className="flex flex-col leading-none gap-0.5 min-w-0">
+                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
                                     {authorName}
                                 </span>
-                                <span className="text-[10px] font-bold text-neutral-400 dark:text-zinc-500 uppercase tracking-wider">
+                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
