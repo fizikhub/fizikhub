@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { IconHome, IconExplore, IconForum, IconProfile } from "@/components/ui/nano-icons";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useSpring, useTransform } from "framer-motion";
@@ -82,7 +83,7 @@ export function BottomNav() {
                 <NavItem
                     id="nav-item-home"
                     href="/"
-                    icon={Home}
+                    icon={IconHome}
                     label="Akış"
                     isActive={pathname === "/"}
                     onInteract={vibrate}
@@ -91,7 +92,7 @@ export function BottomNav() {
                 <NavItem
                     id="nav-item-feed"
                     href="/makale"
-                    icon={BookOpen}
+                    icon={IconExplore}
                     label="Blog"
                     isActive={pathname.startsWith("/makale")}
                     onInteract={vibrate}
@@ -146,7 +147,7 @@ export function BottomNav() {
                 <NavItem
                     id="nav-item-forum"
                     href="/forum"
-                    icon={MessageCircle}
+                    icon={IconForum}
                     label="Forum"
                     isActive={pathname.startsWith("/forum")}
                     onInteract={vibrate}
@@ -155,7 +156,7 @@ export function BottomNav() {
                 <NavItem
                     id="nav-item-profile"
                     href="/profil"
-                    icon={User}
+                    icon={IconProfile}
                     label="Profil"
                     isActive={pathname.startsWith("/profil")}
                     onInteract={vibrate}
@@ -215,10 +216,10 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                         transition={{ type: "spring", stiffness: 500, damping: 15 }}
                     >
                         <Icon
-                            fill={isActive ? "currentColor" : "none"}
+                            isActive={isActive}
                             className={cn(
-                                "w-5 h-5 transition-all duration-200",
-                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                                "w-6 h-6 transition-all duration-200",
+                                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
                             )}
                         />
                     </motion.div>
