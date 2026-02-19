@@ -52,9 +52,12 @@ export function SimWrapper({
                     colors: ['#EF4444', '#3B82F6', '#10B981', '#F59E0B']
                 });
 
-                // Show Explanation if available
+                // Show Explanation if available (DELAYED 7 Seconds)
                 if (completedTask.explanation) {
-                    setShowExplanation(completedTask.explanation);
+                    const timer = setTimeout(() => {
+                        setShowExplanation(completedTask.explanation);
+                    }, 7000);
+                    return () => clearTimeout(timer);
                 }
             }
         }
@@ -64,7 +67,7 @@ export function SimWrapper({
 
     return (
         <LandscapeGuard>
-            <div className="h-[100dvh] w-screen flex flex-col lg:flex-row bg-[#09090b] text-white overflow-hidden font-sans">
+            <div className="h-[100dvh] w-screen flex flex-col bg-[#09090b] text-white font-sans overflow-hidden">
 
                 {/* --- HEADER --- */}
                 <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#09090b]/80 backdrop-blur-md z-50 shrink-0">
@@ -109,11 +112,13 @@ export function SimWrapper({
                     </div>
                 </header>
 
-                {/* --- MAIN CONTENT AREA --- */}
-                <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
+                {/* --- MAIN CONTENT WRAPPER --- */}
+                {/* On Mobile: flex-col and overflow-auto to allow scrolling. On Desktop: flex-row and overflow-hidden. */}
+                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden">
 
-                    {/* CANVAS AREA (Takes full remaining height on mobile) */}
-                    <div className="flex-1 relative bg-black/50 touch-none no-select overflow-hidden">
+                    {/* CANVAS AREA */}
+                    {/* Mobile: Fixed height (60vh) so it's large but allows controls below. Desktop: flex-1, full height. */}
+                    <div className="w-full h-[60vh] shrink-0 lg:h-full lg:flex-1 relative bg-black/50 touch-none no-select overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10">
                         {children}
 
                         {/* Active Task Overlay */}
@@ -163,7 +168,7 @@ export function SimWrapper({
                     </div>
 
                     {/* --- DESKTOP SIDEBAR CONTROLS --- */}
-                    <div className="hidden lg:flex w-[320px] bg-[#09090b] border-l border-white/10 flex-col shrink-0 z-20">
+                    <div className="hidden lg:flex w-[320px] bg-[#09090b] flex-col shrink-0 z-20">
                         <div className="p-4 border-b border-white/10">
                             <h2 className="text-sm font-bold text-zinc-400 uppercase tracking-wider">Kontrol Paneli</h2>
                         </div>
@@ -172,33 +177,16 @@ export function SimWrapper({
                         </div>
                     </div>
 
-                    {/* --- MOBILE BOTTOM SHEET CONTROLS --- */}
-                    <motion.div
-                        className="lg:hidden absolute bottom-0 left-0 right-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] flex flex-col max-h-[60vh]"
-                        initial={false}
-                        animate={{ height: isMobileControlsOpen ? "60vh" : "120px" }} // Default height shows primary controls
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    >
-                        {/* Drag Handle / Toggle */}
-                        <div
-                            className="w-full h-8 flex items-center justify-center cursor-pointer active:bg-white/5"
-                            onClick={() => setIsMobileControlsOpen(!isMobileControlsOpen)}
-                        >
-                            <div className="w-12 h-1.5 bg-zinc-700 rounded-full" />
-                        </div>
-
-                        {/* Scrollable Content */}
-                        <div className="flex-1 overflow-y-auto p-6 pt-0 pb-12">
-                            {/* Hint for interaction */}
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Ayarlar</span>
-                                <button onClick={() => setIsMobileControlsOpen(!isMobileControlsOpen)}>
-                                    {isMobileControlsOpen ? <ChevronDown className="w-4 h-4 text-zinc-500" /> : <ChevronUp className="w-4 h-4 text-zinc-500" />}
-                                </button>
-                            </div>
+                    {/* --- MOBILE CONTROLS (Static Block) --- */}
+                    <div className="lg:hidden w-full p-6 bg-[#09090b] pb-24">
+                        <h2 className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            Kontrol Paneli
+                            <div className="h-px flex-1 bg-zinc-800" />
+                        </h2>
+                        <div className="space-y-6">
                             {controls}
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Info Modal */}
