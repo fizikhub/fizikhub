@@ -37,7 +37,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
 
             <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x snap-mandatory px-1">
                 {articles.slice(0, 6).map((article, index) => (
-                    <div
+                    <article
                         key={article.id}
                         className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start article-slide-item"
                         style={{ animationDelay: `${index * 80}ms` }}
@@ -89,7 +89,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                 </div>
                             </div>
                         </Link>
-                    </div>
+                    </article>
                 ))}
             </div>
         </section>

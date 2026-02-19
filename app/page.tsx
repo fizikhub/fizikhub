@@ -130,8 +130,34 @@ export default async function Home() {
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
 
+  // JSON-LD Structured Data for Homepage (ItemList)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: articles.map((article: any, index: number) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'Article',
+        url: `https://fizikhub.com/blog/${article.slug}`,
+        name: article.title,
+        headline: article.title,
+        image: article.cover_url || "https://fizikhub.com/og-image.png",
+        datePublished: article.created_at,
+        author: {
+          '@type': 'Person',
+          name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
+        }
+      }
+    }))
+  };
+
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ScrollProgress />
       <BackToTop />
 
