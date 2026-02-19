@@ -54,7 +54,6 @@ export function ModernLogin() {
             });
             if (error) throw error;
         } catch (error: any) {
-        } catch (error: any) {
             // Only show error if it's NOT a user cancellation (which often happens silently or with specific strings)
             // But usually unexpected errors.
             console.error("OAuth Error:", error);
@@ -146,7 +145,6 @@ export function ModernLogin() {
                 toast.error("Kullanıcı adı veya şifre hatalı.", { id: toastId });
             } else if (error.message.includes("Database error")) {
                 toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
-            } else {
             } else {
                 // Fallback for other errors
                 if (error.message.includes("rate limit")) {
