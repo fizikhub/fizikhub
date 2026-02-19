@@ -54,8 +54,17 @@ export function ModernLogin() {
             });
             if (error) throw error;
         } catch (error: any) {
-            toast.error(error.message);
-            setLoading(false);
+        } catch (error: any) {
+            // Only show error if it's NOT a user cancellation (which often happens silently or with specific strings)
+            // But usually unexpected errors.
+            console.error("OAuth Error:", error);
+            toast.error("Giriş bağlantısı başlatılamadı.");
+        } finally {
+            // We keep loading true because we are redirecting away. 
+            // If we set it false, user sees the form again before redirect.
+            // BUT if it failed synchronously, we must reset.
+            // The catch block catches synchronous failures.
+            setTimeout(() => setLoading(false), 2000); // Reset after delay just in case user comes back via history
         }
     };
 
@@ -138,7 +147,13 @@ export function ModernLogin() {
             } else if (error.message.includes("Database error")) {
                 toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
             } else {
-                toast.error(error.message || "Bir hata oluştu.", { id: toastId });
+            } else {
+                // Fallback for other errors
+                if (error.message.includes("rate limit")) {
+                    toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
+                } else {
+                    toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
+                }
             }
         }
         // Note: We don't set loading(false) in success case to prevent interaction during redirect

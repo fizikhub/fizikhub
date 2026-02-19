@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Story {
     id: string;
@@ -90,7 +91,17 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
         const currentStory = stories[currentIndex];
         if (!currentStory?.id || !userId) return; // Should not happen if button is visible
 
-        if (!confirm("Bu hikayeyi silmek istediğinize emin misiniz?")) return;
+        // Use a custom toast based confirmation or simple double check could be better, 
+        // but for "premium" feel let's use a non-blocking UI or a toast action. 
+        // For now, let's keep it simple but safe:
+        // We will use a toast that requires a second click or a custom UI state. 
+        // Actually, let's just use the `sonner` toast with an action button if possible, 
+        // or a small discrete overlay. 
+        // Since we are inside a full screen viewer, a native confirm is jarring.
+        // Let's implement a "Click again to delete" pattern on the button itself.
+
+        // For this first step, let's just remove the native confirm and handle it in the UI button
+        // (We will modify the button in the JSX to handle "Are you sure?")
 
         try {
             setIsDeleting(true);
@@ -197,13 +208,10 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                         </div>
                         <div className="flex items-center gap-2 pointer-events-auto">
                             {isOwner && (
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); handleDelete(); }}
-                                    disabled={isDeleting}
-                                    className="w-10 h-10 flex items-center justify-center bg-black/50 backdrop-blur-xl border border-white/10 rounded-full text-red-500 hover:bg-red-500/20 transition-all active:scale-95 z-[101]"
-                                >
-                                    {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
-                                </button>
+                                <DeleteStoryButton
+                                    onConfirm={handleDelete}
+                                    isDeleting={isDeleting}
+                                />
                             )}
                             <button
                                 onClick={onClose}
@@ -273,4 +281,42 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
     );
 
     return createPortal(content, document.body);
+}
+
+function DeleteStoryButton({ onConfirm, isDeleting }: { onConfirm: () => void, isDeleting: boolean }) {
+    const [confirming, setConfirming] = useState(false);
+
+    useEffect(() => {
+        if (confirming) {
+            const timer = setTimeout(() => setConfirming(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [confirming]);
+
+    return (
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                if (confirming) {
+                    onConfirm();
+                } else {
+                    setConfirming(true);
+                    toast.warning("Silmek için tekrar dokun.", { duration: 2000 });
+                }
+            }}
+            disabled={isDeleting}
+            className={cn(
+                "h-10 flex items-center justify-center bg-black/50 backdrop-blur-xl border border-white/10 rounded-full transition-all active:scale-95 z-[101]",
+                confirming ? "w-auto px-4 bg-red-500/80 text-white" : "w-10 text-red-500 hover:bg-red-500/20"
+            )}
+        >
+            {isDeleting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+            ) : confirming ? (
+                <span className="text-xs font-bold whitespace-nowrap">SİL?</span>
+            ) : (
+                <Trash2 className="w-5 h-5" />
+            )}
+        </button>
+    );
 }
