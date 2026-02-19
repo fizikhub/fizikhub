@@ -40,6 +40,9 @@ export function SimWrapper({
     const [showInfo, setShowInfo] = useState(false);
     const [showExplanation, setShowExplanation] = useState<string | null>(null);
 
+    // Onboarding State
+    const [showOnboarding, setShowOnboarding] = useState(true);
+
     // Watch for task completion to show explanation
     useEffect(() => {
         if (currentTaskIndex > 0) {
@@ -55,7 +58,52 @@ export function SimWrapper({
     return (
         <LandscapeGuard>
             <div className="h-screen w-screen flex flex-col bg-[#09090b] text-white overflow-hidden font-sans">
+
+                {/* Onboarding Overlay */}
+                <AnimatePresence>
+                    {showOnboarding && (
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-6"
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+                                className="max-w-md w-full bg-zinc-900 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+
+                                <div className="mb-6">
+                                    <h1 className="text-3xl font-black text-white mb-2 tracking-tight">{title}</h1>
+                                    <p className="text-zinc-400 text-lg leading-relaxed">{description}</p>
+                                </div>
+
+                                <div className="bg-zinc-800/50 rounded-xl p-4 mb-8">
+                                    <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">GÖREVLERİN</h3>
+                                    <div className="space-y-3">
+                                        {tasks.slice(0, 3).map((t, i) => (
+                                            <div key={t.id} className="flex items-start gap-3">
+                                                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
+                                                    {i + 1}
+                                                </div>
+                                                <p className="text-sm text-zinc-300">{t.description}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => setShowOnboarding(false)}
+                                    className="w-full py-4 bg-white text-black font-black text-lg rounded-2xl hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                                >
+                                    SİMÜLASYONU BAŞLAT 🚀
+                                </button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* Header */}
+
                 <header className="h-14 border-b border-white/10 flex items-center justify-between px-4 bg-[#09090b] z-20 shrink-0">
                     <div className="flex items-center gap-4">
                         <Link href="/simulasyonlar" className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 transition-colors">

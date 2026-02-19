@@ -55,16 +55,16 @@ export default function OpticsSim() {
 
     const [tasks, setTasks] = useState<SimTask[]>([
         {
-            id: "o1", description: "Yansıma", hint: "Aynayı kullanarak lazeri hedefe vur.", isCompleted: false,
-            explanation: "Yansıma Yasası: Gelme açısı yansıma açısına eşittir (θi = θr)."
+            id: "o1", description: "Hedefi Vur!", hint: "Aynayı sürükle ve açısını değiştirerek lazeri hedefe yansıt.", isCompleted: false,
+            explanation: "Yansıma Yasası: Işık aynaya hangi açıyla gelirse, aynı açıyla yansır."
         },
         {
-            id: "o2", description: "Kırılma", hint: "Cam bloğu ışığın önüne koy ve sapmayı gözlemle.", isCompleted: false,
-            explanation: "Snell Yasası: Işık yoğun ortama girerken normale yaklaşır, çıkarken uzaklaşır."
+            id: "o2", description: "Işığı Kır!", hint: "Cam bloğu ışığın yoluna koy. Işığın nasıl büküldüğünü gör.", isCompleted: false,
+            explanation: "Snell Yasası: Işık cam gibi yoğun bir ortama girerken yavaşlar ve yön değiştirir."
         },
         {
-            id: "o3", description: "Tam İç Yansıma", hint: "Işığı camın içinden çok yatay bir açıyla gönder.", isCompleted: false,
-            explanation: "Kritik açı aşıldığında ışık dışarı çıkamaz ve %100 yansır. Fiber optik kablolar böyle çalışır."
+            id: "o3", description: "Işığı Hapset!", hint: "Işığı camın içinden çok yatay gönder (veya lazeri camın içine sok). Işık dışarı çıkamasın!", isCompleted: false,
+            explanation: "Tebrikler! Kritik açıyı aştın ve ışık dışarı çıkamadı. Fiber internet kablosu da böyle çalışır."
         }
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
@@ -100,9 +100,9 @@ export default function OpticsSim() {
         // Check intersections with all elements
         // Simplified: Treat all as AABBs first for speed, or OBBs properly
         // Let's do proper OBB (Oriented Bounding Box) intersection
-        elements.forEach(el => {
-            if (el.id === "target") return; // Targets don't reflect/refract physics-wise (detected separately)
-            if (el.id === excludeId) return;
+        for (const el of elements) {
+            if (el.id === "target") continue; // Targets don't reflect/refract physics-wise (detected separately)
+            if (el.id === excludeId) continue;
 
             // Transform ray to local space of the element
             // 1. Translate ray start to relative
@@ -125,7 +125,7 @@ export default function OpticsSim() {
             const tmin = Math.max(Math.min(tx1, tx2), Math.min(ty1, ty2));
             const tmax = Math.min(Math.max(tx1, tx2), Math.max(ty1, ty2));
 
-            if (tmax < 0 || tmin > tmax) return; // No hit
+            if (tmax < 0 || tmin > tmax) continue; // No hit
 
             const t = tmin > 0.001 ? tmin : tmax; // if inside, tmin < 0, take tmax
             if (t > 0.001 && t < nearestT) {
@@ -145,18 +145,21 @@ export default function OpticsSim() {
                 hitPoint = add(start, scale(dir, t));
                 entering = tmin > 0.001; // If tmin positive, we hit outside. If negative, we are inside exiting.
             }
-        });
+        }
 
         // Current Segment
         const segment: RaySegment = { start, end: hitPoint, intensity };
         const nextSegments: RaySegment[] = [];
 
-        if (hitElement && hitElement.type === "mirror") {
+        // Explicit null check for safety
+        if (!hitElement) return [segment];
+
+        if (hitElement.type === "mirror") {
             // Reflection: R = D - 2(D.N)N
             const dDotN = dot(dir, hitNormal);
             const reflectDir = sub(dir, scale(hitNormal, 2 * dDotN));
             nextSegments.push(...traceRay(hitPoint, reflectDir, intensity * 0.9, depth + 1, hitElement.id));
-        } else if (hitElement && hitElement.type === "block") {
+        } else if (hitElement.type === "block") {
             // Refraction (Snell's Law)
             const n1 = entering ? 1.0 : hitElement.n;
             const n2 = entering ? hitElement.n : 1.0;
@@ -328,7 +331,7 @@ export default function OpticsSim() {
             newTasks[index].isCompleted = true;
             return newTasks;
         });
-        setTimeout(() => setCurrentTaskIndex(i => Math.min(i + 1, prev => tasks.length - 1)), 1500);
+        setTimeout(() => setCurrentTaskIndex(prev => Math.min(prev + 1, tasks.length - 1)), 1500);
     };
 
     // -- Interactions --

@@ -174,24 +174,24 @@ export default function SolarSystemSim() {
     const [tasks, setTasks] = useState<SimTask[]>([
         {
             id: "s1",
-            description: "Kütleçekimini Artır",
-            hint: "Çekim sabitini (G) 2.0'ın üzerine çıkar ve gezegenlerin güneşe yaklaşmasını izle.",
+            description: "Kütleçekimini Artır!",
+            hint: "Çekim sabitini (G) 2.0'ın üzerine çıkar! Gezegenlerin güneşe yapışmasını izle.",
             isCompleted: false,
-            explanation: "Formül: F = G*(m1*m2)/r². G arttığında çekim kuvveti artar, gezegenler merkeze daha güçlü çekilir."
+            explanation: "Formül: F = G*(m1*m2)/r². Sen G'yi artırınca çekim kuvveti arttı ve gezegenler merkeze düştü."
         },
         {
             id: "s2",
-            description: "Zamanı Hızlandır",
-            hint: "Zaman hızını 2.0x veya üzerine getirerek yörüngeleri hızlandır.",
+            description: "Zamanı Hızlandır!",
+            hint: "Zaman hızını 2.0x veya üzerine getir! Yılların ne kadar hızlı geçtiğini gör.",
             isCompleted: false,
-            explanation: "Kepler'in 3. Yasası: Gezegenler güneşten uzaklaştıkça yörünge periyotları (yılları) uzar."
+            explanation: "Kepler'in 3. Yasası: Gezegenler güneşten uzaklaştıkça yılları uzar. Hızlandırınca bunu daha net görürsün."
         },
         {
             id: "s3",
-            description: "Kaos (Düşük Yerçekimi)",
-            hint: "Çekim sabitini 0.5'in altına düşür ve gezegenlerin savrulmasını izle.",
+            description: "Kaos Yarat!",
+            hint: "Çekim sabitini 0.5'in altına düşür! Gezegenlerin yörüngeden fırlayıp gitmesini izle.",
             isCompleted: false,
-            explanation: "Yörüngede kalabilmek için merkezkaç kuvveti ile kütleçekimi dengede olmalıdır. Çekim azalırsa gezegenler uzaya savrulur."
+            explanation: "Yörüngede kalmak ince bir dengedir. Çekimi azalttığında savrulup gittiler!"
         }
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);

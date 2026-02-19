@@ -43,20 +43,20 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
     const [tasks, setTasks] = useState<SimTask[]>([
         {
             id: "p1",
-            description: "Hedefi Vur",
-            hint: "Açıyı ve Hızı değiştirerek hedefi vur. Deneyerek öğren!",
+            description: "Hedefi Vur!",
+            hint: "Deneyerek öğren! Açıyı ve Hızı değiştir, sonra ATEŞLE butonuna bas.",
             isCompleted: false
         },
         {
             id: "p2",
-            description: "Maksimum Menzil (45°)",
-            hint: "Açıyı tam 45° yap ve Hızı 100m/s'ye getir. 45 derece, havadaki yatay ve dikey hızın dengelendiği en verimli açıdır.",
+            description: "Açıyı 45° Yap!",
+            hint: "En uzağa gitmek için açıyı tam 45° yap ve Hızı 100m/s'ye getir.",
             isCompleted: false
         },
         {
             id: "p3",
-            description: "Yüksek İrtifa Atışı",
-            hint: "Açıyı 70° yap ve 120m/s hızla at. Top çok yükseğe çıkacak ama fazla uzağa gitmeyecek. Enerji yükseklik kazanmak için harcanır.",
+            description: "Yükseğe At!",
+            hint: "Açıyı 70° yap ve 120m/s hızla fırlat. Topun ne kadar yükseğe çıktığını gör.",
             isCompleted: false
         },
     ]);
