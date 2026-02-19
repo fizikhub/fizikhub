@@ -25,6 +25,8 @@ type GameState = {
     camera: { x: number; y: number };
     // Target
     target: { x: number; y: number; w: number; h: number; hit: boolean };
+    // Visuals
+    landingSpot: { x: number; active: boolean } | null;
 };
 
 export function ProjectileSim({ className }: ProjectileSimProps) {
@@ -37,11 +39,26 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
     const [uiPower, setUiPower] = useState(50);
     const [simData, setSimData] = useState({ range: 0, height: 0, time: 0 });
 
-    // Tasks
+    // Tasks (Tutorial Mode)
     const [tasks, setTasks] = useState<SimTask[]>([
-        { id: "p1", description: "Hedefi vur!", hint: "Açıyı ve gücü ayarla.", isCompleted: false },
-        { id: "p2", description: "Maksimum menzile ulaş (45°).", hint: "Açıyı 45 derece yap ve tam güçle ateşle.", isCompleted: false },
-        { id: "p3", description: "Yüksek bir atış yap (>150m).", hint: "Açıyı dikleştir (75°+).", isCompleted: false },
+        {
+            id: "p1",
+            description: "Hedefi Vur",
+            hint: "Açıyı ve Hızı değiştirerek hedefi vur. Deneyerek öğren!",
+            isCompleted: false
+        },
+        {
+            id: "p2",
+            description: "Maksimum Menzil (45°)",
+            hint: "Açıyı tam 45° yap ve Hızı 100m/s'ye getir. 45 derece, havadaki yatay ve dikey hızın dengelendiği en verimli açıdır.",
+            isCompleted: false
+        },
+        {
+            id: "p3",
+            description: "Yüksek İrtifa Atışı",
+            hint: "Açıyı 70° yap ve 120m/s hızla at. Top çok yükseğe çıkacak ama fazla uzağa gitmeyecek. Enerji yükseklik kazanmak için harcanır.",
+            isCompleted: false
+        },
     ]);
     const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
@@ -55,7 +72,8 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
         g: 9.81,
         scale: 4, // Will be dynamic
         camera: { x: 0, y: 0 },
-        target: { x: 300, y: 0, w: 50, h: 10, hit: false }
+        target: { x: 300, y: 0, w: 50, h: 10, hit: false },
+        landingSpot: null
     });
 
     // Initialize/Reset
@@ -69,7 +87,8 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
         s.vx = 0; s.vy = 0;
         s.path = [];
         s.target.hit = false;
-        
+        // Keep landing spot until fire? No, clear logic in fire.
+
         // Reset Camera
         s.camera.x = 0;
         s.camera.y = 0;
@@ -78,14 +97,14 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
         // Let's use a coordinate system where (0,0) is the cannon muzzle for physics slightly easier,
         // but traditionally we map (x,y) to canvas. 
         // Let's stick to: y=0 is ground in physics.
-        s.x = 0; 
+        s.x = 0;
         s.y = 0;
 
         // Determine Scale based on width
         // Mobile: Show ~50m width -> scale = width / 50
         // Desktop: Show ~100m width -> scale = width / 100
         const isMobile = container.clientWidth < 640;
-        const visibleMeters = isMobile ? 60 : 120; 
+        const visibleMeters = isMobile ? 60 : 120;
         s.scale = container.clientWidth / visibleMeters;
 
         // Randomize target based on visible range + some buffer
@@ -103,7 +122,7 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
 
     const fire = () => {
         const s = state.current;
-        if (s.active) return; 
+        if (s.active) return;
 
         const rad = s.angle * Math.PI / 180;
         const v = s.power; // Direct m/s
@@ -111,13 +130,14 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
         s.active = true;
         s.path = [];
         s.target.hit = false;
+        s.landingSpot = null;
         s.x = 0;
         s.y = 0;
-        
+
         // Initial Velocity
         s.vx = v * Math.cos(rad);
-        s.vy = v * Math.sin(rad); 
-        
+        s.vy = v * Math.sin(rad);
+
         setIsRunning(true);
     };
 
@@ -165,7 +185,7 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
                 }
             }
 
-            const dt = Math.min((time - lastTime) / 1000, 0.1); 
+            const dt = Math.min((time - lastTime) / 1000, 0.1);
             lastTime = time;
             const s = state.current;
             const heightPx = output.height;
@@ -192,20 +212,23 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
                     setSimData({
                         range,
                         height: maxH,
-                        time: s.path.length * 0.016 
+                        time: s.path.length * 0.016
                     });
+
+                    // Set Landing Spot
+                    s.landingSpot = { x: s.x, active: true };
 
                     // Check Tasks
                     if (currentTaskIndex === 0 && s.target.hit) completeTask(0);
-                    if (currentTaskIndex === 1 && Math.abs(s.angle - 45) < 2 && s.power > 90) completeTask(1);
+                    if (currentTaskIndex === 1 && Math.abs(s.angle - 45) < 3 && s.power >= 95) completeTask(1);
                     if (currentTaskIndex === 2 && maxH > 150) completeTask(2);
                 }
 
                 // Target Collision
                 // Simple AABB. Target is at s.target.x (meters), width s.target.w (meters)
                 if (s.y <= s.target.h && s.x >= s.target.x && s.x <= s.target.x + 5) { // 5m generous hit box
-                     // Or strictly:
-                     // x overlap: [s.x - radius, s.x + radius] overlaps [target.x, target.x + w]
+                    // Or strictly:
+                    // x overlap: [s.x - radius, s.x + radius] overlaps [target.x, target.x + w]
                 }
                 // Let's use scale for collision to be precise visually
                 // But physics-based is better.
@@ -218,18 +241,37 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
             }
 
             // Camera Logic (Follow projectile)
-            // Goal: Keep projectile within 20%-80% of screen
-            // If projectile x * scale > width * 0.6, shift camera
             const projectileScreenX = s.x * s.scale - s.camera.x;
-            if (projectileScreenX > output.width * 0.6) {
-                s.camera.x += (projectileScreenX - output.width * 0.6) * 0.1; // Smooth follow
-            } else if (projectileScreenX < output.width * 0.2 && s.camera.x > 0) {
-                // If backtracking (wind? or just reset), move back? Usually projectile only goes forward
+            const outputWidth = output.width;
+
+            // Horizontal Follow
+            if (projectileScreenX > outputWidth * 0.6) {
+                s.camera.x += (projectileScreenX - outputWidth * 0.6) * 0.1;
             }
-            
-            // Also follow target in "idle" mode if strict task? 
-            // Better: If idle, ensure target is visible? No, let user scroll or just auto-fit on fire.
-            // When reset, camera goes back to 0.
+
+            // Vertical Follow (Y-axis)
+            // Physics Y is up, Canvas Y is down. Origin is at groundY + camera.y
+            // Screen Y of projectile = (groundY + camera.y) - (s.y * s.scale)
+            // We want projectile to stay below top 20% (e.g. 0.2 * height)
+            const targetScreenY = output.height * 0.3; // Aim to keep high projectiles here
+            const currentProjScreenY = (groundY + s.camera.y) - (s.y * s.scale);
+
+            if (currentProjScreenY < targetScreenY) {
+                // Projectile is too high, move camera UP (which means increasing camera.y, shifting ground down)
+                s.camera.y += (targetScreenY - currentProjScreenY) * 0.1;
+            } else if (s.camera.y > 0 && !s.active) {
+                // Return to ground level smoothly if active
+                s.camera.y += (0 - s.camera.y) * 0.05;
+            } else if (s.camera.y > 0 && currentProjScreenY > output.height * 0.6) {
+                // If dropping down and camera has offset, reduce offset
+                s.camera.y += (0 - s.camera.y) * 0.1;
+            }
+
+            // Clamp camera.y to not go below 0 (don't show underground)
+            // Actually camera.y > 0 means we looked up.
+            if (s.camera.y < 0) s.camera.y = 0;
+
+            // Idle return X
             if (!s.active && s.x === 0 && Math.abs(s.camera.x) > 1) {
                 s.camera.x += (0 - s.camera.x) * 0.1;
             }
@@ -240,20 +282,20 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
             ctx.fillRect(0, 0, output.width, output.height);
 
             ctx.save();
-            
+
             // Apply Camera Transform
             // We want y=0 to be at `groundY`
             // and x=0 to be at 50px padding from left relative to camera
-            const startX = 50; 
+            const startX = 50;
             ctx.translate(startX - s.camera.x, groundY + s.camera.y);
-            
+
             // Draw Grid/Metrics
             const stepMeters = 10;
             const stepPx = stepMeters * s.scale;
             ctx.textAlign = "center";
             ctx.font = "10px monospace";
             ctx.fillStyle = "#444";
-            
+
             // Calculate visible range for optimization
             const camStartM = (s.camera.x - startX) / s.scale;
             const camEndM = (s.camera.x - startX + output.width) / s.scale;
@@ -267,7 +309,7 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, -output.height);
                 ctx.stroke();
-                
+
                 // Label
                 ctx.fillText(`${m}m`, x, 20);
             }
@@ -321,6 +363,20 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
             ctx.lineWidth = 2;
             ctx.stroke();
 
+            // Landing Marker
+            if (s.landingSpot && s.landingSpot.active) {
+                const lx = s.landingSpot.x * s.scale;
+                ctx.fillStyle = "white";
+                ctx.beginPath();
+                ctx.arc(lx, 0, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(`${s.landingSpot.x.toFixed(1)}m`, lx, 20);
+            }
+
             // Projectile
             if (s.active || s.path.length > 0) {
                 const px = s.x * s.scale;
@@ -346,6 +402,7 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
 
     return (
         <SimWrapper
+            layoutMode="split"
             title="Eğik Atış Laboratuvarı"
             description="Yerçekimi altında cisimlerin hareketini incele."
             tasks={tasks}
@@ -359,8 +416,8 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
                         disabled={isRunning}
                         className={cn(
                             "w-full py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg transition-all shadow-lg active:scale-95",
-                            isRunning 
-                                ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5" 
+                            isRunning
+                                ? "bg-zinc-800 text-zinc-500 cursor-not-allowed border border-white/5"
                                 : "bg-white text-black hover:bg-zinc-200 border border-transparent shadow-white/10"
                         )}
                     >
@@ -434,7 +491,7 @@ export function ProjectileSim({ className }: ProjectileSimProps) {
                 className="w-full h-full relative bg-[#09090b]"
             >
                 <canvas ref={canvasRef} className="w-full h-full block touch-none" />
-                
+
                 {/* Overlay Hint */}
                 {!isRunning && state.current.path.length === 0 && (
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 text-sm font-bold pointer-events-none select-none animate-pulse">

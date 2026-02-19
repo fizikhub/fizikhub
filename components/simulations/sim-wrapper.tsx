@@ -32,8 +32,9 @@ export function SimWrapper({
     currentTaskIndex = 0,
     controls,
     children,
-    onReset
-}: SimWrapperProps) {
+    onReset,
+    layoutMode = "drawer"
+}: SimWrapperProps & { layoutMode?: "drawer" | "split" }) {
     const [showControls, setShowControls] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
 
@@ -135,6 +136,15 @@ export function SimWrapper({
                         </AnimatePresence>
                     </div>
 
+                    {/* Mobile Split View Controls */}
+                    {layoutMode === "split" && (
+                        <div className="lg:hidden h-[45vh] bg-[#09090b] border-t border-white/10 flex flex-col z-20">
+                            <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-zinc-800">
+                                {controls}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Desktop Controls Sidebar */}
                     <motion.div
                         initial={false}
@@ -147,20 +157,22 @@ export function SimWrapper({
                     </motion.div>
 
                     {/* Mobile Controls Drawer */}
-                    <motion.div
-                        drag="y"
-                        dragConstraints={{ top: 0, bottom: 400 }}
-                        initial={{ y: "calc(100% - 60px)" }}
-                        whileTap={{ cursor: "grabbing" }}
-                        className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#09090b] border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-30"
-                    >
-                        <div className="w-full h-8 flex items-center justify-center cursor-grab active:cursor-grabbing">
-                            <div className="w-12 h-1.5 bg-zinc-800 rounded-full" />
-                        </div>
-                        <div className="p-6 pt-2 h-[50vh] overflow-y-auto">
-                            {controls}
-                        </div>
-                    </motion.div>
+                    {layoutMode === "drawer" && (
+                        <motion.div
+                            drag="y"
+                            dragConstraints={{ top: 0, bottom: 400 }}
+                            initial={{ y: "calc(100% - 60px)" }}
+                            whileTap={{ cursor: "grabbing" }}
+                            className="lg:hidden absolute bottom-0 left-0 right-0 bg-[#09090b] border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-30"
+                        >
+                            <div className="w-full h-8 flex items-center justify-center cursor-grab active:cursor-grabbing">
+                                <div className="w-12 h-1.5 bg-zinc-800 rounded-full" />
+                            </div>
+                            <div className="p-6 pt-2 h-[50vh] overflow-y-auto">
+                                {controls}
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* Collapse Button (Desktop) */}
                     <button
