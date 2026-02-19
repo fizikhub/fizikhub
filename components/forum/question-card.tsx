@@ -114,15 +114,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
 
                 {/* 1. Header Bar (Yellow Theme) */}
                 <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
-                    <span className="font-black text-xs uppercase tracking-widest text-black">
+                    <span className="font-black text-[10px] sm:text-xs uppercase tracking-widest text-black/80">
                         {question.category || "GENEL"}
                     </span>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-black opacity-60 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-black/60 uppercase tracking-widest">
                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                         </span>
                         {badgeLabel && (
-                            <div className="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
+                            <div className="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]">
                                 {badgeLabel}
                             </div>
                         )}
@@ -130,18 +130,18 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-3 sm:p-5 flex flex-col gap-3 z-10 relative">
+                <div className="flex-1 p-4 sm:p-6 flex flex-col gap-3 z-10 relative">
 
                     {/* Title (Big like TermCard) */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-[0.9] uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-3">
                         {question.title}
                     </h3>
 
                     {/* Content Snippet */}
                     <div className="relative">
                         <p className={cn(
-                            "font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent",
-                            !isExpanded && "line-clamp-5"
+                            "font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed font-mono-accent",
+                            !isExpanded && "line-clamp-4"
                         )}>
                             {cleanContent}
                             {!isExpanded && question.content?.length > 160 && "..."}
@@ -159,7 +159,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
-                                className="mt-2 text-xs font-black uppercase tracking-wider text-[#FFBD2E] hover:underline bg-black px-2 py-1 rounded-sm"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#FFBD2E] hover:underline bg-black px-2 py-1 rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
                             >
                                 Devamını Oku
                             </button>
@@ -172,7 +172,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(false);
                                 }}
-                                className="mt-2 text-xs font-black uppercase tracking-wider text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 Küçült
                             </button>
