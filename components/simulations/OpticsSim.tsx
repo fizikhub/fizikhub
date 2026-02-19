@@ -413,7 +413,6 @@ export function OpticsSim() {
 
     return (
         <SimWrapper
-            layoutMode="split"
             title="Optik Laboratuvarı"
             description="Işığın yansıması, kırılması ve tam iç yansıma deneyleri."
             tasks={tasks}
