@@ -134,7 +134,9 @@ export function SimWrapper({
 
                 {/* --- MAIN CONTENT WRAPPER --- */}
                 {/* On Mobile: flex-col and overflow-auto to allow scrolling. On Desktop: flex-row and overflow-hidden. */}
-                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden pb-[40vh] lg:pb-0">
+                {/* --- MAIN CONTENT WRAPPER --- */}
+                {/* On Mobile: flex-col and overflow-auto to allow scrolling. On Desktop: flex-row and overflow-hidden. */}
+                <div className="flex-1 flex flex-col lg:flex-row lg:overflow-hidden overflow-y-auto lg:overflow-y-hidden">
 
                     {/* CANVAS AREA */}
                     {/* Mobile: Fixed height (60vh) so it's large but allows controls below. Desktop: flex-1, full height. */}
@@ -189,8 +191,8 @@ export function SimWrapper({
 
                     {/* --- RIGHT PANEL (Desktop Sidebar & Mobile Bottom Sheet) --- */}
                     <div className="flex flex-col bg-[#09090b] z-20 
-                        lg:w-[360px] lg:border-l lg:border-white/10 shrink-0
-                        fixed bottom-0 left-0 right-0 h-[35vh] lg:static lg:h-auto border-t border-white/10 shadow-[0_-10px_40px_-5px_rgba(0,0,0,0.8)] lg:shadow-none
+                        w-full shrink-0 border-t border-white/10
+                        lg:w-[360px] lg:border-l lg:border-white/10 lg:h-auto lg:border-t-0
                     ">
 
                         {/* Tab Headers */}
