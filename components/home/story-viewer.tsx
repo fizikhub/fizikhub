@@ -166,7 +166,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 className="fixed inset-0 z-[99999] bg-black flex items-center justify-center"
             >
                 <div
-                    className="relative w-[96vw] h-full sm:max-w-md sm:h-[90vh] sm:rounded-3xl rounded-none overflow-hidden bg-zinc-900 flex flex-col shadow-2xl"
+                    className="relative w-full h-[100dvh] sm:max-w-md sm:h-[90vh] sm:rounded-3xl rounded-none overflow-hidden bg-black flex flex-col sm:shadow-2xl"
                     onMouseDown={() => setIsPaused(true)}
                     onMouseUp={() => setIsPaused(false)}
                     onTouchStart={() => setIsPaused(true)}
@@ -174,9 +174,9 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 >
 
                     {/* Progress Bars */}
-                    <div className="absolute top-0 left-0 right-0 z-[100] p-2 pt-3 flex gap-1 px-4 sm:px-6 pointer-events-none">
+                    <div className="absolute top-0 left-0 right-0 z-[100] pt-4 flex gap-1 px-2 sm:px-6 pointer-events-none">
                         {stories.map((_, index) => (
-                            <div key={index} className="h-0.5 flex-1 bg-white/20 rounded-full overflow-hidden">
+                            <div key={index} className="h-0.5 flex-1 bg-white/30 rounded-full overflow-hidden">
                                 <motion.div
                                     className="h-full bg-white"
                                     initial={{ width: 0 }}
@@ -190,7 +190,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                     </div>
 
                     {/* Header */}
-                    <div className="absolute top-7 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
+                    <div className="absolute top-8 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
                         <div className="flex items-center gap-2 pointer-events-auto">
                             <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
@@ -234,12 +234,13 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                             draggable={false}
                         />
 
-                        {/* Dark Gradient Overlay for Legibility */}
+                        {/* Dark Gradients Overlay for Legibility */}
                         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
+                        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-[90]" />
 
                         {/* Tap Zones for Navigation */}
-                        <div className="absolute inset-y-0 left-0 w-1/3 z-10" onClick={!isPaused ? prevStory : undefined} />
-                        <div className="absolute inset-y-0 right-0 w-1/3 z-10" onClick={!isPaused ? nextStory : undefined} />
+                        <div className="absolute inset-y-0 left-0 w-1/2 z-10" onClick={!isPaused ? prevStory : undefined} />
+                        <div className="absolute inset-y-0 right-0 w-1/2 z-10" onClick={!isPaused ? nextStory : undefined} />
 
                         {/* Navigation Arrows (Visible on Desktop) */}
                         <div className="absolute inset-y-0 left-4 hidden sm:flex items-center z-50">
