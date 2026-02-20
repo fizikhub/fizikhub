@@ -18,7 +18,8 @@ export type NexusCardType =
     | "term"
     | "experiment"
     | "fact"
-    | "meme";
+    | "meme"
+    | "answer";
 
 export interface NexusCardDeviceProps {
     type: NexusCardType;
@@ -113,6 +114,28 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
         </div>
     );
 
+    const renderAnswerContent = () => (
+        <div className="p-5 h-full flex flex-col bg-zinc-800 text-white">
+            <div className="flex items-center justify-between mb-3 text-emerald-400">
+                <span className="neo-badge bg-[#FFC800] text-black border-none shadow-none text-[10px]">YANIT</span>
+                <MessageCircle className="w-5 h-5 text-[#FFC800]" />
+            </div>
+
+            <h3 className="font-heading font-black text-lg leading-tight mb-2 line-clamp-2">
+                {Array.isArray(data.questions) ? data.questions[0]?.title : data.questions?.title || "Soru Başlığı"}
+            </h3>
+
+            <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-[#FFC800] line-clamp-3 mb-auto">
+                {data.content?.replace(/<[^>]*>?/gm, "").slice(0, 100)}...
+            </div>
+
+            <div className="mt-4 flex items-center justify-between text-xs font-bold pt-3 border-t border-white/10">
+                <span>{data.profiles?.username || "Anonim"}</span>
+                <span>{new Date(data.created_at).toLocaleDateString('tr-TR')}</span>
+            </div>
+        </div>
+    );
+
     const renderSimulationContent = () => (
         <div className="relative h-full flex flex-col group">
             <div className="absolute inset-0 bg-blue-500 z-0">
@@ -138,6 +161,10 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
     let href = "/";
     if (type === 'article' || type === 'blog') href = `/makale/${data.slug}`;
     if (type === 'question') href = `/forum/${data.slug}`;
+    if (type === 'answer') {
+        const qSlug = Array.isArray(data.questions) ? data.questions[0]?.slug : data.questions?.slug;
+        href = qSlug ? `/forum/${qSlug}` : `/profil`;
+    }
     if (type === 'simulation') href = `/simulasyonlar/${data.slug}`;
     if (type === 'book-review') href = `/kitap-inceleme/${data.slug}`;
 
@@ -152,8 +179,9 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
             <Link href={href} className="block h-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-xl">
                 <article className={baseCardStyle}>
                     {type === 'question' ? renderQuestionContent() :
-                        type === 'simulation' ? renderSimulationContent() :
-                            renderArticleContent()}
+                        type === 'answer' ? renderAnswerContent() :
+                            type === 'simulation' ? renderSimulationContent() :
+                                renderArticleContent()}
                 </article>
             </Link>
         </motion.div>
