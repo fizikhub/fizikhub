@@ -174,9 +174,9 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 >
 
                     {/* Progress Bars */}
-                    <div className="absolute top-0 left-0 right-0 z-[100] p-4 pt-6 flex gap-1.5 px-4 sm:px-6 pointer-events-none">
+                    <div className="absolute top-0 left-0 right-0 z-[100] p-2 pt-3 flex gap-1 px-4 sm:px-6 pointer-events-none">
                         {stories.map((_, index) => (
-                            <div key={index} className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
+                            <div key={index} className="h-0.5 flex-1 bg-white/20 rounded-full overflow-hidden">
                                 <motion.div
                                     className="h-full bg-white"
                                     initial={{ width: 0 }}
