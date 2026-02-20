@@ -175,7 +175,7 @@ export default async function Home() {
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-4 md:mt-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-2 md:mt-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 

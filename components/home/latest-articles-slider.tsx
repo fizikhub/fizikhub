@@ -23,27 +23,27 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="w-full pt-0 pb-6 mb-8 mt-[-10px]">
-            <div className="flex items-center justify-between mb-6 px-1">
-                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
-                    <span className="w-2 h-8 bg-yellow-400 border-2 border-black"></span>
+        <section className="w-full py-2 mb-2 mt-[-10px]">
+            <div className="flex items-center justify-between mb-4 px-1">
+                <h2 className="text-lg sm:text-lg font-black uppercase tracking-tighter flex items-center gap-2">
+                    <span className="w-2 h-6 bg-yellow-400 border-2 border-black"></span>
                     Son Yazılar
                 </h2>
-                <Link href="/blog" className="text-xs font-black uppercase tracking-widest flex items-center gap-1 group hover:text-yellow-600 transition-colors">
+                <Link href="/blog" className="text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group hover:text-yellow-600 transition-colors">
                     Tümünü Gör
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
 
-            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x snap-mandatory px-1">
+            <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory px-1">
                 {articles.slice(0, 6).map((article, index) => (
                     <article
                         key={article.id}
-                        className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start article-slide-item"
+                        className="flex-shrink-0 w-[240px] sm:w-[280px] snap-start article-slide-item"
                         style={{ animationDelay: `${index * 80}ms` }}
                     >
                         <Link href={`/blog/${article.slug}`}>
-                            <div className="group relative bg-white dark:bg-zinc-900 border-[3px] border-black shadow-[5px_5px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] hover:scale-[1.02] transition-all duration-300 rounded-3xl overflow-hidden aspect-[4/3]">
+                            <div className="group relative bg-white dark:bg-zinc-900 border-2 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] hover:scale-[1.02] transition-all duration-300 rounded-2xl overflow-hidden aspect-[4/3]">
                                 {/* Image Background */}
                                 <div className="absolute inset-0 z-0">
                                     {article.image ? (
@@ -65,24 +65,24 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                 </div>
 
                                 {/* Content Overlay */}
-                                <div className="absolute inset-0 z-10 p-5 flex flex-col justify-end">
-                                    <div className="mb-3">
-                                        <span className="px-3 py-1 bg-yellow-400 border-[1.5px] border-black text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_#000]">
+                                <div className="absolute inset-0 z-10 p-4 flex flex-col justify-end">
+                                    <div className="mb-2">
+                                        <span className="px-2 py-0.5 bg-yellow-400 border border-black text-[9px] font-black uppercase tracking-widest shadow-[1.5px_1.5px_0px_0px_#000]">
                                             {article.category}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-tighter leading-tight line-clamp-2 mb-3 drop-shadow-lg">
+                                    <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-tighter leading-tight line-clamp-2 mb-2 drop-shadow-lg">
                                         {article.title}
                                     </h3>
 
-                                    <div className="flex items-center gap-4 text-white/70 text-[10px] uppercase font-bold tracking-widest">
+                                    <div className="flex items-center gap-3 text-white/80 text-[9px] uppercase font-bold tracking-widest">
                                         <div className="flex items-center gap-1">
-                                            <User className="w-3 h-3" />
-                                            <span className="truncate max-w-[80px]">{article.author_name}</span>
+                                            <User className="w-2.5 h-2.5" />
+                                            <span className="truncate max-w-[70px]">{article.author_name}</span>
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <Clock className="w-3 h-3" />
+                                            <Clock className="w-2.5 h-2.5" />
                                             <span>{new Date(article.created_at).toLocaleDateString("tr-TR")}</span>
                                         </div>
                                     </div>
