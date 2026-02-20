@@ -166,7 +166,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 className="fixed inset-0 z-[99999] bg-black flex items-center justify-center"
             >
                 <div
-                    className="relative w-full h-full sm:max-w-md sm:h-[90vh] sm:rounded-3xl overflow-hidden bg-zinc-900 flex flex-col"
+                    className="relative w-[92vw] h-[82vh] sm:max-w-md sm:h-[90vh] rounded-3xl overflow-hidden bg-zinc-900 flex flex-col shadow-2xl border border-white/5"
                     onMouseDown={() => setIsPaused(true)}
                     onMouseUp={() => setIsPaused(false)}
                     onTouchStart={() => setIsPaused(true)}
