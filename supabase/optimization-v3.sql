@@ -66,7 +66,7 @@ CREATE INDEX IF NOT EXISTS idx_articles_author_id ON public.articles(author_id);
 CREATE INDEX IF NOT EXISTS idx_questions_author_id ON public.questions(author_id);
 CREATE INDEX IF NOT EXISTS idx_answers_author_id ON public.answers(author_id);
 CREATE INDEX IF NOT EXISTS idx_stories_author_id ON public.stories(author_id);
-CREATE INDEX IF NOT EXISTS idx_profiles_username_slug ON public.profiles(username, slug);
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username);
 
 -- Cleanup
 DROP FUNCTION IF EXISTS public.drop_all_policies_for_table(text);
