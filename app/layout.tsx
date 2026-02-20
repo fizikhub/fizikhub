@@ -107,7 +107,7 @@ export const metadata: Metadata = {
   publisher: "Fizikhub",
   manifest: "/manifest.json",
   icons: {
-    icon: "/icon.png",
+    icon: "/favicon.svg",
     apple: "/apple-icon.png",
   },
   openGraph: {
