@@ -23,7 +23,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="w-full pt-1 pb-0 mb-0 mt-[-15px]">
+        <section className="w-full pt-2 pb-0 mb-0 mt-2">
             <div className="flex items-center justify-between mb-4 px-1">
                 <h2 className="text-lg sm:text-lg font-black uppercase tracking-tighter flex items-center gap-2">
                     <span className="w-2 h-6 bg-yellow-400 border-2 border-black"></span>
@@ -35,7 +35,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                 </Link>
             </div>
 
-            <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory px-1">
+            <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0">
                 {articles.slice(0, 6).map((article, index) => (
                     <article
                         key={article.id}
