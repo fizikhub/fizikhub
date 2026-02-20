@@ -45,13 +45,22 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
 export function formatSliderArticles(articles: any[]) {
     return articles
         .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
-        .map((a: any) => ({
-            id: a.id,
-            title: a.title,
-            image: a.image_url || a.image,
-            slug: a.slug,
-            category: a.category,
-            author_name: a.author?.full_name || 'FizikHub',
-            created_at: a.created_at
-        }));
+        .map((a: any) => {
+            // Calculate reading time
+            const content = a.content || '';
+            const plainText = content.replace(/<[^>]+>/g, ' ');
+            const wordCount = plainText.trim().split(/\s+/).length;
+            const readingTime = Math.max(1, Math.ceil(wordCount / 225));
+
+            return {
+                id: a.id,
+                title: a.title,
+                image: a.image_url || a.image,
+                slug: a.slug,
+                category: a.category,
+                author_name: a.author?.full_name || 'FizikHub',
+                created_at: a.created_at,
+                reading_time: readingTime
+            };
+        });
 }
