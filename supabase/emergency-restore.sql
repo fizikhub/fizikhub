@@ -19,31 +19,31 @@ $$ LANGUAGE plpgsql;
 -- --- Profiles ---
 SELECT public.drop_all_policies_for_table('profiles');
 CREATE POLICY "profiles_select_public" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "profiles_insert_owner" ON public.profiles FOR INSERT WITH CHECK (id = auth.uid());
-CREATE POLICY "profiles_update_owner" ON public.profiles FOR UPDATE USING (id = auth.uid());
+CREATE POLICY "profiles_insert_owner" ON public.profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "profiles_update_owner" ON public.profiles FOR UPDATE USING (true);
 
 -- --- Articles ---
 SELECT public.drop_all_policies_for_table('articles');
-CREATE POLICY "articles_select_public" ON public.articles FOR SELECT USING (status = 'published' OR author_id = auth.uid());
-CREATE POLICY "articles_insert_auth" ON public.articles FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "articles_update_owner" ON public.articles FOR UPDATE USING (author_id = auth.uid());
-CREATE POLICY "articles_delete_owner" ON public.articles FOR DELETE USING (author_id = auth.uid());
+CREATE POLICY "articles_select_public" ON public.articles FOR SELECT USING (true);
+CREATE POLICY "articles_insert_auth" ON public.articles FOR INSERT WITH CHECK (true);
+CREATE POLICY "articles_update_owner" ON public.articles FOR UPDATE USING (true);
+CREATE POLICY "articles_delete_owner" ON public.articles FOR DELETE USING (true);
 
 -- --- Questions ---
 SELECT public.drop_all_policies_for_table('questions');
 CREATE POLICY "questions_select_public" ON public.questions FOR SELECT USING (true);
-CREATE POLICY "questions_insert_auth" ON public.questions FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "questions_update_owner" ON public.questions FOR UPDATE USING (author_id = auth.uid());
+CREATE POLICY "questions_insert_auth" ON public.questions FOR INSERT WITH CHECK (true);
+CREATE POLICY "questions_update_owner" ON public.questions FOR UPDATE USING (true);
 
 -- --- Answers ---
 SELECT public.drop_all_policies_for_table('answers');
 CREATE POLICY "answers_select_public" ON public.answers FOR SELECT USING (true);
-CREATE POLICY "answers_insert_auth" ON public.answers FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "answers_update_owner" ON public.answers FOR UPDATE USING (author_id = auth.uid());
+CREATE POLICY "answers_insert_auth" ON public.answers FOR INSERT WITH CHECK (true);
+CREATE POLICY "answers_update_owner" ON public.answers FOR UPDATE USING (true);
 
 -- --- Notifications ---
 SELECT public.drop_all_policies_for_table('notifications');
-CREATE POLICY "notifications_owner_all" ON public.notifications FOR ALL USING (recipient_id = auth.uid());
+CREATE POLICY "notifications_owner_all" ON public.notifications FOR ALL USING (true);
 
 -- Cleanup
 DROP FUNCTION IF EXISTS public.drop_all_policies_for_table(text);

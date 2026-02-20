@@ -29,7 +29,7 @@ export default async function ProfilePage() {
         { data: bookmarkedArticles },
         { data: bookmarkedQuestions }
     ] = await Promise.all([
-        supabase.from('profiles').select('id, username, full_name, avatar_url, bio, website_url, twitter_url, github_url, reputation, role, banner_url, slug, created_at').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
         supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
         supabase.from('questions').select('id, title, slug, created_at, category, views, answers_count').eq('author_id', user.id).order('created_at', { ascending: false }),
         supabase.from('answers').select('id, content, created_at, is_accepted, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }),
