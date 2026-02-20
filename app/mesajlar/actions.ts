@@ -71,6 +71,7 @@ export async function sendMessage(conversationId: string, content: string) {
 
 /**
  * Get all conversations for the current user
+ * Optimized to prevent N+1 queries
  */
 export async function getConversations(): Promise<Conversation[]> {
     const supabase = await createClient();
@@ -78,71 +79,84 @@ export async function getConversations(): Promise<Conversation[]> {
 
     if (!user) return [];
 
-    // Get conversation IDs user is part of
-    const { data: participations } = await supabase
+    // 1. Get all conversations the user is a part of, 
+    // including other participants and their profiles, and the latest messages.
+    // Supabase allows us to fetch related data in a single query.
+    const { data: participations, error } = await supabase
         .from('conversation_participants')
-        .select('conversation_id')
+        .select(`
+            conversation_id,
+            conversations:conversation_id (
+                id,
+                updated_at,
+                messages:messages (
+                    id,
+                    conversation_id,
+                    sender_id,
+                    content,
+                    is_read,
+                    created_at
+                )
+            )
+        `)
         .eq('user_id', user.id);
 
-    if (!participations || participations.length === 0) return [];
+    if (error || !participations || participations.length === 0) return [];
 
     const conversationIds = participations.map(p => p.conversation_id);
 
-    // Get conversation details
-    const { data: conversations } = await supabase
-        .from('conversations')
-        .select('id, updated_at')
-        .in('id', conversationIds)
-        .order('updated_at', { ascending: false });
+    // 2. Get all participants for these conversations to find the "other" user
+    const { data: allParticipants } = await supabase
+        .from('conversation_participants')
+        .select(`
+            conversation_id,
+            user_id,
+            profiles:user_id (
+                id,
+                username,
+                full_name,
+                avatar_url
+            )
+        `)
+        .in('conversation_id', conversationIds)
+        .neq('user_id', user.id);
 
-    if (!conversations) return [];
-
-    // Build conversation list with details
     const result: Conversation[] = [];
 
-    for (const conv of conversations) {
-        // Get other participant
-        const { data: otherParticipant } = await supabase
-            .from('conversation_participants')
-            .select('user_id')
-            .eq('conversation_id', conv.id)
-            .neq('user_id', user.id)
-            .single();
+    for (const part of participations) {
+        const conv: any = part.conversations;
+        if (!conv) continue;
 
-        if (!otherParticipant) continue;
+        // Find the other participant's profile
+        const otherPart = allParticipants?.find(p => p.conversation_id === conv.id);
+        const otherProfile: any = otherPart?.profiles;
 
-        // Get other user's profile
-        const { data: otherProfile } = await supabase
-            .from('profiles')
-            .select('id, username, full_name, avatar_url')
-            .eq('id', otherParticipant.user_id)
-            .single();
+        // Get the latest message (sorted by created_at desc in memory since we only grabbed top few or just sort here)
+        const messages = conv.messages || [];
+        const sortedMessages = [...messages].sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
 
-        // Get last message
-        const { data: messages } = await supabase
-            .from('messages')
-            .select('*')
-            .eq('conversation_id', conv.id)
-            .order('created_at', { ascending: false })
-            .limit(10);
-
-        const lastMessage = messages && messages.length > 0 ? messages[0] : null;
+        const lastMessage = sortedMessages.length > 0 ? sortedMessages[0] : null;
 
         // Count unread messages (not sent by me)
-        const unreadCount = messages
-            ? messages.filter(m => m.sender_id !== user.id && !m.is_read).length
-            : 0;
+        const unreadCount = messages.filter((m: any) =>
+            m.sender_id !== user.id && !m.is_read
+        ).length;
 
         result.push({
             id: conv.id,
             updated_at: conv.updated_at,
-            otherUser: otherProfile,
+            otherUser: otherProfile || null,
             lastMessage,
             unreadCount
         });
     }
 
-    return result;
+    // Sort by updated_at descending
+    return result.sort((a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
 }
 
 /**

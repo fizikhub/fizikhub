@@ -26,33 +26,20 @@ export default async function ConversationPage({
 
     let messages: Message[] = [];
     let initialLikes: { [messageId: number]: { count: number; likedByMe: boolean } } = {};
+    let otherUser: any = null;
 
     try {
-        // Fetch messages and likes in parallel
-        const [messagesResult, likesResult] = await Promise.all([
+        // Fetch everything in parallel to minimize TTFB
+        const [messagesResult, likesResult, _] = await Promise.all([
             getMessages(conversationId),
-            getMessageLikes(conversationId)
+            getMessageLikes(conversationId),
+            markAsRead(conversationId) // Mark as read while fetching
         ]);
+
         messages = messagesResult;
         initialLikes = likesResult;
 
-        if (process.env.NODE_ENV === 'development') {
-
-        }
-    } catch (e) {
-        console.error("Conversation Page: Error fetching messages", e);
-    }
-
-    // Mark messages as read
-    try {
-        await markAsRead(conversationId);
-    } catch (e) {
-        console.error("Conversation Page: Error marking as read", e);
-    }
-
-    // Get other participant info
-    let otherUser = null;
-    try {
+        // Fetch other participant info
         const { data: otherParticipant } = await supabase
             .from('conversation_participants')
             .select('user_id')
@@ -69,7 +56,7 @@ export default async function ConversationPage({
             otherUser = data;
         }
     } catch (e) {
-        console.error("Conversation Page: Error fetching participants", e);
+        console.error("Conversation Page: Error fetching data", e);
     }
 
     return (

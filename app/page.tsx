@@ -6,21 +6,22 @@ import { CompactHero } from "@/components/home/compact-hero";
 import { NexusStories } from "@/components/home/nexus-stories";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 
 // Lazy Load Heavy Components
 const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {
-  loading: () => <div className="h-screen w-full animate-pulse bg-muted/20 rounded-xl" />,
+  loading: () => <FeedSkeleton />,
   ssr: true // Keep SSR for SEO, but chunk it
 });
 
 const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-muted/20 rounded-xl" />,
+  loading: () => <SidebarSkeleton />,
   ssr: true
 });
 
 const LatestArticlesSlider = dynamic(() => import("@/components/home/latest-articles-slider").then(mod => mod.LatestArticlesSlider), {
-  loading: () => <div className="h-48 w-full animate-pulse bg-muted/20 rounded-xl" />,
+  loading: () => <SliderSkeleton />,
   ssr: true
 });
 
@@ -175,7 +176,7 @@ export default async function Home() {
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-[-40px] sm:mt-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-6 min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0 mt-0">
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 
