@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -46,13 +46,13 @@ export function DarkNeoFeed({
         ] : [])
     ];
 
-    const getFeedItems = (type: string): FeedItem[] => {
+    const feedItems = useMemo(() => {
         let items: FeedItem[] = [];
-        if (type === 'posts') {
+        if (activeTab === 'posts') {
             const articleItems = articles.map(a => ({ type: 'article', data: a, sortDate: a.created_at } as FeedItem));
             const questionItems = questions.map(q => ({ type: 'question', data: q, sortDate: q.created_at } as FeedItem));
             items = [...articleItems, ...questionItems];
-        } else if (type === 'saved') {
+        } else if (activeTab === 'saved') {
             const savedArticles = bookmarkedArticles
                 .filter(b => b.articles)
                 .map(b => ({
@@ -68,15 +68,13 @@ export function DarkNeoFeed({
                     sortDate: b.created_at
                 } as FeedItem));
             items = [...savedArticles, ...savedQuestions];
-        } else if (type === 'replies') {
+        } else if (activeTab === 'replies') {
             items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as FeedItem));
-        } else if (type === 'drafts') {
+        } else if (activeTab === 'drafts') {
             items = drafts.map(d => ({ type: 'article', data: d, sortDate: d.created_at } as FeedItem));
         }
         return items.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
-    };
-
-    const feedItems = getFeedItems(activeTab);
+    }, [activeTab, articles, questions, answers, drafts, bookmarkedArticles, bookmarkedQuestions]);
 
     return (
         <div className="w-full space-y-6">
