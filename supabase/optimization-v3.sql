@@ -46,7 +46,7 @@ CREATE POLICY "profiles_admin_all" ON public.profiles FOR ALL USING (
 
 -- --- Notifications ---
 SELECT drop_all_policies_for_table('notifications');
-CREATE POLICY "notifications_owner_all" ON public.notifications FOR ALL USING (user_id = public.request_uid());
+CREATE POLICY "notifications_owner_all" ON public.notifications FOR ALL USING (recipient_id = public.request_uid());
 
 -- --- Stories ---
 SELECT drop_all_policies_for_table('stories');
