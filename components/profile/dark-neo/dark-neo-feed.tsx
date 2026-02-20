@@ -53,9 +53,23 @@ export function DarkNeoFeed({
             const questionItems = questions.map(q => ({ type: 'question', data: q, sortDate: q.created_at } as FeedItem));
             items = [...articleItems, ...questionItems];
         } else if (type === 'saved') {
-            const savedArticles = bookmarkedArticles.map(b => ({ type: 'article', data: b.articles, sortDate: b.created_at } as FeedItem));
-            const savedQuestions = bookmarkedQuestions.map(b => ({ type: 'question', data: b.questions, sortDate: b.created_at } as FeedItem));
+            const savedArticles = bookmarkedArticles
+                .filter(b => b.articles)
+                .map(b => ({
+                    type: 'article',
+                    data: Array.isArray(b.articles) ? b.articles[0] : b.articles,
+                    sortDate: b.created_at
+                } as FeedItem));
+            const savedQuestions = bookmarkedQuestions
+                .filter(b => b.questions)
+                .map(b => ({
+                    type: 'question',
+                    data: Array.isArray(b.questions) ? b.questions[0] : b.questions,
+                    sortDate: b.created_at
+                } as FeedItem));
             items = [...savedArticles, ...savedQuestions];
+        } else if (type === 'replies') {
+            items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as FeedItem));
         } else if (type === 'drafts') {
             items = drafts.map(d => ({ type: 'article', data: d, sortDate: d.created_at } as FeedItem));
         }
@@ -130,7 +144,7 @@ export function DarkNeoFeed({
                                                 )}
                                             </div>
                                             <h4 className="font-black text-base text-zinc-100 mb-2 group-hover:text-[#FFC800] transition-colors leading-snug relative z-10">
-                                                {answer.questions?.title}
+                                                {Array.isArray(answer.questions) ? answer.questions[0]?.title : answer.questions?.title || "Soru Başlığı Bulunamadı"}
                                             </h4>
                                             <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#FFC800] transition-colors relative z-10">
                                                 {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...

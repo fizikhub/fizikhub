@@ -27,7 +27,7 @@ const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-t
 });
 
 export interface FeedItem {
-    type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term';
+    type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term' | 'answer';
     data: any;
     sortDate: string;
 }
