@@ -163,10 +163,10 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[99999] bg-black flex items-center justify-center"
+                className="fixed inset-0 z-[99999] bg-black sm:bg-black/95 sm:backdrop-blur-sm flex items-center justify-center p-0 sm:p-4"
             >
                 <div
-                    className="relative w-full h-[100dvh] sm:max-w-md sm:h-[90vh] sm:rounded-3xl rounded-none overflow-hidden bg-black flex flex-col sm:shadow-2xl"
+                    className="relative w-full h-[100dvh] sm:h-[95vh] sm:max-w-[calc(95vh*860/1280)] sm:aspect-[860/1280] sm:rounded-[2rem] rounded-none overflow-hidden bg-black flex flex-col sm:border sm:border-white/10 shadow-2xl mx-auto"
                     onMouseDown={() => setIsPaused(true)}
                     onMouseUp={() => setIsPaused(false)}
                     onTouchStart={() => setIsPaused(true)}
@@ -262,14 +262,16 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                                 key={currentIndex}
                                 className="space-y-4 max-w-sm pointer-events-auto"
                             >
-                                <h2 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter leading-tight drop-shadow-xl">
+                                <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                                     {currentStory.title}
                                 </h2>
-                                <p className="text-zinc-100 text-base sm:text-lg leading-relaxed font-medium drop-shadow-md font-grotesk tracking-wide">
-                                    {currentStory.content}
-                                </p>
-                                <div className="pt-6">
-                                    <button className="w-full sm:w-auto px-10 py-4 bg-white text-black font-black uppercase text-sm rounded-2xl shadow-2xl hover:bg-yellow-400 hover:scale-105 active:scale-95 transition-all">
+                                {currentStory.content && (
+                                    <p className="text-white/95 text-sm sm:text-base leading-snug font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-grotesk tracking-wide max-w-[90%]">
+                                        {currentStory.content}
+                                    </p>
+                                )}
+                                <div className="pt-4 pb-4">
+                                    <button className="w-full mx-auto px-6 py-3.5 bg-white text-black font-black uppercase text-xs rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#FFC800] hover:scale-[1.02] active:scale-95 transition-all duration-300">
                                         Hemen Keşfet
                                     </button>
                                 </div>

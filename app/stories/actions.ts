@@ -13,6 +13,7 @@ export async function createStoryGroup(formData: FormData) {
 
     const title = formData.get("title") as string;
     const coverUrl = formData.get("cover_url") as string;
+    const ringColor = formData.get("ring_color") as string;
 
     if (!title) return { success: false, error: "Başlık gereklidir." };
 
@@ -21,6 +22,7 @@ export async function createStoryGroup(formData: FormData) {
         .insert({
             title,
             cover_url: coverUrl,
+            ring_color: ringColor || null,
             author_id: user.id
         })
         .select()
@@ -40,10 +42,12 @@ export async function updateStoryGroup(id: string, formData: FormData) {
 
     const title = formData.get("title") as string;
     const coverUrl = formData.get("cover_url") as string;
+    const ringColor = formData.get("ring_color") as string;
 
     const updates: any = {};
     if (title) updates.title = title;
     if (coverUrl) updates.cover_url = coverUrl;
+    if (ringColor !== null) updates.ring_color = ringColor;
 
     const { error } = await supabase
         .from("story_groups")

@@ -63,13 +63,14 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                             onClick={() => openGroup(index)}
                         >
                             {/* Outer Gradient Ring */}
-                            <div className={cn(
-                                "w-[82px] h-[82px] rounded-full p-[2px]",
-                                "bg-gradient-to-tr",
-                                // Highlight logic: If user hasn't seen? For now just random or based on existence
-                                "from-purple-500 via-pink-500 to-orange-500", // Standard brand gradient
-                                "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
-                            )}>
+                            <div
+                                className={cn(
+                                    "w-[82px] h-[82px] rounded-full p-[2px]",
+                                    !group.ring_color && "bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500",
+                                    "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
+                                )}
+                                style={group.ring_color ? { background: group.ring_color } : undefined}
+                            >
                                 {/* Inner Content Container */}
                                 <div className="w-full h-full rounded-full bg-white dark:bg-zinc-900 border-[1.5px] border-black flex items-center justify-center overflow-hidden relative shadow-inner">
                                     <Image

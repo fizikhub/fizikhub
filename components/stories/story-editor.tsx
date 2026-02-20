@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import Cropper from "react-easy-crop";
 import { createBrowserClient } from "@supabase/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,8 +136,40 @@ export function StoryEditor() {
 }
 
 // --- STORY CREATOR (CANVAS) ---
+const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.src = imageSrc;
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = (e) => reject(e);
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('No 2d context');
+    ctx.drawImage(
+        image,
+        pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
+        0, 0, pixelCrop.width, pixelCrop.height
+    );
+    return new Promise((resolve, reject) => {
+        canvas.toBlob((file) => {
+            if (file) resolve(URL.createObjectURL(file));
+            else reject(new Error("Görsel kırpılamadı."));
+        }, 'image/jpeg', 1);
+    });
+};
+
 function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: () => void }) {
+    const [rawImage, setRawImage] = useState<string | null>(null);
     const [image, setImage] = useState<string | null>(null);
+    const [isCroppingMode, setIsCroppingMode] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [textLayers, setTextLayers] = useState<TextLayer[]>([]);
@@ -172,11 +205,27 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                setImage(e.target?.result as string);
-                setScale(1);
-                setPosition({ x: 0, y: 0 });
+                setRawImage(e.target?.result as string);
+                setIsCroppingMode(true);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropComplete = useCallback((croppedArea: any, croppedPixels: any) => {
+        setCroppedAreaPixels(croppedPixels);
+    }, []);
+
+    const handleAcceptCrop = async () => {
+        if (!rawImage || !croppedAreaPixels) return;
+        try {
+            const croppedImageBlobUrl = await getCroppedImg(rawImage, croppedAreaPixels);
+            setImage(croppedImageBlobUrl);
+            setScale(1);
+            setPosition({ x: 0, y: 0 });
+            setIsCroppingMode(false);
+        } catch (error) {
+            toast.error("Kırpma işlemi başarısız oldu.");
         }
     };
 
@@ -304,13 +353,41 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
     const activeTextLayer = textLayers.find(l => l.id === selectedId);
 
+    // Kırpma Arayüzü
+    if (isCroppingMode && rawImage) {
+        return (
+            <div className="h-full w-full bg-[#121212] flex flex-col">
+                <div className="flex-1 relative">
+                    <Cropper
+                        image={rawImage}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={860 / 1280}
+                        onCropChange={setCrop}
+                        onCropComplete={handleCropComplete}
+                        onZoomChange={setZoom}
+                    />
+                </div>
+                <div className="h-24 bg-black border-t border-white/10 flex items-center justify-between px-6 z-10">
+                    <Button variant="ghost" onClick={() => setIsCroppingMode(false)} className="text-zinc-400 hover:text-white">İptal</Button>
+                    <div className="flex items-center gap-4 flex-1 max-w-sm mx-auto">
+                        <ZoomOut className="w-5 h-5 text-zinc-400" />
+                        <Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(v) => setZoom(v[0])} className="flex-1" />
+                        <ZoomIn className="w-5 h-5 text-zinc-400" />
+                    </div>
+                    <Button onClick={handleAcceptCrop} className="bg-[#23A9FA] text-black font-bold h-10 px-8">Kırp ve İlerle</Button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col lg:flex-row h-full">
             {/* CANVAS */}
             <div className="flex-1 bg-[#1a1a1a] flex items-center justify-center p-4 relative overflow-hidden">
                 <div
                     ref={canvasRef}
-                    className="relative w-full max-w-[400px] aspect-[9/16] bg-black shadow-2xl overflow-hidden ring-1 ring-white/10"
+                    className="relative w-full max-w-[400px] aspect-[860/1280] bg-black shadow-2xl overflow-hidden ring-1 ring-white/10"
                     onClick={() => setSelectedId(null)}
                 >
                     {image ? (
@@ -484,6 +561,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
     const [groupTitle, setGroupTitle] = useState("");
     const [groupCover, setGroupCover] = useState<File | null>(null);
     const [previewCover, setPreviewCover] = useState<string>("");
+    const [groupRingColor, setGroupRingColor] = useState<string>("");
 
     // Edit Story State
     const [editingStory, setEditingStory] = useState<Story | null>(null);
@@ -534,6 +612,9 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                 // Use a default placeholder if no cover
                 formData.append("cover_url", "/stories/feyman.png");
             }
+            if (groupRingColor) {
+                formData.append("ring_color", groupRingColor);
+            }
 
             const res = await createStoryGroup(formData);
             if (!res.success) throw new Error(res.error);
@@ -543,6 +624,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
             setGroupTitle("");
             setGroupCover(null);
             setPreviewCover("");
+            setGroupRingColor("");
             onUpdate();
         } catch (error: any) {
             toast.error(error.message);
@@ -756,6 +838,36 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                                         value={groupTitle}
                                         onChange={(e) => setGroupTitle(e.target.value)}
                                         placeholder="Örn: Uzay Haberleri"
+                                        className="bg-black border-zinc-800"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label>ÇERÇEVE RENGİ (Opsiyonel)</Label>
+                                    <div className="flex gap-2 mb-2 flex-wrap">
+                                        {[
+                                            { name: "Varsayılan", value: "" },
+                                            { name: "Mavi", value: "#23A9FA" },
+                                            { name: "Pembe", value: "#FF3366" },
+                                            { name: "Yeşil", value: "#10B981" },
+                                            { name: "Sarı", value: "#FFC800" },
+                                            { name: "FizikHub", value: "linear-gradient(to top right, #a855f7, #ec4899, #f97316)" }
+                                        ].map((colorObj, i) => (
+                                            <div
+                                                key={i}
+                                                className={`w-8 h-8 rounded-full cursor-pointer border-2 shadow-sm ${groupRingColor === colorObj.value ? 'border-white scale-110' : 'border-transparent'} transition-all`}
+                                                style={{ background: colorObj.value || '#333' }}
+                                                onClick={() => setGroupRingColor(colorObj.value)}
+                                                title={colorObj.name}
+                                            >
+                                                {!colorObj.value && <div className="w-full h-full flex items-center justify-center text-[8px] text-white/50 text-center font-bold">YOK</div>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <Input
+                                        value={groupRingColor}
+                                        onChange={(e) => setGroupRingColor(e.target.value)}
+                                        placeholder="HEX kodu veya CSS renk (örn: #ff0000)"
                                         className="bg-black border-zinc-800"
                                     />
                                 </div>
