@@ -23,7 +23,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="w-full py-2 mb-2 mt-[-10px]">
+        <section className="w-full pt-1 pb-0 mb-0 mt-[-15px]">
             <div className="flex items-center justify-between mb-4 px-1">
                 <h2 className="text-lg sm:text-lg font-black uppercase tracking-tighter flex items-center gap-2">
                     <span className="w-2 h-6 bg-yellow-400 border-2 border-black"></span>
@@ -43,7 +43,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                         style={{ animationDelay: `${index * 80}ms` }}
                     >
                         <Link href={`/blog/${article.slug}`}>
-                            <div className="group relative bg-white dark:bg-zinc-900 border-2 border-black shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] hover:scale-[1.02] transition-all duration-300 rounded-2xl overflow-hidden aspect-[4/3]">
+                            <div className="group relative bg-white dark:bg-zinc-900 border-2 border-black shadow-[3px_3px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] hover:scale-[1.01] transition-all duration-300 rounded-2xl overflow-hidden aspect-[4/3] flex flex-col">
                                 {/* Image Background */}
                                 <div className="absolute inset-0 z-0">
                                     {article.image ? (

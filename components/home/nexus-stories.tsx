@@ -47,7 +47,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
     }
 
     return (
-        <section className="w-full py-4 mt-[-20px] mb-4">
+        <section className="w-full pt-4 pb-0 mt-[-20px] mb-0 sm:mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {initialGroups.map((group, index) => {
                     // Check if this group has updates (stories)
