@@ -124,7 +124,7 @@ export async function GET(request: Request) {
                     .maybeSingle()
 
                 if (finalProfile && !finalProfile.onboarding_completed) {
-                    return NextResponse.redirect(`${origin}/onboarding`)
+                    return NextResponse.redirect(`${origin}/kurulum`)
                 }
             }
 

@@ -77,6 +77,7 @@ export async function updateProfile(formData: {
     social_links?: any;
     cover_offset_y?: number;
     location?: string;
+    onboarding_completed?: boolean;
 }) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -94,6 +95,7 @@ export async function updateProfile(formData: {
     if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
     if (formData.location !== undefined) updateData.location = formData.location;
+    if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
 
     // Add updated_at timestamp
     const finalUpdateData = {
