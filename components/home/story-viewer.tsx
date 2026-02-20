@@ -190,18 +190,18 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                     </div>
 
                     {/* Header */}
-                    <div className="absolute top-10 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
-                        <div className="flex items-center gap-3 pointer-events-auto">
-                            <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-orange-500">
+                    <div className="absolute top-7 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
+                        <div className="flex items-center gap-2 pointer-events-auto">
+                            <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
                                     <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill className="object-cover" />
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-white font-black text-sm uppercase tracking-tight drop-shadow-md leading-none">
+                                <span className="text-white font-black text-xs uppercase tracking-tight drop-shadow-md leading-none">
                                     {currentStory.title}
                                 </span>
-                                <span className="text-white/60 text-[10px] uppercase font-bold tracking-widest mt-0.5">
+                                <span className="text-white/60 text-[9px] uppercase font-bold tracking-widest mt-0.5">
                                     {currentStory.author || "FizikHub"}
                                 </span>
                             </div>
@@ -216,9 +216,9 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                             <button
                                 onClick={onClose}
                                 aria-label="Hikayeyi kapat"
-                                className="w-10 h-10 flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95 z-[101]"
+                                className="w-8 h-8 flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95 z-[101]"
                             >
-                                <X className="w-6 h-6" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
