@@ -5,14 +5,10 @@ import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-// ═══════════════════════════════════════════════════════════════════════
-// GARGANTUA FOOTER v4 — Schwarzschild geodesic ray tracer (GLSL)
-//
-// Real GR: each pixel fires a ray that bends according to the
-// Schwarzschild metric. The accretion disk is a physical plane
-// detected via ray-plane intersection. Secondary (lensed) images
-// of the disk appear naturally from the physics — no faking.
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// BLACK HOLE FOOTER v5 — Cinematic composition
+// Schwarzschild ray tracer, thin luminous disk, proper framing
+// ═══════════════════════════════════════════════════════════════
 
 const VS = `attribute vec2 a;void main(){gl_Position=vec4(a,0,1);}`;
 
@@ -22,219 +18,177 @@ uniform float T;
 uniform vec2 R;
 
 #define PI 3.14159265
-#define STEPS 150
-#define RS 1.0
+#define STEPS 128
 
-// ── Pseudo-random ──
-float hash(vec2 p){
-    p=fract(p*vec2(443.8975,441.4237));
-    p+=dot(p,p.yx+19.19);
-    return fract((p.x+p.y)*p.x);
+float hash(vec2 p) {
+    p = fract(p * vec2(443.8975, 441.4237));
+    p += dot(p, p.yx + 19.19);
+    return fract((p.x + p.y) * p.x);
 }
 
-// ── FBM noise ──
-float noise(vec2 p){
-    vec2 i=floor(p),f=fract(p);
-    f=f*f*(3.0-2.0*f);
-    return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
-               mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+float noise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+               mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
 }
 
-float fbm(vec2 p){
-    float v=0.0,a=0.5;
-    for(int i=0;i<5;i++){v+=a*noise(p);p*=2.1;a*=0.5;}
+float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
     return v;
 }
 
-// ── Procedural star field on a sphere ──
-vec3 starsSphere(vec3 rd){
-    vec3 col=vec3(0.0);
+// ── Star field on unit sphere ──
+vec3 stars(vec3 rd) {
+    vec3 col = vec3(0.0);
+    vec2 suv = vec2(atan(rd.z, rd.x) / (2.0 * PI) + 0.5,
+                     asin(clamp(rd.y, -1.0, 1.0)) / PI + 0.5);
 
-    // Convert to spherical UVs
-    vec2 suv=vec2(atan(rd.z,rd.x)/(2.0*PI)+0.5, asin(clamp(rd.y,-1.0,1.0))/PI+0.5);
-
-    for(float layer=0.0;layer<6.0;layer++){
-        float sc=120.0+layer*80.0;
-        float thr=0.97-layer*0.005;
-        vec2 g=floor(suv*sc);
-        float h=hash(g+layer*71.0);
-        if(h>thr){
-            vec2 c=(g+0.5+0.35*(vec2(hash(g+vec2(3,7)),hash(g+vec2(11,13)))-0.5))/sc;
-            float d=length(suv-c)*sc;
-            float br=smoothstep(1.8-layer*0.15,0.0,d);
-            br*=0.55+0.45*sin(T*(0.8+h*3.5)+h*80.0);
-
-            vec3 sc2;
-            if(h>0.996) sc2=vec3(1.0,0.7,0.35);
-            else if(h>0.99) sc2=vec3(0.6,0.78,1.0);
-            else if(h>0.982) sc2=vec3(1.0,0.92,0.65);
-            else sc2=vec3(0.82,0.85,0.92);
-
-            col+=sc2*br*0.9;
+    for (float l = 0.0; l < 7.0; l++) {
+        float sc = 100.0 + l * 70.0;
+        float thr = 0.975 - l * 0.004;
+        vec2 g = floor(suv * sc);
+        float h = hash(g + l * 53.0);
+        if (h > thr) {
+            vec2 c = (g + 0.5 + 0.4 * (vec2(hash(g + 1.0), hash(g + 2.0)) - 0.5)) / sc;
+            float d = length(suv - c) * sc;
+            float br = smoothstep(1.5 - l * 0.1, 0.0, d);
+            br *= 0.5 + 0.5 * sin(T * (0.6 + h * 3.0) + h * 90.0);
+            vec3 sc2 = h > 0.997 ? vec3(1.0, 0.7, 0.3) :
+                       h > 0.992 ? vec3(0.6, 0.75, 1.0) :
+                       h > 0.984 ? vec3(1.0, 0.93, 0.65) :
+                                   vec3(0.8, 0.83, 0.9);
+            col += sc2 * br * 0.8;
         }
     }
-    // Milky way band
-    float mw=exp(-8.0*pow(abs(rd.y-0.05),2.0));
-    col+=vec3(0.06,0.05,0.08)*mw*fbm(suv*8.0+T*0.01);
-
+    // Milky way
+    float mw = exp(-10.0 * pow(abs(rd.y + 0.05), 2.0));
+    col += vec3(0.04, 0.035, 0.06) * mw * fbm(suv * 10.0 + T * 0.005);
     return col;
 }
 
-// ── Blackbody-ish color from temperature ──
-vec3 tempColor(float t){
-    // t: 0=cool → 1=hot
-    vec3 cool=vec3(0.5,0.05,0.01);
-    vec3 warm=vec3(1.0,0.3,0.02);
-    vec3 orange=vec3(1.0,0.65,0.1);
-    vec3 yellow=vec3(1.0,0.9,0.4);
-    vec3 white=vec3(1.0,0.98,0.95);
+// ── Accretion disk color ──
+vec3 diskColor(vec3 p, float r) {
+    float rs = 1.0;
+    float inner = rs * 3.0;
+    float outer = rs * 14.0;
+    if (r < inner || r > outer) return vec3(0.0);
 
-    if(t<0.2) return mix(cool,warm,t/0.2);
-    if(t<0.4) return mix(warm,orange,(t-0.2)/0.2);
-    if(t<0.65) return mix(orange,yellow,(t-0.4)/0.25);
-    return mix(yellow,white,(t-0.65)/0.35);
-}
+    float ratio = 1.0 - (r - inner) / (outer - inner);
+    ratio = pow(ratio, 0.8);
 
-// ── Disk shading ──
-vec3 diskShade(vec3 hitPos, float r){
-    float innerR=RS*2.6;
-    float outerR=RS*10.0;
-    if(r<innerR||r>outerR) return vec3(0.0);
+    // Temperature coloring
+    vec3 c;
+    if (ratio > 0.85) c = vec3(1.0, 0.97, 0.94);       // White hot
+    else if (ratio > 0.65) c = vec3(1.0, 0.82, 0.45);   // Yellow
+    else if (ratio > 0.4) c = vec3(1.0, 0.5, 0.08);     // Orange
+    else if (ratio > 0.2) c = vec3(0.75, 0.18, 0.03);   // Red
+    else c = vec3(0.3, 0.05, 0.01);                       // Dim red
 
-    float ratio=1.0-(r-innerR)/(outerR-innerR); // 1=inner(hot), 0=outer(cool)
-    vec3 c=tempColor(ratio);
-
-    // Angle in disk plane (for rotation + turbulence)
-    float angle=atan(hitPos.z,hitPos.x)+T*0.35*(1.0+ratio*0.5);
+    float angle = atan(p.z, p.x) + T * 0.5;
 
     // Turbulence
-    float turb=fbm(vec2(angle*2.5,r*3.0-T*0.4));
-    turb=0.35+0.65*turb;
+    float turb = fbm(vec2(angle * 2.0 + T * 0.3, r * 2.5));
+    turb = 0.3 + 0.7 * turb;
 
     // Spiral arms
-    float spiral=0.7+0.3*sin(angle*3.0-r*5.0+T*1.5);
+    float spiral = 0.65 + 0.35 * sin(angle * 3.0 - r * 4.0 + T * 1.2);
 
-    // Doppler relativistic beaming (approaching side brigher)
-    float doppler=0.55+0.45*cos(angle-T*0.35);
+    // Doppler beaming
+    float doppler = 0.5 + 0.5 * cos(angle - T * 0.5);
 
-    float brightness=ratio*ratio*turb*spiral*doppler*2.5;
+    float brightness = ratio * ratio * turb * spiral * doppler * 4.0;
 
-    // Bright inner edge (ISCO glow)
-    float iscoGlow=exp(-(r-innerR)*4.0)*3.0;
-    c+=vec3(1.0,0.8,0.5)*iscoGlow;
+    // Inner edge ISCO glow
+    float isco = exp(-(r - inner) * 2.0) * 5.0;
+    c += vec3(0.5, 0.3, 0.15) * isco;
 
-    return c*brightness;
+    return c * brightness;
 }
 
-void main(){
-    vec2 uv=(gl_FragCoord.xy-R*0.5)/R.y;
+void main() {
+    vec2 uv = (gl_FragCoord.xy - R * 0.5) / R.y;
 
-    // ── Camera setup ──
-    // Position: behind and above, looking down at the black hole
-    float camDist=12.0;
-    float camAngle=0.45; // Elevation angle (radians) — ~26 degrees above equator
-    vec3 ro=vec3(0.0, camDist*sin(camAngle), -camDist*cos(camAngle));
-    vec3 target=vec3(0.0, 0.0, 0.0);
-    vec3 up=vec3(0.0,1.0,0.0);
+    // ── Camera: pulled back, low angle for cinematic thin-disk view ──
+    float camDist = 28.0;
+    float camElev = 0.18;  // ~10 degrees — nearly edge-on
+    vec3 ro = vec3(0.0, camDist * sin(camElev), -camDist * cos(camElev));
 
-    // View matrix
-    vec3 fwd=normalize(target-ro);
-    vec3 right=normalize(cross(fwd,up));
-    vec3 vup=cross(right,fwd);
+    vec3 fwd = normalize(-ro);
+    vec3 right = normalize(cross(fwd, vec3(0, 1, 0)));
+    vec3 vup = cross(right, fwd);
+    vec3 rd = normalize(fwd * 2.2 + right * uv.x + vup * uv.y);
 
-    float fov=1.8;
-    vec3 rd=normalize(fwd*fov+right*uv.x+vup*uv.y);
+    // ── Schwarzschild ray trace ──
+    vec3 pos = ro;
+    vec3 vel = rd;
+    float h2 = dot(cross(pos, vel), cross(pos, vel));
 
-    // ── Ray trace with Schwarzschild geodesic ──
-    vec3 pos=ro;
-    vec3 vel=rd*1.0;
+    vec3 color = vec3(0.0);
+    float prevY = pos.y;
+    bool absorbed = false;
 
-    // h² = |r × v|² — conserved angular momentum (squared)
-    vec3 crossRV=cross(pos,vel);
-    float h2=dot(crossRV,crossRV);
+    for (int i = 0; i < STEPS; i++) {
+        float r = length(pos);
 
-    vec3 color=vec3(0.0);
-    float prevY=pos.y;
-    bool hit=false;
+        // GR geodesic acceleration
+        vec3 acc = -1.5 * h2 / (r * r * r * r * r) * pos;
 
-    for(int i=0;i<STEPS;i++){
-        float r=length(pos);
+        float dt = 0.1 + 0.06 * clamp(r - 2.0, 0.0, 8.0);
+        vel += acc * dt;
+        pos += vel * dt;
 
-        // ── Schwarzschild geodesic acceleration ──
-        // d²r/dλ² = -1.5 * h² / r⁵ * r_vec
-        // This is the exact GR correction for photon orbits
-        vec3 accel=-1.5*h2/(r*r*r*r*r)*pos;
+        float newR = length(pos);
 
-        // Adaptive step size: smaller near the black hole
-        float dt=0.08+0.04*clamp(r-RS*2.0,0.0,5.0);
-
-        // Leapfrog integration
-        vel+=accel*dt;
-        pos+=vel*dt;
-
-        float newR=length(pos);
-
-        // ── Event horizon: absorbed ──
-        if(newR<RS*0.5){
-            color=vec3(0.0);
-            hit=true;
+        // Event horizon
+        if (newR < 0.5) {
+            absorbed = true;
             break;
         }
 
-        // ── Accretion disk: check if ray crossed y=0 plane ──
-        if(pos.y*prevY<0.0 && newR>RS*2.0){
-            // Interpolate exact crossing point
-            float frac=abs(prevY)/(abs(prevY)+abs(pos.y));
-            vec3 hitP=pos-vel*dt*(1.0-frac);
-            float hitR=length(hitP);
+        // Disk plane crossing (y sign change)
+        if (pos.y * prevY < 0.0 && newR > 2.8 && newR < 15.0) {
+            float frac = abs(prevY) / (abs(prevY) + abs(pos.y));
+            vec3 hitP = pos - vel * dt * (1.0 - frac);
+            float hitR = length(hitP);
 
-            if(hitR>RS*2.5 && hitR<RS*10.0){
-                vec3 dc=diskShade(hitP,hitR);
-                if(length(dc)>0.01){
-                    // Accumulate (semi-transparent disk)
-                    float opacity=clamp(length(dc)*0.5,0.0,0.85);
-                    color=color*(1.0-opacity)+dc;
-                }
+            vec3 dc = diskColor(hitP, hitR);
+            if (length(dc) > 0.005) {
+                float opacity = clamp(length(dc) * 0.35, 0.0, 0.9);
+                color = color * (1.0 - opacity) + dc;
             }
         }
 
-        prevY=pos.y;
+        prevY = pos.y;
 
-        // ── Escaped: star field ──
-        if(newR>25.0){
-            color+=starsSphere(normalize(pos));
-            hit=true;
+        // Escape
+        if (newR > 40.0) {
+            color += stars(normalize(pos));
             break;
         }
     }
 
-    // Rays that didn't hit anything
-    if(!hit){
-        color+=starsSphere(normalize(vel))*0.3;
+    if (absorbed) {
+        color = vec3(0.0);
     }
 
-    // ── Photon ring glow ──
-    // Approximate: brightening at the photon sphere edge
-    // Recast a quick 2D check
-    vec2 screenBH=vec2(0.0, 0.0); // BH is at center of screen roughly
-    float screenDist=length(uv-vec2(0.0,0.05));
-    float photonR=0.085;
-    float ringDist=abs(screenDist-photonR);
-    float ring=exp(-ringDist*200.0)*0.4;
-    ring*=0.7+0.3*sin(T*1.2);
-    color+=vec3(1.0,0.85,0.6)*ring;
+    // Photon ring
+    float sd = length(uv - vec2(0.0, 0.03));
+    float pr = 0.038;
+    float rd2 = abs(sd - pr);
+    float ring = exp(-rd2 * 350.0) * 0.5 * (0.7 + 0.3 * sin(T * 1.5));
+    color += vec3(1.0, 0.88, 0.65) * ring;
 
-    // ── Tone mapping (ACES-ish) ──
-    color=color/(color+0.8);
-
-    // Subtle warm color grade
-    color=pow(color,vec3(0.95,1.0,1.08));
+    // Tone mapping
+    color = color / (color + 0.7);
+    color = pow(color, vec3(0.92, 0.97, 1.05));
 
     // Vignette
-    vec2 vuv=gl_FragCoord.xy/R;
-    color*=1.0-0.25*length(vuv-0.5);
+    vec2 vu = gl_FragCoord.xy / R;
+    color *= 1.0 - 0.3 * length(vu - 0.5);
 
-    gl_FragColor=vec4(color,1.0);
+    gl_FragColor = vec4(color, 1.0);
 }
 `;
 
@@ -242,19 +196,19 @@ function initGL(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl", { antialias: false, alpha: false });
     if (!gl) return null;
 
-    const compile = (type: number, src: string) => {
-        const s = gl.createShader(type)!;
-        gl.shaderSource(s, src);
-        gl.compileShader(s);
-        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-            console.error(gl.getShaderInfoLog(s));
+    const mk = (t: number, s: string) => {
+        const sh = gl.createShader(t)!;
+        gl.shaderSource(sh, s);
+        gl.compileShader(sh);
+        if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+            console.error(gl.getShaderInfoLog(sh));
             return null;
         }
-        return s;
+        return sh;
     };
 
-    const vs = compile(gl.VERTEX_SHADER, VS);
-    const fs = compile(gl.FRAGMENT_SHADER, FS);
+    const vs = mk(gl.VERTEX_SHADER, VS);
+    const fs = mk(gl.FRAGMENT_SHADER, FS);
     if (!vs || !fs) return null;
 
     const p = gl.createProgram()!;
@@ -281,59 +235,57 @@ export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const ctxRef = useRef<ReturnType<typeof initGL>>(null);
-    const animRef = useRef(0);
+    const boxRef = useRef<HTMLDivElement>(null);
+    const glRef = useRef<ReturnType<typeof initGL>>(null);
+    const afRef = useRef(0);
     const t0 = useRef(0);
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const box = containerRef.current;
-        if (!canvas || !box) return;
+        const c = canvasRef.current;
+        const b = boxRef.current;
+        if (!c || !b) return;
 
         const resize = () => {
             const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-            const r = box.getBoundingClientRect();
-            canvas.width = r.width * dpr;
-            canvas.height = r.height * dpr;
-            canvas.style.width = r.width + "px";
-            canvas.style.height = r.height + "px";
-            if (ctxRef.current) {
-                const { gl, uR } = ctxRef.current;
-                gl.viewport(0, 0, canvas.width, canvas.height);
-                gl.uniform2f(uR, canvas.width, canvas.height);
+            const r = b.getBoundingClientRect();
+            c.width = r.width * dpr;
+            c.height = r.height * dpr;
+            c.style.width = r.width + "px";
+            c.style.height = r.height + "px";
+            if (glRef.current) {
+                glRef.current.gl.viewport(0, 0, c.width, c.height);
+                glRef.current.gl.uniform2f(glRef.current.uR, c.width, c.height);
             }
         };
 
-        ctxRef.current = initGL(canvas);
-        if (!ctxRef.current) return;
+        glRef.current = initGL(c);
+        if (!glRef.current) return;
         t0.current = Date.now();
         resize();
 
         const loop = () => {
-            if (!ctxRef.current) return;
-            const { gl, uT, uR } = ctxRef.current;
+            if (!glRef.current) return;
+            const { gl, uT, uR } = glRef.current;
             gl.uniform1f(uT, (Date.now() - t0.current) * 0.001);
-            gl.uniform2f(uR, canvas.width, canvas.height);
+            gl.uniform2f(uR, c.width, c.height);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
-            animRef.current = requestAnimationFrame(loop);
+            afRef.current = requestAnimationFrame(loop);
         };
 
-        animRef.current = requestAnimationFrame(loop);
+        afRef.current = requestAnimationFrame(loop);
         window.addEventListener("resize", resize);
-        return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(animRef.current); };
+        return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(afRef.current); };
     }, []);
 
     if (isMessagesPage) return null;
 
     return (
-        <footer ref={containerRef} role="contentinfo" aria-label="Site bilgileri"
+        <footer ref={boxRef} role="contentinfo" aria-label="Site bilgileri"
             className="relative bg-black overflow-hidden min-h-[520px] md:min-h-[650px] flex flex-col justify-end">
 
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
             <div className="absolute inset-x-0 top-0 h-[60px] bg-gradient-to-b from-[#0a0a0a] to-transparent z-10 pointer-events-none" />
 
-            {/* CONTENT */}
             <div className="container relative z-30 py-12 md:py-16">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 text-center md:text-left w-full max-w-4xl mx-auto">
                     <div className="flex flex-col gap-3">
