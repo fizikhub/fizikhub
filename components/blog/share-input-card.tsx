@@ -2,15 +2,15 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Zap } from "lucide-react";
+import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Zap, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
-import { createQuestion } from "@/app/forum/actions"; // Import action
-import { toast } from "sonner"; // Import toast
-import { createClient } from "@/lib/supabase"; // Client-side supabase
+import { createQuestion } from "@/app/forum/actions";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase";
 
 interface ShareInputCardProps {
     user?: {
@@ -33,12 +33,10 @@ const CATEGORIES = [
 ];
 
 export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
-    // Client-side user state to fix "Misafir" persistence
     const [user, setUser] = useState(initialUser);
     const [supabase] = useState(() => createClient());
 
     useEffect(() => {
-        // If no user prop or just double checking, fetch on client
         const fetchUser = async () => {
             const { data: { user: authUser } } = await supabase.auth.getUser();
             if (authUser) {
@@ -59,7 +57,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
-    const [mode, setMode] = useState<"default" | "question">("default"); // New mode state
+    const [mode, setMode] = useState<"default" | "question">("default");
 
     // Form State
     const [title, setTitle] = useState("");
@@ -71,7 +69,6 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
-            // Check if click is outside BOTH dropdown and trigger button
             if (
                 dropdownRef.current &&
                 !dropdownRef.current.contains(event.target as Node) &&
@@ -93,12 +90,12 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const handleQuickQuestion = (e: React.MouseEvent) => {
         e.preventDefault();
         setMode("question");
-        setIsOpen(true); // Ensure expanded
+        setIsOpen(true);
     };
 
     const handleClose = () => {
         setIsOpen(false);
-        setTimeout(() => setMode("default"), 300); // Reset mode after animation
+        setTimeout(() => setMode("default"), 300);
     };
 
     const submitQuestion = async (status: 'published' | 'draft') => {
@@ -133,18 +130,15 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         }
     };
 
-    // --- STAR GENERATION (Simple CSS/SVG approach for performance) ---
-    const [stars, setStars] = useState<{ top: number; left: number; size: number; opacity: number }[]>([]);
-
-    useEffect(() => {
-        const starCount = 120;
-        const newStars = Array.from({ length: starCount }).map(() => ({
+    // Memoize stars so they don't re-render on every state change
+    const stars = useMemo(() => {
+        const starCount = 60; // Reduced from 120 for perf
+        return Array.from({ length: starCount }).map(() => ({
             top: Math.random() * 100,
             left: Math.random() * 100,
-            size: 0.5 + Math.random() * 2.5,
-            opacity: 0.2 + Math.random() * 0.8
+            size: 0.5 + Math.random() * 2,
+            opacity: 0.15 + Math.random() * 0.5
         }));
-        setStars(newStars);
     }, []);
 
     return (
@@ -153,63 +147,58 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "backOut" }}
-            whileHover={{ y: -2, transition: { duration: 0.2 } }}
             className={cn(
-                "group relative flex flex-col overflow-visible rounded-xl transition-all duration-300",
-                "bg-black text-white", // PURE BLACK
-                "border-[3px] border-white", // White Border
-                "shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]", // White/Glass Shadow
+                "group relative flex flex-col overflow-visible rounded-2xl transition-all duration-300",
+                "bg-black text-white",
+                "border-2 border-zinc-700/80 hover:border-zinc-600",
+                "shadow-xl shadow-black/30",
                 "w-full mb-6",
-                isOpen ? "z-[5000]" : "z-[20]", // Z-Index fix - Much higher to overlay all
-                "sm:-mt-4" // Move up slightly on desktop/mobile if needed
+                isOpen ? "z-[5000]" : "z-[20]",
+                "sm:-mt-4"
             )}
         >
-            {/* DEEP SPACE BACKGROUND LAYERS */}
-            <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none z-0">
-                {/* 1. Base - PURE BLACK */}
+            {/* DEEP SPACE BACKGROUND - Simplified */}
+            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
                 <div className="absolute inset-0 bg-black" />
-
-                {/* 2. Stars */}
+                {/* Stars - Fewer, memoized */}
                 {stars.map((star, i) => (
                     <div
                         key={i}
-                        className="absolute rounded-full bg-white animate-pulse"
+                        className="absolute rounded-full bg-white"
                         style={{
                             top: `${star.top}%`,
                             left: `${star.left}%`,
                             width: `${star.size}px`,
                             height: `${star.size}px`,
                             opacity: star.opacity,
-                            animationDuration: `${2 + Math.random() * 3}s`
                         }}
                     />
                 ))}
-
-                {/* 3. Nebula/Galaxy Effects (Subtle Purple/Blue per request) */}
-                <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04]" />
-                <div className="absolute top-0 right-0 w-48 h-48 bg-purple-900/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-56 h-56 bg-blue-900/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none" />
+                {/* Subtle nebula glow */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-900/8 blur-[60px] rounded-full" />
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-900/8 blur-[60px] rounded-full" />
             </div>
 
-            {/* HEADER */}
-            <div className="relative h-9 sm:h-10 border-b-[3px] border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center select-none rounded-t-xl overflow-hidden z-10">
-                <div className="absolute left-3 sm:left-5 flex gap-1.5 sm:gap-2 z-10">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border border-white/20 shadow-sm" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border border-white/20 shadow-sm" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border border-white/20 shadow-sm" />
+            {/* HEADER - Terminal Style */}
+            <div className="relative h-9 sm:h-10 border-b border-zinc-700/60 bg-zinc-900/60 backdrop-blur-sm flex items-center select-none rounded-t-2xl overflow-hidden z-10">
+                <div className="absolute left-3 sm:left-4 flex gap-1.5 z-10">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F]" />
                 </div>
-                <div className="text-[10px] sm:text-xs font-black text-white/90 uppercase tracking-[0.2em]">
+                <div className="flex-1 text-center text-[10px] sm:text-xs font-bold text-zinc-400 uppercase tracking-[0.15em]">
                     Paylaşım Merkezi
                 </div>
             </div>
 
+            {/* MAIN CONTENT */}
             <div className="p-3 sm:p-5 relative z-[4000]">
                 <div className="flex gap-3 sm:gap-4 items-center">
-                    {/* Avatar Area */}
+                    {/* Avatar */}
                     <div className="shrink-0">
-                        <Avatar className="w-10 h-10 sm:w-14 sm:h-14 border-[2px] border-white shadow-[0px_0px_15px_rgba(255,255,255,0.2)] rounded-xl">
+                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-zinc-700 rounded-xl ring-2 ring-zinc-800">
                             <AvatarImage src={avatarUrl} />
-                            <AvatarFallback className="bg-black text-white font-black text-base sm:text-lg rounded-xl border border-white/20">
+                            <AvatarFallback className="bg-zinc-900 text-white font-bold text-sm sm:text-base rounded-xl">
                                 {displayName?.[0]?.toUpperCase() || "?"}
                             </AvatarFallback>
                         </Avatar>
@@ -225,23 +214,23 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    className="w-full bg-white/10 backdrop-blur-xl rounded-xl p-4 border-[2px] border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] space-y-3 relative overflow-hidden"
+                                    className="w-full bg-zinc-900/80 backdrop-blur-xl rounded-xl p-4 border border-zinc-700 space-y-3 relative overflow-hidden"
                                 >
                                     {/* CLOSE BUTTON */}
                                     <button
                                         onClick={handleClose}
-                                        className="absolute top-2 right-2 p-1.5 text-white/50 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                                        className="absolute top-2 right-2 p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
                                     >
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path d="M6 18L18 6M6 6l12 12" /></svg>
+                                        <X className="w-4 h-4" />
                                     </button>
 
-                                    <div className="text-xs font-bold text-white/50 uppercase tracking-wider mb-2">Hızlı Soru Sor</div>
+                                    <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Hızlı Soru Sor</div>
 
                                     <input
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
                                         placeholder="Sorunun başlığı ne olsun?"
-                                        className="w-full bg-transparent border-b-[2px] border-white/30 px-2 py-2 text-sm font-bold focus:outline-none placeholder:text-white/30 text-white focus:border-white transition-colors"
+                                        className="w-full bg-transparent border-b border-zinc-700 px-2 py-2 text-sm font-medium focus:outline-none placeholder:text-zinc-600 text-white focus:border-yellow-500/60 transition-colors"
                                         autoFocus
                                     />
 
@@ -249,19 +238,19 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
                                         placeholder="Detayları buraya yazabilirsin..."
-                                        className="w-full bg-transparent border-b-[2px] border-white/30 px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-white/30 text-white focus:border-white transition-colors"
+                                        className="w-full bg-transparent border-b border-zinc-700 px-2 py-2 text-sm min-h-[80px] focus:outline-none resize-none placeholder:text-zinc-600 text-white focus:border-yellow-500/60 transition-colors"
                                     />
 
-                                    <div className="flex flex-wrap gap-2 pt-1">
+                                    <div className="flex flex-wrap gap-1.5 pt-1">
                                         {CATEGORIES.map(cat => (
                                             <button
                                                 key={cat}
                                                 onClick={() => setCategory(cat)}
                                                 className={cn(
-                                                    "px-3 py-1 rounded-lg text-[10px] font-bold border border-white/20 transition-all",
+                                                    "px-2.5 py-1 rounded-lg text-[10px] font-medium border transition-all",
                                                     category === cat
-                                                        ? "bg-white text-black shadow-[0px_0px_10px_rgba(255,255,255,0.4)] border-white"
-                                                        : "bg-transparent text-white/70 hover:bg-white/10"
+                                                        ? "bg-yellow-400 text-zinc-900 border-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.3)]"
+                                                        : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-zinc-300"
                                                 )}
                                             >
                                                 {cat}
@@ -273,9 +262,9 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         <button
                                             onClick={() => submitQuestion('published')}
                                             disabled={isSubmitting}
-                                            className="px-6 py-2 rounded-lg text-xs font-black bg-[#FFC800] text-black border-[2px] border-white shadow-[2px_2px_0px_0px_#fff] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] transition-all disabled:opacity-50 flex items-center gap-2"
+                                            className="px-5 py-2 rounded-lg text-xs font-bold bg-yellow-400 text-zinc-900 hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 hover:shadow-yellow-400/30 transition-all disabled:opacity-50 flex items-center gap-1.5"
                                         >
-                                            {isSubmitting ? "..." : "Yayınla"} <Zap className="w-3 h-3 fill-black" />
+                                            {isSubmitting ? "..." : "Yayınla"} <Zap className="w-3 h-3 fill-zinc-900" />
                                         </button>
                                     </div>
                                 </motion.div>
@@ -284,55 +273,54 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     ref={triggerRef}
                                     onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                                     className={cn(
-                                        "w-full h-10 sm:h-14 text-left px-3 sm:px-5 flex items-center justify-between transition-all duration-200 group/input relative",
-                                        "bg-white/5 backdrop-blur-md", // Translucent
-                                        "border-[2px] border-white/50 hover:border-white",
+                                        "w-full h-10 sm:h-12 text-left px-3 sm:px-4 flex items-center justify-between transition-all duration-200 group/input relative",
+                                        "bg-zinc-900/60 backdrop-blur-sm",
+                                        "border border-zinc-700/60 hover:border-zinc-600",
                                         "rounded-xl",
-                                        "shadow-none hover:bg-white/10",
-                                        isOpen && "bg-white text-black border-white"
+                                        "hover:bg-zinc-800/60",
+                                        isOpen && "bg-yellow-400 text-zinc-900 border-yellow-400"
                                     )}
                                 >
-                                    <span className={cn("font-bold text-xs sm:text-base truncate mr-2 flex-1 block transition-colors", isOpen ? "text-black" : "text-white")}>
+                                    <span className={cn("font-medium text-xs sm:text-sm truncate mr-2 flex-1 block transition-colors", isOpen ? "text-zinc-900" : "text-zinc-400")}>
                                         {isOpen ? (
                                             "Kapat"
                                         ) : (
                                             <span className="flex items-center gap-1 overflow-hidden">
-                                                <span className="truncate shrink min-w-0 sm:hidden opacity-80">Paylaşmak ister misin,</span>
-                                                <span className="truncate shrink min-w-0 hidden sm:inline opacity-80 text-sm">Aklında ne var,</span>
-                                                <span className="font-black shrink-0 uppercase tracking-wide">{firstName}?</span>
+                                                <span className="truncate shrink min-w-0 sm:hidden">Paylaşmak ister misin,</span>
+                                                <span className="truncate shrink min-w-0 hidden sm:inline">Aklında ne var,</span>
+                                                <span className="font-bold shrink-0">{firstName}?</span>
                                             </span>
                                         )}
                                     </span>
                                     <div className={cn(
-                                        "w-7 h-7 sm:w-8 sm:h-8 rounded-lg border-[2px] flex items-center justify-center transition-all duration-300 shrink-0",
-                                        isOpen ? "border-black bg-black text-white rotate-45" : "border-white/50 bg-white/10 text-white"
+                                        "w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center transition-all duration-300 shrink-0",
+                                        isOpen ? "bg-zinc-900 text-yellow-400 rotate-45" : "bg-zinc-800 text-zinc-400 hover:text-white"
                                     )}>
-                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
+                                        <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5px]" />
                                     </div>
                                 </button>
                             )}
                         </AnimatePresence>
 
-                        {/* Dropdown Menu - Neo Style */}
+                        {/* Dropdown Menu */}
                         <AnimatePresence>
                             {isOpen && (
                                 <motion.div
                                     ref={dropdownRef}
-                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    initial={{ opacity: 0, y: 8, scale: 0.98 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    exit={{ opacity: 0, y: 8, scale: 0.98 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
-                                    className="absolute top-full right-0 mt-3 w-full sm:w-72 bg-[#0a0a0a] border-[2px] border-white shadow-[0px_10px_40px_rgba(0,0,0,0.5)] z-[100] overflow-hidden rounded-xl"
+                                    className="absolute top-full right-0 mt-2 w-full sm:w-72 bg-zinc-950 border border-zinc-800 shadow-2xl shadow-black/50 z-[100] overflow-hidden rounded-xl"
                                 >
-                                    <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none" />
-                                    <div className="p-2 space-y-1 relative z-10">
-                                        <div className="px-3 py-2 text-[10px] font-black tracking-widest uppercase text-white/40 ml-1">Seçenekler</div>
+                                    <div className="p-2 space-y-0.5 relative z-10">
+                                        <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-zinc-600">Seçenekler</div>
 
                                         {[
-                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-red-500", border: "border-red-500" },
-                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-yellow-400", border: "border-yellow-400" },
-                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-blue-500", border: "border-blue-500" },
-                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-green-500", border: "border-green-500" }
+                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-red-500" },
+                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-yellow-400" },
+                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-blue-500" },
+                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-emerald-500" }
                                         ].map((item, idx) => {
                                             const Comp = item.href ? Link : 'button';
                                             const props = item.href ? { href: item.href } : { onClick: item.action };
@@ -340,14 +328,14 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                                 <Comp
                                                     key={idx}
                                                     {...props as any}
-                                                    className="w-full flex items-center gap-3 p-3 hover:bg-white/10 transition-all group rounded-lg border border-transparent hover:border-white/20"
+                                                    className="w-full flex items-center gap-3 p-2.5 hover:bg-zinc-800/80 transition-colors group rounded-lg"
                                                 >
-                                                    <div className={`relative w-10 h-10 ${item.color} flex items-center justify-center text-black rounded-lg shadow-[0px_0px_10px_rgba(0,0,0,0.3)] group-hover:scale-110 transition-transform`}>
-                                                        <item.icon className="w-5 h-5 stroke-[2.5px]" />
+                                                    <div className={`w-9 h-9 ${item.color} flex items-center justify-center text-black rounded-lg group-hover:scale-105 transition-transform`}>
+                                                        <item.icon className="w-4.5 h-4.5 stroke-[2px]" />
                                                     </div>
                                                     <div className="flex-1 min-w-0 text-left">
-                                                        <h4 className="font-bold text-sm text-white transition-colors truncate">{item.label}</h4>
-                                                        <p className="text-[10px] text-white/50 leading-tight truncate font-medium">{item.sub}</p>
+                                                        <h4 className="font-semibold text-sm text-white truncate">{item.label}</h4>
+                                                        <p className="text-[10px] text-zinc-500 leading-tight truncate">{item.sub}</p>
                                                     </div>
                                                 </Comp>
                                             )
@@ -360,24 +348,23 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 </div>
             </div>
 
-            {/* Bottom Actions Bar - Neo Style */}
-            <div className="px-3 py-3 sm:px-5 sm:py-4 border-t-[2px] border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center gap-2 sm:gap-4 text-[10px] font-bold text-black overflow-x-auto rounded-b-xl relative z-10">
+            {/* Bottom Actions Bar */}
+            <div className="px-3 py-2.5 sm:px-5 sm:py-3 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center rounded-b-2xl relative z-10">
+                <div className="flex items-center gap-2 sm:gap-3 w-full justify-center">
 
-                <div className="flex items-center gap-2 sm:gap-4 w-full justify-center">
-
-                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-transparent text-white border-[2px] border-white/30 hover:bg-white hover:text-black hover:border-white transition-all cursor-pointer group shrink-0">
-                        <PenTool className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2px]" />
-                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">Blog</span>
+                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
+                        <PenTool className="w-3.5 h-3.5" />
+                        Blog
                     </Link>
 
-                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-transparent text-white border-[2px] border-white/30 hover:bg-white hover:text-black hover:border-white transition-all cursor-pointer group shrink-0">
-                        <HelpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2px]" />
-                        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">Soru</span>
+                    <button onClick={handleQuickQuestion} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        Soru
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-6 h-9 sm:h-10 rounded-xl bg-[#dc2626] text-white border-[2px] border-white shadow-[0px_0px_10px_rgba(255,255,255,0.3)] hover:scale-105 transition-all cursor-pointer group shrink-0">
-                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
-                        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider">Ekle</span>
+                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 hover:shadow-yellow-400/30 transition-all cursor-pointer text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
+                        <Plus className="w-3.5 h-3.5 stroke-[3px]" />
+                        Ekle
                     </button>
 
                 </div>
