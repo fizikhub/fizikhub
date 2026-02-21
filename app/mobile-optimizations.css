@@ -696,6 +696,48 @@ iframe {
     }
 }
 
+/* ========== SHARE CARD SHOOTING STARS ========== */
+/* Diagonal shooting stars from top-left to bottom-right */
+@keyframes shootingStarDiagonal {
+    0% {
+        transform: translate(0, 0) rotate(35deg);
+        opacity: 0;
+        width: 0;
+    }
+
+    3% {
+        opacity: 1;
+        width: 60px;
+    }
+
+    15% {
+        opacity: 0.6;
+        width: 80px;
+    }
+
+    30% {
+        opacity: 0;
+        width: 40px;
+    }
+
+    100% {
+        transform: translate(400px, 300px) rotate(35deg);
+        opacity: 0;
+        width: 0;
+    }
+}
+
+.shooting-star {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3), transparent);
+    animation: shootingStarDiagonal linear infinite;
+    opacity: 0;
+    border-radius: 100px;
+    filter: blur(0.3px);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
 /* ========== FEED & COMPONENT ANIMATIONS ========== */
 /* These replace framer-motion JS animations for better mobile perf */
 

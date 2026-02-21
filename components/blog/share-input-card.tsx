@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Zap, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { createQuestion } from "@/app/forum/actions";
@@ -82,11 +82,6 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleNavigation = (path: string) => {
-        setIsOpen(false);
-        router.push(path);
-    };
-
     const handleQuickQuestion = (e: React.MouseEvent) => {
         e.preventDefault();
         setMode("question");
@@ -130,17 +125,6 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         }
     };
 
-    // Memoize stars so they don't re-render on every state change
-    const stars = useMemo(() => {
-        const starCount = 60; // Reduced from 120 for perf
-        return Array.from({ length: starCount }).map(() => ({
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            size: 0.5 + Math.random() * 2,
-            opacity: 0.15 + Math.random() * 0.5
-        }));
-    }, []);
-
     return (
         <motion.div
             layout
@@ -157,23 +141,17 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                 "sm:-mt-4"
             )}
         >
-            {/* DEEP SPACE BACKGROUND - Simplified */}
+            {/* DEEP SPACE BACKGROUND with Shooting Stars */}
             <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
                 <div className="absolute inset-0 bg-black" />
-                {/* Stars - Fewer, memoized */}
-                {stars.map((star, i) => (
-                    <div
-                        key={i}
-                        className="absolute rounded-full bg-white"
-                        style={{
-                            top: `${star.top}%`,
-                            left: `${star.left}%`,
-                            width: `${star.size}px`,
-                            height: `${star.size}px`,
-                            opacity: star.opacity,
-                        }}
-                    />
-                ))}
+
+                {/* Shooting Stars — CSS animated, diagonal from top-left to bottom-right */}
+                <div className="shooting-star" style={{ top: '8%', left: '-5%', animationDelay: '0s', animationDuration: '3s' }} />
+                <div className="shooting-star" style={{ top: '22%', left: '-10%', animationDelay: '1.8s', animationDuration: '2.5s' }} />
+                <div className="shooting-star" style={{ top: '45%', left: '-8%', animationDelay: '4.2s', animationDuration: '3.2s' }} />
+                <div className="shooting-star" style={{ top: '15%', left: '-3%', animationDelay: '6.5s', animationDuration: '2.8s' }} />
+                <div className="shooting-star" style={{ top: '55%', left: '-12%', animationDelay: '8s', animationDuration: '3.5s' }} />
+
                 {/* Subtle nebula glow */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-purple-900/8 blur-[60px] rounded-full" />
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-900/8 blur-[60px] rounded-full" />
@@ -216,7 +194,6 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                     exit={{ opacity: 0, height: 0 }}
                                     className="w-full bg-zinc-900/80 backdrop-blur-xl rounded-xl p-4 border border-zinc-700 space-y-3 relative overflow-hidden"
                                 >
-                                    {/* CLOSE BUTTON */}
                                     <button
                                         onClick={handleClose}
                                         className="absolute top-2 right-2 p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
