@@ -375,7 +375,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                         <Slider value={[zoom]} min={1} max={3} step={0.1} onValueChange={(v) => setZoom(v[0])} className="flex-1" />
                         <ZoomIn className="w-5 h-5 text-zinc-400" />
                     </div>
-                    <Button onClick={handleAcceptCrop} className="bg-[#23A9FA] text-black font-bold h-10 px-8">Kırp ve İlerle</Button>
+                    <Button onClick={handleAcceptCrop} className="bg-[#23A9FA] text-black font-bold h-10 px-8">Kırp ve İlerle Bu Özelliği Eklerken Anam Ağladı Ha</Button>
                 </div>
             </div>
         );
@@ -506,7 +506,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                                     ))}
                                 </select>
                                 {groups.length === 0 && (
-                                    <p className="text-[10px] text-red-400">Önce "Yönet" sekmesinden bir kart oluşturmalısınız.</p>
+                                    <p className="text-[10px] text-red-400">Önce "Yönet" sekmesinden bir kart oluşturmalısınız bebeğim.</p>
                                 )}
                             </div>
 
@@ -664,7 +664,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
     };
 
     const handleDeleteStory = async (id: string) => {
-        if (!confirm("Bu hikayeyi silmek istediğinize emin misiniz?")) return;
+        if (!confirm("Bu hikayeyi silmek istediğinize emin misiniz? Dikkatli ol Baranım")) return;
         try {
             const res = await deleteStory(id);
             if (!res.success) throw new Error(res.error);
@@ -746,7 +746,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                         {groups.length === 0 && (
                             <div className="col-span-full py-12 flex flex-col items-center justify-center text-zinc-500 border border-dashed border-white/10 rounded-xl">
                                 <FolderOpen className="w-12 h-12 mb-4 opacity-50" />
-                                <p>Henüz hiç hikaye kartı oluşturmadınız.</p>
+                                <p>Henüz hiç hikaye kartı oluşturmadınız eee oluştursana.</p>
                             </div>
                         )}
                     </div>
