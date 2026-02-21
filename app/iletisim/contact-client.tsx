@@ -264,7 +264,7 @@ function NeoCard({ children, className, delay = 0, href }: { children: React.Rea
         <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay, ease: "easeOut" }}
             whileHover={{ x: -3, y: -3, boxShadow: "7px 7px 0px 0px #000" }}
             whileTap={{ x: 0, y: 0, boxShadow: "3px 3px 0px 0px #000" }}
             className={cn(
@@ -312,9 +312,10 @@ export function ContactPageClient() {
         show: { transition: { staggerChildren: 0.12 } },
     };
 
-    const fadeUp = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fadeUp: any = {
         hidden: { opacity: 0, y: 30 },
-        show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+        show: { opacity: 1, y: 0 },
     };
 
     return (
@@ -342,7 +343,7 @@ export function ContactPageClient() {
                 animate="show"
             >
                 {/* ── HEADER ── */}
-                <motion.div className="text-center mb-10 sm:mb-14" variants={fadeUp}>
+                <motion.div className="text-center mb-10 sm:mb-14" variants={fadeUp} transition={{ duration: 0.6, ease: "easeOut" }}>
                     <motion.div
                         className="inline-flex items-center gap-2 mb-5"
                         animate={{ scale: [1, 1.05, 1] }}
