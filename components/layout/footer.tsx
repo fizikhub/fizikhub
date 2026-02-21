@@ -18,7 +18,7 @@ uniform float T;
 uniform vec2 R;
 
 #define PI 3.14159265
-#define STEPS 128
+#define STEPS 140
 
 float hash(vec2 p) {
     p = fract(p * vec2(443.8975, 441.4237));
@@ -35,74 +35,93 @@ float noise(vec2 p) {
 
 float fbm(vec2 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
+    for (int i = 0; i < 6; i++) { v += a * noise(p); p *= 2.1; a *= 0.48; }
     return v;
 }
 
-// ── Star field on unit sphere ──
+// ── Dense star field with nebula dust ──
 vec3 stars(vec3 rd) {
     vec3 col = vec3(0.0);
     vec2 suv = vec2(atan(rd.z, rd.x) / (2.0 * PI) + 0.5,
                      asin(clamp(rd.y, -1.0, 1.0)) / PI + 0.5);
 
-    for (float l = 0.0; l < 7.0; l++) {
-        float sc = 100.0 + l * 70.0;
-        float thr = 0.975 - l * 0.004;
+    // 8 layers of stars — very dense feeling
+    for (float l = 0.0; l < 8.0; l++) {
+        float sc = 90.0 + l * 65.0;
+        float thr = 0.97 - l * 0.004;
         vec2 g = floor(suv * sc);
         float h = hash(g + l * 53.0);
         if (h > thr) {
             vec2 c = (g + 0.5 + 0.4 * (vec2(hash(g + 1.0), hash(g + 2.0)) - 0.5)) / sc;
             float d = length(suv - c) * sc;
-            float br = smoothstep(1.5 - l * 0.1, 0.0, d);
-            br *= 0.5 + 0.5 * sin(T * (0.6 + h * 3.0) + h * 90.0);
-            vec3 sc2 = h > 0.997 ? vec3(1.0, 0.7, 0.3) :
-                       h > 0.992 ? vec3(0.6, 0.75, 1.0) :
-                       h > 0.984 ? vec3(1.0, 0.93, 0.65) :
-                                   vec3(0.8, 0.83, 0.9);
-            col += sc2 * br * 0.8;
+            float br = smoothstep(1.6 - l * 0.1, 0.0, d);
+            br *= 0.45 + 0.55 * sin(T * (0.5 + h * 3.5) + h * 80.0);
+
+            vec3 sc2 = h > 0.997 ? vec3(1.0, 0.65, 0.25) :   // Red giant
+                       h > 0.993 ? vec3(0.55, 0.72, 1.0) :    // Blue hot
+                       h > 0.988 ? vec3(1.0, 0.95, 0.7) :     // Yellow Sun
+                       h > 0.982 ? vec3(0.9, 0.6, 0.95) :     // Purple rare
+                                   vec3(0.82, 0.85, 0.93);    // White dwarf
+            col += sc2 * br * 0.9;
         }
     }
-    // Milky way
-    float mw = exp(-10.0 * pow(abs(rd.y + 0.05), 2.0));
-    col += vec3(0.04, 0.035, 0.06) * mw * fbm(suv * 10.0 + T * 0.005);
+
+    // Milky Way band — richer
+    float mw = exp(-8.0 * pow(abs(rd.y + 0.05), 2.0));
+    float mwNoise = fbm(suv * 12.0 + T * 0.003);
+    col += vec3(0.05, 0.04, 0.07) * mw * mwNoise;
+    col += vec3(0.03, 0.015, 0.04) * mw * fbm(suv * 20.0 - 5.0);
+
+    // Subtle nebula dust clouds
+    float neb1 = fbm(suv * 4.0 + vec2(T * 0.002, 0.0));
+    float neb2 = fbm(suv * 3.5 + vec2(0.0, T * 0.001) + 50.0);
+    col += vec3(0.02, 0.005, 0.03) * neb1 * smoothstep(0.4, 0.7, neb1);
+    col += vec3(0.005, 0.01, 0.025) * neb2 * smoothstep(0.45, 0.75, neb2);
+
     return col;
 }
 
-// ── Accretion disk color ──
+// ── Accretion disk with rich detail ──
 vec3 diskColor(vec3 p, float r) {
-    float rs = 1.0;
-    float inner = rs * 3.0;
-    float outer = rs * 14.0;
+    float inner = 3.0;
+    float outer = 14.0;
     if (r < inner || r > outer) return vec3(0.0);
 
     float ratio = 1.0 - (r - inner) / (outer - inner);
-    ratio = pow(ratio, 0.8);
+    ratio = pow(ratio, 0.75);
 
-    // Temperature coloring
+    // Smooth blackbody temperature gradient
     vec3 c;
-    if (ratio > 0.85) c = vec3(1.0, 0.97, 0.94);       // White hot
-    else if (ratio > 0.65) c = vec3(1.0, 0.82, 0.45);   // Yellow
-    else if (ratio > 0.4) c = vec3(1.0, 0.5, 0.08);     // Orange
-    else if (ratio > 0.2) c = vec3(0.75, 0.18, 0.03);   // Red
-    else c = vec3(0.3, 0.05, 0.01);                       // Dim red
+    if (ratio > 0.88) c = mix(vec3(1.0, 0.92, 0.5), vec3(1.0, 0.98, 0.95), (ratio - 0.88) / 0.12);
+    else if (ratio > 0.7) c = mix(vec3(1.0, 0.65, 0.15), vec3(1.0, 0.92, 0.5), (ratio - 0.7) / 0.18);
+    else if (ratio > 0.45) c = mix(vec3(0.9, 0.3, 0.04), vec3(1.0, 0.65, 0.15), (ratio - 0.45) / 0.25);
+    else if (ratio > 0.2) c = mix(vec3(0.55, 0.1, 0.02), vec3(0.9, 0.3, 0.04), (ratio - 0.2) / 0.25);
+    else c = mix(vec3(0.15, 0.02, 0.005), vec3(0.55, 0.1, 0.02), ratio / 0.2);
 
-    float angle = atan(p.z, p.x) + T * 0.5;
+    float angle = atan(p.z, p.x) + T * 0.45;
 
-    // Turbulence
-    float turb = fbm(vec2(angle * 2.0 + T * 0.3, r * 2.5));
-    turb = 0.3 + 0.7 * turb;
+    // Rich turbulence (6 octaves)
+    float turb = fbm(vec2(angle * 2.5 + T * 0.25, r * 3.0 - T * 0.3));
+    float turb2 = fbm(vec2(angle * 5.0 - T * 0.4, r * 6.0 + T * 0.2));
+    turb = 0.25 + 0.75 * (turb * 0.7 + turb2 * 0.3);
 
-    // Spiral arms
-    float spiral = 0.65 + 0.35 * sin(angle * 3.0 - r * 4.0 + T * 1.2);
+    // Multiple spiral arms
+    float spiral = 0.6 + 0.25 * sin(angle * 3.0 - r * 4.5 + T * 1.0);
+    spiral += 0.15 * sin(angle * 7.0 + r * 2.0 - T * 0.7);
 
-    // Doppler beaming
-    float doppler = 0.5 + 0.5 * cos(angle - T * 0.5);
+    // Doppler relativistic beaming — stronger contrast
+    float doppler = 0.4 + 0.6 * cos(angle - T * 0.45);
+    doppler = pow(max(doppler, 0.0), 1.3);
 
-    float brightness = ratio * ratio * turb * spiral * doppler * 4.0;
+    float brightness = ratio * ratio * turb * spiral * doppler * 5.0;
 
-    // Inner edge ISCO glow
-    float isco = exp(-(r - inner) * 2.0) * 5.0;
-    c += vec3(0.5, 0.3, 0.15) * isco;
+    // ISCO inner edge blaze
+    float isco = exp(-(r - inner) * 1.5) * 6.0;
+    c += vec3(0.6, 0.35, 0.15) * isco;
+
+    // Hot spots (clumps in the disk)
+    float hotspot = smoothstep(0.68, 0.75, fbm(vec2(angle * 4.0 + T * 0.8, r * 8.0)));
+    c += vec3(0.4, 0.25, 0.1) * hotspot * ratio * 3.0;
 
     return c * brightness;
 }
@@ -110,15 +129,15 @@ vec3 diskColor(vec3 p, float r) {
 void main() {
     vec2 uv = (gl_FragCoord.xy - R * 0.5) / R.y;
 
-    // ── Camera: pulled back, low angle for cinematic thin-disk view ──
-    float camDist = 28.0;
-    float camElev = 0.18;  // ~10 degrees — nearly edge-on
+    // ── Camera ──
+    float camDist = 26.0;
+    float camElev = 0.2;
     vec3 ro = vec3(0.0, camDist * sin(camElev), -camDist * cos(camElev));
 
     vec3 fwd = normalize(-ro);
     vec3 right = normalize(cross(fwd, vec3(0, 1, 0)));
     vec3 vup = cross(right, fwd);
-    vec3 rd = normalize(fwd * 2.2 + right * uv.x + vup * uv.y);
+    vec3 rd = normalize(fwd * 2.0 + right * uv.x + vup * uv.y);
 
     // ── Schwarzschild ray trace ──
     vec3 pos = ro;
@@ -128,67 +147,71 @@ void main() {
     vec3 color = vec3(0.0);
     float prevY = pos.y;
     bool absorbed = false;
+    float diskGlow = 0.0;
 
     for (int i = 0; i < STEPS; i++) {
         float r = length(pos);
-
-        // GR geodesic acceleration
         vec3 acc = -1.5 * h2 / (r * r * r * r * r) * pos;
-
         float dt = 0.1 + 0.06 * clamp(r - 2.0, 0.0, 8.0);
         vel += acc * dt;
         pos += vel * dt;
-
         float newR = length(pos);
 
-        // Event horizon
-        if (newR < 0.5) {
-            absorbed = true;
-            break;
-        }
+        if (newR < 0.5) { absorbed = true; break; }
 
-        // Disk plane crossing (y sign change)
+        // Disk crossing
         if (pos.y * prevY < 0.0 && newR > 2.8 && newR < 15.0) {
             float frac = abs(prevY) / (abs(prevY) + abs(pos.y));
             vec3 hitP = pos - vel * dt * (1.0 - frac);
             float hitR = length(hitP);
-
             vec3 dc = diskColor(hitP, hitR);
             if (length(dc) > 0.005) {
-                float opacity = clamp(length(dc) * 0.35, 0.0, 0.9);
+                float opacity = clamp(length(dc) * 0.4, 0.0, 0.92);
                 color = color * (1.0 - opacity) + dc;
+                diskGlow += length(dc) * 0.15;
             }
         }
 
         prevY = pos.y;
-
-        // Escape
-        if (newR > 40.0) {
-            color += stars(normalize(pos));
-            break;
-        }
+        if (newR > 40.0) { color += stars(normalize(pos)); break; }
     }
 
-    if (absorbed) {
-        color = vec3(0.0);
-    }
+    if (absorbed) color = vec3(0.0);
 
-    // Photon ring
-    float sd = length(uv - vec2(0.0, 0.03));
-    float pr = 0.038;
-    float rd2 = abs(sd - pr);
-    float ring = exp(-rd2 * 350.0) * 0.5 * (0.7 + 0.3 * sin(T * 1.5));
-    color += vec3(1.0, 0.88, 0.65) * ring;
+    // ── Photon ring — double ring ──
+    float sd = length(uv - vec2(0.0, 0.035));
+    float pr1 = 0.037;
+    float pr2 = 0.042;
+    float ring1 = exp(-abs(sd - pr1) * 500.0) * 0.6 * (0.7 + 0.3 * sin(T * 1.5));
+    float ring2 = exp(-abs(sd - pr2) * 300.0) * 0.25 * (0.6 + 0.4 * sin(T * 2.1 + 1.0));
+    color += vec3(1.0, 0.9, 0.7) * ring1;
+    color += vec3(1.0, 0.75, 0.5) * ring2;
 
-    // Tone mapping
-    color = color / (color + 0.7);
-    color = pow(color, vec3(0.92, 0.97, 1.05));
+    // ── Relativistic jets (faint blue beams from poles) ──
+    float jetX = abs(uv.x);
+    float jetY = uv.y - 0.035;
+    float jetUp = smoothstep(0.012, 0.0, jetX) * smoothstep(0.0, 0.15, jetY) * smoothstep(0.5, 0.1, jetY);
+    float jetDown = smoothstep(0.012, 0.0, jetX) * smoothstep(0.0, -0.1, -jetY) * smoothstep(-0.35, -0.08, -jetY);
+    float jetTurb = 0.6 + 0.4 * sin(jetY * 80.0 + T * 3.0);
+    color += vec3(0.3, 0.5, 1.0) * jetUp * 0.15 * jetTurb;
+    color += vec3(0.25, 0.4, 0.9) * jetDown * 0.08 * jetTurb;
+
+    // ── Soft bloom from disk ──
+    float bloomR = length(uv - vec2(0.0, 0.035));
+    float bloom = exp(-bloomR * 8.0) * diskGlow * 0.3;
+    color += vec3(1.0, 0.7, 0.3) * bloom;
+
+    // ── ACES Tone mapping ──
+    color = (color * (2.51 * color + 0.03)) / (color * (2.43 * color + 0.59) + 0.14);
+
+    // Cinematic warm color grade
+    color = pow(color, vec3(0.9, 0.95, 1.08));
 
     // Vignette
     vec2 vu = gl_FragCoord.xy / R;
-    color *= 1.0 - 0.3 * length(vu - 0.5);
+    color *= 1.0 - 0.35 * pow(length(vu - 0.5), 1.5);
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
 `;
 
