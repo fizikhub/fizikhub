@@ -3,311 +3,351 @@
 import Link from "next/link";
 import { SiteLogo } from "@/components/icons/site-logo";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
-// ═══════════════════════════════════════════════════════════════
-// GARGANTUA FOOTER — Interstellar-quality black hole animation
-// Smooth gradient rendering, 20K stars, photon ring, lensed disk
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// GARGANTUA FOOTER — WebGL GLSL shader-based black hole
+// GPU ray-traced gravitational lensing, rotating accretion disk
+// ═══════════════════════════════════════════════════════════════════
+
+const VERT_SHADER = `
+attribute vec2 aPos;
+void main() {
+    gl_Position = vec4(aPos, 0.0, 1.0);
+}`;
+
+const FRAG_SHADER = `
+precision highp float;
+
+uniform float uTime;
+uniform vec2 uRes;
+
+// ── Hash for procedural stars ──
+float hash(vec2 p) {
+    p = fract(p * vec2(443.897, 441.423));
+    p += dot(p, p.yx + 19.19);
+    return fract((p.x + p.y) * p.x);
+}
+
+float hash1(float n) {
+    return fract(sin(n) * 43758.5453123);
+}
+
+// ── Noise ──
+float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float fbm(vec2 p) {
+    float v = 0.0;
+    float a = 0.5;
+    for (int i = 0; i < 4; i++) {
+        v += a * noise(p);
+        p *= 2.1;
+        a *= 0.5;
+    }
+    return v;
+}
+
+// ── Procedural star field ──
+vec3 stars(vec2 uv) {
+    vec3 col = vec3(0.0);
+
+    for (float layer = 0.0; layer < 5.0; layer++) {
+        float scale = 80.0 + layer * 60.0;
+        float threshold = 0.965 - layer * 0.008;
+        float sizeMax = 0.04 - layer * 0.005;
+
+        vec2 grid = floor(uv * scale);
+        float h = hash(grid + layer * 137.0);
+
+        if (h > threshold) {
+            vec2 center = (grid + 0.5 + 0.4 * (vec2(hash(grid + 1.0), hash(grid + 2.0)) - 0.5)) / scale;
+            float d = length(uv - center) * scale;
+            float brightness = smoothstep(sizeMax * scale, 0.0, d);
+
+            // Twinkle
+            float twinkle = 0.6 + 0.4 * sin(uTime * (1.0 + h * 4.0) + h * 100.0);
+            brightness *= twinkle;
+
+            // Star color
+            vec3 sc;
+            if (h > 0.995) sc = vec3(1.0, 0.75, 0.4);       // Orange giant
+            else if (h > 0.988) sc = vec3(0.65, 0.8, 1.0);   // Blue
+            else if (h > 0.98) sc = vec3(1.0, 0.95, 0.7);    // Yellow
+            else sc = vec3(0.85, 0.88, 0.95);                 // White
+
+            col += sc * brightness;
+        }
+    }
+    return col;
+}
+
+// ── Accretion disk color ──
+vec3 diskColor(float r, float angle, float t) {
+    float innerR = 0.09;
+    float outerR = 0.45;
+
+    if (r < innerR || r > outerR) return vec3(0.0);
+
+    float ratio = (r - innerR) / (outerR - innerR);
+
+    // Heat gradient: inner white → yellow → orange → red → dim
+    vec3 hot = vec3(1.0, 0.97, 0.92);
+    vec3 warm = vec3(1.0, 0.7, 0.2);
+    vec3 mid = vec3(1.0, 0.35, 0.05);
+    vec3 cool = vec3(0.6, 0.1, 0.02);
+    vec3 dim = vec3(0.15, 0.02, 0.005);
+
+    vec3 c;
+    if (ratio < 0.1) c = mix(hot, warm, ratio / 0.1);
+    else if (ratio < 0.3) c = mix(warm, mid, (ratio - 0.1) / 0.2);
+    else if (ratio < 0.6) c = mix(mid, cool, (ratio - 0.3) / 0.3);
+    else c = mix(cool, dim, (ratio - 0.6) / 0.4);
+
+    // Turbulence
+    float turb = fbm(vec2(angle * 3.0 + t * 1.5, r * 20.0 - t * 0.8));
+    turb = 0.4 + 0.6 * turb;
+
+    // Spiral structure
+    float spiral = 0.7 + 0.3 * sin(angle * 4.0 - r * 30.0 + t * 2.0);
+
+    // Doppler beaming: approaching side brighter
+    float doppler = 0.6 + 0.4 * cos(angle - t * 0.6 + 1.5);
+
+    // Brightness falloff
+    float brightness = (1.0 - ratio) * (1.0 - ratio);
+    brightness *= turb * spiral * doppler;
+
+    // Inner edge glow
+    float innerGlow = smoothstep(innerR + 0.02, innerR, r) * 2.0;
+    c += vec3(0.3, 0.15, 0.05) * innerGlow;
+
+    return c * brightness * 3.0;
+}
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / uRes;
+    float aspect = uRes.x / uRes.y;
+    vec2 p = (gl_FragCoord.xy - uRes * 0.5) / uRes.y; // normalized coords
+
+    // Black hole center
+    vec2 bhCenter = vec2(0.0, 0.12);
+    vec2 delta = p - bhCenter;
+    float dist = length(delta);
+
+    float eventHorizon = 0.065;
+    float photonSphere = eventHorizon * 1.5;
+
+    // ── Gravitational lensing ──
+    vec2 lensedUV = uv;
+    float lensMag = 1.0;
+
+    if (dist > eventHorizon * 0.95) {
+        // Deflection angle: simplified Schwarzschild
+        float rs = eventHorizon; // Schwarzschild radius
+        float deflection = rs / (dist * dist) * 0.8;
+
+        // Apply lensing to UV
+        vec2 radial = normalize(delta);
+        vec2 tangent = vec2(-radial.y, radial.x);
+
+        lensedUV += tangent * deflection * 0.15;
+        lensedUV += radial * deflection * 0.05;
+
+        // Magnification near photon sphere
+        if (dist < photonSphere * 2.0) {
+            lensMag = 1.0 + 0.5 * smoothstep(photonSphere * 2.0, photonSphere, dist);
+        }
+    }
+
+    // ── Background: Stars with lensing applied ──
+    vec3 color = stars(lensedUV) * lensMag;
+
+    // ── Accretion disk ──
+    // The disk is in the equatorial plane — project to 3D
+    // We see it at an angle, so it appears as an ellipse
+    float diskAngle = atan(delta.y, delta.x) + uTime * 0.4; // ROTATION
+    float diskR = dist;
+
+    // Disk visibility: thin slab in y (flattened for perspective)
+    float diskPlaneY = delta.y / max(dist, 0.001);
+    float diskThickness = 0.12 * smoothstep(eventHorizon, eventHorizon * 4.0, dist);
+
+    // Front half of disk (below center line in screen space)
+    float absDiskY = abs(diskPlaneY);
+    if (absDiskY < diskThickness && dist > eventHorizon * 1.3 && dist < 0.5) {
+        float edgeFade = smoothstep(diskThickness, diskThickness * 0.3, absDiskY);
+        vec3 dc = diskColor(dist, diskAngle, uTime);
+        color += dc * edgeFade;
+    }
+
+    // ── Lensed disk above black hole (back of disk bent over the top) ──
+    float topArcDist = length(delta - vec2(0.0, 0.0));
+    float topAngle = atan(delta.y - 0.0, delta.x) + uTime * 0.4;
+    if (delta.y > 0.0 && dist > eventHorizon * 1.2 && dist < eventHorizon * 3.0) {
+        float lensedDiskR = dist * 1.3;
+        vec3 ldc = diskColor(lensedDiskR, topAngle + 3.14159, uTime);
+        float lensStrength = smoothstep(eventHorizon * 3.0, eventHorizon * 1.2, dist);
+        lensStrength *= smoothstep(0.0, 0.03, delta.y);
+        color += ldc * lensStrength * 0.5;
+    }
+
+    // ── Event horizon: pitch black ──
+    if (dist < eventHorizon) {
+        color = vec3(0.0);
+    }
+
+    // Soft edge transition
+    float edgeSoft = smoothstep(eventHorizon * 0.92, eventHorizon * 1.05, dist);
+    color *= edgeSoft;
+
+    // ── Photon ring ──
+    float ringWidth = 0.004;
+    float ringDist = abs(dist - photonSphere);
+    float ring = smoothstep(ringWidth, 0.0, ringDist);
+    ring *= 0.5 + 0.2 * sin(uTime * 1.5);
+    color += vec3(1.0, 0.88, 0.65) * ring * 0.7;
+
+    // ── Inner photon ring (tighter, brighter) ──
+    float innerRingDist = abs(dist - eventHorizon * 1.12);
+    float innerRing = smoothstep(0.002, 0.0, innerRingDist);
+    innerRing *= 0.4 + 0.1 * sin(uTime * 2.3 + 1.0);
+    color += vec3(1.0, 0.92, 0.78) * innerRing * 0.5;
+
+    // ── Ambient glow ──
+    float glow = exp(-dist * 5.0) * 0.03;
+    color += vec3(1.0, 0.6, 0.2) * glow;
+
+    // Tone mapping (prevent blowout)
+    color = color / (1.0 + color);
+
+    // Subtle vignette
+    float vig = 1.0 - 0.3 * length(uv - 0.5);
+    color *= vig;
+
+    gl_FragColor = vec4(color, 1.0);
+}
+`;
+
+function initWebGL(canvas: HTMLCanvasElement) {
+    const gl = canvas.getContext("webgl", {
+        antialias: true,
+        alpha: false,
+        preserveDrawingBuffer: false,
+    });
+    if (!gl) return null;
+
+    // Compile shaders
+    const vs = gl.createShader(gl.VERTEX_SHADER)!;
+    gl.shaderSource(vs, VERT_SHADER);
+    gl.compileShader(vs);
+    if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+        console.error("VS:", gl.getShaderInfoLog(vs));
+        return null;
+    }
+
+    const fs = gl.createShader(gl.FRAGMENT_SHADER)!;
+    gl.shaderSource(fs, FRAG_SHADER);
+    gl.compileShader(fs);
+    if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+        console.error("FS:", gl.getShaderInfoLog(fs));
+        return null;
+    }
+
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error("Link:", gl.getProgramInfoLog(prog));
+        return null;
+    }
+
+    gl.useProgram(prog);
+
+    // Full-screen quad
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1, 1, -1, -1, 1,
+        -1, 1, 1, -1, 1, 1
+    ]), gl.STATIC_DRAW);
+
+    const aPos = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    return {
+        gl,
+        prog,
+        uTime: gl.getUniformLocation(prog, "uTime"),
+        uRes: gl.getUniformLocation(prog, "uRes"),
+    };
+}
 
 export function Footer() {
     const pathname = usePathname();
     const isMessagesPage = pathname?.startsWith("/mesajlar");
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const animRef = useRef<number>(0);
-    const starsRef = useRef<Float32Array | null>(null); // x, y, size, brightness, twinkleSpeed, r, g, b = 8 per star
-    const timeRef = useRef(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const glRef = useRef<ReturnType<typeof initWebGL>>(null);
+    const animRef = useRef<number>(0);
+    const startTimeRef = useRef(Date.now());
 
-    // ──── STAR INITIALIZATION ────
-    const initStars = useCallback((w: number, h: number) => {
-        const N = 20000;
-        const buf = new Float32Array(N * 8);
-
-        for (let i = 0; i < N; i++) {
-            const off = i * 8;
-            buf[off] = Math.random() * w;          // x
-            buf[off + 1] = Math.random() * h;      // y
-            buf[off + 2] = Math.random() < 0.97     // size
-                ? Math.random() * 1.0 + 0.2
-                : Math.random() * 1.8 + 1.0;
-            buf[off + 3] = Math.random() * 0.6 + 0.2; // brightness
-            buf[off + 4] = Math.random() * 2 + 0.5;   // twinkle speed
-
-            // Color distribution
-            const roll = Math.random();
-            if (roll < 0.55) {
-                // White
-                buf[off + 5] = 230 + Math.random() * 25;
-                buf[off + 6] = 235 + Math.random() * 20;
-                buf[off + 7] = 240 + Math.random() * 15;
-            } else if (roll < 0.75) {
-                // Blue-white
-                buf[off + 5] = 170 + Math.random() * 40;
-                buf[off + 6] = 195 + Math.random() * 40;
-                buf[off + 7] = 235 + Math.random() * 20;
-            } else if (roll < 0.9) {
-                // Warm yellow
-                buf[off + 5] = 240 + Math.random() * 15;
-                buf[off + 6] = 210 + Math.random() * 30;
-                buf[off + 7] = 160 + Math.random() * 30;
-            } else {
-                // Orange-red (rare)
-                buf[off + 5] = 240 + Math.random() * 15;
-                buf[off + 6] = 150 + Math.random() * 50;
-                buf[off + 7] = 90 + Math.random() * 40;
-            }
-        }
-        starsRef.current = buf;
-    }, []);
-
-    // ──── MAIN RENDER LOOP ────
-    const draw = useCallback(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d", { alpha: false });
-        if (!ctx) return;
-
-        const W = canvas.width;
-        const H = canvas.height;
-        const dpr = window.devicePixelRatio || 1;
-
-        timeRef.current += 0.003;
-        const t = timeRef.current;
-
-        // Black hole params
-        const bhX = W * 0.5;
-        const bhY = H * 0.38;
-        const baseR = Math.min(W, H);
-        const eventHorizon = baseR * 0.065;
-        const photonR = eventHorizon * 1.25;
-
-        // ──── CLEAR ────
-        ctx.fillStyle = "#000";
-        ctx.fillRect(0, 0, W, H);
-
-        // ──── STARS ────
-        const stars = starsRef.current;
-        if (stars) {
-            const len = stars.length / 8;
-            for (let i = 0; i < len; i++) {
-                const off = i * 8;
-                const sx = stars[off];
-                const sy = stars[off + 1];
-                const sz = stars[off + 2];
-                const sb = stars[off + 3];
-                const sp = stars[off + 4];
-
-                // Distance from black hole center
-                const dx = sx - bhX;
-                const dy = sy - bhY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                // Stars inside event horizon are invisible
-                if (dist < eventHorizon * 1.1) continue;
-
-                // Dim stars near the black hole (gravitational redshift)
-                let alpha = sb;
-                if (dist < eventHorizon * 3) {
-                    alpha *= Math.min(1, (dist - eventHorizon * 1.1) / (eventHorizon * 1.9));
-                }
-
-                // Twinkling
-                alpha *= 0.7 + 0.3 * Math.sin(t * sp * 6 + i * 1.3);
-
-                if (alpha < 0.03) continue;
-
-                const r = stars[off + 5] | 0;
-                const g = stars[off + 6] | 0;
-                const b = stars[off + 7] | 0;
-
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = `rgb(${r},${g},${b})`;
-
-                const drawSz = sz / dpr;
-                if (sz > 1.5) {
-                    // Bright star with subtle glow
-                    ctx.beginPath();
-                    ctx.arc(sx, sy, drawSz, 0, 6.2832);
-                    ctx.fill();
-                    ctx.globalAlpha = alpha * 0.08;
-                    ctx.beginPath();
-                    ctx.arc(sx, sy, drawSz * 3, 0, 6.2832);
-                    ctx.fill();
-                } else {
-                    ctx.fillRect(sx - drawSz * 0.5, sy - drawSz * 0.5, drawSz, drawSz);
-                }
-            }
-        }
-        ctx.globalAlpha = 1;
-
-        // ──── ACCRETION DISK (back — behind the black hole) ────
-        drawAccretionDisk(ctx, bhX, bhY, eventHorizon, dpr, t, true);
-
-        // ──── BLACK HOLE (event horizon) ────
-        // Smooth dark sphere
-        const bhGrad = ctx.createRadialGradient(bhX, bhY, 0, bhX, bhY, eventHorizon * 1.4);
-        bhGrad.addColorStop(0, "rgba(0,0,0,1)");
-        bhGrad.addColorStop(0.7, "rgba(0,0,0,1)");
-        bhGrad.addColorStop(0.88, "rgba(0,0,0,0.98)");
-        bhGrad.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.fillStyle = bhGrad;
-        ctx.beginPath();
-        ctx.arc(bhX, bhY, eventHorizon * 1.4, 0, 6.2832);
-        ctx.fill();
-
-        // ──── PHOTON RING (thin bright ring at event horizon edge) ────
-        ctx.save();
-        ctx.globalAlpha = 0.5 + Math.sin(t * 0.7) * 0.1;
-        const ringGrad = ctx.createRadialGradient(bhX, bhY, photonR - 2 / dpr, bhX, bhY, photonR + 3 / dpr);
-        ringGrad.addColorStop(0, "rgba(255,200,120,0)");
-        ringGrad.addColorStop(0.35, "rgba(255,210,140,0.6)");
-        ringGrad.addColorStop(0.5, "rgba(255,240,220,0.9)");
-        ringGrad.addColorStop(0.65, "rgba(255,210,140,0.6)");
-        ringGrad.addColorStop(1, "rgba(255,200,120,0)");
-        ctx.fillStyle = ringGrad;
-        ctx.beginPath();
-        ctx.arc(bhX, bhY, photonR + 3 / dpr, 0, 6.2832);
-        ctx.fill();
-        ctx.restore();
-
-        // ──── ACCRETION DISK (front — in front of the black hole) ────
-        drawAccretionDisk(ctx, bhX, bhY, eventHorizon, dpr, t, false);
-
-        // ──── LENSED LIGHT (top arc — back of disk bent over the top) ────
-        ctx.save();
-        const lensArcR = eventHorizon * 1.7;
-        ctx.globalAlpha = 0.25 + Math.sin(t * 0.5) * 0.05;
-        ctx.strokeStyle = "rgba(255,190,100,0.5)";
-        ctx.lineWidth = (3 + Math.sin(t * 1.2) * 0.5) / dpr;
-        ctx.beginPath();
-        ctx.arc(bhX, bhY, lensArcR, Math.PI * 1.1, Math.PI * 1.9);
-        ctx.stroke();
-
-        ctx.globalAlpha = 0.12;
-        ctx.strokeStyle = "rgba(255,160,60,0.3)";
-        ctx.lineWidth = 8 / dpr;
-        ctx.beginPath();
-        ctx.arc(bhX, bhY, lensArcR + 2 / dpr, Math.PI * 1.15, Math.PI * 1.85);
-        ctx.stroke();
-        ctx.restore();
-
-        // ──── AMBIENT GLOW around the black hole ────
-        ctx.save();
-        ctx.globalAlpha = 0.07;
-        const ambGrad = ctx.createRadialGradient(bhX, bhY, eventHorizon, bhX, bhY, eventHorizon * 5);
-        ambGrad.addColorStop(0, "rgba(255,180,80,0.3)");
-        ambGrad.addColorStop(0.3, "rgba(255,120,40,0.1)");
-        ambGrad.addColorStop(1, "rgba(0,0,0,0)");
-        ctx.fillStyle = ambGrad;
-        ctx.beginPath();
-        ctx.arc(bhX, bhY, eventHorizon * 5, 0, 6.2832);
-        ctx.fill();
-        ctx.restore();
-
-        animRef.current = requestAnimationFrame(draw);
-    }, []);
-
-    // ──── ACCRETION DISK RENDERER ────
-    function drawAccretionDisk(
-        ctx: CanvasRenderingContext2D,
-        cx: number, cy: number,
-        eventHorizon: number,
-        dpr: number,
-        t: number,
-        isBack: boolean
-    ) {
-        ctx.save();
-
-        // Disk is an ellipse: wide horizontally, thin vertically (perspective)
-        const diskOuter = eventHorizon * 4.5;
-        const diskInner = eventHorizon * 1.5;
-        const diskLayers = 12;
-        const flatness = 0.18; // How flat the ellipse is (perspective)
-
-        // Only draw top half (back) or bottom half (front)
-        const startAngle = isBack ? Math.PI : 0;
-        const endAngle = isBack ? Math.PI * 2 : Math.PI;
-
-        for (let layer = 0; layer < diskLayers; layer++) {
-            const ratio = layer / diskLayers;
-            const layerR = diskInner + (diskOuter - diskInner) * ratio;
-
-            // Color: inner=white-hot → orange → red → dim
-            let r: number, g: number, b: number, a: number;
-            if (ratio < 0.15) {
-                r = 255; g = 245; b = 230; a = 0.8;
-            } else if (ratio < 0.3) {
-                r = 255; g = 210; b = 140; a = 0.65;
-            } else if (ratio < 0.5) {
-                r = 255; g = 160; b = 60; a = 0.45;
-            } else if (ratio < 0.7) {
-                r = 230; g = 100; b = 30; a = 0.3;
-            } else if (ratio < 0.85) {
-                r = 180; g = 60; b = 20; a = 0.18;
-            } else {
-                r = 120; g = 35; b = 15; a = 0.08;
-            }
-
-            // Subtle rotation animation
-            const rotOffset = t * 0.15 * (1 + ratio * 0.5);
-
-            ctx.globalAlpha = a;
-            ctx.strokeStyle = `rgb(${r},${g},${b})`;
-            ctx.lineWidth = (2.5 - ratio * 1.5 + 0.5) / dpr;
-
-            ctx.beginPath();
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(rotOffset * 0.02);
-            ctx.scale(1, flatness);
-            ctx.arc(0, 0, layerR, startAngle, endAngle);
-            ctx.restore();
-            ctx.stroke();
-
-            // Bloom layer
-            if (ratio < 0.4) {
-                ctx.globalAlpha = a * 0.15;
-                ctx.lineWidth = (6 + (1 - ratio) * 8) / dpr;
-                ctx.beginPath();
-                ctx.save();
-                ctx.translate(cx, cy);
-                ctx.rotate(rotOffset * 0.02);
-                ctx.scale(1, flatness);
-                ctx.arc(0, 0, layerR, startAngle, endAngle);
-                ctx.restore();
-                ctx.stroke();
-            }
-        }
-
-        ctx.restore();
-    }
-
-    // ──── LIFECYCLE ────
     useEffect(() => {
         const canvas = canvasRef.current;
         const container = containerRef.current;
         if (!canvas || !container) return;
 
         const resize = () => {
-            const dpr = window.devicePixelRatio || 1;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for perf
             const rect = container.getBoundingClientRect();
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
             canvas.style.width = rect.width + "px";
             canvas.style.height = rect.height + "px";
-            initStars(canvas.width, canvas.height);
+
+            if (glRef.current) {
+                const { gl, uRes } = glRef.current;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                gl.uniform2f(uRes, canvas.width, canvas.height);
+            }
         };
 
+        glRef.current = initWebGL(canvas);
+        if (!glRef.current) return;
+
         resize();
-        animRef.current = requestAnimationFrame(draw);
+        startTimeRef.current = Date.now();
+
+        const render = () => {
+            if (!glRef.current) return;
+            const { gl, uTime, uRes } = glRef.current;
+
+            const t = (Date.now() - startTimeRef.current) * 0.001;
+            gl.uniform1f(uTime, t);
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            animRef.current = requestAnimationFrame(render);
+        };
+
+        animRef.current = requestAnimationFrame(render);
         window.addEventListener("resize", resize);
 
         return () => {
             window.removeEventListener("resize", resize);
             cancelAnimationFrame(animRef.current);
         };
-    }, [draw, initStars]);
+    }, []);
 
     if (isMessagesPage) return null;
 
@@ -318,7 +358,7 @@ export function Footer() {
             aria-label="Site bilgileri"
             className="relative bg-black overflow-hidden min-h-[520px] md:min-h-[620px] flex flex-col justify-end"
         >
-            {/* Canvas */}
+            {/* WebGL Canvas */}
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
             {/* Top fade */}
