@@ -170,13 +170,13 @@ export default async function Home() {
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
             <NexusStories initialStories={stories} initialGroups={groups} />
-            <LatestArticlesSlider
-              articles={formatSliderArticles(articles)}
-            />
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-3 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-0 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
+            <LatestArticlesSlider
+              articles={formatSliderArticles(articles)}
+            />
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
 

@@ -25,7 +25,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="w-full pt-2 pb-0 mb-0 mt-2">
+        <section className="w-full pt-2 pb-1 sm:pb-2 mb-0 mt-2">
             <div className="flex items-center justify-between mb-3 px-1">
                 <h2 className="text-base sm:text-base font-black uppercase tracking-tighter flex items-center gap-2">
                     <span className="w-1.5 h-5 bg-yellow-400 border-2 border-black"></span>

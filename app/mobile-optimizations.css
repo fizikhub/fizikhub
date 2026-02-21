@@ -152,7 +152,6 @@ article,
     }
 
     /* Content-visibility for off-screen sections */
-    section,
     article,
     .card,
     [class*="feed-item"] {
