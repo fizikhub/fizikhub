@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { getClientMetadata, checkContent } from "@/lib/moderation";
 
 // ============================================
 // TYPES
@@ -48,6 +49,9 @@ export async function sendMessage(conversationId: string, content: string) {
         return { success: false, error: "Message cannot be empty" };
     }
 
+    const { ip, ua } = await getClientMetadata();
+    const modResult = checkContent(content.trim());
+
     // Insert message
     const { data: message, error } = await supabase
         .from('messages')
@@ -55,7 +59,10 @@ export async function sendMessage(conversationId: string, content: string) {
             conversation_id: conversationId,
             sender_id: user.id,
             content: content.trim(),
-            is_read: false
+            is_read: false,
+            author_ip: ip,
+            user_agent: ua,
+            is_flagged: modResult.isFlagged
         })
         .select()
         .single();

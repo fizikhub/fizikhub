@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
+import { getClientMetadata, checkContent } from "@/lib/moderation";
 
 const ADMIN_EMAILS = [
     'barannnbozkurttb.b@gmail.com',
@@ -105,13 +106,20 @@ export async function createQuestion(formData: { title: string; content: string;
         return { success: false, error: "Soru sormak için giriş yapmalısınız." };
     }
 
+    // Moderation check
+    const modResult = checkContent(`${formData.title} ${formData.content}`);
+    const { ip, ua } = await getClientMetadata();
+
     const { data, error } = await supabase.from('questions').insert({
         title: formData.title,
         content: formData.content,
         category: formData.category,
         author_id: user.id,
         tags: [],
-        status: formData.status || 'published'
+        status: formData.status || 'published',
+        author_ip: ip,
+        user_agent: ua,
+        is_flagged: modResult.isFlagged
     }).select().single();
 
     if (error) {
@@ -188,10 +196,16 @@ export async function createAnswer(formData: { content: string; questionId: numb
         return { success: false, error: `Oturum hatası: ${authError?.message || "Kullanıcı bulunamadı"}` };
     }
 
+    const { ip, ua } = await getClientMetadata();
+    const modResult = checkContent(formData.content);
+
     const { data, error } = await supabase.from('answers').insert({
         content: formData.content,
         question_id: formData.questionId,
-        author_id: user.id
+        author_id: user.id,
+        author_ip: ip,
+        user_agent: ua,
+        is_flagged: modResult.isFlagged
     })
         .select(`
         *,
@@ -513,12 +527,18 @@ export async function createAnswerComment(formData: {
         return { success: false, error: "Yorum içeriği boş olamaz." };
     }
 
+    const { ip, ua } = await getClientMetadata();
+    const modResult = checkContent(formData.content);
+
     const { data, error } = await supabase
         .from('answer_comments')
         .insert({
             content: formData.content,
             answer_id: formData.answerId,
-            author_id: user.id
+            author_id: user.id,
+            author_ip: ip,
+            user_agent: ua,
+            is_flagged: modResult.isFlagged
         })
         .select(`
             *,

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { getClientMetadata } from "@/lib/moderation";
 
 export async function toggleArticleLike(articleId: number) {
     const supabase = await createClient();
@@ -29,9 +30,15 @@ export async function toggleArticleLike(articleId: number) {
         if (error) return { success: false, error: error.message };
     } else {
         // Like
+        const { ip, ua } = await getClientMetadata();
         const { error } = await supabase
             .from('article_likes')
-            .insert({ article_id: articleId, user_id: user.id });
+            .insert({
+                article_id: articleId,
+                user_id: user.id,
+                author_ip: ip,
+                user_agent: ua
+            });
 
         if (error) return { success: false, error: error.message };
 
