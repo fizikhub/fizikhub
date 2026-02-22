@@ -1,12 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import Link from "next/link";
 import Image from "next/image";
-import { Atom, Telescope, Cpu, Dna, FlaskConical, Globe } from "lucide-react";
+import { Atom, Telescope, Cpu, Dna, FlaskConical, Globe, ArrowUpRight, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { GoldenTicketCTA } from "@/components/ui/golden-ticket-cta";
+import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { useCallback, useRef, useState } from "react";
 import { type ScienceNewsItem } from "@/lib/rss";
 import { formatDistanceToNow } from "date-fns";
@@ -21,147 +23,167 @@ interface ArticleFeedProps {
 }
 
 const TOPICS = [
-    { label: 'Fizik', icon: Atom, color: '#FACC15' },
-    { label: 'Uzay', icon: Telescope, color: '#FF0080' },
-    { label: 'Teknoloji', icon: Cpu, color: '#23A9FA' },
-    { label: 'Biyoloji', icon: Dna, color: '#F472B6' },
-    { label: 'Kimya', icon: FlaskConical, color: '#4ADE80' },
-    { label: 'Genel', icon: Globe, color: '#71717a' },
+    { label: 'Fizik', icon: Atom, accent: '#FACC15' },
+    { label: 'Uzay', icon: Telescope, accent: '#FF0080' },
+    { label: 'Teknoloji', icon: Cpu, accent: '#23A9FA' },
+    { label: 'Biyoloji', icon: Dna, accent: '#F472B6' },
+    { label: 'Kimya', icon: FlaskConical, accent: '#4ADE80' },
+    { label: 'Genel', icon: Globe, accent: '#71717a' },
 ];
 
-const CATEGORY_COLORS: Record<string, string> = {
-    'Fizik': '#FACC15',
-    'Uzay': '#FF0080',
-    'Teknoloji': '#23A9FA',
-    'Biyoloji': '#F472B6',
-    'Kimya': '#4ADE80',
-    'Genel': '#71717a',
+const CAT_COLOR: Record<string, string> = {
+    Fizik: '#FACC15', Uzay: '#FF0080', Teknoloji: '#23A9FA',
+    Biyoloji: '#F472B6', Kimya: '#4ADE80', Genel: '#71717a',
 };
 
 function ago(d: string) {
     return formatDistanceToNow(new Date(d), { addSuffix: true, locale: tr });
 }
 
-function strip(html: string | null | undefined) {
+function plain(html: string | null | undefined) {
     if (!html) return "";
-    return html.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+    return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/* ─────────────────────────────────────
-   ARTICLE ROW — hover reveals image (desktop)
-   tap expands (mobile)
-───────────────────────────────────── */
-function ArticleRow({ article, index, onHover, onLeave }: {
-    article: any;
-    index: number;
-    onHover: (article: any, y: number) => void;
-    onLeave: () => void;
-}) {
-    const [expanded, setExpanded] = useState(false);
-    const rowRef = useRef<HTMLDivElement>(null);
-    const catColor = CATEGORY_COLORS[article.category] || "#71717a";
-    const preview = article.excerpt || article.summary || strip(article.content)?.slice(0, 200) + "…";
+/* ═══════════════════════════════════════
+   COVER CARD — featured article, massive
+═══════════════════════════════════════ */
+function CoverCard({ article }: { article: any }) {
+    return (
+        <Link href={`/blog/${article.slug}`} className="group block">
+            <article className={cn(
+                "relative overflow-hidden rounded-[8px]",
+                "bg-card border-3 border-border shadow-neo",
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover",
+                "transition-all duration-200"
+            )}>
+                {/* Image */}
+                <div className="relative aspect-[2/1] sm:aspect-[2.4/1] w-full border-b-3 border-border bg-primary">
+                    <OptimizedImage
+                        src={article.cover_url || article.image_url || "/images/placeholder-article.webp"}
+                        alt={article.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-    const handleMouseMove = useCallback((e: React.MouseEvent) => {
-        onHover(article, e.clientY);
-    }, [article, onHover]);
+                    {/* Category badge */}
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+                        <span className="inline-block bg-primary border-2 border-primary-foreground text-primary-foreground px-2.5 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-neo-xs -rotate-2 group-hover:rotate-0 transition-transform">
+                            {article.category || "GENEL"}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Text */}
+                <div className="p-4 sm:p-6 relative">
+                    {/* Noise */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
+                    />
+
+                    <h2 className="font-heading text-2xl sm:text-4xl md:text-5xl font-black text-card-foreground leading-[1.05] tracking-tight mb-3 uppercase">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-primary/20 group-hover:to-primary/20 transition-all duration-300">
+                            {article.title}
+                        </span>
+                    </h2>
+
+                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 max-w-2xl mb-4">
+                        {article.excerpt || article.summary || plain(article.content)?.slice(0, 180) + "…"}
+                    </p>
+
+                    <div className="flex items-center gap-3">
+                        <div className="relative w-8 h-8 flex-shrink-0 rounded-full border-2 border-border overflow-hidden shadow-neo-xs">
+                            <OptimizedAvatar
+                                src={article.author?.avatar_url || "/images/default-avatar.png"}
+                                alt={article.author?.full_name || ""}
+                                size={32}
+                                className="w-full h-full"
+                            />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-wide text-foreground">
+                            {article.author?.full_name || "Anonim"}
+                        </span>
+                        <span className="text-muted-foreground text-[10px] flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {ago(article.created_at)}
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </Link>
+    );
+}
+
+/* ═══════════════════════════════════════
+   INDEX ROW — magazine table of contents feel
+═══════════════════════════════════════ */
+function IndexRow({ article, num }: { article: any; num: number }) {
+    const [open, setOpen] = useState(false);
+    const color = CAT_COLOR[article.category] || "#71717a";
 
     return (
-        <div ref={rowRef}>
-            {/* Desktop Row */}
-            <Link
-                href={`/blog/${article.slug}`}
-                className="group hidden sm:block"
-                onMouseEnter={handleMouseMove}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={onLeave}
-            >
-                <div className="flex items-center gap-4 md:gap-6 py-5 md:py-6 border-b border-zinc-800/60 transition-colors hover:bg-zinc-900/40 px-2 -mx-2 rounded-lg">
-                    {/* Index */}
-                    <span className="text-zinc-700 font-mono text-sm w-8 text-right shrink-0 tabular-nums">
-                        {String(index + 1).padStart(2, "0")}
-                    </span>
-
-                    {/* Category dot */}
-                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: catColor }} />
-
-                    {/* Title */}
-                    <h3 className="flex-1 text-lg md:text-2xl font-black text-zinc-200 leading-tight tracking-tight group-hover:text-white transition-colors line-clamp-1 min-w-0">
-                        {article.title}
-                    </h3>
-
-                    {/* Category */}
-                    <span
-                        className="shrink-0 text-[10px] font-bold uppercase tracking-[.15em] px-2.5 py-1 rounded border border-zinc-700 transition-colors"
-                        style={{ color: catColor }}
-                    >
-                        {article.category || "Genel"}
-                    </span>
-
-                    {/* Author */}
-                    <span className="hidden lg:block shrink-0 text-xs text-zinc-500 font-medium w-28 truncate text-right">
-                        {article.author?.full_name || "Anonim"}
-                    </span>
-
-                    {/* Time */}
-                    <span className="hidden md:block shrink-0 text-[11px] text-zinc-600 w-24 text-right">
-                        {ago(article.created_at)}
-                    </span>
-                </div>
+        <div className="border-b border-border/30 last:border-b-0">
+            {/* Desktop */}
+            <Link href={`/blog/${article.slug}`} className="hidden sm:flex group items-center gap-4 py-4 px-2 -mx-2 rounded-lg hover:bg-muted/40 transition-colors">
+                <span className="font-mono text-xs text-muted-foreground w-6 text-right tabular-nums shrink-0">
+                    {String(num).padStart(2, "0")}
+                </span>
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                <h3 className="flex-1 font-heading text-base md:text-lg font-black text-foreground leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase">
+                    {article.title}
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 px-2 py-0.5 border border-border/50 rounded">
+                    {article.category || "Genel"}
+                </span>
+                <span className="hidden lg:block text-xs text-muted-foreground font-medium w-24 text-right truncate shrink-0">
+                    {article.author?.full_name}
+                </span>
+                <span className="hidden md:block text-[10px] text-muted-foreground/60 w-20 text-right shrink-0">
+                    {ago(article.created_at)}
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
             </Link>
 
-            {/* Mobile Card */}
-            <div className="sm:hidden border-b border-zinc-800/50">
-                <button
-                    onClick={() => setExpanded(!expanded)}
-                    className="w-full text-left py-4 flex items-start gap-3"
-                >
-                    <span className="text-zinc-700 font-mono text-xs mt-1 w-6 text-right shrink-0">
-                        {String(index + 1).padStart(2, "0")}
+            {/* Mobile — tap to expand */}
+            <div className="sm:hidden">
+                <button onClick={() => setOpen(!open)} className="w-full text-left py-3.5 flex items-start gap-3">
+                    <span className="font-mono text-[10px] text-muted-foreground w-5 text-right mt-0.5 shrink-0 tabular-nums">
+                        {String(num).padStart(2, "0")}
                     </span>
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                            <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: catColor }} />
-                            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: catColor }}>
-                                {article.category || "Genel"}
-                            </span>
+                        <div className="flex items-center gap-2 mb-0.5">
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color }}>{article.category}</span>
                         </div>
-                        <h3 className="text-base font-bold text-zinc-200 leading-snug pr-4">
+                        <h3 className="font-heading text-sm font-black text-foreground leading-snug uppercase tracking-tight">
                             {article.title}
                         </h3>
-                        <span className="text-[11px] text-zinc-600 mt-1 block">
+                        <span className="text-[10px] text-muted-foreground mt-0.5 block">
                             {article.author?.full_name} · {ago(article.created_at)}
                         </span>
                     </div>
-                    <motion.span
-                        animate={{ rotate: expanded ? 45 : 0 }}
-                        className="text-zinc-600 text-lg mt-1 shrink-0"
-                    >
-                        +
-                    </motion.span>
+                    <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-muted-foreground text-base mt-0.5 shrink-0">+</motion.span>
                 </button>
 
                 <AnimatePresence>
-                    {expanded && (
+                    {open && (
                         <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
                             className="overflow-hidden"
                         >
-                            <Link href={`/blog/${article.slug}`} className="block pb-4 pl-9">
+                            <Link href={`/blog/${article.slug}`} className="block pb-4 pl-8">
                                 {(article.cover_url || article.image_url) && (
-                                    <div className="relative aspect-[16/9] w-full rounded-lg overflow-hidden mb-3 border border-zinc-800">
-                                        <Image
-                                            src={article.cover_url || article.image_url}
-                                            alt={article.title} fill
-                                            className="object-cover"
-                                        />
+                                    <div className="relative aspect-[16/9] w-full rounded-[6px] overflow-hidden mb-2 border-2 border-border">
+                                        <Image src={article.cover_url || article.image_url} alt={article.title} fill className="object-cover" />
                                     </div>
                                 )}
-                                <p className="text-sm text-zinc-400 leading-relaxed line-clamp-3 mb-2">{preview}</p>
-                                <span className="text-xs font-bold text-[#FACC15]">Devamını Oku →</span>
+                                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-1.5">
+                                    {article.excerpt || article.summary || plain(article.content)?.slice(0, 160) + "…"}
+                                </p>
+                                <span className="text-[11px] font-black text-primary uppercase tracking-wide">Oku →</span>
                             </Link>
                         </motion.div>
                     )}
@@ -171,104 +193,52 @@ function ArticleRow({ article, index, onHover, onLeave }: {
     );
 }
 
-/* ─────────────────────────────────────
-   FLOATING IMAGE PREVIEW (desktop only)
-───────────────────────────────────── */
-function FloatingPreview({ article, mouseY }: { article: any | null; mouseY: number }) {
-    if (!article) return null;
-    const imgSrc = article.cover_url || article.image_url;
-    if (!imgSrc) return null;
-
-    return (
-        <AnimatePresence>
-            {article && (
-                <motion.div
-                    key={article.id}
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.92 }}
-                    transition={{ duration: 0.2 }}
-                    className="fixed right-8 lg:right-16 z-50 pointer-events-none hidden sm:block"
-                    style={{ top: Math.max(100, Math.min(mouseY - 120, window.innerHeight - 320)) }}
-                >
-                    <div className="w-[280px] lg:w-[340px] rounded-xl overflow-hidden border-[3px] border-black shadow-[8px_8px_0px_0px_#000] bg-zinc-900">
-                        <div className="relative aspect-[16/10]">
-                            <Image src={imgSrc} alt={article.title} fill className="object-cover" />
-                        </div>
-                        <div className="p-3 bg-zinc-950">
-                            <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-                                {article.excerpt || article.summary || strip(article.content)?.slice(0, 100) + "…"}
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
-}
-
-/* ─────────────────────────────────────
+/* ═══════════════════════════════════════
    MAIN FEED
-───────────────────────────────────── */
+═══════════════════════════════════════ */
 export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems }: ArticleFeedProps) {
-    const [hoveredArticle, setHoveredArticle] = useState<any>(null);
-    const [mouseY, setMouseY] = useState(0);
-
-    const handleHover = useCallback((article: any, y: number) => {
-        setHoveredArticle(article);
-        setMouseY(y);
-    }, []);
-
-    const handleLeave = useCallback(() => {
-        setHoveredArticle(null);
-    }, []);
-
-    const lead = !activeCategory && sortParam === "latest" ? articles[0] : null;
-    const list = !activeCategory && sortParam === "latest" ? articles.slice(1) : articles;
+    const isDefault = !activeCategory && sortParam === "latest";
+    const cover = isDefault && articles.length > 0 ? articles[0] : null;
+    const duo = isDefault ? articles.slice(1, 3) : [];
+    const rest = isDefault ? articles.slice(3) : articles;
 
     return (
-        <main className="min-h-screen bg-zinc-950 text-white">
-            <FloatingPreview article={hoveredArticle} mouseY={mouseY} />
+        <main className="min-h-screen bg-background text-foreground">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-10 sm:pb-16">
 
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-14 sm:pb-20">
-
-                {/* MASTHEAD */}
-                <div className="mb-6 sm:mb-10">
-                    <h1 className="text-5xl sm:text-8xl md:text-9xl font-black tracking-tighter leading-none text-white uppercase">
-                        Makaleler
-                    </h1>
-                    <div className="flex items-center gap-3 mt-3">
-                        <div className="h-1 w-12 bg-[#FACC15] rounded-full" />
-                        <p className="text-zinc-600 text-xs sm:text-sm font-medium">
-                            {articles.length} yazı · Bilimin nabzı
-                        </p>
-                    </div>
+                {/* ▬ HEADER ▬ */}
+                <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter leading-none uppercase mb-2">
+                    Makaleler
+                </h1>
+                <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                    <div className="h-1 w-10 bg-primary rounded-full" />
+                    <p className="text-muted-foreground text-xs sm:text-sm">{articles.length} yazı</p>
                 </div>
 
-                {/* FILTERS */}
-                <div className="flex items-center gap-2 mb-8 sm:mb-12 overflow-x-auto scrollbar-hide pb-1">
+                {/* ▬ CATEGORY PILLS ▬ */}
+                <div className="flex flex-wrap items-center gap-2 mb-8 sm:mb-10">
                     <Link
                         href="/makale"
                         className={cn(
-                            "shrink-0 px-3.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider border-2 transition-all",
+                            "px-3 py-1.5 rounded-[6px] text-[11px] font-black uppercase tracking-wider border-2 border-border transition-all",
                             !activeCategory
-                                ? "bg-white text-black border-black shadow-[2px_2px_0px_0px_#000]"
-                                : "border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300"
+                                ? "bg-primary text-primary-foreground shadow-neo-xs"
+                                : "bg-card text-muted-foreground hover:bg-muted"
                         )}
                     >
-                        Hepsi
+                        Tümü
                     </Link>
                     {TOPICS.map(t => (
                         <Link
                             key={t.label}
                             href={`/makale?category=${t.label}`}
                             className={cn(
-                                "shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider border-2 transition-all",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[11px] font-black uppercase tracking-wider border-2 border-border transition-all",
                                 activeCategory === t.label
-                                    ? "text-black border-black shadow-[2px_2px_0px_0px_#000]"
-                                    : "border-zinc-800 text-zinc-500 hover:border-zinc-600 hover:text-zinc-300"
+                                    ? "shadow-neo-xs text-primary-foreground"
+                                    : "bg-card text-muted-foreground hover:bg-muted"
                             )}
-                            style={activeCategory === t.label ? { backgroundColor: t.color } : {}}
+                            style={activeCategory === t.label ? { backgroundColor: t.accent, borderColor: 'hsl(var(--border))' } : {}}
                         >
                             <t.icon className="w-3 h-3" />
                             {t.label}
@@ -276,81 +246,56 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     ))}
                 </div>
 
-                {/* COVER STORY */}
-                {lead && (
-                    <Link href={`/blog/${lead.slug}`} className="group block mb-10 sm:mb-14">
-                        <article className="relative rounded-2xl overflow-hidden border-[3px] border-black shadow-[6px_6px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-200">
-                            <div className="relative aspect-[21/9] sm:aspect-[2.5/1] w-full bg-zinc-900">
-                                <Image
-                                    src={lead.cover_url || lead.image_url || "/images/placeholder-hero.jpg"}
-                                    alt={lead.title} fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                    priority
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[.2em] text-[#FACC15]/80">{lead.category}</span>
-                                </div>
-                                <h2 className="text-xl sm:text-4xl md:text-5xl font-black leading-[1] tracking-tight text-white group-hover:text-[#FACC15] transition-colors max-w-3xl mb-3">
-                                    {lead.title}
-                                </h2>
-                                <div className="flex items-center gap-2">
-                                    {lead.author?.avatar_url && (
-                                        <Image src={lead.author.avatar_url} alt="" width={24} height={24}
-                                            className="rounded-full border border-zinc-600 w-6 h-6 object-cover" />
-                                    )}
-                                    <span className="text-zinc-300 text-[11px] font-medium">{lead.author?.full_name}</span>
-                                    <span className="text-zinc-700">·</span>
-                                    <span className="text-zinc-500 text-[10px]">{ago(lead.created_at)}</span>
-                                </div>
-                            </div>
-                        </article>
-                    </Link>
+                {/* ▬ COVER ▬ */}
+                {cover && <div className="mb-8 sm:mb-10"><CoverCard article={cover} /></div>}
+
+                {/* ▬ DUO ROW ▬ */}
+                {duo.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-8 sm:mb-10">
+                        {duo.map(a => <NeoArticleCard key={a.id} article={a} />)}
+                    </div>
                 )}
 
-                {/* NEWS */}
+                {/* ▬ NEWS TICKER ▬ */}
                 {!activeCategory && newsItems.length > 0 && (
-                    <div className="mb-10 sm:mb-14 rounded-lg border border-zinc-800/60 overflow-hidden">
+                    <div className="mb-8 sm:mb-10 rounded-[6px] border-2 border-border overflow-hidden shadow-neo-xs">
                         <TrendingMarquee items={newsItems} />
                     </div>
                 )}
 
-                {/* INTERACTIVE ARTICLE INDEX */}
-                <section>
-                    <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                        <h2 className="text-xs font-bold uppercase tracking-[.2em] text-zinc-500">
-                            {activeCategory ? `${activeCategory} — Arşiv` : "İçindekiler"}
-                        </h2>
-                        <div className="h-px flex-1 bg-zinc-800" />
-                        <span className="text-[10px] text-zinc-700 font-mono">{list.length} yazı</span>
-                    </div>
+                {/* ▬ İÇİNDEKİLER / ARTICLE INDEX ▬ */}
+                {rest.length > 0 && (
+                    <section className="mb-10 sm:mb-14">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="w-5 h-1 bg-foreground rounded-full" />
+                            <h2 className="text-xs font-black uppercase tracking-[.2em] text-muted-foreground">
+                                {activeCategory ? `${activeCategory} Arşivi` : "İçindekiler"}
+                            </h2>
+                            <div className="h-px flex-1 bg-border/30" />
+                        </div>
 
-                    {list.length > 0 ? (
-                        <div>
-                            {list.map((article, i) => (
-                                <ArticleRow
+                        <div className="border-t border-border/30">
+                            {rest.map((article, i) => (
+                                <IndexRow
                                     key={article.id}
                                     article={article}
-                                    index={lead ? i + 1 : i}
-                                    onHover={handleHover}
-                                    onLeave={handleLeave}
+                                    num={cover ? i + 4 : i + 1}
                                 />
                             ))}
                         </div>
-                    ) : (
-                        <div className="py-16 text-center border border-dashed border-zinc-800 rounded-xl">
-                            <p className="text-zinc-600 text-sm mb-2">Bu kategoride henüz yazı yok.</p>
-                            <Link href="/makale" className="text-sm text-[#FACC15] hover:underline font-medium">
-                                Tüm yazılara dön →
-                            </Link>
-                        </div>
-                    )}
-                </section>
+                    </section>
+                )}
 
-                {/* CTA */}
-                <div className="mt-14 sm:mt-20">
+                {/* Empty state */}
+                {articles.length === 0 && (
+                    <div className="py-16 text-center border-2 border-dashed border-border rounded-[8px] bg-card">
+                        <p className="text-muted-foreground text-sm mb-2">Henüz içerik yok.</p>
+                        <Link href="/makale" className="text-sm text-primary hover:underline font-black uppercase">Tüm yazılar →</Link>
+                    </div>
+                )}
+
+                {/* ▬ CTA ▬ */}
+                <div className="mt-10 sm:mt-14">
                     <GoldenTicketCTA />
                 </div>
             </div>
