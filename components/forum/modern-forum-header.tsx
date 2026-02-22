@@ -75,13 +75,16 @@ export function ModernForumHeader() {
 
     const categories = [
         "Tümü",
-        "Kuantum Fiziği",
+        "Fizik",
+        "Kuantum",
         "Astrofizik",
-        "Termodinamik",
         "Mekanik",
-        "Elektromanyetizma",
-        "Genel Görelilik",
-        "Parçacık Fiziği"
+        "Termodinamik",
+        "Biyoloji",
+        "Kimya",
+        "Matematik",
+        "Edebiyat",
+        "Felsefe",
     ];
 
     const handleSearch = (e: React.FormEvent) => {
