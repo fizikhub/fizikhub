@@ -409,8 +409,8 @@ export function Footer() {
                 </div>
             </div>
 
-            {/* COPYRIGHT BAR — compact, with DankLogo */}
-            <div className="relative z-40 w-full border-t border-white/[0.06] bg-black/60 backdrop-blur-sm pb-2 pt-3">
+            {/* COPYRIGHT BAR — Desktop only, mobile handled by BottomNav */}
+            <div className="hidden md:block relative z-40 w-full border-t border-white/[0.06] bg-black/60 backdrop-blur-sm pb-4 pt-3 mt-auto">
                 <div className="container flex flex-col items-center justify-center gap-1.5 text-center">
                     <div className="scale-[0.55] origin-center -my-2">
                         <DankLogo />
