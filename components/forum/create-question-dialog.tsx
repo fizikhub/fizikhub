@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -46,12 +46,19 @@ const CATEGORY_GROUPS = [
 
 interface CreateQuestionDialogProps {
     trigger?: React.ReactNode;
+    defaultOpen?: boolean;
 }
 
-export function CreateQuestionDialog({ trigger }: CreateQuestionDialogProps) {
-    const [open, setOpen] = useState(false);
+export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQuestionDialogProps) {
+    const [open, setOpen] = useState(defaultOpen);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1); // 1: Category, 2: Details
+
+    useEffect(() => {
+        if (defaultOpen) {
+            setOpen(true);
+        }
+    }, [defaultOpen]);
     const [formData, setFormData] = useState({
         title: "",
         content: "",

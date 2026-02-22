@@ -230,7 +230,7 @@ export default function PaylasPage() {
                     <FreshCard
                         title="SORU"
                         description="Topluluğa danış."
-                        href="/forum"
+                        href="/forum?create=true"
                         icon={MessageCircle}
                         color="bg-[#FB7185]"
                         accentColor="#FB7185"
@@ -240,7 +240,7 @@ export default function PaylasPage() {
                     <FreshCard
                         title="DENEY"
                         description="Sonuçları aktar."
-                        href="/deney/yeni"
+                        href="/makale/yeni?type=experiment"
                         icon={FlaskConical}
                         color="bg-[#4ADE80]"
                         accentColor="#4ADE80"
@@ -260,7 +260,7 @@ export default function PaylasPage() {
                     <FreshCard
                         title="TERİM"
                         description="Sözlüğe katkı sağla."
-                        href="/sozluk"
+                        href="/makale/yeni?type=term"
                         icon={BookOpen}
                         color="bg-[#C084FC]"
                         accentColor="#C084FC"
@@ -270,7 +270,7 @@ export default function PaylasPage() {
                     <FreshCard
                         title="BLOG"
                         description="Serbest yazı."
-                        href="/blog"
+                        href="/makale/yeni?type=blog"
                         icon={FileText}
                         color="bg-orange-400"
                         accentColor="#fb923c"

@@ -316,6 +316,7 @@ export function ModernForumHeader() {
                     {/* Input Trigger (Chalk Panel Style) */}
                     <div className="w-full md:max-w-xl">
                         <CreateQuestionDialog
+                            defaultOpen={searchParams.get("create") === "true"}
                             trigger={
                                 <div className={cn(
                                     "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
