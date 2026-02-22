@@ -349,70 +349,68 @@ export function Footer() {
 
             {/* LINK SECTIONS — glass backdrop for visibility */}
             <div className="container relative z-30 py-10 md:py-14">
-                <div className="relative rounded-2xl backdrop-blur-md bg-black/40 border border-white/[0.06] p-6 md:p-10">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 text-center md:text-left w-full max-w-4xl mx-auto">
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
-                                <div className="w-1.5 h-5 bg-blue-400 rounded-full shadow-[0_0_12px_rgba(96,165,250,0.7)]" />
-                                <h4 className="text-sm font-extrabold text-blue-200 uppercase tracking-widest"
-                                    style={{ textShadow: '0 0 20px rgba(96,165,250,0.4)' }}>
-                                    Keşif Modülü
-                                </h4>
-                            </div>
-                            <nav aria-label="Keşif bağlantıları" className="flex flex-col gap-2.5">
-                                <Link href="/kesfet" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Keşfet</Link>
-                                <Link href="/testler" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Testler</Link>
-                                <Link href="/sozluk" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Sözlük</Link>
-                            </nav>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 text-center md:text-left w-full max-w-4xl mx-auto">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
+                            <div className="w-1.5 h-5 bg-blue-400 rounded-full shadow-[0_0_12px_rgba(96,165,250,0.7)]" />
+                            <h4 className="text-sm font-extrabold text-blue-200 uppercase tracking-widest"
+                                style={{ textShadow: '0 0 20px rgba(96,165,250,0.4)' }}>
+                                Keşif Modülü
+                            </h4>
                         </div>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
-                                <div className="w-1.5 h-5 bg-purple-400 rounded-full shadow-[0_0_12px_rgba(192,132,252,0.7)]" />
-                                <h4 className="text-sm font-extrabold text-purple-200 uppercase tracking-widest"
-                                    style={{ textShadow: '0 0 20px rgba(192,132,252,0.4)' }}>
-                                    Topluluk
-                                </h4>
-                            </div>
-                            <nav className="flex flex-col gap-2.5">
-                                <Link href="/forum" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Forum</Link>
-                                <Link href="/siralamalar" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Sıralamalar</Link>
-                                <Link href="/yazar" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Yazarlar</Link>
-                            </nav>
+                        <nav aria-label="Keşif bağlantıları" className="flex flex-col gap-2.5">
+                            <Link href="/kesfet" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Keşfet</Link>
+                            <Link href="/testler" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Testler</Link>
+                            <Link href="/sozluk" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Sözlük</Link>
+                        </nav>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
+                            <div className="w-1.5 h-5 bg-purple-400 rounded-full shadow-[0_0_12px_rgba(192,132,252,0.7)]" />
+                            <h4 className="text-sm font-extrabold text-purple-200 uppercase tracking-widest"
+                                style={{ textShadow: '0 0 20px rgba(192,132,252,0.4)' }}>
+                                Topluluk
+                            </h4>
                         </div>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
-                                <div className="w-1.5 h-5 bg-green-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,0.7)]" />
-                                <h4 className="text-sm font-extrabold text-green-200 uppercase tracking-widest"
-                                    style={{ textShadow: '0 0 20px rgba(74,222,128,0.4)' }}>
-                                    Kurumsal
-                                </h4>
-                            </div>
-                            <nav className="flex flex-col gap-2.5">
-                                <Link href="/hakkimizda" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Hakkımızda</Link>
-                                <Link href="/iletisim" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">İletişim</Link>
-                                <Link href="/blog" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Blog</Link>
-                            </nav>
+                        <nav className="flex flex-col gap-2.5">
+                            <Link href="/forum" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Forum</Link>
+                            <Link href="/siralamalar" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Sıralamalar</Link>
+                            <Link href="/yazar" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Yazarlar</Link>
+                        </nav>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
+                            <div className="w-1.5 h-5 bg-green-400 rounded-full shadow-[0_0_12px_rgba(74,222,128,0.7)]" />
+                            <h4 className="text-sm font-extrabold text-green-200 uppercase tracking-widest"
+                                style={{ textShadow: '0 0 20px rgba(74,222,128,0.4)' }}>
+                                Kurumsal
+                            </h4>
                         </div>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
-                                <div className="w-1.5 h-5 bg-red-400 rounded-full shadow-[0_0_12px_rgba(248,113,113,0.7)]" />
-                                <h4 className="text-sm font-extrabold text-red-200 uppercase tracking-widest"
-                                    style={{ textShadow: '0 0 20px rgba(248,113,113,0.4)' }}>
-                                    Protokoller
-                                </h4>
-                            </div>
-                            <nav className="flex flex-col gap-2.5">
-                                <Link href="/gizlilik-politikasi" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Gizlilik</Link>
-                                <Link href="/kullanim-sartlari" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Şartlar</Link>
-                                <Link href="/kvkk" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">KVKK</Link>
-                            </nav>
+                        <nav className="flex flex-col gap-2.5">
+                            <Link href="/hakkimizda" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Hakkımızda</Link>
+                            <Link href="/iletisim" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">İletişim</Link>
+                            <Link href="/blog" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Blog</Link>
+                        </nav>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-center md:justify-start gap-2.5 mb-1">
+                            <div className="w-1.5 h-5 bg-red-400 rounded-full shadow-[0_0_12px_rgba(248,113,113,0.7)]" />
+                            <h4 className="text-sm font-extrabold text-red-200 uppercase tracking-widest"
+                                style={{ textShadow: '0 0 20px rgba(248,113,113,0.4)' }}>
+                                Protokoller
+                            </h4>
                         </div>
+                        <nav className="flex flex-col gap-2.5">
+                            <Link href="/gizlilik-politikasi" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Gizlilik</Link>
+                            <Link href="/kullanim-sartlari" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">Şartlar</Link>
+                            <Link href="/kvkk" className="text-sm text-zinc-300 hover:text-yellow-400 transition-all duration-300 hover:translate-x-1.5 font-medium">KVKK</Link>
+                        </nav>
                     </div>
                 </div>
             </div>
 
             {/* COPYRIGHT BAR — compact, with DankLogo */}
-            <div className="relative z-40 w-full border-t border-white/[0.06] bg-black/60 backdrop-blur-sm pb-5 pt-3">
+            <div className="relative z-40 w-full border-t border-white/[0.06] bg-black/60 backdrop-blur-sm pb-2 pt-3">
                 <div className="container flex flex-col items-center justify-center gap-1.5 text-center">
                     <div className="scale-[0.55] origin-center -my-2">
                         <DankLogo />
