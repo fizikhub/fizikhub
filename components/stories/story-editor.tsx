@@ -25,7 +25,6 @@ interface TextLayer {
     fontSize: number;
     color: string;
     rotation: number;
-    nodeRef?: React.RefObject<HTMLDivElement>;
 }
 
 interface StickerLayer {
@@ -35,7 +34,34 @@ interface StickerLayer {
     y: number;
     scale: number;
     rotation: number;
-    nodeRef?: React.RefObject<HTMLDivElement>;
+}
+
+// Sub-components to fix react-draggable StrictMode ref tearing
+function DraggableTextItem({ layer, isSelected, onSelect, onStop }: { layer: TextLayer, isSelected: boolean, onSelect: () => void, onStop: (data: { x: number, y: number }) => void }) {
+    const nodeRef = useRef<HTMLDivElement>(null);
+    return (
+        <Draggable
+            nodeRef={nodeRef}
+            position={{ x: layer.x, y: layer.y }}
+            onStop={(e, data) => onStop(data)}
+            onStart={onSelect}
+            bounds="parent"
+        >
+            <div
+                ref={nodeRef}
+                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-all ${isSelected ? 'border-[#FFC800] bg-black/30 backdrop-blur-sm' : 'border-transparent'}`}
+                style={{
+                    color: layer.color,
+                    fontSize: `${layer.fontSize}px`,
+                    fontFamily: 'var(--font-outfit)',
+                    fontWeight: 900,
+                    transform: `rotate(${layer.rotation}deg)`
+                }}
+            >
+                {layer.text}
+            </div>
+        </Draggable>
+    );
 }
 
 interface StoryGroup {
@@ -240,8 +266,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                     x: 100,
                     y: 300,
                     scale: 1,
-                    rotation: 0,
-                    nodeRef: React.createRef<HTMLDivElement>() as React.RefObject<HTMLDivElement>
+                    rotation: 0
                 };
                 setStickerLayers([...stickerLayers, newSticker]);
                 setSelectedId(newSticker.id);
@@ -260,8 +285,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
             y: rect.height / 2 - 20,
             fontSize: 32,
             color: "#ffffff",
-            rotation: 0,
-            nodeRef: React.createRef<HTMLDivElement>() as React.RefObject<HTMLDivElement>
+            rotation: 0
         };
         setTextLayers([...textLayers, newLayer]);
         setSelectedId(newLayer.id);
@@ -406,28 +430,13 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
                     {/* LAYERS RENDER */}
                     {textLayers.map(layer => (
-                        <Draggable
+                        <DraggableTextItem
                             key={layer.id}
-                            nodeRef={layer.nodeRef}
-                            position={{ x: layer.x, y: layer.y }}
-                            onStop={(e, data) => updateTextLayer(layer.id, { x: data.x, y: data.y })}
-                            onStart={() => setSelectedId(layer.id)}
-                            bounds="parent"
-                        >
-                            <div
-                                ref={layer.nodeRef}
-                                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-all ${selectedId === layer.id ? 'border-[#FFC800] bg-black/30 backdrop-blur-sm' : 'border-transparent'}`}
-                                style={{
-                                    color: layer.color,
-                                    fontSize: `${layer.fontSize}px`,
-                                    fontFamily: 'var(--font-outfit)',
-                                    fontWeight: 900,
-                                    transform: `rotate(${layer.rotation}deg)`
-                                }}
-                            >
-                                {layer.text}
-                            </div>
-                        </Draggable>
+                            layer={layer}
+                            isSelected={selectedId === layer.id}
+                            onSelect={() => setSelectedId(layer.id)}
+                            onStop={(data) => updateTextLayer(layer.id, { x: data.x, y: data.y })}
+                        />
                     ))}
                 </div>
 

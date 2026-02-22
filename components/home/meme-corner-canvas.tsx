@@ -377,12 +377,11 @@ export default function MemeCornerCanvas() {
                 <NebulaClouds />
             </group>
 
-            <EffectComposer enableNormalPass={false}>
+            <EffectComposer enableNormalPass={false} multisampling={8}>
                 <Bloom
                     luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
-                    mipmapBlur
-                    intensity={1.1}
-                    radius={0.4} // Sharper glow
+                    intensity={1.0}
+                    radius={0.2} // Sharper glow
                 />
             </EffectComposer>
         </Canvas>

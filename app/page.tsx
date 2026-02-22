@@ -100,12 +100,14 @@ const getCachedFeedData = unstable_cache(
       suggestedUsers: profilesResult.data || [],
       // Map stories to match NexusStories expected format temporarily or update component to handle both
       stories: (storiesResult?.data || []).map((s: any) => ({
+        id: s.id,
         name: s.title || "Hikaye",
         image: s.media_url,
         href: "#",
         color: "from-purple-500 to-pink-500", // Default gradient for now
         content: s.content || "", // Empty if no content
         author: s.author?.username || "FizikHub",
+        author_id: s.author_id,
         isDynamic: true, // Flag to distinguish
         group_id: s.group_id,
         category: s.category
