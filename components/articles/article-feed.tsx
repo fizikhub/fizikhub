@@ -71,7 +71,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
     }, [mousePos, cursorX, cursorY]);
 
     return (
-        <div className="min-h-screen bg-[#f4f4f0] dark:bg-[#121212] pt-20 sm:pt-28 pb-10 overflow-hidden text-black dark:text-white">
+        <div className="min-h-screen pt-20 sm:pt-28 pb-10 overflow-hidden text-black dark:text-white">
 
             {/* FLOATING IMAGE REVEAL (DESKTOP ONLY) */}
             <div className="hidden lg:block pointer-events-none fixed inset-0 z-50 overflow-hidden">
@@ -88,7 +88,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                 translateX: "-50%",
                                 translateY: "-50%",
                             }}
-                            className="absolute w-[300px] h-[200px] border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-sm overflow-hidden"
+                            className="absolute w-[260px] h-[180px] border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-sm overflow-hidden"
                         >
                             <Image
                                 src={hoveredArticle}
@@ -104,9 +104,9 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
 
                 {/* MAGAZINE HEADER (APP-LIKE BRUTALISM) */}
-                <header className="mb-10 sm:mb-16 border-b-4 border-black dark:border-white pb-6 relative">
+                <header className="mb-8 sm:mb-12 border-b-2 border-black dark:border-white pb-4 relative">
                     <div className="absolute top-0 right-0 opacity-10 pointer-events-none translate-x-1/4 -translate-y-1/2">
-                        <Sparkles className="w-64 h-64" />
+                        <Sparkles className="w-48 h-48" />
                     </div>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -114,16 +114,16 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10"
                     >
                         <div>
-                            <div className="inline-block bg-[#FFC800] text-black font-black uppercase text-xs sm:text-sm px-3 py-1 border-2 border-black shadow-[4px_4px_0px_0px_#000] rotate-[-2deg] mb-4">
+                            <div className="inline-block bg-[#FFC800] text-black font-black uppercase text-xs sm:text-sm px-3 py-1 border-2 border-black shadow-[3px_3px_0px_0px_#000] rotate-[-2deg] mb-3">
                                 GÜNLÜK YAYIN
                             </div>
-                            <h1 className="font-heading text-6xl sm:text-8xl md:text-9xl font-black tracking-tighter uppercase leading-[0.85] text-black dark:text-white" style={{ textShadow: '4px 4px 0px rgba(0,0,0,0.1)' }}>
+                            <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter uppercase leading-[0.85] text-black dark:text-white" style={{ textShadow: '2px 2px 0px rgba(0,0,0,0.1)' }}>
                                 MAGAZINE<span className="text-[#FF0080]">.</span>
                             </h1>
                         </div>
 
                         <div className="flex flex-col gap-3 md:items-end">
-                            <p className="max-w-xs text-sm sm:text-base font-bold leading-tight md:text-right border-l-4 md:border-l-0 md:border-r-4 border-[#23A9FA] pl-3 md:pl-0 md:pr-3">
+                            <p className="max-w-xs text-sm font-bold leading-tight md:text-right border-l-2 md:border-l-0 md:border-r-2 border-[#23A9FA] pl-3 md:pl-0 md:pr-3">
                                 Bilim, teknoloji ve evrenin sınırlarında dolaşan {articles.length} makale.
                             </p>
 
@@ -134,7 +134,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                         key={s.value}
                                         href={`/makale?sort=${s.value}${activeCategory ? `&category=${activeCategory}` : ''}`}
                                         className={cn(
-                                            "flex items-center gap-1.5 px-4 py-2 rounded-full font-black text-xs uppercase transition-all",
+                                            "flex items-center gap-1.5 px-4 py-1.5 rounded-full font-black text-[11px] uppercase transition-all",
                                             sortParam === s.value
                                                 ? "bg-[#00F050] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]"
                                                 : "text-zinc-500 hover:text-black dark:hover:text-white"
@@ -150,18 +150,18 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                 </header>
 
                 {/* CATEGORIES / FILTER CAROUSEL */}
-                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-6 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x">
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-4 mb-6 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x">
                     <Link
                         href="/makale"
                         className={cn(
-                            "snap-start relative flex flex-col items-center justify-center min-w-[100px] h-[100px] border-3 rounded-2xl font-black transition-all active:scale-95 group",
+                            "snap-start relative flex flex-col items-center justify-center min-w-[90px] h-[90px] border-2 rounded-xl font-black transition-all active:scale-95 group",
                             !activeCategory
-                                ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
-                                : "bg-white dark:bg-zinc-900 text-black dark:text-white border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1"
+                                ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"
+                                : "bg-white dark:bg-zinc-900 text-black dark:text-white border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1"
                         )}
                     >
-                        <Globe className={cn("w-8 h-8 mb-2 stroke-[2px]", !activeCategory ? "animate-spin-slow" : "group-hover:rotate-12 transition-transform")} />
-                        <span className="text-xs uppercase tracking-widest">Hepsi</span>
+                        <Globe className={cn("w-6 h-6 mb-1.5 stroke-[2px]", !activeCategory ? "animate-spin-slow" : "group-hover:rotate-12 transition-transform")} />
+                        <span className="text-[10px] uppercase tracking-widest">Hepsi</span>
                     </Link>
 
                     {TOPICS.map((t, i) => (
@@ -169,24 +169,24 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                             key={t.label}
                             href={`/makale?category=${t.label}`}
                             className={cn(
-                                "snap-start relative flex flex-col items-center justify-center min-w-[100px] h-[100px] border-3 border-black dark:border-white rounded-2xl font-black transition-all active:scale-95 group",
+                                "snap-start relative flex flex-col items-center justify-center min-w-[90px] h-[90px] border-2 border-black dark:border-white rounded-xl font-black transition-all active:scale-95 group",
                                 activeCategory === t.label
-                                    ? "text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -translate-y-1"
-                                    : "bg-white dark:bg-zinc-900 text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1"
+                                    ? "text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] -translate-y-1"
+                                    : "bg-white dark:bg-zinc-900 text-black dark:text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1"
                             )}
                             style={activeCategory === t.label ? { backgroundColor: t.accent, transform: `rotate(${t.rotation}) translateY(-4px)` } : {}}
                         >
-                            <div className={cn("p-2 rounded-full mb-1 border-2 border-black", activeCategory === t.label ? "bg-white" : "bg-black dark:bg-white text-white dark:text-black")} style={activeCategory !== t.label ? { backgroundColor: t.accent } : {}}>
-                                <t.icon className={cn("w-5 h-5 stroke-[2.5px]", activeCategory === t.label ? "text-black" : "text-black")} />
+                            <div className={cn("p-1.5 rounded-full mb-1 border-2 border-black", activeCategory === t.label ? "bg-white" : "bg-black dark:bg-white text-white dark:text-black")} style={activeCategory !== t.label ? { backgroundColor: t.accent } : {}}>
+                                <t.icon className={cn("w-4 h-4 stroke-[2.5px]", activeCategory === t.label ? "text-black" : "text-black")} />
                             </div>
-                            <span className="text-[10px] uppercase tracking-wider">{t.label}</span>
+                            <span className="text-[9px] uppercase tracking-wider">{t.label}</span>
                         </Link>
                     ))}
                 </div>
 
                 {/* NEWS TICKER */}
                 {!activeCategory && newsItems.length > 0 && (
-                    <div className="mb-12 border-4 border-black dark:border-white bg-[#FFC800] text-black font-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rotate-[-1deg] hover:rotate-0 transition-transform duration-300">
+                    <div className="mb-10 border-2 border-black dark:border-white bg-[#FFC800] text-black font-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rotate-[-1deg] hover:rotate-0 transition-transform duration-300">
                         <TrendingMarquee items={newsItems} />
                     </div>
                 )}
@@ -197,8 +197,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
 
                             {/* HERO ARTICLE - LEFT SIDE */}
-                            <div className="lg:col-span-7 h-[500px] sm:h-[600px] lg:h-[700px] group">
-                                <ViewTransitionLink href={`/blog/${featured[0].slug}`} className="block w-full h-full relative border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] overflow-hidden bg-zinc-900">
+                            <div className="lg:col-span-7 h-[400px] sm:h-[480px] lg:h-[560px] group">
+                                <ViewTransitionLink href={`/blog/${featured[0].slug}`} className="block w-full h-full relative border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] overflow-hidden bg-zinc-900">
                                     <Image
                                         src={featured[0].cover_url || featured[0].image_url || "/images/placeholder-article.webp"}
                                         alt={featured[0].title}
@@ -291,15 +291,15 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
 
                 {/* THE EDITORIAL LIST (ALL OTHER ARTICLES) */}
                 <section>
-                    <div className="flex items-center justify-between border-b-4 border-black dark:border-white pb-2 mb-8">
-                        <h2 className="font-heading font-black text-3xl sm:text-5xl uppercase tracking-tighter">İndeks</h2>
-                        <span className="bg-black dark:bg-white text-white dark:text-black font-black text-xl px-4 py-1 rounded-full uppercase">
+                    <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-6">
+                        <h2 className="font-heading font-black text-2xl sm:text-4xl uppercase tracking-tighter">İndeks</h2>
+                        <span className="bg-black dark:bg-white text-white dark:text-black font-black text-base px-3 py-1 rounded-full uppercase">
                             {restArticles.length} Yazı
                         </span>
                     </div>
 
                     {restArticles.length > 0 ? (
-                        <div className="flex flex-col border-b-4 border-black dark:border-white">
+                        <div className="flex flex-col border-b-2 border-black dark:border-white">
                             {restArticles.map((article, i) => (
                                 <div
                                     key={article.id}
@@ -308,29 +308,29 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                 >
                                     <ViewTransitionLink
                                         href={`/blog/${article.slug}`}
-                                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-4 border-black dark:border-white py-6 sm:py-8 hover:bg-[#FFC800] dark:hover:bg-[#FFC800] dark:hover:text-black transition-colors px-4 -mx-4 sm:mx-0 sm:px-4 cursor-pointer"
+                                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t-2 border-black dark:border-white py-4 sm:py-6 hover:bg-[#FFC800] dark:hover:bg-[#FFC800] dark:hover:text-black transition-colors px-4 -mx-4 sm:mx-0 sm:px-4 cursor-pointer"
                                     >
-                                        <div className="flex items-start gap-4 sm:gap-8 flex-1">
-                                            <div className="font-heading font-black text-3xl sm:text-5xl text-black/20 dark:text-white/20 group-hover:text-black/40 min-w-[50px]">
+                                        <div className="flex items-start gap-3 sm:gap-6 flex-1">
+                                            <div className="font-heading font-black text-2xl sm:text-4xl text-black/20 dark:text-white/20 group-hover:text-black/40 min-w-[40px]">
                                                 {(i + 1).toString().padStart(2, '0')}
                                             </div>
                                             <div className="flex-1">
-                                                <div className="flex flex-wrap items-center gap-2 mb-2">
-                                                    <span className="font-black text-[10px] sm:text-xs uppercase border-2 border-black px-2 py-0.5 rounded-full bg-white text-black">
+                                                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                                                    <span className="font-black text-[9px] sm:text-[10px] uppercase border-[1.5px] border-black px-2 py-0.5 rounded-full bg-white text-black">
                                                         {article.category}
                                                     </span>
-                                                    <span className="font-bold text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 group-hover:text-black/70">
+                                                    <span className="font-bold text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 group-hover:text-black/70">
                                                         {ago(article.created_at)}
                                                     </span>
                                                 </div>
-                                                <h3 className="font-heading font-black text-2xl sm:text-4xl uppercase leading-tight tracking-tight">
+                                                <h3 className="font-heading font-black text-lg sm:text-2xl uppercase leading-tight tracking-tight">
                                                     {article.title}
                                                 </h3>
                                             </div>
                                         </div>
 
                                         {/* Mobile Only Thumbnail (Since float image is hidden on mobile) */}
-                                        <div className="block lg:hidden w-full h-48 sm:w-48 sm:h-32 relative border-4 border-black rounded-lg overflow-hidden shrink-0 mt-4 sm:mt-0">
+                                        <div className="block lg:hidden w-full h-36 sm:w-40 sm:h-28 relative border-2 border-black rounded-lg overflow-hidden shrink-0 mt-3 sm:mt-0">
                                             <Image
                                                 src={article.cover_url || article.image_url || "/images/placeholder-article.webp"}
                                                 alt={article.title} fill
@@ -338,26 +338,26 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                             />
                                         </div>
 
-                                        <div className="hidden lg:flex items-center justify-center w-16 h-16 rounded-full border-4 border-black bg-white group-hover:bg-black group-hover:text-[#FFC800] transition-colors shrink-0">
-                                            <ArrowUpRight className="w-8 h-8 stroke-[3px]" />
+                                        <div className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full border-2 border-black bg-white group-hover:bg-black group-hover:text-[#FFC800] transition-colors shrink-0">
+                                            <ArrowUpRight className="w-6 h-6 stroke-[3px]" />
                                         </div>
                                     </ViewTransitionLink>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-32 text-center border-4 border-dashed border-black dark:border-white rounded-3xl bg-black/5 dark:bg-white/5">
-                            <Cpu className="w-16 h-16 mb-6 opacity-20" />
-                            <h3 className="font-heading font-black text-3xl uppercase mb-2">BOŞLUK.</h3>
-                            <p className="font-bold text-zinc-500 max-w-sm">Bu filtrede hiçbir sinyal yakalanamadı. Lütfen rotayı değiştirin.</p>
-                            <Link href="/makale" className="mt-8 bg-[#FF0080] text-white font-black uppercase px-6 py-3 border-4 border-black shadow-[6px_6px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_#000] transition-all">
+                        <div className="flex flex-col items-center justify-center py-24 text-center border-2 border-dashed border-black dark:border-white rounded-2xl bg-black/5 dark:bg-white/5">
+                            <Cpu className="w-12 h-12 mb-4 opacity-20" />
+                            <h3 className="font-heading font-black text-2xl uppercase mb-2">BOŞLUK.</h3>
+                            <p className="font-bold text-zinc-500 text-sm max-w-sm">Bu filtrede hiçbir sinyal yakalanamadı. Lütfen rotayı değiştirin.</p>
+                            <Link href="/makale" className="mt-6 bg-[#FF0080] text-white font-black uppercase text-sm px-5 py-2.5 border-2 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] transition-all">
                                 KAPSAMA ALANINA DÖN
                             </Link>
                         </div>
                     )}
                 </section>
 
-                <div className="mt-20 sm:mt-32">
+                <div className="mt-16 sm:mt-24">
                     <GoldenTicketCTA />
                 </div>
             </div>
