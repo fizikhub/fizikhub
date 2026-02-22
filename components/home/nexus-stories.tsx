@@ -15,38 +15,44 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
     const [activeStories, setActiveStories] = useState<any[]>([]);
 
     const openGroup = (groupIndex: number) => {
-        const group = initialGroups[groupIndex];
+        const group = groupsWithStories[groupIndex]; // Use the filtered array!
 
-        // 2. Filter dynamic stories for this group
+        // 2. Filter dynamic stories for this group (loose equality for uuid/number mismatches just in case)
         const groupStories = initialStories.filter(s =>
-            s.group_id === group.id
+            String(s.group_id) === String(group.id)
         ).map(s => ({
             id: s.id,
             title: s.name || s.title || "Hikaye",
             image: s.image,
             content: s.content || "",
             author: s.author,
-            category: group.name, // Display group name as category
+            category: group.name,
             author_id: s.author_id
         }));
 
-        // 3. Just use the group stories
-        setActiveStories(groupStories);
-        setViewerOpen(true);
+        if (groupStories.length > 0) {
+            setActiveStories(groupStories);
+            setViewerOpen(true);
+        }
     };
 
-    if (initialGroups.length === 0) {
-        return null; // Or return a placeholder / default list
+    // Only show groups that have at least one valid story associated
+    const groupsWithStories = initialGroups.filter(group =>
+        initialStories.some(s => String(s.group_id) === String(group.id))
+    );
+
+    if (groupsWithStories.length === 0) {
+        return null;
     }
 
     return (
         <section className="w-full pt-4 pb-0 mt-[-8px] mb-0 sm:mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
-                {initialGroups.map((group, index) => {
+                {groupsWithStories.map((group, index) => {
                     // Check if this group has updates (stories)
                     // If we want to show ring only for groups with stories?
                     // Or strictly highlights that always exist.
-                    const hasStories = initialStories.some(s => s.group_id === group.id);
+                    const hasStories = true; // Since we filtered, it always has stories
 
                     return (
                         <div

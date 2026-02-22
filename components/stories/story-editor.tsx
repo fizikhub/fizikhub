@@ -44,21 +44,27 @@ function DraggableTextItem({ layer, isSelected, onSelect, onStop }: { layer: Tex
             nodeRef={nodeRef}
             position={{ x: layer.x, y: layer.y }}
             onStop={(e, data) => onStop(data)}
-            onStart={onSelect}
+            onStart={(e: any) => {
+                // Prevent bubbling which causes canvas deselection immediately
+                if (e.stopPropagation) e.stopPropagation();
+                onSelect();
+            }}
             bounds="parent"
         >
             <div
                 ref={nodeRef}
-                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-all ${isSelected ? 'border-[#FFC800] bg-black/30 backdrop-blur-sm' : 'border-transparent'}`}
+                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-colors ${isSelected ? 'border-[#FFC800] bg-black/30 backdrop-blur-sm shadow-xl' : 'border-transparent'}`}
                 style={{
                     color: layer.color,
                     fontSize: `${layer.fontSize}px`,
                     fontFamily: 'var(--font-outfit)',
                     fontWeight: 900,
-                    transform: `rotate(${layer.rotation}deg)`
                 }}
             >
-                {layer.text}
+                {/* React-draggable uses 'transform', so we must nest our specific rotation to prevent overriding */}
+                <div style={{ transform: `rotate(${layer.rotation}deg)` }}>
+                    {layer.text}
+                </div>
             </div>
         </Draggable>
     );
@@ -412,7 +418,17 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                 <div
                     ref={canvasRef}
                     className="relative w-full max-w-[400px] aspect-[860/1280] bg-black shadow-2xl overflow-hidden ring-1 ring-white/10"
-                    onClick={() => setSelectedId(null)}
+                    onMouseDown={(e) => {
+                        // Only deselect if clicking the canvas background or the image directly
+                        if (e.target === e.currentTarget || (e.target as Element).tagName.toLowerCase() === 'img') {
+                            setSelectedId(null);
+                        }
+                    }}
+                    onTouchStart={(e) => {
+                        if (e.target === e.currentTarget || (e.target as Element).tagName.toLowerCase() === 'img') {
+                            setSelectedId(null);
+                        }
+                    }}
                 >
                     {image ? (
                         <div className="w-full h-full" style={{ transform: `scale(${scale})` }}>

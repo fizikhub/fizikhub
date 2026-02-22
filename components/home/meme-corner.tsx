@@ -91,33 +91,33 @@ export function MemeCorner() {
                 <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)]" />
 
                 {/* TEXT OVERLAY */}
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12 bg-black/20 backdrop-blur-[1px] group-hover:bg-transparent transition-colors duration-500">
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12">
 
                     {/* Main Title */}
-                    <div className="flex flex-col items-center justify-center translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="flex flex-col items-center justify-center">
                         {/* Top: Spaced Out */}
-                        <h2 className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-100 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                        <h2 className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-1 sm:mb-2 ml-1 drop-shadow-lg">
                             BİLİMİ
                         </h2>
 
                         {/* Bottom: Animated Gradient Text */}
                         <h2
-                            className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap drop-shadow-2xl"
+                            className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap"
                             style={{
-                                background: 'linear-gradient(90deg, #ffffff, #e0f2fe, #fdf4ff, #ffffff)',
+                                background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
                                 backgroundSize: '200% auto',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
-                                animation: 'gradient-flow 3s linear infinite',
-                                filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.2))'
+                                animation: 'gradient-flow 4s ease infinite',
+                                textShadow: '0 4px 8px rgba(0,0,0,0.5)',
                             }}
                         >
                             Tİ'YE ALIYORUZ
                         </h2>
 
                         {/* BADGE - Mood below text */}
-                        <div className="mt-2 sm:mt-4 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite] group-hover:scale-110 transition-transform duration-300">
-                            <span className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-500 border-[2px] border-black text-black px-4 py-1.5 sm:px-6 sm:py-2 font-black text-[10px] sm:text-[13px] uppercase shadow-[3px_3px_0px_0px_#000]">
+                        <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">
+                            <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] hover:scale-110 transition-transform">
                                 AMA CİDDİLİ ŞEKİLDE
                             </span>
                         </div>
