@@ -74,11 +74,11 @@ export default async function ProfilePage() {
                     />
                 </div>
 
-                {/* GRID CONTENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
+                {/* GRID CONTENT - Mobile: Sidebar first, then Feed. Desktop: Feed left, Sidebar right */}
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:gap-8">
 
                     {/* MAIN FEED */}
-                    <div className="lg:col-span-12 xl:col-span-7">
+                    <div className="order-2 xl:order-1 xl:col-span-7">
                         <DarkNeoFeed
                             articles={articles || []}
                             questions={questions || []}
@@ -90,8 +90,8 @@ export default async function ProfilePage() {
                         />
                     </div>
 
-                    {/* SIDEBAR - Hidden on mobile */}
-                    <div className="hidden xl:block xl:col-span-5 relative">
+                    {/* SIDEBAR */}
+                    <div className="order-1 xl:order-2 xl:col-span-5 relative mb-4 xl:mb-0">
                         <DarkNeoSidebar
                             profile={profile}
                             user={user}

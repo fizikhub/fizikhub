@@ -28,7 +28,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
             />
 
             {/* MAIN CONTAINER - Article Card Style */}
-            <div className="relative overflow-hidden bg-[#27272a] border-[2px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000]">
+            <div className="relative overflow-hidden bg-background border-2 border-black dark:border-zinc-800 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
 
                 {/* COVER BANNER */}
                 <div className="relative h-44 sm:h-52 md:h-60 overflow-visible border-b-[2px] border-black bg-zinc-900">
@@ -54,7 +54,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     )}
 
                     {/* Gradient overlay for readability */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#27272a]/90" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90" />
 
                     {/* FOLLOWER/FOLLOWING - Vivid Cards */}
                     <div className="absolute -bottom-6 right-4 sm:right-6 flex gap-3 z-20">
@@ -90,8 +90,8 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                             animate={{ scale: 1, opacity: 1 }}
                             className="relative group"
                         >
-                            <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[#27272a] p-1 rounded-2xl shadow-[4px_4px_0px_0px_#000] border-2 border-black overflow-hidden relative z-10">
-                                <Avatar className="w-full h-full rounded-xl border border-black/10">
+                            <div className="w-20 h-20 sm:w-28 sm:h-28 bg-background p-1 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-2 border-black dark:border-zinc-800 overflow-hidden relative z-10">
+                                <Avatar className="w-full h-full rounded-xl border border-black/10 dark:border-white/10">
                                     <AvatarImage src={profile?.avatar_url} className="object-cover" />
                                     <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
                                         {initial}
@@ -106,8 +106,8 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     </div>
 
                     {/* NAME & HANDLE */}
-                    <div className="mb-5">
-                        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight mb-1 drop-shadow-md">
+                    <div className="mb-5 mt-2 sm:mt-0">
+                        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-tight mb-1 drop-shadow-md">
                             <span className="bg-gradient-to-r from-transparent to-transparent hover:from-[#FFC800]/20 hover:to-[#FFC800]/20 transition-all duration-300 rounded px-1 -ml-1">
                                 {profile?.full_name || "New User"}
                             </span>
@@ -158,7 +158,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                         </button>
                                     </Link>
                                     <Link href="/mesajlar">
-                                        <button className="flex items-center gap-2 bg-[#27272a] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] hover:text-white transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+                                        <button className="flex items-center gap-2 bg-zinc-900 dark:bg-zinc-800 text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] hover:text-white transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             Mesajlar
                                         </button>
@@ -196,7 +196,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                         className="px-5 py-2.5 text-xs font-black rounded-lg shadow-[2px_2px_0px_0px_#000] border-2 border-black hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                                     />
                                     <Link href={`/mesajlar?to=${profile.id}`}>
-                                        <button className="flex items-center gap-2 bg-[#27272a] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+                                        <button className="flex items-center gap-2 bg-zinc-900 dark:bg-zinc-800 text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             Mesaj
                                         </button>

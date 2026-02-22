@@ -92,7 +92,7 @@ export function DarkNeoFeed({
                                 "relative flex items-center gap-2 px-4 py-2 border-2 rounded-xl font-black text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group",
                                 isActive
                                     ? `${tab.color} border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
-                                    : "bg-white dark:bg-[#27272a] border-black text-zinc-500 hover:text-white hover:border-black hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                    : "bg-background border-black dark:border-zinc-800 text-zinc-500 hover:text-foreground hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
                         >
                             <Icon className={cn("w-3.5 h-3.5 stroke-[2.5px]", isActive && "stroke-current")} />
@@ -126,7 +126,7 @@ export function DarkNeoFeed({
                             <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-[#27272a] border-2 border-black rounded-xl p-5 hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group hover:bg-[#2a2a2d] shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] relative overflow-hidden">
+                                        <div key={answer.id} className="bg-background border-2 border-black dark:border-zinc-800 rounded-xl p-5 hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] relative overflow-hidden">
                                             {/* Top Line Accent */}
                                             <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
@@ -141,7 +141,7 @@ export function DarkNeoFeed({
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-black text-base text-zinc-100 mb-2 group-hover:text-[#FFC800] transition-colors leading-snug relative z-10">
+                                            <h4 className="font-black text-base text-foreground mb-2 group-hover:text-[#FFC800] transition-colors leading-snug relative z-10">
                                                 {Array.isArray(answer.questions) ? answer.questions[0]?.title : answer.questions?.title || "Soru Başlığı Bulunamadı"}
                                             </h4>
                                             <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#FFC800] transition-colors relative z-10">
@@ -191,8 +191,8 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/20">
-            <div className="w-12 h-12 bg-zinc-900 rounded-lg flex items-center justify-center mb-4 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-100/50 dark:bg-zinc-900/20">
+            <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-lg flex items-center justify-center mb-4 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
                 <Icon className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
             </div>
             <p className="text-zinc-300 font-black text-base mb-1">{label}</p>

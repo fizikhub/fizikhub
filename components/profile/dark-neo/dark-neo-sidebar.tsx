@@ -20,7 +20,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             className="space-y-6 sticky top-24"
         >
             {/* ABOUT CARD - Vivid & Soft */}
-            <div className="bg-[#27272a] border-[2px] border-black p-5 relative shadow-[4px_4px_0px_0px_#000] rounded-xl overflow-hidden group hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+            <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl overflow-hidden group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 {/* Yellow Accent Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform scale-x-100 transition-transform" />
 
@@ -54,7 +54,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             </div>
 
             {/* BADGES CARD - Vivid Grid */}
-            <div className="bg-[#27272a] border-[2px] border-black p-5 relative shadow-[4px_4px_0px_0px_#000] rounded-xl group hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+            <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
 
                 <h3 className="font-black text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10">
@@ -71,7 +71,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                             return (
                                 <div
                                     key={index}
-                                    className="aspect-square bg-zinc-900 border-2 border-black rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
+                                    className="aspect-square bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
                                     title={badge.name}
                                 >
                                     {badge.icon ? (
@@ -86,8 +86,8 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-zinc-900/50 border-2 border-dashed border-black/20 rounded-lg flex items-center justify-center">
-                                <div className="w-1.5 h-1.5 bg-black/20 rounded-full" />
+                            <div key={`empty-${i}`} className="aspect-square bg-zinc-100/50 dark:bg-zinc-900/50 border-2 border-dashed border-black/20 dark:border-white/20 rounded-lg flex items-center justify-center">
+                                <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/20 rounded-full" />
                             </div>
                         ))}
                     </div>
@@ -101,9 +101,8 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                 )}
             </div>
 
-            {/* COMMUNITY LINK - Green Pop */}
-            <div className="bg-[#00F050] border-[2px] border-black p-1 shadow-[4px_4px_0px_0px_#000] rounded-xl relative overflow-hidden group cursor-pointer hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                <div className="bg-[#27272a] rounded-[10px] p-4 flex items-center justify-between relative z-10 h-full border-2 border-black group-hover:bg-[#00F050] transition-colors duration-300">
+            <div className="bg-[#00F050] border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl relative overflow-hidden group cursor-pointer hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                <div className="bg-zinc-900 rounded-[10px] p-4 flex items-center justify-between relative z-10 h-full border-2 border-black group-hover:bg-[#00F050] transition-colors duration-300">
                     <div>
                         <p className="text-[9px] font-black uppercase text-[#00F050] mb-0.5 tracking-wider group-hover:text-black transition-colors">Topluluk</p>
                         <h3 className="text-base font-black text-white group-hover:text-black transition-colors">Katkı Kuralları</h3>
