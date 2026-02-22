@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MarkdownEditor } from "@/components/markdown-editor";
-import { Plus, Sparkles, Hash, Tag, Atom, Brain, Globe, Zap, Microscope, BookOpen, Layers, FlaskConical } from "lucide-react";
+import { Plus, Hash, Tag, Atom, Brain, Globe, Zap, Microscope, BookOpen, Layers, FlaskConical } from "lucide-react";
 import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { toast } from "sonner";
 import { createQuestion } from "@/app/forum/actions";
@@ -18,28 +18,28 @@ const CATEGORY_GROUPS = [
     {
         label: "Fizik Bilimleri",
         categories: [
-            { id: "Kuantum", label: "Kuantum", icon: Atom, bg: "bg-[#C084FC]" },
-            { id: "Astrofizik", label: "Astrofizik", icon: Rocket, bg: "bg-[#60A5FA]" },
-            { id: "Mekanik", label: "Mekanik", icon: Zap, bg: "bg-[#FACC15]" },
-            { id: "Termodinamik", label: "Termo.", icon: Sparkles, bg: "bg-orange-400" },
-            { id: "Elektromanyetizma", label: "Elek-Mag", icon: Zap, bg: "bg-[#FB7185]" },
-            { id: "Genel-Fizik", label: "Genel Fizik", icon: Globe, bg: "bg-[#4ADE80]" },
+            { id: "Kuantum", label: "Kuantum", icon: Atom },
+            { id: "Astrofizik", label: "Astrofizik", icon: Rocket },
+            { id: "Mekanik", label: "Mekanik", icon: Zap },
+            { id: "Termodinamik", label: "Termo.", icon: Zap },
+            { id: "Elektromanyetizma", label: "Elek-Mag", icon: Zap },
+            { id: "Genel-Fizik", label: "Genel Fizik", icon: Globe },
         ]
     },
     {
         label: "Temel Bilimler",
         categories: [
-            { id: "Biyoloji", label: "Biyoloji", icon: Microscope, bg: "bg-[#4ADE80]" },
-            { id: "Kimya", label: "Kimya", icon: FlaskConical, bg: "bg-[#60A5FA]" },
-            { id: "Matematik", label: "Matematik", icon: Hash, bg: "bg-[#FACC15]" },
+            { id: "Biyoloji", label: "Biyoloji", icon: Microscope },
+            { id: "Kimya", label: "Kimya", icon: FlaskConical },
+            { id: "Matematik", label: "Matematik", icon: Hash },
         ]
     },
     {
         label: "Sosyal & Değerler",
         categories: [
-            { id: "Edebiyat", label: "Edebiyat", icon: BookOpen, bg: "bg-[#FB7185]" },
-            { id: "Felsefe", label: "Felsefe", icon: Brain, bg: "bg-[#C084FC]" },
-            { id: "Diğer", label: "Diğer", icon: Layers, bg: "bg-zinc-300" },
+            { id: "Edebiyat", label: "Edebiyat", icon: BookOpen },
+            { id: "Felsefe", label: "Felsefe", icon: Brain },
+            { id: "Diğer", label: "Diğer", icon: Layers },
         ]
     }
 ];
@@ -103,10 +103,10 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
     const handleOpen = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
-            toast("GİRİŞ YAPMAN GEREKİYOR", {
-                description: "Soru sormak, cevap yazmak ve topluluğa katılmak için hemen giriş yap.",
+            toast("Giriş yapmanız gerekiyor.", {
+                description: "Soru sormak, cevap yazmak ve topluluğa katılmak için hemen giriş yapın.",
                 action: {
-                    label: "GİRİŞ YAP",
+                    label: "Giriş Yap",
                     onClick: () => window.location.href = "/login"
                 },
             });
@@ -124,40 +124,44 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
             ) : (
                 <Button
                     onClick={handleOpen}
-                    className="gap-2 h-10 px-6 rounded-none bg-black dark:bg-white text-white dark:text-black font-bold uppercase border-[3px] border-transparent hover:border-black dark:hover:border-white shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+                    className="gap-2 h-10 px-6 rounded-[8px] bg-black dark:bg-[#18181b] text-white hover:bg-neutral-800 dark:hover:bg-zinc-800 border-[3px] border-black transition-all shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 >
                     <Plus className="h-5 w-5" />
-                    <span className="font-black tracking-wide">SORU SOR</span>
+                    <span className="font-outfit font-black tracking-wide uppercase">Soru Sor</span>
                 </Button>
             )}
             <DialogContent
-                style={{ transform: "translate(-50%, -50%)" }}
-                className="!translate-x-0 !translate-y-0 sm:max-w-[750px] w-[95vw] border-[3px] sm:border-4 border-black dark:border-white bg-[#f4f4f5] dark:bg-zinc-950 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-0 overflow-hidden rounded-none h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col z-[150] gap-0"
+                className="sm:max-w-[700px] w-[95vw] border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0 overflow-hidden rounded-[8px] h-auto max-h-[90vh] flex flex-col z-[150] gap-0 mx-auto"
             >
-                <div className="relative flex flex-col h-full sm:max-h-[90vh]">
-                    {/* Header - Neo Brutalist */}
-                    <div className="px-5 sm:px-6 py-4 border-b-[3px] sm:border-b-4 border-black dark:border-white bg-white dark:bg-[#18181b] flex items-center justify-between shrink-0 z-10">
-                        <DialogTitle className="text-xl sm:text-2xl font-black uppercase tracking-tighter flex items-center gap-3 text-black dark:text-white">
+                {/* NOISE TEXTURE */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                />
+
+                <div className="relative flex flex-col h-full sm:max-h-[90vh] z-10">
+                    {/* Header - Sleek */}
+                    <div className="px-5 py-4 border-b-[3px] border-black bg-white dark:bg-[#18181b] flex items-center justify-between shrink-0">
+                        <DialogTitle className="font-[family-name:var(--font-outfit)] text-xl font-black uppercase tracking-tighter flex items-center gap-3 text-black dark:text-zinc-50">
                             <span className={cn(
-                                "flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-lg",
-                                "bg-[#FACC15] text-black font-black border-2 sm:border-[3px] border-black shadow-[2px_2px_0px_0px_#000]"
+                                "flex items-center justify-center w-8 h-8 text-sm",
+                                "bg-[#FFC800] text-black font-black border-[3px] border-black rounded-[4px] shadow-[2px_2px_0px_0px_#000]"
                             )}>
                                 {step}
                             </span>
-                            <span>{step === 1 ? "KONU SEÇ" : "DETAYLANDIR"}</span>
+                            <span>{step === 1 ? "KONU SEÇ" : "AYRINTILAR"}</span>
                         </DialogTitle>
 
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => setOpen(false)}
-                            className="rounded-none border-[3px] border-transparent hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all"
+                            className="rounded-[8px] border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-zinc-800 text-black dark:text-zinc-100 transition-all w-9 h-9"
                         >
-                            <Plus className="w-6 h-6 rotate-45" />
+                            <Plus className="w-5 h-5 rotate-45 stroke-[3px]" />
                         </Button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-0 bg-white dark:bg-[#18181b] relative">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-0 bg-transparent">
                         <AnimatePresence mode="wait">
                             {step === 1 ? (
                                 <motion.div
@@ -165,34 +169,33 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
-                                    className="p-5 sm:p-8 space-y-8"
+                                    className="p-5 sm:p-6 space-y-6"
                                 >
                                     {CATEGORY_GROUPS.map((group, groupIdx) => (
-                                        <div key={groupIdx} className="space-y-4">
-                                            <h4 className="text-base sm:text-lg font-black uppercase tracking-widest text-black dark:text-white border-b-[3px] sm:border-b-4 border-black dark:border-white pb-2 inline-block">
+                                        <div key={groupIdx} className="space-y-3">
+                                            <h4 className="font-[family-name:var(--font-inter)] text-xs font-black uppercase tracking-widest text-neutral-600 dark:text-zinc-400 pl-1">
                                                 {group.label}
                                             </h4>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                                                 {group.categories.map((cat) => (
                                                     <button
                                                         key={cat.id}
                                                         onClick={() => handleCategorySelect(cat.id)}
                                                         className={cn(
-                                                            "group relative flex items-center gap-3 p-3 sm:p-4 transition-all duration-200",
-                                                            "bg-white dark:bg-zinc-900 border-2 sm:border-[3px] border-black dark:border-white rounded-none",
-                                                            "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff]",
-                                                            "hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_#000] dark:hover:shadow-[6px_6px_0px_0px_#fff]",
-                                                            "active:translate-y-1 active:translate-x-1 active:shadow-none",
-                                                            formData.category === cat.id ? "bg-zinc-100 dark:bg-zinc-800" : ""
+                                                            "group relative flex items-center gap-3 p-3 transition-all duration-200",
+                                                            "bg-white dark:bg-[#18181b] border-[3px] border-black rounded-[8px]",
+                                                            "shadow-[2px_2px_0px_0px_#000]",
+                                                            "hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_#000]",
+                                                            "active:translate-y-[2px] active:translate-x-[2px] active:shadow-none",
+                                                            formData.category === cat.id ? "bg-neutral-100 dark:bg-zinc-800" : ""
                                                         )}
                                                     >
                                                         <div className={cn(
-                                                            "w-10 h-10 sm:w-12 sm:h-12 rounded-none border-2 sm:border-[3px] border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#000]",
-                                                            cat.bg
+                                                            "w-8 h-8 rounded-[6px] border-[2px] border-black flex items-center justify-center shrink-0 shadow-[1px_1px_0px_0px_#000]"
                                                         )}>
-                                                            <cat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
+                                                            <cat.icon className="h-4 w-4 stroke-[2.5px] text-black dark:text-zinc-100" />
                                                         </div>
-                                                        <span className="font-black text-xs sm:text-sm uppercase tracking-wide text-black dark:text-white text-left line-clamp-2">
+                                                        <span className="font-[family-name:var(--font-inter)] font-black text-xs sm:text-sm uppercase tracking-wide text-black dark:text-zinc-100 text-left line-clamp-1">
                                                             {cat.label}
                                                         </span>
                                                     </button>
@@ -207,87 +210,83 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="p-5 sm:p-8 space-y-6 pb-24 sm:pb-8"
+                                    className="p-5 sm:p-6 space-y-5"
                                 >
                                     {/* Selected Category Tag */}
-                                    <div className="flex items-center justify-between pb-4 border-b-[3px] sm:border-b-4 border-black dark:border-white">
+                                    <div className="flex items-center justify-between pb-3 border-b border-black/10 dark:border-white/10">
                                         <button
                                             onClick={() => setStep(1)}
-                                            className="px-4 py-2 border-[3px] border-black dark:border-white bg-[#FACC15] text-black font-black uppercase tracking-widest text-xs sm:text-sm flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none"
+                                            className="px-3 py-1.5 border-[2px] border-black bg-[#FFC800] text-black font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all rounded-[6px]"
                                         >
-                                            <Tag className="h-4 w-4" />
+                                            <Tag className="h-3 w-3" />
                                             {formData.category}
                                             <span className="opacity-50 mx-1">|</span>
                                             <span>DEĞİŞTİR</span>
                                         </button>
                                     </div>
 
-                                    <div className="space-y-6 sm:space-y-8">
-                                        <div className="space-y-3 group">
-                                            <Label className="text-sm sm:text-base font-black uppercase tracking-widest text-black dark:text-white">Başlık</Label>
+                                    <div className="space-y-5">
+                                        <div className="space-y-2 group">
+                                            <Label className="font-[family-name:var(--font-inter)] text-xs font-black uppercase tracking-widest text-black dark:text-zinc-100">Başlık</Label>
                                             <Input
-                                                placeholder="BÜYÜK BİR SORU SOR..."
+                                                placeholder="Sormak istediğin soru nedir?"
                                                 value={formData.title}
                                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                                 className={cn(
-                                                    "text-lg sm:text-2xl font-black bg-[#f4f4f5] dark:bg-zinc-800 border-[3px] border-black dark:border-white text-black dark:text-white rounded-none px-4 py-6 sm:py-8 h-auto",
-                                                    "focus-visible:ring-0 focus-visible:border-black dark:focus-visible:border-white",
-                                                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] transition-all placeholder:text-black/30 dark:placeholder:text-white/30"
+                                                    "font-[family-name:var(--font-outfit)] text-lg sm:text-xl font-black bg-white dark:bg-[#18181b] border-[3px] border-black text-black dark:text-zinc-50 rounded-[8px] px-3 py-6 h-auto",
+                                                    "focus-visible:ring-0 focus-visible:border-black",
+                                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all placeholder:text-neutral-400 dark:placeholder:text-zinc-600 uppercase"
                                                 )}
                                                 autoFocus
                                             />
                                         </div>
 
-                                        <div className="space-y-3 group">
-                                            <Label className="text-sm sm:text-base font-black uppercase tracking-widest text-black dark:text-white">Detaylar</Label>
-                                            <div className="border-[3px] border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_#fff] overflow-hidden rounded-none">
+                                        <div className="space-y-2 group">
+                                            <Label className="font-[family-name:var(--font-inter)] text-xs font-black uppercase tracking-widest text-black dark:text-zinc-100">Açıklama</Label>
+                                            <div className="border-[3px] border-black bg-white dark:bg-[#18181b] shadow-[2px_2px_0px_0px_#000] overflow-hidden rounded-[8px] focus-within:translate-x-[1px] focus-within:translate-y-[1px] focus-within:shadow-[1px_1px_0px_0px_#000] transition-all">
                                                 <MarkdownEditor
                                                     id="content"
                                                     label=""
-                                                    placeholder="Açıklamanı buraya detaylıca yazabilirsin..."
+                                                    placeholder="Ayrıntıları paylaş..."
                                                     value={formData.content}
                                                     onChange={(value) => setFormData({ ...formData, content: value })}
-                                                    minHeight="250px"
+                                                    minHeight="200px"
                                                 />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div className="pt-2 flex justify-between items-center">
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setStep(1)}
+                                            className="font-[family-name:var(--font-inter)] font-black border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-zinc-800 rounded-[8px] transition-all uppercase tracking-widest text-xs px-4"
+                                        >
+                                            <span className="mr-2">{'<'}</span> GERİ
+                                        </Button>
+                                        <Button
+                                            onClick={handleSubmit}
+                                            disabled={loading}
+                                            className={cn(
+                                                "h-10 px-8 font-[family-name:var(--font-inter)] font-black uppercase tracking-widest transition-all rounded-[8px]",
+                                                "bg-black dark:bg-[#18181b] text-white dark:text-zinc-100 border-[3px] border-black",
+                                                "shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
+                                            )}
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center gap-2">
+                                                    <div className="h-4 w-4 border-2 border-white dark:border-zinc-100 border-t-transparent rounded-full animate-spin" />
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-2">
+                                                    PAYLAŞ <Rocket className="h-4 w-4" />
+                                                </span>
+                                            )}
+                                        </Button>
                                     </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
-
-                    {/* Footer - Fixed at bottom on mobile, static on desktop */}
-                    {step === 2 && (
-                        <div className="absolute sm:static bottom-0 left-0 right-0 p-4 sm:p-6 border-t-[3px] sm:border-t-4 border-black dark:border-white bg-[#f4f4f5] dark:bg-zinc-950 flex justify-between items-center z-20">
-                            <Button
-                                variant="ghost"
-                                onClick={() => setStep(1)}
-                                className="font-black border-[3px] border-transparent hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-none transition-all uppercase tracking-widest"
-                            >
-                                <span className="mr-2">{'<'}</span> <span className="hidden sm:inline">GERİ</span>
-                            </Button>
-                            <Button
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                className={cn(
-                                    "h-12 px-6 sm:px-10 font-black uppercase tracking-widest transition-all rounded-none",
-                                    "bg-[#FACC15] text-black border-[3px] border-black",
-                                    "shadow-[4px_4px_0px_0px_#000] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000] active:translate-y-1 active:translate-x-1 active:shadow-none"
-                                )}
-                            >
-                                {loading ? (
-                                    <span className="flex items-center gap-2">
-                                        <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center gap-2">
-                                        YAYINLA <Rocket className="h-5 w-5" />
-                                    </span>
-                                )}
-                            </Button>
-                        </div>
-                    )}
                 </div>
             </DialogContent>
         </Dialog>
