@@ -1,15 +1,14 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import Link from "next/link";
 import Image from "next/image";
-import { Atom, Telescope, Cpu, Dna, FlaskConical, Globe, ArrowUpRight, Clock } from "lucide-react";
+import { Atom, Telescope, Cpu, Dna, FlaskConical, Globe, TrendingUp, Clock, SlidersHorizontal, ArrowDownWideNarrow, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { GoldenTicketCTA } from "@/components/ui/golden-ticket-cta";
-import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
-import { useCallback, useRef, useState } from "react";
 import { type ScienceNewsItem } from "@/lib/rss";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -23,207 +22,54 @@ interface ArticleFeedProps {
 }
 
 const TOPICS = [
-    { label: 'Fizik', icon: Atom, accent: '#FACC15' },
+    { label: 'Fizik', icon: Atom, accent: '#FFC800' },
     { label: 'Uzay', icon: Telescope, accent: '#FF0080' },
     { label: 'Teknoloji', icon: Cpu, accent: '#23A9FA' },
     { label: 'Biyoloji', icon: Dna, accent: '#F472B6' },
-    { label: 'Kimya', icon: FlaskConical, accent: '#4ADE80' },
-    { label: 'Genel', icon: Globe, accent: '#71717a' },
+    { label: 'Kimya', icon: FlaskConical, accent: '#00F050' },
+    { label: 'Genel', icon: Globe, accent: '#a1a1aa' },
 ];
 
-const CAT_COLOR: Record<string, string> = {
-    Fizik: '#FACC15', Uzay: '#FF0080', Teknoloji: '#23A9FA',
-    Biyoloji: '#F472B6', Kimya: '#4ADE80', Genel: '#71717a',
-};
+const SORT_OPTS = [
+    { value: 'latest', label: 'En Yeni', icon: Clock },
+    { value: 'popular', label: 'Popüler', icon: Flame },
+];
 
 function ago(d: string) {
     return formatDistanceToNow(new Date(d), { addSuffix: true, locale: tr });
 }
 
-function plain(html: string | null | undefined) {
-    if (!html) return "";
-    return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-/* ═══════════════════════════════════════
-   COVER CARD — featured article, massive
-═══════════════════════════════════════ */
-function CoverCard({ article }: { article: any }) {
-    return (
-        <Link href={`/blog/${article.slug}`} className="group block">
-            <article className={cn(
-                "relative overflow-hidden rounded-[8px]",
-                "bg-card border-3 border-border shadow-neo",
-                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-hover",
-                "transition-all duration-200"
-            )}>
-                {/* Image */}
-                <div className="relative aspect-[2/1] sm:aspect-[2.4/1] w-full border-b-3 border-border bg-primary">
-                    <OptimizedImage
-                        src={article.cover_url || article.image_url || "/images/placeholder-article.webp"}
-                        alt={article.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                    {/* Category badge */}
-                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                        <span className="inline-block bg-primary border-2 border-primary-foreground text-primary-foreground px-2.5 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-neo-xs -rotate-2 group-hover:rotate-0 transition-transform">
-                            {article.category || "GENEL"}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Text */}
-                <div className="p-4 sm:p-6 relative">
-                    {/* Noise */}
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply"
-                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")` }}
-                    />
-
-                    <h2 className="font-heading text-2xl sm:text-4xl md:text-5xl font-black text-card-foreground leading-[1.05] tracking-tight mb-3 uppercase">
-                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-primary/20 group-hover:to-primary/20 transition-all duration-300">
-                            {article.title}
-                        </span>
-                    </h2>
-
-                    <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 max-w-2xl mb-4">
-                        {article.excerpt || article.summary || plain(article.content)?.slice(0, 180) + "…"}
-                    </p>
-
-                    <div className="flex items-center gap-3">
-                        <div className="relative w-8 h-8 flex-shrink-0 rounded-full border-2 border-border overflow-hidden shadow-neo-xs">
-                            <OptimizedAvatar
-                                src={article.author?.avatar_url || "/images/default-avatar.png"}
-                                alt={article.author?.full_name || ""}
-                                size={32}
-                                className="w-full h-full"
-                            />
-                        </div>
-                        <span className="text-xs font-black uppercase tracking-wide text-foreground">
-                            {article.author?.full_name || "Anonim"}
-                        </span>
-                        <span className="text-muted-foreground text-[10px] flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> {ago(article.created_at)}
-                        </span>
-                    </div>
-                </div>
-            </article>
-        </Link>
-    );
-}
-
-/* ═══════════════════════════════════════
-   INDEX ROW — magazine table of contents feel
-═══════════════════════════════════════ */
-function IndexRow({ article, num }: { article: any; num: number }) {
-    const [open, setOpen] = useState(false);
-    const color = CAT_COLOR[article.category] || "#71717a";
-
-    return (
-        <div className="border-b border-border/30 last:border-b-0">
-            {/* Desktop */}
-            <Link href={`/blog/${article.slug}`} className="hidden sm:flex group items-center gap-4 py-4 px-2 -mx-2 rounded-lg hover:bg-muted/40 transition-colors">
-                <span className="font-mono text-xs text-muted-foreground w-6 text-right tabular-nums shrink-0">
-                    {String(num).padStart(2, "0")}
-                </span>
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <h3 className="flex-1 font-heading text-base md:text-lg font-black text-foreground leading-tight tracking-tight truncate group-hover:text-primary transition-colors uppercase">
-                    {article.title}
-                </h3>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 px-2 py-0.5 border border-border/50 rounded">
-                    {article.category || "Genel"}
-                </span>
-                <span className="hidden lg:block text-xs text-muted-foreground font-medium w-24 text-right truncate shrink-0">
-                    {article.author?.full_name}
-                </span>
-                <span className="hidden md:block text-[10px] text-muted-foreground/60 w-20 text-right shrink-0">
-                    {ago(article.created_at)}
-                </span>
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
-            </Link>
-
-            {/* Mobile — tap to expand */}
-            <div className="sm:hidden">
-                <button onClick={() => setOpen(!open)} className="w-full text-left py-3.5 flex items-start gap-3">
-                    <span className="font-mono text-[10px] text-muted-foreground w-5 text-right mt-0.5 shrink-0 tabular-nums">
-                        {String(num).padStart(2, "0")}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-                            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color }}>{article.category}</span>
-                        </div>
-                        <h3 className="font-heading text-sm font-black text-foreground leading-snug uppercase tracking-tight">
-                            {article.title}
-                        </h3>
-                        <span className="text-[10px] text-muted-foreground mt-0.5 block">
-                            {article.author?.full_name} · {ago(article.created_at)}
-                        </span>
-                    </div>
-                    <motion.span animate={{ rotate: open ? 45 : 0 }} className="text-muted-foreground text-base mt-0.5 shrink-0">+</motion.span>
-                </button>
-
-                <AnimatePresence>
-                    {open && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                            className="overflow-hidden"
-                        >
-                            <Link href={`/blog/${article.slug}`} className="block pb-4 pl-8">
-                                {(article.cover_url || article.image_url) && (
-                                    <div className="relative aspect-[16/9] w-full rounded-[6px] overflow-hidden mb-2 border-2 border-border">
-                                        <Image src={article.cover_url || article.image_url} alt={article.title} fill className="object-cover" />
-                                    </div>
-                                )}
-                                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 mb-1.5">
-                                    {article.excerpt || article.summary || plain(article.content)?.slice(0, 160) + "…"}
-                                </p>
-                                <span className="text-[11px] font-black text-primary uppercase tracking-wide">Oku →</span>
-                            </Link>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        </div>
-    );
-}
-
-/* ═══════════════════════════════════════
-   MAIN FEED
-═══════════════════════════════════════ */
 export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems }: ArticleFeedProps) {
-    const isDefault = !activeCategory && sortParam === "latest";
-    const cover = isDefault && articles.length > 0 ? articles[0] : null;
-    const duo = isDefault ? articles.slice(1, 3) : [];
-    const rest = isDefault ? articles.slice(3) : articles;
+
+    // featured = first 3 if no filter
+    const showFeatured = !activeCategory && sortParam === "latest" && articles.length >= 3;
+    const featured = showFeatured ? articles.slice(0, 3) : [];
+    const gridArticles = showFeatured ? articles.slice(3) : articles;
 
     return (
-        <main className="min-h-screen bg-background text-foreground">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 sm:pt-28 pb-10 sm:pb-16">
+        <div className="min-h-screen pt-20 sm:pt-24 pb-10">
+            <div className="max-w-[1200px] mx-auto px-3 sm:px-6">
 
-                {/* ▬ HEADER ▬ */}
-                <h1 className="font-heading text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter leading-none uppercase mb-2">
-                    Makaleler
-                </h1>
-                <div className="flex items-center gap-3 mb-6 sm:mb-8">
-                    <div className="h-1 w-10 bg-primary rounded-full" />
-                    <p className="text-muted-foreground text-xs sm:text-sm">{articles.length} yazı</p>
+                {/* ═══ HEADER ═══ */}
+                <div className="mb-6">
+                    <h1 className="font-heading text-4xl sm:text-6xl font-black tracking-tighter uppercase leading-none">
+                        Makaleler
+                    </h1>
+                    <p className="text-muted-foreground text-xs sm:text-sm mt-1 font-bold">
+                        {articles.length} yazı yayında
+                    </p>
                 </div>
 
-                {/* ▬ CATEGORY PILLS ▬ */}
-                <div className="flex flex-wrap items-center gap-2 mb-8 sm:mb-10">
+                {/* ═══ FILTERS — same style as DarkNeoFeed tabs ═══ */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-6 border-b-2 border-dashed border-black/20 dark:border-white/10">
+                    {/* Category Filters */}
                     <Link
                         href="/makale"
                         className={cn(
-                            "px-3 py-1.5 rounded-[6px] text-[11px] font-black uppercase tracking-wider border-2 border-border transition-all",
+                            "relative flex items-center gap-1.5 px-3 py-1.5 border-2 rounded-xl font-black text-[11px] transition-all whitespace-nowrap flex-shrink-0 active:scale-95 uppercase tracking-wider",
                             !activeCategory
-                                ? "bg-primary text-primary-foreground shadow-neo-xs"
-                                : "bg-card text-muted-foreground hover:bg-muted"
+                                ? "bg-[#FFC800] text-black border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
+                                : "bg-white dark:bg-[#27272a] border-black dark:border-white text-zinc-500 hover:text-black dark:hover:text-white hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                         )}
                     >
                         Tümü
@@ -233,72 +79,172 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                             key={t.label}
                             href={`/makale?category=${t.label}`}
                             className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-[11px] font-black uppercase tracking-wider border-2 border-border transition-all",
+                                "relative flex items-center gap-1.5 px-3 py-1.5 border-2 rounded-xl font-black text-[11px] transition-all whitespace-nowrap flex-shrink-0 active:scale-95 uppercase tracking-wider",
                                 activeCategory === t.label
-                                    ? "shadow-neo-xs text-primary-foreground"
-                                    : "bg-card text-muted-foreground hover:bg-muted"
+                                    ? "text-black border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
+                                    : "bg-white dark:bg-[#27272a] border-black dark:border-white text-zinc-500 hover:text-black dark:hover:text-white hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_#fff] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
-                            style={activeCategory === t.label ? { backgroundColor: t.accent, borderColor: 'hsl(var(--border))' } : {}}
+                            style={activeCategory === t.label ? { backgroundColor: t.accent } : {}}
                         >
-                            <t.icon className="w-3 h-3" />
+                            <t.icon className="w-3 h-3 stroke-[2.5px]" />
                             {t.label}
+                        </Link>
+                    ))}
+
+                    {/* Spacer */}
+                    <div className="flex-1" />
+
+                    {/* Sort */}
+                    {SORT_OPTS.map(s => (
+                        <Link
+                            key={s.value}
+                            href={`/makale?sort=${s.value}${activeCategory ? `&category=${activeCategory}` : ''}`}
+                            className={cn(
+                                "hidden sm:flex items-center gap-1.5 px-3 py-1.5 border-2 rounded-xl font-black text-[11px] transition-all whitespace-nowrap flex-shrink-0 active:scale-95 uppercase tracking-wider",
+                                sortParam === s.value
+                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_#fff] translate-x-[-1px] translate-y-[-1px]"
+                                    : "bg-white dark:bg-[#27272a] border-black dark:border-white text-zinc-500 hover:text-black dark:hover:text-white"
+                            )}
+                        >
+                            <s.icon className="w-3 h-3 stroke-[2.5px]" />
+                            {s.label}
                         </Link>
                     ))}
                 </div>
 
-                {/* ▬ COVER ▬ */}
-                {cover && <div className="mb-8 sm:mb-10"><CoverCard article={cover} /></div>}
+                {/* ═══ FEATURED BENTO — 1 big + 2 small ═══ */}
+                {showFeatured && (
+                    <section className="mb-8 sm:mb-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-                {/* ▬ DUO ROW ▬ */}
-                {duo.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6 mb-8 sm:mb-10">
-                        {duo.map(a => <NeoArticleCard key={a.id} article={a} />)}
-                    </div>
-                )}
+                            {/* MAIN — big card */}
+                            <Link href={`/blog/${featured[0].slug}`} className="lg:col-span-7 group block">
+                                <article className={cn(
+                                    "relative overflow-hidden h-full min-h-[280px] sm:min-h-[400px] flex flex-col justify-end",
+                                    "border-3 border-black dark:border-white rounded-xl",
+                                    "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
+                                    "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+                                    "hover:translate-x-[2px] hover:translate-y-[2px]",
+                                    "transition-all duration-200"
+                                )}>
+                                    <Image
+                                        src={featured[0].cover_url || featured[0].image_url || "/images/placeholder-article.webp"}
+                                        alt={featured[0].title}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        priority
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
-                {/* ▬ NEWS TICKER ▬ */}
-                {!activeCategory && newsItems.length > 0 && (
-                    <div className="mb-8 sm:mb-10 rounded-[6px] border-2 border-border overflow-hidden shadow-neo-xs">
-                        <TrendingMarquee items={newsItems} />
-                    </div>
-                )}
+                                    {/* Badge */}
+                                    <div className="absolute top-3 left-3 z-10">
+                                        <span className="inline-block bg-[#FFC800] border-2 border-black text-black px-2.5 py-0.5 font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_#000] -rotate-2 group-hover:rotate-0 transition-transform">
+                                            {featured[0].category || "MAKALE"}
+                                        </span>
+                                    </div>
 
-                {/* ▬ İÇİNDEKİLER / ARTICLE INDEX ▬ */}
-                {rest.length > 0 && (
-                    <section className="mb-10 sm:mb-14">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className="w-5 h-1 bg-foreground rounded-full" />
-                            <h2 className="text-xs font-black uppercase tracking-[.2em] text-muted-foreground">
-                                {activeCategory ? `${activeCategory} Arşivi` : "İçindekiler"}
-                            </h2>
-                            <div className="h-px flex-1 bg-border/30" />
-                        </div>
+                                    <div className="relative z-10 p-4 sm:p-6">
+                                        <h2 className="font-heading text-xl sm:text-3xl md:text-4xl font-black text-white leading-[1.05] tracking-tight uppercase mb-2 group-hover:text-[#FFC800] transition-colors">
+                                            {featured[0].title}
+                                        </h2>
+                                        <div className="flex items-center gap-2 text-white/60 text-[11px] font-bold">
+                                            {featured[0].author?.avatar_url && (
+                                                <div className="w-5 h-5 rounded-full overflow-hidden border border-white/30">
+                                                    <Image src={featured[0].author.avatar_url} alt="" width={20} height={20} className="object-cover" />
+                                                </div>
+                                            )}
+                                            <span>{featured[0].author?.full_name}</span>
+                                            <span>·</span>
+                                            <span>{ago(featured[0].created_at)}</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </Link>
 
-                        <div className="border-t border-border/30">
-                            {rest.map((article, i) => (
-                                <IndexRow
-                                    key={article.id}
-                                    article={article}
-                                    num={cover ? i + 4 : i + 1}
-                                />
-                            ))}
+                            {/* SIDE — 2 stacked */}
+                            <div className="lg:col-span-5 grid grid-cols-1 gap-4">
+                                {featured.slice(1, 3).map((a, i) => (
+                                    <Link key={a.id} href={`/blog/${a.slug}`} className="group block">
+                                        <article className={cn(
+                                            "relative overflow-hidden h-full min-h-[160px] sm:min-h-[190px] flex flex-col justify-end",
+                                            "border-3 border-black dark:border-white rounded-xl",
+                                            "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]",
+                                            "hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+                                            "hover:translate-x-[2px] hover:translate-y-[2px]",
+                                            "transition-all duration-200"
+                                        )}>
+                                            <Image
+                                                src={a.cover_url || a.image_url || "/images/placeholder-article.webp"}
+                                                alt={a.title} fill
+                                                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                                            <div className="absolute top-2.5 left-2.5 z-10">
+                                                <span className={cn(
+                                                    "inline-block border-2 border-black text-black px-2 py-0.5 font-black text-[9px] uppercase shadow-[2px_2px_0px_0px_#000]",
+                                                    i === 0 ? "bg-[#FF0080]" : "bg-[#23A9FA]"
+                                                )}>
+                                                    {a.category || "MAKALE"}
+                                                </span>
+                                            </div>
+
+                                            <div className="relative z-10 p-3 sm:p-4">
+                                                <h3 className="font-heading text-sm sm:text-lg font-black text-white leading-tight tracking-tight uppercase mb-1 group-hover:text-[#FFC800] transition-colors line-clamp-2">
+                                                    {a.title}
+                                                </h3>
+                                                <span className="text-white/50 text-[10px] font-bold">
+                                                    {a.author?.full_name} · {ago(a.created_at)}
+                                                </span>
+                                            </div>
+                                        </article>
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                     </section>
                 )}
 
-                {/* Empty state */}
-                {articles.length === 0 && (
-                    <div className="py-16 text-center border-2 border-dashed border-border rounded-[8px] bg-card">
-                        <p className="text-muted-foreground text-sm mb-2">Henüz içerik yok.</p>
-                        <Link href="/makale" className="text-sm text-primary hover:underline font-black uppercase">Tüm yazılar →</Link>
+                {/* ═══ NEWS TICKER ═══ */}
+                {!activeCategory && newsItems.length > 0 && (
+                    <div className="mb-8 sm:mb-10 border-3 border-black dark:border-white rounded-xl overflow-hidden shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                        <TrendingMarquee items={newsItems} />
                     </div>
                 )}
 
-                {/* ▬ CTA ▬ */}
+                {/* ═══ ARTICLE GRID ═══ */}
+                <section>
+                    {gridArticles.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {gridArticles.map((article, i) => (
+                                <motion.div
+                                    key={article.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: Math.min(i * 0.05, 0.3), duration: 0.3 }}
+                                >
+                                    <NeoArticleCard article={article} />
+                                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/20">
+                            <p className="text-zinc-300 font-black text-base mb-1">İçerik Bulunamadı</p>
+                            <p className="text-zinc-500 text-xs max-w-[250px] leading-relaxed font-bold mb-4">Bu kategoride henüz yazı yayınlanmamış.</p>
+                            <Link href="/makale">
+                                <span className="px-4 py-2 bg-[#FFC800] text-black font-black text-xs uppercase border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] transition-all">
+                                    Tümünü Gör
+                                </span>
+                            </Link>
+                        </div>
+                    )}
+                </section>
+
+                {/* ═══ CTA ═══ */}
                 <div className="mt-10 sm:mt-14">
                     <GoldenTicketCTA />
                 </div>
             </div>
-        </main>
+        </div>
     );
 }
