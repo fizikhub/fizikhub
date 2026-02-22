@@ -11,15 +11,8 @@ interface NexusStoriesProps {
 }
 
 export function NexusStories({ initialStories = [], initialGroups = [] }: NexusStoriesProps) {
-    const [mounted, setMounted] = useState(false);
     const [viewerOpen, setViewerOpen] = useState(false);
     const [activeStories, setActiveStories] = useState<any[]>([]);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) return null;
 
     const openGroup = (groupIndex: number) => {
         const group = initialGroups[groupIndex];

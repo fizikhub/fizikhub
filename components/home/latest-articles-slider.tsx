@@ -39,7 +39,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
 
             {/* Horizontal Scroll */}
             <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0">
-                {[...articles].sort(() => Math.random() - 0.5).slice(0, 6).map((article, index) => {
+                {articles.slice(0, 6).map((article, index) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
