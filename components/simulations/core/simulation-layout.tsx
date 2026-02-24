@@ -19,7 +19,7 @@ type TabType = "controls" | "theory" | "missions";
 
 export function SimulationLayout({
     title,
-    color = "#38BDF8",
+    color = "#FACC15",
     children,
     controlsArea,
     theoryArea,
@@ -29,67 +29,76 @@ export function SimulationLayout({
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-[#09090b] text-zinc-50 font-[family-name:var(--font-outfit)] overflow-hidden">
+        <div className="flex flex-col h-[100dvh] bg-[#FFFDF0] text-black font-sans overflow-hidden selection:bg-black selection:text-white">
 
             {/* Header / Topbar */}
             {!isFullscreen && (
                 <header
-                    className="relative z-50 flex items-center justify-between px-4 py-3 sm:py-4 border-b border-white/5"
-                    style={{ backgroundColor: `${color}15` }}
+                    className="relative z-50 flex items-center justify-between px-4 py-3 sm:py-4 border-b-[4px] border-black"
+                    style={{ backgroundColor: color }}
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
+                    {/* Retro Grid Background Overlay */}
+                    <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply"
+                        style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+                    />
 
-                    <div className="flex items-center gap-4 relative z-10 w-full max-w-screen-2xl mx-auto">
+                    <div className="flex items-center gap-4 relative z-10 w-full max-w-[1400px] mx-auto">
                         <ViewTransitionLink href="/simulasyonlar">
-                            <button className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all active:scale-95">
-                                <ArrowLeft className="w-5 h-5 text-white" />
+                            <button className="flex items-center justify-center w-12 h-12 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all group">
+                                <ArrowLeft className="w-6 h-6 text-black group-hover:-translate-x-1 transition-transform" />
                             </button>
                         </ViewTransitionLink>
 
-                        <h1 className="text-xl sm:text-2xl font-black text-white italic tracking-tighter drop-shadow-md">
-                            {title}
-                        </h1>
+                        <div className="bg-white border-[3px] border-black px-4 py-2 shadow-[4px_4px_0px_#000] rotate-1">
+                            <h1 className="text-xl md:text-2xl font-black text-black uppercase tracking-tighter leading-none">
+                                {title}
+                            </h1>
+                        </div>
                     </div>
                 </header>
             )}
 
             {/* Main Stage */}
             <main className="flex-1 flex flex-col lg:flex-row relative">
+
                 {/* Visual Area */}
                 <section className={cn(
-                    "relative flex-1 flex items-center justify-center p-2 sm:p-4 bg-[url('/noise.png')] bg-repeat shadow-inner transition-all",
-                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-black" : "min-h-[50vh] lg:min-h-full"
+                    "relative flex-1 flex items-center justify-center p-4 lg:p-8 transition-all",
+                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-[#FFFDF0]" : "min-h-[50vh] lg:min-h-full"
                 )}>
                     {/* The Canvas Frame */}
                     <div className={cn(
-                        "relative w-full h-full overflow-hidden flex items-center justify-center bg-black backdrop-blur-3xl transition-all duration-500",
-                        isFullscreen ? "rounded-none border-none shadow-none" : "rounded-3xl border border-white/5 shadow-2xl"
+                        "relative w-full h-full overflow-hidden flex items-center justify-center transition-all duration-300",
+                        isFullscreen
+                            ? "rounded-none border-none shadow-none bg-black"
+                            : "bg-white border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]"
                     )}>
+                        {/* Simulation Content */}
                         {children}
 
                         {/* Fullscreen Toggle */}
                         <button
                             onClick={() => setIsFullscreen(!isFullscreen)}
                             className={cn(
-                                "absolute z-50 w-10 h-10 rounded-xl bg-black/50 border border-white/10 backdrop-blur text-white flex items-center justify-center hover:bg-white/20 transition-all active:scale-90",
-                                isFullscreen ? "top-4 right-4 bg-white/10 hover:bg-white/30" : "top-4 right-4"
+                                "absolute z-50 w-12 h-12 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] flex items-center justify-center hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] transition-all",
+                                isFullscreen ? "top-4 right-4" : "top-4 right-4"
                             )}
                         >
-                            {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                            {isFullscreen ? <Minimize2 className="w-6 h-6" /> : <Maximize2 className="w-6 h-6" />}
                         </button>
                     </div>
                 </section>
 
                 {/* Interaction Panel */}
                 {!isFullscreen && (
-                    <aside className="h-[45vh] lg:h-full lg:w-[420px] flex flex-col bg-zinc-950/80 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/5 z-40 relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+                    <aside className="h-[45vh] lg:h-full lg:w-[450px] flex flex-col bg-white border-t-[4px] lg:border-t-0 lg:border-l-[4px] border-black z-40 relative shadow-[-8px_0_0px_rgba(0,0,0,1)]">
                         {/* Tabs Header */}
-                        <div className="flex items-center p-2 gap-1 bg-black/60 shrink-0 overflow-x-auto overflow-y-hidden hide-scrollbar border-b border-white/5">
+                        <div className="flex items-center p-4 gap-2 bg-[#f4f4f5] shrink-0 border-b-[4px] border-black overflow-x-auto overflow-y-hidden hide-scrollbar">
                             <TabButton
                                 isActive={activeTab === "controls"}
                                 onClick={() => setActiveTab("controls")}
                                 icon={<Settings2 className="w-4 h-4" />}
-                                label="KONTROLLER"
+                                label="KONTROL"
                                 color={color}
                             />
                             <TabButton
@@ -103,48 +112,48 @@ export function SimulationLayout({
                                 isActive={activeTab === "missions"}
                                 onClick={() => setActiveTab("missions")}
                                 icon={<Target className="w-4 h-4" />}
-                                label="GÖREVLER"
+                                label="GÖREV"
                                 color={color}
                             />
                         </div>
 
                         {/* Tab Content */}
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar relative">
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative bg-[#FFFDF0]">
                             <AnimatePresence mode="wait">
                                 {activeTab === "controls" && (
                                     <motion.div
                                         key="controls"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.2 }}
-                                        className="h-full flex flex-col gap-6"
+                                        className="h-full flex flex-col gap-8"
                                     >
-                                        {controlsArea || <Placeholder text="Kontrol paneli entegre edilmedi." />}
+                                        {controlsArea || <Placeholder text="KONTROL PANELİ YOK" />}
                                     </motion.div>
                                 )}
                                 {activeTab === "theory" && (
                                     <motion.div
                                         key="theory"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.2 }}
-                                        className="h-full text-zinc-300 max-w-none text-sm leading-relaxed"
+                                        className="h-full text-black max-w-none text-base font-medium leading-relaxed"
                                     >
-                                        {theoryArea ? theoryArea : <Placeholder text="Teori içeriği bulunamadı." />}
+                                        {theoryArea ? theoryArea : <Placeholder text="TEORİ EKLENMEDİ" />}
                                     </motion.div>
                                 )}
                                 {activeTab === "missions" && (
                                     <motion.div
                                         key="missions"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{ duration: 0.2 }}
                                         className="h-full"
                                     >
-                                        {missionsArea || <Placeholder text="Pedagojik görevler aktif değil." />}
+                                        {missionsArea || <Placeholder text="GÖREV TANIMLANMADI" />}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -161,19 +170,13 @@ function TabButton({ isActive, onClick, icon, label, color }: { isActive: boolea
         <button
             onClick={onClick}
             className={cn(
-                "relative flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-xs font-bold transition-all duration-300 z-10 tracking-widest overflow-hidden",
-                isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                "relative flex-1 flex items-center justify-center gap-2 px-4 py-3 border-[3px] border-black text-sm font-black uppercase tracking-tighter transition-all duration-200 shadow-[4px_4px_0px_#000] whitespace-nowrap",
+                isActive
+                    ? "text-black translate-y-[4px] translate-x-[4px] shadow-none"
+                    : "bg-white text-black hover:-translate-y-1 hover:shadow-[6px_6px_0px_#000]"
             )}
+            style={{ backgroundColor: isActive ? color : "white" }}
         >
-            {isActive && (
-                <motion.div
-                    layoutId="activeTabBadge"
-                    className="absolute inset-0 rounded-lg pointer-events-none"
-                    style={{ backgroundColor: `${color}30` }} // 30 hex alpha
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-            )}
             <span className="relative z-10">{icon}</span>
             <span className="relative z-10">{label}</span>
         </button>
@@ -182,9 +185,9 @@ function TabButton({ isActive, onClick, icon, label, color }: { isActive: boolea
 
 function Placeholder({ text }: { text: string }) {
     return (
-        <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4 py-12">
-            <div className="w-16 h-16 rounded-full border border-dashed border-zinc-700 bg-zinc-900/50 flex items-center justify-center" />
-            <p className="text-sm font-medium tracking-wide uppercase">{text}</p>
+        <div className="h-full flex flex-col items-center justify-center text-black space-y-6 py-12">
+            <div className="w-24 h-24 border-[4px] border-dashed border-black bg-zinc-200 flex items-center justify-center rotate-3" />
+            <p className="text-xl font-black tracking-tighter uppercase bg-white border-[3px] border-black px-4 py-2 shadow-[4px_4px_0px_#000] -rotate-2">{text}</p>
         </div>
     );
 }

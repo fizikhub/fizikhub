@@ -10,117 +10,68 @@ import {
     FileText,
     ArrowRight,
     Search,
-    Atom,
-    Rocket,
-    Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, Variants } from "framer-motion";
-import { BorderBeam } from "@/components/magicui/border-beam";
-import HyperText from "@/components/magicui/hyper-text";
-import { GlitchText } from "@/components/magicui/glitch-text";
+import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase-client";
-import { TiltCard } from "@/components/magicui/tilt-card";
 import { RealisticStars } from "@/components/share/realistic-stars";
 
-const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
-
-const item: Variants = {
-    hidden: { y: 20, opacity: 0, scale: 0.95 },
-    show: {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        transition: {
-            type: "spring",
-            stiffness: 120,
-            damping: 15
-        }
-    }
-};
-
-interface FreshCardProps {
+interface BrutalCardProps {
     title: string;
     description: string;
     href: string;
     icon: any;
     color: string;
-    accentColor: string;
-    colSpan?: string;
-    showBorderBeam?: boolean;
+    className?: string;
+    rotation: string;
 }
 
-function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", showBorderBeam }: FreshCardProps) {
+function BrutalCard({ title, description, href, icon: Icon, color, className, rotation }: BrutalCardProps) {
     return (
         <motion.div
-            variants={item}
-            className={cn("relative group h-full perspective-1000", colSpan)}
-            whileHover={{ y: -5, scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{
+                scale: 1.05,
+                rotate: 0,
+                zIndex: 50,
+                y: -10
+            }}
+            transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 25
+            }}
+            className={cn(
+                "group relative block w-full border-[3px] border-black p-6 rounded-none cursor-pointer",
+                "shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300",
+                color,
+                rotation,
+                className
+            )}
         >
-            <Link href={href} className="block h-full">
-                <TiltCard className="h-full" rotationFactor={12}>
-                    <div className="
-                        relative h-full 
-                        bg-white 
-                        border-[3px] border-black 
-                        rounded-2xl 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
-                        group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
-                        group-hover:-translate-y-1 group-hover:translate-x-1
-                        transition-all duration-300 ease-out
-                        flex flex-col
-                        overflow-hidden
-                    ">
-                        {showBorderBeam && (
-                            <BorderBeam
-                                size={300}
-                                duration={8}
-                                delay={0}
-                                borderWidth={3}
-                                colorFrom="#FACC15"
-                                colorTo="#FB7185"
-                            />
-                        )}
-
-                        {/* Decorative top bar */}
-                        <div className={cn("h-5 w-full border-b-[3px] border-black", color)}></div>
-
-                        <div className="px-6 py-6 flex flex-col justify-between h-full">
-                            <div className="flex items-start justify-between mb-4">
-                                <div className={cn(
-                                    "w-12 h-12 flex items-center justify-center rounded-xl border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
-                                    color
-                                )}>
-                                    <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
-                                </div>
-                                <div className="
-                                    w-8 h-8 rounded-full border-[2px] border-black flex items-center justify-center
-                                    bg-transparent group-hover:bg-black transition-colors duration-200
-                                ">
-                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-2xl md:text-3xl font-black text-black uppercase mb-1 leading-none tracking-tight">
-                                    <GlitchText text={title} className="block" />
-                                </h3>
-                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
-                                    {description}
-                                </p>
-                            </div>
-                        </div>
+            <Link href={href} className="flex flex-col h-full justify-between gap-8">
+                <div className="flex items-start justify-between">
+                    <div className="w-14 h-14 bg-white border-[3px] border-black rounded-full flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+                        <Icon className="w-7 h-7 text-black stroke-[3px]" />
                     </div>
-                </TiltCard>
+
+                    {/* Decorative tape / pin  */}
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-16 h-8 bg-zinc-200/80 border-2 border-black/20 rotate-[-5deg] mix-blend-overlay opacity-80" />
+
+                    <div className="w-10 h-10 border-[3px] border-black bg-white flex items-center justify-center rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:bg-black transition-colors">
+                        <ArrowRight className="w-5 h-5 text-black group-hover:text-white transition-colors" />
+                    </div>
+                </div>
+
+                <div className="mt-8">
+                    <h3 className="text-4xl lg:text-5xl font-black text-black uppercase tracking-tighter leading-none mb-3">
+                        {title}
+                    </h3>
+                    <p className="text-black font-bold text-lg md:text-xl leading-snug border-t-2 border-black/30 pt-3">
+                        {description}
+                    </p>
+                </div>
             </Link>
         </motion.div>
     );
@@ -142,9 +93,9 @@ export default function PaylasPage() {
                     .single();
 
                 if (profile) {
-                    setUserName(profile.full_name || profile.username || "Bilim İnsanı");
+                    setUserName(profile.full_name || profile.username || "FİZİKÇİ");
                 } else {
-                    setUserName("Bilim İnsanı");
+                    setUserName("FİZİKÇİ");
                 }
             }
             setLoaded(true);
@@ -152,147 +103,138 @@ export default function PaylasPage() {
         fetchUser();
     }, [supabase]);
 
-    // ... inside component
-
     return (
-        <div className="min-h-screen bg-background pb-24 pt-4 md:pt-20 px-4 font-sans relative overflow-hidden">
+        <div className="min-h-screen bg-[#FFFDF0] pb-24 font-sans relative overflow-hidden">
+            {/* NOISE OVERLAY */}
+            <div className="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.25]"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}>
+            </div>
 
-            {/* REALISTIC STARS - Behind texture */}
-            <RealisticStars />
-
-            {/* TEXTURED PAPER BACKGROUND - Reduced Opacity for Star Visibility */}
-            <div className="absolute inset-0 opacity-[0.4] dark:opacity-30 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-overlay"
-                style={{
-                    // Slightly finer grain (0.5) but still visible
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.7'/%3E%3C/svg%3E")`,
-                }}
-            ></div>
-
-
-
-            <div className="max-w-[900px] mx-auto relative z-10">
-
-                {/* Header - Compact */}
+            <div className="max-w-[1200px] mx-auto px-4 pt-12 md:pt-24 relative z-10">
+                {/* HERO HEADER */}
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
+                    initial={{ opacity: 0, y: -50 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 md:mb-10 pt-2 relative"
+                    className="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8 border-b-[4px] border-black pb-8"
                 >
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
-                        <div className="flex flex-col">
-                            <h1 className="text-5xl md:text-7xl font-black text-black leading-[0.85] tracking-tighter uppercase drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
-                                Paylaşım<br />
-                            </h1>
-                            <div className="flex items-center">
-                                <HyperText
-                                    text="MERKEZİ"
-                                    className="text-5xl md:text-7xl font-black text-[#FACC15] leading-[0.85] tracking-tighter uppercase text-stroke-black drop-shadow-[4px_4px_0px_#000]"
-                                    duration={1200}
-                                />
-                            </div>
-                        </div>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-white p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                        >
+                    <div className="relative inline-block">
+                        <div className="absolute -inset-2 bg-[#FACC15] border-[3px] border-black shadow-[8px_8px_0px_#000] -rotate-1 z-0"></div>
+                        <h1 className="relative z-10 text-6xl md:text-8xl lg:text-9xl font-black text-black leading-[0.8] tracking-tighter uppercase ml-2 mt-2">
+                            PAYLAŞIM<br />
+                            <span className="text-white text-stroke-black drop-shadow-[4px_4px_0px_#000]">MERKEZİ</span>
+                        </h1>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, rotate: -10 }}
+                        animate={{ opacity: 1, rotate: 3 }}
+                        transition={{ delay: 0.3, type: "spring" }}
+                        className="bg-white border-[3px] border-black p-4 shadow-[6px_6px_0px_#000] rotate-3 max-w-xs"
+                    >
+                        <p className="text-black font-black text-lg leading-snug uppercase">
                             {loaded ? (
                                 userName ?
-                                    `Bugün ne paylaşmak istersin, ${userName}?` :
-                                    "Bugün ne paylaşmak istersin?"
+                                    `MERHABA ${userName.toUpperCase()}! DÜNYAYA NE KATMAK İSTERSİN?` :
+                                    "BUGÜN NE PAYLAŞMAK İSTERSİN?"
                             ) : (
-                                "Yükleniyor..."
+                                "YÜKLENİYOR..."
                             )}
-                        </motion.p>
+                        </p>
+                    </motion.div>
+                </motion.div>
+
+                {/* THE ASYMMETRIC PINBOARD DESK */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 auto-rows-auto">
+
+                    {/* MAKALE - Big Feature */}
+                    <div className="lg:col-span-8 lg:row-span-2">
+                        <BrutalCard
+                            title="MAKALE"
+                            description="Derinlemesine bilimsel içerikler üret. İnsanları aydınlat."
+                            href="/makale/yeni"
+                            icon={FileText}
+                            color="bg-[#FACC15]"
+                            rotation="-rotate-1"
+                            className="h-full min-h-[300px]"
+                        />
                     </div>
-                </motion.div>
 
-                {/* Grid - Respecting Original Layout but Higher Quality */}
+                    {/* SORU */}
+                    <div className="lg:col-span-4 lg:row-span-1">
+                        <BrutalCard
+                            title="SORU"
+                            description="Kafana takılanları topluluğa sor."
+                            href="/forum?create=true"
+                            icon={MessageCircle}
+                            color="bg-[#FB7185]"
+                            rotation="rotate-2"
+                        />
+                    </div>
+
+                    {/* DENEY */}
+                    <div className="lg:col-span-4 lg:row-span-1">
+                        <BrutalCard
+                            title="DENEY"
+                            description="Laboratuvar sonuçlarını aktar."
+                            href="/makale/yeni?type=experiment"
+                            icon={FlaskConical}
+                            color="bg-[#4ADE80]"
+                            rotation="-rotate-2"
+                        />
+                    </div>
+
+                    {/* KİTAP */}
+                    <div className="lg:col-span-5 lg:row-span-1">
+                        <BrutalCard
+                            title="KİTAP"
+                            description="Okuduğun kitapların en vurucu incelemelerini yaz."
+                            href="/kitap-inceleme/yeni"
+                            icon={Library}
+                            color="bg-[#60A5FA]"
+                            rotation="rotate-1"
+                        />
+                    </div>
+
+                    {/* TERİM */}
+                    <div className="lg:col-span-4 lg:row-span-1">
+                        <BrutalCard
+                            title="TERİM"
+                            description="Bilim sözlüğüne terim ekle."
+                            href="/makale/yeni?type=term"
+                            icon={BookOpen}
+                            color="bg-[#C084FC]"
+                            rotation="-rotate-1"
+                        />
+                    </div>
+
+                    {/* BLOG */}
+                    <div className="lg:col-span-3 lg:row-span-1">
+                        <BrutalCard
+                            title="BLOG"
+                            description="Serbest, günlük yazılar."
+                            href="/makale/yeni?type=blog"
+                            icon={FileText}
+                            color="bg-orange-400"
+                            rotation="rotate-3"
+                        />
+                    </div>
+
+                </div>
+
+                {/* SEARCH COMMAND BAR */}
                 <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-                >
-                    {/* 1. Article - Yellow (Full Width Mobile - Preserved) */}
-                    <FreshCard
-                        title="MAKALE"
-                        description="Derinlemesine içerik üret."
-                        href="/makale/yeni"
-                        icon={FileText}
-                        color="bg-[#FACC15]"
-                        accentColor="#FACC15"
-                        colSpan="col-span-2 lg:col-span-2"
-                        showBorderBeam={true}
-                    />
-
-                    {/* 2. Question - Pink */}
-                    <FreshCard
-                        title="SORU"
-                        description="Topluluğa danış."
-                        href="/forum?create=true"
-                        icon={MessageCircle}
-                        color="bg-[#FB7185]"
-                        accentColor="#FB7185"
-                    />
-
-                    {/* 3. Experiment - Green */}
-                    <FreshCard
-                        title="DENEY"
-                        description="Sonuçları aktar."
-                        href="/makale/yeni?type=experiment"
-                        icon={FlaskConical}
-                        color="bg-[#4ADE80]"
-                        accentColor="#4ADE80"
-                    />
-
-                    {/* 4. Book - Blue */}
-                    <FreshCard
-                        title="KİTAP"
-                        description="Kütüphane notları."
-                        href="/kitap-inceleme/yeni"
-                        icon={Library}
-                        color="bg-[#60A5FA]"
-                        accentColor="#60A5FA"
-                    />
-
-                    {/* 5. Term - Purple */}
-                    <FreshCard
-                        title="TERİM"
-                        description="Sözlüğe katkı sağla."
-                        href="/makale/yeni?type=term"
-                        icon={BookOpen}
-                        color="bg-[#C084FC]"
-                        accentColor="#C084FC"
-                    />
-
-                    {/* 6. Blog - Orange */}
-                    <FreshCard
-                        title="BLOG"
-                        description="Serbest yazı."
-                        href="/makale/yeni?type=blog"
-                        icon={FileText}
-                        color="bg-orange-400"
-                        accentColor="#fb923c"
-                    />
-
-                </motion.div>
-
-                {/* Footer / Search Link */}
-                <motion.div
-                    variants={item}
-                    initial="hidden"
-                    animate="show"
-                    className="mt-6 md:mt-8 pb-8"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-16 md:mt-24"
                 >
                     <Link href="/ara" className="block group">
-                        <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] transition-all">
-                            <span className="font-bold text-sm md:text-lg flex items-center gap-3">
-                                <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full shadow-[0_0_8px_#22c55e]"></div>
-                                <span className="font-mono text-gray-300">_komut_satiri:</span>
-                                <span className="text-white">Daha fazlasını ara...</span>
+                        <div className="bg-black text-white p-6 md:p-8 border-[4px] border-black hover:bg-[#1a1a1a] shadow-[8px_8px_0px_#C084FC] group-hover:shadow-[12px_12px_0px_#C084FC] group-hover:-translate-y-1 transition-all flex items-center justify-between">
+                            <span className="font-black text-xl md:text-3xl uppercase tracking-tighter flex items-center gap-4">
+                                <span className="animate-ping bg-[#4ADE80] w-4 h-4 rounded-none border-2 border-white inline-block"></span>
+                                <span className="text-[#C084FC]">&gt;</span> DAHA FAZLASINI ARA...
                             </span>
-                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff]">
+                            <div className="bg-white text-black px-6 py-2 font-black text-lg md:text-2xl border-[3px] border-black shadow-[4px_4px_0px_#000] rotate-2 group-hover:rotate-0 transition-transform">
                                 ENTER
                             </div>
                         </div>
@@ -303,11 +245,11 @@ export default function PaylasPage() {
 
             <style jsx global>{`
                 .text-stroke-black {
-                    -webkit-text-stroke: 1.5px black;
+                    -webkit-text-stroke: 2px black;
                 }
                 @media (min-width: 768px) {
                     .text-stroke-black {
-                        -webkit-text-stroke: 2px black;
+                        -webkit-text-stroke: 3px black;
                     }
                 }
             `}</style>
