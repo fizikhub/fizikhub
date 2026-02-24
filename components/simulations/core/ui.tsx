@@ -24,56 +24,49 @@ export function PhysicsSlider({
     step = 1,
     unit = "",
     onChange,
-    color = "#FACC15"
+    color = "#38BDF8"
 }: PhysicsSliderProps) {
+
     const percentage = ((value - min) / (max - min)) * 100;
 
     return (
-        <div className="flex flex-col gap-2 w-full group relative z-10">
-            <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-black text-black uppercase tracking-tighter w-full">
+        <div className="flex flex-col gap-2 w-full group">
+            <div className="flex justify-between items-center px-1">
+                <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase group-hover:text-zinc-200 transition-colors">
                     {label}
                 </span>
+                <div className="font-mono text-xs font-black px-2 py-1 rounded bg-black/50 border border-white/10 text-white min-w-[4rem] text-center shadow-inner tracking-tighter">
+                    {value.toFixed(step % 1 !== 0 ? 2 : 0)} <span className="text-zinc-500">{unit}</span>
+                </div>
             </div>
 
-            <div className="relative h-6 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] flex items-center">
-                {/* Fill Track */}
+            <div className="relative h-2 rounded-full bg-black border border-white/5 overflow-visible flex items-center shadow-inner">
                 <div
-                    className="absolute left-0 top-0 bottom-0 border-r-[3px] border-black transition-all duration-75"
+                    className="absolute left-0 top-0 bottom-0 rounded-full"
                     style={{
                         width: `${percentage}%`,
                         backgroundColor: color,
+                        boxShadow: `0 0 10px ${color}80`
                     }}
                 />
 
-                {/* Invisible input on top */}
                 <input
                     type="range"
+                    autoFocus={false}
                     min={min}
                     max={max}
                     step={step}
                     value={value}
                     onChange={(e) => onChange(parseFloat(e.target.value))}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 />
 
-                {/* Value Display attached to thumb */}
-                <div
-                    className="absolute -top-10 pointer-events-none transition-all duration-75"
-                    style={{ left: `calc(${percentage}%)`, transform: 'translateX(-50%)' }}
-                >
-                    <div className="bg-black text-white font-mono font-black text-xs px-2 py-1 flex items-center gap-1 relative after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-t-4 after:border-x-4 after:border-x-transparent after:border-t-black">
-                        {value.toFixed(step % 1 !== 0 ? 2 : 0)} <span className="text-zinc-400">{unit}</span>
-                    </div>
-                </div>
-
-                {/* Custom Thumb - Brutalist Block */}
-                <div
-                    className="absolute w-6 h-8 bg-white border-[3px] border-black pointer-events-none transition-all duration-75 z-10 flex items-center justify-center shadow-[2px_2px_0px_#000]"
-                    style={{ left: `calc(${percentage}% - 12px)` }}
-                >
-                    <div className="w-1 h-3 bg-black"></div>
-                </div>
+                {/* Custom Thumb */}
+                <motion.div
+                    className="absolute w-4 h-4 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] border-2 border-zinc-900 pointer-events-none"
+                    style={{ left: `calc(${percentage}% - 8px)` }}
+                    layout
+                />
             </div>
         </div>
     );
@@ -87,13 +80,10 @@ interface PhysicsToggleProps {
     color?: string;
 }
 
-export function PhysicsToggle({ label, checked, onChange, color = "#4ADE80" }: PhysicsToggleProps) {
+export function PhysicsToggle({ label, checked, onChange, color = "#38BDF8" }: PhysicsToggleProps) {
     return (
-        <div
-            className="flex items-center justify-between w-full p-3 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] cursor-pointer group hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
-            onClick={() => onChange(!checked)}
-        >
-            <span className="text-sm font-black text-black uppercase tracking-tighter">
+        <div className="flex items-center justify-between w-full p-2 sm:p-3 rounded-xl bg-black/20 border border-white/5 hover:border-white/10 transition-colors cursor-pointer group" onClick={() => onChange(!checked)}>
+            <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase group-hover:text-zinc-200 transition-colors">
                 {label}
             </span>
 
@@ -101,15 +91,17 @@ export function PhysicsToggle({ label, checked, onChange, color = "#4ADE80" }: P
                 role="switch"
                 aria-checked={checked}
                 className={cn(
-                    "relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center border-[3px] border-black transition-colors focus:outline-none",
-                    checked ? "bg-white" : "bg-zinc-200"
+                    "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+                    checked ? "bg-white/20" : "bg-zinc-800"
                 )}
                 style={{ backgroundColor: checked ? color : undefined }}
             >
-                <span
+                <motion.span
+                    layout
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     className={cn(
-                        "pointer-events-none block h-full w-6 bg-white border-x-[3px] border-black transition-transform duration-200 shadow-[2px_0_0_#000]",
-                        checked ? "translate-x-6" : "translate-x-0"
+                        "pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform",
+                        checked ? "translate-x-4" : "translate-x-0"
                     )}
                 />
             </button>
