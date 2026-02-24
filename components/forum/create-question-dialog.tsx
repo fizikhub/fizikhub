@@ -131,7 +131,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                 </Button>
             )}
             <DialogContent
-                className="sm:max-w-[700px] w-[95vw] border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0 overflow-hidden rounded-[8px] h-auto max-h-[90vh] flex flex-col z-[150] gap-0"
+                className="sm:max-w-[700px] w-[95vw] border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0 overflow-hidden rounded-[8px] h-auto max-h-[85dvh] flex flex-col z-[150] gap-0"
             >
                 {/* NOISE TEXTURE */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
@@ -210,7 +210,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="p-5 sm:p-6 space-y-5"
+                                    className="p-5 sm:p-6 pb-20 sm:pb-6 space-y-5"
                                 >
                                     {/* Selected Category Tag */}
                                     <div className="flex items-center justify-between pb-3 border-b border-black/10 dark:border-white/10">
@@ -268,7 +268,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                             disabled={loading}
                                             className={cn(
                                                 "h-10 px-8 font-[family-name:var(--font-inter)] font-black uppercase tracking-widest transition-all rounded-[8px]",
-                                                "bg-black dark:bg-[#18181b] text-white dark:text-zinc-100 border-[3px] border-black",
+                                                "bg-green-600 hover:bg-green-500 text-white border-[3px] border-black",
                                                 "shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
                                             )}
                                         >
