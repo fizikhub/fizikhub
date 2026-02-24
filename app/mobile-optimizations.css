@@ -54,7 +54,6 @@ section>div,
 .hover\:scale,
 .group-hover\:scale {
     will-change: transform;
-    transform: translateZ(0);
     backface-visibility: hidden;
 }
 
@@ -223,7 +222,6 @@ iframe {
 [data-state="open"],
 .dialog-content,
 .modal {
-    transform: translateZ(0);
     will-change: transform, opacity;
 }
 

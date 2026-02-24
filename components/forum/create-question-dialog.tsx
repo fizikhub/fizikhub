@@ -131,7 +131,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                 </Button>
             )}
             <DialogContent
-                className="sm:max-w-[700px] w-[95vw] border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0 overflow-hidden rounded-[8px] h-auto max-h-[90vh] flex flex-col z-[150] gap-0 mx-auto"
+                className="sm:max-w-[700px] w-[95vw] border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0 overflow-hidden rounded-[8px] h-auto max-h-[90vh] flex flex-col z-[150] gap-0"
             >
                 {/* NOISE TEXTURE */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
