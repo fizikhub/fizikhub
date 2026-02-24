@@ -3,7 +3,6 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
-import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
@@ -235,24 +234,18 @@ export default async function ArticlePage({ params }: PageProps) {
                         initialBookmarked={!!userBookmark}
                     />
                 ) : (
-                    <>
-                        {/* Immersive Neo Hero */}
-                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
-
-                        {/* State-managed Article Reader */}
-                        <ArticleReader
-                            article={article}
-                            readingTime={formattedReadingTime}
-                            likeCount={likeCount || 0}
-                            initialLiked={!!userLike}
-                            initialBookmarked={!!userBookmark}
-                            comments={comments || []}
-                            isLoggedIn={!!user}
-                            isAdmin={isAdmin}
-                            userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                            relatedArticles={relatedArticles || []}
-                        />
-                    </>
+                    <ArticleReader
+                        article={article}
+                        readingTime={formattedReadingTime}
+                        likeCount={likeCount || 0}
+                        initialLiked={!!userLike}
+                        initialBookmarked={!!userBookmark}
+                        comments={comments || []}
+                        isLoggedIn={!!user}
+                        isAdmin={isAdmin}
+                        userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                        relatedArticles={relatedArticles || []}
+                    />
                 )}
             </div>
         </>
