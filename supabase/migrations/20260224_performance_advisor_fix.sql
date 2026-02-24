@@ -88,9 +88,9 @@ DO $$
 BEGIN
     IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'story_groups') THEN
         CREATE POLICY "Story groups are viewable by everyone" ON public.story_groups FOR SELECT USING (true);
-        CREATE POLICY "Users can insert their own story groups" ON public.story_groups FOR INSERT WITH CHECK (auth.uid() = owner_id);
-        CREATE POLICY "Users can update their own story groups" ON public.story_groups FOR UPDATE USING (auth.uid() = owner_id);
-        CREATE POLICY "Users can delete their own story groups" ON public.story_groups FOR DELETE USING (auth.uid() = owner_id);
+        CREATE POLICY "Users can insert their own story groups" ON public.story_groups FOR INSERT WITH CHECK (auth.uid() = author_id);
+        CREATE POLICY "Users can update their own story groups" ON public.story_groups FOR UPDATE USING (auth.uid() = author_id);
+        CREATE POLICY "Users can delete their own story groups" ON public.story_groups FOR DELETE USING (auth.uid() = author_id);
     END IF;
 END $$;
 
