@@ -255,11 +255,11 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="pt-2 flex justify-between items-center">
+                                    <div className="sticky bottom-0 left-0 right-0 bg-[#f4f4f5] dark:bg-[#18181b] border-t-[3px] border-black -mx-5 sm:-mx-6 -mb-20 sm:-mb-6 p-4 sm:p-5 mt-auto flex justify-between items-center z-20 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.3)]">
                                         <Button
                                             variant="ghost"
                                             onClick={() => setStep(1)}
-                                            className="font-[family-name:var(--font-inter)] font-black border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-zinc-800 rounded-[8px] transition-all uppercase tracking-widest text-xs px-4"
+                                            className="font-[family-name:var(--font-inter)] font-black border-[3px] border-transparent hover:border-black hover:bg-white dark:hover:bg-zinc-800 rounded-[8px] transition-all uppercase tracking-widest text-xs px-4 text-black dark:text-zinc-100"
                                         >
                                             <span className="mr-2">{'<'}</span> GERİ
                                         </Button>
@@ -289,6 +289,6 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                     </div>
                 </div>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 }
