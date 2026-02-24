@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { TermGuide } from "@/components/term/term-guide";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TermEditorProps {
     userId: string;
@@ -80,145 +79,96 @@ export function TermEditor({ userId }: TermEditorProps) {
     };
 
     const [showGuide, setShowGuide] = useState(true);
-    const [activeTab, setActiveTab] = useState("content");
 
     return (
-        <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-0 space-y-8 animate-in fade-in duration-500 pb-24 relative">
             <TermGuide open={showGuide} onOpenChange={setShowGuide} />
 
-            {/* Header */}
-            <div className="flex items-center justify-between border-b-4 border-foreground pb-6">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-blue-500 text-white border-2 border-foreground flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                        <BookType className="w-7 h-7" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter text-foreground">Terim Ekle</h1>
-                        <p className="text-muted-foreground font-bold text-sm uppercase tracking-wide">Tanımla. Örnekle. Aydınlat.</p>
-                    </div>
-                </div>
-
+            {/* Guide Trigger Float */}
+            <div className="fixed bottom-4 left-4 z-50">
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
+                    className="rounded-full bg-background border-[3px] border-black shadow-[4px_4px_0px_#000] hover:-translate-y-1 transition-transform w-12 h-12 text-blue-500 hover:text-blue-600 hover:bg-blue-50 active:translate-y-[2px] active:shadow-none"
                     onClick={() => setShowGuide(true)}
-                    className="rounded-full border-2 border-foreground hover:bg-muted"
                     title="İpuçları"
                 >
-                    <WholeWord className="w-5 h-5 text-blue-500" />
+                    <WholeWord className="w-6 h-6 stroke-[3]" />
                 </Button>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                {/* Mobile Tab Control - Sticky Top on Mobile */}
-                <div className="md:hidden sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b-[3px] border-black p-2 -mx-4 mb-4">
-                    <TabsList className="grid w-full grid-cols-2 bg-muted/30 border-[3px] border-black rounded-xl h-12 p-1">
-                        <TabsTrigger value="content" className="rounded-lg font-black uppercase tracking-widest text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-[2px_2px_0px_#000] transition-all">
-                            📝 Açıklama
-                        </TabsTrigger>
-                        <TabsTrigger value="details" className="rounded-lg font-black uppercase tracking-widest text-xs data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-[2px_2px_0px_#000] transition-all">
-                            ⚙️ Ayarlar
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
+            <div className="bg-card border-[3px] border-black rounded-[12px] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex flex-col gap-0 relative">
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-                    {/* Left/Main Column: Definition Editor */}
-                    <TabsContent value="content" className="md:col-span-8 space-y-6 mt-0 border-0 p-0">
-                        {/* Title Input */}
-                        <div className="space-y-4">
-                            <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Terim Adı</Label>
-                            <Textarea
-                                ref={titleRef}
-                                placeholder="TERİMİN ADI..."
-                                className="min-h-[60px] sm:min-h-[80px] font-black text-3xl sm:text-5xl uppercase tracking-tighter resize-none bg-background border-none focus:ring-0 rounded-none p-0 placeholder:text-muted-foreground/30 shadow-none leading-[0.9] text-foreground"
-                                value={termName}
-                                onChange={(e) => setTermName(e.target.value)}
+                {/* Top Meta Area (Blue Tint) */}
+                <div className="p-5 sm:p-8 border-b-[3px] border-black bg-blue-500/10 space-y-5">
+
+                    {/* Title */}
+                    <Textarea
+                        ref={titleRef}
+                        placeholder="TERİM ADI..."
+                        className="w-full resize-none overflow-hidden bg-transparent border-none text-3xl sm:text-4xl md:text-5xl font-black font-[family-name:var(--font-outfit)] uppercase tracking-tighter placeholder:text-muted-foreground/30 focus-visible:ring-0 p-0 leading-[1.1] min-h-[50px] sm:min-h-[60px]"
+                        value={termName}
+                        onChange={(e) => setTermName(e.target.value)}
+                        maxLength={150}
+                        rows={1}
+                    />
+
+                    {/* Meta Controls */}
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-stretch sm:items-center">
+                        {/* Related Field */}
+                        <div className="flex-1 sm:max-w-[300px] flex items-center bg-background border-[3px] border-black rounded-[8px] px-3 h-12 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
+                            <Hash className="w-5 h-5 text-blue-600 mr-2 shrink-0" />
+                            <Input
+                                placeholder="Alan (Örn: Fizik, Biyoloji)"
+                                value={relatedField}
+                                onChange={(e) => setRelatedField(e.target.value)}
+                                className="w-full h-full border-none shadow-none bg-transparent hover:bg-transparent px-0 font-bold focus-visible:ring-0 text-xs sm:text-sm placeholder:text-muted-foreground/50"
                             />
                         </div>
 
-                        {/* Article Editor for Definition */}
-                        <div className="bg-card min-h-[400px] border-[3px] border-black rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden relative group">
-                            <div className="border-b-[3px] border-black p-3 bg-muted/40 flex items-center justify-between">
-                                <div className="flex gap-2">
-                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-black bg-red-500" />
-                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-black bg-yellow-500" />
-                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-black bg-green-500" />
-                                </div>
-                                <span className="font-bold text-xs uppercase tracking-widest text-muted-foreground mr-2">Açıklama Editörü</span>
-                            </div>
-                            <ArticleEditor
-                                content={content}
-                                onChange={setContent}
-                                className="flex-1 p-6 sm:p-10 outline-none prose prose-lg dark:prose-invert max-w-none prose-headings:font-[family-name:var(--font-outfit)] prose-headings:font-black prose-p:font-[family-name:var(--font-inter)] prose-p:text-lg prose-p:leading-relaxed selection:bg-blue-300 selection:text-black"
-                                onUploadImage={async () => { return ""; }}
-                            />
+                        {/* Certainty badge */}
+                        <div className="flex-shrink-0 flex items-center justify-center bg-blue-600/10 border-[3px] border-blue-600 text-blue-700 dark:text-blue-400 rounded-[8px] px-4 h-12 font-black uppercase tracking-widest text-xs sm:text-sm select-none">
+                            100% Kesinlik
                         </div>
-                    </TabsContent>
-
-                    {/* Right Column: Settings */}
-                    <TabsContent value="details" className="md:col-span-4 space-y-6 mt-0 data-[state=inactive]:hidden md:data-[state=inactive]:block border-0 p-0 md:sticky md:top-24">
-                        <div className="bg-card p-5 border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(59,130,246,1)] rounded-xl relative overflow-hidden">
-                            <div className="flex items-center gap-2 mb-4 pb-2 border-b-2 border-black/10">
-                                <BookType className="w-5 h-5 text-blue-600" />
-                                <h3 className="font-black uppercase tracking-widest text-foreground text-sm">Terim Detayı</h3>
-                            </div>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                                        <Hash className="w-3 h-3 text-blue-600" />
-                                        Alan / Konu
-                                    </Label>
-                                    <Input
-                                        placeholder="Örn: Fizik, DNA, Uzay..."
-                                        className="h-12 bg-muted/20 border-2 border-black focus:border-blue-600 focus:ring-0 rounded-lg transition-all font-bold text-lg placeholder:font-normal placeholder:text-muted-foreground/40"
-                                        value={relatedField}
-                                        onChange={(e) => setRelatedField(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">İlgili Alan Yüzdesi (%)</Label>
-                                    <div className="flex gap-4">
-                                        <div className="flex-1 text-center py-4 bg-muted/20 border-2 border-black rounded-lg group hover:border-blue-600 transition-colors cursor-help">
-                                            <div className="font-black text-3xl text-foreground group-hover:text-blue-600 transition-colors">100</div>
-                                            <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mt-1">Kesinlik</div>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground font-medium italic mt-2 text-center">Bu alan otomatik olarak 100% olarak ayarlanmıştır.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-blue-600/10 border-[3px] border-blue-600 text-foreground text-sm font-medium shadow-[4px_4px_0px_0px_rgba(59,130,246,1)]">
-                            <span className="font-black uppercase tracking-widest">İpucu:</span> Terimi açıklarken herkesin anlayabileceği bir dil kullanmaya çalış. Karmaşık formüller yerine güzel benzetmeler hayat kurtarır.
-                        </div>
-                    </TabsContent>
+                    </div>
                 </div>
-            </Tabs>
 
-            {/* Bottom Toolbar */}
-            <div className="sticky bottom-0 z-40 p-4 sm:p-5 -mx-4 bg-[#f4f4f5] dark:bg-[#18181b] border-t-[3px] border-black flex justify-end items-center mt-12 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.3)] gap-4">
-                <div className="flex w-full sm:w-auto gap-3">
-                    <Button
-                        variant="outline"
-                        onClick={() => handleSubmit("draft")}
-                        className="flex-1 sm:flex-none h-12 sm:h-auto text-foreground font-black uppercase tracking-widest border-[3px] border-black hover:bg-black hover:text-white rounded-lg transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
-                        disabled={isSubmitting}
-                    >
-                        Taslak
-                    </Button>
-                    <Button
-                        onClick={() => handleSubmit("published")}
-                        disabled={isSubmitting || !termName || !content}
-                        className="flex-1 sm:flex-none h-12 sm:h-auto rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest px-8 border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-[1px] hover:-translate-x-[1px] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all"
-                    >
-                        {isSubmitting ? (
-                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                        ) : (
-                            <Send className="w-5 h-5 mr-2 stroke-[3]" />
-                        )}
-                        Paylaş
-                    </Button>
+                {/* Editor Area */}
+                <div className="p-4 sm:p-6 md:p-8 bg-background flex flex-col min-h-[500px]">
+                    <ArticleEditor
+                        content={content}
+                        onChange={setContent}
+                        className="flex-1 outline-none prose prose-lg dark:prose-invert max-w-none prose-headings:font-[family-name:var(--font-outfit)] prose-headings:font-black prose-p:font-[family-name:var(--font-inter)] prose-p:text-lg prose-p:leading-relaxed selection:bg-blue-300 selection:text-black placeholder:text-muted-foreground/30 focus:outline-none"
+                        onUploadImage={async () => { return ""; }}
+                    />
+                </div>
+
+                {/* Footer Controls */}
+                <div className="p-4 sm:p-6 border-t-[3px] border-black bg-[#f4f4f5] dark:bg-[#18181b] flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <span className={cn("hidden sm:block text-xs font-black uppercase tracking-widest transition-colors",
+                        content.length > 0 ? "text-muted-foreground" : "text-transparent"
+                    )}>
+                        {content.length} karakter
+                    </span>
+
+                    <div className="flex w-full sm:w-auto gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => handleSubmit("draft")}
+                            disabled={isSubmitting}
+                            className="flex-1 sm:flex-none h-12 text-foreground font-black uppercase tracking-widest border-[3px] border-black hover:bg-black hover:text-white rounded-[8px] transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none text-xs sm:text-sm"
+                        >
+                            Taslak
+                        </Button>
+                        <Button
+                            onClick={() => handleSubmit("published")}
+                            disabled={isSubmitting || !termName || !content}
+                            className="flex-1 sm:flex-none h-12 rounded-[8px] bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest px-6 sm:px-8 border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all text-xs sm:text-sm"
+                        >
+                            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Send className="w-5 h-5 mr-2 stroke-[3]" />}
+                            Paylaş
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
