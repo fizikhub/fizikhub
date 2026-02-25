@@ -30,7 +30,7 @@ export function TrendingMarquee({ items }: TrendingMarqueeProps) {
                     transition={{
                         repeat: Infinity,
                         ease: "linear",
-                        duration: 60, // Slower for readability
+                        duration: 120, // Slower for readability
                     }}
                 >
                     {duplicatedNews.map((item, index) => (

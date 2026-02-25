@@ -15,10 +15,9 @@ const FEEDS = [
 
 // Curated list of reliable science feeds
 const SCIENCE_FEEDS = [
-    { url: 'https://p.feedblitz.com/f3.io/8987d605481711204856627054238722', source: 'ScienceDaily (Top)' }, // Specific ScienceDaily
-    { url: 'https://phys.org/rss-feed/physics-news/', source: 'Phys.org (Physics)' },
-    { url: 'https://phys.org/rss-feed/biology-news/', source: 'Phys.org (Biology)' },
-    { url: 'https://phys.org/rss-feed/chemistry-news/', source: 'Phys.org (Chemistry)' },
+    { url: 'https://p.feedblitz.com/f3.io/8987d605481711204856627054238722', source: 'ScienceDaily' },
+    { url: 'https://phys.org/rss-feed/physics-news/', source: 'Phys.org' },
+    { url: 'https://evrimagaci.org/rss.xml', source: 'Evrim Ağacı' }, // Turkish Source
 ];
 
 export async function getScienceNews(): Promise<ScienceNewsItem[]> {
