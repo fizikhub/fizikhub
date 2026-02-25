@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Cpu } from "lucide-react";
+import { Telescope, Cpu, Dna, FlaskConical, Globe, Clock, Flame, Zap, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { type ScienceNewsItem } from "@/lib/rss";
@@ -19,6 +19,16 @@ interface ArticleFeedProps {
     newsItems: ScienceNewsItem[];
 }
 
+const TABS = [
+    { id: 'TÜMÜ', icon: LayoutList, color: 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-black' },
+    { id: 'Uzay', icon: Telescope, color: 'bg-[#FF0080] text-white' },
+    { id: 'Teknoloji', icon: Cpu, color: 'bg-[#23A9FA] text-white' },
+    { id: 'Biyoloji', icon: Dna, color: 'bg-[#00F050] text-black' },
+    { id: 'Fizik', icon: Zap, color: 'bg-[#FFC800] text-black' },
+    { id: 'Kimya', icon: FlaskConical, color: 'bg-[#FF90E8] text-black' },
+    { id: 'Genel', icon: Globe, color: 'bg-[#a1a1aa] text-black' },
+];
+
 export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems }: ArticleFeedProps) {
 
     const ARTICLES = articles.map(a => ({
@@ -26,194 +36,183 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
         title: a.title,
         excerpt: a.summary || a.excerpt,
         image: a.cover_url || a.image_url || "/images/placeholder-article.webp",
-        category: a.category || "GENEL",
+        category: a.category || "Genel",
         date: a.created_at,
-        author: a.author?.full_name || a.profiles?.full_name || "Anonim",
+        author: a.author?.full_name || a.profiles?.full_name || "FizikHub Editör",
         slug: a.slug,
+        readingTime: Math.max(1, Math.ceil((a.content?.split(/\s+/).length || 500) / 200))
     }));
 
-    const COLORS = ['#FFC800', '#FF0080', '#00F050', '#23A9FA'];
-
     return (
-        <div className="min-h-screen bg-transparent text-black dark:text-white pb-20">
+        <div className="min-h-screen bg-background text-foreground pb-20">
             {newsItems && newsItems.length > 0 && <TrendingMarquee items={newsItems} />}
 
-            <main className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
+            <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+                {/* ── HEADER ── */}
+                <header className="mb-10 pt-4 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2 border-dashed border-black/10 dark:border-white/10 pb-6">
+                    <div>
+                        <motion.h1
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="font-heading text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter"
+                        >
+                            Bilim <span className="text-zinc-400 dark:text-zinc-600">&</span> Makale
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="mt-3 text-sm sm:text-base font-bold tracking-tight text-zinc-500 max-w-xl"
+                        >
+                            Evrenin sırları ve teknolojik atılımlar hakkında derinlemesine analizler.
+                        </motion.p>
+                    </div>
 
-                <header className="mb-12 border-b-[4px] border-black dark:border-white pb-8">
-                    <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-8">
-                        <div className="max-w-4xl">
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="font-heading text-6xl sm:text-8xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] drop-shadow-[4px_4px_0px_#000] dark:drop-shadow-[4px_4px_0px_#fff]"
+                    <div className="flex gap-2">
+                        {['latest', 'popular'].map((s) => (
+                            <Link
+                                key={s}
+                                href={`/makale?sort=${s}${activeCategory ? `&category=${activeCategory}` : ''}`}
+                                className={cn(
+                                    "flex items-center gap-2 px-4 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all border-2",
+                                    sortParam === s
+                                        ? "bg-zinc-900 text-white dark:bg-white dark:text-black border-zinc-900 dark:border-white shadow-[2px_2px_0px_rgba(0,0,0,0.5)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.5)] translate-x-[-1px] translate-y-[-1px]"
+                                        : "bg-transparent text-zinc-500 border-zinc-200 dark:border-zinc-800 hover:text-foreground hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:hover:shadow-[2px_2px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                )}
                             >
-                                İNDEKS<span className="text-[#00F050]">.</span>
-                            </motion.h1>
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="mt-8 text-xl sm:text-2xl font-bold uppercase tracking-tight text-zinc-600 dark:text-zinc-400 border-l-[6px] border-[#FFC800] pl-5 max-w-2xl"
-                            >
-                                Kozmosun ve teknolojinin sınırlarında en güncel <span className="text-black dark:text-white">bilimsel makaleler</span>. Özgün, premium ve tavizsiz tasarım.
-                            </motion.p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            {['latest', 'popular'].map((s) => (
-                                <Link
-                                    key={s}
-                                    href={`/makale?sort=${s}${activeCategory ? `&category=${activeCategory}` : ''}`}
-                                    className={cn(
-                                        "px-8 py-3.5 font-black uppercase text-sm border-[3px] border-black dark:border-white transition-all duration-200",
-                                        sortParam === s
-                                            ? "bg-black text-white dark:bg-white dark:text-black shadow-none translate-x-[2px] translate-y-[2px]"
-                                            : "bg-white dark:bg-[#18181b] text-black dark:text-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                                    )}
-                                >
-                                    {s === 'latest' ? 'En Yeni' : 'Popüler'}
-                                </Link>
-                            ))}
-                        </div>
+                                {s === 'latest' ? <Clock className="w-3.5 h-3.5" /> : <Flame className="w-3.5 h-3.5" />}
+                                {s === 'latest' ? 'En Yeni' : 'Popüler'}
+                            </Link>
+                        ))}
                     </div>
                 </header>
 
-                <div className="flex gap-4 overflow-x-auto no-scrollbar mb-16 pb-4 snap-x">
-                    <Link
-                        href="/makale"
-                        className={cn(
-                            "snap-start whitespace-nowrap px-8 py-3 font-black uppercase text-sm border-[3px] border-black dark:border-white transition-all duration-200",
-                            !activeCategory
-                                ? "bg-[#FF0080] text-white shadow-none translate-x-[2px] translate-y-[2px]"
-                                : "bg-white dark:bg-[#18181b] text-black dark:text-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                        )}
-                    >
-                        TÜMÜ
-                    </Link>
-                    {categories.map((cat, idx) => (
-                        <Link
-                            key={cat}
-                            href={`/makale?category=${cat}`}
-                            className={cn(
-                                "snap-start whitespace-nowrap px-8 py-3 font-black uppercase text-sm border-[3px] border-black dark:border-white transition-all duration-200",
-                                activeCategory === cat
-                                    ? "text-black shadow-none translate-x-[2px] translate-y-[2px]"
-                                    : "bg-white dark:bg-[#18181b] text-black dark:text-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#fff] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                            )}
-                            style={activeCategory === cat ? { backgroundColor: COLORS[idx % COLORS.length] } : {}}
-                        >
-                            {cat}
-                        </Link>
-                    ))}
+                {/* ── PROFILE-STYLE DARK NEO TABS ── */}
+                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-6 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+                    {TABS.map((tab) => {
+                        const Icon = tab.icon;
+                        const isAll = tab.id === 'TÜMÜ';
+                        const isActive = isAll ? !activeCategory : activeCategory === tab.id;
+
+                        // Sadece elimizde o kategori varsa veya "TÜMÜ" ise göster
+                        if (!isAll && !categories.includes(tab.id) && !isActive) return null;
+
+                        return (
+                            <Link
+                                key={tab.id}
+                                href={isAll ? '/makale' : `/makale?category=${tab.id}${sortParam !== 'latest' ? `&sort=${sortParam}` : ''}`}
+                                className={cn(
+                                    "relative flex items-center gap-2 px-4 py-2.5 border-2 rounded-xl font-black text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group uppercase tracking-wider",
+                                    isActive
+                                        ? `${tab.color} border-black dark:border-transparent shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.2)] translate-x-[-1px] translate-y-[-1px]`
+                                        : "bg-background border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-foreground hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                )}
+                            >
+                                <Icon className={cn("w-3.5 h-3.5 stroke-[2.5px]", isActive && "stroke-current")} />
+                                {tab.id}
+                            </Link>
+                        );
+                    })}
                 </div>
 
+                {/* ── SLEEK DARK NEO CARDS GRID ── */}
                 {ARTICLES.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 auto-rows-[400px]">
-                        {ARTICLES.map((article, i) => {
-                            const isHero = i === 0;
-                            const isWide = i % 5 === 4 && i !== 0;
-                            const currentAccent = COLORS[i % COLORS.length];
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        {ARTICLES.map((article, index) => {
+                            const isNew = new Date().getTime() - new Date(article.date).getTime() < 3 * 24 * 60 * 60 * 1000;
+                            // Kartlara sıralı ve uyumlu renk dokunuşları
+                            const accentColors = ['#FFC800', '#23A9FA', '#FF0080', '#00F050'];
+                            const accentColor = accentColors[index % accentColors.length];
 
                             return (
-                                <Link
-                                    key={article.id}
-                                    href={`/blog/${article.slug}`}
-                                    className={cn(
-                                        "group relative flex overflow-hidden border-[3px] border-black dark:border-white bg-white dark:bg-[#09090b] transition-transform duration-300",
-                                        "hover:-translate-y-1 hover:translate-x-1",
-                                        isHero ? "flex-col md:col-span-2 lg:col-span-2 lg:row-span-2 shadow-[6px_6px_0px_#FFC800] dark:shadow-[6px_6px_0px_#FFC800]" :
-                                            isWide ? "flex-col md:flex-row md:col-span-2 lg:col-span-2 lg:row-span-1 shadow-[6px_6px_0px_#00F050] dark:shadow-[6px_6px_0px_#00F050]" :
-                                                "flex-col col-span-1 lg:row-span-1 shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#fff]",
-                                        "hover:shadow-[8px_8px_0px_#23A9FA] dark:hover:shadow-[8px_8px_0px_#23A9FA]"
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "relative overflow-hidden bg-zinc-100 dark:bg-zinc-900 border-black dark:border-white",
-                                        isHero ? "absolute inset-0 w-full h-full" :
-                                            isWide ? "w-full md:w-1/2 border-b-[3px] md:border-b-0 md:border-r-[3px]" :
-                                                "w-full h-1/2 border-b-[3px]"
-                                    )}>
-                                        <Image
-                                            src={article.image}
-                                            alt={article.title}
-                                            fill
-                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                <Link href={`/blog/${article.slug}`} key={article.id}>
+                                    <motion.article
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: (index % 10) * 0.05, duration: 0.3 }}
+                                        className="group relative bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-zinc-600 shadow-[2px_2px_0px_rgba(0,0,0,0.05)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] dark:hover:shadow-[4px_4px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden flex flex-col h-full"
+                                    >
+                                        {/* Top Accent Line like Profile feed */}
+                                        <div
+                                            className="absolute top-0 left-0 w-full h-[3px] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 z-20"
+                                            style={{ backgroundColor: accentColor }}
                                         />
-                                        {isHero && (
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
-                                        )}
 
-                                        <div className="absolute top-4 left-4 z-20">
-                                            <span
-                                                className="text-black border-[3px] border-black px-4 py-1.5 font-black text-xs uppercase shadow-[4px_4px_0px_#000]"
-                                                style={{ backgroundColor: currentAccent }}
-                                            >
-                                                {article.category}
-                                            </span>
-                                        </div>
-                                    </div>
+                                        {/* Image Container */}
+                                        <div className="relative aspect-[16/10] z-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900 border-b-2 border-zinc-100 dark:border-zinc-800">
+                                            <Image
+                                                src={article.image}
+                                                alt={article.title}
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                                className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
+                                            />
+                                            {/* Gradient Overlay for subtle dark mode consistency */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
 
-                                    <div className={cn(
-                                        "relative flex flex-col z-10",
-                                        isHero ? "mt-auto p-8 md:p-12 w-full max-w-2xl" :
-                                            isWide ? "w-full md:w-1/2 p-6 md:p-8 flex items-start justify-center" :
-                                                "w-full h-1/2 p-6"
-                                    )}>
-                                        <div className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest mb-4 opacity-90 drop-shadow-sm">
-                                            <span className={isHero ? "text-white" : "text-zinc-500 dark:text-zinc-400"}>
-                                                {formatDistanceToNow(new Date(article.date), { locale: tr })} ÖNCE
-                                            </span>
-                                            <span className={isHero ? "text-[#FFC800]" : "text-[#FF0080]"}>•</span>
-                                            <span className={cn("truncate", isHero ? "text-white" : "text-black dark:text-white")}>
-                                                {article.author}
-                                            </span>
-                                        </div>
-
-                                        <h3 className={cn(
-                                            "font-heading font-black uppercase tracking-tighter leading-[0.95]",
-                                            isHero ? "text-5xl md:text-6xl lg:text-7xl text-white mb-6" :
-                                                isWide ? "text-3xl sm:text-4xl text-black dark:text-white mb-4 line-clamp-3" :
-                                                    "text-2xl text-black dark:text-white mb-4 line-clamp-3"
-                                        )}>
-                                            {article.title}
-                                        </h3>
-
-                                        {(!isHero || isWide) && <div className="mt-auto"></div>}
-
-                                        {!isHero && (
-                                            <div className="pt-2 flex items-center justify-between">
-                                                <span className="text-sm font-black uppercase flex items-center gap-2 text-black dark:text-white group-hover:text-[#23A9FA] transition-colors">
-                                                    İncele <ArrowUpRight className="w-5 h-5 stroke-[3px]" />
+                                            {/* Top badges over image */}
+                                            <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-10">
+                                                <span
+                                                    className="px-2 py-1 bg-black text-white text-[9px] font-black uppercase tracking-wider rounded-md border border-white/20 shadow-[1px_1px_0px_rgba(0,0,0,0.5)]"
+                                                    style={{ borderBottomColor: accentColor, borderBottomWidth: '2px' }}
+                                                >
+                                                    {article.category}
                                                 </span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {isHero && (
-                                        <div className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div className="bg-[#00F050] text-black p-5 rounded-full border-[3px] border-black shadow-[4px_4px_0px_#000]">
-                                                <ArrowUpRight className="w-8 h-8 stroke-[4px]" />
+                                                {isNew && (
+                                                    <span className="flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
+                                                        <span className="h-1.5 w-1.5 rounded-full bg-[#00F050] animate-pulse shadow-[0_0_6px_rgba(0,240,80,0.6)]" />
+                                                        <span className="text-[8px] font-bold text-[#00F050] uppercase tracking-wider">YENİ</span>
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
-                                    )}
+
+                                        {/* Content Area */}
+                                        <div className="p-4 sm:p-5 flex flex-col flex-grow relative z-10 dark:group-hover:bg-zinc-900/30 transition-colors">
+                                            {/* Date & Author */}
+                                            <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-500 dark:text-zinc-500 uppercase tracking-wider mb-2">
+                                                <span>{formatDistanceToNow(new Date(article.date), { locale: tr })} ÖNCE</span>
+                                                <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                                                <span className="truncate max-w-[100px]">{article.author}</span>
+                                            </div>
+
+                                            {/* Title */}
+                                            <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight mb-2 group-hover:text-zinc-600 dark:group-hover:text-white transition-colors line-clamp-3">
+                                                {article.title}
+                                            </h3>
+
+                                            {/* Excerpt */}
+                                            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed line-clamp-2 mt-auto">
+                                                {article.excerpt}
+                                            </p>
+
+                                            {/* Footer with Reading Time */}
+                                            <div className="flex items-center justify-between pt-4 mt-4 border-t border-dashed border-zinc-200 dark:border-zinc-800">
+                                                <div className="flex items-center gap-1.5 text-zinc-400 text-[10px] font-bold tracking-wide uppercase">
+                                                    <Clock className="w-3 h-3" />
+                                                    <span>{article.readingTime} dk okuma</span>
+                                                </div>
+                                                <div className="w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors">
+                                                    <Flame className="w-3 h-3 stroke-[3px]" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.article>
                                 </Link>
                             );
                         })}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-32 text-center border-[4px] border-black dark:border-white bg-[#FFC800] text-black shadow-[8px_8px_0px_#000] dark:shadow-[8px_8px_0px_#fff]">
-                        <Cpu className="w-24 h-24 mb-6 opacity-80" />
-                        <h3 className="font-heading font-black text-6xl uppercase mb-4 tracking-tighter">SİNYAL YOK</h3>
-                        <p className="font-bold text-xl max-w-md mx-auto mb-10">
-                            Bu sektörde henüz keşfedilmiş bir makale bulunmuyor. Farklı bir filtre seçerek taramaya devam edin.
-                        </p>
-                        <Link href="/makale" className="bg-black text-white font-black uppercase text-xl px-12 py-5 border-[4px] border-black shadow-[8px_8px_0px_#FFF] hover:translate-x-[4px] hover:translate-y-[4px] transition-all active:translate-x-[8px] active:translate-y-[8px] active:shadow-none">
-                            TÜMÜNE DÖN
-                        </Link>
+                    <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-300 dark:border-zinc-800 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30">
+                        <div className="w-14 h-14 bg-white dark:bg-zinc-900 rounded-xl flex items-center justify-center mb-4 border-2 border-zinc-200 dark:border-zinc-800 shadow-[2px_2px_0px_rgba(0,0,0,0.05)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
+                            <Zap className="w-6 h-6 text-zinc-400 dark:text-zinc-600 stroke-[2.5px]" />
+                        </div>
+                        <p className="text-zinc-900 dark:text-zinc-300 font-black text-lg mb-1 uppercase tracking-tight">İçerik Bulunamadı</p>
+                        <p className="text-zinc-500 text-sm max-w-[280px] leading-relaxed font-bold">Bu kategori için henüz veri işlenmemiş.</p>
                     </div>
                 )}
-                <div className="mt-20 sm:mt-24 pt-16">
+
+                <div className="mt-16 sm:mt-24 pt-16 border-t-2 border-dashed border-zinc-200 dark:border-zinc-800">
                     <GoldenTicketCTA />
                 </div>
             </main>
