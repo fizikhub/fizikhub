@@ -153,7 +153,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     };
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-0 animate-in fade-in duration-500 pb-24 relative">
+        <div className="max-w-4xl mx-auto px-1.5 sm:px-0 animate-in fade-in duration-500 pb-24 relative">
             <BlogEditor101
                 open={showGuide}
                 onOpenChange={setShowGuide}
@@ -193,7 +193,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                 )}
 
                 {/* Top Meta Area (Yellow Tint) */}
-                <div className="p-5 sm:p-8 border-b-[3px] border-black bg-yellow-400/10 space-y-5">
+                <div className="px-4 py-5 sm:p-8 border-b-[3px] border-black bg-yellow-400/10 space-y-5">
 
                     {/* Title */}
                     <Textarea

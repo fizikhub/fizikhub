@@ -81,7 +81,7 @@ export function TermEditor({ userId }: TermEditorProps) {
     const [showGuide, setShowGuide] = useState(true);
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-0 space-y-8 animate-in fade-in duration-500 pb-24 relative">
+        <div className="max-w-4xl mx-auto px-1.5 sm:px-0 space-y-8 animate-in fade-in duration-500 pb-24 relative">
             <TermGuide open={showGuide} onOpenChange={setShowGuide} />
 
             {/* Guide Trigger Float */}
@@ -100,7 +100,7 @@ export function TermEditor({ userId }: TermEditorProps) {
             <div className="bg-card border-[3px] border-black rounded-[12px] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex flex-col gap-0 relative">
 
                 {/* Top Meta Area (Blue Tint) */}
-                <div className="p-5 sm:p-8 border-b-[3px] border-black bg-blue-500/10 space-y-5">
+                <div className="px-4 py-5 sm:p-8 border-b-[3px] border-black bg-blue-600/10 space-y-5">
 
                     {/* Title */}
                     <Textarea

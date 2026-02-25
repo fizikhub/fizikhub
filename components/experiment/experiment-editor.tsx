@@ -137,7 +137,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
     const [showGuide, setShowGuide] = useState(true);
 
     return (
-        <div className="max-w-4xl mx-auto px-4 sm:px-0 space-y-8 animate-in fade-in duration-500 pb-24 relative">
+        <div className="max-w-4xl mx-auto px-1.5 sm:px-0 space-y-8 animate-in fade-in duration-500 pb-24 relative">
             <ExperimentGuide open={showGuide} onOpenChange={setShowGuide} />
 
             {/* Guide Trigger Float */}
@@ -172,7 +172,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
                 )}
 
                 {/* Top Meta Area (Green Tint) */}
-                <div className="p-5 sm:p-8 border-b-[3px] border-black bg-green-600/10 space-y-5">
+                <div className="px-4 py-5 sm:p-8 border-b-[3px] border-black bg-green-600/10 space-y-5">
 
                     {/* Title */}
                     <Textarea

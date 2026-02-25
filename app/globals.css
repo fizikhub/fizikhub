@@ -48,8 +48,8 @@
   }
 
   .dark {
-    --background: 0 0% 14%;
-    /* RGB(36,36,36) */
+    --background: 0 0% 16%;
+    /* RGB(41, 41, 41) */
     --foreground: 0 0% 98%;
 
     --card: 240 10% 4%;

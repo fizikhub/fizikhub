@@ -3,6 +3,7 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
+import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
@@ -127,10 +128,6 @@ export default async function ArticlePage({ params }: PageProps) {
         .order('created_at', { ascending: true });
 
 
-    if (commentsData && commentsData.length > 0) {
-
-    }
-
     // Fetch profiles separately
     const userIds = commentsData?.map(c => c.user_id) || [];
     const { data: profiles } = userIds.length > 0 ? await supabase
@@ -156,7 +153,6 @@ export default async function ArticlePage({ params }: PageProps) {
             id,
             title,
             slug,
-            excerpt,
             excerpt,
             cover_url,
             category,
@@ -234,18 +230,24 @@ export default async function ArticlePage({ params }: PageProps) {
                         initialBookmarked={!!userBookmark}
                     />
                 ) : (
-                    <ArticleReader
-                        article={article}
-                        readingTime={formattedReadingTime}
-                        likeCount={likeCount || 0}
-                        initialLiked={!!userLike}
-                        initialBookmarked={!!userBookmark}
-                        comments={comments || []}
-                        isLoggedIn={!!user}
-                        isAdmin={isAdmin}
-                        userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                        relatedArticles={relatedArticles || []}
-                    />
+                    <>
+                        {/* Immersive Neo Hero */}
+                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
+
+                        {/* State-managed Article Reader */}
+                        <ArticleReader
+                            article={article}
+                            readingTime={formattedReadingTime}
+                            likeCount={likeCount || 0}
+                            initialLiked={!!userLike}
+                            initialBookmarked={!!userBookmark}
+                            comments={comments || []}
+                            isLoggedIn={!!user}
+                            isAdmin={isAdmin}
+                            userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                            relatedArticles={relatedArticles || []}
+                        />
+                    </>
                 )}
             </div>
         </>
