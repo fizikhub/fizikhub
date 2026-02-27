@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Archivo_Black, EB_Garamond } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import "./mobile-optimizations.css";
 import { Navbar } from "@/components/layout/navbar";
@@ -16,23 +16,9 @@ const inter = Inter({
   fallback: ['system-ui', 'arial'],
 });
 
-const ebGaramond = EB_Garamond({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap",
-});
-
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-grotesk",
-  display: "swap",
-});
-
-const archivoBlack = Archivo_Black({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-head",
   display: "swap",
 });
 
@@ -202,16 +188,12 @@ import { Toaster } from "sonner";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
-import { FramerMotionProvider } from "@/components/framer-motion-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
-import SmoothScrollProvider from "@/components/providers/smooth-scroll-provider";
 
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
 import { Suspense } from "react";
-import { CloudflareAnalytics } from "@/components/analytics/cloudflare-analytics";
 
 export default async function RootLayout({
   children,
@@ -301,7 +283,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
       </head>
-      <body className={`${inter.variable} ${ebGaramond.variable} ${spaceGrotesk.variable} ${archivoBlack.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* Skip to content — keyboard accessibility */}
         <a
           href="#main-content"
@@ -317,21 +299,17 @@ export default async function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <FramerMotionProvider>
-            <TimeLimitProvider>
-              <NavigationWrapper>
-                <Suspense fallback={null}>
-                  <OnboardingCheck />
-                </Suspense>
-                <SmoothScrollProvider>
-                  <main id="main-content" role="main">
-                    {children}
-                  </main>
-                </SmoothScrollProvider>
-              </NavigationWrapper>
+          <TimeLimitProvider>
+            <NavigationWrapper>
+              <Suspense fallback={null}>
+                <OnboardingCheck />
+              </Suspense>
+              <main id="main-content" role="main">
+                {children}
+              </main>
+            </NavigationWrapper>
 
-            </TimeLimitProvider>
-          </FramerMotionProvider>
+          </TimeLimitProvider>
           <Toaster
             position="top-center"
             toastOptions={{
@@ -344,8 +322,6 @@ export default async function RootLayout({
             }}
           />
           <Analytics />
-          <SpeedInsights />
-          <CloudflareAnalytics />
         </ThemeProvider>
       </body>
     </html>

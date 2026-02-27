@@ -174,7 +174,7 @@ export function ReadingControls({
                                             variant={fontFamily === 'serif' ? 'default' : 'outline'}
                                             size="sm"
                                             className={cn(
-                                                "font-serif border-2 relative overflow-hidden",
+                                                "font-grotesk border-2 relative overflow-hidden",
                                                 fontFamily === 'serif' ? "bg-black text-white hover:bg-black/90 border-black" : "border-neutral-200 dark:border-white/10 hover:bg-neutral-50"
                                             )}
                                             onClick={() => {

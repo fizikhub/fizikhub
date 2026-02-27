@@ -10,14 +10,8 @@ import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
-
-const clickVariant = {
-    tap: { y: 2, x: 2, boxShadow: "0px 0px 0px 0px #000" },
-    hover: { y: -2, x: -2, boxShadow: "3px 3px 0px 0px #000" }
-};
 
 const physicsTicker = [
     "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",
@@ -92,26 +86,19 @@ export function Navbar() {
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
                         {raindrops.map((drop, i) => (
-                            <motion.div
+                            <div
                                 key={i}
-                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform translate-z-0"
+                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform"
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${13 * drop.scale}px`,
                                     color: `rgba(255,255,255,${drop.opacity || 0.3})`,
-                                    filter: 'blur(0.3px)'
-                                }}
-                                initial={{ y: 60, opacity: 0 }}
-                                animate={{ y: -20, opacity: [0, 1, 0] }}
-                                transition={{
-                                    duration: drop.duration,
-                                    repeat: Infinity,
-                                    delay: drop.delay,
-                                    ease: "linear"
+                                    filter: 'blur(0.3px)',
+                                    animation: `physicsRainUp ${drop.duration}s linear ${drop.delay}s infinite`,
                                 }}
                             >
                                 {drop.formula}
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
 

@@ -16,7 +16,7 @@ export function RetroEffects() {
     }
 
     return (
-        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden font-serif">
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden font-grotesk">
             {/* Top Center Welcome Banner (CSS Based for reliability) */}
             <div className="absolute top-[80px] left-1/2 -translate-x-1/2 z-50 text-center">
                 <div className="bg-[#000080] text-white px-4 py-1 border-2 border-white shadow-[2px_2px_0px_#000] animate-pulse font-bold text-xl tracking-widest">

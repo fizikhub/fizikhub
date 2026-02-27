@@ -53,7 +53,7 @@ export function TermDetail({ article, readingTime, likeCount, initialLiked, init
                     className="bg-card border border-border/50 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden"
                 >
                     {/* Watermark */}
-                    <div className="absolute right-8 top-8 text-[12rem] leading-none font-serif text-blue-500/5 select-none pointer-events-none">
+                    <div className="absolute right-8 top-8 text-[12rem] leading-none font-grotesk text-blue-500/5 select-none pointer-events-none">
                         &rdquo;
                     </div>
 
@@ -88,7 +88,7 @@ export function TermDetail({ article, readingTime, likeCount, initialLiked, init
                         </div>
 
                         {/* Content Body */}
-                        <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-p:text-xl prose-p:leading-loose prose-p:font-serif prose-p:text-muted-foreground/90">
+                        <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-p:text-xl prose-p:leading-loose prose-p:font-grotesk prose-p:text-muted-foreground/90">
                             <MarkdownRenderer content={cleanContent} />
                         </div>
 

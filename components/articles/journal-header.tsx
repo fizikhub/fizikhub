@@ -23,7 +23,7 @@ export function JournalHeader() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-serif font-bold tracking-tight text-black dark:text-white mb-2">
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-grotesk font-bold tracking-tight text-black dark:text-white mb-2">
                         FizikHub
                     </h1>
                     <div className="flex items-center justify-center gap-4 text-xs font-medium text-neutral-500 uppercase tracking-[0.3em]">

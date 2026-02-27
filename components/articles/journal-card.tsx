@@ -90,7 +90,7 @@ export function JournalCard({
                                 <span className="inline-block text-[11px] font-semibold uppercase tracking-widest text-amber-400 mb-3">
                                     {article.category || "Genel"}
                                 </span>
-                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight mb-4">
+                                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-grotesk font-bold text-white leading-tight mb-4">
                                     {article.title}
                                 </h2>
                                 <p className="text-sm md:text-base text-white/80 line-clamp-2 max-w-2xl mb-4">
@@ -139,7 +139,7 @@ export function JournalCard({
                             <span className="inline-block text-[10px] font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-2">
                                 {article.category || "Genel"}
                             </span>
-                            <h3 className="text-xl md:text-2xl font-serif font-bold text-black dark:text-white leading-snug mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                            <h3 className="text-xl md:text-2xl font-grotesk font-bold text-black dark:text-white leading-snug mb-3 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                                 {article.title}
                             </h3>
                             <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3 mb-4">
@@ -194,7 +194,7 @@ export function JournalCard({
                     <span className="inline-block text-[10px] font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-2">
                         {article.category || "Genel"}
                     </span>
-                    <h3 className="text-lg font-serif font-bold text-black dark:text-white leading-snug mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    <h3 className="text-lg font-grotesk font-bold text-black dark:text-white leading-snug mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                         {article.title}
                     </h3>
                     <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 mb-3">
@@ -224,7 +224,7 @@ export function JournalCard({
                     <span className="inline-block text-[10px] font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-1">
                         {article.category || "Genel"}
                     </span>
-                    <h4 className="text-base font-serif font-semibold text-black dark:text-white leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    <h4 className="text-base font-grotesk font-semibold text-black dark:text-white leading-snug group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                         {article.title}
                     </h4>
                     <span className="text-xs text-neutral-500 mt-1 block">

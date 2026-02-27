@@ -211,7 +211,7 @@ export function BookReviewDetail({
                             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading tracking-tight leading-[1.1] text-foreground mb-2">
                                 {bookTitle || article.title}
                             </h1>
-                            <p className="text-xl md:text-2xl text-rose-500 font-medium font-serif italic mb-6">
+                            <p className="text-xl md:text-2xl text-rose-500 font-medium font-grotesk italic mb-6">
                                 by {bookAuthor}
                             </p>
                         </motion.div>

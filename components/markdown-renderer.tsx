@@ -36,7 +36,7 @@ export function MarkdownRenderer({
 
     const fontClasses = {
         sans: 'font-sans',
-        serif: 'font-serif'
+        serif: 'font-grotesk'
     };
 
     return (
