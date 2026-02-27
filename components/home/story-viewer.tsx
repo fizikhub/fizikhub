@@ -254,27 +254,24 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                             </button>
                         </div>
 
-                        {/* Text & Action Overlay */}
+                        {/* Text Overlay */}
                         <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 sm:p-10 pointer-events-none">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 key={currentIndex}
-                                className="space-y-4 max-w-sm pointer-events-auto"
+                                className="space-y-3 max-w-sm pointer-events-auto"
                             >
-                                <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-                                    {currentStory.title}
-                                </h2>
+                                {currentStory.title && (
+                                    <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tighter leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                                        {currentStory.title}
+                                    </h2>
+                                )}
                                 {currentStory.content && (
-                                    <p className="text-white/95 text-sm sm:text-base leading-snug font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-grotesk tracking-wide max-w-[90%]">
+                                    <p className="text-white/95 text-sm sm:text-base leading-snug font-medium drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] font-grotesk tracking-wide max-w-[95%]">
                                         {currentStory.content}
                                     </p>
                                 )}
-                                <div className="pt-4 pb-4">
-                                    <button className="w-full mx-auto px-6 py-3.5 bg-white text-black font-black uppercase text-xs rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-[#FFC800] hover:scale-[1.02] active:scale-95 transition-all duration-300">
-                                        Hemen Keşfet
-                                    </button>
-                                </div>
                             </motion.div>
                         </div>
                     </div>

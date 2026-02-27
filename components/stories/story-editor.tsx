@@ -316,14 +316,6 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
     const handlePublish = async () => {
         if (!canvasRef.current || !image) return;
-        if (!title.trim()) {
-            toast.error("Lütfen hikayenize bir başlık ekleyin.");
-            return;
-        }
-        if (!selectedGroupId && groups.length > 0) {
-            toast.error("Lütfen bir hikaye grubu seçin.");
-            return;
-        }
 
         try {
             setIsUploading(true);
@@ -338,7 +330,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
             const canvas = await html2canvas(canvasRef.current, {
                 useCORS: true,
-                scale: 4, // Increased for sharper quality on Retina
+                scale: 2, // Optimized from 4 to 2 for better performance/speed
                 backgroundColor: "#000000",
                 logging: false,
                 allowTaint: true,
@@ -360,10 +352,10 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                     media_url: publicUrl,
                     author_id: user.id,
                     type: 'image',
-                    title: title.trim(),
+                    title: title.trim() || ".", // Use a dot as placeholder if title is empty
                     content: content.trim() || undefined,
-                    group_id: selectedGroupId || null, // Use group_id
-                    category: groups.find(g => g.id === selectedGroupId)?.title || "Genel" // Fallback mainly
+                    group_id: selectedGroupId || null,
+                    category: groups.find(g => g.id === selectedGroupId)?.title || "Genel"
                 });
 
             if (dbError) throw dbError;
@@ -560,7 +552,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
                         <Button
                             onClick={handlePublish}
-                            disabled={isUploading || !image || !title}
+                            disabled={isUploading || !image}
                             className="w-full h-12 bg-white text-black font-black hover:bg-zinc-200"
                         >
                             {isUploading ? "YAYINLANIYOR..." : "PAYLAŞ"}
