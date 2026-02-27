@@ -111,9 +111,9 @@ vec3 diskColor(vec3 p, float r) {
     spiral += 0.15 * sin(angle * 7.0 + r * 2.5 - T * 0.6);
     spiral += 0.08 * sin(angle * 13.0 - r * 8.0 + T * 1.2);
 
-    // Doppler relativistic beaming — STRONG asymmetry (Interstellar style)
-    float doppler = 0.15 + 0.85 * cos(angle - T * 0.35);
-    doppler = pow(max(doppler, 0.0), 2.8);
+    // Doppler relativistic beaming — BALANCED for symmetry
+    float doppler = 0.5 + 0.5 * cos(angle - T * 0.35);
+    doppler = pow(max(doppler, 0.0), 1.2);
 
     float brightness = ratio * ratio * turb * spiral * doppler * 7.0;
 
@@ -336,8 +336,8 @@ export function Footer() {
 
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
-            {/* SMOOTH GRADIENT TRANSITION — seamless fade using CSS variable */}
-            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-48 bg-gradient-to-b from-background via-background/90 to-transparent" />
+            {/* SMOOTH GRADIENT TRANSITION — ultra seamless massive fade from site into footer */}
+            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
 
             {/* CLEAN INLINE LINKS */}
             <div className="relative z-30 mt-auto pb-3 pt-6">
