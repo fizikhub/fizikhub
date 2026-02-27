@@ -93,11 +93,10 @@ vec3 diskColor(vec3 p, float r) {
 
     // Blackbody temperature gradient — hot white core to deep red/orange outer
     vec3 c;
-    if (ratio > 0.92) c = mix(vec3(1.0, 0.95, 0.85), vec3(1.0, 1.0, 0.98), (ratio - 0.92) / 0.08);
-    else if (ratio > 0.75) c = mix(vec3(1.0, 0.72, 0.25), vec3(1.0, 0.95, 0.85), (ratio - 0.75) / 0.17);
-    else if (ratio > 0.5) c = mix(vec3(1.0, 0.42, 0.08), vec3(1.0, 0.72, 0.25), (ratio - 0.5) / 0.25);
-    else if (ratio > 0.25) c = mix(vec3(0.7, 0.18, 0.03), vec3(1.0, 0.42, 0.08), (ratio - 0.25) / 0.25);
-    else c = mix(vec3(0.2, 0.04, 0.01), vec3(0.7, 0.18, 0.03), ratio / 0.25);
+    if (ratio > 0.90) c = mix(vec3(1.0, 1.0, 1.0), vec3(1.0, 0.95, 0.8), (ratio - 0.90) / 0.1);
+    else if (ratio > 0.70) c = mix(vec3(1.0, 0.85, 0.4), vec3(1.0, 0.95, 0.8), (ratio - 0.70) / 0.2);
+    else if (ratio > 0.40) c = mix(vec3(0.9, 0.5, 0.1), vec3(1.0, 0.85, 0.4), (ratio - 0.40) / 0.3);
+    else c = mix(vec3(0.3, 0.1, 0.0), vec3(0.9, 0.5, 0.1), ratio / 0.40);
 
     float angle = atan(p.z, p.x) + T * 0.35;
 
@@ -112,9 +111,9 @@ vec3 diskColor(vec3 p, float r) {
     spiral += 0.15 * sin(angle * 7.0 + r * 2.5 - T * 0.6);
     spiral += 0.08 * sin(angle * 13.0 - r * 8.0 + T * 1.2);
 
-    // Doppler relativistic beaming — STRONG asymmetry
-    float doppler = 0.25 + 0.75 * cos(angle - T * 0.35);
-    doppler = pow(max(doppler, 0.0), 1.8);
+    // Doppler relativistic beaming — STRONG asymmetry (Interstellar style)
+    float doppler = 0.15 + 0.85 * cos(angle - T * 0.35);
+    doppler = pow(max(doppler, 0.0), 2.8);
 
     float brightness = ratio * ratio * turb * spiral * doppler * 7.0;
 
@@ -190,22 +189,22 @@ void main() {
         color = vec3(0.0);
     }
 
-    // ── Photon ring — TRIPLE RING for realism ──
+    // ── Photon ring — TRIPLE RING for realism (Sharper/brighter for Gargantua) ──
     float sd = length(uv - vec2(0.0, 0.035));
-    float pr1 = 0.036;
-    float pr2 = 0.041;
-    float pr3 = 0.033;
-    float ring1 = exp(-abs(sd - pr1) * 600.0) * 0.8 * (0.75 + 0.25 * sin(T * 1.2));
-    float ring2 = exp(-abs(sd - pr2) * 350.0) * 0.35 * (0.65 + 0.35 * sin(T * 1.8 + 1.0));
-    float ring3 = exp(-abs(sd - pr3) * 800.0) * 0.5 * (0.7 + 0.3 * sin(T * 2.5 + 2.0));
-    color += vec3(1.0, 0.95, 0.8) * ring1;
-    color += vec3(1.0, 0.8, 0.55) * ring2;
-    color += vec3(1.0, 0.98, 0.92) * ring3;
+    float pr1 = 0.035;
+    float pr2 = 0.040;
+    float pr3 = 0.031;
+    float ring1 = exp(-abs(sd - pr1) * 1200.0) * 1.5 * (0.8 + 0.2 * sin(T * 1.2));
+    float ring2 = exp(-abs(sd - pr2) * 500.0) * 0.5 * (0.7 + 0.3 * sin(T * 1.8 + 1.0));
+    float ring3 = exp(-abs(sd - pr3) * 1500.0) * 0.8 * (0.8 + 0.2 * sin(T * 2.5 + 2.0));
+    color += vec3(1.0, 0.98, 0.92) * ring1;
+    color += vec3(1.0, 0.85, 0.6) * ring2;
+    color += vec3(1.0, 1.0, 0.98) * ring3;
 
     // ── Event horizon rim glow — dark blue/purple ──
     float ehR = 0.025;
-    float ehGlow = exp(-abs(sd - ehR) * 200.0) * 0.2;
-    float ehGlow2 = exp(-abs(sd - ehR) * 80.0) * 0.08;
+    float ehGlow = exp(-abs(sd - ehR) * 300.0) * 0.3;
+    float ehGlow2 = exp(-abs(sd - ehR) * 120.0) * 0.12;
     color += vec3(0.15, 0.1, 0.35) * ehGlow;
     color += vec3(0.08, 0.05, 0.2) * ehGlow2;
 
@@ -337,30 +336,23 @@ export function Footer() {
 
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
-            {/* SMOOTH GRADIENT TRANSITION — tall multi-step fade from site into footer */}
-            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none"
-                style={{ height: '180px' }}>
-                <div className="w-full h-full"
-                    style={{
-                        background: 'linear-gradient(to bottom, #09090b 0%, #09090b 20%, rgba(9,9,11,0.95) 35%, rgba(9,9,11,0.8) 50%, rgba(9,9,11,0.5) 65%, rgba(9,9,11,0.2) 80%, transparent 100%)'
-                    }}
-                />
-            </div>
+            {/* SMOOTH GRADIENT TRANSITION — seamless fade using CSS variable */}
+            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-48 bg-gradient-to-b from-background via-background/90 to-transparent" />
 
             {/* CLEAN INLINE LINKS */}
             <div className="relative z-30 mt-auto pb-3 pt-6">
                 <nav aria-label="Footer bağlantıları" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4">
-                    <Link href="/hakkimizda" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">Hakkımızda</Link>
-                    <span className="text-zinc-600 text-[8px]">•</span>
-                    <Link href="/iletisim" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">İletişim</Link>
-                    <span className="text-zinc-600 text-[8px]">•</span>
-                    <Link href="/blog" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">Blog</Link>
-                    <span className="text-zinc-600 text-[8px]">•</span>
-                    <Link href="/gizlilik-politikasi" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">Gizlilik</Link>
-                    <span className="text-zinc-600 text-[8px]">•</span>
-                    <Link href="/kullanim-sartlari" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">Şartlar</Link>
-                    <span className="text-zinc-600 text-[8px]">•</span>
-                    <Link href="/kvkk" className="text-xs font-semibold text-zinc-400 hover:text-white transition-colors duration-300 uppercase tracking-wider">KVKK</Link>
+                    <Link href="/hakkimizda" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Hakkımızda</Link>
+                    <span className="text-zinc-500 text-[8px]">•</span>
+                    <Link href="/iletisim" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">İletişim</Link>
+                    <span className="text-zinc-500 text-[8px]">•</span>
+                    <Link href="/blog" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
+                    <span className="text-zinc-500 text-[8px]">•</span>
+                    <Link href="/gizlilik-politikasi" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Gizlilik</Link>
+                    <span className="text-zinc-500 text-[8px]">•</span>
+                    <Link href="/kullanim-sartlari" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Şartlar</Link>
+                    <span className="text-zinc-500 text-[8px]">•</span>
+                    <Link href="/kvkk" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">KVKK</Link>
                 </nav>
             </div>
 
