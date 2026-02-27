@@ -266,7 +266,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* QUESTION CARD - Refined & Fresh */}
-                        <div className="bg-card/80 backdrop-blur-sm border sm:border rounded-xl overflow-hidden shadow-sm transition-all">
+                        <div className="bg-card/90 sm:bg-card/80 backdrop-blur-sm border-y sm:border rounded-none sm:rounded-xl overflow-hidden shadow-sm sm:shadow-md transition-all">
 
                             {/* 1. Header: Author & Context */}
                             <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">

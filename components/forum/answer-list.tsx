@@ -57,7 +57,15 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState<any>(currentUser);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
+    const [expandedAnswers, setExpandedAnswers] = useState<Record<number, boolean>>({});
     const [supabase] = useState(() => createClient());
+
+    const toggleAnswerExpand = (answerId: number) => {
+        setExpandedAnswers(prev => ({
+            ...prev,
+            [answerId]: !prev[answerId]
+        }));
+    };
 
     const toggleComments = (answerId: number) => {
         setExpandedComments(prev => ({
@@ -307,7 +315,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
                             <div className="flex gap-2 sm:gap-4 py-4 sm:py-6 px-1 sm:px-3">
                                 {/* Left: Avatar column */}
-                                <div className="flex flex-col items-center gap-2 shrink-0">
+                                <div className="flex flex-col items-center shrink-0">
                                     <Link href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                         <Avatar className={cn(
                                             "h-8 w-8 sm:h-10 sm:w-10 border border-border/50 transition-all",
@@ -319,6 +327,11 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             </AvatarFallback>
                                         </Avatar>
                                     </Link>
+
+                                    {/* Thread Line - Connecting answer to comments */}
+                                    {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
+                                        <div className="w-[2px] bg-border/20 group-hover:bg-border/40 transition-colors grow mt-3 mb-1 rounded-full hidden sm:block" />
+                                    )}
                                 </div>
 
                                 {/* Right: Content column */}
@@ -384,9 +397,40 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         </div>
                                     </div>
 
-                                    {/* Content */}
-                                    <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none mb-2 sm:mb-3 text-foreground/90 font-medium leading-relaxed">
-                                        <MarkdownRenderer content={answer.content} />
+                                    {/* Content with Read More logic */}
+                                    <div className="mb-2 sm:mb-3 relative group/content transition-all">
+                                        <div className={cn(
+                                            "prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-foreground/90 font-medium leading-relaxed transition-all duration-300",
+                                            !expandedAnswers[answer.id] && answer.content.length > 300 ? "max-h-[160px] overflow-hidden" : ""
+                                        )}>
+                                            <MarkdownRenderer content={answer.content} />
+                                        </div>
+
+                                        {!expandedAnswers[answer.id] && answer.content.length > 300 && (
+                                            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/90 to-transparent flex items-end justify-center pb-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => toggleAnswerExpand(answer.id)}
+                                                    className="rounded-full bg-background/50 backdrop-blur-md border border-border shadow-sm font-bold text-primary hover:text-primary hover:bg-muted mb-2 px-4 h-8"
+                                                >
+                                                    Devamını Oku
+                                                </Button>
+                                            </div>
+                                        )}
+
+                                        {expandedAnswers[answer.id] && answer.content.length > 300 && (
+                                            <div className="flex justify-end mt-1">
+                                                <Button
+                                                    variant="link"
+                                                    size="sm"
+                                                    onClick={() => toggleAnswerExpand(answer.id)}
+                                                    className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
+                                                >
+                                                    Daralt
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Action Bar (Simple) */}
@@ -426,7 +470,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
                                     {/* Expanded Comments */}
                                     {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
-                                        <div className="mt-4 pl-4 border-l-2 border-border/40">
+                                        <div className="mt-4 pl-2 sm:pl-4 pt-2 relative">
                                             {/* Show comments here */}
                                             <RealtimeCommentList
                                                 answerId={answer.id}
@@ -447,7 +491,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             />
 
                                             {expandedComments[answer.id] && (
-                                                <div className="mt-4">
+                                                <div className="mt-3 relative z-10">
                                                     <AnswerCommentForm
                                                         answerId={answer.id}
                                                         questionId={questionId}
