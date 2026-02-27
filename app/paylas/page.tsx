@@ -180,7 +180,7 @@ export default function PaylasPage() {
                 >
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
                         <div className="flex flex-col">
-                            <h1 className="text-5xl md:text-7xl font-black text-black leading-[0.85] tracking-tighter uppercase drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
+                            <h1 className="text-5xl md:text-7xl font-black text-[#FACC15] leading-[0.85] tracking-tighter uppercase drop-shadow-[4px_4px_0px_#fff] text-stroke-black">
                                 Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
@@ -214,11 +214,11 @@ export default function PaylasPage() {
                     animate="show"
                     className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
                 >
-                    {/* 1. Article - Yellow (Full Width Mobile - Preserved) */}
+                    {/* 1. Blog - Orange/Yellow (Full Width Mobile - Adjusted to fit Makale's spot) */}
                     <FreshCard
-                        title="MAKALE"
-                        description="Derinlemesine içerik üret."
-                        href="/makale/yeni"
+                        title="BLOG"
+                        description="Serbest yazı."
+                        href="/makale/yeni?type=blog"
                         icon={FileText}
                         color="bg-[#FACC15]"
                         accentColor="#FACC15"
@@ -266,15 +266,6 @@ export default function PaylasPage() {
                         accentColor="#C084FC"
                     />
 
-                    {/* 6. Blog - Orange */}
-                    <FreshCard
-                        title="BLOG"
-                        description="Serbest yazı."
-                        href="/makale/yeni?type=blog"
-                        icon={FileText}
-                        color="bg-orange-400"
-                        accentColor="#fb923c"
-                    />
 
                 </motion.div>
 

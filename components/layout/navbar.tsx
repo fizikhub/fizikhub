@@ -5,6 +5,7 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
 import { CommandPalette } from "@/components/ui/command-palette";
+import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 // Sheet imports removed
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
@@ -29,6 +30,7 @@ const physicsTicker = [
 
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isFactOpen, setIsFactOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
@@ -161,8 +163,8 @@ export function Navbar() {
                         {/* 2. ZAP - OPTIMIZED (32px) */}
                         <button
                             id="desktop-zap-trigger"
-                            onClick={() => window.location.href = '/ozel'}
-                            aria-label="Premium özellikler"
+                            onClick={() => setIsFactOpen(true)}
+                            aria-label="Günün Hap Bilgisi"
                             className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
                             <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
@@ -178,6 +180,7 @@ export function Navbar() {
 
             <div className="h-[53px] sm:h-[64px]" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+            <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>
     );
 }
