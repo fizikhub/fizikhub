@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase-server";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function AdminDashboard() {
     const supabase = await createClient();
@@ -117,12 +118,13 @@ export default async function AdminDashboard() {
                         <div className="space-y-4">
                             {recentUsers?.map((user) => (
                                 <div key={user.id} className="flex items-center gap-4 border-b pb-2 last:border-0 last:pb-0">
-                                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                                    <div className="relative h-8 w-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                                         {user.avatar_url ? (
-                                            <img src={user.avatar_url} alt={user.username || ""} className="h-full w-full object-cover" />
+                                            <Image src={user.avatar_url} alt={user.username || ""} fill sizes="32px" className="object-cover" />
                                         ) : (
                                             <Users className="h-4 w-4 text-muted-foreground" />
                                         )}
+
                                     </div>
                                     <div className="flex-1 space-y-1">
                                         <p className="text-sm font-medium leading-none">{user.username || "İsimsiz"}</p>

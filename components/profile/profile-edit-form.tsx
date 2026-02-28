@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 interface ProfileEditFormProps {
     user: any;
@@ -129,7 +130,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                             onClick={() => coverInputRef.current?.click()}>
 
                             {coverPreview ? (
-                                <img src={coverPreview} alt="Cover" className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
+                                <Image src={coverPreview} alt="Cover" fill priority sizes="(max-width: 640px) 100vw, 672px" className="object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
                             ) : (
                                 <div className="absolute inset-0 bg-gradient-to-tr from-[#FFC800]/20 via-purple-500/10 to-blue-500/20" />
                             )}

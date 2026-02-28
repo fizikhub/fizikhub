@@ -65,19 +65,29 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=31536000, immutable', // 1 year cache
           },
         ],
       },
       // JS/CSS bundles
       {
-        source: '/:all*(js|css)',
+        source: '/_next/static/:all*',
         headers: [
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
         ],
+      },
+      // PWA Files (Service Worker & Manifest)
+      {
+        source: '/(sw.js|manifest.json|workbox-*.js)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          }
+        ]
       },
       // Global security headers for all routes
       {

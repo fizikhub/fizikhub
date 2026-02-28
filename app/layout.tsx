@@ -270,13 +270,9 @@ export default async function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
-        {/* DNS prefetch & preconnect for external resources */}
-        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        {/* Sadece en kritik bağlantılar */}
+        <link rel="preconnect" href="https://yqokiiobwqkuznemzmvq.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://yqokiiobwqkuznemzmvq.supabase.co" />
         {/* Google Verification - REPLACE WITH YOUR CODE */}
         <meta name="google-site-verification" content="google-site-verification-code-here" />
         {/* React Scan for performance monitoring (Dev only) */}
