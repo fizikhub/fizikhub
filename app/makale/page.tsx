@@ -32,7 +32,7 @@ export default async function MakalePage({ searchParams }: PageProps) {
             if (category) query = query.eq('category', category);
 
             query = sort === 'popular'
-                ? query.order('views', { ascending: false })
+                ? query.order('created_at', { ascending: false })
                 : query.order('created_at', { ascending: false });
 
             const { data } = await query;

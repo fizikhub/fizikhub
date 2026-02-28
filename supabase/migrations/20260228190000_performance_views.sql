@@ -11,7 +11,6 @@ SELECT
     a.author_id,
     a.category,
     a.created_at,
-    a.views,
     p.full_name AS author_full_name,
     p.username AS author_username,
     p.avatar_url AS author_avatar_url,
