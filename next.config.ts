@@ -155,13 +155,9 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   skipWaiting: true,
 });
 
-const millionConfig = {
-  auto: { rsc: true, mute: true },
-};
+// export default million.next(
+//   withBundleAnalyzer(nextConfig),
+//   millionConfig
+// );
 
-// Temporarily disabled PWA to fix Vercel Edge Deployment error
-// export default withBundleAnalyzer(withPWA(nextConfig));
-export default million.next(
-  withBundleAnalyzer(nextConfig),
-  millionConfig
-);
+export default withBundleAnalyzer(nextConfig);
