@@ -159,8 +159,16 @@ const millionConfig = {
   auto: {
     rsc: true,
     skip: [
-      'Partytown', // Partytown injects scripts at runtime, skip it
-      'ThemeProvider', // next-themes manipulates <html> attributes
+      'Partytown',
+      'ThemeProvider',
+      'FramerMotionProvider',
+      'NavigationWrapper',
+      'Toaster',
+      'Analytics',
+      'OnboardingCheck',
+      'MaintenanceAudioPlayer',
+      'UserActivityTracker',
+      'QueryProvider'
     ],
   },
 };
