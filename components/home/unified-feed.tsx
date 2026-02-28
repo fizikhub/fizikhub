@@ -55,6 +55,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                                 initialComments={item.data.comments_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
+                                priority={index < 2}
                             />
                         )}
 
@@ -64,6 +65,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                                 initialLikes={item.data.likes_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
+                                priority={index < 2}
                             />
                         )}
 

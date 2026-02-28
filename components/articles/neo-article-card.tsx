@@ -21,6 +21,7 @@ interface NeoArticleCardProps {
     initialIsLiked?: boolean;
     initialIsBookmarked?: boolean;
     className?: string;
+    priority?: boolean;
 }
 
 export function NeoArticleCard({
@@ -29,7 +30,8 @@ export function NeoArticleCard({
     initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
-    className
+    className,
+    priority = false
 }: NeoArticleCardProps) {
     const [isLiked, setIsLiked] = useState(initialIsLiked);
     const [likeCount, setLikeCount] = useState(initialLikes);
@@ -138,6 +140,7 @@ export function NeoArticleCard({
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
+                        priority={priority}
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 

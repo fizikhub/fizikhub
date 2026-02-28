@@ -61,7 +61,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 fill
                                                 sizes="(max-width: 640px) 215px, 275px"
                                                 className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
-                                                loading={index < 3 ? "eager" : "lazy"}
+                                                priority={index < 3}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
