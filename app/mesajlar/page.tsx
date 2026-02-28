@@ -20,7 +20,7 @@ export default async function MessagesPage() {
     const conversations = await getConversations();
 
     return (
-        <div className="min-h-[100dvh] bg-[#050505] text-white font-[family-name:var(--font-outfit)]">
+        <div className="min-h-screen bg-[#050505] text-white font-[family-name:var(--font-outfit)] pb-32">
             <div className="container mx-auto max-w-2xl px-4 py-6 sm:py-8">
 
                 {/* Header */}

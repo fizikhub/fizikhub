@@ -284,7 +284,7 @@ function initGL(canvas: HTMLCanvasElement) {
 
 export function Footer() {
     const pathname = usePathname();
-    const isMessagesPage = pathname?.startsWith("/mesajlar");
+    const isChatPage = pathname?.match(/\/mesajlar\/.+/);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const boxRef = useRef<HTMLDivElement>(null);
     const glRef = useRef<ReturnType<typeof initGL>>(null);
@@ -328,7 +328,7 @@ export function Footer() {
         return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(afRef.current); };
     }, []);
 
-    if (isMessagesPage) return null;
+    if (isChatPage) return null;
 
     return (
         <footer ref={boxRef} role="contentinfo" aria-label="Site bilgileri"
@@ -336,8 +336,8 @@ export function Footer() {
 
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
-            {/* SMOOTH GRADIENT TRANSITION — ultra seamless massive fade from site into footer */}
-            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
+            {/* SMOOTH GRADIENT TRANSITION — shrunken on mobile to avoid covering the hole */}
+            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[150px] md:h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
 
             {/* CLEAN INLINE LINKS */}
             <div className="relative z-30 mt-auto pb-3 pt-6">
