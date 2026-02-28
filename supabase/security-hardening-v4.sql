@@ -1,5 +1,5 @@
 -- ==========================================
--- FizikHub Supabase Security Hardening v4
+-- FizikHub Supabase Security Hardening v4 (FIXED)
 -- ==========================================
 -- This script addresses WARN level security linter issues:
 -- 1. [SECURITY] Function Search Path Mutable (Fixed search_path)
@@ -23,11 +23,8 @@ ALTER FUNCTION public.refresh_feed_articles_mv() SET search_path = public;
 -- 2. SECURING MATERIALIZED VIEWS
 -- ==========================================
 -- Restricting direct API access to the materialized view.
--- Only authenticated users or service_role should access it directly if needed,
--- or it should be kept for server-side usage.
 
 REVOKE SELECT ON public.feed_articles_mv FROM anon;
--- If you want authenticated users to still see the feed (recommended for performance):
 GRANT SELECT ON public.feed_articles_mv TO authenticated;
 
 
@@ -35,18 +32,19 @@ GRANT SELECT ON public.feed_articles_mv TO authenticated;
 -- 3. HARDENING RLS POLICIES (ALWAYS TRUE FIXES)
 -- ==========================================
 -- Replacing permissive "true" checks with actual owner/auth checks.
+-- Note: Column names verified (author_id for articles/questions/answers, recipient_id for notifications).
 
 -- public.answers
 DROP POLICY IF EXISTS "answers_insert_auth" ON public.answers;
 CREATE POLICY "answers_insert_auth"
     ON public.answers FOR INSERT
-    WITH CHECK (auth.uid() IS NOT NULL); -- Ensure it's an authenticated user
+    WITH CHECK (auth.uid() IS NOT NULL);
 
 DROP POLICY IF EXISTS "answers_update_owner" ON public.answers;
 CREATE POLICY "answers_update_owner"
     ON public.answers FOR UPDATE
-    USING (user_id = (SELECT auth.uid()))
-    WITH CHECK (user_id = (SELECT auth.uid()));
+    USING (author_id = (SELECT auth.uid()))
+    WITH CHECK (author_id = (SELECT auth.uid()));
 
 -- public.articles
 DROP POLICY IF EXISTS "articles_delete_owner" ON public.articles;
@@ -69,8 +67,8 @@ CREATE POLICY "articles_update_owner"
 DROP POLICY IF EXISTS "notifications_owner_all" ON public.notifications;
 CREATE POLICY "notifications_owner_all"
     ON public.notifications FOR ALL
-    USING (user_id = (SELECT auth.uid()))
-    WITH CHECK (user_id = (SELECT auth.uid()));
+    USING (recipient_id = (SELECT auth.uid()))
+    WITH CHECK (recipient_id = (SELECT auth.uid()));
 
 -- public.profiles
 DROP POLICY IF EXISTS "profiles_insert_owner" ON public.profiles;
@@ -99,4 +97,4 @@ CREATE POLICY "questions_update_owner"
 COMMIT;
 
 -- Final Verification Message
-SELECT '🛡️ Supabase security hardening (V4) applied successfully!' as message;
+SELECT '🛡️ Supabase security hardening (V4 - FIXED) applied successfully!' as message;
