@@ -15,11 +15,28 @@ export interface Message {
     content: string;
     is_read: boolean;
     created_at: string;
+    message_type: 'text' | 'image' | 'system';
+    edited_at: string | null;
+    reply_to_id: number | null;
+    reply_to?: {
+        id: number;
+        content: string;
+        sender_id: string;
+    } | null;
+    sender?: {
+        id: string;
+        username: string;
+        full_name: string;
+        avatar_url: string;
+    } | null;
 }
 
 export interface Conversation {
     id: string;
     updated_at: string;
+    last_message_preview: string | null;
+    last_message_at: string | null;
+    last_message_sender_id: string | null;
     otherUser: {
         id: string;
         username: string;
@@ -30,40 +47,55 @@ export interface Conversation {
     unreadCount: number;
 }
 
+export interface Reaction {
+    id: string;
+    message_id: number;
+    user_id: string;
+    reaction: string;
+    created_at: string;
+}
+
 // ============================================
-// ACTIONS
+// SEND MESSAGE
 // ============================================
 
-/**
- * Send a message in a conversation
- */
-export async function sendMessage(conversationId: string, content: string) {
+export async function sendMessage(
+    conversationId: string,
+    content: string,
+    replyToId?: number | null
+) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return { success: false, error: "Not authenticated" };
+        return { success: false, error: "Giriş yapmalısınız" };
     }
 
     if (!content.trim()) {
-        return { success: false, error: "Message cannot be empty" };
+        return { success: false, error: "Mesaj boş olamaz" };
     }
 
     const { ip, ua } = await getClientMetadata();
     const modResult = checkContent(content.trim());
 
-    // Insert message
+    const insertData: any = {
+        conversation_id: conversationId,
+        sender_id: user.id,
+        content: content.trim(),
+        is_read: false,
+        message_type: 'text',
+        author_ip: ip,
+        user_agent: ua,
+        is_flagged: modResult.isFlagged
+    };
+
+    if (replyToId) {
+        insertData.reply_to_id = replyToId;
+    }
+
     const { data: message, error } = await supabase
         .from('messages')
-        .insert({
-            conversation_id: conversationId,
-            sender_id: user.id,
-            content: content.trim(),
-            is_read: false,
-            author_ip: ip,
-            user_agent: ua,
-            is_flagged: modResult.isFlagged
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -76,44 +108,37 @@ export async function sendMessage(conversationId: string, content: string) {
     return { success: true, message };
 }
 
-/**
- * Get all conversations for the current user
- * Optimized to prevent N+1 queries
- */
+// ============================================
+// GET CONVERSATIONS (Optimized)
+// ============================================
+
 export async function getConversations(): Promise<Conversation[]> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return [];
 
-    // 1. Get all conversations the user is a part of, 
-    // including other participants and their profiles, and the latest messages.
-    // Supabase allows us to fetch related data in a single query.
-    const { data: participations, error } = await supabase
+    // Get all conversation IDs for this user
+    const { data: participations, error: partError } = await supabase
         .from('conversation_participants')
-        .select(`
-            conversation_id,
-            conversations:conversation_id (
-                id,
-                updated_at,
-                messages:messages (
-                    id,
-                    conversation_id,
-                    sender_id,
-                    content,
-                    is_read,
-                    created_at
-                )
-            )
-        `)
+        .select('conversation_id')
         .eq('user_id', user.id);
 
-    if (error || !participations || participations.length === 0) return [];
+    if (partError || !participations || participations.length === 0) return [];
 
     const conversationIds = participations.map(p => p.conversation_id);
 
-    // 2. Get all participants for these conversations to find the "other" user
-    const { data: allParticipants } = await supabase
+    // Get conversations with preview data (no need to fetch all messages!)
+    const { data: conversations, error: convError } = await supabase
+        .from('conversations')
+        .select('id, updated_at, last_message_preview, last_message_at, last_message_sender_id')
+        .in('id', conversationIds)
+        .order('last_message_at', { ascending: false, nullsFirst: false });
+
+    if (convError || !conversations) return [];
+
+    // Get other participants with profiles in one query
+    const { data: otherParticipants } = await supabase
         .from('conversation_participants')
         .select(`
             conversation_id,
@@ -128,52 +153,61 @@ export async function getConversations(): Promise<Conversation[]> {
         .in('conversation_id', conversationIds)
         .neq('user_id', user.id);
 
-    const result: Conversation[] = [];
+    // Get unread counts per conversation
+    const { data: unreadMessages } = await supabase
+        .from('messages')
+        .select('conversation_id')
+        .in('conversation_id', conversationIds)
+        .neq('sender_id', user.id)
+        .eq('is_read', false);
 
-    for (const part of participations) {
-        const conv: any = part.conversations;
-        if (!conv) continue;
-
-        // Find the other participant's profile
-        const otherPart = allParticipants?.find(p => p.conversation_id === conv.id);
-        const otherProfile: any = otherPart?.profiles;
-
-        // Get the latest message (sorted by created_at desc in memory since we only grabbed top few or just sort here)
-        const messages = conv.messages || [];
-        const sortedMessages = [...messages].sort((a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-
-        const lastMessage = sortedMessages.length > 0 ? sortedMessages[0] : null;
-
-        // Count unread messages (not sent by me)
-        const unreadCount = messages.filter((m: any) =>
-            m.sender_id !== user.id && !m.is_read
-        ).length;
-
-        result.push({
-            id: conv.id,
-            updated_at: conv.updated_at,
-            otherUser: otherProfile || null,
-            lastMessage,
-            unreadCount
-        });
+    const unreadMap: Record<string, number> = {};
+    if (unreadMessages) {
+        for (const msg of unreadMessages) {
+            unreadMap[msg.conversation_id] = (unreadMap[msg.conversation_id] || 0) + 1;
+        }
     }
 
-    // Sort by updated_at descending
-    return result.sort((a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-    );
+    return conversations.map(conv => {
+        const otherPart = otherParticipants?.find(p => p.conversation_id === conv.id);
+        const otherProfile: any = otherPart?.profiles;
+
+        return {
+            id: conv.id,
+            updated_at: conv.updated_at,
+            last_message_preview: conv.last_message_preview,
+            last_message_at: conv.last_message_at,
+            last_message_sender_id: conv.last_message_sender_id,
+            otherUser: otherProfile || null,
+            lastMessage: conv.last_message_preview ? {
+                id: 0,
+                conversation_id: conv.id,
+                sender_id: conv.last_message_sender_id || '',
+                content: conv.last_message_preview,
+                is_read: true,
+                created_at: conv.last_message_at || conv.updated_at,
+                message_type: 'text' as const,
+                edited_at: null,
+                reply_to_id: null,
+            } : null,
+            unreadCount: unreadMap[conv.id] || 0,
+        };
+    });
 }
 
-/**
- * Get all messages in a conversation
- */
-export async function getMessages(conversationId: string): Promise<Message[]> {
+// ============================================
+// GET MESSAGES (with pagination & replies)
+// ============================================
+
+export async function getMessages(
+    conversationId: string,
+    limit = 50,
+    before?: string
+): Promise<{ messages: Message[]; hasMore: boolean }> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return [];
+    if (!user) return { messages: [], hasMore: false };
 
     // Verify user is part of conversation
     const { data: participation } = await supabase
@@ -183,21 +217,85 @@ export async function getMessages(conversationId: string): Promise<Message[]> {
         .eq('user_id', user.id)
         .single();
 
-    if (!participation) return [];
+    if (!participation) return { messages: [], hasMore: false };
 
-    // Get messages
-    const { data: messages } = await supabase
+    // Build query
+    let query = supabase
         .from('messages')
-        .select('*')
+        .select(`
+            id,
+            conversation_id,
+            sender_id,
+            content,
+            is_read,
+            created_at,
+            message_type,
+            edited_at,
+            reply_to_id
+        `)
         .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false })
+        .limit(limit + 1); // +1 to check if there are more
 
-    return messages || [];
+    if (before) {
+        query = query.lt('created_at', before);
+    }
+
+    const { data: messages } = await query;
+
+    if (!messages) return { messages: [], hasMore: false };
+
+    const hasMore = messages.length > limit;
+    const sliced = hasMore ? messages.slice(0, limit) : messages;
+
+    // Get reply-to messages if any
+    const replyIds = sliced.filter(m => m.reply_to_id).map(m => m.reply_to_id!);
+    let replyMap: Record<number, { id: number; content: string; sender_id: string }> = {};
+
+    if (replyIds.length > 0) {
+        const { data: replies } = await supabase
+            .from('messages')
+            .select('id, content, sender_id')
+            .in('id', replyIds);
+
+        if (replies) {
+            for (const r of replies) {
+                replyMap[r.id] = { id: r.id, content: r.content, sender_id: r.sender_id };
+            }
+        }
+    }
+
+    // Get unique sender IDs and fetch profiles
+    const senderIds = [...new Set(sliced.map(m => m.sender_id))];
+    let profileMap: Record<string, any> = {};
+
+    if (senderIds.length > 0) {
+        const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, username, full_name, avatar_url')
+            .in('id', senderIds);
+
+        if (profiles) {
+            for (const p of profiles) {
+                profileMap[p.id] = p;
+            }
+        }
+    }
+
+    const enrichedMessages: Message[] = sliced.map(m => ({
+        ...m,
+        message_type: (m.message_type || 'text') as 'text' | 'image' | 'system',
+        reply_to: m.reply_to_id ? (replyMap[m.reply_to_id] || null) : null,
+        sender: profileMap[m.sender_id] || null,
+    })).reverse(); // Reverse to get chronological order
+
+    return { messages: enrichedMessages, hasMore };
 }
 
-/**
- * Mark all messages in a conversation as read
- */
+// ============================================
+// MARK AS READ
+// ============================================
+
 export async function markAsRead(conversationId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -214,52 +312,40 @@ export async function markAsRead(conversationId: string) {
     revalidatePath('/mesajlar');
 }
 
-/**
- * Start a conversation with another user (or get existing one)
- */
+// ============================================
+// START CONVERSATION
+// ============================================
+
 export async function startConversation(otherUserId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-
-
     if (!user) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error("User not authenticated");
-        }
-        return { success: false, error: "Not authenticated" };
+        return { success: false, error: "Giriş yapmalısınız" };
     }
 
-    // Use the database function to create or get conversation
     const { data: conversationId, error } = await supabase
         .rpc('create_conversation', { other_user_id: otherUserId });
 
     if (error) {
-        if (process.env.NODE_ENV === 'development') {
-            console.error("Start conversation error:", error);
-        }
+        console.error("Start conversation error:", error);
         return { success: false, error: error.message };
     }
-
-    // Verify participants were created
-    const { data: participants, error: participantsError } = await supabase
-        .from('conversation_participants')
-        .select('*')
-        .eq('conversation_id', conversationId);
 
     revalidatePath('/mesajlar');
     return { success: true, conversationId };
 }
 
-/**
- * Delete a message (only sender can delete)
- */
+// ============================================
+// DELETE MESSAGE
+// ============================================
+
 export async function deleteMessage(messageId: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return { success: false, error: "Not authenticated" };
+        return { success: false, error: "Giriş yapmalısınız" };
     }
 
     // Verify ownership
@@ -273,14 +359,14 @@ export async function deleteMessage(messageId: number) {
         return { success: false, error: "Bu mesajı silme yetkiniz yok" };
     }
 
-    // Delete related notifications (message and like notifications)
+    // Delete related notifications
     await supabase
         .from('notifications')
         .delete()
         .eq('resource_type', 'message')
         .eq('resource_id', messageId.toString());
 
-    // Delete the message (this will also cascade delete likes)
+    // Delete the message
     const { error } = await supabase
         .from('messages')
         .delete()
@@ -295,64 +381,105 @@ export async function deleteMessage(messageId: number) {
     return { success: true };
 }
 
-/**
- * Like a message (double-click to like)
- */
-export async function likeMessage(messageId: number) {
+// ============================================
+// EDIT MESSAGE
+// ============================================
+
+export async function editMessage(messageId: number, newContent: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return { success: false, error: "Not authenticated" };
+        return { success: false, error: "Giriş yapmalısınız" };
     }
 
-    // Check if already liked
-    const { data: existingLike } = await supabase
-        .from('message_likes')
-        .select('id')
-        .eq('message_id', messageId)
-        .eq('user_id', user.id)
+    if (!newContent.trim()) {
+        return { success: false, error: "Mesaj boş olamaz" };
+    }
+
+    // Verify ownership
+    const { data: message } = await supabase
+        .from('messages')
+        .select('sender_id')
+        .eq('id', messageId)
         .single();
 
-    if (existingLike) {
-        // Unlike if already liked
-        const { error } = await supabase
-            .from('message_likes')
-            .delete()
-            .eq('id', existingLike.id);
-
-        if (error) {
-            return { success: false, error: error.message };
-        }
-        return { success: true, liked: false };
+    if (!message || message.sender_id !== user.id) {
+        return { success: false, error: "Bu mesajı düzenleme yetkiniz yok" };
     }
 
-    // Like
     const { error } = await supabase
-        .from('message_likes')
-        .insert({
-            message_id: messageId,
-            user_id: user.id
-        });
+        .from('messages')
+        .update({
+            content: newContent.trim(),
+            edited_at: new Date().toISOString()
+        })
+        .eq('id', messageId);
 
     if (error) {
-        console.error("Like message error:", error);
         return { success: false, error: error.message };
     }
 
-    return { success: true, liked: true };
+    return { success: true };
 }
 
-/**
- * Get likes for messages in a conversation
- */
-export async function getMessageLikes(conversationId: string): Promise<{ [messageId: number]: { count: number; likedByMe: boolean } }> {
+// ============================================
+// REACT TO MESSAGE
+// ============================================
+
+export async function reactToMessage(messageId: number, reaction: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız" };
+    }
+
+    // Check if already reacted with same emoji
+    const { data: existing } = await supabase
+        .from('message_reactions')
+        .select('id')
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .eq('reaction', reaction)
+        .single();
+
+    if (existing) {
+        // Remove reaction
+        await supabase
+            .from('message_reactions')
+            .delete()
+            .eq('id', existing.id);
+        return { success: true, removed: true };
+    }
+
+    // Add reaction
+    const { error } = await supabase
+        .from('message_reactions')
+        .insert({
+            message_id: messageId,
+            user_id: user.id,
+            reaction
+        });
+
+    if (error) {
+        console.error("React error:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true, removed: false };
+}
+
+// ============================================
+// GET REACTIONS FOR CONVERSATION
+// ============================================
+
+export async function getReactions(conversationId: string): Promise<Record<number, { reaction: string; count: number; myReaction: boolean }[]>> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return {};
 
-    // Get all messages in conversation
     const { data: messages } = await supabase
         .from('messages')
         .select('id')
@@ -362,38 +489,107 @@ export async function getMessageLikes(conversationId: string): Promise<{ [messag
 
     const messageIds = messages.map(m => m.id);
 
-    // Get likes for these messages
-    const { data: likes } = await supabase
-        .from('message_likes')
-        .select('message_id, user_id')
+    const { data: reactions } = await supabase
+        .from('message_reactions')
+        .select('message_id, user_id, reaction')
         .in('message_id', messageIds);
 
-    if (!likes) return {};
+    if (!reactions) return {};
 
-    // Build result
-    const result: { [messageId: number]: { count: number; likedByMe: boolean } } = {};
+    const result: Record<number, { reaction: string; count: number; myReaction: boolean }[]> = {};
 
-    for (const msg of messages) {
-        const msgLikes = likes.filter(l => l.message_id === msg.id);
-        result[msg.id] = {
-            count: msgLikes.length,
-            likedByMe: msgLikes.some(l => l.user_id === user.id)
-        };
+    for (const r of reactions) {
+        if (!result[r.message_id]) {
+            result[r.message_id] = [];
+        }
+
+        const existing = result[r.message_id].find(x => x.reaction === r.reaction);
+        if (existing) {
+            existing.count++;
+            if (r.user_id === user.id) existing.myReaction = true;
+        } else {
+            result[r.message_id].push({
+                reaction: r.reaction,
+                count: 1,
+                myReaction: r.user_id === user.id
+            });
+        }
     }
 
     return result;
 }
 
-/**
- * Get total unread count for all conversations
- */
+// ============================================
+// SEARCH MESSAGES IN CONVERSATION
+// ============================================
+
+export async function searchMessages(conversationId: string, query: string): Promise<Message[]> {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user || !query.trim()) return [];
+
+    // Verify participation
+    const { data: participation } = await supabase
+        .from('conversation_participants')
+        .select('id')
+        .eq('conversation_id', conversationId)
+        .eq('user_id', user.id)
+        .single();
+
+    if (!participation) return [];
+
+    const { data: messages } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', conversationId)
+        .ilike('content', `%${query.trim()}%`)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+    return (messages || []).map(m => ({
+        ...m,
+        message_type: (m.message_type || 'text') as 'text' | 'image' | 'system',
+        reply_to: null,
+        sender: null,
+    }));
+}
+
+// ============================================
+// LEGACY COMPATIBILITY: likeMessage → reactToMessage
+// ============================================
+
+export async function likeMessage(messageId: number) {
+    return reactToMessage(messageId, '❤️');
+}
+
+export async function getMessageLikes(conversationId: string): Promise<{ [messageId: number]: { count: number; likedByMe: boolean } }> {
+    const reactions = await getReactions(conversationId);
+    const result: { [messageId: number]: { count: number; likedByMe: boolean } } = {};
+
+    for (const [msgId, reacts] of Object.entries(reactions)) {
+        const heartReact = reacts.find(r => r.reaction === '❤️');
+        if (heartReact) {
+            result[Number(msgId)] = {
+                count: heartReact.count,
+                likedByMe: heartReact.myReaction
+            };
+        }
+    }
+
+    return result;
+}
+
+// ============================================
+// GET TOTAL UNREAD COUNT
+// ============================================
+
 export async function getTotalUnreadCount(): Promise<number> {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return 0;
 
-    // Get all conversations user is part of
     const { data: participations } = await supabase
         .from('conversation_participants')
         .select('conversation_id')
@@ -403,7 +599,6 @@ export async function getTotalUnreadCount(): Promise<number> {
 
     const conversationIds = participations.map(p => p.conversation_id);
 
-    // Count unread messages in these conversations sent by OTHERS
     try {
         const { count, error } = await supabase
             .from('messages')
@@ -414,7 +609,7 @@ export async function getTotalUnreadCount(): Promise<number> {
 
         if (error) return 0;
         return count || 0;
-    } catch (error) {
+    } catch {
         return 0;
     }
 }
