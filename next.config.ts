@@ -156,8 +156,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const millionConfig = {
-  auto: true,
-  // Rsc is supported by default in million auto
+  auto: false, // Disabling auto mode to fix "removeChild" hydration errors.
 };
 
 // Temporarily disabled PWA to fix Vercel Edge Deployment error
