@@ -191,6 +191,7 @@ import { UserActivityTracker } from "@/components/analytics/user-activity-tracke
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
+import { ReactScan } from "@/components/analytics/react-scan";
 
 import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
@@ -276,8 +277,10 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        {/* Google Verification */}
+        {/* Google Verification - REPLACE WITH YOUR CODE */}
         <meta name="google-site-verification" content="google-site-verification-code-here" />
+        {/* React Scan for performance monitoring (Dev only) */}
+        {process.env.NODE_ENV === "development" && <ReactScan />}
         {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}
         <script
           type="application/ld+json"
