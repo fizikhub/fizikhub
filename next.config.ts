@@ -156,7 +156,13 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const millionConfig = {
-  auto: false, // Disabling auto mode to fix "removeChild" hydration errors.
+  auto: {
+    rsc: true,
+    skip: [
+      'Partytown', // Partytown injects scripts at runtime, skip it
+      'ThemeProvider', // next-themes manipulates <html> attributes
+    ],
+  },
 };
 
 // Temporarily disabled PWA to fix Vercel Edge Deployment error
