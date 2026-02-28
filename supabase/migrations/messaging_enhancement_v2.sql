@@ -116,7 +116,17 @@ WHERE c.id = sub.conversation_id AND c.last_message_at IS NULL;
 GRANT ALL ON TABLE message_reactions TO authenticated;
 GRANT ALL ON TABLE message_reactions TO service_role;
 
--- 10. Realtime for new table
-ALTER PUBLICATION supabase_realtime ADD TABLE message_reactions;
+-- 10. Realtime for new table (Safer check for 'FOR ALL TABLES' publications)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime' AND puballtables = false) THEN
+        ALTER PUBLICATION supabase_realtime ADD TABLE message_reactions;
+    ELSE
+        RAISE NOTICE 'Publication is FOR ALL TABLES or does not exist, skipping explicit add.';
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Could not add table to publication: %', SQLERRM;
+END $$;
 
 -- DONE: Mevcut veriler korundu, yeni özellikler eklendi.
