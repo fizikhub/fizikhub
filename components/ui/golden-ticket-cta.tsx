@@ -22,7 +22,9 @@ export function GoldenTicketCTA() {
                 <div className="relative bg-[#FFC800] rounded-xl border-[3px] border-black shadow-[6px_6px_0px_0px_#000] md:shadow-[10px_10px_0px_0px_#000] flex flex-col md:flex-row shadow-sm overflow-hidden">
 
                     {/* PAPER TEXTURE OVERLAY */}
-                    <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]" />
+                    <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)'/%3E%3C/svg%3E")` }}
+                    />
                     <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay"
                         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                     />
