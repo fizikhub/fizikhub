@@ -156,21 +156,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const millionConfig = {
-  auto: {
-    rsc: true,
-    skip: [
-      'Partytown',
-      'ThemeProvider',
-      'FramerMotionProvider',
-      'NavigationWrapper',
-      'Toaster',
-      'Analytics',
-      'OnboardingCheck',
-      'MaintenanceAudioPlayer',
-      'UserActivityTracker',
-      'QueryProvider'
-    ],
-  },
+  auto: true,
 };
 
 // Temporarily disabled PWA to fix Vercel Edge Deployment error
