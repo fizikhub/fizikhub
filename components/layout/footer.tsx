@@ -4,6 +4,7 @@ import Link from "next/link";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 // ═══════════════════════════════════════════════════════════════
 // BLACK HOLE FOOTER v6 — Cinematic Interstellar-quality
@@ -328,11 +329,13 @@ export function Footer() {
         return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(afRef.current); };
     }, []);
 
-    if (isChatPage) return null;
-
     return (
         <footer ref={boxRef} role="contentinfo" aria-label="Site bilgileri"
-            className="relative bg-black overflow-hidden min-h-[520px] md:min-h-[650px] flex flex-col justify-end">
+            className={cn(
+                "relative bg-black overflow-hidden min-h-[520px] md:min-h-[650px] flex flex-col justify-end",
+                isChatPage ? "hidden" : "flex"
+            )}
+        >
 
             <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
