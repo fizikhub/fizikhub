@@ -6,7 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
-
+import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -300,16 +300,18 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <TimeLimitProvider>
-            <NavigationWrapper>
-              <Suspense fallback={null}>
-                <OnboardingCheck />
-              </Suspense>
-              <main id="main-content" role="main">
-                {children}
-              </main>
-            </NavigationWrapper>
-
+            <FramerMotionProvider>
+              <NavigationWrapper>
+                <Suspense fallback={null}>
+                  <OnboardingCheck />
+                </Suspense>
+                <main id="main-content" role="main">
+                  {children}
+                </main>
+              </NavigationWrapper>
+            </FramerMotionProvider>
           </TimeLimitProvider>
+
           <Toaster
             position="top-center"
             toastOptions={{
