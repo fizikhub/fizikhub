@@ -1,3 +1,4 @@
+// million-ignore
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
@@ -287,7 +288,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
       </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* Skip to content — keyboard accessibility */}
         <a
           href="#main-content"
