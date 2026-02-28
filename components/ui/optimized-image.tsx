@@ -20,7 +20,7 @@ export function OptimizedImage({
     alt,
     ...props
 }: OptimizedImageProps) {
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(props.priority ? true : false);
 
     return (
         <NextImage
