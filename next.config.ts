@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import million from 'million/compiler';
 
 const nextConfig: NextConfig = {
   images: {
@@ -30,6 +29,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
+  reactCompiler: true,
   // Performance optimizations
   experimental: {
     optimizePackageImports: [
