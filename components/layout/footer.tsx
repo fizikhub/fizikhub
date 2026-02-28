@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 // ═══════════════════════════════════════════════════════════════
 // BLACK HOLE FOOTER v6 — Cinematic Interstellar-quality
@@ -290,21 +290,8 @@ export function Footer() {
     const glRef = useRef<ReturnType<typeof initGL>>(null);
     const afRef = useRef(0);
     const t0 = useRef(0);
-    const [isMobile, setIsMobile] = useState(false);
-
-    // Detect mobile on mount
-    useEffect(() => {
-        const checkMobile = () => {
-            const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            const small = window.innerWidth < 768;
-            setIsMobile(touch && small);
-        };
-        checkMobile();
-        // No resize listener needed — first load detection is enough
-    }, []);
 
     useEffect(() => {
-        if (isMobile) return; // Skip WebGL on mobile entirely
         const c = canvasRef.current;
         const b = boxRef.current;
         if (!c || !b) return;
@@ -347,12 +334,7 @@ export function Footer() {
         <footer ref={boxRef} role="contentinfo" aria-label="Site bilgileri"
             className="relative bg-black overflow-hidden min-h-[520px] md:min-h-[650px] flex flex-col justify-end">
 
-            <canvas ref={canvasRef} className={`absolute inset-0 z-0 block ${isMobile ? 'hidden' : ''}`} />
-
-            {/* Mobile: Static gradient background instead of WebGL */}
-            {isMobile && (
-                <div className="absolute inset-0 z-0 bg-gradient-to-b from-zinc-950 via-black to-zinc-900" />
-            )}
+            <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
 
             {/* SMOOTH GRADIENT TRANSITION — ultra seamless massive fade from site into footer */}
             <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
