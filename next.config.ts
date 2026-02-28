@@ -156,7 +156,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const millionConfig = {
-  auto: true,
+  auto: { rsc: true, mute: true },
 };
 
 // Temporarily disabled PWA to fix Vercel Edge Deployment error
