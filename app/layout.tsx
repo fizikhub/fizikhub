@@ -195,7 +195,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
 import { Suspense } from "react";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { Partytown } from '@qwik.dev/partytown/react';
+
 
 export default async function RootLayout({
   children,
@@ -209,7 +209,7 @@ export default async function RootLayout({
     return (
       <html lang="tr" suppressHydrationWarning>
         <head>
-          <Partytown debug={false} forward={['dataLayer.push']} />
+
           <link rel="manifest" href="/manifest.json" />
           <link rel="canonical" href="https://fizikhub.com" />
         </head>
@@ -264,7 +264,7 @@ export default async function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
-        <Partytown debug={false} forward={['dataLayer.push']} />
+
         <link rel="manifest" href="/manifest.json" />
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
