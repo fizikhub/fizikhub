@@ -42,7 +42,10 @@ export const Starfield: React.FC<StarfieldProps> = ({
             }));
         };
 
+        let isVisible = false;
+
         const animate = () => {
+            if (!isVisible) return;
             ctx.fillStyle = backgroundColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -72,13 +75,29 @@ export const Starfield: React.FC<StarfieldProps> = ({
             animationFrameId = requestAnimationFrame(animate);
         };
 
+        const observer = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                if (!animationFrameId) {
+                    animationFrameId = requestAnimationFrame(animate);
+                }
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = 0;
+                }
+            }
+        }, { rootMargin: "200px" });
+
+        observer.observe(canvas);
+
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
-        animate();
 
         return () => {
+            observer.disconnect();
             window.removeEventListener("resize", resizeCanvas);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, [speed, backgroundColor, starColor, count]);
 

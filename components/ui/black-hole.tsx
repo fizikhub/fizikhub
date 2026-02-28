@@ -129,11 +129,27 @@ export const BlackHole = () => {
             animationFrameId = requestAnimationFrame(draw);
         };
 
-        draw();
+        let isVisible = false;
+        const observer = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                if (!animationFrameId) {
+                    animationFrameId = requestAnimationFrame(draw);
+                }
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = 0;
+                }
+            }
+        }, { rootMargin: "200px" });
+
+        observer.observe(canvas);
 
         return () => {
+            observer.disconnect();
             window.removeEventListener("resize", resize);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, []);
 

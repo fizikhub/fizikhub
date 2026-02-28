@@ -43,17 +43,14 @@ export function SpaceBackground() {
             });
         }
 
-        let animationFrameId: number;
+        let animationFrameId: number = 0;
+        let isVisible = false;
 
         const render = () => {
-            if (!canvas || !ctx) return;
+            if (!canvas || !ctx || !isVisible) return;
 
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw pure black background (optional, can be done with CSS)
-            // ctx.fillStyle = 'black';
-            // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Update and draw stars
             ctx.fillStyle = 'white';
@@ -73,11 +70,26 @@ export function SpaceBackground() {
             animationFrameId = requestAnimationFrame(render);
         };
 
-        render();
+        const observer = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                if (!animationFrameId) {
+                    animationFrameId = requestAnimationFrame(render);
+                }
+            } else {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = 0;
+                }
+            }
+        }, { rootMargin: "200px" });
+
+        observer.observe(canvas);
 
         return () => {
+            observer.disconnect();
             window.removeEventListener('resize', resizeCanvas);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, []);
 

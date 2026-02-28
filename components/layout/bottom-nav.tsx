@@ -5,8 +5,9 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useSpring, useTransform } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useSpring, useTransform, useMotionValue, animate } from "framer-motion";
+
 import { DankLogo } from "@/components/brand/dank-logo";
 
 export function BottomNav() {
@@ -14,39 +15,48 @@ export function BottomNav() {
     const { scrollY } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
 
-    // Smoothly track the visibility state
-    const [isVisible, setIsVisible] = useState(true);
+    // Performance: Instead of React state, use a MotionValue to prevent re-renders on scroll
     const [isAtBottom, setIsAtBottom] = useState(false);
-
-    // Physics-based transition settings
-    const [dynamicDuration, setDynamicDuration] = useState(0.4);
+    const navY = useMotionValue(0);
+    const targetYRef = useRef(0);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const velocity = scrollVelocity.get();
         const previous = scrollY.getPrevious() || 0;
         const diff = latest - previous;
+        let targetY = navY.get();
+        let targetDuration = 0.4;
 
         // Detect if at bottom
         const windowHeight = window.innerHeight;
         const bodyHeight = document.body.offsetHeight;
+
         if (latest + windowHeight >= bodyHeight - 150) {
-            setIsAtBottom(true);
-            setIsVisible(true); // Always show at bottom
+            if (!isAtBottom) setIsAtBottom(true);
+            targetY = 0; // Always show at bottom
         } else {
-            setIsAtBottom(false);
+            if (isAtBottom) setIsAtBottom(false);
             // Normal visibility logic
             if (latest < 50) {
-                setIsVisible(true);
+                targetY = 0;
             } else if (diff > 5) { // Significant scroll down
-                setIsVisible(false);
+                targetY = 120;
             } else if (diff < -5) { // Significant scroll up
-                setIsVisible(true);
+                targetY = 0;
             }
         }
 
         const absVelocity = Math.abs(velocity);
-        const newDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
-        setDynamicDuration(newDuration);
+        targetDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
+
+        // Only animate if the target value is actually different to save battery/CPU
+        if (targetYRef.current !== targetY) {
+            targetYRef.current = targetY;
+            animate(navY, targetY, {
+                duration: targetDuration,
+                ease: [0.32, 0.72, 0, 1]
+            });
+        }
     });
 
     // Haptic feedback helper
@@ -58,14 +68,8 @@ export function BottomNav() {
 
     return (
         <motion.div
-            initial={false}
-            animate={{
-                y: isVisible ? 0 : 120,
-            }}
-            transition={{
-                duration: dynamicDuration,
-                ease: [0.32, 0.72, 0, 1]
-            }}
+            style={{ y: navY }}
+
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
             <nav aria-label="Mobil navigasyon" className={cn(

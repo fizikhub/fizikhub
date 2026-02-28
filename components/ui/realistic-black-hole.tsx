@@ -229,13 +229,31 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
         scene.add(mesh);
 
         // --- ANIMATION ---
-        let frameId: number;
+        let frameId: number = 0;
+        let isVisible = false;
+
         const animate = (time: number) => {
+            if (!isVisible) return;
             material.uniforms.iTime.value = time * 0.001;
             renderer.render(scene, camera);
             frameId = requestAnimationFrame(animate);
         };
-        requestAnimationFrame(animate);
+
+        const observer = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                if (!frameId) {
+                    frameId = requestAnimationFrame(animate);
+                }
+            } else {
+                if (frameId) {
+                    cancelAnimationFrame(frameId);
+                    frameId = 0;
+                }
+            }
+        }, { rootMargin: "200px" });
+
+        observer.observe(container);
 
         // --- RESIZE ---
         const handleResize = () => {
@@ -292,6 +310,7 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
         window.addEventListener("touchmove", handleTouchMove, { passive: true });
 
         return () => {
+            observer.disconnect();
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("touchmove", handleTouchMove);

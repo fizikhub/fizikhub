@@ -315,8 +315,10 @@ export function Footer() {
         t0.current = Date.now();
         resize();
 
+        let isVisible = false;
+
         const loop = () => {
-            if (!glRef.current) return;
+            if (!glRef.current || !isVisible) return;
             const { gl, uT, uR } = glRef.current;
             gl.uniform1f(uT, (Date.now() - t0.current) * 0.001);
             gl.uniform2f(uR, c.width, c.height);
@@ -324,9 +326,28 @@ export function Footer() {
             afRef.current = requestAnimationFrame(loop);
         };
 
-        afRef.current = requestAnimationFrame(loop);
+        const observer = new IntersectionObserver(([entry]) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                if (!afRef.current) {
+                    loop();
+                }
+            } else {
+                if (afRef.current) {
+                    cancelAnimationFrame(afRef.current);
+                    afRef.current = 0;
+                }
+            }
+        }, { rootMargin: "200px" });
+
+        observer.observe(b);
         window.addEventListener("resize", resize);
-        return () => { window.removeEventListener("resize", resize); cancelAnimationFrame(afRef.current); };
+
+        return () => {
+            observer.disconnect();
+            window.removeEventListener("resize", resize);
+            if (afRef.current) cancelAnimationFrame(afRef.current);
+        };
     }, []);
 
     return (
