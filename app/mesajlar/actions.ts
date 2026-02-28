@@ -137,21 +137,25 @@ export async function getConversations(): Promise<Conversation[]> {
 
     if (convError || !conversations) return [];
 
-    // Get other participants with profiles in one query
+    // Get other participants separately
     const { data: otherParticipants } = await supabase
         .from('conversation_participants')
-        .select(`
-            conversation_id,
-            user_id,
-            profiles:user_id (
-                id,
-                username,
-                full_name,
-                avatar_url
-            )
-        `)
+        .select('conversation_id, user_id')
         .in('conversation_id', conversationIds)
         .neq('user_id', user.id);
+
+    // Get other participants' profiles in one separate query to avoid join issues
+    const { data: allProfiles } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url')
+        .in('id', otherParticipants?.map((p: any) => p.user_id) || []);
+
+    const profileMap: Record<string, any> = {};
+    if (allProfiles) {
+        for (const p of allProfiles) {
+            profileMap[p.id] = p;
+        }
+    }
 
     // Get unread counts per conversation
     const { data: unreadMessages } = await supabase
@@ -170,7 +174,7 @@ export async function getConversations(): Promise<Conversation[]> {
 
     return conversations.map(conv => {
         const otherPart = otherParticipants?.find(p => p.conversation_id === conv.id);
-        const otherProfile: any = otherPart?.profiles;
+        const otherProfile = otherPart ? profileMap[otherPart.user_id] : null;
 
         return {
             id: conv.id,

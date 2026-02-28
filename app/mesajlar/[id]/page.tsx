@@ -60,6 +60,7 @@ export default async function ConversationPage({
 
             {/* Chat */}
             <ChatWindow
+                key={conversationId}
                 conversationId={conversationId}
                 initialMessages={messages}
                 currentUserId={user.id}
