@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import million from 'million/compiler';
 
 const nextConfig: NextConfig = {
   images: {
@@ -154,6 +155,14 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   skipWaiting: true,
 });
 
+const millionConfig = {
+  auto: true,
+  // Rsc is supported by default in million auto
+};
+
 // Temporarily disabled PWA to fix Vercel Edge Deployment error
 // export default withBundleAnalyzer(withPWA(nextConfig));
-export default withBundleAnalyzer(nextConfig);
+export default million.next(
+  withBundleAnalyzer(nextConfig),
+  millionConfig
+);

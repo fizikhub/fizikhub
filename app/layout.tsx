@@ -194,6 +194,8 @@ import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
 import { Suspense } from "react";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { Partytown } from '@qwik.dev/partytown/react';
 
 export default async function RootLayout({
   children,
@@ -207,6 +209,7 @@ export default async function RootLayout({
     return (
       <html lang="tr" suppressHydrationWarning>
         <head>
+          <Partytown debug={false} forward={['dataLayer.push']} />
           <link rel="manifest" href="/manifest.json" />
           <link rel="canonical" href="https://fizikhub.com" />
         </head>
@@ -261,6 +264,7 @@ export default async function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
+        <Partytown debug={false} forward={['dataLayer.push']} />
         <link rel="manifest" href="/manifest.json" />
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
@@ -293,38 +297,40 @@ export default async function RootLayout({
         </a>
 
         <UserActivityTracker />
-        <ThemeProvider
-          attribute="class"
-          forcedTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <TimeLimitProvider>
-            <FramerMotionProvider>
-              <NavigationWrapper>
-                <Suspense fallback={null}>
-                  <OnboardingCheck />
-                </Suspense>
-                <main id="main-content" role="main">
-                  {children}
-                </main>
-              </NavigationWrapper>
-            </FramerMotionProvider>
-          </TimeLimitProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            forcedTheme="dark"
+            enableSystem={false}
+            disableTransitionOnChange
+          >
+            <TimeLimitProvider>
+              <FramerMotionProvider>
+                <NavigationWrapper>
+                  <Suspense fallback={null}>
+                    <OnboardingCheck />
+                  </Suspense>
+                  <main id="main-content" role="main">
+                    {children}
+                  </main>
+                </NavigationWrapper>
+              </FramerMotionProvider>
+            </TimeLimitProvider>
 
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              className: "font-sans border-none bg-black text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-[40px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-bold tracking-tight dynamic-island-toast",
-              style: {
-                borderRadius: "40px",
-                background: "#000000",
-                color: "#ffffff",
-              },
-            }}
-          />
-          <Analytics />
-        </ThemeProvider>
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                className: "font-sans border-none bg-black text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-[40px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-bold tracking-tight dynamic-island-toast",
+                style: {
+                  borderRadius: "40px",
+                  background: "#000000",
+                  color: "#ffffff",
+                },
+              }}
+            />
+            <Analytics />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
