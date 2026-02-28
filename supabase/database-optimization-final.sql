@@ -99,7 +99,9 @@ DROP INDEX IF EXISTS public.idx_articles_status_created_at;
 DROP INDEX IF EXISTS public.idx_conversation_participants_user;
 
 -- public.profiles
--- profiles_username_key (Unique Constraint) is identical to profiles_username_unique (Index)
+-- profiles_username_key (Unique Constraint) is identical to profiles_username_unique (Index/Constraint)
+-- If it's a constraint, we must drop it using ALTER TABLE
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_username_unique;
 DROP INDEX IF EXISTS public.profiles_username_unique;
 
 -- public.questions

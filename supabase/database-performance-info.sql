@@ -53,7 +53,9 @@ CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_quiz_id ON public.user_quiz_at
 DROP INDEX IF EXISTS public.idx_articles_status_created_at;
 
 -- public.profiles
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_username_unique;
 DROP INDEX IF EXISTS public.idx_profiles_is_writer;
+DROP INDEX IF EXISTS public.profiles_username_unique;
 
 -- public.user_activity_logs
 DROP INDEX IF EXISTS public.idx_user_activity_logs_user_id;
