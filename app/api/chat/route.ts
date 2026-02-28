@@ -44,7 +44,6 @@ EKSTRA TONE VE ÜSLUP KURALLARI:
         return result.toUIMessageStreamResponse();
     } catch (error) {
         console.error("❌ HubGPT Stream Error:", error);
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        return new Response(`Error: ${errorMessage}`, { status: 500 });
+        return new Response("Bir hata oluştu. Lütfen tekrar deneyin.", { status: 500 });
     }
 }

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { ADMIN_EMAILS } from '@/lib/admin'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -49,9 +50,17 @@ export async function updateSession(request: NextRequest) {
         // Ignore auth errors, treat as logged out
     }
 
-    // Protected routes
-    if (request.nextUrl.pathname.startsWith('/admin') && user?.email !== 'barannnbozkurttb.b@gmail.com' && user?.email !== 'barannnnbozkurttb.b@gmail.com') {
-        return NextResponse.redirect(new URL('/', request.url))
+    // Protected routes — use centralized admin emails
+    if (request.nextUrl.pathname.startsWith('/admin') && !ADMIN_EMAILS.includes(user?.email?.toLowerCase() as any)) {
+        // Also check role from profile if email doesn't match
+        if (user) {
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            if (profile?.role !== 'admin') {
+                return NextResponse.redirect(new URL('/', request.url))
+            }
+        } else {
+            return NextResponse.redirect(new URL('/', request.url))
+        }
     }
 
     if (request.nextUrl.pathname.startsWith('/profil') && !user) {

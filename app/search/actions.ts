@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { generateEmbedding } from "@/lib/gemini";
+import { sanitizeSearchQuery } from "@/lib/security";
 
 export type SearchResult = {
     type: 'question' | 'article' | 'user';
@@ -60,7 +61,8 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
     }
 
     // --- STRATEGY 2: KEYWORD SEARCH (Fallback/Augment) ---
-    const searchTerm = `%${query}%`;
+    const sanitized = sanitizeSearchQuery(query);
+    const searchTerm = `%${sanitized}%`;
 
     // 1. Search Questions
     const { data: questions } = await supabase

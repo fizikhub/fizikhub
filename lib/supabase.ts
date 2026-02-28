@@ -5,8 +5,7 @@ export const createClient = () => {
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
     if (!url || !key) {
-        console.error("Supabase credentials missing! Check .env.local");
-        return createBrowserClient('https://placeholder.supabase.co', 'placeholder');
+        throw new Error("Supabase credentials missing! Check .env.local for NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
     }
 
     return createBrowserClient(url, key);

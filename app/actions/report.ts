@@ -90,8 +90,22 @@ export async function getReports() {
 
 export async function updateReportStatus(reportId: number, status: 'pending' | 'resolved' | 'dismissed') {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    // Auth check skipped for brevity, relies on RLS policy for update
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Admin check - role or email
+    const adminEmails = ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'];
+    const isAdmin = adminEmails.includes(user.email?.toLowerCase() || '');
+
+    if (!isAdmin) {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (profile?.role !== 'admin') {
+            return { success: false, error: "Bu işlem için admin yetkisi gereklidir." };
+        }
+    }
 
     const { error } = await supabase
         .from('reports')
@@ -99,7 +113,7 @@ export async function updateReportStatus(reportId: number, status: 'pending' | '
         .eq('id', reportId);
 
     if (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: "Rapor durumu güncellenirken hata oluştu." };
     }
 
     return { success: true };

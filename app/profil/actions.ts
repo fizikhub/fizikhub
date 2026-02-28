@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
+import { validateImageFile } from "@/lib/security";
 
 export async function updateUsername(newUsername: string) {
     const supabase = await createClient();
@@ -110,7 +111,7 @@ export async function updateProfile(formData: {
 
     if (updateError) {
         console.error("Profile update error:", updateError);
-        return { success: false, error: `Hata: ${updateError.message}` };
+        return { success: false, error: "Profil güncellenirken hata oluştu." };
     }
 
     // Get username for revalidation
@@ -253,6 +254,12 @@ export async function uploadAvatar(file: File) {
     }
 
     try {
+        // Validate file
+        const validationError = validateImageFile(file);
+        if (validationError) {
+            return { success: false, error: validationError };
+        }
+
         // Get current profile to check for existing avatar
         const { data: profile } = await supabase
             .from('profiles')
@@ -305,7 +312,7 @@ export async function uploadAvatar(file: File) {
 
         if (updateError) {
             console.error("Profile update error:", updateError);
-            return { success: false, error: "Profil güncellenirken hata oluştu. Tekrar dener misin yavrum?" };
+            return { success: false, error: "Profil güncellenirken hata oluştu." };
         }
 
         revalidatePath("/profil");
@@ -327,6 +334,12 @@ export async function uploadCover(file: File) {
     }
 
     try {
+        // Validate file
+        const validationError = validateImageFile(file);
+        if (validationError) {
+            return { success: false, error: validationError };
+        }
+
         // Get current profile to check for existing cover
         const { data: profile } = await supabase
             .from('profiles')
@@ -359,7 +372,7 @@ export async function uploadCover(file: File) {
 
         if (uploadError) {
             console.error("Upload error:", uploadError);
-            return { success: false, error: "Dosya yüklenirken hata oluştu. Aptal veritabanı" };
+            return { success: false, error: "Dosya yüklenirken hata oluştu." };
         }
 
         // Get public URL
@@ -379,7 +392,7 @@ export async function uploadCover(file: File) {
 
         if (updateError) {
             console.error("Profile update error:", updateError);
-            return { success: false, error: "Profil güncellenirken hata oluştu. fuck einstein" };
+            return { success: false, error: "Profil güncellenirken hata oluştu." };
         }
 
         revalidatePath("/profil");

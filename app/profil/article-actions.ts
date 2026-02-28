@@ -54,8 +54,7 @@ export async function createArticle(formData: FormData) {
         }).select().single();
 
         if (error) {
-            console.error("Article insert details:", error);
-            return { success: false, error: `Veritabanı hatası: ${error.message}` };
+            return { success: false, error: "Makale oluşturulurken bir hata oluştu. Lütfen tekrar deneyin." };
         }
 
         // 5. Success
@@ -63,7 +62,7 @@ export async function createArticle(formData: FormData) {
 
     } catch (error: any) {
         console.error("Unexpected error in createArticle:", error);
-        return { success: false, error: error?.message || "Beklenmeyen sunucu hatası" };
+        return { success: false, error: "Beklenmeyen sunucu hatası" };
     }
 }
 

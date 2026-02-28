@@ -547,7 +547,7 @@ export async function searchMessages(conversationId: string, query: string): Pro
         .from('messages')
         .select('*')
         .eq('conversation_id', conversationId)
-        .ilike('content', `%${query.trim()}%`)
+        .ilike('content', `%${query.trim().replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)
         .order('created_at', { ascending: false })
         .limit(20);
 

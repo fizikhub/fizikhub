@@ -4,11 +4,7 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 import { getClientMetadata, checkContent } from "@/lib/moderation";
-
-const ADMIN_EMAILS = [
-    'barannnbozkurttb.b@gmail.com',
-    'barannnnbozkurttb.b@gmail.com'
-];
+import { isAdminEmail } from "@/lib/admin";
 
 export async function toggleAnswerLike(answerId: number) {
     const supabase = await createClient();
@@ -123,8 +119,7 @@ export async function createQuestion(formData: { title: string; content: string;
     }).select().single();
 
     if (error) {
-        console.error("Create Question Error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: "Soru oluşturulurken bir hata oluştu." };
     }
 
     // Add reputation for asking question ONLY IF PUBLISHED
@@ -161,7 +156,7 @@ export async function updateQuestion(questionId: number, content: string) {
         return { success: false, error: "Soru bulunamadı." };
     }
 
-    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+    const isAdmin = isAdminEmail(user.email);
 
     if (question.author_id !== user.id && !isAdmin) {
         return { success: false, error: "Bu soruyu düzenleme yetkiniz yok." };
@@ -214,8 +209,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
         .single();
 
     if (error) {
-        console.error("Create Answer Error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: "Cevap oluşturulurken bir hata oluştu." };
     }
 
     // Get question author to notify
@@ -226,7 +220,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
         .single();
 
     if (question) {
-        const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+        const isAdmin = isAdminEmail(user.email);
         const notificationContent = isAdmin
             ? "hazreti yüce müce admin soruna cevap verdi"
             : `"${question.title}" soruna cevap yazdı.`;
@@ -328,7 +322,7 @@ export async function deleteQuestion(questionId: number) {
     if (!user) return { success: false, error: "Giriş yapmalısınız." };
 
     // Check if user is admin
-    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+    const isAdmin = isAdminEmail(user.email);
 
     if (!isAdmin) {
         // Optional: Allow owner to delete (if we want that feature later)
@@ -363,7 +357,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
         .eq('id', questionId)
         .single();
 
-    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+    const isAdmin = isAdminEmail(user.email);
 
     if (!question || (question.author_id !== user.id && !isAdmin)) {
         return { success: false, error: "Sadece soruyu soran kişi veya admin cevabı onaylayabilir." };
@@ -459,6 +453,31 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
 export async function incrementView(questionId: number) {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Require authentication to prevent anonymous view spam
+    if (!user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Dedup: check if user already viewed this question (prevents spam)
+    const { data: existingView } = await supabase
+        .from('question_views')
+        .select('id')
+        .eq('question_id', questionId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    if (existingView) {
+        // Already viewed, skip increment
+        return { success: true };
+    }
+
+    // Record the view
+    await supabase.from('question_views').insert({
+        question_id: questionId,
+        user_id: user.id
+    }).select().maybeSingle(); // ignore errors (table may not exist yet, RPC handles it)
 
     const { error } = await supabase.rpc('increment_question_views', {
         question_id: questionId
@@ -466,7 +485,7 @@ export async function incrementView(questionId: number) {
 
     if (error) {
         console.error("Increment View Error:", error);
-        return { success: false, error: error.message };
+        return { success: false, error: "Görüntülenme sayısı güncellenirken hata oluştu." };
     }
 
     return { success: true };
@@ -491,7 +510,7 @@ export async function deleteAnswer(answerId: number, questionId: number) {
         return { success: false, error: "Cevap bulunamadı." };
     }
 
-    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+    const isAdmin = isAdminEmail(user.email);
 
     if (answer.author_id !== user.id && !isAdmin) {
         return { success: false, error: "Bu cevabı silme yetkiniz yok." };
@@ -564,7 +583,7 @@ export async function deleteAnswerComment(commentId: number, questionId: number)
     }
 
     // Check if user is admin
-    const isAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() || '');
+    const isAdmin = isAdminEmail(user.email);
 
     let query = supabase.from('answer_comments').delete().eq('id', commentId);
 
