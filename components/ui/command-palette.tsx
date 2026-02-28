@@ -6,7 +6,6 @@ import { searchGlobal, type SearchResult } from "@/app/search/actions";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
-import { RiveMascot } from "@/components/ui/rive-mascot"; // [NEW]
 
 export function CommandPalette({
     isOpen: externalIsOpen,
@@ -76,11 +75,6 @@ export function CommandPalette({
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-0 overflow-hidden shadow-2xl max-w-2xl bg-white dark:bg-[#050505] border-2 border-black/10 dark:border-white/10">
-                {/* [NEW] Rive Mascot Container */}
-                <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none z-10 opacity-20 sm:opacity-50">
-                    <RiveMascot className="w-full h-full" state={loading ? 'searching' : 'idle'} />
-                </div>
-
                 <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 aria-selected:bg-blue-500">
                     <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
                         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
