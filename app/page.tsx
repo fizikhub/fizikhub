@@ -53,8 +53,8 @@ export const metadata: Metadata = {
 const getCachedFeedData = unstable_cache(
   async () => {
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
     const [articlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([

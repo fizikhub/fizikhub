@@ -154,11 +154,28 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  cacheOnFrontEndNav: true,
+  reloadOnOnline: true,
+  fallbacks: {
+    document: "/~offline",
+  },
+  workboxOptions: {
+    cleanupOutdatedCaches: true,
+    skipWaiting: true,
+    clientsClaim: true,
+    // Exclude external URLs from being cached by the SW
+    navigateFallbackDenylist: [/^\/api\//],
+    runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/lh3\.googleusercontent\.com\/.*/i,
+        handler: 'NetworkOnly',
+      },
+      {
+        urlPattern: /^https:\/\/cdn-icons-png\.flaticon\.com\/.*/i,
+        handler: 'NetworkOnly',
+      },
+    ],
+  },
 });
 
-// export default million.next(
-//   withBundleAnalyzer(nextConfig),
-//   millionConfig
-// );
-
-export default withBundleAnalyzer(nextConfig);
+export default withPWA(withBundleAnalyzer(nextConfig));

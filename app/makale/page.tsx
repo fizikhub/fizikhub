@@ -13,8 +13,8 @@ export const revalidate = 60;
 
 // Reusable Supabase client for cached data fetching (no cookies/auth)
 const getPublicClient = () => createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
 );
 
 // Cache articles for better performance
