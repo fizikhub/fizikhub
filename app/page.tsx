@@ -161,22 +161,8 @@ export default async function Home() {
     }))
   };
 
-  // Preload the LCP image (first article with cover) using direct unoptimized URL to bypass Vercel proxy latency
-  const lcpArticle = articles.find((a: any) => a.cover_url);
-  const lcpImageUrl = lcpArticle?.cover_url || null;
-
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
-      {/* Preload LCP image so browser discovers it immediately during HTML parse */}
-      {lcpImageUrl && (
-        <link
-          rel="preload"
-          as="image"
-          href={lcpImageUrl}
-          // @ts-ignore — React hoists <link> to <head>
-          fetchPriority="high"
-        />
-      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

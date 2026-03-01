@@ -64,9 +64,6 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 priority={index < 3}
                                                 fetchPriority={index < 3 ? "high" : "auto"}
                                                 quality={index < 3 ? 60 : 50}
-                                                // Bypassing Vercel _next/image proxy for LCP images to fetch directly from fast Supabase CDN
-                                                // This saves 1-3 seconds of Next.js image optimization TTFB (Time to First Byte)
-                                                unoptimized={index < 3}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">
