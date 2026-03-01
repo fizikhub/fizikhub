@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // Performance optimizations
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false,
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
