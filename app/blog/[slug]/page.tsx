@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { ArticleHero } from "@/components/articles/article-hero";

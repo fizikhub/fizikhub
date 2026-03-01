@@ -1,16 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
-import "katex/dist/katex.min.css";
-import "highlight.js/styles/github-dark.css";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn } from "lucide-react";
+
+// Lazy load heavy CSS — only when MarkdownRenderer mounts
+let cssLoaded = false;
+function loadMarkdownCSS() {
+    if (cssLoaded || typeof window === 'undefined') return;
+    cssLoaded = true;
+    // Inject KaTeX CSS
+    const katexLink = document.createElement('link');
+    katexLink.rel = 'stylesheet';
+    katexLink.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css';
+    katexLink.crossOrigin = 'anonymous';
+    document.head.appendChild(katexLink);
+    // Inject highlight.js CSS
+    const hlLink = document.createElement('link');
+    hlLink.rel = 'stylesheet';
+    hlLink.href = 'https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css';
+    hlLink.crossOrigin = 'anonymous';
+    document.head.appendChild(hlLink);
+}
 
 interface MarkdownRendererProps {
     content: string;
@@ -27,6 +44,10 @@ export function MarkdownRenderer({
     fontFamily = 'sans',
     isZenMode = false
 }: MarkdownRendererProps) {
+    // Load KaTeX + highlight.js CSS on first mount
+    useEffect(() => {
+        loadMarkdownCSS();
+    }, []);
     const proseSizeClasses = {
         sm: 'prose-sm',
         base: 'prose-base',

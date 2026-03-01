@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Clock } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface Article {
     id: string;
@@ -43,7 +43,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
-                        <motion.article
+                        <m.article
                             key={article.id}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -100,7 +100,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                     </div>
                                 </div>
                             </Link>
-                        </motion.article>
+                        </m.article>
                     );
                 })}
             </div>

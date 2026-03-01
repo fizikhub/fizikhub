@@ -8,11 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, MessageCircle, Share2, Star, BookOpen, Quote, Calendar, Clock, ArrowLeft, Heart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
+
+const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
+    loading: () => <div className="animate-pulse h-40 bg-muted/20 rounded-xl" />
+});
 
 interface BookReviewDetailProps {
     article: any;

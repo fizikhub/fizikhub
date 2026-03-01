@@ -3,18 +3,22 @@
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import * as THREE from "three";
+import {
+    Texture, CanvasTexture, Points, Color,
+    BufferGeometry, BufferAttribute, AdditiveBlending
+} from "three";
+import type { Points as PointsType } from "three";
 
 // --- TEXTURES ---
 
 // 1. STAR TEXTURE: Hard center for visibility
 function getStarTexture() {
-    if (typeof document === 'undefined') return new THREE.Texture();
+    if (typeof document === 'undefined') return new Texture();
     const canvas = document.createElement('canvas');
     canvas.width = 32;
     canvas.height = 32;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return new THREE.Texture();
+    if (!ctx) return new Texture();
 
     const center = 16;
     const gradient = ctx.createRadialGradient(center, center, 0, center, center, 15);
@@ -26,19 +30,19 @@ function getStarTexture() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 32, 32);
 
-    const texture = new THREE.CanvasTexture(canvas);
+    const texture = new CanvasTexture(canvas);
     texture.premultiplyAlpha = true;
     return texture;
 }
 
 // 2. NEBULA TEXTURE: Pure soft cloud
 function getNebulaTexture() {
-    if (typeof document === 'undefined') return new THREE.Texture();
+    if (typeof document === 'undefined') return new Texture();
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 64;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return new THREE.Texture();
+    if (!ctx) return new Texture();
 
     const center = 32;
     const gradient = ctx.createRadialGradient(center, center, 0, center, center, 32);
@@ -50,7 +54,7 @@ function getNebulaTexture() {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 64, 64);
 
-    const texture = new THREE.CanvasTexture(canvas);
+    const texture = new CanvasTexture(canvas);
     texture.premultiplyAlpha = true;
     return texture;
 }
@@ -58,16 +62,16 @@ function getNebulaTexture() {
 
 // --- MAIN STARS ( Bright & Distinct ) ---
 function MainStars({ count = 7000 }) {
-    const pointsRef = useRef<THREE.Points>(null!);
+    const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
-        const c_Core = new THREE.Color('#fff5c2');    // Golden Core
-        const c_Inner = new THREE.Color('#d4f1ff');   // White-Blue
-        const c_Outer = new THREE.Color('#5599ff');   // Electric Blue
+        const c_Core = new Color('#fff5c2');    // Golden Core
+        const c_Inner = new Color('#d4f1ff');   // White-Blue
+        const c_Outer = new Color('#5599ff');   // Electric Blue
 
         const arms = 2;
         const spin = 3.5;
@@ -75,7 +79,7 @@ function MainStars({ count = 7000 }) {
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-            const color = new THREE.Color();
+            const color = new Color();
 
             if (i < bulgeCount) {
                 // Bulge
@@ -130,9 +134,9 @@ function MainStars({ count = 7000 }) {
             colors[i3 + 2] = color.b;
         }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const geo = new BufferGeometry();
+        geo.setAttribute('position', new BufferAttribute(positions, 3));
+        geo.setAttribute('color', new BufferAttribute(colors, 3));
         return geo;
     }, [count]);
 
@@ -148,7 +152,7 @@ function MainStars({ count = 7000 }) {
                 size={0.35} // Larger, distinct stars
                 sizeAttenuation={true}
                 depthWrite={false}
-                blending={THREE.AdditiveBlending}
+                blending={AdditiveBlending}
                 vertexColors
                 transparent
                 opacity={1.0}
@@ -159,7 +163,7 @@ function MainStars({ count = 7000 }) {
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
 function NebulaClouds({ count = 8000 }) {
-    const pointsRef = useRef<THREE.Points>(null!);
+    const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
     const geometry = useMemo(() => {
@@ -167,9 +171,9 @@ function NebulaClouds({ count = 8000 }) {
         const colors = new Float32Array(count * 3);
 
         // Deep Navy & Purple Theme
-        const c_Pink = new THREE.Color('#aa00ff');   // Violet highlights
-        const c_Purple = new THREE.Color('#4400ff'); // Deep Indigo
-        const c_Blue = new THREE.Color('#001155');   // Very Dark Navy
+        const c_Pink = new Color('#aa00ff');   // Violet highlights
+        const c_Purple = new Color('#4400ff'); // Deep Indigo
+        const c_Blue = new Color('#001155');   // Very Dark Navy
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
@@ -184,7 +188,7 @@ function NebulaClouds({ count = 8000 }) {
             positions[i3 + 1] = y;
             positions[i3 + 2] = z;
 
-            const color = new THREE.Color();
+            const color = new Color();
             const mix = Math.random();
             if (mix < 0.33) color.copy(c_Pink);
             else if (mix < 0.66) color.copy(c_Purple);
@@ -198,9 +202,9 @@ function NebulaClouds({ count = 8000 }) {
             colors[i3 + 2] = color.b;
         }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const geo = new BufferGeometry();
+        geo.setAttribute('position', new BufferAttribute(positions, 3));
+        geo.setAttribute('color', new BufferAttribute(colors, 3));
         return geo;
     }, [count]);
 
@@ -216,7 +220,7 @@ function NebulaClouds({ count = 8000 }) {
                 size={3.0} // Large volumetric look
                 sizeAttenuation={true}
                 depthWrite={false}
-                blending={THREE.AdditiveBlending}
+                blending={AdditiveBlending}
                 vertexColors
                 transparent
                 opacity={0.5}
@@ -227,14 +231,14 @@ function NebulaClouds({ count = 8000 }) {
 
 // --- DISTANT BACKGROUND STARS ---
 function BackgroundStars({ count = 2000 }) {
-    const pointsRef = useRef<THREE.Points>(null!);
+    const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
     const geometry = useMemo(() => {
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const c_White = new THREE.Color('#ffffff');
-        const c_Blue = new THREE.Color('#aaaaff');
+        const c_White = new Color('#ffffff');
+        const c_Blue = new Color('#aaaaff');
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
@@ -251,7 +255,7 @@ function BackgroundStars({ count = 2000 }) {
             positions[i3 + 1] = y;
             positions[i3 + 2] = z;
 
-            const color = new THREE.Color();
+            const color = new Color();
             color.copy(Math.random() > 0.5 ? c_White : c_Blue);
 
             colors[i3] = color.r;
@@ -259,9 +263,9 @@ function BackgroundStars({ count = 2000 }) {
             colors[i3 + 2] = color.b;
         }
 
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const geo = new BufferGeometry();
+        geo.setAttribute('position', new BufferAttribute(positions, 3));
+        geo.setAttribute('color', new BufferAttribute(colors, 3));
         return geo;
     }, [count]);
 
@@ -277,7 +281,7 @@ function BackgroundStars({ count = 2000 }) {
                 size={0.15} // Tiny distant dots
                 sizeAttenuation={true}
                 depthWrite={false}
-                blending={THREE.AdditiveBlending}
+                blending={AdditiveBlending}
                 vertexColors
                 transparent
                 opacity={0.6} // Faint
