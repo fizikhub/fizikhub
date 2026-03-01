@@ -88,6 +88,12 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: './',
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
+  verification: {
+    google: 'google-site-verification-code-here',
   },
   description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   keywords: [
@@ -270,15 +276,10 @@ export default async function RootLayout({
 
   return (
     <html lang="tr" suppressHydrationWarning>
-      <head>
-
-        {/* RSS Feed Autodiscovery */}
-        <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
+      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${outfit.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* Sadece en kritik bağlantılar */}
         <link rel="preconnect" href="https://yqokiiobwqkuznemzmvq.supabase.co" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://yqokiiobwqkuznemzmvq.supabase.co" />
-        {/* Google Verification - REPLACE WITH YOUR CODE */}
-        <meta name="google-site-verification" content="google-site-verification-code-here" />
         {/* React Scan for performance monitoring (Dev only) */}
         {process.env.NODE_ENV === "development" && <ReactScan />}
         {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}
@@ -290,8 +291,6 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
-      </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${outfit.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
 
         {/* Skip to content — keyboard accessibility */}
         <a
