@@ -81,6 +81,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                         loading={index < 3 ? undefined : "lazy"}
                                         priority={index < 3}
                                         fetchPriority={index < 3 ? "high" : "auto"}
+                                        quality={index < 3 ? 60 : 50}
                                     />
                                 </div>
                             </div>

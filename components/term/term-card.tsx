@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface TermCardProps {
     article: any;
@@ -84,9 +85,9 @@ export function TermCard({ article, index }: TermCardProps) {
                     {/* FOOTER - Simple */}
                     <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
                         <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white">
+                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white relative">
                                 {article.author?.avatar_url ? (
-                                    <img src={article.author.avatar_url} alt="A" className="w-full h-full object-cover" />
+                                    <Image src={article.author.avatar_url} alt={article.author.full_name || "A"} fill sizes="24px" className="object-cover" />
                                 ) : (
                                     <div className="w-full h-full bg-black" />
                                 )}

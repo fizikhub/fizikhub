@@ -78,7 +78,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
                     <div className="flex items-center gap-2">
                         {data.author?.avatar_url && (
                             <div className="w-6 h-6 rounded-full overflow-hidden border border-black dark:border-white relative">
-                                <Image src={data.author.avatar_url} alt={data.author.username} fill />
+                                <Image src={data.author.avatar_url} alt={data.author.username} fill sizes="24px" />
                             </div>
                         )}
                         <span>{data.author?.username || "Anonim"}</span>

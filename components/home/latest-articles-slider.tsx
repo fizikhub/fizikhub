@@ -63,6 +63,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
                                                 priority={index < 3}
                                                 fetchPriority={index < 3 ? "high" : "auto"}
+                                                quality={index < 3 ? 60 : 50}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">

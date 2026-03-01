@@ -62,6 +62,8 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                         className="object-cover"
                                         priority
                                         fetchPriority="high"
+                                        quality={60}
+                                        sizes="(max-width: 768px) 128px, (max-width: 1024px) 192px, 33vw"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-emerald-900 flex items-center justify-center p-4 text-center">
@@ -150,6 +152,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                         className="object-cover"
                                         priority
                                         fetchPriority="high"
+                                        quality={60}
                                         sizes="(max-width: 768px) 100vw, 896px"
                                     />
                                 </div>
