@@ -651,6 +651,326 @@ export function CustomBadgeIcon({ name }: CustomBadgeIconProps) {
         );
     }
 
+    // ═══════════════════════════════════════════
+    // DB İtibar/Seviye Rozetleri (Eksik Olanlar)
+    // ═══════════════════════════════════════════
+
+    // Gözlemci (Büyük göz/iris)
+    if (normalName.includes("gözlemci")) {
+        return (
+            <NeoSticker color="#1d4ed8" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Göz dış çizgisi */}
+                    <path d="M10 50 Q50 15 90 50 Q50 85 10 50 Z" fill="#bfdbfe" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+                    {/* İris */}
+                    <circle cx="50" cy="50" r="18" fill="#2563eb" stroke="#000" strokeWidth="3" />
+                    {/* Pupil */}
+                    <motion.circle cx="50" cy="50" r="8" fill="#000" animate={{ cx: [48, 52, 48], r: [7, 9, 7] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
+                    {/* Parlama */}
+                    <circle cx="43" cy="43" r="4" fill="#fff" />
+                    <circle cx="55" cy="47" r="2" fill="#fff" />
+                    {/* Kirpikler */}
+                    <path d="M15 45 L5 35 M25 35 L20 22 M40 28 L38 15 M60 28 L62 15 M75 35 L80 22 M85 45 L95 35" stroke="#000" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Çırak (Çekiç & Anahtar)
+    if (normalName.includes("çırak")) {
+        return (
+            <NeoSticker color="#78350f" rotate={-5}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Çekiç */}
+                    <motion.g animate={{ rotateZ: [-15, 15, -15] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "30px", originY: "70px" }}>
+                        <rect x="25" y="40" width="10" height="40" fill="#a16207" stroke="#000" strokeWidth="3" rx="2" />
+                        <rect x="15" y="30" width="30" height="15" fill="#94a3b8" stroke="#000" strokeWidth="3" rx="2" />
+                    </motion.g>
+                    {/* Anahtar (İngiliz Anahtarı) */}
+                    <g transform="translate(55, 20) rotate(30)">
+                        <rect x="5" y="10" width="8" height="55" fill="#64748b" stroke="#000" strokeWidth="3" rx="2" />
+                        <path d="M0 5 L18 5 L18 20 L12 15 L6 20 L0 15 Z" fill="#94a3b8" stroke="#000" strokeWidth="3" />
+                    </g>
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Teorisyen (Karatahta + denklemler)
+    if (normalName.includes("teorisyen")) {
+        return (
+            <NeoSticker color="#166534" rotate={3}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Tahta */}
+                    <rect x="10" y="10" width="80" height="60" fill="#14532d" stroke="#000" strokeWidth="5" rx="3" />
+                    <rect x="5" y="65" width="90" height="8" fill="#a16207" stroke="#000" strokeWidth="3" rx="2" />
+                    {/* Tebeşir yazıları */}
+                    <motion.g animate={{ opacity: [0, 1] }} transition={{ duration: 2 }}>
+                        <text x="22" y="35" fontSize="14" fill="#fef08a" fontFamily="monospace" fontWeight="bold">F=ma</text>
+                        <text x="18" y="55" fontSize="12" fill="#bbf7d0" fontFamily="monospace">∇·E = ρ/ε₀</text>
+                    </motion.g>
+                    {/* Tebeşir */}
+                    <rect x="70" y="70" width="20" height="6" fill="#fff" stroke="#000" strokeWidth="2" rx="3" transform="rotate(-10 80 73)" />
+                    {/* Tahta silgisi */}
+                    <rect x="15" y="70" width="15" height="10" fill="#d97706" stroke="#000" strokeWidth="2" rx="2" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Profesör (Mezuniyet kepi & kürsü)
+    if (normalName.includes("profesör")) {
+        return (
+            <NeoSticker color="#7c3aed" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Mezuniyet Kepi */}
+                    <polygon points="50,15 10,35 50,55 90,35" fill="#1e293b" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+                    <line x1="50" y1="35" x2="50" y2="55" stroke="#000" strokeWidth="3" />
+                    <path d="M30 42 Q50 60 70 42" fill="none" stroke="#000" strokeWidth="3" />
+                    {/* Püskül */}
+                    <motion.g animate={{ rotateZ: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "85px", originY: "35px" }}>
+                        <line x1="85" y1="35" x2="90" y2="55" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" />
+                        <circle cx="90" cy="58" r="4" fill="#fbbf24" stroke="#000" strokeWidth="2" />
+                    </motion.g>
+                    {/* Kürsü */}
+                    <rect x="30" y="65" width="40" height="30" fill="#a16207" stroke="#000" strokeWidth="4" rx="3" />
+                    <rect x="35" y="60" width="30" height="8" fill="#b45309" stroke="#000" strokeWidth="3" rx="2" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Kozmolog (Spiral Galaksi)
+    if (normalName.includes("kozmolog")) {
+        return (
+            <NeoSticker color="#0c0a09" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Galaksi Spirali */}
+                    <motion.g animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} style={{ originX: "50px", originY: "50px" }}>
+                        <path d="M50 50 Q60 30 40 25 Q20 20 25 45 Q30 70 55 65 Q80 60 70 40 Q60 20 35 30" fill="none" stroke="#c084fc" strokeWidth="6" strokeLinecap="round" opacity="0.8" />
+                        <path d="M50 50 Q40 70 60 75 Q80 80 75 55 Q70 30 45 35 Q20 40 30 60 Q40 80 65 70" fill="none" stroke="#818cf8" strokeWidth="5" strokeLinecap="round" opacity="0.6" />
+                    </motion.g>
+                    {/* Merkez */}
+                    <motion.circle cx="50" cy="50" r="8" fill="#fbbf24" animate={{ r: [7, 10, 7], opacity: [0.8, 1, 0.8] }} transition={{ duration: 2, repeat: Infinity }} />
+                    {/* Yıldızlar */}
+                    <circle cx="20" cy="20" r="1.5" fill="#fff" />
+                    <circle cx="80" cy="80" r="1" fill="#fff" />
+                    <circle cx="85" cy="15" r="1.5" fill="#fff" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Kuantum Mekaniği (Psi dalga fonksiyonu)
+    if (normalName.includes("kuantum")) {
+        return (
+            <NeoSticker color="#581c87" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Dalga fonksiyonu ψ */}
+                    <motion.path
+                        d="M10 50 Q20 20 30 50 Q40 80 50 50 Q60 20 70 50 Q80 80 90 50"
+                        fill="none" stroke="#c084fc" strokeWidth="5" strokeLinecap="round"
+                        animate={{ d: ["M10 50 Q20 20 30 50 Q40 80 50 50 Q60 20 70 50 Q80 80 90 50", "M10 50 Q20 80 30 50 Q40 20 50 50 Q60 80 70 50 Q80 20 90 50", "M10 50 Q20 20 30 50 Q40 80 50 50 Q60 20 70 50 Q80 80 90 50"] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    {/* Büyük Ψ sembolü */}
+                    <text x="50" y="40" fontSize="35" fill="#e9d5ff" textAnchor="middle" fontFamily="serif" fontWeight="bold" fontStyle="italic">
+                        Ψ
+                    </text>
+                    {/* Parçacık parıltıları */}
+                    <motion.circle cx="30" cy="50" r="3" fill="#fef08a" animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }} />
+                    <motion.circle cx="70" cy="50" r="3" fill="#fef08a" animate={{ opacity: [0, 1, 0], scale: [0.5, 1.5, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.75 }} />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Gece Kuşu (Baykuş + Ay)
+    if (normalName.includes("gece") || normalName.includes("kuşu")) {
+        return (
+            <NeoSticker color="#1e1b4b" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Hilal Ay */}
+                    <circle cx="75" cy="25" r="15" fill="#fbbf24" stroke="#000" strokeWidth="3" />
+                    <circle cx="82" cy="20" r="12" fill="#1e1b4b" />
+                    {/* Baykuş Gövdesi */}
+                    <path d="M30 45 Q50 30 70 45 Q75 70 70 85 L30 85 Q25 70 30 45 Z" fill="#78350f" stroke="#000" strokeWidth="4" />
+                    {/* Kulak çıkıntıları */}
+                    <path d="M30 45 L20 30 L35 40" fill="#78350f" stroke="#000" strokeWidth="3" />
+                    <path d="M70 45 L80 30 L65 40" fill="#78350f" stroke="#000" strokeWidth="3" />
+                    {/* Gözler */}
+                    <motion.g animate={{ scaleY: [1, 0.1, 1] }} transition={{ duration: 4, repeat: Infinity, times: [0, 0.05, 0.1] }}>
+                        <circle cx="40" cy="55" r="10" fill="#fbbf24" stroke="#000" strokeWidth="3" />
+                        <circle cx="60" cy="55" r="10" fill="#fbbf24" stroke="#000" strokeWidth="3" />
+                        <circle cx="40" cy="55" r="5" fill="#000" />
+                        <circle cx="60" cy="55" r="5" fill="#000" />
+                        <circle cx="38" cy="52" r="2" fill="#fff" />
+                        <circle cx="58" cy="52" r="2" fill="#fff" />
+                    </motion.g>
+                    {/* Gaga */}
+                    <path d="M45 67 L50 75 L55 67" fill="#f59e0b" stroke="#000" strokeWidth="2" />
+                    {/* Yıldızlar */}
+                    <motion.circle cx="15" cy="20" r="1.5" fill="#fff" animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 2, repeat: Infinity }} />
+                    <motion.circle cx="55" cy="10" r="1" fill="#fff" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }} />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Seri Okuyucu (Kitap Yığını)
+    if (normalName.includes("seri") || normalName.includes("okuyucu")) {
+        return (
+            <NeoSticker color="#b91c1c" rotate={-3}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Kitap Yığını */}
+                    <rect x="20" y="65" width="60" height="12" fill="#3b82f6" stroke="#000" strokeWidth="3" rx="2" />
+                    <rect x="22" y="53" width="56" height="12" fill="#ef4444" stroke="#000" strokeWidth="3" rx="2" />
+                    <rect x="18" y="41" width="64" height="12" fill="#22c55e" stroke="#000" strokeWidth="3" rx="2" />
+                    <rect x="24" y="29" width="52" height="12" fill="#f59e0b" stroke="#000" strokeWidth="3" rx="2" />
+                    {/* Üst kitap (açık) */}
+                    <motion.g animate={{ rotateZ: [-3, 3, -3] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "50px", originY: "25px" }}>
+                        <path d="M25 25 L50 15 L75 25 L50 20 Z" fill="#a855f7" stroke="#000" strokeWidth="3" />
+                        <line x1="50" y1="15" x2="50" y2="20" stroke="#000" strokeWidth="2" />
+                    </motion.g>
+                    {/* Gözlük */}
+                    <circle cx="38" cy="85" r="6" fill="none" stroke="#000" strokeWidth="3" />
+                    <circle cx="55" cy="85" r="6" fill="none" stroke="#000" strokeWidth="3" />
+                    <line x1="44" y1="85" x2="49" y2="85" stroke="#000" strokeWidth="2" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Evrensel (Evren / Parlayan Yıldızlar)
+    if (normalName.includes("evrensel")) {
+        return (
+            <NeoSticker color="#020617" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Dev Yıldız */}
+                    <motion.g animate={{ rotate: 360, scale: [1, 1.1, 1] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} style={{ originX: "50px", originY: "50px" }}>
+                        <path d="M50 10 L58 40 L90 40 L64 58 L72 90 L50 70 L28 90 L36 58 L10 40 L42 40 Z" fill="#fde047" stroke="#000" strokeWidth="3" strokeLinejoin="round" />
+                    </motion.g>
+                    {/* İç yıldız */}
+                    <circle cx="50" cy="50" r="10" fill="#fff" stroke="#000" strokeWidth="2" />
+                    <text x="50" y="55" fontSize="12" fill="#000" textAnchor="middle" fontWeight="black">∞</text>
+                    {/* Küçük yıldızlar */}
+                    <motion.circle cx="20" cy="20" r="2" fill="#fff" animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 2, repeat: Infinity }} />
+                    <motion.circle cx="80" cy="25" r="1.5" fill="#fff" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }} />
+                    <motion.circle cx="85" cy="80" r="2" fill="#fff" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 3, repeat: Infinity, delay: 1 }} />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Araştırmacı (Büyüteç)
+    if (normalName.includes("araştırmacı")) {
+        return (
+            <NeoSticker color="#0369a1" rotate={10}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Büyüteç Camı */}
+                    <circle cx="40" cy="40" r="25" fill="#bae6fd" stroke="#000" strokeWidth="5" />
+                    <circle cx="40" cy="40" r="18" fill="#e0f2fe" stroke="#000" strokeWidth="2" />
+                    {/* Parlama */}
+                    <path d="M30 30 Q25 35 30 35" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" />
+                    {/* Sap */}
+                    <line x1="58" y1="58" x2="85" y2="85" stroke="#78350f" strokeWidth="10" strokeLinecap="round" />
+                    <line x1="58" y1="58" x2="85" y2="85" stroke="#a16207" strokeWidth="6" strokeLinecap="round" />
+                    {/* İçindeki atom */}
+                    <motion.g animate={{ rotate: 360 }} transition={{ duration: 4, repeat: Infinity, ease: "linear" }} style={{ originX: "40px", originY: "40px" }}>
+                        <circle cx="40" cy="28" r="3" fill="#ef4444" stroke="#000" strokeWidth="1" />
+                    </motion.g>
+                    <circle cx="40" cy="40" r="4" fill="#3b82f6" stroke="#000" strokeWidth="2" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Çaylak (Filizlenen tohum)
+    if (normalName.includes("çaylak")) {
+        return (
+            <NeoSticker color="#365314" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Toprak */}
+                    <path d="M10 75 Q50 65 90 75 L90 95 L10 95 Z" fill="#78350f" stroke="#000" strokeWidth="4" />
+                    {/* Saksı */}
+                    <path d="M30 70 L35 90 L65 90 L70 70 Z" fill="#b45309" stroke="#000" strokeWidth="3" />
+                    <line x1="30" y1="70" x2="70" y2="70" stroke="#000" strokeWidth="4" strokeLinecap="round" />
+                    {/* Fidan Gövdesi */}
+                    <motion.g animate={{ scaleY: [0, 1] }} transition={{ duration: 2 }} style={{ originX: "50px", originY: "70px" }}>
+                        <path d="M50 70 Q48 50 50 30" fill="none" stroke="#22c55e" strokeWidth="5" strokeLinecap="round" />
+                        {/* Yapraklar */}
+                        <motion.path d="M50 45 Q35 35 40 50" fill="#4ade80" stroke="#000" strokeWidth="2" animate={{ rotateZ: [-5, 5, -5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} />
+                        <motion.path d="M50 35 Q65 25 60 40" fill="#22c55e" stroke="#000" strokeWidth="2" animate={{ rotateZ: [5, -5, 5] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} />
+                    </motion.g>
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Kaşif (Pusula)
+    if (normalName.includes("kaşif")) {
+        return (
+            <NeoSticker color="#0c4a6e" rotate={0}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Pusula Gövdesi */}
+                    <circle cx="50" cy="50" r="40" fill="#e0f2fe" stroke="#000" strokeWidth="5" />
+                    <circle cx="50" cy="50" r="35" fill="#f0f9ff" stroke="#000" strokeWidth="2" />
+                    {/* Yön İşaretleri */}
+                    <text x="50" y="22" fontSize="10" fill="#000" textAnchor="middle" fontWeight="black">K</text>
+                    <text x="50" y="88" fontSize="10" fill="#000" textAnchor="middle" fontWeight="black">G</text>
+                    <text x="16" y="55" fontSize="10" fill="#000" textAnchor="middle" fontWeight="black">B</text>
+                    <text x="84" y="55" fontSize="10" fill="#000" textAnchor="middle" fontWeight="black">D</text>
+                    {/* İbre animasyonlu */}
+                    <motion.g animate={{ rotateZ: [-20, 20, -5, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "50px", originY: "50px" }}>
+                        <polygon points="50,20 45,50 50,45 55,50" fill="#ef4444" stroke="#000" strokeWidth="2" />
+                        <polygon points="50,80 45,50 50,55 55,50" fill="#e2e8f0" stroke="#000" strokeWidth="2" />
+                    </motion.g>
+                    <circle cx="50" cy="50" r="4" fill="#000" />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Yardımsever (El + Kalp)
+    if (normalName.includes("yardımsever")) {
+        return (
+            <NeoSticker color="#be185d" rotate={5}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* El */}
+                    <path d="M25 90 L25 50 Q25 45 30 45 L35 45 L35 35 Q35 30 40 30 L45 30 L45 25 Q45 20 50 20 L55 20 L55 25 Q55 20 60 20 L65 20 Q70 20 70 25 L70 50 L75 45 Q80 40 85 45 L80 55 Q70 75 60 85 Z" fill="#fcd34d" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+                    {/* Kalp */}
+                    <motion.g animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "50px", originY: "55px" }}>
+                        <path d="M50 65 Q40 50 30 55 Q20 65 35 75 L50 90 L65 75 Q80 65 70 55 Q60 50 50 65 Z" fill="#ef4444" stroke="#000" strokeWidth="3" />
+                    </motion.g>
+                </svg>
+            </NeoSticker>
+        );
+    }
+
+    // Yazar (Kalem & Mürekkep)
+    if (normalName.includes("yazar")) {
+        return (
+            <NeoSticker color="#1e3a5f" rotate={-8}>
+                <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] overflow-visible">
+                    {/* Tüylü Kalem */}
+                    <motion.g animate={{ rotateZ: [-2, 2, -2] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} style={{ originX: "50px", originY: "85px" }}>
+                        <path d="M50 85 L45 30 Q50 10 55 30 Z" fill="#e2e8f0" stroke="#000" strokeWidth="3" />
+                        {/* Tüy çizgileri */}
+                        <path d="M47 40 Q35 35 30 25" fill="none" stroke="#94a3b8" strokeWidth="2" />
+                        <path d="M47 55 Q30 50 25 45" fill="none" stroke="#94a3b8" strokeWidth="2" />
+                        <path d="M53 40 Q65 35 70 25" fill="none" stroke="#94a3b8" strokeWidth="2" />
+                        <path d="M53 55 Q70 50 75 45" fill="none" stroke="#94a3b8" strokeWidth="2" />
+                        {/* Uç */}
+                        <polygon points="50,85 47,75 53,75" fill="#fbbf24" stroke="#000" strokeWidth="2" />
+                    </motion.g>
+                    {/* Mürekkep Damlaları */}
+                    <motion.circle cx="50" cy="90" r="3" fill="#1e3a8a" animate={{ r: [2, 4, 2], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} />
+                    <motion.circle cx="55" cy="93" r="1.5" fill="#1e3a8a" animate={{ opacity: [0, 1, 0] }} transition={{ duration: 2, repeat: Infinity, delay: 1 }} />
+                </svg>
+            </NeoSticker>
+        );
+    }
+
     // Geçici Fallback (Eğer yukarıdaki if bloklarına girmezse)
     return (
         <NeoSticker color="#71717a">
