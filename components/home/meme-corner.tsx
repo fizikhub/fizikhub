@@ -74,11 +74,11 @@ export function MemeCorner() {
                     />
                 </div>
 
-                {/* VISUAL NOISE - Reduced to 5% for clarity */}
+                {/* VISUAL NOISE - Reduced to 2% for clarity and performance */}
                 <div
-                    className="absolute inset-0 z-[1] opacity-5 pointer-events-none mix-blend-overlay"
+                    className="absolute inset-0 z-[1] opacity-[0.02] pointer-events-none mix-blend-overlay"
                     style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
                     }}
                 />
 
@@ -102,14 +102,14 @@ export function MemeCorner() {
 
                         {/* Bottom: Animated Gradient Text */}
                         <h2
-                            className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap"
+                            className="font-head text-3xl sm:text-5xl font-black tracking-tighter leading-[0.9] pt-2 pb-2 pl-2 pr-2 whitespace-nowrap"
                             style={{
                                 background: 'linear-gradient(90deg, #fff, #93c5fd, #c084fc, #fff)',
                                 backgroundSize: '200% auto',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
-                                animation: 'gradient-flow 4s ease infinite',
-                                textShadow: '0 4px 8px rgba(0,0,0,0.5)',
+                                animation: 'gradient-flow 6s ease infinite', // Slowed down
+                                textShadow: '0 4px 12px rgba(0,0,0,1)',
                             }}
                         >
                             Tİ'YE ALIYORUZ

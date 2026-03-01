@@ -78,7 +78,8 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                         fill
                                         sizes="82px"
                                         className="object-cover"
-                                        loading={index < 3 ? "eager" : "lazy"}
+                                        loading={index < 3 ? undefined : "lazy"}
+                                        priority={index < 3}
                                     />
                                 </div>
                             </div>

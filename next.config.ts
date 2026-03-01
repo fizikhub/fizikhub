@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
       'lucide-react',
       'date-fns',
       'framer-motion',
+      'three',
       '@phosphor-icons/react',
       '@radix-ui/react-accordion',
       '@radix-ui/react-dialog',
