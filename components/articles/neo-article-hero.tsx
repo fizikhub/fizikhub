@@ -43,13 +43,13 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                 </div>
 
                 {/* 2. TITLE AREA */}
-                <div className="mb-8 sm:mb-10 text-center sm:text-left">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-black dark:text-white leading-[0.95] tracking-tighter uppercase drop-shadow-[4px_4px_0px_rgba(0,0,0,0.1)] mb-6">
+                <div className="mb-8 sm:mb-10 text-left">
+                    <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-black dark:text-white leading-[1.05] tracking-tight uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] mb-6 text-balance">
                         {article.title}
                     </h1>
 
                     {/* Meta Bar */}
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 sm:gap-6 pb-6 border-b-[3px] border-black">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4 sm:gap-6 pb-6 border-b-[3px] border-black flex-wrap">
                         {/* Author */}
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-[2px] border-black overflow-hidden shadow-[2px_2px_0px_0px_#000]">
@@ -69,25 +69,27 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
 
                         <div className="w-px h-8 bg-black/20 hidden sm:block" />
 
-                        {/* Date */}
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-                            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
-                            <div className="flex flex-col text-left">
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">TARİH</span>
-                                <span className="text-xs sm:text-sm font-bold text-black dark:text-white">
-                                    {format(new Date(article.created_at), "d MMMM yyyy", { locale: tr })}
-                                </span>
+                        <div className="flex items-center gap-4 sm:gap-6">
+                            {/* Date */}
+                            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
+                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
+                                <div className="flex flex-col text-left">
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">TARİH</span>
+                                    <span className="text-xs sm:text-sm font-bold text-black dark:text-white">
+                                        {format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="w-px h-8 bg-black/20 hidden sm:block" />
+                            <div className="w-px h-6 bg-black/20 block" />
 
-                        {/* Read Time */}
-                        <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-                            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
-                            <div className="flex flex-col text-left">
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">SÜRE</span>
-                                <span className="text-xs sm:text-sm font-bold text-black dark:text-white">{readingTime}</span>
+                            {/* Read Time */}
+                            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
+                                <div className="flex flex-col text-left">
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">SÜRE</span>
+                                    <span className="text-xs sm:text-sm font-bold text-black dark:text-white">{readingTime}</span>
+                                </div>
                             </div>
                         </div>
                     </div>

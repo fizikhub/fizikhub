@@ -13,14 +13,15 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  preload: true,
+  preload: false,
   fallback: ['system-ui', 'arial'],
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-grotesk",
+  variable: "--font-gross",
   display: "swap",
+  preload: false,
 });
 
 

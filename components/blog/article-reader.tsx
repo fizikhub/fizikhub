@@ -80,23 +80,24 @@ export function ArticleReader({
 
                         {/* Content - Evrim Ağacı / Wired Style */}
                         <div className={cn(
-                            "prose prose-lg dark:prose-invert max-w-none mb-20",
+                            "prose sm:prose-lg dark:prose-invert max-w-none mb-12 sm:mb-20",
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-tight prose-headings:text-foreground",
-                            "prose-h1:text-4xl prose-h1:mb-8",
-                            "prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-[6px] prose-h2:border-[#FFC800] prose-h2:pl-4",
-                            "prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:font-bold",
+                            "prose-h1:text-3xl sm:prose-h1:text-4xl prose-h1:mb-6 sm:prose-h1:mb-8 prose-h1:leading-tight",
+                            "prose-h2:text-2xl sm:prose-h2:text-3xl prose-h2:mt-10 sm:prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-l-[6px] prose-h2:border-[#FFC800] prose-h2:pl-4 prose-h2:leading-tight",
+                            "prose-h3:text-xl sm:prose-h3:text-2xl prose-h3:mt-8 sm:prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-bold",
                             // Content
-                            "prose-p:text-foreground/90 prose-p:leading-[1.9] prose-p:mb-6 prose-p:font-medium",
-                            "prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#FFC800] transition-colors",
-                            "prose-li:text-foreground/90 prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black",
+                            "prose-p:text-foreground/90 prose-p:text-base sm:prose-p:text-lg prose-p:leading-[1.8] sm:prose-p:leading-[1.9] prose-p:mb-6 md:prose-p:mb-8 prose-p:font-medium",
+                            "prose-a:text-cyan-600 dark:prose-a:text-cyan-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-[#FFC800] transition-colors break-words",
+                            "prose-li:text-foreground/90 prose-li:text-base sm:prose-li:text-lg prose-li:leading-[1.8] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black",
+                            "prose-ul:pl-5 sm:prose-ul:pl-8 prose-ol:pl-5 sm:prose-ol:pl-8",
                             // Blockquotes
-                            "prose-blockquote:border-l-[4px] prose-blockquote:border-black dark:prose-blockquote:border-white prose-blockquote:bg-neutral-100 dark:prose-blockquote:bg-neutral-900 prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:my-8 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-lg prose-blockquote:shadow-sm",
+                            "prose-blockquote:border-l-[4px] sm:prose-blockquote:border-l-[6px] prose-blockquote:border-black dark:prose-blockquote:border-white prose-blockquote:bg-neutral-100 dark:prose-blockquote:bg-neutral-900 prose-blockquote:py-4 sm:prose-blockquote:py-6 prose-blockquote:px-5 sm:prose-blockquote:px-8 prose-blockquote:my-8 sm:prose-blockquote:my-10 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:font-medium prose-blockquote:text-base sm:prose-blockquote:text-xl prose-blockquote:leading-relaxed prose-blockquote:shadow-sm",
                             // Code
-                            "prose-code:bg-neutral-200 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#d63384] dark:prose-code:text-[#ff79c6] prose-code:font-mono prose-code:text-[0.9em] prose-code:font-bold prose-code:before:content-none prose-code:after:content-none",
-                            "prose-pre:bg-[#1e1e1e] prose-pre:border-[2px] prose-pre:border-black/20 dark:prose-pre:border-white/20 prose-pre:rounded-xl prose-pre:shadow-xl",
+                            "prose-code:bg-neutral-200 dark:prose-code:bg-neutral-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#d63384] dark:prose-code:text-[#ff79c6] prose-code:font-mono prose-code:text-[0.85em] sm:prose-code:text-[0.9em] prose-code:font-bold prose-code:before:content-none prose-code:after:content-none",
+                            "prose-pre:bg-[#1e1e1e] prose-pre:border-[2px] prose-pre:border-black/20 dark:prose-pre:border-white/20 prose-pre:rounded-xl prose-pre:shadow-xl overflow-x-auto",
                             // Images & Media
-                            "prose-img:rounded-xl prose-img:border-[2px] prose-img:border-black/10 dark:prose-img:border-white/10 prose-img:shadow-lg prose-img:my-10",
+                            "prose-img:rounded-xl prose-img:border-[2px] prose-img:border-black/10 dark:prose-img:border-white/10 prose-img:shadow-lg prose-img:my-8 sm:prose-img:my-12 prose-img:mx-auto",
                             "prose-strong:text-foreground prose-strong:font-black"
                         )}>
                             <MarkdownRenderer
@@ -110,10 +111,10 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-12 space-y-16">
+                            <div className="mt-12 space-y-12 sm:space-y-16">
                                 {/* Control Panel (Action Bar) */}
-                                <div className="p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[2px] border-black/10 dark:border-white/10 flex flex-wrap items-center justify-between gap-6">
-                                    <div className="flex items-center gap-4">
+                                <div className="p-4 sm:p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[2px] border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 shadow-sm">
+                                    <div className="flex items-center justify-center sm:justify-start gap-4 flex-1">
                                         <div className="flex items-center p-1 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg shadow-sm">
                                             <LikeButton
                                                 articleId={article.id}
@@ -132,11 +133,13 @@ export function ArticleReader({
                                             contentId={article.id}
                                         />
                                     </div>
-                                    <ShareButtons title={article.title} slug={article.slug} />
+                                    <div className="flex justify-center sm:justify-end border-t border-black/5 dark:border-white/5 sm:border-0 pt-4 sm:pt-0">
+                                        <ShareButtons title={article.title} slug={article.slug} />
+                                    </div>
                                 </div>
 
                                 {/* Author */}
-                                <div className="border-t-2 border-dashed border-black/10 dark:border-white/10 pt-12">
+                                <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-10 sm:pt-12">
                                     <AuthorCard author={article.author || {}} />
                                 </div>
 

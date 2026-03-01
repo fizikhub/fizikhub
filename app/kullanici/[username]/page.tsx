@@ -94,7 +94,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 4. User articles
         supabase
             .from('articles')
-            .select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count')
+            .select('id, title, slug, excerpt, created_at, category, cover_url')
             .eq('author_id', profile.id)
             .eq('status', 'published')
             .order('created_at', { ascending: false }),
@@ -102,14 +102,14 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 5. User questions
         supabase
             .from('questions')
-            .select('id, title, slug, created_at, category, views, answers_count')
+            .select('id, title, slug, created_at, category')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false }),
 
         // 6. User answers
         supabase
             .from('answers')
-            .select('id, content, created_at, is_accepted, questions(id, title, slug)')
+            .select('id, content, created_at, questions(id, title, slug)')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false })
             .limit(10) // Limit answers for performance

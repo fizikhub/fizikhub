@@ -30,9 +30,9 @@ export default async function ProfilePage() {
         { data: bookmarkedQuestions }
     ] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
-        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, views, likes_count').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
-        supabase.from('questions').select('id, title, slug, created_at, category, views, answers_count').eq('author_id', user.id).order('created_at', { ascending: false }),
-        supabase.from('answers').select('id, content, created_at, is_accepted, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }),
+        supabase.from('questions').select('id, title, slug, created_at, category').eq('author_id', user.id).order('created_at', { ascending: false }),
+        supabase.from('answers').select('id, content, created_at, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }),
         supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
         getFollowStats(user.id),
         supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, status').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }),

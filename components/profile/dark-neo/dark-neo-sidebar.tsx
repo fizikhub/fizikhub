@@ -100,18 +100,6 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                     </div>
                 )}
             </div>
-
-            <div className="bg-[#00F050] border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl relative overflow-hidden group cursor-pointer hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                <div className="bg-zinc-900 rounded-[10px] p-4 flex items-center justify-between relative z-10 h-full border-2 border-black group-hover:bg-[#00F050] transition-colors duration-300">
-                    <div>
-                        <p className="text-[9px] font-black uppercase text-[#00F050] mb-0.5 tracking-wider group-hover:text-black transition-colors">Topluluk</p>
-                        <h3 className="text-base font-black text-white group-hover:text-black transition-colors">Katkı Kuralları</h3>
-                    </div>
-                    <div className="bg-black/20 p-2.5 rounded-lg text-[#00F050] group-hover:bg-black group-hover:text-[#00F050] transition-all border-2 border-transparent group-hover:border-black shadow-inner">
-                        <GraduationCap className="w-5 h-5 stroke-[2.5px]" />
-                    </div>
-                </div>
-            </div>
         </motion.div>
     );
 }
