@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Award, Shield, BookOpen, HelpCircle, MessageCircle, Zap, AlertCircle, GraduationCap, User } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
 import { CustomBadgeIcon } from "../custom-badge-icon";
+import Link from "next/link";
 
 interface DarkNeoSidebarProps {
     profile: any;
@@ -58,30 +59,43 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
 
-                <h3 className="font-black text-xs mb-4 flex items-center gap-2 uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10">
-                    <span className="w-6 h-6 bg-[#23A9FA] text-white flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000]">
-                        <Award className="w-3.5 h-3.5 stroke-[3px]" />
-                    </span>
-                    Rozetler
-                </h3>
+                <Link href="/rozetler" className="h-[2px] w-full block absolute bottom-0 left-0 hover:bg-[#23A9FA] transition-colors z-20"></Link>
+                <Link href="/rozetler" className="font-black text-xs mb-4 flex items-center justify-between uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10 hover:text-white transition-colors group">
+                    <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 bg-[#23A9FA] text-white flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000] group-hover:bg-white group-hover:text-[#23A9FA] transition-colors">
+                            <Award className="w-3.5 h-3.5 stroke-[3px]" />
+                        </span>
+                        Rozetler
+                    </div>
+                    <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 px-2 py-0.5 rounded text-white">Tümünü Gör →</span>
+                </Link>
 
                 {userBadges && userBadges.length > 0 ? (
                     <div className="grid grid-cols-4 gap-2 relative z-10">
                         {userBadges.map((badgeObj: any, index: number) => {
                             const badge = badgeObj.badges;
                             return (
-                                <div
+                                <Link
+                                    href="/rozetler"
                                     key={index}
                                     className="aspect-square bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
-                                    title={badge.name}
                                 >
-                                    <div className="w-full h-full p-1 opacity-80 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200">
+                                    {/* Tooltip Hover Area */}
+                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full w-56 bg-zinc-900 border-2 border-zinc-700 text-white p-2 rounded-lg opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all pointer-events-none z-50 shadow-[4px_4px_0_0_#000] flex flex-col gap-1 bottom-full origin-bottom">
+                                        <div className="font-black text-[12px] uppercase text-[#23A9FA] flex items-center gap-1 border-b border-zinc-700/50 pb-1">
+                                            <Award className="w-3 h-3" />
+                                            {badge.name}
+                                        </div>
+                                        <div className="text-[10px] leading-snug text-zinc-300 font-medium whitespace-pre-wrap">
+                                            {badge.description || "Gizemli rozet... Nasıl kazanılacağını kimse bilmiyor."}
+                                        </div>
+                                        {/* Tooltip Arrow */}
+                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-zinc-900 border-b-2 border-r-2 border-zinc-700 rotate-45" />
+                                    </div>
+                                    <div className="w-full h-full p-2 opacity-85 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200 flex items-center justify-center">
                                         <CustomBadgeIcon name={badge.name} />
                                     </div>
-                                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[9px] font-black uppercase px-2 py-1 rounded border-2 border-white opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] translate-y-2 group-hover/badge:translate-y-0">
-                                        {badge.name}
-                                    </div>
-                                </div>
+                                </Link>
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
@@ -97,9 +111,10 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                         </div>
                         <p className="text-[10px] font-black text-zinc-500 uppercase">Henüz rozet yok.</p>
                     </div>
-                )}
-            </div>
-        </motion.div>
+                )
+                }
+            </div >
+        </motion.div >
     );
 }
 
