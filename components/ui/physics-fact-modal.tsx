@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Zap, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 
 const FACTS = [
     {
@@ -85,7 +85,7 @@ export function PhysicsFactModal({ open, onOpenChange }: PhysicsFactModalProps) 
 
                 <AnimatePresence mode="wait">
                     {open && (
-                        <motion.div
+                        <m.div
                             key={currentFact.title}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -108,7 +108,7 @@ export function PhysicsFactModal({ open, onOpenChange }: PhysicsFactModalProps) 
                                     Anladım
                                 </button>
                             </div>
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </DialogContent>

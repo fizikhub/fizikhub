@@ -4,14 +4,16 @@ import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
-import { CommandPalette } from "@/components/ui/command-palette";
-import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
-// Sheet imports removed
 import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
+import dynamic from "next/dynamic";
+
+// Dynamically import heavy modals to reduce initial bundle size
+const CommandPalette = dynamic(() => import("@/components/ui/command-palette").then(mod => mod.CommandPalette), { ssr: false });
+const PhysicsFactModal = dynamic(() => import("@/components/ui/physics-fact-modal").then(mod => mod.PhysicsFactModal), { ssr: false });
 
 const physicsTicker = [
     "E = mc²", "F = ma", "ΔS ≥ 0", "iℏ∂ψ/∂t = Ĥψ", "G = 6.67×10⁻¹¹",

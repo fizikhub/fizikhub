@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useSpring, useTransform, useMotionValue, animate } from "framer-motion";
+import { m, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
 
 import { DankLogo } from "@/components/brand/dank-logo";
 
@@ -67,7 +67,7 @@ export function BottomNav() {
     };
 
     return (
-        <motion.div
+        <m.div
             style={{ y: navY }}
 
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
@@ -84,7 +84,7 @@ export function BottomNav() {
 
                 <AnimatePresence mode="wait">
                     {!isAtBottom ? (
-                        <motion.div
+                        <m.div
                             key="nav-icons"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -116,7 +116,7 @@ export function BottomNav() {
                                     className="relative block"
                                     onClick={vibrate}
                                 >
-                                    <motion.div
+                                    <m.div
                                         animate={{ scale: [1, 1.05, 1] }}
                                         transition={{
                                             repeat: Infinity,
@@ -140,7 +140,7 @@ export function BottomNav() {
                                         <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
 
                                         {/* Shimmer Effect */}
-                                        <motion.div
+                                        <m.div
                                             className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent z-0 pointer-events-none"
                                             initial={{ x: "-100%" }}
                                             animate={{ x: "100%" }}
@@ -151,7 +151,7 @@ export function BottomNav() {
                                                 ease: "easeInOut"
                                             }}
                                         />
-                                    </motion.div>
+                                    </m.div>
                                 </ViewTransitionLink>
                             </div>
 
@@ -172,9 +172,9 @@ export function BottomNav() {
                                 isActive={pathname.startsWith("/profil")}
                                 onInteract={vibrate}
                             />
-                        </motion.div>
+                        </m.div>
                     ) : (
-                        <motion.div
+                        <m.div
                             key="copyright-info"
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -203,11 +203,11 @@ export function BottomNav() {
                                     50% { background-position: 100% 50%; }
                                 }
                             `}</style>
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </nav>
-        </motion.div>
+        </m.div>
     );
 }
 
@@ -232,13 +232,13 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
-            <motion.div
+            <m.div
                 whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 className="flex flex-col items-center gap-0.5 relative"
             >
                 {isActive && (
-                    <motion.div
+                    <m.div
                         layoutId="nav-item-background"
                         className="
                             absolute inset-0 
@@ -255,7 +255,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                     "p-1.5 rounded-lg transition-all duration-200 relative z-10",
                     !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
-                    <motion.div
+                    <m.div
                         initial={false}
                         animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                         transition={{ type: "spring", stiffness: 500, damping: 15 }}
@@ -267,9 +267,9 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                                 isActive ? "stroke-[2.75px]" : "stroke-[2px]"
                             )}
                         />
-                    </motion.div>
+                    </m.div>
                 </div>
-            </motion.div>
+            </m.div>
         </ViewTransitionLink>
     );
 }
