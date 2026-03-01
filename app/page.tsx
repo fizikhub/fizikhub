@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 // CompactHero — dynamically loaded to reduce initial bundle; MemeCornerCanvas inside is already ssr:false
 const CompactHero = dynamic(() => import("@/components/home/compact-hero").then(mod => mod.CompactHero), {
   loading: () => <div className="h-[180px] sm:h-[240px] w-full animate-pulse bg-zinc-900/40 rounded-[8px] border-[3px] border-zinc-800 mb-2 sm:mb-6"></div>,
@@ -20,9 +21,11 @@ import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 // Lazy Load Heavy Components
 const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {
   loading: () => <FeedSkeleton />,
-  ssr: true // Keep SSR for SEO, but chunk it
+  ssr: true
 });
 
+// We load the sidebar structure dynamically, but to avoid TBT hydration blocks, 
+// we let the Client Component itself do the heavy lifting later.
 const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
   loading: () => <SidebarSkeleton />,
   ssr: true
