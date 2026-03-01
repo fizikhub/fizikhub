@@ -1,6 +1,6 @@
 // million-ignore
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, Outfit } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -9,23 +9,12 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 
+// Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
   fallback: ['system-ui', 'arial'],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-gross",
-  display: "swap",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-  display: "swap",
 });
 
 
@@ -276,7 +265,7 @@ export default async function RootLayout({
 
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${outfit.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* Sadece en kritik bağlantılar */}
         <link rel="preconnect" href="https://yqokiiobwqkuznemzmvq.supabase.co" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://yqokiiobwqkuznemzmvq.supabase.co" />

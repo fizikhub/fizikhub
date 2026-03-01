@@ -61,7 +61,7 @@ export default function SimulasyonlarPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#09090b] pb-20 font-[family-name:var(--font-outfit)] selection:bg-[#FFC800] selection:text-black">
+        <div className="min-h-screen bg-[#09090b] pb-20 font-sans selection:bg-[#FFC800] selection:text-black">
             <TutorialOverlay
                 steps={tutorialSteps}
                 isActive={showTutorial}

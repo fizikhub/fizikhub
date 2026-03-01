@@ -2,10 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-// Heavy Client Components - Dynamically loaded to split JS bundle weight
+// CompactHero — dynamically loaded to reduce initial bundle; MemeCornerCanvas inside is already ssr:false
 const CompactHero = dynamic(() => import("@/components/home/compact-hero").then(mod => mod.CompactHero), {
-  loading: () => <div className="h-[240px] w-full animate-pulse bg-zinc-900/40 rounded-[8px] border-[3px] border-zinc-800 mb-2 sm:mb-6"></div>,
-  ssr: true // Keeps HTML payload for LCP and SEO
+  loading: () => <div className="h-[180px] sm:h-[240px] w-full animate-pulse bg-zinc-900/40 rounded-[8px] border-[3px] border-zinc-800 mb-2 sm:mb-6"></div>,
+  ssr: true
 });
 
 const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories), {
@@ -28,10 +28,8 @@ const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(
   ssr: true
 });
 
-const LatestArticlesSlider = dynamic(() => import("@/components/home/latest-articles-slider").then(mod => mod.LatestArticlesSlider), {
-  loading: () => <SliderSkeleton />,
-  ssr: true
-});
+// LCP Component — STATIC IMPORT so Next.js can preload the hero image
+import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
@@ -163,8 +161,24 @@ export default async function Home() {
     }))
   };
 
+  // Preload the LCP image (first article with cover)
+  const lcpArticle = articles.find((a: any) => a.cover_url);
+  const lcpImageUrl = lcpArticle?.cover_url
+    ? `/_next/image?url=${encodeURIComponent(lcpArticle.cover_url)}&w=640&q=60`
+    : null;
+
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      {/* Preload LCP image so browser discovers it immediately during HTML parse */}
+      {lcpImageUrl && (
+        <link
+          rel="preload"
+          as="image"
+          href={lcpImageUrl}
+          // @ts-ignore — React hoists <link> to <head>
+          fetchPriority="high"
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

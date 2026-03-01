@@ -117,12 +117,12 @@ const config = {
                 heading: "700",
             },
             fontFamily: {
-                sans: ["var(--font-sans)", "sans-serif"],
-                serif: ["var(--font-serif)", "serif"],
-                display: ["var(--font-display)", "serif"],
-                heading: ["var(--font-head)", "sans-serif"],
-                head: ["var(--font-head)", "sans-serif"], // RetroUI alias
-                base: ["var(--font-sans)", "sans-serif"], // NeoBrutalism alias
+                sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+                serif: ["Georgia", "serif"],
+                display: ["var(--font-sans)", "system-ui", "sans-serif"],
+                heading: ["var(--font-sans)", "system-ui", "sans-serif"],
+                head: ["var(--font-sans)", "system-ui", "sans-serif"],
+                base: ["var(--font-sans)", "system-ui", "sans-serif"],
             },
             keyframes: {
                 "accordion-down": {
