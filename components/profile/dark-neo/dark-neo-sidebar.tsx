@@ -71,48 +71,47 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                 </Link>
 
                 {userBadges && userBadges.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-2 relative z-10">
+                    <div className="grid grid-cols-4 gap-3 relative z-10">
                         {userBadges.map((badgeObj: any, index: number) => {
                             const badge = badgeObj.badges;
                             return (
                                 <Link
                                     href="/rozetler"
                                     key={index}
-                                    className="aspect-square bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
+                                    className="relative flex justify-center group/badge"
                                 >
                                     {/* Tooltip Hover Area */}
-                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full w-56 bg-zinc-900 border-2 border-zinc-700 text-white p-2 rounded-lg opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all pointer-events-none z-50 shadow-[4px_4px_0_0_#000] flex flex-col gap-1 bottom-full origin-bottom">
-                                        <div className="font-black text-[12px] uppercase text-[#23A9FA] flex items-center gap-1 border-b border-zinc-700/50 pb-1">
-                                            <Award className="w-3 h-3" />
+                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full w-48 bg-zinc-900 border-2 border-zinc-700 text-white p-3 rounded-xl opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all pointer-events-none z-50 shadow-[4px_4px_0_0_#000] flex flex-col gap-1.5 bottom-full origin-bottom">
+                                        <div className="font-black text-[11px] uppercase text-[#23A9FA] flex items-center gap-1.5 border-b-2 border-dashed border-zinc-700 pb-1.5 mb-1">
+                                            <Award className="w-4 h-4 stroke-[2.5px]" />
                                             {badge.name}
                                         </div>
                                         <div className="text-[10px] leading-snug text-zinc-300 font-medium whitespace-pre-wrap">
                                             {badge.description || "Gizemli rozet... Nasıl kazanılacağını kimse bilmiyor."}
                                         </div>
                                         {/* Tooltip Arrow */}
-                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-zinc-900 border-b-2 border-r-2 border-zinc-700 rotate-45" />
+                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-b-2 border-r-2 border-zinc-700 rotate-45" />
                                     </div>
-                                    <div className="w-full h-full p-2 opacity-85 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200 flex items-center justify-center">
-                                        <CustomBadgeIcon name={badge.name} />
+                                    <div className="w-full aspect-square flex items-center justify-center">
+                                        <CustomBadgeIcon name={badge.name} size={28} className="!shadow-[2px_2px_0_0_#000] hover:!shadow-[4px_4px_0_0_#000] active:translate-y-0.5 active:translate-x-0.5" />
                                     </div>
                                 </Link>
                             );
                         })}
                         {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-zinc-100/50 dark:bg-zinc-900/50 border-2 border-dashed border-black/20 dark:border-white/20 rounded-lg flex items-center justify-center">
+                            <div key={`empty-${i}`} className="aspect-square bg-zinc-100/50 dark:bg-zinc-900/50 border-2 border-dashed border-black/20 dark:border-white/20 rounded-xl flex items-center justify-center">
                                 <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/20 rounded-full" />
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-6 border-2 border-dashed border-black/20 rounded-lg relative z-10 bg-black/5">
+                    <div className="text-center py-6 border-2 border-dashed border-black/20 rounded-xl relative z-10 bg-black/5">
                         <div className="w-10 h-10 bg-zinc-800 flex items-center justify-center mx-auto mb-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]">
                             <AlertCircle className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
                         </div>
                         <p className="text-[10px] font-black text-zinc-500 uppercase">Henüz rozet yok.</p>
                     </div>
-                )
-                }
+                )}
             </div >
         </motion.div >
     );
