@@ -257,31 +257,27 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
 
         // --- RESIZE ---
         const handleResize = () => {
-            if (!container) return;
-            const w = container.clientWidth;
-            const h = container.clientHeight;
-            renderer.setSize(w, h);
-            material.uniforms.iResolution.value.set(w, h);
+            requestAnimationFrame(() => {
+                if (!container) return;
+                const w = container.clientWidth;
+                const h = container.clientHeight;
+                renderer.setSize(w, h);
+                material.uniforms.iResolution.value.set(w, h);
 
-            // --- RESPONSIVE LOGIC ---
-            const aspect = w / h;
-
-            if (variant === 'contained') {
-                // FIXED ZOOM for contained logo mode
-                // We want it to be fully visible within the small box
-                // Scale 3.5 means "zoom out" significant for small box
-                material.uniforms.iCameraZoom.value = 3.5;
-                material.uniforms.iVerticalOffset.value = 0.0;
-            } else {
-                // Fullscreen Logic (Fallback)
-                if (aspect < 1.0) { // Portrait
-                    material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
-                    material.uniforms.iVerticalOffset.value = 0.55;
-                } else { // Landscape
-                    material.uniforms.iCameraZoom.value = 0.9;
+                const aspect = w / h;
+                if (variant === 'contained') {
+                    material.uniforms.iCameraZoom.value = 3.5;
                     material.uniforms.iVerticalOffset.value = 0.0;
+                } else {
+                    if (aspect < 1.0) {
+                        material.uniforms.iCameraZoom.value = (1.0 / aspect) * 2.0;
+                        material.uniforms.iVerticalOffset.value = 0.55;
+                    } else {
+                        material.uniforms.iCameraZoom.value = 0.9;
+                        material.uniforms.iVerticalOffset.value = 0.0;
+                    }
                 }
-            }
+            });
         };
 
         window.addEventListener("resize", handleResize);

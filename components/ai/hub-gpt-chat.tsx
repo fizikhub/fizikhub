@@ -157,7 +157,7 @@ export function HubGPTChat({ onClose }: { onClose?: () => void }) {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Bir şeyler sor... (Fizik, Evren, Hayat?)"
-                        className="w-full pl-4 pr-12 py-3 bg-[#222] border-[2px] border-white/20 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC800] focus:ring-1 focus:ring-[#FFC800] transition-all font-medium"
+                        className="w-full pl-4 pr-12 py-3 bg-[#222] border-[2px] border-white/20 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#FFC800] focus:ring-1 focus:ring-[#FFC800] transition-all font-medium [field-sizing:content]"
                     />
                     <button
                         type="submit"

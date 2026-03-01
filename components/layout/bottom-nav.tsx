@@ -21,42 +21,42 @@ export function BottomNav() {
     const targetYRef = useRef(0);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        const velocity = scrollVelocity.get();
-        const previous = scrollY.getPrevious() || 0;
-        const diff = latest - previous;
-        let targetY = navY.get();
-        let targetDuration = 0.4;
+        requestAnimationFrame(() => {
+            const velocity = scrollVelocity.get();
+            const previous = scrollY.getPrevious() || 0;
+            const diff = latest - previous;
+            let targetY = navY.get();
+            let targetDuration = 0.4;
 
-        // Detect if at bottom
-        const windowHeight = window.innerHeight;
-        const bodyHeight = document.body.offsetHeight;
+            // Detect if at bottom - Batch these reads
+            const windowHeight = window.innerHeight;
+            const bodyHeight = document.body.offsetHeight;
 
-        if (latest + windowHeight >= bodyHeight - 150) {
-            if (!isAtBottom) setIsAtBottom(true);
-            targetY = 0; // Always show at bottom
-        } else {
-            if (isAtBottom) setIsAtBottom(false);
-            // Normal visibility logic
-            if (latest < 50) {
+            if (latest + windowHeight >= bodyHeight - 150) {
+                if (!isAtBottom) setIsAtBottom(true);
                 targetY = 0;
-            } else if (diff > 5) { // Significant scroll down
-                targetY = 120;
-            } else if (diff < -5) { // Significant scroll up
-                targetY = 0;
+            } else {
+                if (isAtBottom) setIsAtBottom(false);
+                if (latest < 50) {
+                    targetY = 0;
+                } else if (diff > 5) {
+                    targetY = 120;
+                } else if (diff < -5) {
+                    targetY = 0;
+                }
             }
-        }
 
-        const absVelocity = Math.abs(velocity);
-        targetDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
+            const absVelocity = Math.abs(velocity);
+            targetDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
 
-        // Only animate if the target value is actually different to save battery/CPU
-        if (targetYRef.current !== targetY) {
-            targetYRef.current = targetY;
-            animate(navY, targetY, {
-                duration: targetDuration,
-                ease: [0.32, 0.72, 0, 1]
-            });
-        }
+            if (targetYRef.current !== targetY) {
+                targetYRef.current = targetY;
+                animate(navY, targetY, {
+                    duration: targetDuration,
+                    ease: [0.32, 0.72, 0, 1]
+                });
+            }
+        });
     });
 
     // Haptic feedback helper

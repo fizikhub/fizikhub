@@ -62,13 +62,8 @@ export function ChatWindow({
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    // Auto-resize textarea
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 128)}px`;
-        }
-    }, [inputText]);
+    // Native CSS field-sizing: content handles auto-resize
+
 
     // Focus on reply
     useEffect(() => {
@@ -363,7 +358,7 @@ export function ChatWindow({
                                 }
                             }}
                             placeholder={editingMessage ? "Mesajı düzenle..." : "Mesaj yaz..."}
-                            className="w-full bg-transparent text-white placeholder:text-zinc-500 text-[14.5px] font-medium focus:outline-none py-3 px-4 max-h-32 min-h-[44px] resize-none leading-relaxed"
+                            className="w-full bg-transparent text-white placeholder:text-zinc-500 text-[14.5px] font-medium focus:outline-none py-3 px-4 max-h-32 min-h-[44px] resize-none leading-relaxed [field-sizing:content]"
                             rows={1}
                         />
                     </div>

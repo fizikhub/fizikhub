@@ -1,8 +1,8 @@
 // million-ignore
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, Outfit } from "next/font/google";
 import "./globals.css";
-import "./mobile-optimizations.css";
+
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
@@ -13,7 +13,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-  preload: false,
+  preload: true,
   fallback: ['system-ui', 'arial'],
 });
 
@@ -21,8 +21,16 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-gross",
   display: "swap",
-  preload: false,
+  preload: true,
 });
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+  preload: true,
+});
+
 
 
 
@@ -288,7 +296,8 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
         />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${outfit.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+
         {/* Skip to content — keyboard accessibility */}
         <a
           href="#main-content"

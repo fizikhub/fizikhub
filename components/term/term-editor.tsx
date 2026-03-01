@@ -26,14 +26,7 @@ export function TermEditor({ userId }: TermEditorProps) {
     // UI States
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Auto-resize title
     const titleRef = useRef<HTMLTextAreaElement>(null);
-    useEffect(() => {
-        if (titleRef.current) {
-            titleRef.current.style.height = 'auto';
-            titleRef.current.style.height = titleRef.current.scrollHeight + 'px';
-        }
-    }, [termName]);
 
     // Submit Logic
     const handleSubmit = async (targetStatus: "draft" | "published") => {
@@ -106,7 +99,7 @@ export function TermEditor({ userId }: TermEditorProps) {
                     <Textarea
                         ref={titleRef}
                         placeholder="TERİM ADI..."
-                        className="w-full resize-none overflow-hidden bg-transparent border-none text-3xl sm:text-4xl md:text-5xl font-black font-[family-name:var(--font-outfit)] uppercase tracking-tighter placeholder:text-muted-foreground/30 focus-visible:ring-0 p-0 leading-[1.1] min-h-[50px] sm:min-h-[60px]"
+                        className="w-full resize-none overflow-hidden bg-transparent border-none text-3xl sm:text-4xl md:text-5xl font-black font-[family-name:var(--font-outfit)] uppercase tracking-tighter placeholder:text-muted-foreground/30 focus-visible:ring-0 p-0 leading-[1.1] min-h-[50px] sm:min-h-[60px] [field-sizing:content]"
                         value={termName}
                         onChange={(e) => setTermName(e.target.value)}
                         maxLength={150}

@@ -298,16 +298,18 @@ export function Footer() {
         if (!c || !b) return;
 
         const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-            const r = b.getBoundingClientRect();
-            c.width = r.width * dpr;
-            c.height = r.height * dpr;
-            c.style.width = r.width + "px";
-            c.style.height = r.height + "px";
-            if (glRef.current) {
-                glRef.current.gl.viewport(0, 0, c.width, c.height);
-                glRef.current.gl.uniform2f(glRef.current.uR, c.width, c.height);
-            }
+            requestAnimationFrame(() => {
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                const r = b.getBoundingClientRect();
+                c.width = r.width * dpr;
+                c.height = r.height * dpr;
+                c.style.width = r.width + "px";
+                c.style.height = r.height + "px";
+                if (glRef.current) {
+                    glRef.current.gl.viewport(0, 0, c.width, c.height);
+                    glRef.current.gl.uniform2f(glRef.current.uR, c.width, c.height);
+                }
+            });
         };
 
         glRef.current = initGL(c);
