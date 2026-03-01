@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Award, Shield, BookOpen, HelpCircle, MessageCircle, Zap, AlertCircle, GraduationCap, User } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
+import { CustomBadgeIcon } from "../custom-badge-icon";
 
 interface DarkNeoSidebarProps {
     profile: any;
@@ -74,11 +75,9 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                                     className="aspect-square bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-800 rounded-lg flex items-center justify-center relative group/badge cursor-pointer hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] transition-all shadow-sm hover:shadow-[2px_2px_0px_0px_#000]"
                                     title={badge.name}
                                 >
-                                    {badge.icon ? (
-                                        <div className="text-xl grayscale group-hover/badge:grayscale-0 transition-all opacity-80 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200">{badge.icon}</div>
-                                    ) : (
-                                        <Shield className="w-5 h-5 text-zinc-600 group-hover/badge:text-white stroke-[2.5px]" />
-                                    )}
+                                    <div className="w-full h-full p-1 opacity-80 group-hover/badge:opacity-100 group-hover/badge:scale-110 duration-200">
+                                        <CustomBadgeIcon name={badge.name} />
+                                    </div>
                                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black text-white text-[9px] font-black uppercase px-2 py-1 rounded border-2 border-white opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] translate-y-2 group-hover/badge:translate-y-0">
                                         {badge.name}
                                     </div>
