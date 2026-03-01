@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Clock } from "lucide-react";
-import { m } from "framer-motion";
 
 interface Article {
     id: string;
@@ -43,12 +42,10 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
-                        <m.article
+                        <article
                             key={article.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05, duration: 0.3 }}
-                            className="flex-shrink-0 w-[215px] sm:w-[275px] snap-start"
+                            className="flex-shrink-0 w-[215px] sm:w-[275px] snap-start animate-[fadeInScale_0.3s_ease-out_forwards]"
+                            style={{ animationDelay: `${index * 50}ms`, opacity: 0 }}
                         >
                             <Link href={`/blog/${article.slug}`}>
                                 <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
@@ -102,7 +99,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                     </div>
                                 </div>
                             </Link>
-                        </m.article>
+                        </article>
                     );
                 })}
             </div>

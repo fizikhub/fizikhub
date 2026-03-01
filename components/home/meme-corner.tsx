@@ -1,9 +1,8 @@
 "use client";
 
-import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // Dynamically import the heavy 3D canvas
 const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-canvas"), {

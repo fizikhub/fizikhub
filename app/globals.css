@@ -3,110 +3,110 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 0 0% 0%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 0%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 0%;
 
-    /* Brand Primary (FizikHub Yellow) */
-    --primary: 47 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --primary-hover: 47 100% 45%;
+        /* Brand Primary (FizikHub Yellow) */
+        --primary: 47 100% 50%;
+        --primary-foreground: 0 0% 0%;
+        --primary-hover: 47 100% 45%;
 
-    --secondary: 0 0% 90%;
-    --secondary-foreground: 0 0% 0%;
-    --secondary-hover: 0 0% 80%;
+        --secondary: 0 0% 90%;
+        --secondary-foreground: 0 0% 0%;
+        --secondary-hover: 0 0% 80%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+        --muted: 0 0% 96%;
+        --muted-foreground: 0 0% 45%;
 
-    --accent: 47 100% 50%;
-    --accent-foreground: 0 0% 0%;
+        --accent: 47 100% 50%;
+        --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 0%;
-    --input: 0 0% 0%;
-    --ring: 0 0% 0%;
+        --border: 0 0% 0%;
+        --input: 0 0% 0%;
+        --ring: 0 0% 0%;
 
-    --radius: 0.5rem;
+        --radius: 0.5rem;
 
-    /* Neo-Brutalist Shadow Offsets */
-    --shadow-xs: 2px 2px 0px 0px #000;
-    --shadow-sm: 3px 3px 0px 0px #000;
-    --shadow: 4px 4px 0px 0px #000;
-    --shadow-md: 6px 6px 0px 0px #000;
-    --shadow-lg: 8px 8px 0px 0px #000;
-    --shadow-xl: 12px 12px 0px 0px #000;
-    --shadow-2xl: 16px 16px 0px 0px #000;
-  }
+        /* Neo-Brutalist Shadow Offsets */
+        --shadow-xs: 2px 2px 0px 0px #000;
+        --shadow-sm: 3px 3px 0px 0px #000;
+        --shadow: 4px 4px 0px 0px #000;
+        --shadow-md: 6px 6px 0px 0px #000;
+        --shadow-lg: 8px 8px 0px 0px #000;
+        --shadow-xl: 12px 12px 0px 0px #000;
+        --shadow-2xl: 16px 16px 0px 0px #000;
+    }
 
-  .dark {
-    --background: 0 0% 16%;
-    /* RGB(41, 41, 41) */
-    --foreground: 0 0% 98%;
+    .dark {
+        --background: 0 0% 16%;
+        /* RGB(41, 41, 41) */
+        --foreground: 0 0% 98%;
 
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
+        --card: 240 10% 4%;
+        --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
+        --popover: 240 10% 4%;
+        --popover-foreground: 0 0% 98%;
 
-    --primary: 47 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --primary-hover: 47 100% 45%;
+        --primary: 47 100% 50%;
+        --primary-foreground: 0 0% 0%;
+        --primary-hover: 47 100% 45%;
 
-    --secondary: 240 4% 16%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-hover: 240 4% 25%;
+        --secondary: 240 4% 16%;
+        --secondary-foreground: 0 0% 98%;
+        --secondary-hover: 240 4% 25%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 65%;
+        --muted: 240 4% 16%;
+        --muted-foreground: 240 5% 65%;
 
-    --accent: 47 100% 50%;
-    --accent-foreground: 0 0% 0%;
+        --accent: 47 100% 50%;
+        --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
+        --destructive: 0 63% 31%;
+        --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 0 0% 100%;
+        --border: 0 0% 100%;
+        --input: 0 0% 100%;
+        --ring: 0 0% 100%;
 
-    /* Shadows in dark mode usually white or just absent, but for Neo-Brutalism we want visible borders */
-    --shadow-xs: 1px 1px 0px 0px var(--border);
-    --shadow-sm: 2px 2px 0px 0px var(--border);
-    --shadow: 3px 3px 0px 0px var(--border);
-    --shadow-md: 4px 4px 0px 0px var(--border);
-    --shadow-lg: 6px 6px 0px 0px var(--border);
-    --shadow-xl: 10px 10px 0px 0px var(--border);
-    --shadow-2xl: 16px 16px 0px 0px var(--border);
-  }
+        /* Shadows in dark mode usually white or just absent, but for Neo-Brutalism we want visible borders */
+        --shadow-xs: 1px 1px 0px 0px var(--border);
+        --shadow-sm: 2px 2px 0px 0px var(--border);
+        --shadow: 3px 3px 0px 0px var(--border);
+        --shadow-md: 4px 4px 0px 0px var(--border);
+        --shadow-lg: 6px 6px 0px 0px var(--border);
+        --shadow-xl: 10px 10px 0px 0px var(--border);
+        --shadow-2xl: 16px 16px 0px 0px var(--border);
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    * {
+        @apply border-border;
+    }
 
-  body {
-    @apply bg-background text-foreground;
-  }
+    body {
+        @apply bg-background text-foreground;
+    }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-heading font-black tracking-tight;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading font-black tracking-tight;
+    }
 }
 
 @layer utilities {}
@@ -115,90 +115,90 @@
 /* VIEW TRANSITIONS API */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  /* Accelerated duration for mobile "snappiness" (0.4s -> 0.25s) */
-  animation-duration: 0.25s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  mix-blend-mode: normal;
+    /* Accelerated duration for mobile "snappiness" (0.4s -> 0.25s) */
+    animation-duration: 0.25s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    mix-blend-mode: normal;
 }
 
 /* Fade through pattern */
 ::view-transition-old(root) {
-  animation-name: fade-out;
+    animation-name: fade-out;
 }
 
 ::view-transition-new(root) {
-  animation-name: fade-in;
+    animation-name: fade-in;
 }
 
 @keyframes fade-out {
-  from {
-    opacity: 1;
-  }
+    from {
+        opacity: 1;
+    }
 
-  to {
-    opacity: 0;
-  }
+    to {
+        opacity: 0;
+    }
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
+    from {
+        opacity: 0;
+    }
 
-  to {
-    opacity: 1;
-  }
+    to {
+        opacity: 1;
+    }
 }
 
 /* Disable complex transitions for users who prefer reduced motion or low-end devices if possible */
 @media (prefers-reduced-motion) {
 
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
 }
 
 /* Dynamic Island Toast Animations */
 @keyframes island-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.8);
-    filter: blur(10px);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.8);
+        filter: blur(10px);
+    }
 
-  50% {
-    opacity: 1;
-    transform: translateY(5px) scale(1.05);
-  }
+    50% {
+        opacity: 1;
+        transform: translateY(5px) scale(1.05);
+    }
 
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 @keyframes island-exit {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.9);
-    filter: blur(5px);
-  }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+        filter: blur(5px);
+    }
 }
 
 .dynamic-island-toast {
-  animation: island-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    animation: island-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
 .dynamic-island-toast[data-state="closed"] {
-  animation: island-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    animation: island-exit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 
 /* Optional: Slide-over pattern for simpler card-to-page feeling override
@@ -208,21 +208,26 @@
 
 /* Physics Rain Up Animation (replaces framer-motion in navbar) */
 @keyframes physicsRainUp {
-  0% {
-    transform: translateY(60px);
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-}/* ===================================
+    0% {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+/* ===================================
    GLOBAL PERFORMANCE OPTIMIZATIONS
    "Yağ Gibi Akışkanlık" 🧈
    =================================== */
@@ -962,6 +967,18 @@ iframe {
 
 /* ========== FEED & COMPONENT ANIMATIONS ========== */
 /* These replace framer-motion JS animations for better mobile perf */
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
 @keyframes feedItemAppear {
     from {
