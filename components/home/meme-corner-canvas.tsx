@@ -55,8 +55,8 @@ function getNebulaTexture() {
     return texture;
 }
 
-// --- GALAXY DUST ( The Haze ) ---
-function GalaxyDust({ count = 8000 }) {
+// --- GALAXY DUST ( The Haze - Smallest Stars ) ---
+function GalaxyDust({ count = 5000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []); // Use same texture, just smaller
 
@@ -130,7 +130,7 @@ function GalaxyDust({ count = 8000 }) {
 }
 
 // --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 4000 }) {
+function MainStars({ count = 10000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -144,7 +144,7 @@ function MainStars({ count = 4000 }) {
 
         const arms = 2;
         const spin = 3.5;
-        const bulgeCount = 1500;
+        const bulgeCount = 4000;
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
@@ -231,7 +231,7 @@ function MainStars({ count = 4000 }) {
 }
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 3000 }) {
+function NebulaClouds({ count = 8000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -377,11 +377,11 @@ export default function MemeCornerCanvas() {
                 <NebulaClouds />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={0}>
+            <EffectComposer enableNormalPass={false} multisampling={4}>
                 <Bloom
-                    luminanceThreshold={0.8} // Higher threshold = Only brightest stars glow
-                    intensity={0.8}
-                    radius={0.3} // Slightly softer glow
+                    luminanceThreshold={0.5} // Restore brilliance
+                    intensity={1.2}
+                    radius={0.2} // Sharper glow
                 />
             </EffectComposer>
         </Canvas>
