@@ -2,8 +2,16 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { CompactHero } from "@/components/home/compact-hero";
-import { NexusStories } from "@/components/home/nexus-stories";
+// Heavy Client Components - Dynamically loaded to split JS bundle weight
+const CompactHero = dynamic(() => import("@/components/home/compact-hero").then(mod => mod.CompactHero), {
+  loading: () => <div className="h-[240px] w-full animate-pulse bg-zinc-900/40 rounded-[8px] border-[3px] border-zinc-800 mb-2 sm:mb-6"></div>,
+  ssr: true // Keeps HTML payload for LCP and SEO
+});
+
+const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories), {
+  loading: () => <div className="h-[120px] w-full flex gap-4 overflow-hidden pt-4"><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /></div>,
+  ssr: true
+});
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";

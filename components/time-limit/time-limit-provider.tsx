@@ -76,17 +76,29 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (!status?.isTimeLimited) return;
 
-        const handleBeforeUnload = () => {
-            if (secondsSinceLastUpdate > 0) {
-                // Use sendBeacon for reliable save on page unload
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden' && secondsSinceLastUpdate > 0) {
+                // Use sendBeacon for reliable save on page unload or hide without breaking BFCache
                 navigator.sendBeacon('/api/time-limit/update', JSON.stringify({
                     seconds: secondsSinceLastUpdate
                 }));
             }
         };
 
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+        const handlePageHide = (event: PageTransitionEvent) => {
+            if (secondsSinceLastUpdate > 0) {
+                navigator.sendBeacon('/api/time-limit/update', JSON.stringify({
+                    seconds: secondsSinceLastUpdate
+                }));
+            }
+        };
+
+        window.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('pagehide', handlePageHide);
+        return () => {
+            window.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('pagehide', handlePageHide);
+        };
     }, [status?.isTimeLimited, secondsSinceLastUpdate]);
 
     // Calculate hours/minutes until midnight reset
