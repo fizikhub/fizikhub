@@ -35,6 +35,7 @@ export function OptimizedImage({
             blurDataURL={lowQualityPlaceholder ? generateBlurPlaceholder() : undefined}
             quality={props.priority ? 85 : 75}
             onLoad={() => setIsLoaded(true)}
+            fetchPriority={props.priority ? "high" : "auto"}
         />
     );
 }

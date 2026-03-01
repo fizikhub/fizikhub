@@ -61,6 +61,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                         fill
                                         className="object-cover"
                                         priority
+                                        fetchPriority="high"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-emerald-900 flex items-center justify-center p-4 text-center">
@@ -148,6 +149,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                         fill
                                         className="object-cover"
                                         priority
+                                        fetchPriority="high"
                                         sizes="(max-width: 768px) 100vw, 896px"
                                     />
                                 </div>

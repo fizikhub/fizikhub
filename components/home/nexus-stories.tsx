@@ -80,6 +80,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                         className="object-cover"
                                         loading={index < 3 ? undefined : "lazy"}
                                         priority={index < 3}
+                                        fetchPriority={index < 3 ? "high" : "auto"}
                                     />
                                 </div>
                             </div>

@@ -221,7 +221,6 @@ export default async function RootLayout({
       <html lang="tr" suppressHydrationWarning>
         <head>
 
-          <link rel="manifest" href="/manifest.json" />
           <link rel="canonical" href="https://fizikhub.com" />
         </head>
         <body className="bg-[#050505] min-h-screen">
@@ -276,7 +275,6 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
 
-        <link rel="manifest" href="/manifest.json" />
         {/* RSS Feed Autodiscovery */}
         <link rel="alternate" type="application/rss+xml" title="Fizikhub RSS" href="/feed.xml" />
         {/* Sadece en kritik bağlantılar */}
