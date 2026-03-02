@@ -2,10 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { QuestionCard } from "@/components/forum/question-card";
-import { ExperimentCard } from "@/components/experiment/experiment-card";
-import { BookReviewCard } from "@/components/book-review/book-review-card";
-import { TermCard } from "@/components/term/term-card";
+
+// Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
+const QuestionCard = dynamic(() => import("@/components/forum/question-card").then(mod => mod.QuestionCard));
+const ExperimentCard = dynamic(() => import("@/components/experiment/experiment-card").then(mod => mod.ExperimentCard));
+const BookReviewCard = dynamic(() => import("@/components/book-review/book-review-card").then(mod => mod.BookReviewCard));
+const TermCard = dynamic(() => import("@/components/term/term-card").then(mod => mod.TermCard));
 
 const SuggestedUsersCard = dynamic(() => import("@/components/home/suggested-users-card").then(mod => mod.SuggestedUsersCard), {
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
