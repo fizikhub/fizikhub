@@ -360,7 +360,7 @@ export function Footer() {
             )}
         >
 
-            <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
+            {/* <canvas ref={canvasRef} className="absolute inset-0 z-0 block" /> */}
 
             {/* SMOOTH GRADIENT TRANSITION — shrunken on mobile to avoid covering the hole */}
             <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[150px] md:h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />

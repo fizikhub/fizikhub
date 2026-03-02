@@ -108,11 +108,11 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {/* REPLACED "Kafanda Soru mu Var?" (ForumTeaserCard) with GOLDEN TICKET */}
-                        {index === 5 && (
+                        {/* {index === 5 && (
                             <div className="mt-6">
                                 <GoldenTicketCTA />
                             </div>
-                        )}
+                        )} */}
 
                         {index === 8 && (
                             <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
