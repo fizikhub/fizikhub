@@ -105,7 +105,7 @@ export function MemeCorner() {
 
                 {/* 3D Canvas - Loaded dynamically ONLY AFTER browser is idle to eliminate TBT */}
                 <div className="absolute inset-0 z-0">
-                    {/* {mountCanvas && <MemeCornerCanvas />} - Disabling for performance */}
+                    {mountCanvas && <MemeCornerCanvas />}
                 </div>
 
                 {/* Vignette */}

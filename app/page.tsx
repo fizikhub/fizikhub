@@ -3,16 +3,9 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-// CompactHero — dynamically loaded to reduce initial bundle; MemeCornerCanvas inside is already ssr:false
-const CompactHero = dynamic(() => import("@/components/home/compact-hero").then(mod => mod.CompactHero), {
-  loading: () => <div className="h-[180px] sm:h-[240px] w-full animate-pulse bg-zinc-900/40 rounded-[8px] border-[3px] border-zinc-800 mb-2 sm:mb-6"></div>,
-  ssr: true
-});
-
-const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories), {
-  loading: () => <div className="h-[120px] w-full flex gap-4 overflow-hidden pt-4"><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /><div className="w-[82px] h-[82px] rounded-full bg-zinc-800/50 animate-pulse flex-shrink-0" /></div>,
-  ssr: true
-});
+// CompactHero — statically loaded to improve LCP; MemeCornerCanvas inside is already ssr:false
+import { CompactHero } from "@/components/home/compact-hero";
+import { NexusStories } from "@/components/home/nexus-stories";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
