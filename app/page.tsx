@@ -20,7 +20,8 @@ const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(
 // We load the sidebar structure dynamically, but to avoid TBT hydration blocks, 
 // we let the Client Component itself do the heavy lifting later. Setting ssr to false completely shifts this below-the-fold component to client-side.
 const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
-  loading: () => <SidebarSkeleton />
+  loading: () => <SidebarSkeleton />,
+  ssr: false // Sidebars are non-critical and often contain client-only logic
 });
 
 // LCP Component — STATIC IMPORT so Next.js can preload the hero image

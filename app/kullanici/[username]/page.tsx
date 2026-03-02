@@ -14,14 +14,18 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { username } = await params;
     const supabase = await createClient();
+
+    // Minimal selection for SEO to reduce TTFB
     const { data: profile } = await supabase
         .from('profiles')
         .select('username, full_name, avatar_url, bio')
         .eq('username', username)
-        .single();
+        .maybeSingle();
 
-    const displayName = profile?.full_name || `@${username}`;
-    const description = profile?.bio
+    if (!profile) return { title: 'Profil Bulunamadı' };
+
+    const displayName = profile.full_name || `@${username}`;
+    const description = profile.bio
         ? `${displayName} — ${profile.bio.substring(0, 140)}`
         : `${displayName} adlı kullanıcının FizikHub profili. Makaleler, sorular ve bilimsel katkılar.`;
 
@@ -33,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description,
             type: 'profile',
             url: `https://fizikhub.com/kullanici/${username}`,
-            ...(profile?.avatar_url && {
+            ...(profile.avatar_url && {
                 images: [{ url: profile.avatar_url, width: 200, height: 200, alt: displayName }]
             }),
         },
@@ -41,11 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             card: 'summary',
             title: `${displayName} — FizikHub`,
             description,
-            ...(profile?.avatar_url && { images: [profile.avatar_url] }),
-        },
-        robots: {
-            index: true,
-            follow: true,
+            ...(profile.avatar_url && { images: [profile.avatar_url] }),
         },
     };
 }

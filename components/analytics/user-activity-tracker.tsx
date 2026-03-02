@@ -16,18 +16,26 @@ function TrackerContent() {
     useEffect(() => {
         const url = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
-        // Aynı URL'yi 30 saniye içinde tekrar kaydetme
+        // Deny list check if needed, but throttle is primary
         const lastLogged = lastLoggedUrls.get(url) ?? 0;
         const now = Date.now();
         if (now - lastLogged < THROTTLE_MS) return;
 
-        // Önceki bekleyen timer'ı iptal et
         if (timerRef.current) clearTimeout(timerRef.current);
 
+        // Increased debounce (2.5s) to allow hydration to complete fully
         timerRef.current = setTimeout(() => {
-            lastLoggedUrls.set(url, Date.now());
-            logActivity("PAGE_VIEW", url);
-        }, 1500); // 1.5 saniye debounce
+            const runLog = () => {
+                lastLoggedUrls.set(url, Date.now());
+                logActivity("PAGE_VIEW", url);
+            };
+
+            if (typeof window !== "undefined" && 'requestIdleCallback' in window) {
+                (window as any).requestIdleCallback(runLog, { timeout: 2000 });
+            } else {
+                runLog();
+            }
+        }, 2500);
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);

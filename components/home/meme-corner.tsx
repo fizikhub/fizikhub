@@ -23,13 +23,13 @@ export function MemeCorner() {
             <div
                 className={cn(
                     "relative w-full h-[180px] sm:h-[240px] overflow-hidden cursor-pointer",
-                    // NEO-BRUTALIST TOKENS
                     "rounded-[8px]",
                     "border-[3px] border-black",
                     "shadow-[4px_4px_0px_0px_#000]",
                     "transition-shadow duration-200 hover:shadow-[6px_6px_0px_0px_#000]",
-                    // Simplified Background for immediate LCP paint
+                    // VIBRANT FALLBACK - Ensure LCP is attractive even before 3D loads
                     "bg-zinc-950",
+                    "bg-[radial-gradient(circle_at_50%_120%,rgba(60,0,120,0.5),transparent)]"
                 )}
             >
                 {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}

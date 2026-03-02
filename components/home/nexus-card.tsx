@@ -1,8 +1,5 @@
-"use client";
-
 import React from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { MessageCircle, ThumbsUp, Play, BookOpen, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,30 +20,24 @@ export type NexusCardType =
 
 export interface NexusCardDeviceProps {
     type: NexusCardType;
-    data: any; // We'll type this more strictly if needed, but for now flexibility helps
+    data: any;
     className?: string;
-    featured?: boolean; // If true, might utilize more space or distinct styling
-    index?: number; // For staggered animation
+    featured?: boolean;
+    index?: number;
 }
 
 // --- Component ---
 
 export function NexusCard({ type, data, className, featured, index = 0 }: NexusCardDeviceProps) {
 
-    // Base Neo-Brutalist Card Style
-    const baseCardStyle = "relative overflow-hidden border-3 border-black bg-white text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200 dark:bg-zinc-900 dark:border-white dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-xl h-full flex flex-col";
-
-    // Staggered Animation Variant
-    const variants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { delay: index * 0.05 } }
-    };
+    // Base Neo-Brutalist Card Style - Optimized with pure CSS hover
+    const baseCardStyle = "relative overflow-hidden border-3 border-black bg-white text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200 dark:bg-zinc-900 dark:border-white dark:text-white dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-xl h-full flex flex-col will-change-transform";
 
     // --- Content Renderers ---
 
     const renderArticleContent = () => (
         <>
-            <div className="relative aspect-video w-full overflow-hidden border-b-3 border-black dark:border-white">
+            <div className="relative aspect-video w-full overflow-hidden border-b-3 border-black dark:border-white bg-zinc-100 dark:bg-zinc-800">
                 {data.image_url ? (
                     <Image
                         src={data.image_url}
@@ -54,6 +45,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading={index < 4 ? "eager" : "lazy"}
                     />
                 ) : (
                     <div className="w-full h-full bg-emerald-400 flex items-center justify-center">
@@ -61,7 +53,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
                     </div>
                 )}
                 <div className="absolute top-2 left-2">
-                    <span className="neo-badge bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <span className="neo-badge bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] py-0.5 px-2 text-[10px] font-black">
                         {type === 'blog' ? 'BLOG' : 'MAKALE'}
                     </span>
                 </div>
@@ -71,19 +63,19 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
                     {data.title}
                 </h3>
                 <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 line-clamp-2 mb-4 flex-grow">
-                    {data.summary || data.content?.substring(0, 100) + "..."}
+                    {data.summary || data.content?.replace(/<[^>]*>?/gm, "").substring(0, 100) + "..."}
                 </p>
 
                 <div className="flex items-center justify-between text-xs font-bold border-t-2 border-dashed border-black/20 dark:border-white/20 pt-3">
                     <div className="flex items-center gap-2">
                         {data.author?.avatar_url && (
-                            <div className="w-6 h-6 rounded-full overflow-hidden border border-black dark:border-white relative">
+                            <div className="w-6 h-6 rounded-full overflow-hidden border border-black dark:border-white relative shrink-0">
                                 <Image src={data.author.avatar_url} alt={data.author.username} fill sizes="24px" />
                             </div>
                         )}
-                        <span>{data.author?.username || "Anonim"}</span>
+                        <span className="truncate max-w-[100px]">{data.author?.username || "Anonim"}</span>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 shrink-0">
                         <span className="flex items-center gap-1"><ThumbsUp className="w-3 h-3" /> {data.likes_count || 0}</span>
                     </div>
                 </div>
@@ -94,7 +86,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
     const renderQuestionContent = () => (
         <div className="p-5 h-full flex flex-col bg-yellow-400 dark:bg-yellow-600 dark:text-black">
             <div className="flex items-center justify-between mb-3">
-                <span className="neo-badge bg-black text-white border-none shadow-none">SORU</span>
+                <span className="neo-badge bg-black text-white border-none shadow-none py-0.5 px-2 text-[10px] font-black uppercase">SORU</span>
                 <BrainCircuit className="w-5 h-5" />
             </div>
 
@@ -104,7 +96,6 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
 
             <div className="mt-4 flex items-center justify-between font-bold">
                 <div className="flex -space-x-2">
-                    {/* Mock avatars for "people answering" feeling */}
                     <div className="w-8 h-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-[10px]">?</div>
                 </div>
                 <span className="flex items-center gap-1 bg-white px-2 py-1 rounded-md border-2 border-black text-xs">
@@ -117,7 +108,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
     const renderAnswerContent = () => (
         <div className="p-5 h-full flex flex-col bg-zinc-800 text-white">
             <div className="flex items-center justify-between mb-3 text-emerald-400">
-                <span className="neo-badge bg-[#FFC800] text-black border-none shadow-none text-[10px]">YANIT</span>
+                <span className="neo-badge bg-[#FFC800] text-black border-none shadow-none text-[10px] font-black uppercase">YANIT</span>
                 <MessageCircle className="w-5 h-5 text-[#FFC800]" />
             </div>
 
@@ -137,27 +128,25 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
     );
 
     const renderSimulationContent = () => (
-        <div className="relative h-full flex flex-col group">
+        <div className="relative h-full flex flex-col group/sim">
             <div className="absolute inset-0 bg-blue-500 z-0">
-                {/* Abstract grid pattern or simple visual */}
-                <div className="w-full h-full opacity-20" style={{ backgroundImage: 'radial-gradient(circle, #fff 2px, transparent 2px)', backgroundSize: '20px 20px' }}></div>
+                <div className="w-full h-full opacity-20" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
             </div>
 
             <div className="relative z-10 p-5 flex flex-col h-full items-center justify-center text-center text-white">
-                <div className="w-16 h-16 bg-white border-3 border-black text-black rounded-full flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 bg-white border-3 border-black text-black rounded-full flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover/sim:scale-110 transition-transform duration-200">
                     <Play className="w-8 h-8 ml-1" />
                 </div>
                 <h3 className="font-heading font-black text-2xl uppercase tracking-widest drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                     {data.title}
                 </h3>
-                <span className="mt-2 text-sm font-bold bg-black px-2 py-0.5 text-white">İNTERAKTİF DENEY</span>
+                <span className="mt-2 text-[10px] font-black bg-black px-2 py-0.5 text-white uppercase tracking-tighter">İNTERAKTİF DENEY</span>
             </div>
         </div>
     );
 
     // --- Main Render ---
 
-    // Determine Link href based on type
     let href = "/";
     if (type === 'article' || type === 'blog') href = `/makale/${data.slug}`;
     if (type === 'question') href = `/forum/${data.slug}`;
@@ -168,14 +157,8 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
     if (type === 'simulation') href = `/simulasyonlar/${data.slug}`;
     if (type === 'book-review') href = `/kitap-inceleme/${data.slug}`;
 
-
     return (
-        <motion.div
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            className={cn("h-full", className)}
-        >
+        <div className={cn("h-full", className)}>
             <Link href={href} className="block h-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-xl">
                 <article className={baseCardStyle}>
                     {type === 'question' ? renderQuestionContent() :
@@ -184,6 +167,6 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
                                 renderArticleContent()}
                 </article>
             </Link>
-        </motion.div>
+        </div>
     );
 }

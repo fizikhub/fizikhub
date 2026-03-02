@@ -40,17 +40,20 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
-    // Progressive hydration: Render first 5 items immediately (SSR/initial load) 
-    // to avoid freezing the main thread, then render the rest after mount.
-    const [renderCount, setRenderCount] = useState(5);
+    // Progressive hydration: Render first 3 items immediately (SSR/initial load)
+    // to avoid freezing the main thread, then render the rest during idle time.
+    const [renderCount, setRenderCount] = useState(3);
 
     useEffect(() => {
-        if (items.length > 5) {
-            // Defer rendering the rest of the items to allow the page transition to be smooth
-            const timer = setTimeout(() => {
-                setRenderCount(items.length);
-            }, 300);
-            return () => clearTimeout(timer);
+        if (items.length > 3) {
+            const idleCallback = window.requestIdleCallback ?
+                window.requestIdleCallback(() => setRenderCount(items.length), { timeout: 2000 }) :
+                setTimeout(() => setRenderCount(items.length), 500);
+
+            return () => {
+                if (window.cancelIdleCallback && typeof idleCallback === 'number') window.cancelIdleCallback(idleCallback);
+                else clearTimeout(idleCallback as any);
+            };
         }
     }, [items.length]);
 
@@ -58,32 +61,21 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
 
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
-            {/* Feed Container - Clean cards */}
             <div className="flex flex-col gap-5 sm:gap-6">
                 {visibleItems.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
-                        className="feed-item-appear"
-                        style={{ animationDelay: index < 5 ? `${index * 60}ms` : undefined }}
+                        className="feed-item-appear will-change-transform"
+                        style={{ animationDelay: index < 3 ? `${index * 50}ms` : undefined }}
                     >
-                        {item.type === 'article' && (
+                        {(item.type === 'article' || item.type === 'blog') && (
                             <NeoArticleCard
                                 article={item.data}
                                 initialLikes={item.data.likes_count || 0}
                                 initialComments={item.data.comments_count || 0}
                                 initialIsLiked={item.data.is_liked}
                                 initialIsBookmarked={item.data.is_bookmarked}
-                                priority={index < 2}
-                            />
-                        )}
-
-                        {item.type === 'blog' && (
-                            <NeoArticleCard
-                                article={item.data}
-                                initialLikes={item.data.likes_count || 0}
-                                initialIsLiked={item.data.is_liked}
-                                initialIsBookmarked={item.data.is_bookmarked}
-                                priority={index < 2}
+                                priority={index < 1}
                             />
                         )}
 
@@ -118,23 +110,10 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {/* Injected Content */}
-                        {index === 2 && (
-                            <div className="mt-6">
-                                <CommunityInviteBanner />
-                            </div>
-                        )}
-
-                        {/* REPLACED "Kafanda Soru mu Var?" (ForumTeaserCard) with GOLDEN TICKET */}
-                        {/* {index === 5 && (
-                            <div className="mt-6">
-                                <GoldenTicketCTA />
-                            </div>
-                        )} */}
-
+                        {index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
                         {index === 8 && (
                             <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
-                                <h3 className="font-bold text-sm uppercase tracking-wide text-amber-600 dark:text-amber-400 mb-4 text-center">
+                                <h3 className="font-bold text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-4 text-center">
                                     Haftanın Sorusu
                                 </h3>
                                 <QuestionOfTheWeek />
@@ -144,9 +123,8 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 ))}
             </div>
 
-            {/* Suggested Users Footer */}
-            <div className="mt-8 rounded-2xl bg-muted/30 border border-border/50 p-6">
-                <h3 className="font-bold text-sm uppercase tracking-wide text-muted-foreground mb-4 text-center">
+            <div className="mt-8 rounded-2xl bg-muted/20 border border-border/40 p-6">
+                <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
                     Önerilen Araştırmacılar
                 </h3>
                 <SuggestedUsersCard users={suggestedUsers} />

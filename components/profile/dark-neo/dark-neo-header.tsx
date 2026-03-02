@@ -5,7 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber, cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface DarkNeoHeaderProps {
     profile: any;
@@ -34,13 +35,13 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                 <div className="relative h-44 sm:h-52 md:h-60 overflow-visible border-b-[2px] border-black bg-zinc-900">
                     {/* Cover photo or pattern */}
                     {hasCoverPhoto ? (
-                        <img
+                        <Image
                             src={profile.cover_url}
                             alt="Kapak fotoğrafı"
-                            className="absolute inset-0 w-full h-full object-cover opacity-90"
-                            // fetchPriority="high" (LCP Optimization)
+                            fill
+                            className="object-cover opacity-90"
+                            priority
                             fetchPriority="high"
-                            decoding="async"
                         />
                     ) : (
                         <>
@@ -95,7 +96,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                         >
                             <div className="w-20 h-20 sm:w-28 sm:h-28 bg-background p-1 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-2 border-black dark:border-zinc-800 overflow-hidden relative z-10">
                                 <Avatar className="w-full h-full rounded-xl border border-black/10 dark:border-white/10">
-                                    <AvatarImage src={profile?.avatar_url} className="object-cover" fetchPriority="high" decoding="async" />
+                                    <AvatarImage src={profile?.avatar_url} className="object-cover" />
                                     <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
                                         {initial}
                                     </AvatarFallback>
