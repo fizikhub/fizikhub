@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
 
 // Dynamically import the heavy 3D canvas
 const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-canvas"), {
@@ -11,28 +10,6 @@ const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-can
 });
 
 export function MemeCorner() {
-    const [mountCanvas, setMountCanvas] = useState(false);
-
-    useEffect(() => {
-        // Deliberately delay heavy WebGL/Three.js parsing to ensure it doesn't block initial LCP/FCP rendering
-        const startCanvasDelay = () => {
-            if ('requestIdleCallback' in window) {
-                // Wait for the browser main thread to be idle before hydrating heavy 3D canvas
-                (window as any).requestIdleCallback(() => setMountCanvas(true), { timeout: 2000 });
-            } else {
-                // Fallback for Safari/Legacy
-                setTimeout(() => setMountCanvas(true), 1500);
-            }
-        };
-
-        if (document.readyState === 'complete') {
-            startCanvasDelay();
-        } else {
-            window.addEventListener('load', startCanvasDelay);
-            return () => window.removeEventListener('load', startCanvasDelay);
-        }
-    }, []);
-
     return (
         <div className="w-full relative group">
             {/* GLOBAL STYLES for animations */}
@@ -103,9 +80,9 @@ export function MemeCorner() {
                     }}
                 />
 
-                {/* 3D Canvas - Loaded dynamically ONLY AFTER browser is idle to eliminate TBT */}
+                {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}
                 <div className="absolute inset-0 z-0">
-                    {mountCanvas && <MemeCornerCanvas />}
+                    <MemeCornerCanvas />
                 </div>
 
                 {/* Vignette */}
