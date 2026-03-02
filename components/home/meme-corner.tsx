@@ -3,28 +3,12 @@
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
-import { useState, useEffect } from "react";
-
 // Dynamically import the heavy 3D canvas (loads cleanly in the background)
 const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-canvas"), {
     ssr: false,
 });
 
 export function MemeCorner() {
-    const [loadCanvas, setLoadCanvas] = useState(false);
-
-    useEffect(() => {
-        // Delay the 3D canvas loading so it doesn't block the main thread during hydration/LCP
-        const timeoutId = setTimeout(() => {
-            if ('requestIdleCallback' in window) {
-                window.requestIdleCallback(() => setLoadCanvas(true));
-            } else {
-                setLoadCanvas(true);
-            }
-        }, 1500);
-
-        return () => clearTimeout(timeoutId);
-    }, []);
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
@@ -49,8 +33,8 @@ export function MemeCorner() {
                 )}
             >
                 {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}
-                <div className="absolute inset-0 z-0 transition-opacity duration-1000" style={{ opacity: loadCanvas ? 1 : 0 }}>
-                    {loadCanvas && <MemeCornerCanvas />}
+                <div className="absolute inset-0 z-0">
+                    <MemeCornerCanvas />
                 </div>
 
                 {/* Vignette - Simple overlay */}
