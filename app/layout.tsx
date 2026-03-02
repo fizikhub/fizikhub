@@ -266,9 +266,6 @@ export default async function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${inter.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
-        {/* Sadece en kritik bağlantılar */}
-        <link rel="preconnect" href="https://yqokiiobwqkuznemzmvq.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://yqokiiobwqkuznemzmvq.supabase.co" />
         {/* React Scan for performance monitoring (Dev only) */}
         {process.env.NODE_ENV === "development" && <ReactScan />}
         {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}
