@@ -6,7 +6,8 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-import { RapidScienceEditorModal } from "@/components/science-cards/rapid-science-editor-modal";
+import dynamic from "next/dynamic";
+const RapidScienceEditorModal = dynamic(() => import("@/components/science-cards/rapid-science-editor-modal").then(m => m.RapidScienceEditorModal), { ssr: false });
 import { useState } from "react";
 
 export function FeedSidebar() {

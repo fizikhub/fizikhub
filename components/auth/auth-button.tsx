@@ -62,7 +62,7 @@ export function AuthButton() {
 
     if (!user) {
         return (
-            <Link href="/login">
+            <Link href="/login" prefetch={false}>
                 <Button variant="default" size="sm" className="gap-2">
                     <LogIn className="h-4 w-4" /> Giriş Yap
                 </Button>
