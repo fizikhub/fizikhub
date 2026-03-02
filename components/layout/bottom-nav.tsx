@@ -12,7 +12,7 @@ import { DankLogo } from "@/components/brand/dank-logo";
 
 export function BottomNav() {
     const pathname = usePathname();
-    const { scrollY } = useScroll();
+    const { scrollY, scrollYProgress } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
 
     // Performance: Instead of React state, use a MotionValue to prevent re-renders on scroll
@@ -28,11 +28,11 @@ export function BottomNav() {
             let targetY = navY.get();
             let targetDuration = 0.4;
 
-            // Detect if at bottom - Batch these reads
-            const windowHeight = window.innerHeight;
-            const bodyHeight = document.body.offsetHeight;
+            // Detect if at bottom using scrollYProgress to avoid layout thrashing
+            // (document.body.offsetHeight triggers forced reflow)
+            const isNearBottom = scrollYProgress.get() > 0.95;
 
-            if (latest + windowHeight >= bodyHeight - 150) {
+            if (isNearBottom) {
                 if (!isAtBottom) setIsAtBottom(true);
                 targetY = 0;
             } else {

@@ -26,6 +26,8 @@ const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-t
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
 
+import { useState, useEffect } from "react";
+
 export interface FeedItem {
     type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term' | 'answer';
     data: any;
@@ -38,11 +40,27 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
+    // Progressive hydration: Render first 5 items immediately (SSR/initial load) 
+    // to avoid freezing the main thread, then render the rest after mount.
+    const [renderCount, setRenderCount] = useState(5);
+
+    useEffect(() => {
+        if (items.length > 5) {
+            // Defer rendering the rest of the items to allow the page transition to be smooth
+            const timer = setTimeout(() => {
+                setRenderCount(items.length);
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [items.length]);
+
+    const visibleItems = items.slice(0, renderCount);
+
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
             {/* Feed Container - Clean cards */}
             <div className="flex flex-col gap-5 sm:gap-6">
-                {items.map((item, index) => (
+                {visibleItems.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
                         className="feed-item-appear"
