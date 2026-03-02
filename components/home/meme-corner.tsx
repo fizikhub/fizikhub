@@ -30,10 +30,6 @@ export function MemeCorner() {
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
             {/* GLOBAL STYLES for text animations */}
             <style jsx global>{`
-                @keyframes gradient-flow {
-                    0%, 100% { background-position: 0% 50%; opacity: 1; }
-                    50% { background-position: 100% 50%; opacity: 0.95; }
-                }
                 @keyframes badge-wiggle {
                     0%, 100% { transform: rotate(-3deg); }
                     50% { transform: rotate(1deg); }
@@ -68,14 +64,9 @@ export function MemeCorner() {
                     </h2>
 
                     <h2
-                        className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-none"
+                        className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
                         style={{
-                            background: 'linear-gradient(90deg, #ffffff, #93c5fd, #c084fc, #ffffff)',
-                            backgroundSize: '200% auto',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            animation: 'gradient-flow 4s ease infinite',
-                            textShadow: '0 4px 12px rgba(0,0,0,0.9)',
+                            filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
                         }}
                     >
                         Tİ'YE ALIYORUZ
