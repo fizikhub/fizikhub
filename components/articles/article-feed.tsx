@@ -9,7 +9,6 @@ import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { type ScienceNewsItem } from "@/lib/rss";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { GoldenTicketCTA } from "@/components/ui/golden-ticket-cta";
 
 interface ArticleFeedProps {
     articles: any[];
@@ -211,10 +210,6 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         <p className="text-zinc-500 text-sm max-w-[280px] leading-relaxed font-bold">Bu kategori için henüz veri işlenmemiş.</p>
                     </div>
                 )}
-
-                <div className="mt-16 sm:mt-24 pt-16 border-t-2 border-dashed border-zinc-200 dark:border-zinc-800">
-                    <GoldenTicketCTA />
-                </div>
             </main>
         </div>
     );

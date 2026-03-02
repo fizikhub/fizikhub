@@ -13,8 +13,6 @@ const SuggestedUsersCard = dynamic(() => import("@/components/home/suggested-use
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
 
-// Replaced WriterApplicationCard with GoldenTicketCTA
-const GoldenTicketCTA = dynamic(() => import("@/components/ui/golden-ticket-cta").then(mod => mod.GoldenTicketCTA));
 
 // Lazy load heavy injected components
 const CommunityInviteBanner = dynamic(() => import("@/components/explore/community-invite-banner").then(mod => mod.CommunityInviteBanner), {
