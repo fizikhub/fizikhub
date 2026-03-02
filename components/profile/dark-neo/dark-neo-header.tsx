@@ -38,6 +38,9 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                             src={profile.cover_url}
                             alt="Kapak fotoğrafı"
                             className="absolute inset-0 w-full h-full object-cover opacity-90"
+                            // fetchPriority="high" (LCP Optimization)
+                            fetchPriority="high"
+                            decoding="async"
                         />
                     ) : (
                         <>
@@ -92,7 +95,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                         >
                             <div className="w-20 h-20 sm:w-28 sm:h-28 bg-background p-1 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] border-2 border-black dark:border-zinc-800 overflow-hidden relative z-10">
                                 <Avatar className="w-full h-full rounded-xl border border-black/10 dark:border-white/10">
-                                    <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                                    <AvatarImage src={profile?.avatar_url} className="object-cover" fetchPriority="high" decoding="async" />
                                     <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
                                         {initial}
                                     </AvatarFallback>

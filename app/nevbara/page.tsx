@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { SpaceBomberGame } from "@/components/nevbara/space-bomber-game";
+import { SpaceBomberGameLazy } from "@/components/nevbara/space-bomber-game-lazy";
 
 export const metadata: Metadata = {
     title: "Gravity Warrior | Fizikhub",
@@ -19,7 +19,7 @@ export default function NevbaraPage() {
                     </p>
                 </div>
 
-                <SpaceBomberGame />
+                <SpaceBomberGameLazy />
 
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm text-muted-foreground">
                     <div className="p-4 border rounded bg-card/50">

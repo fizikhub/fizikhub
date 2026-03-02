@@ -23,7 +23,7 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('*, author:profiles!articles_author_id_fkey!inner(*)')
+            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey!inner(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published');
 
         if (category) {

@@ -51,7 +51,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     let query = supabase
         .from('questions')
         .select(`
-            *,
+            id, title, slug, content, created_at, category, votes, author_id, tags,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
         `, { count: 'exact' });
