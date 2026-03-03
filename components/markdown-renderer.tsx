@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -48,6 +48,19 @@ export function MarkdownRenderer({
     useEffect(() => {
         loadMarkdownCSS();
     }, []);
+
+    // Preprocess content: convert HTML math nodes to $...$ notation
+    // The editor stores math as <span data-type="math" data-latex="..."></span>
+    // but ReactMarkdown + remarkMath only understands $...$ in markdown
+    const processedContent = useMemo(() => {
+        let c = content;
+        // Convert <span data-type="math" data-latex="..."></span> or self-closing variants
+        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        // Also handle reverse attribute order: data-latex before data-type
+        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        return c;
+    }, [content]);
+
     const proseSizeClasses = {
         sm: 'prose-sm',
         base: 'prose-base',
@@ -164,7 +177,7 @@ export function MarkdownRenderer({
                     ),
                 }}
             >
-                {content}
+                {processedContent}
             </ReactMarkdown>
         </div>
     );
