@@ -1,7 +1,7 @@
 "use client";
 
-import imageCompression from 'browser-image-compression';
-import 'katex/dist/katex.min.css';
+// REMOVED top-level imports of browser-image-compression and katex — they are HUGE
+// and block the main thread. Now loaded dynamically only when needed.
 
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -20,13 +20,15 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator, MonitorPlay
 } from "lucide-react"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState, useEffect, lazy, Suspense } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
-import { InlineMath } from 'react-katex'
 import { MathExtension } from './extensions/math-extension'
 import { IframeExtension } from './extensions/iframe-extension'
+
+// Lazy load KaTeX preview (only when math dialog is opened)
+const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
 
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
@@ -77,6 +79,16 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isIframeDialogOpen, setIsIframeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
+    const katexCssLoaded = useRef(false);
+
+    // Load katex CSS only when math dialog opens
+    useEffect(() => {
+        if (isMathDialogOpen && !katexCssLoaded.current) {
+            // @ts-ignore - CSS dynamic import has no type declarations
+            import('katex/dist/katex.min.css');
+            katexCssLoaded.current = true;
+        }
+    }, [isMathDialogOpen]);
 
     // Debounce timer for onUpdate — getMarkdown() is expensive, don't call every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,6 +139,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 onChange(markdown);
             }, 500);
         },
+        immediatelyRender: false,
     });
 
     const addImage = useCallback(() => {
@@ -148,7 +161,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
         setIsUploading(true);
         try {
-            // console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            // Dynamic import — only load when user actually uploads an image
+            const { default: imageCompression } = await import('browser-image-compression');
             const compressedFile = await imageCompression(file, options);
             // console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
@@ -310,13 +324,11 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                                     <div className="min-h-[60px] flex items-center justify-center p-4 bg-muted/30 rounded-lg border border-border/50 overflow-x-auto">
                                         {mathLatex ? (
                                             <span className="text-lg">
-                                                {/* We need InlineMath here. I'll add the import in a previous step or next step. */}
-                                                <InlineMath
-                                                    math={mathLatex.replace(/^\$+|\$+$/g, '')}
-                                                    renderError={() => {
-                                                        return <span className="text-red-500 font-mono text-sm">{mathLatex}</span>
-                                                    }}
-                                                />
+                                                <Suspense fallback={<span className="text-muted-foreground">Yükleniyor...</span>}>
+                                                    <LazyInlineMath
+                                                        math={mathLatex.replace(/^\$+|\$+$/g, '')}
+                                                    />
+                                                </Suspense>
                                             </span>
                                         ) : (
                                             <span className="text-sm text-muted-foreground italic">Formül yazmaya başlayın...</span>

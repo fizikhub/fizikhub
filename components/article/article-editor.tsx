@@ -1,7 +1,7 @@
 "use client";
 
-import imageCompression from 'browser-image-compression';
-import 'katex/dist/katex.min.css';
+// REMOVED top-level imports of browser-image-compression and katex — they are HUGE
+// and block the main thread. Now loaded dynamically only when needed.
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper, NodeViewProps } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -20,11 +20,13 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator
 } from "lucide-react";
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { InlineMath } from 'react-katex';
 import { MathExtension } from '@/components/writer/extensions/math-extension';
+
+// Lazy load KaTeX preview (only when math dialog is opened)
+const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
 
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
@@ -82,6 +84,16 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
+    const katexCssLoaded = useRef(false);
+
+    // Load katex CSS only when math dialog opens
+    useEffect(() => {
+        if (isMathDialogOpen && !katexCssLoaded.current) {
+            // @ts-ignore - CSS dynamic import has no type declarations
+            import('katex/dist/katex.min.css');
+            katexCssLoaded.current = true;
+        }
+    }, [isMathDialogOpen]);
 
     // Debounce timer for onUpdate — getHTML() is expensive on every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -151,6 +163,8 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
 
         setIsUploading(true);
         try {
+            // Dynamic import — only load when user actually uploads an image
+            const { default: imageCompression } = await import('browser-image-compression');
             const compressedFile = await imageCompression(file, options);
             const url = await onUploadImage(compressedFile);
 
@@ -300,7 +314,9 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
                                     <div className="min-h-[60px] flex items-center justify-center p-4 bg-muted/30 rounded-lg border border-border/50 overflow-x-auto">
                                         {mathLatex ? (
                                             <span className="text-lg">
-                                                <InlineMath math={mathLatex} />
+                                                <Suspense fallback={<span className="text-muted-foreground">Yükleniyor...</span>}>
+                                                    <LazyInlineMath math={mathLatex} />
+                                                </Suspense>
                                             </span>
                                         ) : (
                                             <span className="text-sm text-muted-foreground italic">Formül yazmaya başlayın...</span>
@@ -349,6 +365,6 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
 
             <EditorContent editor={editor} />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
-        </div>
+        </div >
     );
 }

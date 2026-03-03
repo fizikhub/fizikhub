@@ -1,6 +1,6 @@
 "use client";
 
-import imageCompression from 'browser-image-compression';
+// browser-image-compression loaded dynamically on upload (see handleImageUpload)
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,8 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
         setIsUploading(true);
         try {
-            // console.log(`[Compression] Original: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+            // Dynamic import — only load heavy library when user uploads
+            const { default: imageCompression } = await import('browser-image-compression');
             const compressedFile = await imageCompression(file, options);
             // console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
