@@ -20,7 +20,7 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator, MonitorPlay
 } from "lucide-react"
-import { useCallback, useRef, useState, useEffect, lazy, Suspense } from "react"
+import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
@@ -93,10 +93,31 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     // Debounce timer for onUpdate — getMarkdown() is expensive, don't call every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Preprocess content for the editor: convert $...$ to html math spans safely
+    const preprocessedContent = useMemo(() => {
+        if (!content) return '';
+        let c = content;
+
+        // 1. Convert indented single-dollar math lines to un-indented spans
+        // This prevents Markdown from turning indented formulas into code blocks
+        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '<span data-type="math" data-latex="$1"></span>');
+
+        // 2. Convert block $$...$$ math to spans
+        c = c.replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
+
+        // 3. Convert inline $...$ to spans (safe regex without lookbehind for Safari compatibility)
+        c = c.replace(/(^|[^\$])\$([^$\n]+?)\$([^\$]|$)/g, '$1<span data-type="math" data-latex="$2"></span>$3');
+
+        return c;
+    }, [content]);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
-            Markdown,
+            Markdown.configure({
+                html: true,
+                transformPastedText: true,
+            }),
             Image.configure({
                 inline: false,
                 allowBase64: true,
@@ -125,7 +146,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: content,
+        content: preprocessedContent,
         editorProps: {
             attributes: {
                 class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',

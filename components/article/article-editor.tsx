@@ -98,34 +98,20 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     // Debounce timer for onUpdate — getHTML() is expensive on every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Preprocess content for the editor: convert $...$ to math spans, fix paragraph spacing
+    // Preprocess content for the editor: convert $...$ to html math spans safely
     const preprocessedContent = useMemo(() => {
         if (!content) return '';
         let c = content;
 
-        // If content looks like markdown (not HTML), wrap paragraphs properly
-        const isHTML = /<[a-z][\s\S]*>/i.test(c);
+        // 1. Convert indented single-dollar math lines to un-indented spans
+        // This prevents Markdown from turning indented formulas into code blocks
+        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '<span data-type="math" data-latex="$1"></span>');
 
-        if (!isHTML) {
-            // Content is markdown — convert double newlines to paragraph breaks
-            // and convert $...$ to math spans
-            c = c
-                // Convert inline math $...$ (but NOT $$...$$) to math spans
-                .replace(/(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)/g, '<span data-type="math" data-latex="$1"></span>')
-                // Convert block math $$...$$ to math spans
-                .replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>')
-                // Convert double newlines to paragraph separators
-                .split(/\n\n+/)
-                .map(p => p.trim())
-                .filter(p => p.length > 0)
-                .map(p => `<p>${p}</p>`)
-                .join('');
-        } else {
-            // Content is already HTML — just convert any remaining $...$ inside text nodes
-            c = c
-                .replace(/(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)/g, '<span data-type="math" data-latex="$1"></span>')
-                .replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
-        }
+        // 2. Convert block $$...$$ math to spans
+        c = c.replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
+
+        // 3. Convert inline $...$ to spans (safe regex without lookbehind for Safari compatibility)
+        c = c.replace(/(^|[^\$])\$([^$\n]+?)\$([^\$]|$)/g, '$1<span data-type="math" data-latex="$2"></span>$3');
 
         return c;
     }, [content]);
@@ -133,7 +119,10 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     const editor = useEditor({
         extensions: [
             StarterKit,
-            Markdown,
+            Markdown.configure({
+                html: true,
+                transformPastedText: true,
+            }),
             Image.configure({
                 inline: false,
                 allowBase64: true,
