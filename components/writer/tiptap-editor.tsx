@@ -1,6 +1,7 @@
 "use client";
 
 import imageCompression from 'browser-image-compression';
+import 'katex/dist/katex.min.css';
 
 import { useEditor, EditorContent, ReactNodeViewRenderer, NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
