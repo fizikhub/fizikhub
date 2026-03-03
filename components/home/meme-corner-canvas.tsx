@@ -61,7 +61,7 @@ function getNebulaTexture() {
 
 
 // --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 3000 }) {
+function MainStars({ count = 7000 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -162,7 +162,7 @@ function MainStars({ count = 3000 }) {
 }
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 3000 }) {
+function NebulaClouds({ count = 8000 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -230,7 +230,7 @@ function NebulaClouds({ count = 3000 }) {
 }
 
 // --- DISTANT BACKGROUND STARS ---
-function BackgroundStars({ count = 800 }) {
+function BackgroundStars({ count = 2000 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -309,9 +309,9 @@ export default function MemeCornerCanvas() {
             frameloop="always"
         >
             <group>
-                <BackgroundStars count={isMobile ? 400 : 800} />
-                <MainStars count={isMobile ? 1500 : 3000} />
-                <NebulaClouds count={isMobile ? 1500 : 3000} />
+                <BackgroundStars count={isMobile ? 1000 : 2000} />
+                <MainStars count={isMobile ? 3500 : 7000} />
+                <NebulaClouds count={isMobile ? 4000 : 8000} />
             </group>
 
             {!isMobile && (

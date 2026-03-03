@@ -37,8 +37,8 @@ export function Navbar() {
 
         const generateRain = () => {
             const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 6 : 12; // Reduced lanes
-            const dropCount = isMobile ? 6 : 15; // Cut in half for performance
+            const laneCount = isMobile ? 6 : 12;
+            const dropCount = isMobile ? 12 : 30;
 
             const drops = Array.from({ length: dropCount }).map((_, i) => {
                 const lane = Math.floor(Math.random() * laneCount);
