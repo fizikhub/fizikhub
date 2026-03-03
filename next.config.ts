@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // Performance optimizations
   experimental: {
-    optimizeCss: false,
+    optimizeCss: true,
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
@@ -46,6 +46,13 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-tooltip',
       '@radix-ui/react-popover',
       '@radix-ui/react-select',
+      '@react-three/fiber',
+      '@react-three/drei',
+      '@react-three/postprocessing',
+      'canvas-confetti',
+      'react-confetti',
+      'html2canvas',
+      'lenis',
       'sonner',
       'react-hook-form',
     ],

@@ -37,19 +37,18 @@ export function Navbar() {
 
         const generateRain = () => {
             const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 8 : 20; // Distinct lanes to prevent overlap
-            const dropCount = isMobile ? 12 : 30;
+            const laneCount = isMobile ? 6 : 12; // Reduced lanes
+            const dropCount = isMobile ? 6 : 15; // Cut in half for performance
 
             const drops = Array.from({ length: dropCount }).map((_, i) => {
-                // Assign to a random lane to prevent horizontal overlap
                 const lane = Math.floor(Math.random() * laneCount);
-                const laneWidth = 80 / laneCount; // Use inner 80% of screen
-                const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8)); // 10% padding on sides
+                const laneWidth = 80 / laneCount;
+                const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8));
 
                 return {
                     left: left,
-                    duration: 5 + Math.random() * 8, // 5s-13s
-                    delay: -1 * Math.random() * 20, // Start "in the past" so they are visible immediately
+                    duration: 5 + Math.random() * 8,
+                    delay: -1 * Math.random() * 20,
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
                     scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
                     opacity: 0.5 + Math.random() * 0.4
@@ -58,7 +57,12 @@ export function Navbar() {
             setRaindrops(drops);
         };
 
-        generateRain();
+        // Defer rain generation to avoid blocking initial hydration
+        if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(generateRain, { timeout: 2000 });
+        } else {
+            setTimeout(generateRain, 500);
+        }
     }, []);
 
     const navItems = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import {
@@ -61,7 +61,7 @@ function getNebulaTexture() {
 
 
 // --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 7000 }) {
+function MainStars({ count = 3000 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -162,7 +162,7 @@ function MainStars({ count = 7000 }) {
 }
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 8000 }) {
+function NebulaClouds({ count = 3000 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -230,7 +230,7 @@ function NebulaClouds({ count = 8000 }) {
 }
 
 // --- DISTANT BACKGROUND STARS ---
-function BackgroundStars({ count = 2000 }) {
+function BackgroundStars({ count = 800 }) {
     const pointsRef = useRef<PointsType>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -291,6 +291,12 @@ function BackgroundStars({ count = 2000 }) {
 }
 
 export default function MemeCornerCanvas() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
     return (
         <Canvas
             camera={{ position: [0, 5, 7], fov: 50 }}
@@ -299,21 +305,24 @@ export default function MemeCornerCanvas() {
                 powerPreference: "high-performance",
                 alpha: true
             }}
-            dpr={[1, 2]}
+            dpr={[1, 1.5]}
+            frameloop="always"
         >
             <group>
-                <BackgroundStars />
-                <MainStars />
-                <NebulaClouds />
+                <BackgroundStars count={isMobile ? 400 : 800} />
+                <MainStars count={isMobile ? 1500 : 3000} />
+                <NebulaClouds count={isMobile ? 1500 : 3000} />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={4}>
-                <Bloom
-                    luminanceThreshold={0.5} // Restore brilliance
-                    intensity={1.2}
-                    radius={0.2} // Sharper glow
-                />
-            </EffectComposer>
+            {!isMobile && (
+                <EffectComposer enableNormalPass={false} multisampling={0}>
+                    <Bloom
+                        luminanceThreshold={0.5}
+                        intensity={1.0}
+                        radius={0.15}
+                    />
+                </EffectComposer>
+            )}
         </Canvas>
     );
 }

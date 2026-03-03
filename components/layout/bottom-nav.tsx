@@ -117,10 +117,9 @@ export function BottomNav() {
                                     onClick={vibrate}
                                 >
                                     <m.div
-                                        animate={{ scale: [1, 1.05, 1] }}
+                                        animate={{ scale: 1 }}
                                         transition={{
-                                            repeat: Infinity,
-                                            duration: 3,
+                                            duration: 0.3,
                                             ease: "easeInOut"
                                         }}
                                         whileTap={{ scale: 0.9, rotate: 15 }}
@@ -197,12 +196,7 @@ export function BottomNav() {
                             >
                                 İzinsiz kopyalayanı kara deliğe atarız.
                             </span>
-                            <style>{`
-                                @keyframes shimmer-nav {
-                                    0%, 100% { background-position: 0% 50%; }
-                                    50% { background-position: 100% 50%; }
-                                }
-                            `}</style>
+
                         </m.div>
                     )}
                 </AnimatePresence>

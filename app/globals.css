@@ -293,7 +293,6 @@ section>div,
 /* Images - smooth loading */
 img {
     image-rendering: -webkit-optimize-contrast;
-    transform: translateZ(0);
 }
 
 /* ========== TOUCH OPTIMIZATION ========== */
@@ -423,18 +422,7 @@ main,
     }
 }
 
-/* ========== IMAGE PERFORMANCE ========== */
 
-/* Lazy loading optimization */
-img[loading="lazy"] {
-    opacity: 0;
-    transition: opacity 400ms ease-in-out;
-}
-
-img[loading="lazy"].loaded,
-img[loading="lazy"]:not([src=""]) {
-    opacity: 1;
-}
 
 /* Prevent layout shift */
 img,
@@ -486,97 +474,23 @@ iframe {
 
 /* ========== UTILITY CLASSES ========== */
 
-/* Force smooth GPU rendering */
-.gpu-smooth {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-    will-change: transform;
-}
-
-/* Instant feedback on click */
-.click-feedback:active {
-    transform: scale(0.97);
-    transition-duration: 50ms !important;
-}
-
-/* Smooth opacity transitions */
-.fade-transition {
-    transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* ========== ADDITIONAL PREMIUM EFFECTS ========== */
 
 
-/* Smooth Scroll Indicator */
-.scroll-indicator {
-    animation: scroll-hint 2s ease-out infinite;
-}
 
-@keyframes scroll-hint {
+
+
+
+/* ========== NAV SHIMMER ========== */
+@keyframes shimmer-nav {
 
     0%,
     100% {
-        transform: translateY(0);
-        opacity: 0.8;
+        background-position: 0% 50%;
     }
 
     50% {
-        transform: translateY(8px);
-        opacity: 0.4;
-    }
-}
-
-/* Premium Modal/Dialog Backdrop */
-.backdrop-premium {
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-    background: rgba(0, 0, 0, 0.5);
-}
-
-/* Smooth Skeleton with Better Shimmer */
-.skeleton-premium {
-    background: linear-gradient(90deg,
-            rgba(var(--muted), 0.8) 0%,
-            rgba(var(--muted-foreground), 0.15) 50%,
-            rgba(var(--muted), 0.8) 100%);
-    background-size: 300% 100%;
-    animation: skeleton-premium-shimmer 1.8s ease-in-out infinite;
-    border-radius: var(--radius, 8px);
-}
-
-@keyframes skeleton-premium-shimmer {
-    0% {
         background-position: 100% 50%;
     }
-
-    100% {
-        background-position: -100% 50%;
-    }
-}
-
-/* Interactive Ripple Effect */
-.ripple-effect {
-    position: relative;
-    overflow: hidden;
-}
-
-.ripple-effect::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(var(--primary), 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-}
-
-.ripple-effect:active::after {
-    width: 300px;
-    height: 300px;
 }
 
 /* ========== FOOTER SHOOTING STARS ========== */

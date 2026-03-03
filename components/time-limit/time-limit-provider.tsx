@@ -30,7 +30,7 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [secondsSinceLastUpdate, setSecondsSinceLastUpdate] = useState(0);
 
-    // Fetch initial status
+    // Fetch initial status — deferred to avoid blocking hydration
     useEffect(() => {
         async function fetchStatus() {
             const result = await getTimeLimitStatus();
@@ -40,7 +40,13 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
             }
             setIsLoading(false);
         }
-        fetchStatus();
+
+        // Defer to idle time so we don't block initial paint/hydration
+        if ('requestIdleCallback' in window) {
+            (window as any).requestIdleCallback(() => fetchStatus(), { timeout: 3000 });
+        } else {
+            setTimeout(fetchStatus, 1000);
+        }
     }, []);
 
     // Countdown timer and periodic save

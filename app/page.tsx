@@ -3,9 +3,11 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-// CompactHero — statically loaded to improve LCP; MemeCornerCanvas inside is already ssr:false
-import { CompactHero } from "@/components/home/compact-hero";
 import { NexusStories } from "@/components/home/nexus-stories";
+
+// CompactHero uses Three.js — deferred via a "use client" wrapper that uses dynamic(ssr:false)
+import { DeferredHero } from "@/components/home/deferred-hero";
+
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
@@ -17,11 +19,9 @@ const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(
   ssr: true
 });
 
-// We load the sidebar structure dynamically, but to avoid TBT hydration blocks, 
-// we let the Client Component itself do the heavy lifting later. Setting ssr to false completely shifts this below-the-fold component to client-side.
+// FeedSidebar — dynamically imported (no ssr:false in Server Components)
 const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
   loading: () => <SidebarSkeleton />,
-  ssr: false // Sidebars are non-critical and often contain client-only logic
 });
 
 // LCP Component — STATIC IMPORT so Next.js can preload the hero image
@@ -172,7 +172,7 @@ export default async function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
-            <CompactHero />
+            <DeferredHero />
             <NexusStories initialStories={stories} initialGroups={groups} />
           </div>
 
