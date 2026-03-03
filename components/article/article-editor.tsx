@@ -20,7 +20,7 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator
 } from "lucide-react";
-import { useCallback, useRef, useState, useEffect, lazy, Suspense } from "react";
+import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { MathExtension } from '@/components/writer/extensions/math-extension';
@@ -98,6 +98,38 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     // Debounce timer for onUpdate — getHTML() is expensive on every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Preprocess content for the editor: convert $...$ to math spans, fix paragraph spacing
+    const preprocessedContent = useMemo(() => {
+        if (!content) return '';
+        let c = content;
+
+        // If content looks like markdown (not HTML), wrap paragraphs properly
+        const isHTML = /<[a-z][\s\S]*>/i.test(c);
+
+        if (!isHTML) {
+            // Content is markdown — convert double newlines to paragraph breaks
+            // and convert $...$ to math spans
+            c = c
+                // Convert inline math $...$ (but NOT $$...$$) to math spans
+                .replace(/(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)/g, '<span data-type="math" data-latex="$1"></span>')
+                // Convert block math $$...$$ to math spans
+                .replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>')
+                // Convert double newlines to paragraph separators
+                .split(/\n\n+/)
+                .map(p => p.trim())
+                .filter(p => p.length > 0)
+                .map(p => `<p>${p}</p>`)
+                .join('');
+        } else {
+            // Content is already HTML — just convert any remaining $...$ inside text nodes
+            c = c
+                .replace(/(?<!\$)\$(?!\$)([^$\n]+?)\$(?!\$)/g, '<span data-type="math" data-latex="$1"></span>')
+                .replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
+        }
+
+        return c;
+    }, [content]);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -129,7 +161,7 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: content,
+        content: preprocessedContent,
         editorProps: {
             attributes: {
                 class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6',
