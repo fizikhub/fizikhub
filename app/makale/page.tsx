@@ -23,7 +23,7 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey!inner(full_name, is_writer)')
+            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey!inner(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published')
             .eq('author.is_writer', true);
 
@@ -31,13 +31,8 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
             query = query.eq('category', category);
         }
 
-        // Filtering by author's writer status using the profiles table
-        // We use 'author' as the join path defined in the select string.
-        query = query.eq('author.is_writer', true);
-
         // Sorting
         if (sort === 'popular') {
-            // Since views column is removed, we fallback to created_at
             query = query.order('created_at', { ascending: false });
         } else {
             query = query.order('created_at', { ascending: false });

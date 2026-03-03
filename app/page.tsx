@@ -5,8 +5,9 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { NexusStories } from "@/components/home/nexus-stories";
 
-// CompactHero uses Three.js — deferred via a "use client" wrapper that uses dynamic(ssr:false)
-import { DeferredHero } from "@/components/home/deferred-hero";
+// CompactHero is statically imported — its text is the LCP element and must be server-rendered.
+// The Three.js canvas inside MemeCorner is already dynamically imported with ssr:false.
+import { CompactHero } from "@/components/home/compact-hero";
 
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
@@ -172,7 +173,7 @@ export default async function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
-            <DeferredHero />
+            <CompactHero />
             <NexusStories initialStories={stories} initialGroups={groups} />
           </div>
 
