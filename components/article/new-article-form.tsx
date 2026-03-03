@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint, Lightbulb, Link as LinkIcon, AlertTriangle } from "lucide-react";
+import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint, Lightbulb, Link as LinkIcon, AlertTriangle, Save, CloudOff } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase-client";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
@@ -53,8 +53,61 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
     const [showGuide, setShowGuide] = useState(!hasSeenGuide);
 
     const titleRef = useRef<HTMLTextAreaElement>(null);
-
     const coverInputRef = useRef<HTMLInputElement>(null);
+    const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+    const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // LocalStorage draft key
+    const draftKey = `draft-blog-${userId}`;
+
+    // Restore draft from localStorage on mount
+    useEffect(() => {
+        if (initialData) return; // Don't restore draft when editing existing article
+        try {
+            const saved = localStorage.getItem(draftKey);
+            if (saved) {
+                const draft = JSON.parse(saved);
+                if (draft.title) setTitle(draft.title);
+                if (draft.content) setContent(draft.content);
+                if (draft.excerpt) setExcerpt(draft.excerpt);
+                if (draft.category) setCategory(draft.category);
+                if (draft.coverUrl) setCoverUrl(draft.coverUrl);
+                toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
+            }
+        } catch { }
+    }, []);
+
+    // Auto-save to localStorage every 5 seconds when content changes
+    useEffect(() => {
+        if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+        if (!title && !content) return; // Don't save empty forms
+
+        autoSaveTimer.current = setTimeout(() => {
+            try {
+                const draft = { title, content, excerpt, category, coverUrl };
+                localStorage.setItem(draftKey, JSON.stringify(draft));
+                setAutoSaveStatus('saved');
+                setTimeout(() => setAutoSaveStatus('idle'), 2000);
+            } catch {
+                setAutoSaveStatus('idle');
+            }
+        }, 5000);
+
+        return () => {
+            if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+        };
+    }, [title, content, excerpt, category, coverUrl]);
+
+    // Warn before leaving with unsaved content
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (content.trim() || title.trim()) {
+                e.preventDefault();
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [content, title]);
 
     // Generic Upload Helper
     const uploadToSupabase = async (file: File): Promise<string> => {
@@ -137,6 +190,8 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
             }
 
             toast.success(targetStatus === "pending" ? "Blog incelemeye gönderildi!" : "Taslak kaydedildi!");
+            // Clear draft from localStorage on successful submit
+            try { localStorage.removeItem(draftKey); } catch { }
             window.location.href = "/profil";
 
         } catch (error: any) {
@@ -259,6 +314,9 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                         content.length > 0 ? "text-muted-foreground" : "text-transparent"
                     )}>
                         {content.length} karakter
+                        {autoSaveStatus === 'saved' && (
+                            <span className="ml-2 text-green-500 font-normal normal-case"> ✓ Otomatik kaydedildi</span>
+                        )}
                     </span>
 
                     <div className="flex w-full sm:w-auto gap-3">

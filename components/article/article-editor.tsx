@@ -83,6 +83,9 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
 
+    // Debounce timer for onUpdate — getHTML() is expensive on every keystroke
+    const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -121,7 +124,11 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
             },
         },
         onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
+            // Debounce: only call getHTML() after 500ms of inactivity
+            if (debounceTimer.current) clearTimeout(debounceTimer.current);
+            debounceTimer.current = setTimeout(() => {
+                onChange(editor.getHTML());
+            }, 500);
         },
         immediatelyRender: false,
     });

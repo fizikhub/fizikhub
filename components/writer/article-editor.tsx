@@ -2,7 +2,7 @@
 
 import imageCompression from 'browser-image-compression';
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,6 +87,49 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
     const [content, setContent] = useState(article?.content || "");
 
+    // Auto-save state
+    const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saved'>('idle');
+    const draftKey = 'draft-writer-article';
+
+    // Restore draft on mount
+    useEffect(() => {
+        if (article) return; // Don't restore when editing
+        try {
+            const saved = localStorage.getItem(draftKey);
+            if (saved) {
+                const draft = JSON.parse(saved);
+                if (draft.content) setContent(draft.content);
+                toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
+            }
+        } catch { }
+    }, []);
+
+    // Auto-save to localStorage every 5 seconds
+    useEffect(() => {
+        if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+        if (!content) return;
+
+        autoSaveTimer.current = setTimeout(() => {
+            try {
+                localStorage.setItem(draftKey, JSON.stringify({ content }));
+                setAutoSaveStatus('saved');
+                setTimeout(() => setAutoSaveStatus('idle'), 2000);
+            } catch { }
+        }, 5000);
+
+        return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+    }, [content]);
+
+    // Warn before leaving
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (content.trim()) e.preventDefault();
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [content]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -105,6 +148,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
             if (result.success) {
                 toast.success(article ? "Makale güncellendi" : "Makale oluşturuldu");
+                try { localStorage.removeItem(draftKey); } catch { }
                 router.push("/yazar");
             } else {
                 toast.error(result.error || "İşlem başarısız");
@@ -227,6 +271,9 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {article ? "Güncelle ve Onaya Gönder" : "Oluştur ve Onaya Gönder"}
                 </Button>
+                {autoSaveStatus === 'saved' && (
+                    <span className="text-xs text-green-500 self-center">✓ Otomatik kaydedildi</span>
+                )}
             </div>
         </form>
     );

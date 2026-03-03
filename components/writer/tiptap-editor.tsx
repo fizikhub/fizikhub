@@ -78,6 +78,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const [isIframeDialogOpen, setIsIframeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
 
+    // Debounce timer for onUpdate — getMarkdown() is expensive, don't call every keystroke
+    const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -117,9 +120,12 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // Use Markdown output for proper math rendering and compatibility
-            const markdown = (editor.storage as any).markdown.getMarkdown();
-            onChange(markdown);
+            // Debounce: only call getMarkdown() after 500ms of inactivity
+            if (debounceTimer.current) clearTimeout(debounceTimer.current);
+            debounceTimer.current = setTimeout(() => {
+                const markdown = (editor.storage as any).markdown.getMarkdown();
+                onChange(markdown);
+            }, 500);
         },
     });
 
