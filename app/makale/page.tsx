@@ -23,16 +23,17 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey!inner(id, full_name, username, avatar_url, is_verified, is_writer)')
-            .eq('status', 'published');
+            .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey!inner(full_name, is_writer)')
+            .eq('status', 'published')
+            .eq('author.is_writer', true);
 
         if (category) {
             query = query.eq('category', category);
         }
 
         // Filtering by author's writer status using the profiles table
-        // We use 'profiles' as the join path. With !inner, this works effectively.
-        query = query.eq('profiles.is_writer', true);
+        // We use 'author' as the join path defined in the select string.
+        query = query.eq('author.is_writer', true);
 
         // Sorting
         if (sort === 'popular') {
