@@ -51,8 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_dictionary_terms_created
 
 -- Stories: Ana sayfa stories
 CREATE INDEX IF NOT EXISTS idx_stories_expires 
-    ON stories(expires_at DESC, created_at DESC) 
-    WHERE expires_at > NOW();
+    ON stories(expires_at DESC, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_stories_author 
     ON stories(author_id, created_at DESC);
