@@ -92,11 +92,9 @@ ANALYZE profiles;
 ANALYZE dictionary_terms;
 ANALYZE quizzes;
 
--- VACUUM (ölü tuple'ları temizle, disk alanını geri kazan)
-VACUUM (VERBOSE) articles;
-VACUUM (VERBOSE) questions;
-VACUUM (VERBOSE) answers;
-VACUUM (VERBOSE) profiles;
+-- NOT: VACUUM (VERBOSE) komutları, Supabase editöründeki transaction blokları
+-- (Tüm betiğin tek seferde çalıştırılması) içerisinde hata verdiği (ERROR: 25001)
+-- için bu otomatik betikten çıkarılmıştır. Normalde rutin işlemdir.
 
 
 -- =====================================================
