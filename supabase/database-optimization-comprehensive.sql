@@ -28,15 +28,15 @@ CREATE INDEX IF NOT EXISTS idx_articles_category_status
 CREATE INDEX IF NOT EXISTS idx_questions_created 
     ON questions(created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_questions_user 
-    ON questions(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_questions_author
+    ON questions(author_id, created_at DESC);
 
 -- Answers tablosu: Soru detay sayfası
 CREATE INDEX IF NOT EXISTS idx_answers_question 
     ON answers(question_id, created_at ASC);
 
-CREATE INDEX IF NOT EXISTS idx_answers_user 
-    ON answers(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_answers_author
+    ON answers(author_id, created_at DESC);
 
 -- Profiles tablosu: Kullanıcı arama, yazar filtresi
 CREATE INDEX IF NOT EXISTS idx_profiles_username 
@@ -75,12 +75,15 @@ CREATE INDEX IF NOT EXISTS idx_simulations_slug
     ON simulations(slug) WHERE is_published = true;
 
 -- Bookmarks: Kullanıcı yer imleri
-CREATE INDEX IF NOT EXISTS idx_bookmarks_user 
-    ON bookmarks(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_article_bookmarks_user 
+    ON article_bookmarks(user_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_question_bookmarks_user 
+    ON question_bookmarks(user_id, created_at DESC);
 
 -- Notifications: Bildirim sayfası
-CREATE INDEX IF NOT EXISTS idx_notifications_user_read 
-    ON notifications(user_id, is_read, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient_read 
+    ON notifications(recipient_id, is_read, created_at DESC);
 
 
 -- =====================================================
@@ -110,15 +113,15 @@ LEFT JOIN (
     GROUP BY author_id
 ) article_counts ON article_counts.author_id = p.id
 LEFT JOIN (
-    SELECT user_id, COUNT(*) AS count 
+    SELECT author_id, COUNT(*) AS count 
     FROM answers 
-    GROUP BY user_id
-) answer_counts ON answer_counts.user_id = p.id
+    GROUP BY author_id
+) answer_counts ON answer_counts.author_id = p.id
 LEFT JOIN (
-    SELECT user_id, COUNT(*) AS count 
+    SELECT author_id, COUNT(*) AS count 
     FROM questions 
-    GROUP BY user_id
-) question_counts ON question_counts.user_id = p.id
+    GROUP BY author_id
+) question_counts ON question_counts.author_id = p.id
 WHERE p.username IS NOT NULL
 ORDER BY p.points DESC NULLS LAST
 LIMIT 100;
@@ -186,7 +189,8 @@ ANALYZE stories;
 ANALYZE story_groups;
 ANALYZE quizzes;
 ANALYZE simulations;
-ANALYZE bookmarks;
+ANALYZE article_bookmarks;
+ANALYZE question_bookmarks;
 ANALYZE notifications;
 
 -- VACUUM (ölü tuple'ları temizle, disk alanını geri kazan)
