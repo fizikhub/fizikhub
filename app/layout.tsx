@@ -24,45 +24,6 @@ const lora = Lora({
   fallback: ['Georgia', 'serif'],
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -88,9 +49,7 @@ export const metadata: Metadata = {
       'application/rss+xml': '/feed.xml',
     },
   },
-  verification: {
-    google: 'google-site-verification-code-here',
-  },
+  // verification: { google: 'GERÇEK_TOKEN_BURAYA' },
   description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   keywords: [
     "fizik", "bilim", "uzay", "teknoloji", "fizikhub", "forum", "soru cevap",
@@ -199,7 +158,7 @@ import { UserActivityTracker } from "@/components/analytics/user-activity-tracke
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { createClient } from "@/lib/supabase-server";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
-import { ReactScan } from "@/components/analytics/react-scan";
+
 
 import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";

@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // Performance optimizations
   experimental: {
+    staleTimes: {
+      dynamic: 30, // Client-side cache for dynamic pages (seconds)
+      static: 300, // Client-side cache for static pages (seconds)
+    },
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
@@ -54,12 +58,21 @@ const nextConfig: NextConfig = {
       'lenis',
       'sonner',
       'react-hook-form',
+      '@supabase/supabase-js',
+      'react-markdown',
+      'rehype-katex',
+      'rehype-raw',
+      'rehype-highlight',
+      'remark-math',
+      'react-katex',
+      'zod',
+      'cmdk',
+      'react-easy-crop',
     ],
     serverActions: {
       bodySizeLimit: '5mb',
     },
   },
-
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

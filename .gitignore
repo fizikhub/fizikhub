@@ -40,6 +40,10 @@ yarn-error.log*
 /temp_repos
 .agent
 
+# lighthouse reports
+lh*.json
+/lhci-report
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

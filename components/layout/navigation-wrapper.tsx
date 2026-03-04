@@ -19,10 +19,7 @@ const GlobalAdminNotification = dynamic(
     { ssr: false }
 );
 
-const GlobalEffects = dynamic(
-    () => import("@/components/effects/global-effects").then(mod => mod.GlobalEffects),
-    { ssr: false }
-);
+
 
 
 
@@ -47,7 +44,7 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-            <GlobalEffects />
+
             <GlobalAdminNotification />
             <Navbar />
             {children}

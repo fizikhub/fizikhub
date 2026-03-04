@@ -180,7 +180,7 @@ export default async function Home() {
           {/* Main Feed Column */}
           <div className="lg:col-span-12 xl:col-span-7 space-y-0 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
             <LatestArticlesSlider
-              articles={[...formatSliderArticles(articles)].sort(() => Math.random() - 0.5)}
+              articles={formatSliderArticles(articles)}
             />
             <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
           </div>
