@@ -57,8 +57,6 @@ CREATE INDEX IF NOT EXISTS idx_stories_author
     ON stories(author_id, created_at DESC);
 
 -- Quizzes: Test listesi
-CREATE INDEX IF NOT EXISTS idx_quizzes_published 
-    ON quizzes(is_published, created_at DESC) WHERE is_published = true;
 
 CREATE INDEX IF NOT EXISTS idx_quizzes_slug 
     ON quizzes(slug) WHERE is_published = true;
