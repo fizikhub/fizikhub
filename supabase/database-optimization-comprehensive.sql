@@ -49,32 +49,7 @@ CREATE INDEX IF NOT EXISTS idx_profiles_writer
 CREATE INDEX IF NOT EXISTS idx_dictionary_terms_created 
     ON dictionary_terms(created_at DESC);
 
--- Stories: Ana sayfa stories
-CREATE INDEX IF NOT EXISTS idx_stories_expires 
-    ON stories(expires_at DESC, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_stories_author 
-    ON stories(author_id, created_at DESC);
-
--- Quizzes: Test listesi
-
-CREATE INDEX IF NOT EXISTS idx_quizzes_slug 
-    ON quizzes(slug);
-
--- Simulations: Simülasyon listesi
-CREATE INDEX IF NOT EXISTS idx_simulations_published 
-    ON simulations(is_published, created_at DESC) WHERE is_published = true;
-
--- Bookmarks: Kullanıcı yer imleri
-CREATE INDEX IF NOT EXISTS idx_article_bookmarks_user 
-    ON article_bookmarks(user_id, created_at DESC);
-
-CREATE INDEX IF NOT EXISTS idx_question_bookmarks_user 
-    ON question_bookmarks(user_id, created_at DESC);
-
--- Notifications: Bildirim sayfası
-CREATE INDEX IF NOT EXISTS idx_notifications_recipient_read 
-    ON notifications(recipient_id, is_read, created_at DESC);
 
 
 -- =====================================================
@@ -176,13 +151,7 @@ ANALYZE questions;
 ANALYZE answers;
 ANALYZE profiles;
 ANALYZE dictionary_terms;
-ANALYZE stories;
-ANALYZE story_groups;
 ANALYZE quizzes;
-ANALYZE simulations;
-ANALYZE article_bookmarks;
-ANALYZE question_bookmarks;
-ANALYZE notifications;
 
 -- VACUUM (ölü tuple'ları temizle, disk alanını geri kazan)
 VACUUM (VERBOSE) articles;
