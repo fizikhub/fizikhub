@@ -52,68 +52,7 @@ CREATE INDEX IF NOT EXISTS idx_dictionary_terms_created
 
 
 
--- =====================================================
--- BÖLÜM 2: MATERYALİZE GÖRÜNÜMLER (Materialized Views)
--- Ağır sorguları önbelleğe alır
--- =====================================================
 
--- Leaderboard Görünümü: Sıralama sayfası için
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_leaderboard AS
-SELECT 
-    p.id,
-    p.username,
-    p.full_name,
-    p.avatar_url,
-    p.is_writer,
-    p.is_verified,
-    p.points,
-    COALESCE(article_counts.count, 0) AS article_count,
-    COALESCE(answer_counts.count, 0) AS answer_count,
-    COALESCE(question_counts.count, 0) AS question_count,
-    RANK() OVER (ORDER BY p.points DESC NULLS LAST) AS rank
-FROM profiles p
-LEFT JOIN (
-    SELECT author_id, COUNT(*) AS count 
-    FROM articles 
-    WHERE status = 'published' 
-    GROUP BY author_id
-) article_counts ON article_counts.author_id = p.id
-LEFT JOIN (
-    SELECT author_id, COUNT(*) AS count 
-    FROM answers 
-    GROUP BY author_id
-) answer_counts ON answer_counts.author_id = p.id
-LEFT JOIN (
-    SELECT author_id, COUNT(*) AS count 
-    FROM questions 
-    GROUP BY author_id
-) question_counts ON question_counts.author_id = p.id
-WHERE p.username IS NOT NULL
-ORDER BY p.points DESC NULLS LAST
-LIMIT 100;
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_leaderboard_id ON mv_leaderboard(id);
-
--- Feed İstatistik Görünümü: Ana sayfa sidebar için
-CREATE MATERIALIZED VIEW IF NOT EXISTS mv_feed_stats AS
-SELECT 
-    (SELECT COUNT(*) FROM articles WHERE status = 'published') AS total_articles,
-    (SELECT COUNT(*) FROM questions) AS total_questions,
-    (SELECT COUNT(*) FROM profiles WHERE username IS NOT NULL) AS total_users,
-    (SELECT COUNT(*) FROM answers) AS total_answers,
-    NOW() AS last_updated;
-
--- Materialized View'ları yenilemek için fonksiyon
-CREATE OR REPLACE FUNCTION refresh_materialized_views()
-RETURNS void AS $$
-BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mv_leaderboard;
-    REFRESH MATERIALIZED VIEW mv_feed_stats;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Her 10 dakikada yenilemek için pg_cron job (Supabase Dashboard > Database > Extensions > pg_cron)
--- SELECT cron.schedule('refresh-mv', '*/10 * * * *', 'SELECT refresh_materialized_views()');
 
 
 -- =====================================================
@@ -210,7 +149,4 @@ ORDER BY pg_relation_size(indexrelid) DESC;
 
 -- =====================================================
 -- TAMAMLANDI ✅
--- Bu SQL'i Supabase SQL Editor'de çalıştırdıktan sonra
--- Materialized View'ları yenilemek için:
--- SELECT refresh_materialized_views();
 -- =====================================================
