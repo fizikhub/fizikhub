@@ -46,9 +46,6 @@ CREATE INDEX IF NOT EXISTS idx_profiles_writer
     ON profiles(is_writer, created_at DESC) WHERE is_writer = true;
 
 -- Dictionary Terms: Sözlük sayfası
-CREATE INDEX IF NOT EXISTS idx_dictionary_terms_slug 
-    ON dictionary_terms(slug);
-
 CREATE INDEX IF NOT EXISTS idx_dictionary_terms_created 
     ON dictionary_terms(created_at DESC);
 
@@ -70,9 +67,6 @@ CREATE INDEX IF NOT EXISTS idx_quizzes_slug
 -- Simulations: Simülasyon listesi
 CREATE INDEX IF NOT EXISTS idx_simulations_published 
     ON simulations(is_published, created_at DESC) WHERE is_published = true;
-
-CREATE INDEX IF NOT EXISTS idx_simulations_slug 
-    ON simulations(slug) WHERE is_published = true;
 
 -- Bookmarks: Kullanıcı yer imleri
 CREATE INDEX IF NOT EXISTS idx_article_bookmarks_user 
