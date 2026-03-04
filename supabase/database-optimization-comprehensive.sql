@@ -59,7 +59,7 @@ CREATE INDEX IF NOT EXISTS idx_stories_author
 -- Quizzes: Test listesi
 
 CREATE INDEX IF NOT EXISTS idx_quizzes_slug 
-    ON quizzes(slug) WHERE is_published = true;
+    ON quizzes(slug);
 
 -- Simulations: Simülasyon listesi
 CREATE INDEX IF NOT EXISTS idx_simulations_published 
