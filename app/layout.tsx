@@ -1,6 +1,6 @@
 // million-ignore
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -15,6 +15,13 @@ const inter = Inter({
   variable: "--font-sans",
   display: "swap",
   fallback: ['system-ui', 'arial'],
+});
+
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  fallback: ['Georgia', 'serif'],
 });
 
 
@@ -198,7 +205,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { OnboardingCheck } from "@/components/auth/onboarding-check";
 import { Suspense } from "react";
 import { QueryProvider } from "@/components/providers/query-provider";
-
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default async function RootLayout({
   children,
@@ -265,7 +272,7 @@ export default async function RootLayout({
 
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body suppressHydrationWarning className={`${inter.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}
         <script
           type="application/ld+json"
@@ -298,9 +305,11 @@ export default async function RootLayout({
                   <Suspense fallback={null}>
                     <OnboardingCheck />
                   </Suspense>
-                  <main id="main-content" role="main">
-                    {children}
-                  </main>
+                  <TooltipProvider>
+                    <main id="main-content" role="main">
+                      {children}
+                    </main>
+                  </TooltipProvider>
                 </NavigationWrapper>
               </FramerMotionProvider>
             </TimeLimitProvider>

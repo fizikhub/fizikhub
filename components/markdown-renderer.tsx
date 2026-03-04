@@ -70,7 +70,7 @@ export function MarkdownRenderer({
 
     const fontClasses = {
         sans: 'font-sans',
-        serif: 'font-grotesk'
+        serif: 'font-serif tracking-wide'
     };
 
     return (

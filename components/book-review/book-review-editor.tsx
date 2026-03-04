@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { BookReviewGuide } from "@/components/book-review/book-review-guide";
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 
 interface BookReviewEditorProps {
     userId: string;
@@ -29,9 +30,68 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
     // UI States
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isDraftLoaded, setIsDraftLoaded] = useState(false);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
     const titleRef = useRef<HTMLTextAreaElement>(null);
+
+    // Auto-save logic
+    const DRAFT_KEY = `draft-book-review-${userId}`;
+
+    // Load draft on mount
+    useEffect(() => {
+        const savedDraft = localStorage.getItem(DRAFT_KEY);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed.bookTitle) setBookTitle(parsed.bookTitle);
+                if (parsed.bookAuthor) setBookAuthor(parsed.bookAuthor);
+                if (parsed.rating) setRating(parsed.rating);
+                if (parsed.coverUrl) setCoverUrl(parsed.coverUrl);
+                if (parsed.content) setContent(parsed.content);
+
+                toast.success("Önceki taslağınız geri yüklendi.");
+                setHasUnsavedChanges(true); // Treat restored draft as unsaved changes
+            } catch (e) {
+                console.error("Draft parsing error", e);
+            }
+        }
+        setIsDraftLoaded(true);
+    }, [DRAFT_KEY]);
+
+    // Save draft on changes
+    useEffect(() => {
+        if (!isDraftLoaded) return; // Don't save before initial load
+
+        const hasContent = bookTitle.trim() || bookAuthor.trim() || content.trim() || coverUrl;
+
+        if (hasContent && !isSubmitting) {
+            setHasUnsavedChanges(true);
+            const draft = { bookTitle, bookAuthor, rating, coverUrl, content, savedAt: new Date().toISOString() };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } else if (!hasContent) {
+            setHasUnsavedChanges(false);
+            localStorage.removeItem(DRAFT_KEY);
+        }
+    }, [bookTitle, bookAuthor, rating, coverUrl, content, isDraftLoaded, isSubmitting, DRAFT_KEY]);
+
+    // Warn before leaving
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasUnsavedChanges && !isSubmitting) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [hasUnsavedChanges, isSubmitting]);
 
     // Image Upload Logic
     const uploadToSupabase = async (file: File): Promise<string> => {
@@ -55,20 +115,29 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
         return publicUrl;
     };
 
-    const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (coverInputRef.current) coverInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
         try {
             setUploadingImage(true);
-            const url = await uploadToSupabase(file);
+            const url = await uploadToSupabase(croppedFile);
             setCoverUrl(url);
             toast.success("Kapak resmi yüklendi hocam.");
         } catch (error: any) {
             toast.error(error.message || "Görsel yüklenirken hata oluştu. Aptal site.");
         } finally {
             setUploadingImage(false);
-            if (coverInputRef.current) coverInputRef.current.value = "";
         }
     };
 
@@ -107,6 +176,9 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             if (!result.success) throw new Error(result.error || "İnceleme oluşturulamadı");
 
             toast.success(targetStatus === "published" ? "İnceleme paylaşıldı!" : "Taslak kaydedildi!");
+            // Clear draft after successful save
+            localStorage.removeItem(DRAFT_KEY);
+            setHasUnsavedChanges(false);
             window.location.href = "/profil";
 
         } catch (error: any) {
@@ -259,6 +331,16 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                     </div>
                 </div>
             </div>
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={16 / 9}
+                    title="Kapak Görselini Kırp"
+                />
+            )}
         </div>
     );
 }

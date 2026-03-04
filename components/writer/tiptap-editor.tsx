@@ -26,6 +26,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { MathExtension } from './extensions/math-extension'
 import { IframeExtension } from './extensions/iframe-extension'
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog"
 
 // Lazy load KaTeX preview (only when math dialog is opened)
 const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
@@ -79,6 +80,11 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isIframeDialogOpen, setIsIframeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
+
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
     const katexCssLoaded = useRef(false);
 
     // Load katex CSS only when math dialog opens
@@ -167,10 +173,20 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         fileInputRef.current?.click();
     }, []);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
         // Compression options - high quality settings
         const options = {
             maxSizeMB: 2,
@@ -184,8 +200,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         try {
             // Dynamic import — only load when user actually uploads an image
             const { default: imageCompression } = await import('browser-image-compression');
-            const compressedFile = await imageCompression(file, options);
-            // console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
+            const compressedFile = await imageCompression(croppedFile, options);
 
             const result = await uploadArticleImage(compressedFile);
             if (result.success && result.url) {
@@ -199,9 +214,6 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             toast.error("Görsel işlenirken bir hata oluştu");
         } finally {
             setIsUploading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
         }
     };
 
@@ -399,6 +411,18 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
             <EditorContent editor={editor} />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={null} // Free cropping by default for inline text, user can choose SEO ratios
+                    title="Görseli Kırp"
+                    showAspectControls={true}
+                />
+            )}
         </div>
     )
 }

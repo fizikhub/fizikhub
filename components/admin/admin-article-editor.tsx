@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { updateArticle } from "@/app/admin/actions";
 import Image from "next/image";
-import { Upload, X, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase-client";
-import imageCompression from "browser-image-compression";
-
-// Dynamically import TipTap editor to avoid SSR issues
+import { ArrowLeft, Save, Upload, Loader2, ImagePlus, X } from "lucide-react";
+import NextImage from "next/image";
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
+// imageCompression imported dynamically inside handleCoverUploadp editor to avoid SSR issues
 const TiptapEditor = dynamic(
     () => import("@/components/writer/tiptap-editor").then((mod) => mod.TiptapEditor),
     {
@@ -46,8 +45,20 @@ interface AdminArticleEditorProps {
 
 export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
     const [loading, setLoading] = useState(false);
-    const [uploadingCover, setUploadingCover] = useState(false);
+    const [isUploading, setIsUploading] = useState(false); // Added for upload state
+    const [tempCoverUrl, setTempCoverUrl] = useState<string | null>(null);
+    const coverInputRef = useRef<HTMLInputElement>(null);
+
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
     const router = useRouter();
+
+    // Setup TinyMCE default content
+    useEffect(() => {
+        // This useEffect block was empty in the provided diff, keeping it as is.
+    }, []);
 
     const [formData, setFormData] = useState({
         title: article.title || "",
@@ -55,7 +66,7 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
         excerpt: article.excerpt || "",
         content: article.content || "",
         category: article.category || "",
-        image_url: article.image_url || article.cover_url || "",
+        image_url: article.image_url || article.cover_url || "", // Kept article.cover_url for robustness
         status: article.status || "published"
     });
 
@@ -87,39 +98,61 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
         setFormData(prev => ({ ...prev, status: value }));
     };
 
-    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setUploadingCover(true);
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (coverInputRef.current) coverInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
+        setIsUploading(true);
         try {
-            // Compress image
-            const compressed = await imageCompression(file, {
+            const { default: imageCompression } = await import('browser-image-compression');
+            const compressedFile = await imageCompression(croppedFile, {
                 maxSizeMB: 1,
-                maxWidthOrHeight: 1920,
+                maxWidthOrHeight: 1200,
                 useWebWorker: true,
+                fileType: "image/webp" as const,
             });
 
+            const { createClient } = await import('@/lib/supabase-client'); // Corrected import path
             const supabase = createClient();
-            const ext = file.name.split(".").pop();
-            const fileName = `cover-${article.id}-${Date.now()}.${ext}`;
 
-            const { data, error } = await supabase.storage
-                .from("article-images")
-                .upload(fileName, compressed, { upsert: true });
+            const fileExt = "webp";
+            const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
+            const filePath = `article-covers/${fileName}`;
 
-            if (error) throw error;
+            const { error: uploadError } = await supabase.storage
+                .from('article-images') // Corrected bucket name
+                .upload(filePath, compressedFile, {
+                    contentType: 'image/webp',
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
-                .from("article-images")
-                .getPublicUrl(fileName);
+                .from('article-images') // Corrected bucket name
+                .getPublicUrl(filePath);
 
-            setFormData(prev => ({ ...prev, image_url: publicUrl }));
-            toast.success("Kapak resmi yüklendi!");
+            setTempCoverUrl(publicUrl);
+            setFormData({ ...formData, image_url: publicUrl });
+            toast.success("Kapak görseli yüklendi");
         } catch (error: any) {
-            toast.error("Resim yüklenemedi: " + error.message);
+            console.error("Upload error:", error);
+            toast.error("Görsel yüklenirken bir hata oluştu: " + error.message);
         } finally {
-            setUploadingCover(false);
+            setIsUploading(false);
+            setIsCropDialogOpen(false); // Close dialog after upload attempt
+            setTempImageSrc(""); // Clear temp image source
         }
     };
 
@@ -248,7 +281,7 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                     ) : (
                         <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
                             <div className="flex flex-col items-center justify-center py-6">
-                                {uploadingCover ? (
+                                {isUploading ? ( // Changed from uploadingCover to isUploading
                                     <Loader2 className="w-10 h-10 text-muted-foreground animate-spin" />
                                 ) : (
                                     <>
@@ -259,10 +292,10 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                             </div>
                             <input
                                 type="file"
+                                ref={coverInputRef}
                                 className="hidden"
                                 accept="image/*"
-                                onChange={handleCoverUpload}
-                                disabled={uploadingCover}
+                                onChange={handleCoverSelect}
                             />
                         </label>
                     )}
@@ -297,7 +330,7 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
 
             {/* Actions */}
             <div className="flex gap-4 sticky bottom-4 bg-background p-4 border rounded-lg shadow-lg">
-                <Button type="submit" className="flex-1" disabled={loading}>
+                <Button type="submit" className="flex-1" disabled={loading || isUploading}>
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -311,11 +344,22 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                     type="button"
                     variant="outline"
                     onClick={() => router.back()}
-                    disabled={loading}
+                    disabled={loading || isUploading}
                 >
                     İptal
                 </Button>
             </div>
+
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={16 / 9}
+                    title="Kapak Görselini Kırp"
+                />
+            )}
         </form>
     );
 }

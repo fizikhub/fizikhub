@@ -24,6 +24,7 @@ import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } fro
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { MathExtension } from '@/components/writer/extensions/math-extension';
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 
 // Lazy load KaTeX preview (only when math dialog is opened)
 const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
@@ -84,6 +85,11 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
+
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
     const katexCssLoaded = useRef(false);
 
     // Load katex CSS only when math dialog opens
@@ -170,23 +176,33 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
         fileInputRef.current?.click();
     }, []);
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
         // Compression options
         const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
-            fileType: "image/webp"
+            fileType: "image/webp" as const
         };
 
         setIsUploading(true);
         try {
             // Dynamic import — only load when user actually uploads an image
             const { default: imageCompression } = await import('browser-image-compression');
-            const compressedFile = await imageCompression(file, options);
+            const compressedFile = await imageCompression(croppedFile, options);
             const url = await onUploadImage(compressedFile);
 
             if (url) {
@@ -198,9 +214,6 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
             toast.error(error.message || "Görsel yüklenirken hata oluştu");
         } finally {
             setIsUploading(false);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-            }
         }
     };
 
@@ -386,6 +399,18 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
 
             <EditorContent editor={editor} />
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={null} // Free cropping by default for inline text, user can choose SEO ratios
+                    title="Görseli Kırp"
+                    showAspectControls={true}
+                />
+            )}
         </div >
     );
 }

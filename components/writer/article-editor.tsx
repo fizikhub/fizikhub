@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
 import NextImage from "next/image";
 import { TiptapEditor } from "./tiptap-editor";
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 
 interface ArticleEditorProps {
     article?: {
@@ -46,12 +47,30 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [title, setTitle] = useState(article?.title || "");
+    const [category, setCategory] = useState(article?.category || CATEGORIES[0]);
+
+    const [excerpt, setExcerpt] = useState(article?.excerpt || "");
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
 
         // Compression options - high quality settings
         const options = {
@@ -66,7 +85,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         try {
             // Dynamic import — only load heavy library when user uploads
             const { default: imageCompression } = await import('browser-image-compression');
-            const compressedFile = await imageCompression(file, options);
+            const compressedFile = await imageCompression(croppedFile, options);
             // console.log(`[Compression] Compressed: Size: ${(compressedFile.size / 1024 / 1024).toFixed(2)}MB`);
 
             const result = await uploadArticleImage(compressedFile);
@@ -92,6 +111,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saved'>('idle');
     const draftKey = 'draft-writer-article';
+    const [isDraftLoaded, setIsDraftLoaded] = useState(false);
 
     // Restore draft on mount
     useEffect(() => {
@@ -100,36 +120,48 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             const saved = localStorage.getItem(draftKey);
             if (saved) {
                 const draft = JSON.parse(saved);
+                if (draft.title) setTitle(draft.title);
+                if (draft.category) setCategory(draft.category);
+                if (draft.excerpt) setExcerpt(draft.excerpt);
+                if (draft.imageUrl) setImageUrl(draft.imageUrl);
                 if (draft.content) setContent(draft.content);
                 toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
             }
         } catch { }
+        setIsDraftLoaded(true);
     }, []);
 
     // Auto-save to localStorage every 5 seconds
     useEffect(() => {
+        if (!isDraftLoaded) return;
         if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-        if (!content) return;
+
+        const hasContent = title.trim() || content.trim() || excerpt.trim() || imageUrl;
+        if (!hasContent) return;
 
         autoSaveTimer.current = setTimeout(() => {
             try {
-                localStorage.setItem(draftKey, JSON.stringify({ content }));
+                localStorage.setItem(draftKey, JSON.stringify({ title, category, excerpt, imageUrl, content }));
                 setAutoSaveStatus('saved');
                 setTimeout(() => setAutoSaveStatus('idle'), 2000);
             } catch { }
         }, 5000);
 
         return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-    }, [content]);
+    }, [title, category, excerpt, imageUrl, content, isDraftLoaded]);
 
     // Warn before leaving
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-            if (content.trim()) e.preventDefault();
+            const hasContent = title.trim() || content.trim() || excerpt.trim() || imageUrl;
+            if (hasContent && !isSubmitting) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
         };
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [content]);
+    }, [title, excerpt, content, imageUrl, isSubmitting]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -169,7 +201,8 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                     <Input
                         id="title"
                         name="title"
-                        defaultValue={article?.title}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         placeholder="Makale başlığı..."
                         required
                         className="text-lg font-medium"
@@ -179,7 +212,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label htmlFor="category">Kategori</Label>
-                        <Select name="category" defaultValue={article?.category} required>
+                        <Select name="category" value={category} onValueChange={setCategory} required>
                             <SelectTrigger>
                                 <SelectValue placeholder="Kategori seçin" />
                             </SelectTrigger>
@@ -208,7 +241,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                                 ref={fileInputRef}
                                 className="hidden"
                                 accept="image/*"
-                                onChange={handleImageUpload}
+                                onChange={handleFileSelect}
                             />
                             <Button
                                 type="button"
@@ -244,7 +277,8 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                     <Textarea
                         id="excerpt"
                         name="excerpt"
-                        defaultValue={article?.excerpt || ""}
+                        value={excerpt}
+                        onChange={(e) => setExcerpt(e.target.value)}
                         placeholder="Makalenin kısa bir özeti..."
                         className="h-20 resize-none"
                     />
@@ -276,6 +310,17 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                     <span className="text-xs text-green-500 self-center">✓ Otomatik kaydedildi</span>
                 )}
             </div>
+
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={16 / 9}
+                    title="Kapak Görselini Kırp"
+                />
+            )}
         </form>
     );
 }

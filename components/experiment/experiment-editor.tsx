@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { ExperimentGuide } from "@/components/experiment/experiment-guide";
 import { Star, GripHorizontal } from "lucide-react";
+import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 interface ExperimentEditorProps {
     userId: string;
 }
@@ -30,9 +31,68 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
     // UI States
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const [isDraftLoaded, setIsDraftLoaded] = useState(false);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
+    // Crop Dialog States
+    const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
+    const [tempImageSrc, setTempImageSrc] = useState<string>("");
+
     const titleRef = useRef<HTMLTextAreaElement>(null);
+
+    // Auto-save logic
+    const DRAFT_KEY = `draft-experiment-${userId}`;
+
+    // Load draft on mount
+    useEffect(() => {
+        const savedDraft = localStorage.getItem(DRAFT_KEY);
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed.title) setTitle(parsed.title);
+                if (parsed.purpose) setPurpose(parsed.purpose);
+                if (parsed.materials) setMaterials(parsed.materials);
+                if (parsed.coverUrl) setCoverUrl(parsed.coverUrl);
+                if (parsed.procedure) setProcedure(parsed.procedure);
+
+                toast.success("Önceki taslağınız geri yüklendi.");
+                setHasUnsavedChanges(true);
+            } catch (e) {
+                console.error("Draft parsing error", e);
+            }
+        }
+        setIsDraftLoaded(true);
+    }, [DRAFT_KEY]);
+
+    // Save draft on changes
+    useEffect(() => {
+        if (!isDraftLoaded) return;
+
+        const hasContent = title.trim() || purpose.trim() || procedure.trim() || materials.length > 0 || coverUrl;
+
+        if (hasContent && !isSubmitting) {
+            setHasUnsavedChanges(true);
+            const draft = { title, purpose, materials, coverUrl, procedure, savedAt: new Date().toISOString() };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } else if (!hasContent) {
+            setHasUnsavedChanges(false);
+            localStorage.removeItem(DRAFT_KEY);
+        }
+    }, [title, purpose, procedure, materials, coverUrl, isDraftLoaded, isSubmitting, DRAFT_KEY]);
+
+    // Warn before leaving
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (hasUnsavedChanges && !isSubmitting) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [hasUnsavedChanges, isSubmitting]);
 
     // Material Handler
     const addMaterial = () => {
@@ -68,20 +128,29 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
         return publicUrl;
     };
 
-    const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // Create a local URL for the cropper
+        const objectUrl = URL.createObjectURL(file);
+        setTempImageSrc(objectUrl);
+        setIsCropDialogOpen(true);
+
+        // Reset input so the same file can be selected again
+        if (coverInputRef.current) coverInputRef.current.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
         try {
             setUploadingImage(true);
-            const url = await uploadToSupabase(file);
+            const url = await uploadToSupabase(croppedFile);
             setCoverUrl(url);
             toast.success("Kapak resmi yüklendi!");
         } catch (error: any) {
             toast.error(error.message || "Görsel yüklenirken hata oluştu.");
         } finally {
             setUploadingImage(false);
-            if (coverInputRef.current) coverInputRef.current.value = "";
         }
     };
 
@@ -119,6 +188,9 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
             if (!result.success) throw new Error(result.error || "Deney paylaşılamadı");
 
             toast.success(targetStatus === "published" ? "Deney paylaşıldı!" : "Taslak kaydedildi!");
+            // Clear draft after successful save
+            localStorage.removeItem(DRAFT_KEY);
+            setHasUnsavedChanges(false);
             window.location.href = "/profil";
 
         } catch (error: any) {
@@ -278,6 +350,17 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
                     </div>
                 </div>
             </div>
+
+            {tempImageSrc && (
+                <ImageCropDialog
+                    imageSrc={tempImageSrc}
+                    open={isCropDialogOpen}
+                    onOpenChange={setIsCropDialogOpen}
+                    onCropComplete={handleCropComplete}
+                    aspectRatio={16 / 9}
+                    title="Kapak Görselini Kırp"
+                />
+            )}
         </div>
     );
 }
