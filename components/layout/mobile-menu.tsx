@@ -1,7 +1,9 @@
 "use client";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -10,8 +12,7 @@ import { motion } from "framer-motion";
 import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 
 const menuItems = [
-    { href: '/', label: 'Akış', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
-    { href: '/kesfet', label: 'Keşfet', icon: Compass, color: 'group-hover:text-[#FF90E8]', iconColor: 'text-[#FF90E8]' },
+    { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
     { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
     { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
     { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'group-hover:text-[#00F0A0]', iconColor: 'text-[#00F0A0]' },
@@ -22,6 +23,16 @@ const menuItems = [
 export function MobileMenu() {
     const [open, setOpen] = useState(false);
     const [factOpen, setFactOpen] = useState(false);
+    const [user, setUser] = useState<SupabaseUser | null>(null);
+    const [supabase] = useState(() => createClient());
+
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
 
     return (
         <>
@@ -147,12 +158,21 @@ export function MobileMenu() {
                         ))}
 
                         <div className="pt-4 mt-4 border-t-2 border-zinc-800">
-                            <Link href="/giris" onClick={() => setOpen(false)}>
-                                <button className="w-full py-4 font-black text-lg border-[3px] border-black bg-white text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
-                                    <User className="w-5 h-5 stroke-[3px]" />
-                                    Giriş Yap
-                                </button>
-                            </Link>
+                            {user ? (
+                                <Link href="/profil" onClick={() => setOpen(false)}>
+                                    <button className="w-full py-4 font-black text-lg border-[3px] border-black bg-[#FACC15] text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
+                                        <User className="w-5 h-5 stroke-[3px]" />
+                                        Profil
+                                    </button>
+                                </Link>
+                            ) : (
+                                <Link href="/login" onClick={() => setOpen(false)}>
+                                    <button className="w-full py-4 font-black text-lg border-[3px] border-black bg-white text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
+                                        <User className="w-5 h-5 stroke-[3px]" />
+                                        Giriş Yap
+                                    </button>
+                                </Link>
+                            )}
                         </div>
                     </div>
 

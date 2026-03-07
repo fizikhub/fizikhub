@@ -95,7 +95,7 @@ export function BottomNav() {
                                 id="nav-item-home"
                                 href="/"
                                 icon={Home}
-                                label="Akış"
+                                label="Ana Sayfa"
                                 isActive={pathname === "/"}
                                 onInteract={vibrate}
                             />
