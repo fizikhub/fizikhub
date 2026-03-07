@@ -138,15 +138,15 @@ export function ModernForumHeader() {
                 />
 
                 {/* Handwritten Formulas SVG - Updated for Mobile Density & "Fainter" Look */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none select-none overflow-hidden">
-                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
+                <div className="absolute inset-0 opacity-40 md:opacity-20 pointer-events-none select-none overflow-hidden flex items-center justify-center">
+                    <svg className="w-[1200px] h-full object-cover min-w-[max(1200px,100%)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
                         <defs>
                             <filter id="chalk-stroke">
                                 <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="1" result="noise" />
                                 <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
                             </filter>
                         </defs>
-                        <g stroke="white" strokeWidth="2" fill="none" style={{ filter: "url(#chalk-stroke)" }} opacity="0.6">
+                        <g stroke="white" strokeWidth="2.5" fill="none" style={{ filter: "url(#chalk-stroke)" }} opacity="0.8">
                             {/* Schrödinger Equation (Center / Prominent) */}
                             <text x="50%" y="30%" fill="white" fontSize="24" fontFamily="serif" stroke="none" textAnchor="middle">iℏ∂Ψ/∂t = ĤΨ</text>
 
@@ -177,6 +177,13 @@ export function ModernForumHeader() {
 
                             {/* Thermodynamics (Middle Left) */}
                             <text x="25%" y="65%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">dS ≥ 0</text>
+
+                            {/* Additional Formulas for Mobile Density */}
+                            <text x="45%" y="15%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">F = G(m1m2/r²)</text>
+                            <text x="5%" y="55%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">v = λf</text>
+                            <text x="80%" y="45%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">PV = nRT</text>
+                            <text x="40%" y="85%" fill="white" fontSize="22" fontFamily="monospace" stroke="none">E = hν</text>
+                            <text x="90%" y="90%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">q = mcΔT</text>
 
                             {/* Random Strokes / Eraser marks */}
                             <path d="M100,250 Q200,230 300,260" opacity="0.3" strokeWidth="8" stroke="rgba(255,255,255,0.2)" />
@@ -321,7 +328,7 @@ export function ModernForumHeader() {
                                 <div className={cn(
                                     "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
                                     "bg-white/5 border-[2px] border-white/30 hover:bg-white/10 hover:border-white/60 transition-all duration-200",
-                                    "flex items-center px-4 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
+                                    "flex items-center px-4 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
                                 )}>
                                     {/* Icon Box */}
                                     <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20 mr-4 group-hover:rotate-12 transition-transform">
@@ -346,7 +353,7 @@ export function ModernForumHeader() {
             </div>
 
             {/* FILTERS BAR - REFINED & CLEAN */}
-            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] z-30 py-2 sm:py-4 bg-background/95 backdrop-blur-md border-b-2 border-black/10 transition-all">
+            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] z-30 py-2 sm:py-4 bg-background/95 backdrop-blur-md transition-all">
                 {/* Categories */}
                 <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-2">
                     <div className="flex gap-2 sm:gap-3 min-w-max px-1">
