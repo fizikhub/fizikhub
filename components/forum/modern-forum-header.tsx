@@ -138,15 +138,15 @@ export function ModernForumHeader() {
                 />
 
                 {/* Handwritten Formulas SVG - Updated for Mobile Density & "Fainter" Look */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none select-none overflow-hidden">
-                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
+                <div className="absolute inset-0 opacity-30 md:opacity-20 pointer-events-none select-none overflow-hidden">
+                    <svg className="w-full h-full min-w-[800px] md:min-w-full object-cover" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
                         <defs>
                             <filter id="chalk-stroke">
                                 <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="1" result="noise" />
                                 <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
                             </filter>
                         </defs>
-                        <g stroke="white" strokeWidth="2" fill="none" style={{ filter: "url(#chalk-stroke)" }} opacity="0.6">
+                        <g stroke="white" strokeWidth="2.5" fill="none" style={{ filter: "url(#chalk-stroke)" }} opacity="0.8">
                             {/* Schrödinger Equation (Center / Prominent) */}
                             <text x="50%" y="30%" fill="white" fontSize="24" fontFamily="serif" stroke="none" textAnchor="middle">iℏ∂Ψ/∂t = ĤΨ</text>
 
@@ -177,6 +177,13 @@ export function ModernForumHeader() {
 
                             {/* Thermodynamics (Middle Left) */}
                             <text x="25%" y="65%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">dS ≥ 0</text>
+
+                            {/* Additional Formulas for Mobile Density */}
+                            <text x="45%" y="15%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">F = G(m1m2/r²)</text>
+                            <text x="5%" y="55%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">v = λf</text>
+                            <text x="80%" y="45%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">PV = nRT</text>
+                            <text x="40%" y="85%" fill="white" fontSize="22" fontFamily="monospace" stroke="none">E = hν</text>
+                            <text x="90%" y="90%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">q = mcΔT</text>
 
                             {/* Random Strokes / Eraser marks */}
                             <path d="M100,250 Q200,230 300,260" opacity="0.3" strokeWidth="8" stroke="rgba(255,255,255,0.2)" />
@@ -313,29 +320,29 @@ export function ModernForumHeader() {
                         </motion.h1>
                     </div>
 
-                    {/* Input Trigger (Chalk Panel Style) */}
-                    <div className="w-full md:max-w-xl">
+                    {/* Input Trigger (Neo-Brutalist Style) */}
+                    <div className="w-full md:max-w-xl pb-2">
                         <CreateQuestionDialog
                             defaultOpen={searchParams.get("create") === "true"}
                             trigger={
                                 <div className={cn(
-                                    "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
-                                    "bg-white/5 border-[2px] border-white/30 hover:bg-white/10 hover:border-white/60 transition-all duration-200",
-                                    "flex items-center px-4 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
+                                    "group relative w-full cursor-pointer h-14 sm:h-16 rounded-xl",
+                                    "bg-white border-[3px] border-black hover:bg-gray-50 transition-all duration-200",
+                                    "flex items-center px-4 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-0.5 hover:-translate-x-0.5"
                                 )}>
                                     {/* Icon Box */}
-                                    <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20 mr-4 group-hover:rotate-12 transition-transform">
-                                        <Sparkles className="w-5 h-5 opacity-80" />
+                                    <div className="w-10 h-10 rounded-full bg-neo-blue text-black border-2 border-black flex items-center justify-center mr-4 group-hover:rotate-12 transition-transform shadow-[2px_2px_0_0_#000]">
+                                        <Sparkles className="w-4 h-4 fill-white" />
                                     </div>
 
                                     {/* Placeholder */}
-                                    <span className="text-lg font-medium text-white/70 group-hover:text-white transition-colors font-mono">
+                                    <span className="text-base sm:text-lg font-bold text-gray-600 group-hover:text-black transition-colors font-mono">
                                         Bugün neyi merak ediyorsun?
                                     </span>
 
                                     {/* Arrow Action */}
-                                    <div className="ml-auto text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all duration-300">
-                                        <ArrowRight className="w-5 h-5" />
+                                    <div className="ml-auto flex items-center justify-center w-8 h-8 rounded-full bg-neo-pink border-2 border-black shadow-[2px_2px_0_0_#000] text-white group-hover:translate-x-1 group-hover:-rotate-12 transition-all duration-300">
+                                        <ArrowRight className="w-4 h-4 text-white font-bold" />
                                     </div>
                                 </div>
                             }
@@ -346,7 +353,7 @@ export function ModernForumHeader() {
             </div>
 
             {/* FILTERS BAR - REFINED & CLEAN */}
-            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] z-30 py-2 sm:py-4 bg-background/95 backdrop-blur-md border-b-2 border-black/10 transition-all">
+            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[70px] z-30 py-3 sm:py-4 px-4 bg-white dark:bg-zinc-900 border-[3px] border-black rounded-2xl shadow-[4px_4px_0_0_#000] transition-all">
                 {/* Categories */}
                 <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-2">
                     <div className="flex gap-2 sm:gap-3 min-w-max px-1">
