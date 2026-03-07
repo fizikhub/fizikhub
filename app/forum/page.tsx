@@ -51,7 +51,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     let query = supabase
         .from('questions')
         .select(`
-            id, title, slug, content, created_at, category, votes, author_id, tags,
+            id, title, content, created_at, category, votes, author_id, tags,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
         `, { count: 'exact' });
@@ -76,8 +76,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     // Add pagination
     query = query.range(offset, offset + limit - 1);
 
-    const { data: questions, count: totalCount } = await query;
-
+    const { data: questions, count: totalCount, error: questionsError } = await query;
+    if (questionsError) {
+        console.error("Supabase Error fetching forum questions:", questionsError);
+    }
     // Fetch user's votes to show "voted" state
     const userVotes = new Map<number, number>();
     const { data: { user } } = await supabase.auth.getUser();

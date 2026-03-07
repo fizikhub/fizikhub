@@ -23,7 +23,7 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
+            .select('id, title, slug, excerpt, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published');
 
         if (category) {
@@ -39,10 +39,13 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
 
         const { data, error } = await query;
         if (error) {
-            console.error("Error in getCachedArticles:", error);
+            console.error("Supabase Error fetching articles in Makale feed:", error, "Query details:", { category, sort });
             return [];
         }
-        return data;
+        return data?.map((article: any) => ({
+            ...article,
+            summary: article.excerpt || article.summary
+        })) || [];
     },
     ['makale-feed', category || 'all', sort || 'latest'],
     { revalidate: 3600, tags: ['articles'] }
