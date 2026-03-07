@@ -105,9 +105,8 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     // Fetch Latest Article for Ad (Only from Writers)
     const { data: latestArticle } = await supabase
         .from('articles')
-        .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey!inner(full_name, is_writer)')
+        .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey(full_name, is_writer)')
         .eq('status', 'published')
-        .eq('author.is_writer', true)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();

@@ -13,8 +13,8 @@ export const revalidate = 60;
 
 // Reusable Supabase client for cached data fetching (no cookies/auth)
 const getPublicClient = () => createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
 // Cache articles for better performance
@@ -23,9 +23,8 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey!inner(id, full_name, username, avatar_url, is_verified, is_writer)')
-            .eq('status', 'published')
-            .eq('author.is_writer', true);
+            .select('id, title, slug, summary, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
+            .eq('status', 'published');
 
         if (category) {
             query = query.eq('category', category);
