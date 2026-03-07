@@ -109,35 +109,43 @@ export function ArticleReader({
                             />
                         </div>
 
-                        {/* Footer Section */}
+                        {/* Floating Action Dock (Reading Controls) */}
                         {!isZenMode && (
-                            <div className="mt-12 space-y-12 sm:space-y-16">
-                                {/* Control Panel (Action Bar) */}
-                                <div className="p-4 sm:p-6 bg-neutral-100 dark:bg-neutral-900/50 rounded-2xl border-[2px] border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-6 shadow-sm">
-                                    <div className="flex items-center justify-center sm:justify-start gap-4 flex-1">
-                                        <div className="flex items-center p-1 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg shadow-sm">
+                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-fit max-w-[90vw] transition-all duration-300">
+                                <div className="p-3 bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-full border-[2px] border-black/10 dark:border-white/10 flex items-center justify-between gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+                                    <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                                        <div className="flex items-center">
                                             <LikeButton
                                                 articleId={article.id}
                                                 initialLiked={initialLiked}
                                                 initialCount={likeCount || 0}
                                             />
                                         </div>
-                                        <div className="w-px h-8 bg-black/10 dark:bg-white/10" />
-                                        <BookmarkButton
-                                            type="article"
-                                            itemId={article.id}
-                                            initialBookmarked={initialBookmarked}
-                                        />
-                                        <ReportButton
-                                            contentType="article"
-                                            contentId={article.id}
-                                        />
+                                        <div className="w-px h-6 bg-black/10 dark:bg-white/10" />
+                                        <div className="flex items-center">
+                                            <BookmarkButton
+                                                type="article"
+                                                itemId={article.id}
+                                                initialBookmarked={initialBookmarked}
+                                            />
+                                        </div>
+                                        <div className="flex items-center">
+                                            <ReportButton
+                                                contentType="article"
+                                                contentId={article.id}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="flex justify-center sm:justify-end border-t border-black/5 dark:border-white/5 sm:border-0 pt-4 sm:pt-0">
+                                    <div className="flex items-center border-l border-black/10 dark:border-white/10 pl-4">
                                         <ShareButtons title={article.title} slug={article.slug} />
                                     </div>
                                 </div>
+                            </div>
+                        )}
 
+                        {/* Footer Section */}
+                        {!isZenMode && (
+                            <div className="mt-12 space-y-12 sm:space-y-16">
                                 {/* Author */}
                                 <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-10 sm:pt-12">
                                     <AuthorCard author={article.author || {}} />

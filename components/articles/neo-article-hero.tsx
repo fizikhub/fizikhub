@@ -43,13 +43,13 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                 </div>
 
                 {/* 2. TITLE AREA */}
-                <div className="mb-8 sm:mb-10 text-left">
-                    <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-black dark:text-white leading-[1.05] tracking-tight uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] mb-6 text-balance">
+                <div className="mb-8 sm:mb-12 text-left relative z-10">
+                    <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-black dark:text-white leading-[1.05] tracking-tight uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)] mb-8 max-w-[95%]">
                         {article.title}
                     </h1>
 
                     {/* Meta Bar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4 sm:gap-6 pb-6 border-b-[3px] border-black flex-wrap">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4 sm:gap-6 pb-6 border-b-[3px] border-black/20 dark:border-white/20 flex-wrap">
                         {/* Author */}
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-[2px] border-black overflow-hidden shadow-[2px_2px_0px_0px_#000]">
@@ -62,33 +62,31 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                                 />
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-[10px] sm:text-xs font-black text-neutral-500 uppercase tracking-widest">YAZAR</span>
+                                <span className="text-[10px] sm:text-xs font-black text-neutral-500 uppercase tracking-widest">Yazar</span>
                                 <span className="text-sm sm:text-base font-bold text-black dark:text-white leading-none">{authorName}</span>
                             </div>
                         </div>
 
-                        <div className="w-px h-8 bg-black/20 hidden sm:block" />
+                        <div className="w-px h-8 bg-black/10 dark:bg-white/10 hidden sm:block" />
 
                         <div className="flex items-center gap-4 sm:gap-6">
                             {/* Date */}
                             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
+                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <div className="flex flex-col text-left">
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">TARİH</span>
-                                    <span className="text-xs sm:text-sm font-bold text-black dark:text-white">
-                                        {format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}
-                                    </span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Tarih</span>
+                                    <span className="text-xs sm:text-sm font-bold">{format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}</span>
                                 </div>
                             </div>
 
-                            <div className="w-px h-6 bg-black/20 block" />
+                            <div className="w-px h-6 bg-black/10 dark:bg-white/10 block" />
 
                             {/* Read Time */}
                             <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
-                                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-black dark:text-white" />
+                                <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <div className="flex flex-col text-left">
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">SÜRE</span>
-                                    <span className="text-xs sm:text-sm font-bold text-black dark:text-white">{readingTime}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Süre</span>
+                                    <span className="text-xs sm:text-sm font-bold">{readingTime}</span>
                                 </div>
                             </div>
                         </div>
