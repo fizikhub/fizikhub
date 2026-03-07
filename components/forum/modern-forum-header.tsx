@@ -138,8 +138,8 @@ export function ModernForumHeader() {
                 />
 
                 {/* Handwritten Formulas SVG - Updated for Mobile Density & "Fainter" Look */}
-                <div className="absolute inset-0 opacity-40 md:opacity-20 pointer-events-none select-none overflow-hidden flex items-center justify-center">
-                    <svg className="w-[1200px] h-full object-cover min-w-[max(1200px,100%)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
+                <div className="absolute inset-0 opacity-40 md:opacity-20 pointer-events-none select-none overflow-hidden">
+                    <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice">
                         <defs>
                             <filter id="chalk-stroke">
                                 <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="1" result="noise" />
@@ -151,26 +151,26 @@ export function ModernForumHeader() {
                             <text x="50%" y="30%" fill="white" fontSize="24" fontFamily="serif" stroke="none" textAnchor="middle">iℏ∂Ψ/∂t = ĤΨ</text>
 
                             {/* E = mc^2 (Top Left) */}
-                            <text x="10%" y="25%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">E = mc²</text>
+                            <text x="15%" y="25%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">E = mc²</text>
 
                             {/* Maxwell: Gauss Law (Top Right) */}
-                            <text x="85%" y="25%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">∇⋅E = ρ/ε₀</text>
+                            <text x="80%" y="25%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">∇⋅E = ρ/ε₀</text>
 
                             {/* Integral (Left) */}
-                            <path d="M50,150 Q40,150 40,160 V190 Q40,200 50,200" />
-                            <text x="60" y="185" fill="white" fontSize="20" fontFamily="monospace" stroke="none">∫ f(x)dx</text>
+                            <path d="M120,150 Q110,150 110,160 V190 Q110,200 120,200" />
+                            <text x="130" y="185" fill="white" fontSize="20" fontFamily="monospace" stroke="none">∫ f(x)dx</text>
 
-                            {/* F = ma (Bottom Left) */}
-                            <text x="15%" y="80%" fill="white" fontSize="24" fontFamily="monospace" stroke="none">F = dp/dt</text>
+                            {/* F = dp/dt (Bottom Left) */}
+                            <text x="20%" y="80%" fill="white" fontSize="24" fontFamily="monospace" stroke="none">F = dp/dt</text>
 
                             {/* Heisenberg Uncertainty (Right Mid) */}
-                            <text x="80%" y="65%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">ΔxΔp ≥ ℏ/2</text>
+                            <text x="75%" y="65%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">ΔxΔp ≥ ℏ/2</text>
 
                             {/* Circuit Symbol (Bottom Right) */}
                             <path d="M600,220 L620,220 L625,210 L635,230 L645,210 L655,230 L660,220 L680,220" />
 
                             {/* Wave Function Psi Symbol Large (Background - Very Faint) */}
-                            <text x="5%" y="90%" fill="white" fontSize="120" fontFamily="serif" stroke="none" opacity="0.1">Ψ</text>
+                            <text x="15%" y="90%" fill="white" fontSize="120" fontFamily="serif" stroke="none" opacity="0.1">Ψ</text>
 
                             {/* Standard Model Lagrangian Term (Middle Right - Complex looking) */}
                             <text x="65%" y="85%" fill="white" fontSize="14" fontFamily="monospace" stroke="none">-¼F_μνF^μν</text>
@@ -180,23 +180,23 @@ export function ModernForumHeader() {
 
                             {/* Additional Formulas for Mobile Density */}
                             <text x="45%" y="15%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">F = G(m1m2/r²)</text>
-                            <text x="5%" y="55%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">v = λf</text>
-                            <text x="80%" y="45%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">PV = nRT</text>
+                            <text x="15%" y="55%" fill="white" fontSize="16" fontFamily="monospace" stroke="none">v = λf</text>
+                            <text x="75%" y="45%" fill="white" fontSize="20" fontFamily="monospace" stroke="none">PV = nRT</text>
                             <text x="40%" y="85%" fill="white" fontSize="22" fontFamily="monospace" stroke="none">E = hν</text>
-                            <text x="90%" y="90%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">q = mcΔT</text>
+                            <text x="80%" y="90%" fill="white" fontSize="18" fontFamily="monospace" stroke="none">q = mcΔT</text>
 
                             {/* Random Strokes / Eraser marks */}
-                            <path d="M100,250 Q200,230 300,260" opacity="0.3" strokeWidth="8" stroke="rgba(255,255,255,0.2)" />
+                            <path d="M300,250 Q400,230 500,260" opacity="0.3" strokeWidth="8" stroke="rgba(255,255,255,0.2)" />
                             <path d="M500,50 Q600,70 700,40" opacity="0.3" strokeWidth="15" stroke="rgba(255,255,255,0.1)" />
                         </g>
 
                         {/* Scattered Numbers & Constants */}
                         <g fill="white" opacity="0.2" fontSize="14" fontFamily="monospace" style={{ filter: "url(#chalk-stroke)" }}>
-                            <text x="12%" y="15%">π</text>
-                            <text x="92%" y="80%">c</text>
+                            <text x="22%" y="15%">π</text>
+                            <text x="82%" y="80%">c</text>
                             <text x="45%" y="90%">h</text>
-                            <text x="75%" y="15%">G</text>
-                            <text x="30%" y="45%">∂</text>
+                            <text x="65%" y="15%">G</text>
+                            <text x="40%" y="45%">∂</text>
                             <text x="60%" y="60%">∑</text>
                         </g>
                     </svg>

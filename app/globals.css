@@ -409,17 +409,6 @@ main,
     [class*="animate-"] {
         animation: none !important;
     }
-
-    /* No blur at all */
-    .backdrop-blur,
-    .backdrop-blur-sm,
-    .backdrop-blur-md,
-    .backdrop-blur-lg,
-    .backdrop-blur-xl {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        background-color: rgba(0, 0, 0, 0.85) !important;
-    }
 }
 
 
