@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, Play, Search, Filter, Trophy, Star, Zap } from "lucide-react";
+import { ArrowLeft, Play, Search, Trophy, Zap } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
 import { simulations } from "@/components/simulations/data";
@@ -61,7 +61,7 @@ export default function SimulasyonlarPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#09090b] pb-20 font-sans selection:bg-[#FFC800] selection:text-black">
+        <div className="min-h-screen bg-background text-foreground pb-20 font-sans selection:bg-[#FFC800] selection:text-black">
             <TutorialOverlay
                 steps={tutorialSteps}
                 isActive={showTutorial}
@@ -70,7 +70,7 @@ export default function SimulasyonlarPage() {
             />
 
             {/* Header */}
-            <div id="sims-header" className="bg-[#4169E1] border-b-[3px] border-black sticky top-0 z-40 shadow-[0px_4px_0px_rgba(0,0,0,0.3)]">
+            <div id="sims-header" className="bg-[#4169E1] border-b-[3px] border-foreground sticky top-0 z-40 shadow-[0px_4px_0px_rgba(0,0,0,0.3)] dark:shadow-[0px_4px_0px_rgba(255,255,255,0.1)]">
                 <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
                 <div className="max-w-7xl mx-auto px-4 py-4 relative z-10">
@@ -83,22 +83,22 @@ export default function SimulasyonlarPage() {
                             </ViewTransitionLink>
                             <div>
                                 <h1 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter italic drop-shadow-md">
-                                    Simülasyon <span className="text-[#FFC800]">Merkezi</span>
+                                    <span className="text-black">Simülasyon</span> <span className="text-[#FFC800] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]">Merkezi</span>
                                 </h1>
-                                <p className="text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-0.5">
+                                <p className="text-white/90 text-[10px] sm:text-xs font-black uppercase tracking-widest mt-0.5 drop-shadow-sm">
                                     v2.0 • İnteraktif Fizik Laboratuvarı
                                 </p>
                             </div>
                         </div>
 
                         {/* User Stats / XP (Fake for now) */}
-                        <div id="sims-stats" className="hidden sm:flex items-center gap-3 bg-black/20 p-2 pr-4 rounded-xl border border-white/10 backdrop-blur-sm">
-                            <div className="w-10 h-10 bg-gradient-to-br from-[#FFC800] to-[#FF90E8] rounded-lg border-2 border-white flex items-center justify-center shadow-lg">
+                        <div id="sims-stats" className="hidden sm:flex items-center gap-3 bg-white/10 p-2 pr-4 rounded-xl border-2 border-white/20 backdrop-blur-md shadow-[4px_4px_0px_rgba(0,0,0,0.5)]">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[#FFC800] to-[#FF90E8] rounded-lg border-2 border-black flex items-center justify-center shadow-inner">
                                 <Trophy className="w-5 h-5 text-black" />
                             </div>
                             <div>
-                                <div className="text-[10px] text-white/60 font-black uppercase tracking-wider">Seviye 3 Fizikçi</div>
-                                <div className="text-white font-black text-sm flex items-center gap-1">
+                                <div className="text-[10px] text-white font-black uppercase tracking-wider drop-shadow-md">Seviye 3 Fizikçi</div>
+                                <div className="text-white font-black text-sm flex items-center gap-1 drop-shadow-md">
                                     1,250 XP <span className="text-[#FFC800] text-[10px]">✨</span>
                                 </div>
                             </div>
@@ -107,34 +107,37 @@ export default function SimulasyonlarPage() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="max-w-7xl mx-auto px-4 py-8 mt-4">
                 {/* Filters & Search */}
-                <div id="sims-filters" className="flex flex-col md:flex-row gap-4 mb-8">
+                <div id="sims-filters" className="flex flex-col md:flex-row gap-4 mb-10">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type="text"
                             placeholder="Simülasyon ara..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full bg-zinc-900 border-2 border-zinc-800 text-white pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-[#4169E1] focus:shadow-[4px_4px_0px_#4169E1] transition-all font-bold placeholder:text-zinc-600 placeholder:uppercase placeholder:text-xs placeholder:tracking-wider"
+                            className="w-full bg-card border-2 border-foreground/20 text-foreground pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:border-foreground focus:shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_rgba(255,255,255,0.2)] hover:border-foreground/50 transition-all font-bold placeholder:text-muted-foreground placeholder:uppercase placeholder:text-xs placeholder:tracking-wider"
                         />
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                        {["Tümü", "Kolay", "Orta", "Zor", "Mekanik", "Optik"].map(tab => (
-                            <button
-                                key={tab}
-                                onClick={() => setFilter(tab)}
-                                className={cn(
-                                    "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap border-2 transition-all shadow-[3px_3px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-                                    filter === tab
-                                        ? "bg-[#FF90E8] border-black text-black shadow-[3px_3px_0px_#000]"
-                                        : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white hover:border-zinc-700"
-                                )}
-                            >
-                                {tab}
-                            </button>
-                        ))}
+                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar items-center">
+                        {["Tümü", "Kolay", "Orta", "Zor", "Mekanik", "Optik"].map(tab => {
+                            const isActive = filter === tab;
+                            return (
+                                <button
+                                    key={tab}
+                                    onClick={() => setFilter(tab)}
+                                    className={cn(
+                                        "px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-wider whitespace-nowrap border-2 transition-all duration-200 outline-none",
+                                        isActive
+                                            ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.2)] -translate-y-1 -translate-x-1"
+                                            : "bg-card text-muted-foreground border-foreground/20 hover:text-foreground hover:border-foreground hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_rgba(255,255,255,0.2)] hover:-translate-y-1 hover:-translate-x-1 active:translate-y-0 active:translate-x-0 active:shadow-none"
+                                    )}
+                                >
+                                    {tab}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -145,27 +148,31 @@ export default function SimulasyonlarPage() {
                             <motion.div
                                 key={sim.id}
                                 layout
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ delay: index * 0.05 }}
+                                initial={{ opacity: 0, scale: 0.98, y: 15 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ delay: index * 0.05, duration: 0.3 }}
                                 className={cn(
-                                    "group relative hover:z-10",
-                                    // Make the first item span 2 cols if on large screen for variety
+                                    "group h-full",
                                     index === 0 ? "lg:col-span-2 lg:row-span-1" : ""
                                 )}
                             >
                                 <Link href={`/simulasyonlar/${sim.slug}`} className="block h-full">
                                     <div
                                         className={cn(
-                                            "h-full flex flex-col bg-zinc-900 border-2 border-black rounded-3xl overflow-hidden transition-all duration-300",
-                                            "hover:-translate-y-1 hover:shadow-[8px_8px_0px_#000] shadow-[4px_4px_0px_rgba(0,0,0,0.5)]",
-                                            "relative"
+                                            "relative h-full flex flex-col bg-card border-2 border-foreground/10 rounded-xl overflow-hidden transition-all duration-300",
+                                            "hover:-translate-y-1 hover:-translate-x-1 hover:border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.8)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)] active:translate-y-0 active:translate-x-0 active:shadow-none"
                                         )}
                                     >
+                                        {/* Top Accent Line */}
+                                        <div
+                                            className="absolute top-0 left-0 w-full h-[4px] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 z-20"
+                                            style={{ backgroundColor: sim.color }}
+                                        />
+
                                         {/* Decorative Background */}
                                         <div
-                                            className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-500"
+                                            className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.08] transition-opacity duration-500 grayscale-[50%] group-hover:grayscale-0"
                                             style={{
                                                 backgroundColor: sim.color,
                                                 backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
@@ -175,18 +182,18 @@ export default function SimulasyonlarPage() {
                                         {/* Header */}
                                         <div className="p-6 pb-0 relative z-10 flex justify-between items-start">
                                             <div
-                                                className="w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] transition-shadow"
+                                                className="w-12 h-12 rounded-xl flex items-center justify-center border-2 border-foreground shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)] group-hover:shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_rgba(255,255,255,0.4)] transition-all duration-300 grayscale-[40%] group-hover:grayscale-0 group-hover:scale-110"
                                                 style={{ backgroundColor: sim.color }}
                                             >
                                                 <sim.icon className="w-6 h-6 text-black" />
                                             </div>
                                             <div className="flex gap-2">
                                                 {sim.difficulty === "Zor" && (
-                                                    <span className="bg-black text-[#FF5757] text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wider border border-[#FF5757]/30">
+                                                    <span className="bg-background text-[#FF5757] text-[10px] font-black px-2 py-1 rounded-sm uppercase tracking-wider border-2 border-foreground shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)]">
                                                         HARDCORE
                                                     </span>
                                                 )}
-                                                <span className="bg-zinc-800 text-zinc-300 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-wider border border-white/5">
+                                                <span className="bg-background text-foreground text-[10px] font-black px-2 py-1 rounded-sm uppercase tracking-wider border-2 border-foreground shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)]">
                                                     {sim.difficulty}
                                                 </span>
                                             </div>
@@ -194,30 +201,30 @@ export default function SimulasyonlarPage() {
 
                                         {/* Content */}
                                         <div className="p-6 flex-1 flex flex-col relative z-10">
-                                            <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter italic mb-2 group-hover:text-[#FFC800] transition-colors">
+                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight mb-3 group-hover:text-foreground/80 transition-colors leading-tight">
                                                 {sim.title}
                                             </h3>
-                                            <p className="text-zinc-400 text-xs sm:text-sm font-medium line-clamp-3 mb-4 leading-relaxed">
+                                            <p className="text-muted-foreground text-xs sm:text-sm font-bold line-clamp-3 mb-4 leading-relaxed">
                                                 {sim.description}
                                             </p>
 
                                             {/* Formula Pill */}
-                                            <div className="mt-auto inline-flex self-start bg-black/30 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-md">
-                                                <span className="font-mono text-[10px] text-white/50">{sim.formula}</span>
+                                            <div className="mt-auto inline-flex self-start bg-card px-3 py-1.5 rounded-sm border-2 border-foreground shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.2)]">
+                                                <span className="font-mono text-[10px] text-foreground font-bold">{sim.formula}</span>
                                             </div>
                                         </div>
 
                                         {/* Action Bar */}
-                                        <div className="p-4 bg-black/20 border-t-2 border-black/10 flex items-center justify-between group-hover:bg-[#FFC800] transition-colors duration-300">
+                                        <div className="p-4 bg-muted border-t-2 border-foreground/10 flex items-center justify-between group-hover:bg-accent/50 transition-colors duration-300">
                                             <div className="flex gap-2">
                                                 {sim.tags.slice(0, 2).map(tag => (
-                                                    <span key={tag} className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 group-hover:text-black/70">
+                                                    <span key={tag} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-foreground">
                                                         #{tag}
                                                     </span>
                                                 ))}
                                             </div>
-                                            <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center border border-black opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                                                <Play className="w-4 h-4 fill-black" />
+                                            <div className="w-8 h-8 rounded-none bg-foreground text-background flex items-center justify-center border-2 border-foreground opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 group-hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[2px_2px_0px_rgba(255,255,255,0.2)]">
+                                                <Play className="w-4 h-4 fill-current stroke-[3px]" />
                                             </div>
                                         </div>
                                     </div>
@@ -227,14 +234,14 @@ export default function SimulasyonlarPage() {
                     </AnimatePresence>
 
                     {/* Coming Soon Card */}
-                    <div className="h-full min-h-[300px] border-2 border-dashed border-zinc-800 rounded-3xl flex flex-col items-center justify-center p-6 text-center opacity-50 hover:opacity-100 hover:border-zinc-700 transition-all cursor-crosshair group bg-zinc-900/10">
-                        <div className="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Zap className="w-8 h-8 text-zinc-700 group-hover:text-[#FFC800] transition-colors" />
+                    <div className="h-full min-h-[300px] border-4 border-dashed border-foreground/10 rounded-xl flex flex-col items-center justify-center p-6 text-center opacity-70 hover:opacity-100 hover:border-foreground/30 transition-all cursor-crosshair group bg-muted/50">
+                        <div className="w-16 h-16 rounded-none bg-card border-4 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                            <Zap className="w-7 h-7 text-muted-foreground group-hover:text-[#FFC800] transition-colors stroke-[3px]" />
                         </div>
-                        <h3 className="text-lg font-black text-zinc-500 uppercase tracking-tighter italic mb-1">
+                        <h3 className="text-lg font-black text-foreground uppercase tracking-tighter mb-2">
                             Yeni Deneyler Yolda
                         </h3>
-                        <p className="text-xs text-zinc-600 font-medium max-w-[200px]">
+                        <p className="text-xs text-muted-foreground font-bold max-w-[200px]">
                             Optik ve Kuantum simülasyonları üzerinde çalışıyoruz.
                         </p>
                     </div>
