@@ -104,22 +104,23 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     // Debounce timer for onUpdate — getHTML() is expensive on every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Preprocess content for the editor: convert $...$ to html math spans safely
-    const preprocessedContent = useMemo(() => {
-        if (!content) return '';
+    // Avoid re-running regex on every keystroke by setting initial content once
+    const initialContentRef = useRef(false);
+    const [editorContent, setEditorContent] = useState('');
+
+    useEffect(() => {
+        if (!content || initialContentRef.current) return;
+
         let c = content;
-
         // 1. Convert indented single-dollar math lines to un-indented spans
-        // This prevents Markdown from turning indented formulas into code blocks
         c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '<span data-type="math" data-latex="$1"></span>');
-
         // 2. Convert block $$...$$ math to spans
         c = c.replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
-
-        // 3. Convert inline $...$ to spans (safe regex without lookbehind for Safari compatibility)
+        // 3. Convert inline $...$ to spans
         c = c.replace(/(^|[^\$])\$([^$\n]+?)\$([^\$]|$)/g, '$1<span data-type="math" data-latex="$2"></span>$3');
 
-        return c;
+        setEditorContent(c);
+        initialContentRef.current = true;
     }, [content]);
 
     const editor = useEditor({
@@ -156,7 +157,7 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: preprocessedContent,
+        content: editorContent,
         editorProps: {
             attributes: {
                 class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6',

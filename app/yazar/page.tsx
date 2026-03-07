@@ -28,7 +28,7 @@ export default async function WriterDashboard() {
 
     const { data: articles } = await supabase
         .from("articles")
-        .select("*")
+        .select("id, title, excerpt, status, created_at")
         .eq("author_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -88,7 +88,7 @@ export default async function WriterDashboard() {
                                             {article.title}
                                         </h3>
                                         <p className="text-sm text-muted-foreground line-clamp-2">
-                                            {article.excerpt || article.content.substring(0, 100)}
+                                            {article.excerpt || "Özet bulunmuyor."}
                                         </p>
                                     </div>
                                 </div>
