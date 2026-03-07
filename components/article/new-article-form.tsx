@@ -13,6 +13,7 @@ import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { BlogEditor101 } from "@/components/article/blog-editor-101";
+import { WriterManifesto } from "@/components/article/writer-manifesto";
 import { Orbitron } from "next/font/google";
 
 const orbitron = Orbitron({ subsets: ["latin"] });
@@ -221,6 +222,8 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                     <HelpCircle className="w-6 h-6 stroke-[3]" />
                 </Button>
             </div>
+
+            <WriterManifesto />
 
             <div className="bg-card border-[3px] border-black rounded-[12px] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex flex-col gap-0 relative">
 

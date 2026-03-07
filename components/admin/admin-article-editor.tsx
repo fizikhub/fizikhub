@@ -14,6 +14,7 @@ import Image from "next/image";
 import { ArrowLeft, Save, Upload, Loader2, ImagePlus, X } from "lucide-react";
 import NextImage from "next/image";
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
+import { WriterManifesto } from "@/components/article/writer-manifesto";
 // imageCompression imported dynamically inside handleCoverUploadp editor to avoid SSR issues
 const TiptapEditor = dynamic(
     () => import("@/components/writer/tiptap-editor").then((mod) => mod.TiptapEditor),
@@ -183,6 +184,7 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            <WriterManifesto />
             {/* Basic Info Card */}
             <Card>
                 <CardHeader>
