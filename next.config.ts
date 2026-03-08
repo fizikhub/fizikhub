@@ -88,6 +88,25 @@ const nextConfig: NextConfig = {
   // Security & Caching Headers
   async headers() {
     return [
+      // Prevent indexing of font/media assets to clean up GSC "Crawled - not indexed" warnings
+      {
+        source: '/_next/static/media/:all*',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+        ],
+      },
+      {
+        source: '/:all*(woff|woff2)',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+        ],
+      },
       // Immutable static assets (fonts, images, etc.)
       {
         source: '/:all*(svg|jpg|png|gif|ico|webp|avif|woff|woff2)',

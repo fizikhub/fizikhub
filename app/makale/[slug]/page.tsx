@@ -54,6 +54,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: (article.content || "").substring(0, 160) + "...",
             images: [coverUrl],
         },
+        alternates: {
+            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/makale/${slug}`,
+        },
     };
 }
 

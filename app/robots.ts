@@ -22,6 +22,10 @@ export default function robots(): MetadataRoute.Robots {
         '/paylas/',
         '/ara/',
         '/abs/',
+        '/*?sort=*',
+        '/*?filter=*',
+        '/*?category=*',
+        '/*?q=*',
     ];
 
     // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
