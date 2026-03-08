@@ -13,9 +13,7 @@ import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
 import { ScrollToAnswerButton } from "@/components/forum/scroll-to-answer-button";
 import dynamic from "next/dynamic";
-const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
-    ssr: false,
-});
+const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer));
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
