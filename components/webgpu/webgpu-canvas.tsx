@@ -27,7 +27,7 @@ export function WebGPUCanvas({ children, className, cameraPosition = [0, 0, 5] }
         <div className={className}>
             <Canvas
                 camera={{ position: cameraPosition, fov: 45 }}
-                dpr={typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio) : 1}
+                dpr={typeof window !== 'undefined' ? (gpuTier === 'low' ? 1 : Math.min(2, window.devicePixelRatio)) : 1}
                 gl={{
                     antialias: gpuTier === 'high',
                     powerPreference: "high-performance",

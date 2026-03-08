@@ -299,7 +299,9 @@ export function Footer() {
 
         const resize = () => {
             requestAnimationFrame(() => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                // Adaptive DPR for Footers on low-end
+                const isMobile = window.innerWidth < 768;
+                const dpr = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
                 const r = b.getBoundingClientRect();
                 c.width = r.width * dpr;
                 c.height = r.height * dpr;

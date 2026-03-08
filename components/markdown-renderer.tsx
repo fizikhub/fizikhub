@@ -139,6 +139,8 @@ export function MarkdownRenderer({
                                     <DialogTrigger asChild>
                                         <div className="relative group cursor-zoom-in w-full flex justify-center">
                                             <img
+                                                loading="lazy"
+                                                decoding="async"
                                                 className="rounded-lg shadow-lg border border-white/5 transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
                                                 {...props}
                                             />

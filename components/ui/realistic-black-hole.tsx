@@ -26,7 +26,9 @@ export const RealisticBlackHole: React.FC<RealisticBlackHoleProps> = ({ variant 
 
         const container = mountRef.current;
         renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // Mobil (Low-end) cihazlar için DPR optimizasyonu (Piksel yığılmasını engeller)
+        const isMobile = window.innerWidth < 768;
+        renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5));
         container.appendChild(renderer.domElement);
 
         // --- SHADER ---
