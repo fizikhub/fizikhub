@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Clock, Calendar, ArrowLeft, User } from "lucide-react";
+import { Clock, Calendar, ArrowLeft, User, Ear } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Article } from "@/lib/api";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { TTSReader } from "@/components/articles/tts-reader";
 
 interface ArticleHeroProps {
     article: Article;
@@ -135,6 +136,13 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                     <span>{readingTime}</span>
                                 </div>
                             </div>
+
+                            {/* Read Aloud Button */}
+                            {article.content && (
+                                <div className="pt-2 sm:pt-4">
+                                    <TTSReader title={bookTitle} content={article.content} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -218,10 +226,15 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                             <span className="text-muted-foreground">•</span>
 
                             {/* Reading Time */}
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-2">
                                 <Clock className="w-4 h-4" />
                                 <span>{readingTime}</span>
                             </div>
+
+                            {/* Read Aloud Button */}
+                            {article.content && (
+                                <TTSReader title={article.title} content={article.content} />
+                            )}
                         </div>
                     </div>
                 </>
