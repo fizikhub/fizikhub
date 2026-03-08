@@ -78,6 +78,17 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
+  // Redirects for broken links (e.g. arXiv links)
+  async redirects() {
+    return [
+      {
+        source: '/abs/:path*',
+        destination: 'https://arxiv.org/abs/:path*',
+        permanent: true,
+      },
+    ];
+  },
+
   // Security & Caching Headers
   async headers() {
     return [

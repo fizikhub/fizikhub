@@ -21,6 +21,7 @@ export default function robots(): MetadataRoute.Robots {
         '/basvuru/',
         '/paylas/',
         '/ara/',
+        '/abs/',
     ];
 
     return {
