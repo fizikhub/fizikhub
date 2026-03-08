@@ -30,9 +30,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   reactCompiler: true,
+  cacheComponents: true,
   // Performance optimizations
   experimental: {
-    ppr: "incremental",
     staleTimes: {
       dynamic: 30, // Client-side cache for dynamic pages (seconds)
       static: 300, // Client-side cache for static pages (seconds)
