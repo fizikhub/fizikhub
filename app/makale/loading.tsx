@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { loadingMessages } from "@/lib/data";
 import { SiteLogo } from "@/components/icons/site-logo";

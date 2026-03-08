@@ -44,7 +44,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { VoiceAIAssistant } from "./voice-ai-assistant";

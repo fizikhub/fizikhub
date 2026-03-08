@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare, PlusCircle } from "lucide-react";
 import Link from "next/link";
@@ -155,20 +155,20 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                         <div className="flex gap-2.5 flex-wrap">
                             {isOwnProfile ? (
                                 <>
-                                    <Link href="/profil/duzenle">
+                                    <Link prefetch={false} href="/profil/duzenle">
                                         <button className="flex items-center gap-2 bg-white text-black px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#FFC800] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                             <Edit3 className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             Düzenle
                                         </button>
                                     </Link>
-                                    <Link href="/mesajlar">
+                                    <Link prefetch={false} href="/mesajlar">
                                         <button className="flex items-center gap-2 bg-zinc-900 dark:bg-zinc-800 text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] dark:hover:bg-[#23A9FA] hover:text-white transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             Mesajlar
                                         </button>
                                     </Link>
                                     {profile?.is_writer && (
-                                        <Link href="/yazar/yeni">
+                                        <Link prefetch={false} href="/yazar/yeni">
                                             <button className="flex items-center gap-2 bg-[#FFC800] text-black px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#FFA000] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                                 <PenSquare className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                 Yaz
@@ -177,13 +177,13 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                     )}
                                     {isAdmin && (
                                         <>
-                                            <Link href="/yonetim/hikaye-olustur">
+                                            <Link prefetch={false} href="/yonetim/hikaye-olustur">
                                                 <button className="flex items-center gap-2 bg-[#9333EA] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#7E22CE] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                                     <PlusCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                     Hikaye Ekle
                                                 </button>
                                             </Link>
-                                            <Link href="/admin">
+                                            <Link prefetch={false} href="/admin">
                                                 <button className="flex items-center gap-2 bg-[#FF3366] text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#E6004C] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                                     <Settings className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                     Admin
@@ -199,7 +199,7 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                         initialIsFollowing={isFollowing}
                                         className="px-5 py-2.5 text-xs font-black rounded-lg shadow-[2px_2px_0px_0px_#000] border-2 border-black hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
                                     />
-                                    <Link href={`/mesajlar?to=${profile.id}`}>
+                                    <Link prefetch={false} href={`/mesajlar?to=${profile.id}`}>
                                         <button className="flex items-center gap-2 bg-zinc-900 dark:bg-zinc-800 text-white px-4 py-2.5 font-black text-xs rounded-lg border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#23A9FA] transition-all active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             Mesaj

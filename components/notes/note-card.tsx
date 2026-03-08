@@ -3,7 +3,7 @@
 import { Note, NOTE_COLORS } from "@/hooks/use-notes";
 import { cn } from "@/lib/utils";
 import { Pin, Trash2, MoreHorizontal, Copy, Palette } from "lucide-react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import {

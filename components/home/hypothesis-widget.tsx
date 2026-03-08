@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Sparkles, MessageSquarePlus, FlaskConical } from "lucide-react";
 import Link from "next/link";
 

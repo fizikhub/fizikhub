@@ -21,7 +21,7 @@ interface BlogCardProps {
 
 export function BlogCard({ article }: BlogCardProps) {
     return (
-        <Link href={`/blog/${article.slug}`} scroll={true}>
+        <Link prefetch={false} href={`/blog/${article.slug}`} scroll={true}>
             <Card
                 id={`article-${article.slug}`}
                 className="group h-full overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2"

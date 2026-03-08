@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { createClient } from "@/lib/supabase-client";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface ConversationListProps {
     initialConversations: Conversation[];

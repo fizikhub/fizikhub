@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();

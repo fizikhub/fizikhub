@@ -11,7 +11,7 @@ import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { SimulationLayout } from "./core/simulation-layout";
 import { PhysicsSlider, PhysicsToggle } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 export function WaveSim({ simData }: { simData: any }) {
     // -------------------------------------------------------------

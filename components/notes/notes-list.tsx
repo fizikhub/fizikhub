@@ -4,7 +4,7 @@ import { Note, NoteColor } from "@/hooks/use-notes";
 import { NoteCard } from "./note-card";
 import { cn } from "@/lib/utils";
 import { Search, Plus, Trash2, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface NotesListProps {
     notes: Note[];

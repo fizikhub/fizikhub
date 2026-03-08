@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { UserPlus, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                                 )}
                             </div>
 
-                            <Link href={`/kullanici/${user.username}`} className="font-bold text-foreground hover:text-primary truncate w-full mb-0.5">
+                            <Link prefetch={false} href={`/kullanici/${user.username}`} className="font-bold text-foreground hover:text-primary truncate w-full mb-0.5">
                                 {user.full_name || user.username}
                             </Link>
                             <div className="text-xs text-muted-foreground mb-4 truncate w-full">

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { MessageSquare, Zap, ArrowRight } from "lucide-react";
 import { CreateQuestionDialog } from "@/components/forum/create-question-dialog";
 import { cn } from "@/lib/utils";

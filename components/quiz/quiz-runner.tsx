@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, Play, Frown, PartyPopper, Zap, ThumbsDown } from "lucide-react";
 import { submitQuizResult } from "@/app/testler/actions";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -266,7 +266,7 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                             <RotateCcw className="mr-2 h-4 w-4" />
                             Tekrar Dene
                         </Button>
-                        <Link href="/testler" className="w-full">
+                        <Link prefetch={false} href="/testler" className="w-full">
                             <Button variant="outline" className="w-full border-2 font-bold h-10 text-base">Testlere Dön</Button>
                         </Link>
                     </CardFooter>

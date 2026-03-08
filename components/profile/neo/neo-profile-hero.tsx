@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, Variants } from "framer-motion";
+import { m as motion, Variants } from "framer-motion";
 import {
     MapPin, Calendar, Link as LinkIcon, Edit3, Share2,
     UserPlus, Check, MessageSquare, ShieldCheck, Trophy,
@@ -153,7 +153,7 @@ export function NeoProfileHero({
                                 {/* ACTION BUTTONS (Desktop) */}
                                 <motion.div variants={itemVariants} className="flex flex-wrap gap-3 w-full lg:w-auto mt-4 lg:mt-0">
                                     {isOwnProfile ? (
-                                        <Link href="/profil/duzenle" className="w-full sm:w-auto">
+                                        <Link prefetch={false} href="/profil/duzenle" className="w-full sm:w-auto">
                                             <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-black text-sm uppercase tracking-wider border-[3px] border-transparent hover:border-black dark:hover:border-white hover:bg-white hover:text-black dark:hover:bg-black dark:hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(100,100,100,0.5)] active:translate-y-[2px] active:shadow-none">
                                                 <Edit3 className="w-4 h-4" />
                                                 <span>Düzenle</span>

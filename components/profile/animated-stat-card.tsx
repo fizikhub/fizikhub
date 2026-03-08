@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
+import { m as motion, useInView, useMotionValue, useSpring } from "framer-motion";
 
 interface AnimatedStatCardProps {
     icon: React.ReactNode;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { X, Image as ImageIcon, Sparkles, Send, Palette } from "lucide-react";
 import { createClient } from "@/lib/supabase-client";
 import { Button } from "@/components/ui/button";

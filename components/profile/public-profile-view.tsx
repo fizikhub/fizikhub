@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { SpaceBackground } from "@/components/home/space-background";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -262,7 +262,7 @@ export function PublicProfileView({
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: index * 0.03 }}
                                                 >
-                                                    <Link href={`/forum/${question.id}`} className="block group">
+                                                    <Link prefetch={false} href={`/forum/${question.id}`} className="block group">
                                                         <div className="bg-card border border-border/50 p-4 rounded-xl hover:border-foreground/20 transition-all">
                                                             <h3 className="font-semibold text-foreground group-hover:text-foreground/80 transition-colors mb-2 line-clamp-2">
                                                                 {question.title}

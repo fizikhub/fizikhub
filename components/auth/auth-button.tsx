@@ -96,7 +96,7 @@ export function AuthButton() {
                 {isAdmin && (
                     <>
                         <DropdownMenuItem asChild>
-                            <Link href="/admin" className="cursor-pointer text-red-500 font-bold">
+                            <Link prefetch={false} href="/admin" className="cursor-pointer text-red-500 font-bold">
                                 <Shield className="mr-2 h-4 w-4" />
                                 Admin Paneli
                             </Link>
@@ -105,7 +105,7 @@ export function AuthButton() {
                     </>
                 )}
                 <DropdownMenuItem asChild>
-                    <Link href="/profil" className="cursor-pointer">
+                    <Link prefetch={false} href="/profil" className="cursor-pointer">
                         <UserIcon className="mr-2 h-4 w-4" />
                         Profilim
                     </Link>

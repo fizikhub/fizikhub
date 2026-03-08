@@ -10,7 +10,7 @@ import { Plus, Hash, Tag, Atom, Brain, Globe, Zap, Microscope, BookOpen, Layers,
 import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { toast } from "sonner";
 import { createQuestion } from "@/app/forum/actions";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase-client";
 import { cn } from "@/lib/utils";
 

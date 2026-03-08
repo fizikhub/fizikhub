@@ -3,7 +3,7 @@
 import React from "react";
 import { ArrowLeft, ShieldCheck, Mail, Lock, Database } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 export default function KvkkPage() {
     return (

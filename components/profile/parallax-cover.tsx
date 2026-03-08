@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m as motion, useScroll, useTransform } from "framer-motion";
 
 interface ParallaxCoverProps {
     gradient: string;

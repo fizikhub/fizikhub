@@ -15,7 +15,7 @@ import {
     Search,
     ArrowDown,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { searchMessages } from "@/app/mesajlar/actions";
 
 interface ChatWindowProps {

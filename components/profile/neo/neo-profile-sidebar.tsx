@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { m as motion, Variants } from "framer-motion";
 import {
     Award, Shield, GraduationCap, Star, Zap,
     BookOpen, HelpCircle, MessageCircle, AlertCircle

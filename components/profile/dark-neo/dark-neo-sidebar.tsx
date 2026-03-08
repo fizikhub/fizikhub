@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Award, Shield, BookOpen, HelpCircle, MessageCircle, Zap, AlertCircle, GraduationCap, User } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
 import { CustomBadgeIcon } from "../custom-badge-icon";
@@ -59,8 +59,8 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
 
-                <Link href="/rozetler" className="h-[2px] w-full block absolute bottom-0 left-0 hover:bg-[#23A9FA] transition-colors z-20"></Link>
-                <Link href="/rozetler" className="font-black text-xs mb-4 flex items-center justify-between uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10 hover:text-white transition-colors group">
+                <Link prefetch={false} href="/rozetler" className="h-[2px] w-full block absolute bottom-0 left-0 hover:bg-[#23A9FA] transition-colors z-20"></Link>
+                <Link prefetch={false} href="/rozetler" className="font-black text-xs mb-4 flex items-center justify-between uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10 hover:text-white transition-colors group">
                     <div className="flex items-center gap-2">
                         <span className="w-6 h-6 bg-[#23A9FA] text-white flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000] group-hover:bg-white group-hover:text-[#23A9FA] transition-colors">
                             <Award className="w-3.5 h-3.5 stroke-[3px]" />
@@ -75,8 +75,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                         {userBadges.map((badgeObj: any, index: number) => {
                             const badge = badgeObj.badges;
                             return (
-                                <Link
-                                    href="/rozetler"
+                                <Link prefetch={false} href="/rozetler"
                                     key={index}
                                     className="relative flex justify-center group/badge"
                                 >

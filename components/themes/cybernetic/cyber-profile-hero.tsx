@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Settings, Shield, Award, Activity, Cpu, MessageSquare, Zap, Terminal } from "lucide-react";

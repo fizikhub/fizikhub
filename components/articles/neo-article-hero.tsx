@@ -27,7 +27,7 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
 
                 {/* 1. TOP BAR: Back & Category */}
                 <div className="flex items-center justify-between mb-6 sm:mb-8">
-                    <Link href="/makale" className="group flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors">
+                    <Link prefetch={false} href="/makale" className="group flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors">
                         <div className="w-8 h-8 rounded-full border-2 border-black/20 group-hover:border-black flex items-center justify-center transition-all bg-white dark:bg-black">
                             <ArrowLeft className="w-4 h-4" />
                         </div>

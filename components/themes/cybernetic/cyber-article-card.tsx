@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -41,7 +41,7 @@ export function CyberArticleCard({
     }, []);
 
     return (
-        <Link href={`/makale/${article.slug}`}>
+        <Link prefetch={false} href={`/makale/${article.slug}`}>
             <motion.div
                 className="group relative w-full bg-black/95 border border-cyan-500/30 overflow-hidden mb-4 hover:border-cyan-400/60 transition-all duration-300"
                 onHoverStart={() => setIsHovered(true)}

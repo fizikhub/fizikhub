@@ -368,17 +368,17 @@ export function Footer() {
             {/* CLEAN INLINE LINKS */}
             <div className="relative z-30 mt-auto pb-3 pt-6">
                 <nav aria-label="Footer bağlantıları" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4">
-                    <Link href="/hakkimizda" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Hakkımızda</Link>
+                    <Link prefetch={false} href="/hakkimizda" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Hakkımızda</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link href="/iletisim" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">İletişim</Link>
+                    <Link prefetch={false} href="/iletisim" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">İletişim</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link href="/blog" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
+                    <Link prefetch={false} href="/blog" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link href="/gizlilik-politikasi" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Gizlilik</Link>
+                    <Link prefetch={false} href="/gizlilik-politikasi" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Gizlilik</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link href="/kullanim-sartlari" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Şartlar</Link>
+                    <Link prefetch={false} href="/kullanim-sartlari" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Şartlar</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link href="/kvkk" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">KVKK</Link>
+                    <Link prefetch={false} href="/kvkk" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">KVKK</Link>
                 </nav>
             </div>
 

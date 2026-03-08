@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { PenTool, Coffee, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -51,7 +51,7 @@ export function WriterApplicationCard() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-4 justify-center md:justify-start">
-                        <Link href="/basvuru/yazar" className="w-full sm:w-auto">
+                        <Link prefetch={false} href="/basvuru/yazar" className="w-full sm:w-auto">
                             <Button size="lg" className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 group/btn border-none">
                                 Başvuru Formuna Işınlan
                                 <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />

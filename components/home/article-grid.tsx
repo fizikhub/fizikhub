@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -30,7 +30,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-between gap-3 sm:gap-4 md:flex-row mb-8 sm:mb-10 md:mb-12">
                     <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Son Eklenenler</h2>
-                    <Link href="/blog">
+                    <Link prefetch={false} href="/blog">
                         <Button variant="ghost" size="sm" className="sm:size-default">Tümünü Gör</Button>
                     </Link>
                 </div>
@@ -46,7 +46,7 @@ export function ArticleGrid({ articles }: ArticleGridProps) {
                                 transition={{ duration: 0.4, delay: index * 0.05 }}
                                 viewport={{ once: true }}
                             >
-                                <Link href={`/blog/${article.slug}`}>
+                                <Link prefetch={false} href={`/blog/${article.slug}`}>
                                     <Card className="h-full flex flex-col overflow-hidden border-border/50 hover:border-primary/50 transition-all duration-300 group cursor-pointer hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 bg-card/50 backdrop-blur-sm">
                                         <div className="relative h-40 sm:h-44 md:h-48 w-full overflow-hidden">
                                             <Image

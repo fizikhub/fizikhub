@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Play, Pause, Square, Volume2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // Helper function to strip markdown and HTML before reading

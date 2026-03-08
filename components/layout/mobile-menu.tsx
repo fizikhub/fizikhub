@@ -7,7 +7,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 
@@ -125,8 +125,7 @@ export function MobileMenu() {
                                         </div>
                                     </button>
                                 ) : (
-                                    <Link
-                                        href={item.href!}
+                                    <Link prefetch={false} href={item.href!}
                                         onClick={() => setOpen(false)}
                                         className="block"
                                     >
@@ -159,14 +158,14 @@ export function MobileMenu() {
 
                         <div className="pt-4 mt-4 border-t-2 border-zinc-800">
                             {user ? (
-                                <Link href="/profil" onClick={() => setOpen(false)}>
+                                <Link prefetch={false} href="/profil" onClick={() => setOpen(false)}>
                                     <button className="w-full py-4 font-black text-lg border-[3px] border-black bg-[#FACC15] text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Profil
                                     </button>
                                 </Link>
                             ) : (
-                                <Link href="/login" onClick={() => setOpen(false)}>
+                                <Link prefetch={false} href="/login" onClick={() => setOpen(false)}>
                                     <button className="w-full py-4 font-black text-lg border-[3px] border-black bg-white text-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Giriş Yap

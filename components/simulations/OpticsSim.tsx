@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { SimulationLayout } from "./core/simulation-layout";
 import { PhysicsSlider } from "./core/ui";
 import { CheckCircle2, Eye, Focus } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 export function OpticsSim({ simData }: { simData: any }) {
     // -------------------------------------------------------------

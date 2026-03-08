@@ -5,7 +5,7 @@ import { useNotes } from "@/hooks/use-notes";
 import { NotesList } from "./notes-list";
 import { NoteEditor } from "./note-editor";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
 export function NotesPage() {

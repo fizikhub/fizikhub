@@ -126,7 +126,7 @@ export function SocialArticleCard({
         // KEY FIX: max-w-full and w-full ensures it never overflows parent container
         // min-w-0 prevents flexbox flex-shrink issues
         <div className={cn("h-full font-sans w-full max-w-full min-w-0", className)}>
-            <Link href={`/blog/${article.slug}`} className="block h-full group w-full">
+            <Link prefetch={false} href={`/blog/${article.slug}`} className="block h-full group w-full">
                 <article
                     className={cn(
                         "relative h-full flex flex-col overflow-hidden w-full",

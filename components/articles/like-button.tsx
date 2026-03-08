@@ -5,7 +5,7 @@ import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { toggleLike } from "@/app/makale/[slug]/actions";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 interface LikeButtonProps {
     articleId: number;

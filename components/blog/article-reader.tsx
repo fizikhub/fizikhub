@@ -7,7 +7,7 @@ const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").
     loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
 });
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m as motion } from "framer-motion";
 import { AuthorCard } from "@/components/blog/author-card";
 import { LikeButton } from "@/components/articles/like-button";
 import { BookmarkButton } from "@/components/bookmark-button";

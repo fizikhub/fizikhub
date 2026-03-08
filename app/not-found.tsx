@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, MoveLeft, EyeOff } from "lucide-react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 export default function NotFound() {
     return (
@@ -122,13 +122,13 @@ export default function NotFound() {
                     transition={{ delay: 0.5 }}
                     className="flex flex-col sm:flex-row gap-4 justify-center pt-8 w-full"
                 >
-                    <Link href="/" className="w-full sm:w-auto">
+                    <Link prefetch={false} href="/" className="w-full sm:w-auto">
                         <Button className="w-full h-14 px-8 bg-[#FACC15] hover:bg-[#EAB308] text-black text-lg font-black rounded-xl shadow-[6px_6px_0_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_black] transition-all flex items-center justify-center gap-2 uppercase">
                             <EyeOff className="w-5 h-5" />
                             Görmedim Say, Eve Dön
                         </Button>
                     </Link>
-                    <Link href="/forum" className="w-full sm:w-auto">
+                    <Link prefetch={false} href="/forum" className="w-full sm:w-auto">
                         <Button variant="ghost" className="w-full h-14 px-8 text-zinc-400 hover:text-white hover:bg-white/10 text-lg font-bold rounded-xl flex items-center justify-center gap-2">
                             <MoveLeft className="w-5 h-5" />
                             Geri Geri Çık

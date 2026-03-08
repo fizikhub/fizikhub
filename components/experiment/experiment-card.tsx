@@ -6,7 +6,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Heart, MessageCircle, FlaskConical, Beaker, Atom } from "lucide-react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

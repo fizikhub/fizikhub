@@ -37,7 +37,7 @@ export function ProfileBadges({ userBadges }: ProfileBadgesProps) {
                                 <p className="text-xs text-muted-foreground">
                                     Topluluğa katkılarınızdan dolayı kazandığınız özel rütbe ve nişanlardır.
                                 </p>
-                                <Link href="/puanlar-nedir#rozetler" className="block">
+                                <Link prefetch={false} href="/puanlar-nedir#rozetler" className="block">
                                     <Button variant="outline" size="sm" className="w-full h-7 text-xs mt-1 rounded-none border-black dark:border-white hover:bg-primary hover:text-white">
                                         KAYITLARI İNCELE
                                     </Button>

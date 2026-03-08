@@ -5,7 +5,7 @@ import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { CreateQuestionDialog } from "./create-question-dialog";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";

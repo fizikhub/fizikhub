@@ -9,7 +9,7 @@ import { Loader2, Mail, ShieldCheck, ArrowLeft, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { verifyOtp, resendOtp } from "@/app/auth/actions";
 import { DankLogo } from "@/components/brand/dank-logo";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import dynamic from "next/dynamic";
 const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 

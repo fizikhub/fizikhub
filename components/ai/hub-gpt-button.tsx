@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { HubGPTChat } from "@/components/ai/hub-gpt-chat";
 import { Bot } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 export function HubGPTButton() {

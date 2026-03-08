@@ -5,7 +5,7 @@ import { ArrowBigUp } from "lucide-react";
 import { toggleAnswerLike } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface AnswerLikeButtonProps {
     answerId: number;

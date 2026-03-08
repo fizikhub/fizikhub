@@ -41,7 +41,7 @@ export function ViewTransitionLink({
     };
 
     return (
-        <Link {...props} href={href} onClick={handleTransition} id={id}>
+        <Link prefetch={false} {...props} href={href} onClick={handleTransition} id={id}>
             {children}
         </Link>
     );

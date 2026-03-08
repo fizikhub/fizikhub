@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Moon, Hourglass, ThumbsDown, Ban, Skull } from "lucide-react";
 import { useState, useEffect } from "react";
 

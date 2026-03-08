@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Trophy, Star, Crown } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useState } from "react";
 import { ShyModeModal } from "./shy-mode-modal";
 
@@ -68,7 +68,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: user.rank * 0.05, type: "spring", stiffness: 100 }}
             >
-                <Link href={`/kullanici/${user.username}`}>
+                <Link prefetch={false} href={`/kullanici/${user.username}`}>
                     <div className={cn(
                         "flex items-center gap-3 sm:gap-4 p-4 rounded-xl border-[3px] transition-all duration-300 group relative overflow-hidden",
                         // Base Shadow (Hard Black)

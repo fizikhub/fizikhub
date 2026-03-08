@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
@@ -85,7 +85,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                                     <RapidScienceButton />
                                 )}
                                 {(profile?.is_writer) && (
-                                    <Link href="/yazar">
+                                    <Link prefetch={false} href="/yazar">
                                         <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
                                             <FileText className="h-4 w-4" />
                                         </Button>

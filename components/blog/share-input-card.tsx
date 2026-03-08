@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PenTool, Plus, HelpCircle, LibraryBig, Atom, BrainCircuit, WholeWord, Zap, X } from "lucide-react";
 import Link from "next/link";
@@ -329,7 +329,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             <div className="px-3 py-2.5 sm:px-5 sm:py-3 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center rounded-b-2xl relative z-10">
                 <div className="flex items-center gap-2 sm:gap-3 w-full justify-center">
 
-                    <Link href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
+                    <Link prefetch={false} href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
                         <PenTool className="w-3.5 h-3.5" />
                         Blog
                     </Link>

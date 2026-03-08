@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { X, Cat, Crown, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";

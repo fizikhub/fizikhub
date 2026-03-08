@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,8 +51,7 @@ export default function ForgotPasswordPage() {
             >
                 {/* Back Link */}
                 <div className="mb-4">
-                    <Link
-                        href="/login"
+                    <Link prefetch={false} href="/login"
                         className="inline-flex items-center gap-2 text-white/40 hover:text-orange-500 transition-colors text-[10px] font-black uppercase tracking-[0.2em]"
                     >
                         <ArrowLeft className="h-4 w-4" />
@@ -127,7 +126,7 @@ export default function ForgotPasswordPage() {
                                     <span className="text-orange-500">{email}</span> adresine bir şifre sıfırlama linki gönderdik. Lütfen gelen kutunu kontrol et.
                                 </p>
 
-                                <Link href="/login">
+                                <Link prefetch={false} href="/login">
                                     <Button
                                         variant="outline"
                                         className="w-full h-12 bg-white/5 border-2 border-white/10 text-white hover:bg-white/10 hover:border-white/30 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all"

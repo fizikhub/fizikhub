@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { SimulationLayout } from "../core/simulation-layout";
 import { PhysicsSlider } from "../core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 // Planet Data Type
 type Planet = {

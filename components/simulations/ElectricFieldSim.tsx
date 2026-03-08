@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { SimulationLayout } from "./core/simulation-layout";
 import { Play, Pause, RotateCcw, PlusCircle, MinusCircle, Trash2, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 type ChargeType = {
     id: string;

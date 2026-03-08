@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Send, Bot, MessageCircle } from "lucide-react";
 
 export function HubGPTWidget() {

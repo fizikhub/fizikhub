@@ -77,7 +77,7 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
 
                             {/* Avatar & Thread Line Column */}
                             <div className="flex flex-col items-center shrink-0 h-full">
-                                <Link href={`/kullanici/${comment.profiles?.username}`} className="relative z-10 shrink-0">
+                                <Link prefetch={false} href={`/kullanici/${comment.profiles?.username}`} className="relative z-10 shrink-0">
                                     <Avatar className="h-7 w-7 sm:h-8 sm:w-8 ring-2 ring-background group-hover:ring-primary/20 transition-all">
                                         <AvatarImage src={comment.profiles?.avatar_url || ""} />
                                         <AvatarFallback className="text-[10px] font-bold bg-muted text-muted-foreground">
@@ -94,8 +94,7 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                             <div className="flex-1 min-w-0 pt-1">
                                 {/* Comment Header */}
                                 <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                    <Link
-                                        href={`/kullanici/${comment.profiles?.username}`}
+                                    <Link prefetch={false} href={`/kullanici/${comment.profiles?.username}`}
                                         className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
                                     >
                                         @{comment.profiles?.username || "Anonim"}

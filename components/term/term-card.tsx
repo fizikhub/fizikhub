@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import Image from "next/image";
 
 interface TermCardProps {

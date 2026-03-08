@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Flame, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase-client";

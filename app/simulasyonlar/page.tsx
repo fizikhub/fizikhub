@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Play, Search, Trophy, Zap, ChevronRight } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
@@ -171,7 +171,7 @@ export default function SimulasyonlarPage() {
                                     index === 0 ? "lg:col-span-2 lg:row-span-1" : ""
                                 )}
                             >
-                                <Link href={`/simulasyonlar/${sim.slug}`} className="block h-full outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-[32px]">
+                                <Link prefetch={false} href={`/simulasyonlar/${sim.slug}`} className="block h-full outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-[32px]">
                                     <div
                                         className={cn(
                                             "relative h-full flex flex-col bg-white/[0.02] border border-white/[0.08] hover:border-white/[0.15] rounded-[32px] overflow-hidden transition-all duration-500",

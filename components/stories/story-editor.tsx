@@ -12,7 +12,7 @@ import Draggable from "react-draggable";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { createStoryGroup, deleteStoryGroup, getStoryGroups, updateStoryGroup, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
 import { cn } from "@/lib/utils";
 

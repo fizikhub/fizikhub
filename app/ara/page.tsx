@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Search, ArrowRight, ArrowLeft, SearchX } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 
 export default function SearchPage() {
     const [query, setQuery] = useState("");

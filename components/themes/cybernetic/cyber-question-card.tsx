@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ArrowUp, ArrowDown, MessageSquare, Clock, Hash, Zap, Activity } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";

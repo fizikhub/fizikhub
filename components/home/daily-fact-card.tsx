@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Share2, Zap, Atom, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";

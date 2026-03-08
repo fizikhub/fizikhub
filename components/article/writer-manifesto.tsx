@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, Sparkles, BookOpen, Quote, Target, AlertTriangle, ShieldCheck, PenTool } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export function WriterManifesto() {

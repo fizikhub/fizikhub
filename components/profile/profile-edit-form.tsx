@@ -6,7 +6,7 @@ import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/
 import { signOut } from "@/app/auth/actions";
 import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";

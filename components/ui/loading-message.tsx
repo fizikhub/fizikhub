@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { loadingMessages } from "@/lib/data";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 export function LoadingMessage() {

@@ -12,7 +12,7 @@ import {
 import { ChevronRight, Lock, Trophy, Star, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface Badge {
     id: number;

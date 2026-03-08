@@ -5,7 +5,7 @@ import { Bell, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactConfetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
     DropdownMenu,
     DropdownMenuContent,

@@ -25,7 +25,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
     return (
         <div className="flex items-start gap-4 p-6 rounded-xl bg-muted/50 border border-border">
             {/* Avatar */}
-            <Link href={`/kullanici/${username}`} className="shrink-0">
+            <Link prefetch={false} href={`/kullanici/${username}`} className="shrink-0">
                 <div className="w-14 h-14 rounded-full overflow-hidden bg-muted">
                     <Image
                         src={author.avatar_url || "/images/default-avatar.png"}
@@ -40,8 +40,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
             {/* Info */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Link
-                        href={`/kullanici/${username}`}
+                    <Link prefetch={false} href={`/kullanici/${username}`}
                         className="font-semibold text-foreground hover:text-primary transition-colors"
                     >
                         {displayName}
@@ -60,8 +59,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
                         {author.bio}
                     </p>
                 )}
-                <Link
-                    href={`/kullanici/${username}`}
+                <Link prefetch={false} href={`/kullanici/${username}`}
                     className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
                 >
                     Profilini gör

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Settings2, BookOpen, Target, ArrowLeft, Maximize2, Minimize2 } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";

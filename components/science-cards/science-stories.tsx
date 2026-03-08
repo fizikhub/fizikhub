@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import NextImage from "next/image";
 import { ArrowRight, Plus } from "lucide-react";
 import { useTheme } from "next-themes";

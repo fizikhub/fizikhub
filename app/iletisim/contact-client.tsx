@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { m as motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { useRef, useEffect, useState, useMemo } from "react";
 import { Mail, MapPin, Clock, ArrowUpRight, Rocket, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";

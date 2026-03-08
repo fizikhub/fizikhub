@@ -3,7 +3,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, BookType, Scale, MessageSquareQuote, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 

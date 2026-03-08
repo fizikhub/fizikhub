@@ -15,7 +15,7 @@ import {
     Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, Variants } from "framer-motion";
+import { m as motion, Variants } from "framer-motion";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
@@ -66,7 +66,7 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
             whileHover={{ y: -5, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
         >
-            <Link href={href} className="block h-full">
+            <Link prefetch={false} href={href} className="block h-full">
                 <TiltCard className="h-full" rotationFactor={12}>
                     <div className="
                         relative h-full 
@@ -276,7 +276,7 @@ export default function PaylasPage() {
                     animate="show"
                     className="mt-6 md:mt-8 pb-8"
                 >
-                    <Link href="/ara" className="block group">
+                    <Link prefetch={false} href="/ara" className="block group">
                         <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] transition-all">
                             <span className="font-bold text-sm md:text-lg flex items-center gap-3">
                                 <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full shadow-[0_0_8px_#22c55e]"></div>

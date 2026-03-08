@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageSquareDashed, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { RealisticBlackHole } from "@/components/ui/realistic-black-hole";
 
 export function EmptyState() {

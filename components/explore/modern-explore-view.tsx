@@ -9,7 +9,7 @@ import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 import { SearchInput } from "@/components/blog/search-input";
 import { TermCard } from "@/components/term/term-card";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { m as motion, useScroll, useTransform } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition, useState, useEffect } from "react";
 

@@ -12,7 +12,10 @@ import { BackgroundWrapper } from "@/components/home/background-wrapper";
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
 import { ScrollToAnswerButton } from "@/components/forum/scroll-to-answer-button";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
+import dynamic from "next/dynamic";
+const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
+    ssr: false,
+});
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
@@ -262,7 +265,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         {/* Back Button & Header */}
                         <div className="flex items-center gap-4 mb-4 px-4 sm:px-0">
                             <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 font-bold uppercase text-xs tracking-wider text-muted-foreground hover:text-foreground" asChild>
-                                <Link href="/forum">
+                                <Link prefetch={false} href="/forum">
                                     <ArrowLeft className="h-4 w-4 stroke-[3px]" />
                                     <span className="hidden sm:inline">Foruma Dön</span>
                                     <span className="sm:hidden">Geri</span>
@@ -276,7 +279,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             {/* 1. Header: Author & Context */}
                             <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
                                 <div className="flex items-center gap-3">
-                                    <Link href={`/kullanici/${question.profiles?.username}`} className="block group">
+                                    <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`} className="block group">
                                         <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border group-hover:border-primary transition-colors">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
                                             <AvatarFallback className="bg-primary/5 text-primary font-bold text-sm sm:text-base">
@@ -285,8 +288,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                         </Avatar>
                                     </Link>
                                     <div className="flex flex-col leading-tight">
-                                        <Link
-                                            href={`/kullanici/${question.profiles?.username}`}
+                                        <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`}
                                             className="font-bold text-base sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
@@ -435,13 +437,13 @@ export default async function QuestionPage({ params }: PageProps) {
                                 </p>
                                 <div className="space-y-2">
                                     <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link href="/forum?sort=popular">Popüler Sorular</Link>
+                                        <Link prefetch={false} href="/forum?sort=popular">Popüler Sorular</Link>
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link href="/forum?category=Kuantum">#Kuantum</Link>
+                                        <Link prefetch={false} href="/forum?category=Kuantum">#Kuantum</Link>
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link href="/forum?category=Astrofizik">#Astrofizik</Link>
+                                        <Link prefetch={false} href="/forum?category=Astrofizik">#Astrofizik</Link>
                                     </Button>
                                 </div>
                             </div>

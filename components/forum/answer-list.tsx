@@ -316,7 +316,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             <div className="flex gap-2 sm:gap-4 py-4 sm:py-6 px-1 sm:px-3">
                                 {/* Left: Avatar column */}
                                 <div className="flex flex-col items-center shrink-0">
-                                    <Link href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
+                                    <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                         <Avatar className={cn(
                                             "h-8 w-8 sm:h-10 sm:w-10 border border-border/50 transition-all",
                                             answer.is_accepted ? "border-green-500 ring-2 ring-green-500/20" : "group-hover:border-border"
@@ -339,8 +339,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                     {/* Header */}
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center flex-wrap gap-x-2">
-                                            <Link
-                                                href={`/kullanici/${answer.profiles?.username}`}
+                                            <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`}
                                                 className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
                                             >
                                                 @{answer.profiles?.username || "Anonim"}

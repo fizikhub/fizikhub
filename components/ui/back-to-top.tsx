@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useAnimation, AnimatePresence } from "framer-motion";
+import { m as motion, useScroll, useAnimation, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 

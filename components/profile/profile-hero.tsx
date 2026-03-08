@@ -124,7 +124,7 @@ export function ProfileHero({
                                 </ProfileSettingsButton>
 
                                 {(profile?.role === 'writer' || profile?.role === 'admin') && (
-                                    <Link href="/yazar/yeni">
+                                    <Link prefetch={false} href="/yazar/yeni">
                                         <Button className="h-10 bg-black text-white border-2 border-black rounded-lg hover:bg-zinc-800 font-bold px-6 shadow-[2px_2px_0px_#888] active:translate-y-[2px] active:shadow-none transition-all">
                                             <PenSquare className="w-4 h-4 mr-2" />
                                             Yazı Yaz

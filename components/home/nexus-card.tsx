@@ -159,7 +159,7 @@ export function NexusCard({ type, data, className, featured, index = 0 }: NexusC
 
     return (
         <div className={cn("h-full", className)}>
-            <Link href={href} className="block h-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-xl">
+            <Link prefetch={false} href={href} className="block h-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-xl">
                 <article className={baseCardStyle}>
                     {type === 'question' ? renderQuestionContent() :
                         type === 'answer' ? renderAnswerContent() :

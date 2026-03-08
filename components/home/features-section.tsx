@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { BookOpen, MessageCircle, Share2, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
