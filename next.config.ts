@@ -30,7 +30,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   reactCompiler: true,
-  cacheComponents: true,
   // Performance optimizations
   experimental: {
     staleTimes: {
