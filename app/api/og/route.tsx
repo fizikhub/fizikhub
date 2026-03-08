@@ -8,10 +8,7 @@ const interRegular = fetch(
     new URL('../../../public/fonts/Inter-Regular.ttf', import.meta.url)
 ).then((res) => res.arrayBuffer());
 
-const loraBold = fetch(
-    new URL('../../../public/fonts/Lora-Bold.ttf', import.meta.url)
-).then((res) => res.arrayBuffer());
-
+// Sadece Inter fontu yüklenecek
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
@@ -27,8 +24,8 @@ export async function GET(req: NextRequest) {
         const hasCategory = searchParams.has('category');
         const category = hasCategory ? searchParams.get('category') : 'Makale';
 
-        // Get fonts
-        const [interFont, loraFont] = await Promise.all([interRegular, loraBold]);
+        // Sadece tekil Inter fontu çekiliyor (Edge payload azaltıldı)
+        const interFont = await interRegular;
 
         return new ImageResponse(
             (
@@ -112,7 +109,7 @@ export async function GET(req: NextRequest) {
                         style={{
                             fontSize: 64,
                             lineHeight: 1.1,
-                            fontFamily: '"Lora"',
+                            fontFamily: '"Inter"', // Eski Lora fontu kapatıldı
                             fontWeight: 700,
                             color: 'white',
                             marginBottom: '40px',
@@ -146,13 +143,7 @@ export async function GET(req: NextRequest) {
                         data: interFont,
                         style: 'normal',
                         weight: 400,
-                    },
-                    {
-                        name: 'Lora',
-                        data: loraFont,
-                        style: 'normal',
-                        weight: 700,
-                    },
+                    }
                 ],
             }
         );
