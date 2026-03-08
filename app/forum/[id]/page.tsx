@@ -197,6 +197,8 @@ export default async function QuestionPage({ params }: PageProps) {
     const acceptedAnswer = answersWithLikes?.find(a => a.is_accepted);
     const suggestedAnswers = answersWithLikes?.filter(a => !a.is_accepted);
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com';
+
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'QAPage',
@@ -210,6 +212,7 @@ export default async function QuestionPage({ params }: PageProps) {
             author: {
                 '@type': 'Person',
                 name: question.profiles?.username || 'Anonim',
+                url: question.profiles?.username ? `${baseUrl}/kullanici/${question.profiles.username}` : baseUrl,
             },
             ...(acceptedAnswer && {
                 acceptedAnswer: {
@@ -217,10 +220,11 @@ export default async function QuestionPage({ params }: PageProps) {
                     text: acceptedAnswer.content,
                     dateCreated: acceptedAnswer.created_at,
                     upvoteCount: acceptedAnswer.votes || 0,
-                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}#answer-${acceptedAnswer.id}`,
+                    url: `${baseUrl}/forum/${question.id}#answer-${acceptedAnswer.id}`,
                     author: {
                         '@type': 'Person',
                         name: acceptedAnswer.profiles?.username || 'Anonim',
+                        url: acceptedAnswer.profiles?.username ? `${baseUrl}/kullanici/${acceptedAnswer.profiles.username}` : baseUrl,
                     },
                 },
             }),
@@ -230,10 +234,11 @@ export default async function QuestionPage({ params }: PageProps) {
                     text: answer.content,
                     dateCreated: answer.created_at,
                     upvoteCount: answer.votes || 0,
-                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}#answer-${answer.id}`,
+                    url: `${baseUrl}/forum/${question.id}#answer-${answer.id}`,
                     author: {
                         '@type': 'Person',
                         name: answer.profiles?.username || 'Anonim',
+                        url: answer.profiles?.username ? `${baseUrl}/kullanici/${answer.profiles.username}` : baseUrl,
                     },
                 })),
             }),
