@@ -180,6 +180,8 @@ export default async function RootLayout({
         <head>
 
           <link rel="canonical" href="https://fizikhub.com" />
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
+          <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
         </head>
         <body className="bg-[#050505] min-h-screen">
           <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center overflow-hidden text-center p-6">

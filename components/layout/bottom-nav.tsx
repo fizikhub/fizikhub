@@ -104,7 +104,7 @@ export function BottomNav() {
                                 id="nav-item-feed"
                                 href="/makale"
                                 icon={BookOpen}
-                                label="Blog"
+                                label="Keşfet"
                                 isActive={pathname.startsWith("/makale")}
                                 onInteract={vibrate}
                             />
