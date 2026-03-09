@@ -5,6 +5,7 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
+import { useUiSounds } from "@/hooks/use-ui-sounds";
 
 // True Royal Blue
 const ROYAL_BLUE = "#1E3A5F";
@@ -29,6 +30,7 @@ export function DarkNeoFeed({
     isOwnProfile
 }: DarkNeoFeedProps) {
     const [activeTab, setActiveTab] = useState("posts");
+    const { playInteractSound } = useUiSounds();
 
     const counts = {
         posts: articles.length + questions.length,
@@ -78,16 +80,21 @@ export function DarkNeoFeed({
 
     return (
         <div className="w-full space-y-6">
-            {/* TABS - Vivid & Chunky */}
-            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-3 border-b-2 border-dashed border-black/20">
+            {/* TABS - Vivid & Chunky & Sticky */}
+            <div className="sticky top-[88px] z-40 bg-background/95 backdrop-blur-sm pt-2 pb-3 mb-2 flex items-center gap-3 overflow-x-auto no-scrollbar border-b-2 border-dashed border-black/20">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
 
+                    const handleTabClick = () => {
+                        playInteractSound();
+                        setActiveTab(tab.id);
+                    };
+
                     return (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
+                            onClick={handleTabClick}
                             className={cn(
                                 "relative flex items-center gap-2 px-4 py-2 border-2 rounded-xl font-black text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group",
                                 isActive
@@ -191,12 +198,15 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-100/50 dark:bg-zinc-900/20">
-            <div className="w-12 h-12 bg-white dark:bg-zinc-900 rounded-lg flex items-center justify-center mb-4 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
-                <Icon className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
+        <div className="flex flex-col items-center justify-center py-24 text-center border-[3px] border-black rounded-xl bg-[#FFF5D1] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E")` }} />
+
+            <div className="w-16 h-16 bg-[#FF3366] rounded-[16px] flex items-center justify-center mb-6 border-4 border-black shadow-[4px_4px_0px_0px_#000] rotate-[-5deg] group-hover:rotate-[5deg] transition-transform duration-300 relative z-10">
+                <Icon className="w-8 h-8 text-white stroke-[3px]" />
             </div>
-            <p className="text-zinc-300 font-black text-base mb-1">{label}</p>
-            <p className="text-zinc-500 text-xs max-w-[250px] leading-relaxed font-bold">{description}</p>
+            <p className="text-black font-black text-xl mb-2 tracking-tight uppercase relative z-10 drop-shadow-sm">{label}</p>
+            <p className="text-black/70 text-sm font-bold max-w-[280px] leading-relaxed relative z-10">{description}</p>
         </div>
     );
 }
