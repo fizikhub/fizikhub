@@ -35,7 +35,7 @@ export function MarkdownEditor({ value, onChange, placeholder, label, id, minHei
                         className="font-mono text-sm min-h-[200px] resize-y"
                         style={{ minHeight }}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="hidden sm:block text-xs text-muted-foreground mt-1">
                         Markdown ve LaTeX desteklenir. Örn: **kalın**, *italik*, $E=mc^2$
                     </p>
                 </TabsContent>

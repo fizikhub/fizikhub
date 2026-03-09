@@ -264,8 +264,8 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Main Content Column */}
                     <main className="min-w-0 w-full">
                         {/* Back Button & Header */}
-                        <div className="flex items-center gap-4 mb-4 px-4 sm:px-0">
-                            <Button variant="ghost" size="sm" className="gap-2 pl-0 hover:pl-2 transition-all -ml-2 font-bold uppercase text-xs tracking-wider text-muted-foreground hover:text-foreground" asChild>
+                        <div className="flex items-center gap-4 mb-2 sm:mb-4 px-2 sm:px-0">
+                            <Button variant="ghost" size="sm" className="gap-2 pl-2 sm:pl-0 hover:pl-2 transition-all -ml-2 font-bold uppercase text-xs tracking-wider text-muted-foreground hover:text-foreground" asChild>
                                 <Link prefetch={false} href="/forum">
                                     <ArrowLeft className="h-4 w-4 stroke-[3px]" />
                                     <span className="hidden sm:inline">Foruma Dön</span>
@@ -275,7 +275,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* QUESTION CARD - Refined & Fresh */}
-                        <div className="bg-card/90 sm:bg-card/80 backdrop-blur-sm border-y sm:border rounded-none sm:rounded-xl overflow-hidden shadow-sm sm:shadow-md transition-all">
+                        <div className="bg-card/90 sm:bg-card/80 backdrop-blur-sm sm:border rounded-none sm:rounded-xl overflow-hidden shadow-none sm:shadow-md transition-all -mx-4 sm:mx-0">
 
                             {/* 1. Header: Author & Context */}
                             <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
@@ -367,9 +367,9 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 4. Action Bar (Clean & Minimal) */}
-                            <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 bg-muted/5">
+                            <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 bg-muted/5 sm:bg-muted/10">
                                 {/* Left Actions (Vote, Comment, Share) */}
-                                <div className="flex items-center gap-1 sm:gap-2">
+                                <div className="flex items-center gap-2 sm:gap-2">
                                     <VoteButton
                                         questionId={question.id}
                                         initialVotes={question.votes || 0}
@@ -397,7 +397,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* Answers Section */}
-                        <div className="mt-4 sm:mt-10 max-w-full">
+                        <div className="mt-8 sm:mt-10 max-w-full px-2 sm:px-0">
                             <div className="flex items-center justify-between px-1 mb-4">
                                 <h3 className="text-xl font-bold flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5 text-primary" />

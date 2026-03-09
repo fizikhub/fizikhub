@@ -262,14 +262,15 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             value={newAnswer}
                                             onChange={setNewAnswer}
                                             placeholder="Tartışmaya katıl..."
+                                            minHeight="140px"
                                         />
                                     </Suspense>
                                 </div>
-                                <div className="flex justify-end">
+                                <div className="flex justify-end mt-2">
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting || !newAnswer.trim()}
-                                        className="px-6 rounded-full font-bold h-9 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                                        className="w-full sm:w-auto px-6 rounded-full sm:rounded-full font-bold h-11 sm:h-9 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
                                     >
                                         {isSubmitting ? "Gönderiliyor..." : "Yanıtla"}
                                     </Button>
@@ -400,31 +401,31 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                     <div className="mb-2 sm:mb-3 relative group/content transition-all">
                                         <div className={cn(
                                             "prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-foreground/90 font-medium leading-relaxed transition-all duration-300",
-                                            !expandedAnswers[answer.id] && answer.content.length > 300 ? "max-h-[160px] overflow-hidden" : ""
+                                            !expandedAnswers[answer.id] && answer.content.length > 400 ? "max-h-[350px] sm:max-h-[160px] overflow-hidden" : ""
                                         )}>
                                             <MarkdownRenderer content={answer.content} />
                                         </div>
 
-                                        {!expandedAnswers[answer.id] && answer.content.length > 300 && (
-                                            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background via-background/90 to-transparent flex items-end justify-center pb-1">
+                                        {!expandedAnswers[answer.id] && answer.content.length > 400 && (
+                                            <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-background via-background/95 to-transparent flex items-end justify-center pb-2">
                                                 <Button
-                                                    variant="ghost"
+                                                    variant="secondary"
                                                     size="sm"
                                                     onClick={() => toggleAnswerExpand(answer.id)}
-                                                    className="rounded-full bg-background/50 backdrop-blur-md border border-border shadow-sm font-bold text-primary hover:text-primary hover:bg-muted mb-2 px-4 h-8"
+                                                    className="rounded-full bg-background/80 backdrop-blur-xl border border-border/80 shadow-md font-bold text-foreground hover:text-primary hover:bg-muted/80 mb-2 px-6 h-9 transition-all active:scale-95"
                                                 >
                                                     Devamını Oku
                                                 </Button>
                                             </div>
                                         )}
 
-                                        {expandedAnswers[answer.id] && answer.content.length > 300 && (
-                                            <div className="flex justify-end mt-1">
+                                        {expandedAnswers[answer.id] && answer.content.length > 400 && (
+                                            <div className="flex justify-end mt-2">
                                                 <Button
-                                                    variant="link"
+                                                    variant="ghost"
                                                     size="sm"
                                                     onClick={() => toggleAnswerExpand(answer.id)}
-                                                    className="text-xs text-muted-foreground hover:text-foreground p-0 h-auto"
+                                                    className="text-xs font-bold text-muted-foreground hover:text-primary p-2 h-auto rounded-md bg-muted/30 hover:bg-primary/10 transition-colors"
                                                 >
                                                     Daralt
                                                 </Button>

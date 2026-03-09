@@ -64,22 +64,22 @@ export function StickyActionBar({ questionId, votes, hasVoted }: StickyActionBar
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    className="fixed bottom-16 left-0 right-0 z-40 md:hidden px-4 pb-2"
+                    className="fixed bottom-6 sm:bottom-10 left-0 right-0 z-40 md:hidden px-4 pb-2"
                 >
-                    <div className="bg-card/95 backdrop-blur-xl border-2 border-border/80 rounded-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] flex items-center justify-between px-4 py-3">
+                    <div className="bg-card/95 backdrop-blur-xl border-2 border-border/80 rounded-2xl shadow-[0_-4px_25px_rgba(0,0,0,0.2)] flex items-center justify-between px-3 py-3 gap-2">
                         {/* Vote Display */}
                         <div className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold",
+                            "flex items-center gap-1.5 px-3 py-2.5 rounded-2xl text-sm font-bold",
                             hasVoted ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
                         )}>
-                            <ChevronUp className="w-4 h-4" />
-                            <span>{votes}</span>
+                            <ChevronUp className="w-5 h-5" />
+                            <span className="text-base">{votes}</span>
                         </div>
 
                         {/* Share Button */}
                         <button
                             onClick={handleShare}
-                            className="p-3 rounded-full bg-muted hover:bg-muted/80 transition-colors active:scale-95"
+                            className="p-3.5 rounded-2xl bg-muted hover:bg-muted/80 transition-colors active:scale-95"
                         >
                             <Share2 className="w-5 h-5 text-muted-foreground" />
                         </button>
@@ -87,9 +87,9 @@ export function StickyActionBar({ questionId, votes, hasVoted }: StickyActionBar
                         {/* Answer Button - Primary CTA */}
                         <button
                             onClick={scrollToAnswerForm}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-full font-bold text-sm shadow-lg hover:bg-primary/90 transition-all active:scale-95"
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-2xl font-bold text-sm sm:text-base shadow-lg hover:bg-primary/90 transition-all active:scale-95"
                         >
-                            <MessageSquare className="w-4 h-4" />
+                            <MessageSquare className="w-5 h-5" />
                             <span>Cevap Yaz</span>
                         </button>
                     </div>
