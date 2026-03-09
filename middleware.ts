@@ -70,6 +70,13 @@ export async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const ip = getClientIP(request);
 
+    // 301 Redirect for /index to /
+    if (pathname === '/index') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
+        return NextResponse.redirect(url, 301);
+    }
+
     // Rate limit auth endpoints (login, register, password reset)
     if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/auth')) {
         if (request.method === 'POST' && isRateLimited(`auth:${ip}`, MAX_REQUESTS_AUTH)) {

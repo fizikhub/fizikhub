@@ -22,9 +22,11 @@ export default function robots(): MetadataRoute.Robots {
         '/paylas/',
         '/ara/',
         '/abs/',
+        '/index',
         '/*?sort=*',
         '/*?filter=*',
         '/*?category=*',
+        '/*?kategori=*',
         '/*?q=*',
     ];
 
