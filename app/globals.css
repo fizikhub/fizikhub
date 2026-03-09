@@ -207,6 +207,11 @@
 */
 
 /* Physics Rain Up Animation (replaces framer-motion in navbar) */
+@keyframes physicsRainUp {
+    0% {
+        transform: translateY(60px);
+        opacity: 0;
+    }
 
     15% {
         opacity: 1;
