@@ -53,15 +53,15 @@ export function AnswerCommentForm({ answerId, questionId, onCommentAdded, onCanc
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Yanıtını gönder..."
-                        className="min-h-[40px] h-[40px] focus:min-h-[80px] text-sm resize-none bg-transparent border-b-2 border-transparent focus:border-primary/50 focus:bg-muted/10 transition-all rounded-none px-0 py-2 focus:ring-0 placeholder:text-muted-foreground/70"
+                        className="min-h-[40px] text-sm resize-none bg-white dark:bg-[#18181b] border-[3px] border-black focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-black transition-all rounded-[4px] px-3 py-2 placeholder:text-muted-foreground/70 shadow-[2px_2px_0_0_#000] focus:shadow-[4px_4px_0_0_#000]"
                     />
 
-                    {/* Actions bar that appears when there is content or focused (we'll just show it for simplicity or check content) */}
-                    <div className={content.trim() ? "flex justify-end gap-2 mt-2" : "hidden"}>
-                        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-8 rounded-full text-xs font-bold hover:bg-muted">
+                    {/* Actions bar that appears when there is content or focused */}
+                    <div className={content.trim() ? "flex justify-end gap-2 mt-3" : "hidden"}>
+                        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-8 rounded-[4px] text-xs font-black uppercase hover:bg-muted border-[2px] border-transparent hover:border-black active:translate-x-[2px] active:translate-y-[2px] transition-all">
                             İptal
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-8 rounded-full text-xs font-bold gap-2">
+                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-8 rounded-[4px] text-xs font-black uppercase bg-neo-pink text-white border-[2px] border-black shadow-[2px_2px_0_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none hover:bg-neo-pink/90 transition-all">
                             {isSubmitting ? "..." : "Yanıtla"}
                         </Button>
                     </div>
@@ -70,13 +70,13 @@ export function AnswerCommentForm({ answerId, questionId, onCommentAdded, onCanc
                 </div>
             </div>
             {!content.trim() && (
-                <div className="flex justify-between items-center mt-1">
-                    <span className="text-[10px] text-muted-foreground/50 pl-0">Markdown desteklenir</span>
+                <div className="flex justify-between items-center mt-2">
+                    <span className="text-[10px] text-muted-foreground/50 pl-1 font-bold">MARKDOWN DESTEKLENİR</span>
                     <div className="flex gap-2">
-                        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-7 px-3 rounded-full text-xs hover:bg-muted text-muted-foreground">
-                            Vazgeç
+                        <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-7 px-3 rounded-[4px] text-xs font-black uppercase hover:bg-muted text-muted-foreground border-[2px] border-transparent hover:border-black active:translate-x-[2px] active:translate-y-[2px] transition-all">
+                            İptal
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-7 px-4 rounded-full text-xs font-bold">
+                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-7 px-4 rounded-[4px] text-xs font-black uppercase bg-neo-pink text-white border-[2px] border-black shadow-[2px_2px_0_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none opacity-50 cursor-not-allowed transition-all">
                             Yanıtla
                         </Button>
                     </div>

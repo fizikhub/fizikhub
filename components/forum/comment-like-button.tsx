@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toggleCommentLike } from "@/app/forum/actions";
 import { toast } from "sonner";
+import { useUiSounds } from "@/hooks/use-ui-sounds";
 
 interface CommentLikeButtonProps {
     commentId: number;
@@ -22,6 +23,7 @@ export function CommentLikeButton({
     const [isLiked, setIsLiked] = useState(initialIsLiked);
     const [likeCount, setLikeCount] = useState(initialLikeCount);
     const [isAnimating, setIsAnimating] = useState(false);
+    const { playInteractSound } = useUiSounds();
 
     const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -39,6 +41,7 @@ export function CommentLikeButton({
         setIsLiked(!isLiked);
         setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
         setIsAnimating(true);
+        playInteractSound();
 
         try {
             const result = await toggleCommentLike(commentId);

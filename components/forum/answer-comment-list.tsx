@@ -72,44 +72,44 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
             {comments.map((comment, index) => {
                 const isLast = index === comments.length - 1;
                 return (
-                    <div key={comment.id} className="group relative py-2 sm:py-3 first:pt-1">
+                    <div key={comment.id} className="group relative p-3 sm:p-4 mb-3 border-[2px] border-black bg-white dark:bg-[#18181b] rounded-[4px] shadow-[2px_2px_0_0_#000]">
                         <div className="flex items-start gap-2 sm:gap-3 h-full">
 
                             {/* Avatar & Thread Line Column */}
                             <div className="flex flex-col items-center shrink-0 h-full">
                                 <Link prefetch={false} href={`/kullanici/${comment.profiles?.username}`} className="relative z-10 shrink-0">
-                                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 ring-2 ring-background group-hover:ring-primary/20 transition-all">
-                                        <AvatarImage src={comment.profiles?.avatar_url || ""} />
-                                        <AvatarFallback className="text-[10px] font-bold bg-muted text-muted-foreground">
+                                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8 border-[2px] border-black rounded-[4px]">
+                                        <AvatarImage src={comment.profiles?.avatar_url || ""} className="rounded-[2px] object-cover" />
+                                        <AvatarFallback className="text-[10px] font-black bg-[#FFBD2E] text-black">
                                             {comment.profiles?.username?.[0]?.toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
                                 </Link>
 
                                 {!isLast && (
-                                    <div className="w-[2px] bg-border/20 group-hover:bg-border/30 transition-colors grow mt-2 mb-[-8px] sm:mb-[-12px] rounded-full hidden sm:block" />
+                                    <div className="w-[3px] bg-black/20 group-hover:bg-neo-pink transition-colors grow mt-2 mb-[-12px] sm:mb-[-16px] hidden sm:block" />
                                 )}
                             </div>
 
-                            <div className="flex-1 min-w-0 pt-1">
+                            <div className="flex-1 min-w-0 pt-0.5">
                                 {/* Comment Header */}
-                                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                                     <Link prefetch={false} href={`/kullanici/${comment.profiles?.username}`}
-                                        className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
+                                        className="font-black text-sm hover:text-neo-pink transition-colors uppercase tracking-wide flex items-center gap-1"
                                     >
                                         @{comment.profiles?.username || "Anonim"}
                                         {comment.profiles?.is_verified && (
-                                            <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500/10" />
+                                            <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                         )}
                                     </Link>
-                                    <span className="text-muted-foreground text-xs font-medium">·</span>
-                                    <span className="text-xs text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
+                                    <span className="text-black/30 dark:text-zinc-500 text-xs font-black">/</span>
+                                    <span className="text-xs text-muted-foreground font-bold tracking-wider uppercase">
                                         {formatDistanceToNow(new Date(comment.created_at), { locale: tr })}
                                     </span>
                                 </div>
 
                                 {/* Content */}
-                                <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap break-words font-medium">
+                                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words font-medium">
                                     {comment.content}
                                 </p>
 
@@ -125,22 +125,22 @@ export function AnswerCommentList({ comments, currentUserId, questionId, onDelet
                                     {(currentUserId === comment.author_id || isAdmin) && (
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
-                                                <button className="text-xs text-muted-foreground hover:text-destructive font-medium transition-colors">
+                                                <button className="text-xs text-red-500 font-bold tracking-widest uppercase hover:underline underline-offset-4 decoration-[2px]">
                                                     Sil
                                                 </button>
                                             </AlertDialogTrigger>
-                                            <AlertDialogContent>
+                                            <AlertDialogContent className="border-[3px] border-black rounded-[4px] shadow-[8px_8px_0_0_#000]">
                                                 <AlertDialogHeader>
-                                                    <AlertDialogTitle>Yorumu silmek istiyor musunuz?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Bu işlem geri alınamaz.
+                                                    <AlertDialogTitle className="font-black uppercase text-xl">Yorumu silmek istiyor musunuz?</AlertDialogTitle>
+                                                    <AlertDialogDescription className="font-bold">
+                                                        Bu işlem geri alınamaz ve neo-dünyadan temelli silinir.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>
-                                                    <AlertDialogCancel>İptal</AlertDialogCancel>
+                                                    <AlertDialogCancel className="border-[2px] border-black rounded-[4px] font-black uppercase shadow-[2px_2px_0_0_#000]">İptal</AlertDialogCancel>
                                                     <AlertDialogAction
                                                         onClick={() => handleDelete(comment.id)}
-                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                        className="bg-red-500 text-white hover:bg-red-600 border-[2px] border-black rounded-[4px] font-black uppercase shadow-[2px_2px_0_0_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                                                         disabled={isDeleting === comment.id}
                                                     >
                                                         {isDeleting === comment.id ? "Siliniyor..." : "Sil"}

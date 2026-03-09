@@ -278,11 +278,11 @@ export default async function RootLayout({
             <Toaster
               position="top-center"
               toastOptions={{
-                className: "font-sans border-none bg-black text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] rounded-[40px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-bold tracking-tight dynamic-island-toast",
+                className: "font-sans border-[3px] border-black bg-[#FFBD2E] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-black tracking-widest uppercase",
                 style: {
-                  borderRadius: "40px",
-                  background: "#000000",
-                  color: "#ffffff",
+                  borderRadius: "4px",
+                  background: "#FFBD2E",
+                  color: "#000000",
                 },
               }}
             />

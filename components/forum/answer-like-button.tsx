@@ -6,6 +6,7 @@ import { toggleAnswerLike } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { m as motion, AnimatePresence } from "framer-motion";
+import { useUiSounds } from "@/hooks/use-ui-sounds";
 
 interface AnswerLikeButtonProps {
     answerId: number;
@@ -23,6 +24,7 @@ export function AnswerLikeButton({
     const [likeCount, setLikeCount] = useState(initialLikeCount);
     const [isLiked, setIsLiked] = useState(initialIsLiked);
     const [isLoading, setIsLoading] = useState(false);
+    const { playInteractSound } = useUiSounds();
 
     const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -42,6 +44,7 @@ export function AnswerLikeButton({
         setIsLiked(newIsLiked);
         setLikeCount(newLikeCount);
         setIsLoading(true);
+        playInteractSound();
 
         try {
             const result = await toggleAnswerLike(answerId);

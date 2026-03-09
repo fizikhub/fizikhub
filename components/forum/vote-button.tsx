@@ -6,6 +6,7 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useUiSounds } from "@/hooks/use-ui-sounds";
 
 interface VoteButtonProps {
     questionId: number;
@@ -19,6 +20,7 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
     const [votes, setVotes] = useState(initialVotes);
     const [isVoting, setIsVoting] = useState(false);
     const [hasVoted, setHasVoted] = useState(initialHasVoted);
+    const { playInteractSound } = useUiSounds();
 
     const handleVote = async (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent link navigation
@@ -31,6 +33,7 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
         setVotes(newVotes);
         setHasVoted(!hasVoted);
         setIsVoting(true);
+        playInteractSound();
 
         try {
             const result = await voteQuestion(questionId, 1); // Always upvote logic for now
