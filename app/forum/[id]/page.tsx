@@ -8,6 +8,7 @@ import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeChe
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
+import { cn } from "@/lib/utils";
 
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
@@ -274,16 +275,41 @@ export default async function QuestionPage({ params }: PageProps) {
                             </Button>
                         </div>
 
-                        {/* QUESTION CARD - Refined & Fresh */}
-                        <div className="bg-card/90 sm:bg-card/80 backdrop-blur-sm sm:border rounded-none sm:rounded-xl overflow-hidden shadow-none sm:shadow-md transition-all -mx-4 sm:mx-0">
+                        {/* QUESTION CARD - Neo-Brutalist */}
+                        <div className={cn(
+                            "relative overflow-hidden transition-all duration-200",
+                            "bg-white dark:bg-[#27272a]",
+                            "border-[3px] border-black rounded-[8px]",
+                            "shadow-[4px_4px_0px_0px_#000]",
+                            "-mx-2 sm:mx-0" // Stretch slightly on mobile to feel chunky
+                        )}>
+                            {/* Noise Texture */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                            />
 
-                            {/* 1. Header: Author & Context */}
-                            <div className="p-4 sm:p-6 pb-2 sm:pb-4 flex justify-between items-start gap-3">
+                            {/* 1. Yellow Neo-Brutalist Header Bar */}
+                            <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
+                                <span className="font-black text-xs sm:text-sm uppercase tracking-widest text-black">
+                                    {question.category || "GENEL"}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    {isSolved && (
+                                        <div className="flex items-center gap-1 bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] sm:text-xs font-bold uppercase">
+                                            <CheckCircle2 className="h-3 w-3" />
+                                            Çözüldü
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 2. Author Info & Edit (Below Header) */}
+                            <div className="p-4 sm:p-5 pb-0 flex justify-between items-start gap-3 relative z-10">
                                 <div className="flex items-center gap-3">
                                     <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`} className="block group">
-                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border group-hover:border-primary transition-colors">
+                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-black rounded-full overflow-hidden bg-white shadow-[2px_2px_0_0_#000] group-hover:shadow-[1px_1px_0_0_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-primary/5 text-primary font-bold text-sm sm:text-base">
+                                            <AvatarFallback className="bg-white text-black font-black text-sm sm:text-base">
                                                 {question.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
@@ -297,7 +323,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                                 <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
                                         </Link>
-                                        <span className="text-xs text-muted-foreground font-medium">
+                                        <span className="font-black text-xs uppercase text-black dark:text-zinc-400">
                                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                                         </span>
                                     </div>
@@ -305,25 +331,27 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Top Actions (Menu) */}
                                 {(isAdmin || user?.id === question.author_id) && (
-                                    <EditQuestionDialog questionId={question.id} initialContent={question.content} />
+                                    <div className="bg-white dark:bg-black border-2 border-black rounded-md shadow-[2px_2px_0_0_#000]">
+                                        <EditQuestionDialog questionId={question.id} initialContent={question.content} />
+                                    </div>
                                 )}
                             </div>
 
-                            {/* 2. Content Body */}
-                            <div className="px-4 sm:px-6 py-2">
+                            {/* 3. Content Body */}
+                            <div className="px-4 sm:px-5 py-4 relative z-10">
                                 {/* Title */}
-                                <h1 className="text-xl sm:text-3xl font-bold font-heading mb-3 sm:mb-5 leading-tight text-foreground tracking-tight text-balance">
+                                <h1 className="font-[family-name:var(--font-outfit)] text-3xl sm:text-4xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-4">
                                     {question.title}
                                 </h1>
 
                                 {/* Markdown Content */}
-                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-relaxed text-foreground/90 font-medium">
+                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-relaxed font-[family-name:var(--font-inter)] text-neutral-800 dark:text-zinc-300 font-medium">
                                     <MarkdownRenderer content={question.content} />
                                 </div>
 
                                 {/* Edit Timestamp */}
                                 {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
-                                    <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground/70 italic">
+                                    <div className="mt-4 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
                                         <Edit2 className="h-3 w-3" />
                                         Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })}
                                     </div>
@@ -331,45 +359,34 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Tags & Badges */}
                                 <div className="mt-6 flex flex-wrap gap-2">
-                                    <Badge variant="secondary" className="bg-primary/5 text-primary border-primary/10 hover:bg-primary/10 transition-colors h-7 px-3 rounded-lg text-xs font-bold">
-                                        {question.category || "Genel"}
-                                    </Badge>
-
-                                    {isSolved && (
-                                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 h-7 px-3 rounded-lg text-xs font-bold">
-                                            <CheckCircle2 className="h-3 w-3" />
-                                            Çözüldü
-                                        </Badge>
-                                    )}
-
                                     {question.tags?.map((tag: string) => (
-                                        <Badge key={tag} variant="outline" className="h-7 border-border hover:bg-muted font-normal text-xs text-muted-foreground rounded-lg">
+                                        <Badge key={tag} variant="outline" className="h-7 border-2 border-black bg-white dark:bg-black text-black dark:text-white font-bold text-[10px] uppercase shadow-[2px_2px_0_0_#000] rounded-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
                                             #{tag}
                                         </Badge>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* 3. Stats Divider */}
-                            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-6 border-b border-border/30 text-xs sm:text-sm font-medium text-muted-foreground mt-2">
-                                <div className="flex items-center gap-1.5">
-                                    <strong className="text-foreground">{question.views?.toLocaleString('tr-TR') || 0}</strong>
-                                    <span className="opacity-70">Görüntülenme</span>
+                            {/* 4. Stats Divider */}
+                            <div className="px-4 sm:px-5 py-3 flex items-center gap-6 border-b-[3px] border-black text-xs sm:text-sm font-black text-black dark:text-zinc-400 relative z-10 bg-neutral-50 dark:bg-[#18181b]">
+                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                    <span>{question.views?.toLocaleString('tr-TR') || 0}</span>
+                                    <span className="opacity-70">Görünüm</span>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <strong className="text-foreground">{answers?.length || 0}</strong>
+                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                    <span>{answers?.length || 0}</span>
                                     <span className="opacity-70">Cevap</span>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <strong className="text-foreground">{question.votes || 0}</strong>
+                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                    <span>{question.votes || 0}</span>
                                     <span className="opacity-70">Oy</span>
                                 </div>
                             </div>
 
-                            {/* 4. Action Bar (Clean & Minimal) */}
-                            <div className="flex items-center justify-between px-3 sm:px-6 py-2 sm:py-3 bg-muted/5 sm:bg-muted/10">
+                            {/* 5. Action Bar (Neo-Brutalist) */}
+                            <div className="flex items-center justify-between px-3 sm:px-5 py-3 bg-neutral-100 dark:bg-[#202022] relative z-10">
                                 {/* Left Actions (Vote, Comment, Share) */}
-                                <div className="flex items-center gap-2 sm:gap-2">
+                                <div className="flex items-center gap-2 sm:gap-3">
                                     <VoteButton
                                         questionId={question.id}
                                         initialVotes={question.votes || 0}
@@ -426,10 +443,10 @@ export default async function QuestionPage({ params }: PageProps) {
 
                     {/* Stats Sidebar (Desktop) */}
                     <aside className="hidden lg:block space-y-6 w-full sticky top-24 pt-10">
-                        {/* Sidebar content simplified/designed */}
-                        <div className="brutalist-card p-6 rounded-xl bg-card">
-                            <h3 className="font-black text-lg mb-4 flex items-center gap-2">
-                                <Flame className="h-5 w-5 text-orange-500 fill-orange-500" />
+                        {/* Neo Brutalist Sidebar Segment */}
+                        <div className="bg-white dark:bg-[#27272a] border-[3px] border-black rounded-[8px] p-6 shadow-[4px_4px_0_0_#000]">
+                            <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black mb-4 flex items-center gap-2 uppercase tracking-tighter">
+                                <Flame className="h-6 w-6 text-black dark:text-white" />
                                 Trendler
                             </h3>
                             <div className="space-y-4">
@@ -437,22 +454,22 @@ export default async function QuestionPage({ params }: PageProps) {
                                     Fizik dünyasında haftanın en çok konuşulan konularına göz at.
                                 </p>
                                 <div className="space-y-2">
-                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link prefetch={false} href="/forum?sort=popular">Popüler Sorular</Link>
+                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-[#FFBD2E] hover:text-black h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
+                                        <Link prefetch={false} href="/forum?sort=popular">POPÜLER SORULAR</Link>
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link prefetch={false} href="/forum?category=Kuantum">#Kuantum</Link>
+                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-neo-pink hover:text-white h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
+                                        <Link prefetch={false} href="/forum?category=Kuantum">#KUANTUM</Link>
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start font-bold border-2 h-10" asChild>
-                                        <Link prefetch={false} href="/forum?category=Astrofizik">#Astrofizik</Link>
+                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-neo-blue hover:text-white h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
+                                        <Link prefetch={false} href="/forum?category=Astrofizik">#ASTROFİZİK</Link>
                                     </Button>
                                 </div>
                             </div>
                         </div>
 
                         {(isAdmin || user?.id === question.author_id) && (
-                            <div className="border-2 border-destructive/20 bg-destructive/5 rounded-xl p-6">
-                                <h3 className="text-sm font-black text-destructive uppercase tracking-wider mb-4">Yönetici Paneli</h3>
+                            <div className="border-[3px] border-black bg-red-100 rounded-[8px] p-6 shadow-[4px_4px_0_0_#000]">
+                                <h3 className="font-[family-name:var(--font-outfit)] text-xl font-black text-black uppercase tracking-tighter mb-4">Yönetici Paneli</h3>
                                 <div className="space-y-3">
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
                                 </div>

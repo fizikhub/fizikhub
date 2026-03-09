@@ -12,7 +12,7 @@ const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown, Share2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createAnswer, toggleAnswerAcceptance } from "@/app/forum/actions";
 import { Database } from "@/types/database";
@@ -241,23 +241,25 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
             {/* New Answer Form - MOVED TO TOP */}
             {user ? (
                 <div id="answer-form" className="mb-8 pt-2 sm:px-0">
-                    <div className="flex gap-4">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border hidden sm:block">
-                            <AvatarImage src={user.user_metadata?.avatar_url || ""} className="object-cover" />
-                            <AvatarFallback className="bg-muted text-muted-foreground font-bold">
-                                {user.user_metadata?.username?.[0]?.toUpperCase() || "S"}
-                            </AvatarFallback>
-                        </Avatar>
+                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div className="hidden sm:block">
+                            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-[3px] border-black rounded-full shadow-[2px_2px_0_0_#000] bg-white">
+                                <AvatarImage src={user.user_metadata?.avatar_url || ""} className="object-cover" />
+                                <AvatarFallback className="bg-white text-black font-black">
+                                    {user.user_metadata?.username?.[0]?.toUpperCase() || "S"}
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
 
-                        <div className="flex-1">
+                        <div className="flex-1 w-full relative z-10">
                             {/* Simplified Header */}
-                            <h3 className="text-lg font-black mb-3 flex items-center gap-2">
-                                <span className="text-foreground">Senin</span> Görüşün Ne?
+                            <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black mb-3 text-black dark:text-white uppercase tracking-tighter">
+                                Senin Görüşün Ne?
                             </h3>
 
-                            <form onSubmit={handleSubmit} className="space-y-3">
-                                <div className="min-h-[120px] border border-border/60 rounded-xl overflow-hidden focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all bg-card/50 shadow-sm">
-                                    <Suspense fallback={<div className="p-4 text-muted-foreground">Editor yükleniyor...</div>}>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="border-[3px] border-black bg-white dark:bg-black rounded-[8px] overflow-hidden focus-within:shadow-[4px_4px_0_0_#000] transition-all shadow-[2px_2px_0_0_#000]">
+                                    <Suspense fallback={<div className="p-4 text-black dark:text-white font-bold uppercase text-xs">Editör yükleniyor...</div>}>
                                         <MarkdownEditor
                                             value={newAnswer}
                                             onChange={setNewAnswer}
@@ -266,13 +268,13 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         />
                                     </Suspense>
                                 </div>
-                                <div className="flex justify-end mt-2">
+                                <div className="flex justify-end">
                                     <Button
                                         type="submit"
                                         disabled={isSubmitting || !newAnswer.trim()}
-                                        className="w-full sm:w-auto px-6 rounded-full sm:rounded-full font-bold h-11 sm:h-9 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+                                        className="w-full sm:w-auto px-8 py-6 rounded-[8px] font-black uppercase tracking-widest bg-neo-pink text-white border-[3px] border-black shadow-[4px_4px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all text-sm sm:text-base"
                                     >
-                                        {isSubmitting ? "Gönderiliyor..." : "Yanıtla"}
+                                        {isSubmitting ? "GÖNDERİLİYOR..." : "YANITLA"}
                                     </Button>
                                 </div>
                             </form>
@@ -280,11 +282,11 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                     </div>
                 </div>
             ) : (
-                <div className="mb-8 p-6 rounded-2xl bg-muted/30 text-center border border-dashed border-border/60">
-                    <div className="max-w-xs mx-auto space-y-3">
-                        <h3 className="text-lg font-bold">Tartışmaya Katıl</h3>
-                        <p className="text-sm text-muted-foreground font-medium">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
-                        <Button className="w-full font-bold rounded-full h-9" asChild>
+                <div className="mb-8 p-6 bg-white dark:bg-[#18181b] border-[3px] border-black rounded-[8px] text-center shadow-[4px_4px_0_0_#000]">
+                    <div className="max-w-sm mx-auto space-y-4">
+                        <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black uppercase text-black dark:text-white">Tartışmaya Katıl</h3>
+                        <p className="text-black dark:text-zinc-400 font-bold uppercase text-xs tracking-wider">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
+                        <Button className="w-full font-black uppercase tracking-widest rounded-[4px] h-12 bg-white text-black border-[3px] border-black shadow-[2px_2px_0_0_#000] hover:bg-[#FFBD2E] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
                             <a href="/login">Giriş Yap / Kayıt Ol</a>
                         </Button>
                     </div>
@@ -294,12 +296,12 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
             {/* Answer List */}
             <div className="relative space-y-4">
                 {answers.length === 0 ? (
-                    <div className="py-12 text-center border-y border-border/40 bg-muted/5">
-                        <div className="bg-muted/20 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                    <div className="py-12 bg-white dark:bg-[#27272a] border-[3px] border-black rounded-[8px] shadow-[4px_4px_0_0_#000] text-center">
+                        <div className="bg-[#FFBD2E] border-[3px] border-black w-14 h-14 rounded-[8px] flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0_0_#000] -rotate-3">
+                            <MessageSquare className="h-6 w-6 text-black stroke-[3px]" />
                         </div>
-                        <h3 className="text-lg font-bold mb-1">Henüz cevap yok</h3>
-                        <p className="text-muted-foreground text-sm font-medium">Bu soruya ilk cevabı sen ver!</p>
+                        <h3 className="font-[family-name:var(--font-outfit)] text-xl font-black uppercase text-black dark:text-zinc-50 mb-1">Henüz cevap yok</h3>
+                        <p className="text-black dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">İlk cevabı sen ver!</p>
                     </div>
                 ) : (
                     answers.map((answer, index) => (
@@ -307,23 +309,22 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             key={answer.id}
                             id={`answer-${answer.id}`}
                             className={cn(
-                                "group relative transition-all duration-300 border-b border-border/40 hover:bg-muted/5 last:border-0",
-                                answer.is_accepted && "bg-green-500/5 hover:bg-green-500/10 rounded-xl border-none mb-4"
+                                "group relative transition-all duration-300 mb-6 bg-white dark:bg-[#27272a] border-[3px] border-black rounded-[8px] shadow-[4px_4px_0_0_#000]",
+                                answer.is_accepted && "bg-[#E5F5E0] dark:bg-[#1A251B] border-green-600"
                             )}
                         >
                             {/* Thread Line - Connecting to next item if needed, currently just visual marker */}
                             {/* <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-border/40 group-hover:bg-border/60 transition-colors" /> */}
 
-                            <div className="flex gap-2 sm:gap-4 py-4 sm:py-6 px-1 sm:px-3">
+                            <div className="flex flex-col sm:flex-row gap-0 sm:gap-4 py-4 px-4 sm:px-5">
                                 {/* Left: Avatar column */}
-                                <div className="flex flex-col items-center shrink-0">
+                                <div className="hidden sm:flex flex-col items-center shrink-0">
                                     <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                         <Avatar className={cn(
-                                            "h-8 w-8 sm:h-10 sm:w-10 border border-border/50 transition-all",
-                                            answer.is_accepted ? "border-green-500 ring-2 ring-green-500/20" : "group-hover:border-border"
+                                            "h-10 w-10 border-[3px] border-black rounded-full shadow-[2px_2px_0_0_#000] bg-white transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000]"
                                         )}>
                                             <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-secondary text-secondary-foreground font-black text-xs">
+                                            <AvatarFallback className="bg-white text-black font-black text-sm">
                                                 {answer.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
@@ -331,49 +332,59 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
                                     {/* Thread Line - Connecting answer to comments */}
                                     {(expandedComments[answer.id] || (answer.comments && answer.comments.length > 0)) && (
-                                        <div className="w-[2px] bg-border/20 group-hover:bg-border/40 transition-colors grow mt-3 mb-1 rounded-full hidden sm:block" />
+                                        <div className="w-[3px] bg-black dark:bg-zinc-700 grow mt-4 mb-2 rounded-full hidden sm:block" />
                                     )}
                                 </div>
 
                                 {/* Right: Content column */}
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 flex flex-col pt-1 sm:pt-0 pb-1">
                                     {/* Header */}
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center flex-wrap gap-x-2">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center flex-wrap gap-2">
+                                            {/* Mobile Avatar (Visible only on small screens next to name) */}
+                                            <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`} className="sm:hidden relative z-10">
+                                                <Avatar className="h-8 w-8 border-[2px] border-black rounded-full shadow-[1px_1px_0_0_#000] bg-white">
+                                                    <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
+                                                    <AvatarFallback className="bg-white text-black font-black text-xs">
+                                                        {answer.profiles?.username?.[0]?.toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            </Link>
+
                                             <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`}
-                                                className="font-bold text-sm hover:text-primary transition-colors flex items-center gap-1"
+                                                className="font-black text-sm uppercase text-black dark:text-zinc-50 hover:bg-[#FFBD2E] hover:text-black transition-colors px-1 -ml-1 rounded flex items-center gap-1"
                                             >
                                                 @{answer.profiles?.username || "Anonim"}
                                                 {answer.profiles?.is_verified && (
                                                     <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                                 )}
                                             </Link>
-                                            <span className="text-muted-foreground text-xs font-medium">·</span>
-                                            <span className="text-xs text-muted-foreground hover:underline decoration-muted-foreground/50 underline-offset-2 transition-all">
+                                            <span className="text-black dark:text-zinc-500 text-[10px] font-black uppercase tracking-widest hidden sm:inline">·</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-black/60 dark:text-zinc-400">
                                                 {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
                                             </span>
                                             {answer.is_accepted && (
-                                                <span className="flex items-center gap-1 text-green-600 bg-green-500/10 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">
-                                                    <CheckCircle2 className="h-3 w-3" />
-                                                    Çözüm
+                                                <span className="flex items-center gap-1 text-black bg-[#4ADE80] border-2 border-black border-dashed px-2 py-0.5 rounded-[4px] text-[10px] sm:text-xs font-black uppercase ml-1 sm:ml-2 shadow-[2px_2px_0_0_#000]">
+                                                    <CheckCircle2 className="h-3 w-3 stroke-[3px]" />
+                                                    ÇÖZÜM
                                                 </span>
                                             )}
                                         </div>
 
                                         {/* Actions Menu */}
-                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-1">
                                             {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleToggleAccept(answer.id)}
                                                     className={cn(
-                                                        "h-7 w-7 rounded-full hover:bg-green-500/10 transition-colors mr-1",
-                                                        answer.is_accepted ? "text-green-600 opacity-100" : "text-muted-foreground hover:text-green-600"
+                                                        "h-8 w-8 rounded-[4px] border-2 border-black transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[1px_1px_0_0_#000]",
+                                                        answer.is_accepted ? "bg-[#4ADE80] text-black" : "bg-white text-black hover:bg-green-100"
                                                     )}
                                                     title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
                                                 >
-                                                    <CheckCircle2 className="h-4 w-4" />
+                                                    <CheckCircle2 className="h-4 w-4 stroke-[3px]" />
                                                 </Button>
                                             )}
 
@@ -389,8 +400,8 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 resourceId={answer.id}
                                                 resourceType="answer"
                                                 trigger={
-                                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 hover:text-destructive rounded-full">
-                                                        <Flag className="h-3 w-3" />
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-black bg-white border-2 border-black rounded-[4px] hover:bg-neo-pink hover:text-white shadow-[1px_1px_0_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all">
+                                                        <Flag className="h-4 w-4 stroke-[2.5px]" />
                                                     </Button>
                                                 }
                                             />
@@ -398,34 +409,32 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                     </div>
 
                                     {/* Content with Read More logic */}
-                                    <div className="mb-2 sm:mb-3 relative group/content transition-all">
+                                    <div className="mb-4 sm:mb-6 relative group/content transition-all">
                                         <div className={cn(
-                                            "prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-foreground/90 font-medium leading-relaxed transition-all duration-300",
-                                            !expandedAnswers[answer.id] && answer.content.length > 400 ? "max-h-[350px] sm:max-h-[160px] overflow-hidden" : ""
+                                            "prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none text-black dark:text-zinc-300 font-[family-name:var(--font-inter)] font-medium leading-relaxed transition-all duration-300",
+                                            !expandedAnswers[answer.id] && answer.content.length > 500 ? "max-h-[350px] sm:max-h-[220px] overflow-hidden" : ""
                                         )}>
                                             <MarkdownRenderer content={answer.content} />
                                         </div>
 
-                                        {!expandedAnswers[answer.id] && answer.content.length > 400 && (
-                                            <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-background via-background/95 to-transparent flex items-end justify-center pb-2">
+                                        {!expandedAnswers[answer.id] && answer.content.length > 500 && (
+                                            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-[#27272a] via-white/80 dark:via-[#27272a]/80 to-transparent flex items-end justify-center pb-2">
                                                 <Button
                                                     variant="secondary"
-                                                    size="sm"
                                                     onClick={() => toggleAnswerExpand(answer.id)}
-                                                    className="rounded-full bg-background/80 backdrop-blur-xl border border-border/80 shadow-md font-bold text-foreground hover:text-primary hover:bg-muted/80 mb-2 px-6 h-9 transition-all active:scale-95"
+                                                    className="rounded-[4px] bg-[#FFBD2E] border-[3px] border-black shadow-[4px_4px_0_0_#000] font-black uppercase text-black hover:text-black hover:bg-[#FFD268] px-8 h-12 transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] z-20"
                                                 >
                                                     Devamını Oku
                                                 </Button>
                                             </div>
                                         )}
 
-                                        {expandedAnswers[answer.id] && answer.content.length > 400 && (
-                                            <div className="flex justify-end mt-2">
+                                        {expandedAnswers[answer.id] && answer.content.length > 500 && (
+                                            <div className="flex justify-end mt-4">
                                                 <Button
                                                     variant="ghost"
-                                                    size="sm"
                                                     onClick={() => toggleAnswerExpand(answer.id)}
-                                                    className="text-xs font-bold text-muted-foreground hover:text-primary p-2 h-auto rounded-md bg-muted/30 hover:bg-primary/10 transition-colors"
+                                                    className="font-black uppercase text-xs tracking-widest text-black dark:text-white border-2 border-black rounded-[4px] bg-neutral-100 dark:bg-black shadow-[2px_2px_0_0_#000] hover:bg-neutral-200 dark:hover:bg-neutral-900 transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
                                                 >
                                                     Daralt
                                                 </Button>
@@ -433,16 +442,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         )}
                                     </div>
 
-                                    {/* Action Bar (Simple) */}
-                                    <div className="flex items-center justify-between max-w-md mt-2">
-                                        {/* Like Group */}
+                                    {/* Action Bar (Neo-brutalist) */}
+                                    <div className="flex items-center justify-between sm:justify-start gap-3 mt-4 sm:mt-0 pt-3 border-t-[3px] border-black mx-[-16px] px-4 sm:mx-[0] sm:px-0 sm:border-none sm:pt-0">
                                         <div className="flex items-center group/like">
-                                            <AnswerLikeButton
-                                                answerId={answer.id}
-                                                initialLikeCount={answer.likeCount || 0}
-                                                initialIsLiked={answer.isLiked || false}
-                                                isLoggedIn={!!user}
-                                            />
+                                            <AnswerLikeButton answerId={answer.id} initialLikeCount={answer.likeCount || 0} initialIsLiked={answer.isLiked || false} isLoggedIn={!!user} />
                                         </div>
 
                                         {/* Reply Group */}
@@ -450,21 +453,21 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="flex items-center gap-1.5 px-2 hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground transition-colors rounded-full h-7"
+                                                className="flex items-center gap-1.5 px-4 h-10 border-2 border-black bg-white dark:bg-black rounded-[4px] font-black uppercase tracking-widest text-[10px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none hover:bg-neo-blue transition-all"
                                                 onClick={() => toggleComments(answer.id)}
                                             >
-                                                <MessageSquare className="h-3.5 w-3.5" />
-                                                <span className="text-xs font-bold">
+                                                <MessageSquare className="h-4 w-4 stroke-[3px]" />
+                                                <span>
                                                     {answer.comments && answer.comments.length > 0
                                                         ? answer.comments.length
-                                                        : "Yanıtla"}
+                                                        : "YANITLA"}
                                                 </span>
                                             </Button>
                                         </div>
 
-                                        {/* Share / More placeholder */}
-                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground/50 hover:text-primary rounded-full hover:bg-primary/10">
-                                            <ArrowBigUp className="h-4 w-4" />
+                                        {/* Share placeholder */}
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 border-2 border-black bg-neutral-100 dark:bg-[#18181b] rounded-[4px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:bg-neo-pink hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all ml-auto sm:ml-0">
+                                            <Share2 className="h-4 w-4 stroke-[2.5px]" />
                                         </Button>
                                     </div>
 

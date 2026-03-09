@@ -22,9 +22,9 @@ export function MarkdownEditor({ value, onChange, placeholder, label, id, minHei
         <div className="space-y-2">
             {label && <Label htmlFor={id}>{label}</Label>}
             <Tabs defaultValue="write" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="write">Yaz</TabsTrigger>
-                    <TabsTrigger value="preview">Önizle</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 border-[3px] border-black p-0 h-10 rounded-[4px] bg-neutral-100 dark:bg-zinc-900 overflow-hidden mb-2 shadow-[2px_2px_0_0_#000]">
+                    <TabsTrigger value="write" className="data-[state=active]:bg-[#FFBD2E] data-[state=active]:text-black data-[state=active]:font-black text-black dark:text-white font-bold h-full rounded-none">Yaz</TabsTrigger>
+                    <TabsTrigger value="preview" className="data-[state=active]:bg-[#FFBD2E] data-[state=active]:text-black data-[state=active]:font-black text-black dark:text-white font-bold h-full border-l-[3px] border-black rounded-none">Önizle</TabsTrigger>
                 </TabsList>
                 <TabsContent value="write">
                     <Textarea
