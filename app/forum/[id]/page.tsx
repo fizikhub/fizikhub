@@ -23,8 +23,10 @@ import { Flag } from "lucide-react";
 import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
 // import { ScrollFixer } from "@/components/ui/scroll-fixer";
 import { StickyActionBar } from "@/components/forum/sticky-action-bar";
+import { QuickNav } from "@/components/forum/quick-nav";
 import { RelatedQuestions } from "@/components/forum/related-questions";
 import { ReplyButton } from "@/components/forum/reply-button";
+import { ReadingProgress } from "@/components/forum/reading-progress";
 
 import { Metadata } from "next";
 
@@ -253,6 +255,7 @@ export default async function QuestionPage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
             {/* ScrollFixer removed to prevent hydration issues */}
+            <ReadingProgress />
             <BackgroundWrapper />
             <script
                 type="application/ld+json"
@@ -480,6 +483,7 @@ export default async function QuestionPage({ params }: PageProps) {
             </div>
 
             <ViewTracker questionId={question.id} />
+            <QuickNav />
             <StickyActionBar
                 questionId={question.id}
                 votes={question.votes || 0}

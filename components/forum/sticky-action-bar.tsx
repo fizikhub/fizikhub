@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { m as motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { m as motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { MessageSquare, Share2, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -15,25 +15,24 @@ interface StickyActionBarProps {
 
 export function StickyActionBar({ questionId, votes, hasVoted }: StickyActionBarProps) {
     const [isVisible, setIsVisible] = useState(false);
-    const [lastScrollY, setLastScrollY] = useState(0);
+    const { scrollY } = useScroll();
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const previous = scrollY.getPrevious() ?? 0;
 
-            // Show after scrolling down 300px
-            if (currentScrollY > 300) {
+        // Show after scrolling down 300px
+        if (latest > 300) {
+            if (latest < previous) {
+                // Scrolling up -> show
                 setIsVisible(true);
-            } else {
+            } else if (latest > previous && latest > 300) {
+                // Scrolling down -> hide
                 setIsVisible(false);
             }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
+        } else {
+            setIsVisible(false);
+        }
+    });
 
     const scrollToAnswerForm = () => {
         const form = document.getElementById("answer-form");
