@@ -94,7 +94,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 4. User articles
         supabase
             .from('articles')
-            .select('id, title, slug, excerpt, created_at, category, cover_url')
+            .select('*, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
             .eq('status', 'published')
             .order('created_at', { ascending: false }),
@@ -102,7 +102,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 5. User questions
         supabase
             .from('questions')
-            .select('id, title, slug, created_at, category')
+            .select('*, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false }),
 

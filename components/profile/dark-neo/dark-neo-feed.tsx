@@ -51,29 +51,65 @@ export function DarkNeoFeed({
     const feedItems = useMemo(() => {
         let items: FeedItem[] = [];
         if (activeTab === 'posts') {
-            const articleItems = articles.map(a => ({ type: 'article', data: a, sortDate: a.created_at } as FeedItem));
-            const questionItems = questions.map(q => ({ type: 'question', data: q, sortDate: q.created_at } as FeedItem));
+            const articleItems = articles.map(a => ({
+                type: 'article',
+                data: {
+                    ...a,
+                    summary: a.summary || a.excerpt,
+                    author: a.author || a.profiles
+                },
+                sortDate: a.created_at
+            } as FeedItem));
+            const questionItems = questions.map(q => ({
+                type: 'question',
+                data: {
+                    ...q,
+                    author: q.author || q.profiles
+                },
+                sortDate: q.created_at
+            } as FeedItem));
             items = [...articleItems, ...questionItems];
         } else if (activeTab === 'saved') {
             const savedArticles = bookmarkedArticles
                 .filter(b => b.articles)
-                .map(b => ({
-                    type: 'article',
-                    data: Array.isArray(b.articles) ? b.articles[0] : b.articles,
-                    sortDate: b.created_at
-                } as FeedItem));
+                .map(b => {
+                    const a = Array.isArray(b.articles) ? b.articles[0] : b.articles;
+                    return {
+                        type: 'article',
+                        data: {
+                            ...a,
+                            summary: a?.summary || a?.excerpt,
+                            author: a?.author || a?.profiles
+                        },
+                        sortDate: b.created_at
+                    } as FeedItem;
+                });
             const savedQuestions = bookmarkedQuestions
                 .filter(b => b.questions)
-                .map(b => ({
-                    type: 'question',
-                    data: Array.isArray(b.questions) ? b.questions[0] : b.questions,
-                    sortDate: b.created_at
-                } as FeedItem));
+                .map(b => {
+                    const q = Array.isArray(b.questions) ? b.questions[0] : b.questions;
+                    return {
+                        type: 'question',
+                        data: {
+                            ...q,
+                            author: q?.author || q?.profiles
+                        },
+                        sortDate: b.created_at
+                    } as FeedItem;
+                });
             items = [...savedArticles, ...savedQuestions];
         } else if (activeTab === 'replies') {
             items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as FeedItem));
         } else if (activeTab === 'drafts') {
-            items = drafts.map(d => ({ type: 'article', data: d, sortDate: d.created_at } as FeedItem));
+            items = drafts.map(d => ({
+                type: 'article',
+                data: {
+                    ...d,
+                    summary: d.summary || d.excerpt,
+                    author: d.author || d.profiles
+                },
+                sortDate: d.created_at
+            } as FeedItem));
         }
         return items.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
     }, [activeTab, articles, questions, answers, drafts, bookmarkedArticles, bookmarkedQuestions]);

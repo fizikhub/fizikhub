@@ -41,7 +41,7 @@ export function MarkdownRenderer({
     content,
     className,
     fontSize = 'base',
-    fontFamily = 'sans',
+    fontFamily = 'serif',
     isZenMode = false
 }: MarkdownRendererProps) {
     // Load KaTeX + highlight.js CSS on first mount
@@ -103,11 +103,11 @@ export function MarkdownRenderer({
                     ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4" {...props} />,
                     ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4" {...props} />,
                     li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                    h1: ({ node, ...props }) => <h1 className="text-3xl font-bold font-mono mt-8 mb-4 text-primary" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="text-2xl font-bold font-mono mt-8 mb-4 text-primary border-b border-white/10 pb-2" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="text-xl font-bold font-mono mt-6 mb-3 text-secondary" {...props} />,
+                    h1: ({ node, ...props }) => <h1 className="text-3xl font-black font-serif mt-10 mb-6 text-primary leading-tight" {...props} />,
+                    h2: ({ node, ...props }) => <h2 className="text-2xl font-bold font-serif mt-10 mb-5 text-primary border-b border-black/10 dark:border-white/10 pb-2 leading-snug" {...props} />,
+                    h3: ({ node, ...props }) => <h3 className="text-xl font-bold font-serif mt-8 mb-4 text-secondary leading-normal" {...props} />,
                     blockquote: ({ node, ...props }) => (
-                        <blockquote className="border-[3px] border-black border-l-[8px] border-l-neo-pink dark:border-l-[#FFBD2E] pl-4 sm:pl-6 py-4 my-6 italic bg-neutral-100 dark:bg-[#27272a] rounded-[8px] shadow-[4px_4px_0_0_#000] font-medium text-black dark:text-zinc-300" {...props} />
+                        <blockquote className="border-[3px] border-black border-l-[8px] border-l-[#FF3366] dark:border-l-[#FFBD2E] pl-4 sm:pl-6 py-4 my-8 italic bg-neutral-100 dark:bg-[#27272a] rounded-[8px] shadow-[4px_4px_0_0_#000] font-serif font-medium text-black dark:text-zinc-200 leading-relaxed" {...props} />
                     ),
                     code: ({ node, inline, className, children, ...props }: any) => {
                         return inline ? (

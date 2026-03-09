@@ -107,6 +107,28 @@
     h6 {
         @apply font-heading font-black tracking-tight;
     }
+
+    /* Article Reading Optimizations */
+    .prose.font-serif {
+        --tw-prose-body: theme('colors.zinc.700');
+        --tw-prose-headings: theme('colors.zinc.900');
+        line-height: 1.8;
+        letter-spacing: 0.01em;
+    }
+
+    .dark .prose.font-serif {
+        --tw-prose-body: theme('colors.zinc.300');
+        --tw-prose-headings: theme('colors.zinc.50');
+    }
+
+    .prose.font-serif p {
+        margin-bottom: 1.75em;
+    }
+
+    .prose.font-serif strong {
+        font-weight: 800;
+        color: inherit;
+    }
 }
 
 @layer utilities {}

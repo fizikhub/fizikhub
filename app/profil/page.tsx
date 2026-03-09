@@ -30,15 +30,15 @@ export default async function ProfilePage() {
         { data: bookmarkedQuestions }
     ] = await Promise.all([
         supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
-        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }).limit(20),
-        supabase.from('questions').select('id, title, slug, created_at, category').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
+        supabase.from('articles').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }).limit(20),
+        supabase.from('questions').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
         supabase.from('answers').select('id, content, created_at, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
         supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
         getFollowStats(user.id),
-        supabase.from('articles').select('id, title, slug, excerpt, created_at, category, cover_url, status').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }).limit(20),
+        supabase.from('articles').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }).limit(20),
         getTotalUnreadCount(),
-        supabase.from('article_bookmarks').select('created_at, articles(id, title, slug, category)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
-        supabase.from('question_bookmarks').select('created_at, questions(id, title, slug, category)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+        supabase.from('article_bookmarks').select('created_at, articles(*, profiles(full_name, avatar_url, username))').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
+        supabase.from('question_bookmarks').select('created_at, questions(*, profiles(full_name, avatar_url, username))').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
     ]);
 
     const stats = {
