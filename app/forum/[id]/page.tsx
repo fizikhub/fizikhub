@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck, Edit2 } from "lucide-react";
+import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck, Edit2, Share2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
@@ -27,6 +27,7 @@ import { QuickNav } from "@/components/forum/quick-nav";
 import { RelatedQuestions } from "@/components/forum/related-questions";
 import { ReplyButton } from "@/components/forum/reply-button";
 import { ReadingProgress } from "@/components/forum/reading-progress";
+import { ShareDrawer } from "@/components/forum/share-drawer";
 
 import { Metadata } from "next";
 
@@ -252,6 +253,14 @@ export default async function QuestionPage({ params }: PageProps) {
         },
     };
 
+    const tagColors = [
+        "bg-[#FFBD2E] text-black", // Neo Yellow
+        "bg-neo-pink text-white", // Neo Pink
+        "bg-neo-blue text-white", // Neo Blue
+        "bg-[#4ADE80] text-black", // Neo Green
+        "bg-[#c084fc] text-white", // Neo Purple
+    ];
+
     return (
         <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
             {/* ScrollFixer removed to prevent hydration issues */}
@@ -362,11 +371,17 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Tags & Badges */}
                                 <div className="mt-6 flex flex-wrap gap-2">
-                                    {question.tags?.map((tag: string) => (
-                                        <Badge key={tag} variant="outline" className="h-7 border-2 border-black bg-white dark:bg-black text-black dark:text-white font-bold text-[10px] uppercase shadow-[2px_2px_0_0_#000] rounded-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
-                                            #{tag}
-                                        </Badge>
-                                    ))}
+                                    {question.tags?.map((tag: string, index: number) => {
+                                        const colorClass = tagColors[index % tagColors.length];
+                                        return (
+                                            <Badge key={tag} variant="outline" className={cn(
+                                                "h-7 border-[2px] border-black font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0_0_#000] rounded-[4px] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all px-3",
+                                                colorClass
+                                            )}>
+                                                #{tag}
+                                            </Badge>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -403,6 +418,15 @@ export default async function QuestionPage({ params }: PageProps) {
                                         contentType="question"
                                         contentId={question.id}
                                     />
+
+                                    <ShareDrawer
+                                        url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}`}
+                                        title={question.title}
+                                    >
+                                        <Button variant="ghost" size="icon" className="h-10 w-10 border-2 border-black bg-white dark:bg-black rounded-[4px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:bg-neo-pink hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all pointer-events-auto">
+                                            <Share2 className="h-4 w-4 stroke-[2.5px]" />
+                                        </Button>
+                                    </ShareDrawer>
                                 </div>
 
                                 {/* Right Actions (Bookmark) */}

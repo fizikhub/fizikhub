@@ -107,16 +107,16 @@ export function MarkdownRenderer({
                     h2: ({ node, ...props }) => <h2 className="text-2xl font-bold font-mono mt-8 mb-4 text-primary border-b border-white/10 pb-2" {...props} />,
                     h3: ({ node, ...props }) => <h3 className="text-xl font-bold font-mono mt-6 mb-3 text-secondary" {...props} />,
                     blockquote: ({ node, ...props }) => (
-                        <blockquote className="border-l-4 border-primary pl-4 py-1 my-4 italic bg-white/5 rounded-r-lg" {...props} />
+                        <blockquote className="border-[3px] border-black border-l-[8px] border-l-neo-pink dark:border-l-[#FFBD2E] pl-4 sm:pl-6 py-4 my-6 italic bg-neutral-100 dark:bg-[#27272a] rounded-[8px] shadow-[4px_4px_0_0_#000] font-medium text-black dark:text-zinc-300" {...props} />
                     ),
                     code: ({ node, inline, className, children, ...props }: any) => {
                         return inline ? (
-                            <code className="bg-secondary/20 rounded px-1 py-0.5 text-sm font-mono" {...props}>
+                            <code className="bg-neutral-200 dark:bg-black border-[2px] border-black text-black dark:text-neo-yellow font-bold px-1.5 py-0.5 mx-0.5 rounded-[4px] font-mono shadow-[2px_2px_0_0_#000] text-[0.9em]" {...props}>
                                 {children}
                             </code>
                         ) : (
-                            <pre className="bg-secondary/10 rounded-lg p-4 overflow-x-auto mb-4">
-                                <code className="text-sm font-mono" {...props}>
+                            <pre className="bg-black dark:bg-[#111111] border-[3px] border-black rounded-[8px] p-4 sm:p-5 overflow-x-auto mb-6 shadow-[4px_4px_0_0_#000]">
+                                <code className="text-sm font-mono text-zinc-50" {...props}>
                                     {children}
                                 </code>
                             </pre>

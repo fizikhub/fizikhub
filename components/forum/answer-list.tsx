@@ -13,7 +13,7 @@ const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown, Share2 } from "lucide-react";
+import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown, Share2, Flame, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createAnswer, toggleAnswerAcceptance } from "@/app/forum/actions";
 import { Database } from "@/types/database";
@@ -23,6 +23,7 @@ import { Flag } from "lucide-react";
 import { AnswerLikeButton } from "@/components/forum/answer-like-button";
 import { RealtimeCommentList } from "@/components/forum/realtime-comment-list";
 import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
+import { ShareDrawer } from "@/components/forum/share-drawer";
 import { cn } from "@/lib/utils";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
@@ -46,20 +47,29 @@ interface AnswerListProps {
 }
 
 export function AnswerList({ questionId, initialAnswers, questionAuthorId, currentUser }: AnswerListProps) {
-    const sortedAnswers = [...initialAnswers].sort((a, b) => {
-        if (a.is_accepted === b.is_accepted) {
-            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        }
-        return a.is_accepted ? -1 : 1;
-    });
-
-    const [answers, setAnswers] = useState<Answer[]>(sortedAnswers);
+    type SortOption = "newest" | "popular";
+    const [sortBy, setSortBy] = useState<SortOption>("newest");
+    const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
     const [newAnswer, setNewAnswer] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [user, setUser] = useState<any>(currentUser);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
     const [expandedAnswers, setExpandedAnswers] = useState<Record<number, boolean>>({});
     const [supabase] = useState(() => createClient());
+
+    const displayedAnswers = [...answers].sort((a, b) => {
+        if (a.is_accepted && !b.is_accepted) return -1;
+        if (!a.is_accepted && b.is_accepted) return 1;
+
+        if (sortBy === "newest") {
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        } else {
+            const likeA = a.likeCount || 0;
+            const likeB = b.likeCount || 0;
+            if (likeA !== likeB) return likeB - likeA;
+            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+    });
 
     const toggleAnswerExpand = (answerId: number) => {
         setExpandedAnswers(prev => ({
@@ -296,6 +306,40 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                 </div>
             )}
 
+            {/* Sorting Tabs (Neo-Brutalist Folders) */}
+            {answers.length > 0 && (
+                <div className="mb-4">
+                    <div className="flex items-end px-2 sm:px-4 -mb-[3px] relative z-10 w-full overflow-x-auto hide-scrollbar">
+                        <button
+                            onClick={() => setSortBy("newest")}
+                            className={cn(
+                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-widest border-[3px] border-black rounded-t-[8px] transition-all",
+                                sortBy === "newest"
+                                    ? "bg-[#FFBD2E] text-black border-b-transparent pt-3 pb-3 sm:pt-4 sm:pb-4 z-10"
+                                    : "bg-neutral-200 dark:bg-[#27272a] text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-700 border-b-black pt-2 sm:pt-3 pb-2 sm:pb-3 z-0"
+                            )}
+                        >
+                            <Clock className="w-4 h-4 stroke-[3px]" />
+                            En Yeni
+                        </button>
+                        <button
+                            onClick={() => setSortBy("popular")}
+                            className={cn(
+                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-widest border-[3px] border-black rounded-t-[8px] transition-all -ml-[3px]",
+                                sortBy === "popular"
+                                    ? "bg-neo-pink text-white border-b-transparent pt-3 pb-3 sm:pt-4 sm:pb-4 z-10"
+                                    : "bg-neutral-200 dark:bg-[#27272a] text-neutral-500 hover:bg-neutral-300 dark:hover:bg-neutral-700 border-b-black pt-2 sm:pt-3 pb-2 sm:pb-3 z-0"
+                            )}
+                        >
+                            <Flame className="w-4 h-4 stroke-[3px]" />
+                            En Popüler
+                        </button>
+                    </div>
+                    {/* The folder body top border */}
+                    <div className="w-full h-[3px] bg-black mb-6 relative z-0"></div>
+                </div>
+            )}
+
             {/* Answer List */}
             <div className="relative space-y-4">
                 <AnimatePresence mode="popLayout">
@@ -313,7 +357,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             <p className="text-black dark:text-zinc-400 text-xs font-bold uppercase tracking-widest">İlk cevabı sen ver!</p>
                         </motion.div>
                     ) : (
-                        answers.map((answer, index) => (
+                        displayedAnswers.map((answer, index) => (
                             <motion.div
                                 key={answer.id}
                                 layout
@@ -483,10 +527,15 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 </Button>
                                             </div>
 
-                                            {/* Share placeholder */}
-                                            <Button variant="ghost" size="icon" className="h-10 w-10 border-2 border-black bg-neutral-100 dark:bg-[#18181b] rounded-[4px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:bg-neo-pink hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all ml-auto sm:ml-0">
-                                                <Share2 className="h-4 w-4 stroke-[2.5px]" />
-                                            </Button>
+                                            {/* Share Drawer */}
+                                            <ShareDrawer
+                                                url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${questionId}#answer-${answer.id}`}
+                                                title={`FizikHub'da bir yanıt`}
+                                            >
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 border-2 border-black bg-neutral-100 dark:bg-[#18181b] rounded-[4px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:bg-neo-pink hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all pointer-events-auto">
+                                                    <Share2 className="h-4 w-4 stroke-[2.5px]" />
+                                                </Button>
+                                            </ShareDrawer>
                                         </div>
 
                                         {/* Expanded Comments */}
