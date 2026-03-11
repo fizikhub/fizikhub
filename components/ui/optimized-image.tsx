@@ -20,21 +20,17 @@ export function OptimizedImage({
     alt,
     ...props
 }: OptimizedImageProps) {
-    const [isLoaded, setIsLoaded] = useState(props.priority ? true : false);
-
     return (
         <NextImage
             {...props}
             alt={alt}
             className={cn(
-                "transition-opacity duration-300",
-                isLoaded ? "opacity-100" : "opacity-0",
+                "object-cover",
                 className
             )}
             placeholder={lowQualityPlaceholder ? "blur" : "empty"}
             blurDataURL={lowQualityPlaceholder ? generateBlurPlaceholder() : undefined}
             quality={props.priority ? 85 : 75}
-            onLoad={() => setIsLoaded(true)}
             fetchPriority={props.priority ? "high" : "auto"}
         />
     );
@@ -54,7 +50,6 @@ export function OptimizedAvatar({
     size?: number;
     className?: string;
 }) {
-    const [isLoaded, setIsLoaded] = useState(false);
     const [hasError, setHasError] = useState(false);
 
     if (!src || hasError) {
@@ -82,11 +77,9 @@ export function OptimizedAvatar({
                 fill
                 sizes={`${size}px`}
                 className={cn(
-                    "object-cover transition-opacity duration-200",
-                    isLoaded ? "opacity-100" : "opacity-0"
+                    "object-cover text-transparent",
                 )}
                 quality={60}
-                onLoad={() => setIsLoaded(true)}
                 onError={() => setHasError(true)}
             />
         </div>

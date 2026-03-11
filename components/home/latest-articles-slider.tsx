@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ChevronRight, Clock } from "lucide-react";
 
 interface Article {
@@ -51,15 +51,13 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                     {/* Image Container */}
                                     <div className="absolute inset-0 z-0">
                                         {article.image ? (
-                                            <Image
+                                            <OptimizedImage
                                                 src={article.image}
                                                 alt={article.title}
                                                 fill
                                                 sizes="(max-width: 640px) 215px, 275px"
                                                 className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
                                                 priority={index < 3}
-                                                fetchPriority={index < 3 ? "high" : "auto"}
-                                                quality={index < 3 ? 60 : 50}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">

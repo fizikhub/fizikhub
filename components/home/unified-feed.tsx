@@ -26,7 +26,6 @@ const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-t
     loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
 });
 
-import { useState, useEffect } from "react";
 
 export interface FeedItem {
     type: 'article' | 'blog' | 'question' | 'experiment' | 'book-review' | 'term' | 'answer';
@@ -40,29 +39,10 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
-    // Progressive hydration: Render first 3 items immediately (SSR/initial load)
-    // to avoid freezing the main thread, then render the rest during idle time.
-    const [renderCount, setRenderCount] = useState(3);
-
-    useEffect(() => {
-        if (items.length > 3) {
-            const idleCallback = window.requestIdleCallback ?
-                window.requestIdleCallback(() => setRenderCount(items.length), { timeout: 2000 }) :
-                setTimeout(() => setRenderCount(items.length), 500);
-
-            return () => {
-                if (window.cancelIdleCallback && typeof idleCallback === 'number') window.cancelIdleCallback(idleCallback);
-                else clearTimeout(idleCallback as any);
-            };
-        }
-    }, [items.length]);
-
-    const visibleItems = items.slice(0, renderCount);
-
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
             <div className="flex flex-col gap-5 sm:gap-6">
-                {visibleItems.map((item, index) => (
+                {items.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
                         className="feed-item-appear will-change-transform"
