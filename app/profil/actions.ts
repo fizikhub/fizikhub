@@ -114,12 +114,125 @@ export async function updateProfile(formData: {
         .eq('id', user.id)
         .single();
 
-    revalidatePath('/profil');
-    if (profile?.username) {
-        revalidatePath(`/kullanici/${profile.username}`);
+    return { success: true };
+}
+
+export async function saveProfileChanges(formData: FormData) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
     }
 
-    return { success: true };
+    const fullName = formData.get("full_name") as string;
+    const bio = formData.get("bio") as string;
+    const website = formData.get("website") as string;
+    const newUsername = formData.get("username") as string;
+    const avatarFile = formData.get("avatar") as File | null;
+    const coverFile = formData.get("cover") as File | null;
+
+    try {
+        const updateData: any = {};
+        
+        // 1. Basic Fields
+        if (fullName !== null) updateData.full_name = fullName;
+        if (bio !== null) updateData.bio = bio;
+        if (website !== null) updateData.website = website;
+
+        // 2. Avatar Upload
+        if (avatarFile && avatarFile.size > 0 && avatarFile.name !== 'undefined') {
+            const validationError = validateImageFile(avatarFile);
+            if (validationError) return { success: false, error: `Avatar: ${validationError}` };
+
+            const fileExt = avatarFile.name.split('.').pop();
+            const fileName = `avatar-${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, avatarFile);
+
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+            updateData.avatar_url = urlData.publicUrl;
+        }
+
+        // 3. Cover Upload
+        if (coverFile && coverFile.size > 0 && coverFile.name !== 'undefined') {
+            const validationError = validateImageFile(coverFile);
+            if (validationError) return { success: false, error: `Kapak: ${validationError}` };
+
+            const fileExt = coverFile.name.split('.').pop();
+            const fileName = `cover-${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('covers')
+                .upload(filePath, coverFile);
+
+            if (uploadError) throw uploadError;
+
+            const { data: urlData } = supabase.storage.from('covers').getPublicUrl(filePath);
+            updateData.cover_url = urlData.publicUrl;
+        }
+
+        // 4. Username Logic
+        if (newUsername && newUsername !== user.user_metadata?.username) {
+            // Check if user has changes left (Reusing part of updateUsername logic but tailored for single update)
+            const { data: currentProfile } = await supabase
+                .from('profiles')
+                .select('username, username_changes_count')
+                .eq('id', user.id)
+                .single();
+
+            if (currentProfile && newUsername !== currentProfile.username) {
+                const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+                const changeCount = currentProfile?.username_changes_count || 0;
+
+                if (!isAdmin && changeCount >= 1) {
+                    return { success: false, error: "Kullanıcı adınızı sadece bir kez değiştirebilirsiniz." };
+                }
+
+                // Check uniqueness
+                const { data: existingUser } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('username', newUsername)
+                    .neq('id', user.id)
+                    .single();
+
+                if (existingUser) {
+                    return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
+                }
+
+                updateData.username = newUsername;
+                updateData.username_changes_count = changeCount + 1;
+            }
+        }
+
+        // 5. Final Save
+        if (Object.keys(updateData).length > 0) {
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update(updateData)
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+        }
+
+        revalidatePath('/profil');
+        if (updateData.username) {
+            revalidatePath(`/kullanici/${updateData.username}`);
+        }
+        
+        return { success: true };
+
+    } catch (error: any) {
+        console.error("Profile consolidation error:", error);
+        return { success: false, error: "Değişiklikler kaydedilirken bir hata oluştu." };
+    }
 }
 
 export async function followUser(targetUserId: string) {

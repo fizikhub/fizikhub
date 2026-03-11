@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/profil/actions";
+import { uploadAvatar, uploadCover, updateProfile, updateUsername, saveProfileChanges } from "@/app/profil/actions";
 import { signOut } from "@/app/auth/actions";
 import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -58,29 +58,22 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         setIsLoading(true);
 
         try {
+            const formData = new FormData();
+            formData.append("full_name", fullName);
+            formData.append("bio", bio);
+            formData.append("website", website);
+            formData.append("username", username);
+            
             if (avatarFile) {
-                const res = await uploadAvatar(avatarFile);
-                if (!res.success) throw new Error(res.error);
+                formData.append("avatar", avatarFile);
             }
-
             if (coverFile) {
-                const res = await uploadCover(coverFile);
-                if (!res.success) throw new Error(res.error);
+                formData.append("cover", coverFile);
             }
 
-            const updateRes = await updateProfile({
-                full_name: fullName,
-                bio: bio,
-                website: website,
-                location: location,
-            });
+            const res = await saveProfileChanges(formData);
 
-            if (!updateRes.success) throw new Error(updateRes.error);
-
-            if (username !== profile.username) {
-                const usernameRes = await updateUsername(username);
-                if (!usernameRes.success) throw new Error(usernameRes.error);
-            }
+            if (!res.success) throw new Error(res.error);
 
             toast.success("Profil başarıyla güncellendi!");
             router.refresh();
