@@ -144,6 +144,12 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                                     <span>Kapak Değiştir</span>
                                 </div>
                             </div>
+                            
+                            {/* Mobile Upload Icon Indicator */}
+                            <div className="absolute bottom-4 right-4 bg-white text-black p-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000] z-20 sm:hidden flex items-center justify-center">
+                                <Upload className="w-4 h-4 stroke-[3px]" />
+                            </div>
+                            
                             <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={handleCoverChange} />
                         </div>
 
