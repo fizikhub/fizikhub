@@ -95,7 +95,6 @@ export async function updateProfile(formData: {
     if (formData.website !== undefined) updateData.website = formData.website;
     if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
-    if (formData.location !== undefined) updateData.location = formData.location;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
 
     const { error: updateError } = await supabase
@@ -104,7 +103,7 @@ export async function updateProfile(formData: {
         .eq('id', user.id);
 
     if (updateError) {
-        console.error("Profile update error:", updateError);
+        console.error("Profile update error detail:", updateError);
         return { success: false, error: "Profil güncellenirken hata oluştu." };
     }
 

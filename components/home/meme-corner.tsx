@@ -12,13 +12,6 @@ export function MemeCorner() {
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
-            {/* GLOBAL STYLES for text animations */}
-            <style jsx global>{`
-                @keyframes badge-wiggle {
-                    0%, 100% { transform: rotate(-3deg); }
-                    50% { transform: rotate(1deg); }
-                }
-            `}</style>
 
             <div
                 className={cn(
