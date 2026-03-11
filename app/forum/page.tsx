@@ -7,6 +7,7 @@ import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { sanitizeSearchQuery } from "@/lib/security";
 
 // Revalidate every 2 minutes for active active forum
 export const revalidate = 120;
@@ -62,7 +63,8 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     }
 
     if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`);
+        const sanitizedSearch = sanitizeSearchQuery(searchQuery);
+        query = query.ilike('title', `%${sanitizedSearch}%`);
     }
 
     // Apply sorting
@@ -76,14 +78,33 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     // Add pagination
     query = query.range(offset, offset + limit - 1);
 
-    const { data: questions, count: totalCount, error: questionsError } = await query;
+    // Run main query + user auth + secondary queries in parallel
+    const [{ data: questions, count: totalCount, error: questionsError }, { data: { user } }, { data: weeklyQuestion }, { data: latestArticle }] = await Promise.all([
+        query,
+        supabase.auth.getUser(),
+        // Fetch Question of the Week
+        supabase
+            .from('questions')
+            .select('id')
+            .contains('tags', ['haftanin-sorusu'])
+            .limit(1)
+            .maybeSingle(),
+        // Fetch Latest Article for Ad (Only from Writers)
+        supabase
+            .from('articles')
+            .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey(full_name, is_writer)')
+            .eq('status', 'published')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+    ]);
+
     if (questionsError) {
         console.error("Supabase Error fetching forum questions:", questionsError);
     }
+
     // Fetch user's votes to show "voted" state
     const userVotes = new Map<number, number>();
-    const { data: { user } } = await supabase.auth.getUser();
-
     if (user && questions && questions.length > 0) {
         const { data: votes } = await supabase
             .from('question_votes')
@@ -95,23 +116,6 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             votes.forEach(v => userVotes.set(v.question_id, v.vote_type));
         }
     }
-
-    // Fetch Question of the Week
-    const { data: weeklyQuestion } = await supabase
-        .from('questions')
-        .select('id')
-        .contains('tags', ['haftanin-sorusu'])
-        .limit(1)
-        .maybeSingle();
-
-    // Fetch Latest Article for Ad (Only from Writers)
-    const { data: latestArticle } = await supabase
-        .from('articles')
-        .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey(full_name, is_writer)')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
 
     const jsonLd = {
         '@context': 'https://schema.org',

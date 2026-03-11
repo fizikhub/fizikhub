@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { Metadata } from "next";
 import { ModernExploreView } from "@/components/explore/modern-explore-view";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { sanitizeSearchQuery } from "@/lib/security";
 
 // ISR Removed for accurate auth state
 // export const revalidate = 0;
@@ -85,23 +86,23 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     // No 'else if (!query)' block anymore - default allows everything.
 
     if (query) {
-        dbQuery = dbQuery.ilike("title", `%${query}%`);
+        const sanitizedQuery = sanitizeSearchQuery(query);
+        dbQuery = dbQuery.ilike("title", `%${sanitizedQuery}%`);
     }
 
-    const { data: articles, count } = await dbQuery
-        .range(offset, offset + limit - 1);
+    const [{ data: articles, count }, { data: { user } }] = await Promise.all([
+        dbQuery.range(offset, offset + limit - 1),
+        supabase.auth.getUser()
+    ]);
 
     const totalPages = count ? Math.ceil(count / limit) : 0;
 
-    // Fetch current user for the share card
-    const { data: { user } } = await supabase.auth.getUser();
+    // Fetch current user profile for the share card
     let userProfile = null;
-
     if (user) {
-        // Fetch full profile to ensure we have name/avatar
         const { data: profile } = await supabase
             .from("profiles")
-            .select("*")
+            .select("id, username, full_name, avatar_url, bio")
             .eq("id", user.id)
             .single();
         userProfile = profile;

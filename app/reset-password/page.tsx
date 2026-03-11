@@ -29,8 +29,8 @@ export default function ResetPasswordPage() {
             return;
         }
 
-        if (newPassword.length < 6) {
-            toast.error("Şifre en az 6 karakter olmalı!");
+        if (newPassword.length < 8) {
+            toast.error("Şifre en az 8 karakter olmalı!");
             return;
         }
 
@@ -161,7 +161,7 @@ export default function ResetPasswordPage() {
 
                             <Button
                                 type="submit"
-                                disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
+                                disabled={loading || newPassword !== confirmPassword || newPassword.length < 8}
                                 className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 {loading ? (
